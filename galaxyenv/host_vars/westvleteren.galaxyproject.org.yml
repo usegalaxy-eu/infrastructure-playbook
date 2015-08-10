@@ -1,0 +1,30 @@
+---
+
+local_users:
+  - name: zfsdump-orval
+    group: zfsdump-orval
+    comment: 'ZFS receive orval'
+    home: /home/zfsdump-orval
+    shell: /bin/bash
+  - name: nate
+    uid: 2048
+    group: nate
+    gid: 2048
+    comment: Nate Coraor
+    home: /home/nate
+    shell: /bin/bash
+
+zfs_filesystems:
+  - name: zones/westvleteren/backup
+    atime: "off"
+    exec: "off"
+    setuid: "off"
+    compression: lz4
+  - name: zones/westvleteren/backup/orval
+    owner: zfsdump-orval
+    group: zfsdump-orval
+
+zfs_permissions:
+  - name: zones/westvleteren/backup/orval
+    users: zfsdump-orval
+    permissions: compression,create,mount,receive

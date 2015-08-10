@@ -1,0 +1,139 @@
+---
+
+local_users:
+  - name: sites
+    group: sites
+    comment: 'Web sites'
+  - name: bioarchive
+    group: bioarchive
+    comment: 'bioaRchive'
+  - name: bag
+    group: bag
+    comment: Björn Grüning
+    home: /home/bag
+    shell: /bin/bash
+  - name: esr
+    group: esr
+    comment: Eric Rasche
+    home: /home/erasche
+    shell: /bin/bash
+  - name: nate
+    uid: 2048
+    group: nate
+    gid: 2048
+    comment: Nate Coraor
+    home: /home/nate
+    shell: /bin/bash
+  - name: zfsdump-orval
+    group: zfsdump-orval
+    comment: 'ZFS send orval'
+    home: /home/zfsdump-orval
+    shell: /bin/bash
+
+zfs_filesystems:
+  - name: promise-1/orval/vicepa
+    mountpoint: /vicepa
+    atime: "off"
+  - name: promise-1/orval/snpeff-data
+    mountpoint: /srv/nginx/snpeff-data.galaxyproject.org/root
+    exec: "off"
+    setuid: "off"
+    owner: bag
+    group: bag
+  - name: promise-1/orval/bioarchive
+    mountpoint: /srv/nginx/bioarchive.galaxyproject.org/root
+    exec: "off"
+    setuid: "off"
+    owner: bioarchive
+    group: bioarchive
+  - name: promise-1/orval/images
+    mountpoint: /srv/nginx/images.galaxyproject.org/root
+    exec: "off"
+    setuid: "off"
+    owner: sites
+    group: sites
+  - name: promise-1/orval/sample-data
+    mountpoint: /srv/nginx/sample-data.galaxyproject.org/root
+    exec: "off"
+    setuid: "off"
+    owner: sites
+    group: sites
+  - name: promise-1/orval/wheels
+    mountpoint: /srv/nginx/wheels.galaxyproject.org/root
+    exec: "off"
+    setuid: "off"
+    owner: sites
+    group: sites
+  - name: promise-1/orval/screencast
+    mountpoint: /srv/nginx/screencast.galaxyproject.org/root
+    exec: "off"
+    setuid: "off"
+    owner: sites
+    group: sites
+
+zfs_permissions:
+  - name: promise-1/orval/vicepa
+    users: zfsdump-orval
+    permissions: send,snapshot,hold
+  - name: promise-1/orval/snpeff-data
+    users: zfsdump-orval
+    permissions: send,snapshot,hold
+  - name: promise-1/orval/bioarchive
+    users: zfsdump-orval
+    permissions: send,snapshot,hold
+  - name: promise-1/orval/images
+    users: zfsdump-orval
+    permissions: send,snapshot,hold
+  - name: promise-1/orval/sample-data
+    users: zfsdump-orval
+    permissions: send,snapshot,hold
+  - name: promise-1/orval/wheels
+    users: zfsdump-orval
+    permissions: send,snapshot,hold
+  - name: promise-1/orval/screencast
+    users: zfsdump-orval
+    permissions: send,snapshot,hold
+
+crontabs:
+  - name: "Backup OpenAFS /vicepa"
+    id: backup_vicepa
+    user: zfsdump-orval
+    hour: 0
+    minute: 0
+    job: dataset='promise-1/orval/vicepa' && backupserver='westvleteren.galaxyproject.org' && {{ zfs_backup_job_template }}
+  - name: "Backup SnpEff data"
+    id: backup_snpeff_data
+    user: zfsdump-orval
+    hour: 0
+    minute: 30
+    job: dataset='promise-1/orval/snpeff-data' && backupserver='westvleteren.galaxyproject.org' && {{ zfs_backup_job_template }}
+  - name: "Backup BioaRchive"
+    id: backup_bioarchive
+    user: zfsdump-orval
+    hour: 0
+    minute: 45
+    job: dataset='promise-1/orval/bioarchive' && backupserver='westvleteren.galaxyproject.org' && {{ zfs_backup_job_template }}
+  - name: "Backup images"
+    id: backup_images
+    user: zfsdump-orval
+    hour: 1
+    minute: 0
+    job: dataset='promise-1/orval/images' && backupserver='westvleteren.galaxyproject.org' && {{ zfs_backup_job_template }}
+  - name: "Backup sample data"
+    id: backup_sample_data
+    user: zfsdump-orval
+    hour: 1
+    minute: 15
+    job: dataset='promise-1/orval/sample-data' && backupserver='westvleteren.galaxyproject.org' && {{ zfs_backup_job_template }}
+  - name: "Backup wheels"
+    id: backup_wheels
+    user: zfsdump-orval
+    hour: 1
+    minute: 30
+    job: dataset='promise-1/orval/wheels' && backupserver='westvleteren.galaxyproject.org' && {{ zfs_backup_job_template }}
+  - name: "Backup screencasts"
+    id: backup_screencast
+    user: zfsdump-orval
+    hour: 1
+    minute: 45
+    job: dataset='promise-1/orval/screencast' && backupserver='westvleteren.galaxyproject.org' && {{ zfs_backup_job_template }}

@@ -1,0 +1,37 @@
+---
+
+- name: Tasks for all hosts
+  hosts: all
+  remote_user: root
+  vars_files:
+    - "{{ deploy_env }}/secret_group_vars/all.yml"
+    - [ "{{ deploy_env }}/secret_host_vars/{{ inventory_hostname }}.yml", "{{ deploy_env }}/secret_host_vars/default.yml" ]
+  roles:
+    - requiretty        # Disable requiretty for Ansible ssh pipelining
+    - ssh               # Enable password auth and root logins
+    - timezone          # Configure system timezone
+    - users             # Create users and set up authentication keys
+    - paths             # Configure path permissions, filesystems
+    - packages          # Install packages
+    - resolv            # Set resolv.conf for static hosts
+    - cron              # Create cron jobs
+  tags: initial
+
+# This is here because it's currently due to a SmartOS issue:
+# https://github.com/joyent/smartos-live/issues/469
+# If that issue is fixed, it should be possible to remove this and undo
+# explicitly setting the sys_fs_import priv
+- name: Assign the sys_fs_import privilege to backup users
+  hosts: zfsbackupservers
+  remote_user: root
+  vars:
+    backupusers:
+      - zfsdump-orval
+  tasks:
+    - name: "Set sys_fs_import for backup users"
+      lineinfile:
+        dest: /etc/user_attr
+        backup: "yes"
+        line: "{{ item }}::::type=normal;defaultpriv=basic,sys_fs_import"
+        regexp: "^{{ item }}:.*"
+      with_items: backupusers
