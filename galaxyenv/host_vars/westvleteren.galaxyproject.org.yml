@@ -1,10 +1,18 @@
 ---
 
+host_packages:
+  - rsync   # need >=3.1.0 for --info
+
 local_users:
   - name: zfsdump-orval
     group: zfsdump-orval
     comment: 'ZFS receive orval'
     home: /home/zfsdump-orval
+    shell: /bin/bash
+  - name: zfsdump-radegast
+    group: zfsdump-radegast
+    comment: 'ZFS receive radegast'
+    home: /home/zfsdump-radegast
     shell: /bin/bash
   - name: nate
     uid: 2048
@@ -23,8 +31,31 @@ zfs_filesystems:
   - name: zones/westvleteren/backup/orval
     owner: zfsdump-orval
     group: zfsdump-orval
+  - name: zones/westvleteren/backup/radegast
+    owner: zfsdump-radegast
+    group: zfsdump-radegast
+  - name: zones/westvleteren/backup/radegast/postgres
+    owner: zfsdump-radegast
+    group: zfsdump-radegast
+  - name: zones/westvleteren/backup/radegast/postgres/current
+    owner: zfsdump-radegast
+    group: zfsdump-radegast
+  - name: zones/westvleteren/backup/radegast/testshed
+    owner: zfsdump-radegast
+    group: zfsdump-radegast
+  - name: zones/westvleteren/backup/radegast/mainshed
+    owner: zfsdump-radegast
+    group: zfsdump-radegast
 
 zfs_permissions:
   - name: zones/westvleteren/backup/orval
     users: zfsdump-orval
     permissions: compression,create,mount,receive
+  - name: zones/westvleteren/backup/radegast
+    users: zfsdump-radegast
+    permissions: snapshot
+
+directories:
+  - path: /zones/westvleteren/backup/radegast/postgres/active
+    owner: zfsdump-radegast
+    group: zfsdump-radegast
