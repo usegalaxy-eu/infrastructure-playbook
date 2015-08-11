@@ -1,7 +1,15 @@
 ---
 
+- name: Install debconf packages
+  apt: pkg={{ item }}
+  when: ansible_os_family == "Debian"
+  with_items:
+    - debconf
+    - debconf-utils
+
 - name: Set client options
   debconf: name=mailman question="{{ item.question }}" value="{{ item.value }}" vtype="{{ item.vtype }}"
+  when: ansible_os_family == "Debian"
   with_items:
       - { question: 'mailman/site_languages', value: 'en', vtype: 'multiselect' }
       - { question: 'mailman/default_server_language', value: 'en', vtype: 'multiselect' }
