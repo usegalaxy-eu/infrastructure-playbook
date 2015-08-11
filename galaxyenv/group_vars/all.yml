@@ -10,5 +10,12 @@ resolv_nameservers:
 resolv_domain: galaxyproject.org
 resolv_search: galaxyproject.org
 
+# for various roles, including: postfix, ldap, nfs, mailman
+ldap_base_dn: dc=galaxyproject,dc=org
+ldap_server_uris:
+  - ldap://ldap3.galaxyproject.org/ # prefer the psu ldap server, override for non-psu hosts
+  - ldap://ldap1.galaxyproject.org/
+  - ldap://ldap2.galaxyproject.org/
+
 # template for zfs backup cron jobs: prepend with "dataset='<dataset>' && backupserver='<server>'"
 zfs_backup_job_template: last_snap_file=".last_snap_`echo $dataset | tr / ,`" && [ -f ~/${last_snap_file} ] && last_snapdate=`cat ~/${last_snap_file}` || true && snapdate=`date -u +\%Y\%m\%dT\%H\%M\%SZ` && zfs snapshot ${dataset}@${snapdate} && [ -z "${last_snapdate}" ] && zfs send ${dataset}@${snapdate} | ssh -T ${backupserver} || zfs send -i ${last_snapdate} ${dataset}@${snapdate} | ssh -T ${backupserver} && echo $snapdate >~/${last_snap_file}

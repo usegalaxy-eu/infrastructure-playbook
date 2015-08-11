@@ -1,9 +1,48 @@
+## Variables
+
 orval.galaxyproject.org ansible_python_interpreter=/opt/local/bin/python
 westvleteren.galaxyproject.org ansible_python_interpreter=/opt/local/bin/python
+
+## Host groupings
+
+[infrastructure]
+delirium.galaxyproject.org
+chouffe.galaxyproject.org
+
+[virtual]
 radegast.galaxyproject.org
+
+[virtual:children]
+ec2hosts
+
+[ec2hosts]
+delirium.galaxyproject.org
+chouffe.galaxyproject.org
+
+## Application groupings
+
+# Mail
+
+[mailservers]
+[mailservers:children]
+mailservers-primarymx
+mailservers-secondarymx
+
+[mailservers-primarymx]
+chouffe.galaxyproject.org
+
+[mailservers-secondarymx]
+delirium.galaxyproject.org
+
+[listservers]
+delirium.galaxyproject.org
+
+# Web
 
 [webservers]
 orval.galaxyproject.org
+
+# Other stuff
 
 [zfsbackupservers]
 westvleteren.galaxyproject.org

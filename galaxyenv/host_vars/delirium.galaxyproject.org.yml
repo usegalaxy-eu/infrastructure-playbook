@@ -1,0 +1,15 @@
+---
+
+filesystems:
+  - name: /var/lib/mailman
+    src: /dev/xvdo
+    fstype: xfs
+    mode: 2775
+    owner: root
+    group: list
+
+ldap_server_uris:
+  - ldap://localhost/ # prefer self
+  - ldap://ldap2.galaxyproject.org/
+  - ldap://ldap3.galaxyproject.org/
+

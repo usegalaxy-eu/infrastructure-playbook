@@ -1,0 +1,14 @@
+---
+
+filesystems:
+  - name: /var/mail
+    src: /dev/xvdn
+    fstype: xfs
+    mode: 2775
+    owner: root
+    group: mail
+
+ldap_server_uris:
+  - ldap://localhost/ # prefer self
+  - ldap://ldap1.galaxyproject.org/
+  - ldap://ldap3.galaxyproject.org/
