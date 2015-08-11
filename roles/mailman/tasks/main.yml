@@ -1,0 +1,68 @@
+---
+
+- name: Set client options
+  debconf: name=mailman question="{{ item.question }}" value="{{ item.value }}" vtype="{{ item.vtype }}"
+  with_items:
+      - { question: 'mailman/site_languages', value: 'en', vtype: 'multiselect' }
+      - { question: 'mailman/default_server_language', value: 'en', vtype: 'multiselect' }
+
+- name: Install Nate's PGP Key
+  apt_key: id=751B835F keyserver=pgp.mit.edu
+  when: ansible_os_family == "Debian"
+
+- name: Install Infrastructure APT repository
+  apt_repository: repo=ppa:natefoo/infrastructure
+  when: ansible_os_family == "Debian"
+  register: added_repo
+
+- name: Update APT cache
+  apt: update_cache=yes
+  when: added_repo.changed
+
+- name: Install Mailman and dependency packages
+  apt: pkg={{ item }}
+  when: ansible_os_family == "Debian"
+  with_items:
+    - mailman
+    - uwsgi
+    - spamassassin
+
+- name: Install mm_cfg.py
+  template: src=mm_cfg.py.j2 dest=/etc/mailman/mm_cfg.py backup=yes
+  notify:
+    - restart mailman
+
+- name: Install alias script
+  template: src=mm_genaliases_ldap.j2 dest=/usr/bin/mm_genaliases_ldap mode=0555
+
+- name: Install discard report script
+  copy: src=mm_discard_report.py dest=/usr/bin/mm_discard_report mode=0555
+
+- name: Install discard report cron job
+  cron: name=mm_discard_report cron_file=ansible_mm_discard_report user=root minute="0" hour="2" job=/usr/bin/mm_discard_report
+
+- name: Install Mailman uWSGI config
+  template: src=mailman.ini.j2 dest=/etc/uwsgi/apps-available/mailman.ini
+  notify:
+    - restart mailman uwsgi
+
+- name: Enable spamd
+  copy: src=default-spamassassin dest=/etc/default/spamassassin owner=root group=root mode=0444 backup=yes
+
+- name: Ensure spamd is running
+  service: name=spamassassin enabled=yes state=started
+
+- name: Link Mailman uWSGI config
+  file: dest=/etc/uwsgi/apps-enabled/mailman.ini src=/etc/uwsgi/apps-available/mailman.ini state=link
+  notify:
+    - restart mailman uwsgi
+
+- name: Ensure uWSGI is running
+  service: name=uwsgi enabled=yes state=started
+
+# As of Ubuntu 14.04, /etc/init.d/mailman does not handle the `status` argument
+#- name: Ensure Mailman is running
+#  service: name=mailman enabled=yes state=started
+
+- name: Ensure Mailman is enabled
+  service: name=mailman enabled=yes

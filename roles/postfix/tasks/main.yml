@@ -1,0 +1,26 @@
+---
+
+- name: Get per-OS/distribution variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution | lower }}.yml"
+    - "{{ ansible_os_family | lower }}.yml"
+    - default.yml
+
+- include: mx.yml
+  when: "'mailservers' in group_names"
+
+- include: relay.yml
+  when: "'mailservers' not in group_names"
+
+- name: Install postfix main.cf
+  template: src=main.cf.j2 dest={{ postfix_conf_dir }}/main.cf owner=root group=root mode=0444 backup=yes
+  notify:
+    - restart postfix
+
+- name: Install mailer.conf
+  template: src=mailer.conf.j2 dest={{ mailer_conf_path }} owner=root group=root mode=0444 backup=yes
+  when: mailer_conf is defined
+
+- name: Ensure postfix is running
+  service: name=postfix enabled=yes state=started

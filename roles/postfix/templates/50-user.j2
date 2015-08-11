@@ -1,0 +1,31 @@
+##
+## This file is managed by Ansible.  ALL CHANGES WILL BE OVERWRITTEN.
+##
+
+use strict;
+
+#
+# Place your configuration directives here.  They will override those in
+# earlier files.
+#
+# See /usr/share/doc/amavisd-new/ for documentation and examples of
+# the directives you can use in this file
+#
+
+@local_domains_acl = ( ".$mydomain", ".galaxyproject.org", "galaxyproject.org" );
+$sa_spam_subject_tag      = undef;     # don't modify subject
+$sa_tag_level_deflt       = -9999;     # always add headers
+$sa_tag2_level_deflt      = 6.31;      # add 'spam detected' headers at that level
+
+# only discard viruses, pass the rest (with headers)
+$final_virus_destiny      = D_DISCARD; # (defaults to D_BOUNCE)
+$final_banned_destiny     = D_PASS;    # (defaults to D_BOUNCE)
+$final_spam_destiny       = D_PASS;    # (defaults to D_REJECT)
+$final_bad_header_destiny = D_PASS;    # (defaults to D_PASS), D_BOUNCE suggested
+
+# don't check spam bound for Mailman (Mailman does it itself)
+@bypass_spam_checks_acl = @spam_lovers_acl = qw ( lists.galaxyproject.org );
+@spam_kill_level_maps = ( { 'lists.galaxyproject.org' => 9999 }, \$sa_kill_level_deflt, );
+
+#------------ Do not modify anything below this line -------------
+1;  # ensure a defined return

@@ -1,0 +1,41 @@
+# -*- python -*-
+###
+### This file is managed by Ansible.  ALL CHANGES WILL BE OVERWRITTEN.
+###
+
+from Defaults import *
+
+MAILMAN_SITE_LIST = 'mailman'
+DEFAULT_URL_PATTERN = 'https://%s/'
+IMAGE_LOGOS         = '/images/mailman/'
+DEFAULT_EMAIL_HOST  = '{{ mailman_default_email_host }}'
+DEFAULT_URL_HOST    = '{{ mailman_default_url_host }}'
+add_virtualhost(DEFAULT_URL_HOST, DEFAULT_EMAIL_HOST)
+DEFAULT_SERVER_LANGUAGE = 'en'
+USE_ENVELOPE_SENDER    = 0              # Still used?
+DEFAULT_SEND_REMINDERS = 0
+MTA=None   # Misnomer, suppresses alias output on newlist
+
+# Don't scan outbound messages (skip amavisd-new), this was already done when
+# the message was received
+SMTPPORT = 10025
+
+PUBLIC_ARCHIVE_URL = 'https://%(hostname)s/pipermail/%(listname)s'
+
+SPAMASSASSIN_HOLD_SCORE = 0.2
+SPAMASSASSIN_DISCARD_SCORE = 1.0
+SPAMASSASSIN_MEMBER_BONUS = 2.0
+
+SPAMASSASSIN_CONFIG = {
+    'mailman' : {
+        'HOLD_SCORE' : -2.0,
+        'DISCARD_SCORE' : 5.0,
+        'MEMBER_BONUS' : 2.0
+    },
+    'galaxy-france' : {
+        'HOLD_SCORE' : 3.0,
+        'DISCARD_SCORE' : 3.0
+    }
+}
+
+GLOBAL_PIPELINE.insert(1, 'SpamAssassin')

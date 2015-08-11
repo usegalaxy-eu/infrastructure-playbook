@@ -1,0 +1,21 @@
+##
+## This file is managed by Ansible.  ALL CHANGES WILL BE OVERWRITTEN.
+##
+
+# The name of the host running the LDAP server
+server_host = {% for uri in ldap_server_uris %} {{ uri }}{% endfor %}
+
+
+# The RFC2253 base DN at which to conduct the search
+search_base = ou=listaliases,ou=mail,{{ ldap_base_dn }}
+
+# The RFC2254 filter used to search the directory
+query_filter = (&(mail=%u)(objectClass=mailGroup))
+
+# The  attribute(s) Postfix will read from any directory entries returned by
+# the lookup, to be resolved to an email address.
+result_attribute = mailRoutingAddress
+
+# Whether or how to bind to the  LDAP  server.  Newer LDAP implementations
+# don't require clients to bind, which saves time.
+bind = no

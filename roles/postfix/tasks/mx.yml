@@ -1,0 +1,76 @@
+---
+
+- name: Install postfix mx packages
+  apt: pkg={{ item }}
+  when: ansible_os_family == "Debian"
+  with_items:
+    - postfix
+    - bsd-mailx
+    - postfix-ldap
+    - amavisd-new
+    - spamassassin
+    - clamav-daemon
+    - libnet-dns-perl
+    - libmail-spf-perl
+    - pyzor
+    - razor
+    - arj
+    - bzip2
+    - cabextract
+    - cpio
+    - file
+    - gzip
+    - nomarch
+    - pax
+    - unrar-free
+    - unzip
+    - zip
+    - zoo
+    - p7zip-full
+    - procmail
+
+- name: Install Postfix master.cf
+  template: src=master.cf.j2 dest={{ postfix_conf_dir }}/master.cf owner=root group=root mode=0444 backup=yes
+
+- name: Install ldap alias configs
+  template: src={{ item }}.j2 dest={{ postfix_conf_dir }}/{{ item }} owner=root group=root mode=0444 backup=yes
+  with_items:
+    - ldap-aliases.cf
+    - ldap-local.cf
+    - ldap-lists.cf
+  notify:
+    - restart postfix
+
+- name: Install spamassassin configs
+  template: src={{ item }}.j2 dest=/etc/spamassassin/{{ item }} owner=root group=root mode=0444 backup=yes
+  with_items:
+    - local.cf
+  notify:
+    - restart spamassassin
+    - restart amavis
+
+# amavisd-new doesn't use spamd, it loads spamassassin directly, internally. So
+# spamd only needs to run on Mailman servers.
+
+- name: Ensure ClamAV is running
+  service: name={{ item }} enabled=yes state=started
+  with_items:
+    - clamav-daemon
+    - clamav-freshclam
+
+- name: Install amavisd-new configs
+  template: src={{ item }}.j2 dest=/etc/amavis/conf.d/{{ item }} owner=root group=root mode=0444 backup=yes
+  with_items:
+    - 15-content_filter_mode
+    - 50-user
+  notify:
+    - restart amavis
+
+- name: Ensure amavisd-new is running
+  service: name=amavis enabled=yes state=started
+
+- name: Add clamav to amavis group
+  user: name=clamav groups=amavis
+
+- name: Add amavis to clamav group
+  user: name=amavis groups=clamav

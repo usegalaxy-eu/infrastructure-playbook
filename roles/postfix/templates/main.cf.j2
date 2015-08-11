@@ -1,0 +1,136 @@
+##
+## This file is managed by Ansible.  ALL CHANGES WILL BE OVERWRITTEN.
+##
+
+# See /usr/share/postfix/main.cf.dist for a commented, more complete version
+
+
+# Debian specific:  Specifying a file name will cause the first
+# line of that file to be used as the name.  The Debian default
+# is /etc/mailname.
+#myorigin = /etc/mailname
+
+smtpd_banner = $myhostname ESMTP $mail_name
+biff = no
+
+# appending .domain is the MUA's job.
+append_dot_mydomain = no
+
+{% if ansible_distribution != "SmartOS" %}
+readme_directory = no
+{% endif %}
+
+mydomain = galaxyproject.org
+myorigin = $mydomain
+
+{% if 'mailservers' in group_names %}
+
+# Use Maildirs
+mail_spool_directory = /var/mail/
+
+{% if 'ec2hosts' in group_names %}
+proxy_interfaces = {{ ansible_ec2_public_ipv4 }}
+{% endif %}
+
+recipient_delimiter = +
+
+content_filter = smtp-amavis:localhost:10024
+
+# List server can't be the primary MX with this config unless we did one of two things:
+#  1. Use virtual, but that's a pain because virtual can't do local delivery to a command
+#  2. Don't differentiate between list names and local/alias names
+
+{% if 'mailservers-primarymx' in group_names %}
+
+# Accept @domain mail
+mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain
+alias_maps = ldap:/etc/postfix/ldap-aliases.cf, ldap:/etc/postfix/ldap-local.cf
+local_recipient_maps = $alias_maps
+#mailbox_command = /usr/bin/procmail -tY -a "$DOMAIN" -d "$USER"
+
+# Relay @lists.domain mail, but make sure 1 of 2 things is true:
+#  1. The Mailman server is the primary MX (in DNS) for lists.domain
+#  2. Use transport to deliver directly to lists.domain (skips MX lookup)
+relay_recipient_maps = ldap:/etc/postfix/ldap-lists.cf
+relay_domains = {{ mailman_default_email_host }}
+
+{% elif 'mailservers-secondarymx' in group_names %}
+
+relay_recipient_maps = ldap:/etc/postfix/ldap-aliases.cf, ldap:/etc/postfix/ldap-local.cf
+relay_domains = $mydomain
+
+{% if 'listservers' in group_names%}
+
+mydestination = {{ mailman_default_email_host }}
+alias_maps = ldap:/etc/postfix/ldap-lists.cf
+local_recipient_maps = $alias_maps
+
+{% else %}
+
+relay_recipient_maps = ldap:/etc/postfix/ldap-lists.cf
+relay_domains = {{ mailman_default_email_host }}
+
+{% endif %}
+
+{% endif %}
+
+{% else %} {# must be a null client #}
+
+{% if ansible_distribution == "SmartOS" %} {# SmartOS null client #}
+
+queue_directory = /var/spool/postfix
+command_directory = /opt/local/sbin
+daemon_directory = /opt/local/libexec/postfix
+data_directory = /var/db/postfix
+mail_owner = postfix
+debug_peer_level = 2
+debugger_command =
+         PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
+         ddd $daemon_directory/$process_name $process_id & sleep 5
+sendmail_path = /opt/local/sbin/sendmail
+newaliases_path = /opt/local/bin/newaliases
+mailq_path = /opt/local/bin/mailq
+setgid_group = maildrop
+html_directory = no
+manpage_directory = /opt/local/man
+sample_directory = /opt/local/share/examples/postfix
+readme_directory = /opt/local/share/doc/postfix
+mynetworks = $myhostname, 127.0.0.0/8
+smtpd_client_restrictions =
+        permit_mynetworks,
+        permit_sasl_authenticated,
+        reject_unknown_reverse_client_hostname
+smtpd_data_restrictions =
+        permit_mynetworks,
+        reject_unauth_pipelining,
+        permit_sasl_authenticated
+smtpd_helo_required = yes
+smtpd_helo_restrictions =
+        permit_mynetworks,
+        permit_sasl_authenticated,
+        reject_invalid_helo_hostname,
+        reject_non_fqdn_helo_hostname
+smtpd_recipient_restrictions =
+        permit_mynetworks,
+        permit_sasl_authenticated,
+        reject_unlisted_recipient,
+        reject_non_fqdn_recipient,
+        reject_unauth_destination,
+        reject_unknown_recipient_domain,
+        check_recipient_access hash:/opt/local/etc/postfix/filtered_domains
+smtpd_sender_restrictions =
+        permit_mynetworks,
+        permit_sasl_authenticated,
+        reject_unlisted_sender,
+        reject_non_fqdn_sender,
+        reject_unknown_sender_domain
+strict_rfc821_envelopes = yes
+
+{% endif %} {# standard null client stuff #}
+
+relayhost = {{ postfix_conf_relayhost }}
+inet_interfaces = loopback-only
+inet_protocols = all
+local_transport = error:local delivery is disabled
+
+{% endif %}

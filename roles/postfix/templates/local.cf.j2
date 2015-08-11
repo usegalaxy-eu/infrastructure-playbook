@@ -1,0 +1,48 @@
+##
+## This file is managed by Ansible.  ALL CHANGES WILL BE OVERWRITTEN.
+##
+#
+# See 'perldoc Mail::SpamAssassin::Conf' for details of what can be
+# tweaked.
+#
+###########################################################################
+
+# trusted_networks are IPs of MTAs that may *relay* spam but that we trust not
+# to *originate* spam. Trust all of PSU's network range since there's no real
+# way to know what addresses ITS will relay from. This is necessary because of
+# the bx.psu.edu -> galaxyproject.org forwards relaying through smtp.psu.edu.
+# If BX's MXs relayed directly this wouldn't be necessary.
+trusted_networks 128.118.0.0/16
+trusted_networks 146.186.0.0/16
+
+# BX's IPv6 MTAs
+trusted_networks 2610:8:6800:45::2
+trusted_networks 2610:8:6800:45::3
+trusted_networks 2610:8:6800:45::4
+
+# Galaxy MTAs
+trusted_networks 54.172.110.33
+trusted_networks 54.172.173.123
+
+# Galaxy MTA internal IPs
+trusted_networks 172.30.0.0/23
+trusted_networks 127.0.0.1
+
+# Spamhaus CSS was detecting messages but for some reason, despite finding some
+# mentions to this test existing, I can't find it, so I define it here.
+
+# CSS is the Spamhaus Snowshoe: http://www.spamhaus.org/css/
+header RCVD_IN_CSS              eval:check_rbl_sub('zen', '127.0.0.3')
+describe RCVD_IN_CSS            Received via a relay in Spamhaus CSS
+tflags RCVD_IN_CSS              net
+reuse  RCVD_IN_CSS
+score RCVD_IN_CSS 0 2.596 0 0.141 # n=0 n=2
+
+# Whitelist mail sent as galaxy-bugs that originates at TACC
+whitelist_from_rcvd galaxy-bugs@bx.psu.edu irongate.mail.utexas.edu
+
+# Blacklist some TLDs that we are receiving mail from that are unlikely to ever
+# originate legitimate mail
+blacklist_from *.link
+blacklist_from *.red
+blacklist_from *.blue
