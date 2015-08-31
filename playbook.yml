@@ -17,6 +17,8 @@
   roles:
     - role: requiretty        # Disable requiretty for Ansible ssh pipelining
       tags: initial,requiretty
+    - role: remote_management # Set up IPMI/serial stuff
+      tags: initial,remote_management
     - role: ssh               # Enable password auth and root logins
       tags: initial,ssh
     - role: timezone          # Configure system timezone
