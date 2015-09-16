@@ -2,9 +2,12 @@
 
 linux_console: ttyS1,115200n8
 
+host_apt_repositories:
+  - 'deb http://http.debian.net/debian jessie-backports main contrib non-free'
 host_packages:
   - git
   - postgresql-9.4
+  - jenkins 
   # TS packages
   - autoconf 
   - automake 
@@ -24,3 +27,4 @@ host_packages:
   - subversion
   - python-dev
   - pkg-config
+  - docker.io
