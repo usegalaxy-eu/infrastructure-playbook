@@ -1,3 +1,22 @@
+# TODO: restrict to debian.
+- name: Install the debs (for linuxbrew)
+  sudo: True
+  apt: name={{ item }}
+  with_items:
+    - build-essential
+    - curl
+    - git
+    - m4
+    - ruby
+    - texinfo
+    - libbz2-dev
+    - libcurl4-openssl-dev
+    - libexpat-dev
+    - libncurses-dev
+    - libncursesw5-dev
+    - zlib1g-dev
+    - python-dev
+    - cmake
 
 - name: Install linuxbrew
   sudo: True
