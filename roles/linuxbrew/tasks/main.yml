@@ -28,11 +28,10 @@
 - name: Tap linuxbrew taps.
   sudo: True
   sudo_user: "{{ linuxbrew_user_name }}"
-  shell: "{{ linuxbrew_user_homee }}/.linuxbrew/bin/brew tap {{ item }}"
+  shell: "{{ linuxbrew_user_home }}/.linuxbrew/bin/brew tap {{ item }}"
   args:
-    creates: "{{ linuxbrew_user_home}}/.linuxbrew/Library/Taps/{{ item.split('/')[0] }}/homebrew-{{ item.split('/')][1] }}"
-  with_items:
-    - linuxbrew_taps
+    creates: "{{ linuxbrew_user_home}}/.linuxbrew/Library/Taps/{{ item.split('/')[0] }}/homebrew-{{ item.split('/')[1] }}"
+  with_items: "{{ linuxbrew_taps }}"
 
 - name: Install linuxbrew recipes.
   sudo: True
@@ -40,8 +39,7 @@
   shell: "{{ linuxbrew_user_home }}/.linuxbrew/bin/brew install -v {{ item }}"
   args:
     creates: "{{ linuxbrew_user_home }}/.linuxbrew/Cellar/{{ item }}"
-  with_items:
-     - linuxbrew_recipes
+  with_items: "{{ linuxbrew_recipes }}"
 
 - name: Install linuxbrew bash completion
   sudo: True
