@@ -42,6 +42,7 @@
 
 - name: Tasks for jenkins hosts
   hosts: jenkinsservers
+  remote_user: root
   roles:
     - role: linuxbrew        # Install linuxbrew
       tags: linuxbrew

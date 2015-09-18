@@ -3,29 +3,33 @@
   sudo: True
   sudo_user: "{{ linuxbrew_user_name }}"
   shell: "ruby -e \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)\""
-  creates: "{{ linuxbrew_user_home}}/.linuxbrew"
+  args:
+    creates: "{{ linuxbrew_user_home}}/.linuxbrew"
 
 - name: Tap linuxbrew taps.
   sudo: True
   sudo_user: "{{ linuxbrew_user_name }}"
   shell: "{{ linuxbrew_user_homee }}/.linuxbrew/bin/brew tap {{ item }}"
-  creates: "{{ linuxbrew_user_home}}/.linuxbrew/Library/Taps/{{ item.split("/")[0] }}/homebrew-{{ item.split("/")][1] }}"
-  with:
+  args:
+    creates: "{{ linuxbrew_user_home}}/.linuxbrew/Library/Taps/{{ item.split('/')[0] }}/homebrew-{{ item.split('/')][1] }}"
+  with_items:
     - linuxbrew_taps
 
 - name: Install linuxbrew recipes.
   sudo: True
   sudo_user: "{{ linuxbrew_user_name }}"
   shell: "{{ linuxbrew_user_home }}/.linuxbrew/bin/brew install -v {{ item }}"
-  creates: "{{ linuxbrew_user_home }}/.linuxbrew/Cellar/{{ item }}"
-  with:
+  args:
+    creates: "{{ linuxbrew_user_home }}/.linuxbrew/Cellar/{{ item }}"
+  with_items:
      - linuxbrew_recipes
 
 - name: Install linuxbrew bash completion
   sudo: True
   sudo_user: "{{ linuxbrew_user_name }}"
   shell: "{{ linuxbrew_user_home }}/.linuxbrew/bin/brew install -v bash-completion"
-  creates: "{{ linuxbrew_user_home }}/.linuxbrew/Cellar/bash-completion"
+  args:
+    creates: "{{ linuxbrew_user_home }}/.linuxbrew/Cellar/bash-completion"
 
 # TODO: MANPATH, INFOPATH
 - name: Add linuxbrew to dev users PATH
