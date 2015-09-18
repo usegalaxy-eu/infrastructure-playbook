@@ -40,6 +40,13 @@
       when: "'listservers' in group_names"
   tags: initial
 
+- name: Tasks for jenkins hosts
+  hosts: jenkinsservers
+  roles:
+    - role: linuxbrew        # Install linuxbrew
+      tags: linuxbrew
+  tags: initial
+
 # This is here because it's currently due to a SmartOS issue:
 # https://github.com/joyent/smartos-live/issues/469
 # If that issue is fixed, it should be possible to remove this and undo
