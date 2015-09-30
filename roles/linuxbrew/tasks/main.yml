@@ -1,0 +1,56 @@
+# TODO: restrict to debian.
+- name: Install the debs (for linuxbrew)
+  sudo: True
+  apt: name={{ item }}
+  with_items:
+    - build-essential
+    - curl
+    - git
+    - m4
+    - ruby
+    - texinfo
+    - libbz2-dev
+    - libcurl4-openssl-dev
+    - libexpat-dev
+    - libncurses-dev
+    - libncursesw5-dev
+    - zlib1g-dev
+    - python-dev
+    - cmake
+
+- name: Install linuxbrew
+  sudo: True
+  sudo_user: "{{ linuxbrew_user_name }}"
+  shell: "ruby -e \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)\""
+  args:
+    creates: "{{ linuxbrew_user_home}}/.linuxbrew"
+
+- name: Tap linuxbrew taps.
+  sudo: True
+  sudo_user: "{{ linuxbrew_user_name }}"
+  shell: "{{ linuxbrew_user_home }}/.linuxbrew/bin/brew tap {{ item }}"
+  args:
+    creates: "{{ linuxbrew_user_home}}/.linuxbrew/Library/Taps/{{ item.split('/')[0] }}/homebrew-{{ item.split('/')[1] }}"
+  with_items: "{{ linuxbrew_taps }}"
+
+- name: Install linuxbrew recipes.
+  sudo: True
+  sudo_user: "{{ linuxbrew_user_name }}"
+  shell: "{{ linuxbrew_user_home }}/.linuxbrew/bin/brew install -v {{ item }}"
+  args:
+    creates: "{{ linuxbrew_user_home }}/.linuxbrew/Cellar/{{ item }}"
+  with_items: "{{ linuxbrew_recipes }}"
+
+- name: Install linuxbrew bash completion
+  sudo: True
+  sudo_user: "{{ linuxbrew_user_name }}"
+  shell: "{{ linuxbrew_user_home }}/.linuxbrew/bin/brew install -v bash-completion"
+  args:
+    creates: "{{ linuxbrew_user_home }}/.linuxbrew/Cellar/bash-completion"
+
+# TODO: MANPATH, INFOPATH
+- name: Add linuxbrew to dev users PATH
+  lineinfile: "dest={{ linuxbrew_user_shellrc }} line='export PATH={{ linuxbrew_user_home }}/.linuxbrew/bin:$PATH'"
+
+- name: Source linuxbrew bash completions
+  lineinfile: "dest={{ linuxbrew_user_shellrc }} line='. {{ linuxbrew_user_home }}/.linuxbrew/etc/bash_completion'"
