@@ -30,6 +30,8 @@ mail_spool_directory = /var/mail/
 
 {% if 'ec2hosts' in group_names %}
 proxy_interfaces = {{ ansible_ec2_public_ipv4 }}
+# Do not attempt v6 delivery from EC2
+inet_protocols = ipv4
 {% endif %}
 
 recipient_delimiter = +
@@ -43,7 +45,6 @@ content_filter = smtp-amavis:localhost:10024
 {% if 'mailservers-primarymx' in group_names %}
 
 # Accept @domain mail
-mynetworks = 127.0.0.0/8 172.30.0.0/16 [::1]/128 [fe80::]/64
 mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain
 alias_maps = ldap:/etc/postfix/ldap-aliases.cf, ldap:/etc/postfix/ldap-local.cf
 local_recipient_maps = $alias_maps
@@ -55,6 +56,8 @@ local_recipient_maps = $alias_maps
 relay_recipient_maps = ldap:/etc/postfix/ldap-lists.cf
 relay_domains = {{ mailman_default_email_host }}
 
+# Relay mail originating from the VPC
+mynetworks = 127.0.0.0/8 172.30.0.0/16 [::1]/128 [fe80::]/64
 smtpd_relay_restrictions = permit_mynetworks, reject_unauth_destination
 
 {% elif 'mailservers-secondarymx' in group_names %}
@@ -62,7 +65,7 @@ smtpd_relay_restrictions = permit_mynetworks, reject_unauth_destination
 relay_recipient_maps = ldap:/etc/postfix/ldap-aliases.cf, ldap:/etc/postfix/ldap-local.cf
 relay_domains = $mydomain
 
-{% if 'listservers' in group_names%}
+{% if 'listservers' in group_names %}
 
 mydestination = {{ mailman_default_email_host }}
 alias_maps = ldap:/etc/postfix/ldap-lists.cf
