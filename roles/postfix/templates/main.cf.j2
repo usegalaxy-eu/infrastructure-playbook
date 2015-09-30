@@ -43,6 +43,7 @@ content_filter = smtp-amavis:localhost:10024
 {% if 'mailservers-primarymx' in group_names %}
 
 # Accept @domain mail
+mynetworks = 127.0.0.0/8 172.30.0.0/16 [::1]/128 [fe80::]/64
 mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain
 alias_maps = ldap:/etc/postfix/ldap-aliases.cf, ldap:/etc/postfix/ldap-local.cf
 local_recipient_maps = $alias_maps
@@ -53,6 +54,8 @@ local_recipient_maps = $alias_maps
 #  2. Use transport to deliver directly to lists.domain (skips MX lookup)
 relay_recipient_maps = ldap:/etc/postfix/ldap-lists.cf
 relay_domains = {{ mailman_default_email_host }}
+
+smtpd_relay_restrictions = permit_mynetworks, reject_unauth_destination
 
 {% elif 'mailservers-secondarymx' in group_names %}
 
