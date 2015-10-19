@@ -40,10 +40,12 @@ local_users:
   - name: jenkins
     groups: docker
 
+# Note ~jenkins/.ssh/config is done by hand to make this work - need to put that in Ansible
+# Maybe this? https://github.com/gaqzi/ansible-ssh-config
 crontabs:
   - id: jenkins_backup
     name: Jenkins Backup
     user: jenkins
     hour: 22
     minute: 0
-    job: rsync -e 'ssh -i ~/.ssh/id_rsa_zfsdump' -av --delete /var/lib/jenkins/ zfsdump-n2@westvleteren.galaxyproject.org:/zones/westvleteren/backup/n2/jenkins && ssh -T zfsdump-n2@westvleteren.galaxyproject.org -- /usr/sbin/zfs snapshot zones/westvleteren/backup/n2/jenkins@`date -u +\%Y\%m\%dT\%H\%M\%SZ`
+    job: rsync -av --delete --exclude='jobs/*/workspace' /var/lib/jenkins/ zfsdump-n2@westvleteren.galaxyproject.org:/zones/westvleteren/backup/n2/jenkins && ssh -T zfsdump-n2@westvleteren.galaxyproject.org -- /usr/sbin/zfs snapshot zones/westvleteren/backup/n2/jenkins@`date -u +\%Y\%m\%dT\%H\%M\%SZ`
