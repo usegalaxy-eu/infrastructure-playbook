@@ -14,6 +14,11 @@ local_users:
     comment: 'ZFS receive radegast'
     home: /home/zfsdump-radegast
     shell: /bin/bash
+  - name: zfsdump-n2
+    group: zfsdump-n2
+    comment: 'ZFS receive n2'
+    home: /home/zfsdump-n2
+    shell: /bin/bash
   - name: nate
     uid: 2048
     group: nate
@@ -46,6 +51,12 @@ zfs_filesystems:
   - name: zones/westvleteren/backup/radegast/mainshed
     owner: zfsdump-radegast
     group: zfsdump-radegast
+  - name: zones/westvleteren/backup/n2
+    owner: zfsdump-n2
+    group: zfsdump-n2
+  - name: zones/westvleteren/backup/n2/jenkins
+    owner: zfsdump-n2
+    group: zfsdump-n2
 
 zfs_permissions:
   - name: zones/westvleteren/backup/orval
@@ -53,6 +64,9 @@ zfs_permissions:
     permissions: compression,create,mount,receive
   - name: zones/westvleteren/backup/radegast
     users: zfsdump-radegast
+    permissions: snapshot
+  - name: zones/westvleteren/backup/n2
+    users: zfsdump-n2
     permissions: snapshot
 
 directories:
