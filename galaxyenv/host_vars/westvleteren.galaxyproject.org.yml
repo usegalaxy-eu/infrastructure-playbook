@@ -19,6 +19,10 @@ local_users:
     comment: 'ZFS receive n2'
     home: /home/zfsdump-n2
     shell: /bin/bash
+  - name: zfsdump-biostar
+    group: zfsdump-biostar
+    home: /home/zfsdump-biostar
+    shell: /bin/bash
   - name: nate
     uid: 2048
     group: nate
@@ -57,6 +61,12 @@ zfs_filesystems:
   - name: zones/westvleteren/backup/n2/jenkins
     owner: zfsdump-n2
     group: zfsdump-n2
+  - name: zones/westvleteren/backup/biostar
+    owner: zfsdump-biostar
+    group: zfsdump-biostar
+  - name: zones/westvleteren/backup/biostar/data
+    owner: zfsdump-biostar
+    group: zfsdump-biostar
 
 zfs_permissions:
   - name: zones/westvleteren/backup/orval
@@ -68,8 +78,18 @@ zfs_permissions:
   - name: zones/westvleteren/backup/n2
     users: zfsdump-n2
     permissions: snapshot
+  - name: zones/westvleteren/backup/biostar
+    users: zfsdump-biostar
+    permissions: snapshot
 
 directories:
   - path: /zones/westvleteren/backup/radegast/postgres/active
     owner: zfsdump-radegast
     group: zfsdump-radegast
+
+crontabs:
+  - id: biostar_backup
+    name: Biostar Backup
+    user: zfsdump-biostar
+    minute: 40
+    job: rsync -av --delete www@biostar.usegalaxy.org:/home/www/data/ /zones/westvleteren/backup/biostar/data && /usr/sbin/zfs snapshot zones/westvleteren/backup/biostar/data@`date -u +\%Y\%m\%dT\%H\%M\%SZ`

@@ -9,7 +9,7 @@
   tags: always
 
 - name: Tasks for all hosts
-  hosts: all
+  hosts: baseenv
   remote_user: root
   vars_files:
     - "{{ deploy_env }}/secret_group_vars/all.yml"
@@ -46,6 +46,16 @@
   roles:
     - role: linuxbrew        # Install linuxbrew
       tags: linuxbrew
+  tags: initial
+
+- name: Tasks for biostar hosts
+  hosts: biostarservers
+  vars_files:
+    - "{{ deploy_env }}/secret_group_vars/all.yml"
+    - [ "{{ deploy_env }}/secret_host_vars/{{ inventory_hostname }}.yml", "{{ deploy_env }}/secret_host_vars/default.yml" ]
+  roles:
+    - role: users
+      tags: system,users
   tags: initial
 
 # This is here because it's currently due to a SmartOS issue:
