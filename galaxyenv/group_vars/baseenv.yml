@@ -1,0 +1,16 @@
+---
+
+ssh_group_sshd_config:
+  # Password auth is disabled in the EC2 Ubuntu AMIs
+  - option: "PasswordAuthentication"
+    value: "yes"
+  # Cloud instances typically have this set to no or without-password
+  - option: "PermitRootLogin"
+    value: "yes"
+  # mmm, KEX: Disable weak DH algorithms (https://weakdh.org/sysadmin.html)
+  - option: "KexAlgorithms"
+    value: "curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group-exchange-sha1,diffie-hellman-group14-sha1"
+  # Enabled by default on Linux distros and SunSSH, need to enable it for
+  # pkgsrc OpenSSH to get pam_unix_cred to read /etc/user_attr
+  - option: "UsePAM"
+    value: "yes"

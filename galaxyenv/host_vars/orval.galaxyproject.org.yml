@@ -7,6 +7,9 @@ local_users:
   - name: bioarchive
     group: bioarchive
     comment: 'bioaRchive'
+  - name: depot
+    group: depot
+    comment: 'Galaxy Depot'
   - name: bag
     group: bag
     comment: Björn Grüning
@@ -70,6 +73,12 @@ zfs_filesystems:
     setuid: "off"
     owner: sites
     group: sites
+  - name: promise-1/orval/depot
+    mountpoint: /srv/nginx/depot.galaxyproject.org/root
+    exec: "off"
+    setuid: "off"
+    owner: depot
+    group: depot
 
 zfs_permissions:
   - name: promise-1/orval/vicepa
@@ -91,6 +100,9 @@ zfs_permissions:
     users: zfsdump-orval
     permissions: send,snapshot,hold
   - name: promise-1/orval/screencast
+    users: zfsdump-orval
+    permissions: send,snapshot,hold
+  - name: promise-1/orval/depot
     users: zfsdump-orval
     permissions: send,snapshot,hold
 
@@ -137,3 +149,9 @@ crontabs:
     hour: 1
     minute: 45
     job: dataset='promise-1/orval/screencast' && backupserver='westvleteren.galaxyproject.org' && {{ zfs_backup_job_template }}
+  - name: "Backup depot"
+    id: backup_depot
+    user: zfsdump-orval
+    hour: 2
+    minute: 0
+    job: dataset='promise-1/orval/depot' && backupserver='westvleteren.galaxyproject.org' && {{ zfs_backup_job_template }}
