@@ -1,0 +1,8 @@
+---
+
+host_packages:
+  - qemu-system-x86
+
+host_files:
+  - content: '# This file is managed by Ansible.  ALL CHANGES WILL BE OVERWRITTEN.\nw /sys/module/kvm/parameters/ignore_msrs - - - - 1\n'
+    dest: '/etc/tmpfiles.d/qemu-ignore-msrs.conf'
