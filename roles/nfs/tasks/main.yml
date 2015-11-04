@@ -1,0 +1,48 @@
+---
+
+- name: Install packages for NFS clients (Debian)
+  apt:
+    pkg: "nfs-common"
+  when: ansible_os_family == "Debian"
+
+- name: Install packages for NFS clients (RedHat)
+  yum:
+    pkg: "nfs-utils"
+  when: ansible_os_family == "RedHat"
+
+- name: Install nfs-common defaults
+  copy:
+    src: "default-nfs-common"
+    dest: "/etc/default/nfs-common"
+    owner: "root"
+    group: "root"
+    mode: 0444
+    backup: yes
+  when: nfsv4_domain is defined and ansible_os_family == "Debian"
+  notify:
+    - restart nfs-common
+
+- name: Install idampd.conf
+  template:
+    src: "idmapd.conf.j2"
+    dest: "/etc/idmapd.conf"
+    owner: "root"
+    group: "root"
+    mode: 0444
+    backup: yes
+  when: nfsv4_domain is defined and ansible_os_family == "Debian"
+  notify:
+    - restart nfs-common
+
+- name: Set up static NFS mounts
+  mount:
+    src: "{{ item.src }}"
+    name: "{{ item.name }}"
+    fstype: "nfs"
+    opts: "{{ item.opts }}"
+    state: "mounted"
+  with_items: nfs_mounts
+  when: nfs_mounts is defined
+
+- include: ldap.yml
+  when: inventory_hostname in groups['nfsldapclients']

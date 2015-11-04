@@ -1,0 +1,17 @@
+---
+
+- name: Create ~
+  file:
+    path: "~{{ item.name }}"
+    state: "directory"
+    owner: "{{ item.name }}"
+  with_items: k5login_users
+
+- name: Set authorized principals
+  copy:
+    content: "{{ item.principals | join('\n') }}"
+    dest: "~{{ item.name }}/.k5login"
+    mode: 0400
+    owner: "{{ item.name }}"
+    backup: yes
+  with_items: k5login_users

@@ -1,0 +1,43 @@
+---
+
+- name: Install packages for LDAP NSS
+  apt:
+    pkg: "{{ item }}"
+  with_items:
+    - libnss-ldap
+    - sudo-ldap
+    - nscd
+
+- name: Install nsswitch.conf
+  copy:
+    src: "{{ ldap_nsswitch_conf_src }}"
+    dest: "/etc/nsswitch.conf"
+    owner: "root"
+    group: "root"
+    mode: 0444
+    backup: yes
+  when: ldap_nsswitch_conf_src is defined
+  notify:
+    - restart nscd
+
+- name: Install nss_ldap ldap.conf
+  template:
+    src: "ldap.conf.j2"
+    dest: "{{ ldap_nss_ldap_conf }}"
+    owner: "root"
+    group: "root"
+    mode: 0444
+    backup: yes
+  when: ldap_nss_ldap_conf is defined
+  notify:
+    - restart nscd
+
+- name: Install sudo ldap.conf
+  template:
+    src: "ldap.conf.j2"
+    dest: "{{ ldap_sudo_ldap_conf }}"
+    owner: "root"
+    group: "root"
+    mode: 0444
+    backup: yes
+  when: ldap_sudo_ldap_conf is defined

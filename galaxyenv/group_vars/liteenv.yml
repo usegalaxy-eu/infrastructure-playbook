@@ -1,0 +1,31 @@
+---
+
+# 'kerberos' role
+
+kerberos_realm: GALAXYPROJECT.ORG
+kerberos_domain: galaxyproject.org
+kerberos_admin_server: duvel.galaxyproject.org
+
+ssh_group_sshd_config:
+  # GSSAPI Authentication is disabled by default
+  - option: "GSSAPIAuthentication"
+    value: "yes"
+
+
+# 'ldap' role
+
+ldap_base_dn: dc=galaxyproject,dc=org
+ldap_server_uris:
+  - ldap://ldap3.galaxyproject.org/ # prefer the psu ldap server, override for non-psu hosts
+  - ldap://ldap1.galaxyproject.org/
+  - ldap://ldap2.galaxyproject.org/
+ldap_nss_ignoreusers: root,ldap
+ldap_nss_home_directory_attribute: altHomeDirectory
+
+
+# 'nfs' role
+nfsv4_domain: galaxyproject.org
+#nfs_symlinks:
+#  - { dest: '/galaxy/home', src: '/nfs/thumper.galaxyproject.org/home' }
+#  - { dest: '/galaxy/data', src: '/nfs/thumper.galaxyproject.org/data' }
+#  - { dest: '/galaxy/software', src: '/nfs/thumper.galaxyproject.org/software' }

@@ -16,6 +16,10 @@ westvleteren.galaxyproject.org
 n2.galaxyproject.org
 mjolnir0.galaxyproject.org
 
+# These get LDAP, Kerberos+Auth, and NFS, but not AFS
+[liteenv]
+mjolnir0.galaxyproject.org
+
 ## Host groupings
 
 [infrastructure]
@@ -55,6 +59,27 @@ delirium.galaxyproject.org
 
 [webservers]
 orval.galaxyproject.org
+
+# Kerberos
+
+[kerberosauthclients]
+
+[kerberosauthclients:children]
+liteenv
+
+# LDAP
+
+[ldapnssclients]
+
+[ldapnssclients:children]
+liteenv
+
+# NFS
+
+[nfsldapclients]
+
+[nfsldapclients:children]
+liteenv
 
 # Other stuff
 

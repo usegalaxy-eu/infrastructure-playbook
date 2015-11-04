@@ -1,0 +1,21 @@
+##
+## This file is managed by Ansible.  ALL CHANGES WILL BE OVERWRITTEN.
+##
+
+# The distinguished name of the search base.
+base {{ ldap_base_dn }}
+
+# DN of the search base for sudoers entries
+sudoers_base ou=sudoers,{{ ldap_base_dn }}
+
+# URIs for LDAP servers
+uri{% for uri in ldap_server_uris %} {{ uri }}{% endfor %}
+
+
+# Don't try to look up root's groups in LDAP
+nss_initgroups_ignoreusers {{ ldap_nss_ignoreusers }}
+
+{% if ldap_nss_home_directory_attribute is defined %}
+# If not using AFS, home dirs are identified by the altHomeDirectory attribute
+nss_map_attribute homeDirectory {{ ldap_nss_home_directory_attribute }}
+{% endif %}

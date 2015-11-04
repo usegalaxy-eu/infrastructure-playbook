@@ -6,3 +6,17 @@ host_packages:
 host_files:
   - content: '# This file is managed by Ansible.  ALL CHANGES WILL BE OVERWRITTEN.\nw /sys/module/kvm/parameters/ignore_msrs - - - - 1\n'
     dest: '/etc/tmpfiles.d/qemu-ignore-msrs.conf'
+
+# user_subvol_rm_allowed has to be set on the / mount (and that does not mean
+# the btrfs root mounted at /btrfs). Could maybe do this with filesystems, but
+# for now I just did it by hand.
+
+local_users:
+  - name: nate
+    groups: kvm
+
+# should we just use pam_mkhomedir?
+directories:
+  - path: /home/nate
+    owner: nate
+    group: nate

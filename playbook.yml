@@ -8,7 +8,7 @@
       action: ec2_facts
   tags: always
 
-- name: Tasks for all hosts
+- name: Tasks for "base environment" hosts
   hosts: baseenv
   remote_user: root
   vars_files:
@@ -37,10 +37,31 @@
       tags: system,cron
     - role: postfix           # MX and null client configuration
       tags: mail,postfix
+    # This is in the baseenv play for a reason I think, but what's the reason? -nate
     - role: mailman           # Mailing lists
       tags: mail,mailman
       when: "'listservers' in group_names"
-  tags: initial
+  tags: initial,baseenv
+
+# This play is currently Debuntu-only
+- name: Tasks for "lite environment" hosts (Kerberos/LDAP/NFS, no AFS)
+  hosts: liteenv
+  remote_user: root
+  vars_files:
+    - "{{ deploy_env }}/secret_group_vars/all.yml"
+    - [ "{{ deploy_env }}/secret_host_vars/{{ inventory_hostname }}.yml", "{{ deploy_env }}/secret_host_vars/default.yml" ]
+  roles:
+    - role: kerberos
+      tags: kerberos
+    # Run the ssh role again here because doing so with the liteenv group will
+    # enable GSSAPIAuthentication
+    - role: ssh
+      tags: ssh
+    - role: ldap
+      tags: ldap
+    - role: nfs
+      tags: nfs
+  tags: liteenv
 
 - name: Tasks for jenkins hosts
   hosts: jenkinsservers

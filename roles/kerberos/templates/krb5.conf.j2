@@ -1,0 +1,28 @@
+##
+## This file is managed by Ansible.  ALL CHANGES WILL BE OVERWRITTEN.
+##
+
+[libdefaults]
+    default_realm = {{ kerberos_realm }}
+    dns_lookup_realm = true
+    dns_lookup_kdc = true
+    forwardable = yes
+    renewable = yes
+    renew_lifetime = 30d
+    ticket_lifetime = 14d
+    allow_weak_crypto = true
+
+[realms]
+    {{ kerberos_realm }} = {
+        admin_server = {{ kerberos_admin_server }}
+    }
+
+[domain_realm]
+    {{ kerberos_domain }} = {{ kerberos_realm }}
+    .{{ kerberos_domain }} = {{ kerberos_realm }}
+
+[appdefaults]
+    ticket_lifetime = 14d
+    renew_lifetime = 30d
+    forwardable = true
+    renewable = true
