@@ -41,3 +41,14 @@
     mode: 0444
     backup: yes
   when: ldap_sudo_ldap_conf is defined
+
+- name: Install pam_mkhomedir config
+  copy:
+    src: "pam-config-mkhomedir"
+    dest: "/usr/share/pam-configs/mkhomedir"
+    owner: "root"
+    group: "root"
+    mode: 0444
+  when: ldap_nss_home_directory_attribute is defined and ansible_os_family == "Debian"
+  notify:
+    - run pam-auth-update
