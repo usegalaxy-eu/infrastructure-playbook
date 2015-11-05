@@ -1,9 +1,17 @@
 ---
 
-host_packages:
+group_apt_keys:
+  - keyserver: hkp://pgp.mit.edu:80
+    id: 58118E89F3A912897C070ADBF76221572C52609D
+
+group_apt_repositories:
+  - repo: deb https://apt.dockerproject.org/repo debian-jessie main
+
+group_packages:
+  - docker-engine
   - qemu-system-x86
 
-host_files:
+group_files:
   - content: '# This file is managed by Ansible.  ALL CHANGES WILL BE OVERWRITTEN.\nw /sys/module/kvm/parameters/ignore_msrs - - - - 1\n'
     dest: '/etc/tmpfiles.d/qemu-ignore-msrs.conf'
 
@@ -11,6 +19,6 @@ host_files:
 # the btrfs root mounted at /btrfs). Could maybe do this with filesystems, but
 # for now I just did it by hand.
 
-local_users:
+group_users:
   - name: nate
-    groups: kvm
+    groups: kvm,docker
