@@ -12,8 +12,8 @@
   hosts: baseenv
   remote_user: root
   vars_files:
-    - "{{ deploy_env }}/secret_group_vars/all.yml"
-    - [ "{{ deploy_env }}/secret_host_vars/{{ inventory_hostname }}.yml", "{{ deploy_env }}/secret_host_vars/default.yml" ]
+    - "secret_group_vars/all.yml"
+    - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
   roles:
     - role: requiretty        # Disable requiretty for Ansible ssh pipelining
       tags: initial,requiretty
@@ -48,8 +48,8 @@
   hosts: liteenv
   remote_user: root
   vars_files:
-    - "{{ deploy_env }}/secret_group_vars/all.yml"
-    - [ "{{ deploy_env }}/secret_host_vars/{{ inventory_hostname }}.yml", "{{ deploy_env }}/secret_host_vars/default.yml" ]
+    - "secret_group_vars/all.yml"
+    - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
   roles:
     - role: kerberos
       tags: kerberos
@@ -74,8 +74,8 @@
 - name: Tasks for biostar hosts
   hosts: biostarservers
   vars_files:
-    - "{{ deploy_env }}/secret_group_vars/all.yml"
-    - [ "{{ deploy_env }}/secret_host_vars/{{ inventory_hostname }}.yml", "{{ deploy_env }}/secret_host_vars/default.yml" ]
+    - "secret_group_vars/all.yml"
+    - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
   roles:
     - role: users
       tags: system,users
