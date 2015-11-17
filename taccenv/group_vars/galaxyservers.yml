@@ -4,3 +4,14 @@
 group_packages:
   - nodejs
   - npm
+  - docker-engine
+
+group_yum_repositories:
+  - name: docker
+    contents:
+      name: Docker
+      baseurl: https://yum.dockerproject.org/repo/main/centos/6
+      enabled: "1"
+      gpgcheck: "1"
+      gpgkey: https://yum.dockerproject.org/gpg
+
