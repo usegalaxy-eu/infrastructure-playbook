@@ -15,3 +15,7 @@ group_yum_repositories:
       gpgcheck: "1"
       gpgkey: https://yum.dockerproject.org/gpg
 
+group_services:
+  - name: docker
+    state: stopped
+    enabled: "no"
