@@ -80,6 +80,28 @@ zfs_filesystems:
     owner: depot
     group: depot
 
+host_templates:
+  - dest: /etc/rsyncd.conf
+    src: ini.j2
+    contents:
+      software:
+        path: /srv/nginx/depot.galaxyproject.org/root/software
+        comment: Community Package Cache
+        use chroot: 'yes'
+        uid: 'nobody'
+        gid: 'nogroup'
+        read only: 'yes'
+        list: 'yes'
+        dont compress: '*.tgz *.zip *.gz *.bz2 *.bam *.2bit *.lzo'
+
+host_service_configurations:
+  - src: files/orval/rsyncd.xml
+
+host_services:
+  - name: network/rsyncd
+    state: started
+    enabled: 'yes'
+
 zfs_permissions:
   - name: promise-1/orval/vicepa
     users: zfsdump-orval
