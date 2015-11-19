@@ -14,10 +14,10 @@ local_users:
     comment: 'ZFS receive radegast'
     home: /home/zfsdump-radegast
     shell: /bin/bash
-  - name: zfsdump-n2
-    group: zfsdump-n2
-    comment: 'ZFS receive n2'
-    home: /home/zfsdump-n2
+  - name: zfsdump-leeroy
+    group: zfsdump-leeroy
+    comment: 'ZFS receive leeroy'
+    home: /home/zfsdump-leeroy
     shell: /bin/bash
   - name: zfsdump-biostar
     group: zfsdump-biostar
@@ -55,12 +55,12 @@ zfs_filesystems:
   - name: zones/westvleteren/backup/radegast/mainshed
     owner: zfsdump-radegast
     group: zfsdump-radegast
-  - name: zones/westvleteren/backup/n2
-    owner: zfsdump-n2
-    group: zfsdump-n2
-  - name: zones/westvleteren/backup/n2/jenkins
-    owner: zfsdump-n2
-    group: zfsdump-n2
+  - name: zones/westvleteren/backup/leeroy
+    owner: zfsdump-leeroy
+    group: zfsdump-leeroy
+  - name: zones/westvleteren/backup/leeroy/jenkins
+    owner: zfsdump-leeroy
+    group: zfsdump-leeroy
   - name: zones/westvleteren/backup/biostar
     owner: zfsdump-biostar
     group: zfsdump-biostar
@@ -75,8 +75,8 @@ zfs_permissions:
   - name: zones/westvleteren/backup/radegast
     users: zfsdump-radegast
     permissions: snapshot
-  - name: zones/westvleteren/backup/n2
-    users: zfsdump-n2
+  - name: zones/westvleteren/backup/leeroy
+    users: zfsdump-leeroy
     permissions: snapshot
   - name: zones/westvleteren/backup/biostar
     users: zfsdump-biostar

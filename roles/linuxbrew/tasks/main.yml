@@ -50,7 +50,13 @@
 
 # TODO: MANPATH, INFOPATH
 - name: Add linuxbrew to dev users PATH
-  lineinfile: "dest={{ linuxbrew_user_shellrc }} line='export PATH={{ linuxbrew_user_home }}/.linuxbrew/bin:$PATH'"
+  lineinfile:
+    dest: "{{ linuxbrew_user_shellrc }}"
+    line: 'export PATH={{ linuxbrew_user_home }}/.linuxbrew/bin:$PATH'
+    create: yes
 
 - name: Source linuxbrew bash completions
-  lineinfile: "dest={{ linuxbrew_user_shellrc }} line='. {{ linuxbrew_user_home }}/.linuxbrew/etc/bash_completion'"
+  lineinfile:
+    dest: "{{ linuxbrew_user_shellrc }}"
+    line: '. {{ linuxbrew_user_home }}/.linuxbrew/etc/bash_completion'
+    create: yes

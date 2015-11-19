@@ -2,8 +2,12 @@
 
 linux_console: ttyS1,115200n8
 
+host_apt_keys:
+  - url: 'http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key'
+
 host_apt_repositories:
   - repo: 'deb http://http.debian.net/debian jessie-backports main contrib non-free'
+  - repo: 'deb http://pkg.jenkins-ci.org/debian binary/'
 
 host_packages:
   - git
@@ -49,4 +53,4 @@ crontabs:
     user: jenkins
     hour: 22
     minute: 0
-    job: rsync -av --delete --exclude='jobs/*/workspace' /var/lib/jenkins/ zfsdump-n2@westvleteren.galaxyproject.org:/zones/westvleteren/backup/n2/jenkins && ssh -T zfsdump-n2@westvleteren.galaxyproject.org -- /usr/sbin/zfs snapshot zones/westvleteren/backup/n2/jenkins@`date -u +\%Y\%m\%dT\%H\%M\%SZ`
+    job: rsync -av --delete --exclude='jobs/*/workspace' /var/lib/jenkins/ zfsdump-leeroy@westvleteren.galaxyproject.org:/zones/westvleteren/backup/leeroy/jenkins && ssh -T zfsdump-leeroy@westvleteren.galaxyproject.org -- /usr/sbin/zfs snapshot zones/westvleteren/backup/leeroy/jenkins@`date -u +\%Y\%m\%dT\%H\%M\%SZ`
