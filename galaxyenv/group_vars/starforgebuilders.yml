@@ -10,6 +10,7 @@ group_apt_repositories:
 group_packages:
   - docker-engine
   - qemu-system-x86
+  - make
 
 group_files:
   - content: '# This file is managed by Ansible.  ALL CHANGES WILL BE OVERWRITTEN.\nw /sys/module/kvm/parameters/ignore_msrs - - - - 1\n'
@@ -22,3 +23,7 @@ group_files:
 local_users:
   - name: nate
     groups: kvm,docker
+  - name: jenkins
+    system: 'yes'
+    groups: kvm,docker
+    # Run /btrfs/snapshots/@starforge-<ver>/snap_for after creation
