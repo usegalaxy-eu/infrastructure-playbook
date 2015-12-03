@@ -10,7 +10,11 @@ group_apt_repositories:
 group_packages:
   - docker-engine
   - qemu-system-x86
+  # for building starforge docker images
   - make
+  # starforge downloading packages with pip will run egg_info, which on at
+  # least one package (mercurial) will fail if Python.h cannot be found
+  - python-dev
 
 group_files:
   - content: '# This file is managed by Ansible.  ALL CHANGES WILL BE OVERWRITTEN.\nw /sys/module/kvm/parameters/ignore_msrs - - - - 1\n'
