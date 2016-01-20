@@ -53,4 +53,4 @@ crontabs:
     user: jenkins
     hour: 22
     minute: 0
-    job: rsync -av --delete --exclude='jobs/*/workspace' /var/lib/jenkins/ zfsdump-leeroy@westvleteren.galaxyproject.org:/zones/westvleteren/backup/leeroy/jenkins && ssh -T zfsdump-leeroy@westvleteren.galaxyproject.org -- /usr/sbin/zfs snapshot zones/westvleteren/backup/leeroy/jenkins@`date -u +\%Y\%m\%dT\%H\%M\%SZ`
+    job: rsync -av --delete --exclude='jobs/*/workspace*' /var/lib/jenkins/ zfsdump-leeroy@westvleteren.galaxyproject.org:/zones/westvleteren/backup/leeroy/jenkins && ssh -T zfsdump-leeroy@westvleteren.galaxyproject.org -- /usr/sbin/zfs snapshot zones/westvleteren/backup/leeroy/jenkins@`date -u +\%Y\%m\%dT\%H\%M\%SZ`
