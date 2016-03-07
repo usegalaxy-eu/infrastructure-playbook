@@ -1,0 +1,16 @@
+---
+
+group_packages:
+  - python-psycopg2
+
+postgresql_version: '9.5'
+
+postgresql_objects_users: 
+  - name: sentry
+  - name: graphite
+
+postgresql_objects_databases:
+  - name: sentry
+    owner: sentry
+  - name: graphite
+    owner: graphite

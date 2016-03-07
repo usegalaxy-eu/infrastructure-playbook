@@ -1,0 +1,33 @@
+---
+
+- name: Install nginx (EPEL)
+  yum:
+    pkg: nginx
+  notify:
+    - restart nginx
+
+- name: Create virtual host directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ nginx_local_conf_dir }}/sites-available"
+    - "{{ nginx_local_conf_dir }}/sites-enabled"
+  notify:
+    - reload nginx
+
+- name: Create config including virtual hosts
+  copy:
+    dest: "{{ nginx_conf_dir }}/conf.d/sites-enabled.conf"
+    content: "## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN\ninclude {{ nginx_local_conf_dir }}/sites-enabled/*;\n"
+  notify:
+    - reload nginx
+
+- name: Set default server redirection
+  copy:
+    dest: "{{ nginx_local_conf_dir }}/default.d/redirect.conf"
+    content: "## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN\nreturn 302 {{ nginx_default_redirect_uri }};\n"
+  when: nginx_default_redirect_uri is defined
+  notify:
+    - reload nginx
