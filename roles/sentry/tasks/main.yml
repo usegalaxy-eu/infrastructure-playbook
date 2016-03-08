@@ -1,0 +1,93 @@
+---
+# based on https://github.com/DandyDev/statserver/
+
+- name: Install sentry and dependencies
+  pip:
+    name: "{{ item }}"
+    virtualenv: "{{ sentry_prefix }}"
+  with_items:
+    - python-memcached
+    - sentry[postgres]
+    - uwsgi
+  environment:
+    # FIXME: ditry hack
+    PATH: "/usr/pgsql-9.5/bin:{{ ansible_env.PATH }}"
+
+- name: Create sentry config directory
+  file:
+    path: "{{ sentry_conf_dir }}"
+    state: directory
+
+- name: Create sentry var directory
+  file:
+    path: "{{ sentry_var_dir }}"
+    state: directory
+    owner: sentry
+    group: sentry
+    mode: 0700
+
+- name: Create sentry socket directory
+  file:
+    path: "{{ sentry_sock_dir }}"
+    state: directory
+    owner: sentry
+    group: nginx
+    mode: 0770
+
+- name: Copy sentry configs
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ sentry_conf_dir }}/{{ item }}"
+  with_items:
+    - sentry.conf.py
+    - uwsgi.ini
+  # FIXME: HUP uwsgi
+
+- name: Initialize/upgrade sentry database
+  become: yes
+  become_user: sentry
+  become_method: su
+  command: "{{ sentry_prefix }}/bin/sentry --config={{ sentry_conf_dir }}/sentry.conf.py upgrade"
+
+# Need to detect first run and do a `sentry createuser here`
+# Actually when running `sentry upgrade` interactively, it prompted me to create a new user
+
+- name: Check for redis
+  stat:
+    path: "{{ sentry_prefix }}/bin/redis-server"
+  register: redis_stat
+
+- name: Create temporary directory for building redis
+  command: mktemp -d
+  register: mktemp_cmd
+  when: not redis_stat.stat.exists
+
+- name: Fetch redis source
+  get_url:
+    url: "http://download.redis.io/redis-stable.tar.gz"
+    dest: "{{ mktemp_cmd.stdout }}/redis-stable.tar.gz"
+  when: not redis_stat.stat.exists
+
+- name: Unarchive redis source
+  unarchive:
+    copy: no
+    dest: "{{ mktemp_cmd.stdout }}"
+    src: "{{ mktemp_cmd.stdout }}/redis-stable.tar.gz"
+  when: not redis_stat.stat.exists
+
+- name: Compile redis
+  command: make PREFIX={{ sentry_prefix }} install
+  args:
+    chdir: "{{ mktemp_cmd.stdout }}/redis-stable"
+  when: not redis_stat.stat.exists
+
+- name: Clean up redis temporary directory
+  file:
+    path: "{{ mktemp_cmd.stdout }}"
+    state: absent
+  when: not redis_stat.stat.exists
+
+- name: Copy redis config
+  template:
+    src: "redis.conf.j2"
+    dest: "{{ sentry_conf_dir }}/redis.conf"

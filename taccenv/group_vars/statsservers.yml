@@ -1,7 +1,15 @@
 ---
 
 group_packages:
+  - '@development'
+  - python-virtualenv
   - python-psycopg2
+  # sentry deps
+  - postgresql95-devel
+  - libxml2-devel
+  - libxslt-devel
+  - libffi-devel
+  - openssl-devel
 
 postgresql_version: '9.5'
 
@@ -14,3 +22,12 @@ postgresql_objects_databases:
     owner: sentry
   - name: graphite
     owner: graphite
+
+supervisord_install: package
+
+supervisord_group_configs:
+  - sentry
+
+# used in the nginx template, which is run in a play that does not include the
+# sentry role
+sentry_sock_dir: /var/run/sentry

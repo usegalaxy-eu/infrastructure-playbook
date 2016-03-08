@@ -18,7 +18,7 @@ server {
 
     location / {
         include uwsgi_params;
-        uwsgi_pass localhost:8007;
+        uwsgi_pass unix:{{ sentry_sock_dir }}/sentry.sock;
     }
 
 }

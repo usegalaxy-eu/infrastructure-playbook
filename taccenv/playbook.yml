@@ -6,6 +6,8 @@
   roles:
     - role: packages          # Install packages
       tags: system,packages
+    - role: users             # Create users and set up authentication keys
+      tags: system,users
     - role: paths             # Configure path permissions, filesystems
       tags: system,paths
     - role: copy              # Copy arbitrary files/templates
@@ -28,6 +30,10 @@
       tags: nginx
     - role: galaxyprojectdotorg.postgresql
       tags: postgres
+    - role: sentry
+      tags: sentry
+    - role: supervisor
+      tags: supervisor
 
 - name: Database tasks for stats servers
   hosts: statsservers

@@ -8,3 +8,13 @@ nginx_configs:
   - sentry
 
 nginx_default_redirect_uri: https://sentry.galaxyproject.org/
+
+local_users:
+  - name: sentry
+    #group: sentry # this happens automatically if unset
+    groups: nginx
+    comment: 'Sentry'
+    system: yes
+    home: /var/opt/sentry
+    createhome: yes
+    shell: /bin/bash

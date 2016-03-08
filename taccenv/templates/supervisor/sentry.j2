@@ -1,0 +1,38 @@
+;;
+;; This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
+;;
+
+[program:sentry_web]
+process_name    = web
+command         = {{ sentry_prefix }}/bin/uwsgi --ini {{ sentry_conf_dir }}/uwsgi.ini
+environment     = VIRTUAL_ENV="{{ sentry_prefix }}",PATH="{{ sentry_prefix }}/bin"
+directory       = {{ sentry_var_dir }}
+user            = sentry
+autostart       = true
+autorestart     = true
+stdout_logfile  = {{ supervisord_log_dir }}/sentry_web.log
+redirect_stderr = true
+
+[program:sentry_workers]
+process_name    = workers
+command         = {{ sentry_prefix }}/bin/sentry --config={{ sentry_conf_dir }}/sentry.conf.py celery worker
+environment     = VIRTUAL_ENV="{{ sentry_prefix }}",PATH="{{ sentry_prefix }}/bin"
+directory       = {{ sentry_var_dir }}
+user            = sentry
+autostart       = true
+autorestart     = true
+stdout_logfile  = {{ supervisord_log_dir }}/sentry_workers.log
+redirect_stderr = true
+
+[program:sentry_redis]
+process_name    = redis
+command         = {{ sentry_prefix }}/bin/redis-server {{ sentry_conf_dir }}/redis.conf
+directory       = {{ sentry_var_dir }}
+user            = sentry
+autostart       = true
+autorestart     = true
+stdout_logfile  = {{ supervisord_log_dir }}/sentry_redis.log
+redirect_stderr = true
+
+[group:sentry]
+programs = sentry_web,sentry_workers,sentry_redis
