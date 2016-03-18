@@ -44,4 +44,4 @@ stdout_logfile  = {{ supervisord_log_dir }}/sentry_redis.log
 redirect_stderr = true
 
 [group:sentry]
-programs = sentry_web,sentry_workers,sentry_redis
+programs = sentry_web,sentry_workers,sentry_redis,sentry_memcached
