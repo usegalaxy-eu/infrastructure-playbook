@@ -13,6 +13,12 @@
     # FIXME: ditry hack
     PATH: "/usr/pgsql-9.5/bin:{{ ansible_env.PATH }}"
 
+- name: Enable and start memcached
+  service:
+      name: 'memcached'
+      enabled: 'yes'
+      state: 'started'
+
 - name: Create sentry config directory
   file:
     path: "{{ sentry_conf_dir }}"
