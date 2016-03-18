@@ -2,6 +2,15 @@
 ;; This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
 ;;
 
+[program:sentry_memcached]
+process_name    = memcached
+command         = /usr/bin/memcached -m 128 -l 127.0.0.1 -p 11211
+user            = sentry
+autostart       = true
+autorestart     = true
+stdout_logfile  = {{ supervisord_log_dir }}/sentry_memcached.log
+redirect_stderr = true
+
 [program:sentry_web]
 process_name    = web
 command         = {{ sentry_prefix }}/bin/uwsgi --ini {{ sentry_conf_dir }}/uwsgi.ini
