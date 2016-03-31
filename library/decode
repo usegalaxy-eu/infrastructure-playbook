@@ -1,0 +1,116 @@
+#!/usr/bin/python
+
+# https://github.com/ansible/ansible/issues/7957
+# https://gist.github.com/shabbyrobe/63a7cc1cc8e1b3473e64
+
+import os
+import time
+import tempfile
+import hashlib
+import base64
+
+filters = {
+    'base64': base64.b64decode,
+}
+
+def main():
+
+    module = AnsibleModule(
+        # not checking because of daisy chain to file module
+        argument_spec = dict(
+            content           = dict(required=True, no_log=True),
+            dest              = dict(required=True),
+            filter            = dict(required=True),
+            force             = dict(default=True, aliases=['thirsty'], type='bool'),
+            backup            = dict(default=False, type='bool'),
+            validate          = dict(required=False, type='str'),
+        ),
+        add_file_common_args=True,
+        supports_check_mode=True,
+    )
+
+    dest   = os.path.expanduser(module.params['dest'])
+    force  = module.params['force']
+    validate = module.params.get('validate',None)
+    content = module.params['content']
+    backup = module.params['backup']
+    filter = module.params['filter']
+
+    if filter not in filters:
+        module.exit_json(msg="Unknown filter", filter=filter, changed=False)
+        
+    filtered_content = filters[filter](content)
+
+    md5sum_src = hashlib.md5(filtered_content).hexdigest()
+    md5sum_dest = None
+
+    changed = False
+
+    if os.path.exists(dest):
+        if not force:
+            module.exit_json(msg="file already exists", dest=dest, changed=False)
+        if (os.path.isdir(dest)):
+            module.exit_json(msg="dest must not be a dir", dest=dest, changed=False)
+        if os.access(dest, os.R_OK):
+            md5sum_dest = module.md5(dest)
+    else:
+        if not os.path.exists(os.path.dirname(dest)):
+            try:
+                # os.path.exists() can return false in some
+                # circumstances where the directory does not have
+                # the execute bit for the current user set, in
+                # which case the stat() call will raise an OSError 
+                os.stat(os.path.dirname(dest))
+            except OSError, e:
+                if "permission denied" in str(e).lower():
+                    module.fail_json(msg="Destination directory %s is not accessible" % (os.path.dirname(dest)))
+            module.fail_json(msg="Destination directory %s does not exist" % (os.path.dirname(dest)))
+    if not os.access(os.path.dirname(dest), os.W_OK):
+        module.fail_json(msg="Destination %s not writable" % (os.path.dirname(dest)))
+
+    backup_file = None
+    if md5sum_src != md5sum_dest or os.path.islink(dest):
+        try:
+            if backup:
+                if os.path.exists(dest):
+                    backup_file = module.backup_local(dest)
+            # allow for conversion from symlink.
+            if os.path.islink(dest):
+                os.unlink(dest)
+                open(dest, 'w').close()
+            if validate:
+                if "%s" not in validate:
+                    module.fail_json(msg="validate must contain %%s: %s" % (validate))
+                (rc,out,err) = module.run_command(validate % src)
+                if rc != 0:
+                    module.fail_json(msg="failed to validate: rc:%s error:%s" % (rc,err))
+
+            tmpfd, temp_path = tempfile.mkstemp()
+            tmp = os.fdopen(tmpfd,'w')
+            tmp.write(filtered_content)
+            tmp.close()
+
+            module.atomic_move(temp_path, dest)
+
+        except IOError:
+            module.fail_json(msg="failed to copy: %s to %s" % (src, dest))
+        changed = True
+    else:
+        changed = False
+
+    res_args = dict(
+        dest = dest, md5sum = md5sum_src, changed = changed
+    )
+    if backup_file:
+        res_args['backup_file'] = backup_file
+
+    module.params['dest'] = dest
+    file_args = module.load_file_common_arguments(module.params)
+    res_args['changed'] = module.set_fs_attributes_if_different(file_args, res_args['changed'])
+
+    module.exit_json(**res_args)
+
+# import module snippets
+from ansible.module_utils.basic import *
+main()
+
