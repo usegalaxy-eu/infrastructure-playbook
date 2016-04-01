@@ -4,3 +4,14 @@
   service:
     name: autofs
     state: reloaded
+
+- name: restart squid
+  service:
+    name: squid
+    state: restarted
+
+- name: restart apache
+  service:
+    # FIXME: RHEL-specific
+    name: httpd
+    state: restarted

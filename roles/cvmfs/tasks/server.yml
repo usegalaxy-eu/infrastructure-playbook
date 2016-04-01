@@ -1,0 +1,50 @@
+---
+
+- name: Install CernVM-FS server and dependencies (yum)
+  yum:
+    name: "{{ item }}"
+  with_items:
+    - httpd
+    - cvmfs-server
+  when: ansible_os_family == "RedHat"
+
+- name: Install CernVM-FS server and dependencies (apt)
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - apache2
+    - cvmfs-server
+  when: ansible_os_family == "Debian"
+
+- name: Install CernVM-FS keys
+  copy:
+    content: "{{ item.key }}"
+    dest: "{{ item.path }}"
+    owner: "root"
+    group: "root"
+    mode: "0444"
+  with_items: "{{ cvmfs_keys }}"
+
+- name: Ensure replicas are configured
+  command: /usr/bin/cvmfs_server add-replica -o root http://cvmfs0.galaxyproject.org/cvmfs/{{ item }}
+  args:
+    creates: /etc/cvmfs/repositories.d/{{ item }}
+  with_items: "{{ cvmfs_repositories }}"
+  notify:
+    - restart apache
+
+- name: Schedule stratum1 snapshots
+  cron:
+    name: cvmfs_snapshot_{{ item }}
+    cron_file: ansible_cvmfs_stratum1_snapshot
+    job: /usr/bin/cvmfs_server snapshot {{ item }}
+    minute: 0,15,30,45
+    user: root
+  with_items: "{{ cvmfs_repositories }}"
+
+- name: Ensure Apache is enabled and running
+  service:
+    # FIXME: RHEL-specific
+    name: httpd
+    state: started
+    enabled: yes

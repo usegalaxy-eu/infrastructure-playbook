@@ -27,11 +27,17 @@ cvmfs_keys:
 cvmfs_server_urls:
   - domain: galaxyproject.org
     urls:
-      - http://cvmfs1-tacc0.galaxyproject.org/cvmfs/@fqrn@
+      - "http://cvmfs1-tacc0.galaxyproject.org/cvmfs/@fqrn@"
 
 cvmfs_repositories:
   - test.galaxyproject.org
   - data.galaxyproject.org
 
 cvmfs_http_proxies:
-  - http://cvmfs1-tacc0.galaxyproject.org:3128
+  - "http://cvmfs1-tacc0.galaxyproject.org:3128"
+
+# TODO: At which level does the order of these matter? Local proxies? Or should we use GeoIP?
+cvmfs_stratum1_servers:
+  - "cvmfs1-tacc0.galaxyproject.org"
+  - "cvmfs1-iu0.galaxyproject.org"
+  - "cvmfs1-psu0.galaxyproject.org"
