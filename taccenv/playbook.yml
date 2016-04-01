@@ -69,12 +69,3 @@
   roles:
     - role: cvmfs
       tags: cvmfs
-
-- name: Tasks for CVMFS Servers
-  hosts: cvmfsstratum1servers:cvmfslocalproxies
-  # FIXME:
-  remote_user: centos
-  become: yes
-  roles:
-    - role: cvmfs
-      tags: cvmfs

@@ -19,3 +19,13 @@ group_services:
   - name: docker
     state: stopped
     enabled: "no"
+
+cvmfs_server_urls:
+  - domain: galaxyproject.org
+    urls:
+      - "http://cvmfs1-tacc0.galaxyproject.org/cvmfs/@fqrn@"
+      - "http://cvmfs1-iu0.galaxyproject.org/cvmfs/@fqrn@"
+
+cvmfs_http_proxies:
+  - "http://cvmfs1-tacc0.galaxyproject.org:3128"
+  - "http://cvmfs1-iu0.galaxyproject.org:3128"

@@ -5,7 +5,9 @@
     name: "{{ item }}"
   with_items:
     - httpd
+    - mod_wsgi
     - cvmfs-server
+    - cvmfs-config
   when: ansible_os_family == "RedHat"
 
 - name: Install CernVM-FS server and dependencies (apt)
@@ -14,6 +16,7 @@
   with_items:
     - apache2
     - cvmfs-server
+    - cvmfs-config
   when: ansible_os_family == "Debian"
 
 - name: Install CernVM-FS keys
@@ -25,8 +28,15 @@
     mode: "0444"
   with_items: "{{ cvmfs_keys }}"
 
+- name: Ensure Apache is enabled and running
+  service:
+    # FIXME: RHEL-specific
+    name: httpd
+    state: started
+    enabled: yes
+
 - name: Ensure replicas are configured
-  command: /usr/bin/cvmfs_server add-replica -o root http://cvmfs0.galaxyproject.org/cvmfs/{{ item }}
+  command: /usr/bin/cvmfs_server add-replica -o root http://cvmfs0.galaxyproject.org/cvmfs/{{ item }} /etc/cvmfs/keys/{{ item }}.pub
   args:
     creates: /etc/cvmfs/repositories.d/{{ item }}
   with_items: "{{ cvmfs_repositories }}"
@@ -41,10 +51,3 @@
     minute: 0,15,30,45
     user: root
   with_items: "{{ cvmfs_repositories }}"
-
-- name: Ensure Apache is enabled and running
-  service:
-    # FIXME: RHEL-specific
-    name: httpd
-    state: started
-    enabled: yes

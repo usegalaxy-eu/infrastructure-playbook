@@ -101,3 +101,12 @@
         line: "{{ item }}::::type=normal;defaultpriv=basic,sys_fs_import"
         regexp: "^{{ item }}:.*"
       with_items: backupusers
+
+- name: Tasks for CVMFS Servers
+  hosts: cvmfsstratum1servers:cvmfslocalproxies
+  # FIXME:
+  remote_user: centos
+  become: yes
+  roles:
+    - role: cvmfs
+      tags: cvmfs
