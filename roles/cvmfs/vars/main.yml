@@ -1,0 +1,37 @@
+---
+
+cvmfs_keys:
+  - path: /etc/cvmfs/keys/test.galaxyproject.org.pub
+    key: |
+      -----BEGIN PUBLIC KEY-----
+      MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtfc5SSX9ALcrukWYcxkI
+      mkLhlkJa5tCP1oZNWFA7GfE4xQW2vcKE5qmbZqhYVfdiy+FHPnhWPJp577hekD2F
+      vMITbApdZ0265AjRC0+EKKxpMF8zZ0q71vCFxvdK0c3DtT/3LmqKrr2wimtJZjQN
+      UAZcQG2ykzeHzFZ46w74IO0o8Fv/w2XEbYI0QqbNFv+0hcp5SruFqaaLsRZdd6Bn
+      3iSylgVRQ5b+h1LfB/EuEpSmH1sDozZ4tU0fpbrBSknK76aad1o/cvWY1X87ToUV
+      helU0HE2Rw/u9EqJDvPFTbUmad3MtspkqbG5Eo7lI+ktzbcD7UTsQ/7noIXIQ5dD
+      PwIDAQAB
+      -----END PUBLIC KEY-----
+  - path: /etc/cvmfs/keys/data.galaxyproject.org.pub
+    key: |
+      -----BEGIN PUBLIC KEY-----
+      MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5LHQuKWzcX5iBbCGsXGt
+      6CRi9+a9cKZG4UlX/lJukEJ+3dSxVDWJs88PSdLk+E25494oU56hB8YeVq+W8AQE
+      3LWx2K2ruRjEAI2o8sRgs/IbafjZ7cBuERzqj3Tn5qUIBFoKUMWMSIiWTQe2Sfnj
+      GzfDoswr5TTk7aH/FIXUjLnLGGCOzPtUC244IhHARzu86bWYxQJUw0/kZl5wVGcH
+      maSgr39h1xPst0Vx1keJ95AH0wqxPbCcyBGtF1L6HQlLidmoIDqcCQpLsGJJEoOs
+      NVNhhcb66OJHah5ppI1N3cZehdaKyr1XcF9eedwLFTvuiwTn6qMmttT/tHX7rcxT
+      owIDAQAB
+      -----END PUBLIC KEY-----
+
+cvmfs_server_urls:
+  - domain: galaxyproject.org
+    urls:
+      - http://cvmfs1-tacc0.galaxyproject.org/cvmfs/@fqrn@
+
+cvmfs_repositories:
+  - test.galaxyproject.org
+  - data.galaxyproject.org
+
+cvmfs_http_proxies:
+  - http://cvmfs1-tacc0.galaxyproject.org:3128
