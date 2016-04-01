@@ -1,12 +1,5 @@
 ---
 
-- name: Configure CernVM apt repository
-  apt_repository:
-    #filename: "cernvm" # not supported until Ansible 2.1
-    repo: "deb http://cvmrepo.web.cern.ch/cvmrepo/apt/ testing main"
-    update_cache: yes
-  when: ansible_os_family == "Debian"
-
 - name: Configure CernVM yum repositories
   action:
     module: yum_repository
@@ -67,19 +60,10 @@
     mode: "0644"
   when: ansible_os_family == "RedHat"
 
-- name: Install CernVM apt key
-  apt_key:
-    url: "http://cvmrepo.web.cern.ch/cvmrepo/apt/cernvm.gpg"
-
-- name: Install CernVM-FS client (yum)
+- name: Install CernVM-FS client
   yum:
     name: cvmfs
   when: ansible_os_family == "RedHat"
-
-- name: Install CernVM-FS client (apt)
-  apt:
-    name: cvmfs
-  when: ansible_os_family == "Debian"
 
 - name: Install CernVM-FS keys
   copy:
@@ -89,49 +73,27 @@
     group: "root"
     mode: "0444"
   with_items: "{{ cvmfs_keys }}"
-    - path: /etc/cvmfs/keys/test.galaxyproject.org.pub
-      key: |
-        -----BEGIN PUBLIC KEY-----
-        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtfc5SSX9ALcrukWYcxkI
-        mkLhlkJa5tCP1oZNWFA7GfE4xQW2vcKE5qmbZqhYVfdiy+FHPnhWPJp577hekD2F
-        vMITbApdZ0265AjRC0+EKKxpMF8zZ0q71vCFxvdK0c3DtT/3LmqKrr2wimtJZjQN
-        UAZcQG2ykzeHzFZ46w74IO0o8Fv/w2XEbYI0QqbNFv+0hcp5SruFqaaLsRZdd6Bn
-        3iSylgVRQ5b+h1LfB/EuEpSmH1sDozZ4tU0fpbrBSknK76aad1o/cvWY1X87ToUV
-        helU0HE2Rw/u9EqJDvPFTbUmad3MtspkqbG5Eo7lI+ktzbcD7UTsQ/7noIXIQ5dD
-        PwIDAQAB
-        -----END PUBLIC KEY-----
-    - path: /etc/cvmfs/keys/data.galaxyproject.org.pub
-      key: |
-        -----BEGIN PUBLIC KEY-----
-        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5LHQuKWzcX5iBbCGsXGt
-        6CRi9+a9cKZG4UlX/lJukEJ+3dSxVDWJs88PSdLk+E25494oU56hB8YeVq+W8AQE
-        3LWx2K2ruRjEAI2o8sRgs/IbafjZ7cBuERzqj3Tn5qUIBFoKUMWMSIiWTQe2Sfnj
-        GzfDoswr5TTk7aH/FIXUjLnLGGCOzPtUC244IhHARzu86bWYxQJUw0/kZl5wVGcH
-        maSgr39h1xPst0Vx1keJ95AH0wqxPbCcyBGtF1L6HQlLidmoIDqcCQpLsGJJEoOs
-        NVNhhcb66OJHah5ppI1N3cZehdaKyr1XcF9eedwLFTvuiwTn6qMmttT/tHX7rcxT
-        owIDAQAB
-        -----END PUBLIC KEY-----
 
 - name: Perform AutoFS and FUSE configuration for CernVM-FS
   command: cvmfs_config setup
   notify:
     - reload autofs
 
-# FIXME: per-site stratum1 and proxies
 - name: Configure CernVM-FS domain
   copy:
     content: |
-      CVMFS_SERVER_URL="http://cvmfs1-tacc0.galaxyproject.org/cvmfs/@fqrn@"
-    dest: "/etc/cvmfs/domain.d/galaxyproject.org.conf"
+      CVMFS_SERVER_URL="{{ item.urls | join(';') }}"
+    dest: "/etc/cvmfs/domain.d/{{ item.domain }}.conf"
     owner: "root"
     group: "root"
     mode: "0644"
+  with_items: "{{ cvmfs_server_urls }}"
 
 - name: Configure CernVM-FS repositories and proxy
   copy:
     content: |
-      CVMFS_REPOSITORIES=test.galaxyproject.org,data.galaxyproject.org
-      CVMFS_HTTP_PROXY=http://cvmfs1-tacc0.galaxyproject.org:3128
+      CVMFS_REPOSITORIES="{{ cvmfs_repositories | join(',') }}"
+      CVMFS_HTTP_PROXY="{{ cvmfs_http_proxies | join('|') }}"
     dest: "/etc/cvmfs/default.local"
     owner: "root"
     group: "root"
