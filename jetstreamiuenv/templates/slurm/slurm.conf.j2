@@ -1,0 +1,49 @@
+##
+## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
+##
+ControlMachine={{ controller_name }}
+ControlAddr={{ controller_ip }}
+#
+AuthType=auth/munge
+FastSchedule=1
+JobCompLoc=/var/log/slurm/slurm.job.log
+JobCompType=jobcomp/filetxt
+PluginDir=/usr/lib64/slurm
+SchedulerType=sched/backfill
+#SelectType=select/cons_res
+#SelectTypeParameters=CR_CPU_Memory
+SelectType=select/linear
+SlurmUser=slurm
+SlurmctldPort=7002
+SlurmctldTimeout=300
+SlurmdPort=7003
+SlurmdSpoolDir=/var/lib/slurm/slurmd/slurmd.spool
+SlurmdTimeout=300
+StateSaveLocation=/var/lib/slurm/slurmctld/slurm.state
+SwitchType=switch/none
+DefaultStorageLoc=/var/log/slurm/slurm_accounting
+AccountingStorageType=accounting_storage/slurmdbd
+AccountingStorageHost=galaxy02.tacc.utexas.edu
+#AccountingStoragePort=6819
+AccountingStoragePort=30001
+JobAcctGatherType=jobacct_gather/linux
+JobAcctGatherFrequency=task=15
+ProctrackType=proctrack/linuxproc
+ClusterName=jetstream-iu
+ReturnToService=1
+#
+# Node Configurations
+#
+# CPUs = Sockets * CoresPerSocket * ThreadsPerCore
+{% for node_type in slurm_nodes %}
+{% for node in node_type.nodes %}
+NodeName={{ node.name }} NodeAddr={{ node.addr }} RealMemory={{ node_type.real_memory }} Sockets={{ node_type.sockets }} CoresPerSocket=1 ThreadsPerCore=1 State=UNKNOWN
+{% endfor %}
+#
+# Partition Configurations
+#
+#PartitionName=normal Default=YES State=UP MaxTime=48:20:00 MaxNodes=1 Nodes=jetstream[1-64] LLN=YES
+PartitionName=large State=UP MaxTime=48:20:00 MaxNodes=1 Nodes=jetstream-iu-large-0
+
+SlurmctldDebug=7
+SlurmdDebug=6

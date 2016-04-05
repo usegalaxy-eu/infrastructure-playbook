@@ -1,0 +1,13 @@
+---
+
+- include: server.yml
+  when: "'controllers' in group_names"
+
+- name: Mount scratch
+  mount:
+    fstype: nfs4
+    name: /jetstream/iu-scratch0
+    src: "{{ jetstream_scratch0_server }}:/scratch0"
+    opts: rw,nosuid,noatime,rsize=1048576,wsize=1048576,intr,soft,tcp
+    state: mounted
+  when: "'galaxynodes' in group_names"

@@ -63,7 +63,7 @@
 - include: client.yml
   when: "'cvmfsclients' in group_names"
 
-- include: server.yml
+- include: stratum1.yml
   when: "'cvmfsstratum1servers' in group_names"
 
 - include: localproxy.yml

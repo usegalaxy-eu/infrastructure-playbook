@@ -35,11 +35,13 @@ cvmfs_repositories:
   - data.galaxyproject.org
 
 cvmfs_http_proxies:
-  - "http://cvmfs1-tacc0.galaxyproject.org:3128"
-  - "http://cvmfs1-iu0.galaxyproject.org:3128"
+  - DIRECT
 
-# TODO: At which level does the order of these matter? Local proxies? Or should we use GeoIP?
 cvmfs_stratum1_servers:
   - "cvmfs1-tacc0.galaxyproject.org"
   - "cvmfs1-iu0.galaxyproject.org"
   - "cvmfs1-psu0.galaxyproject.org"
+
+cvmfs_stratum1_apache_port: 8008
+# in MB
+cvmfs_stratum1_cache_mem: 128

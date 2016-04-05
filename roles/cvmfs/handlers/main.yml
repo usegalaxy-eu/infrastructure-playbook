@@ -15,3 +15,9 @@
     # FIXME: RHEL-specific
     name: httpd
     state: restarted
+
+- name: reload apache
+  service:
+    # FIXME: RHEL-specific
+    name: httpd
+    state: reloaded

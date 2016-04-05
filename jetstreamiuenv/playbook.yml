@@ -2,26 +2,30 @@
 
 - name: Tasks for "base environment" hosts
   hosts: baseenv
-  remote_user: root
-  #vars_files:
-    #- "secret_group_vars/all.yml"
-    # uncomment when necessary
-    #- [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
+  remote_user: centos
+  become: yes
+  become_method: sudo
+  vars_files:
+    - secret_group_vars/all.yml
   pre_tasks:
     - name: Locate secret group variable files
       local_action:
         module: stat
         path: "{{ inventory_dir }}/secret_group_vars/{{ item }}.yml"
-      with_items: group_names
+      become: no
+      with_items: "{{ group_names }}"
       register: secret_group_vars
       tags: always
     - name: Include secret group variables
       local_action:
         module: "include_vars {{ item.stat.path }}"
-      with_items: secret_group_vars.results
+      become: no
+      with_items: "{{ secret_group_vars.results }}"
       when: item.stat.exists
       tags: always
   roles:
+    - role: requiretty        # Disable requiretty for Ansible ssh pipelining
+      tags: initial,requiretty
     - role: packages          # Install packages
       tags: system,packages
     - role: users             # Create users and set up authentication keys
@@ -36,36 +40,38 @@
       tags: system,services
   tags: initial
 
-- name: Tasks for stats servers
-  hosts: statsservers
-  remote_user: root
+- name: Tasks for controllers
+  hosts: controllers
+  remote_user: centos
+  become: yes
+  become_method: sudo
+  roles:
+    - role: jetstream_nfs
+      tags: nfs
+
+- name: Tasks for galaxy nodes
+  hosts: galaxynodes
+  remote_user: centos
+  become: yes
+  become_method: sudo
   vars_files:
-    - secret_group_vars/ssl.yml
+    - secret_group_vars/galaxynodes.yml
   roles:
     - role: geerlingguy.repo-epel
       tags: packages
-    - role: galaxyprojectdotorg.nginx
-      tags: nginx
-    - role: galaxyprojectdotorg.postgresql
-      tags: postgres
-    - role: sentry
-      tags: sentry
-    - role: supervisor
-      tags: supervisor
-
-- name: Database tasks for stats servers
-  hosts: statsservers
-  remote_user: root
-  become: yes
-  become_method: sudo
-  become_user: postgres
-  roles:
-    - role: natefoo.postgresql_objects
-      tags: postgres
-
-- name: Tasks for CVMFS clients
-  hosts: cvmfsclients
-  remote_user: root
-  roles:
     - role: cvmfs
       tags: cvmfs
+    - role: jetstream_nfs
+      tags: nfs
+
+# This has to be last for slurm elastic (everything must be configured/done when slurmd starts)
+- name: Tasks for slurm hosts
+  hosts: slurmservers:slurmclients
+  remote_user: centos
+  become: yes
+  become_method: sudo
+  vars_files:
+    - secret_group_vars/slurmclients.yml
+  roles:
+    - role: slurm
+      tags: slurm

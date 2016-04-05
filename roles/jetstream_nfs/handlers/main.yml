@@ -1,0 +1,13 @@
+---
+
+- name: export all
+  command: exportfs -a
+
+- name: restart nfs server
+  service:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - rpcbind
+    - nfs-config
+    - nfs

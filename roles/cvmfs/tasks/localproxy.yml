@@ -14,18 +14,18 @@
     - squid
   when: ansible_os_family == "Debian"
 
-# stratum1s are pulling double duty as local proxies for now
-- name: Create squid hosts file
-  copy:
-    content: |
-      {{ inventory_hostname }} 127.0.0.1
-    dest: /etc/squid/hosts
-  notify:
-    - restart squid
+# Need to double check that this actually works (see the hosts_file directive)
+#- name: Create squid hosts file
+#  copy:
+#    content: |
+#      {{ inventory_hostname }} 127.0.0.1
+#    dest: /etc/squid/hosts
+#  notify:
+#    - restart squid
 
 - name: Configure squid for local proxies
   template:
-    src: squid.conf.j2
+    src: localproxy_squid.conf.j2
     dest: /etc/squid/squid.conf
     backup: yes
   notify:

@@ -34,11 +34,12 @@
     mode: "0644"
   with_items: "{{ cvmfs_server_urls }}"
 
-- name: Configure CernVM-FS repositories and proxy
+- name: Configure CernVM-FS client settings
   copy:
     content: |
       CVMFS_REPOSITORIES="{{ cvmfs_repositories | join(',') }}"
-      CVMFS_HTTP_PROXY="{{ cvmfs_http_proxies | join('|') }}"
+      CVMFS_HTTP_PROXY="{{ cvmfs_http_proxies | join(';') }}"
+      CVMFS_QUOTA_LIMIT="{{ cvmfs_quota_limit | default('4000') }}"
     dest: "/etc/cvmfs/default.local"
     owner: "root"
     group: "root"

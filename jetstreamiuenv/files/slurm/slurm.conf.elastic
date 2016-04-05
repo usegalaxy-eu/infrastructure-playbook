@@ -1,0 +1,52 @@
+##
+## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
+##
+ControlMachine=jetstream-iu0
+ControlAddr=10.0.0.5
+#
+AuthType=auth/munge
+FastSchedule=1
+JobCompLoc=/var/log/slurm/slurm.job.log
+JobCompType=jobcomp/filetxt
+PluginDir=/usr/lib64/slurm
+SchedulerType=sched/backfill
+#SelectType=select/cons_res
+#SelectTypeParameters=CR_CPU_Memory
+SelectType=select/linear
+SlurmUser=slurm
+SlurmctldPort=7002
+SlurmctldTimeout=300
+SlurmdPort=7003
+SlurmdSpoolDir=/var/lib/slurm/slurmd/slurmd.spool
+SlurmdTimeout=300
+StateSaveLocation=/var/lib/slurm/slurmctld/slurm.state
+SwitchType=switch/none
+DefaultStorageLoc=/var/log/slurm/slurm_accounting
+AccountingStorageType=accounting_storage/slurmdbd
+AccountingStorageHost=galaxy02.tacc.utexas.edu
+#AccountingStoragePort=6819
+AccountingStoragePort=30001
+JobAcctGatherType=jobacct_gather/linux
+JobAcctGatherFrequency=task=15
+ProctrackType=proctrack/linuxproc
+ClusterName=jetstream-iu
+ReturnToService=1
+# Elastic config
+SuspendProgram=/opt/slurm_cloud_provision/bin/terminate
+ResumeProgram=/opt/slurm_cloud_provision/bin/launch
+ResumeTimeout=900
+SuspendTime=1800
+TreeWidth=256
+BatchStartTimeout=780
+#
+# Node Configurations
+#
+NodeName=jetstream[1-64] State=CLOUD
+#
+# Partition Configurations
+#
+PartitionName=normal Default=YES State=UP MaxTime=48:20:00 MaxNodes=1 Nodes=jetstream[1-64] LLN=YES
+PartitionName=multi State=UP MaxTime=48:20:00 MaxNodes=1 Nodes=jetstream[1-64] LLN=YES
+
+SlurmctldDebug=7
+SlurmdDebug=6

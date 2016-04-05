@@ -1,0 +1,65 @@
+---
+
+- name: Launch instance(s)
+  hosts: localhost
+  connection: local
+  vars:
+    jetstream_inventory_file: /var/lib/slurm/inventory
+  tasks:
+    - name: Launch new instance(s)
+      os_server:
+        cloud: jetstream_iu
+        name: "{{ item }}"
+        image: "CentOS 7 Stock 1601"
+        flavor: "m1.large"
+        key_name: "slurm_jetstream0"
+        security_groups: "default,usegalaxy-control"
+        nics:
+          - net-name: "usegalaxy"
+        auto_ip: no
+      with_items: "{{ jetstream_instances_to_launch.split(',') }}"
+      register: jetstream_instances_launched
+
+    - debug:
+        var: jetstream_instances_launched
+
+    # FIXME: what does jetstream_instances_launched look like if one or more
+    # launches fails?
+    - name: Add new host to running inventory
+      add_host:
+        name: "{{ item.server.name }}"
+        ansible_host: "{{ item.server.private_v4 }}"
+        groups: "baseenv,galaxynodes,slurmclients,slurmexechosts"
+      with_items: "{{ jetstream_instances_launched.results }}"
+
+    - name: Spin waiting for instance(s) to become accessible
+      command: >
+        ssh -o BatchMode=yes -o UserKnownHostsFile=/dev/null
+        -o StrictHostKeyChecking=no -o ConnectTimeout=10
+        centos@{{ item.server.private_v4 }} /bin/true
+      with_items: "{{ jetstream_instances_launched.results }}"
+      register: jetstream_instances_alive
+      until: jetstream_instances_alive | success
+      retries: 60
+      delay: 5
+
+    - name: Instruct slurm on the new instance's address
+      command: >
+        /usr/bin/scontrol update NodeName={{ item.server.name }}
+        NodeAddr={{ item.server.private_v4 }}
+      with_items: "{{ jetstream_instances_launched.results }}"
+
+    # Need to create this w/ appropriate groups first
+    #- name: Add host to static inventory
+    #  lineinfile:
+    #    path: "{{ jetstream_inventory_file }}"
+    #    regex: "^$host\s+"
+    #    line: "$host ansible_host=$instance_ip"
+
+    #- name: Kill new instance(s)
+    #  os_server:
+    #    auth: "{{ os_auth }}"
+    #    name: jetstream1
+    #    state: absent
+
+- include: playbook.yml
