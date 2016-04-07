@@ -37,13 +37,15 @@ ReturnToService=1
 # CPUs = Sockets * CoresPerSocket * ThreadsPerCore
 {% for node_type in slurm_nodes %}
 {% for node in node_type.nodes %}
-NodeName={{ node.name }} NodeAddr={{ node.addr }} RealMemory={{ node_type.real_memory }} Sockets={{ node_type.sockets }} CoresPerSocket=1 ThreadsPerCore=1 State=UNKNOWN
+NodeName={{ node_type.name_prefix }}{{ loop.index0 }} NodeAddr={{ node.addr }} RealMemory={{ node_type.real_memory }} Sockets={{ node_type.sockets }} CoresPerSocket=1 ThreadsPerCore=1 State=UNKNOWN
+{% endfor %}
 {% endfor %}
 #
 # Partition Configurations
 #
-#PartitionName=normal Default=YES State=UP MaxTime=48:20:00 MaxNodes=1 Nodes=jetstream[1-64] LLN=YES
-PartitionName=large State=UP MaxTime=48:20:00 MaxNodes=1 Nodes=jetstream-iu-large-0
+{% for node_type in slurm_nodes %}
+PartitionName=large State=UP MaxTime=48:20:00 MaxNodes=1 Nodes={{ node_type.name_prefix }}[0-{{ (node_type.nodes | length) - 1 }}]
+{% endfor %}
 
 SlurmctldDebug=7
 SlurmdDebug=6

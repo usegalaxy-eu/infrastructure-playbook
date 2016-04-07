@@ -108,5 +108,11 @@
   remote_user: centos
   become: yes
   roles:
+    # mounts /srv
+    - role: paths
+      tags: cvmfs
+    # need epel for the jq package
+    - role: geerlingguy.repo-epel
+      tags: cvmfs
     - role: cvmfs
       tags: cvmfs

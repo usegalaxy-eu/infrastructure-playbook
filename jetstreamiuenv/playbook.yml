@@ -5,8 +5,6 @@
   remote_user: centos
   become: yes
   become_method: sudo
-  vars_files:
-    - secret_group_vars/all.yml
   pre_tasks:
     - name: Locate secret group variable files
       local_action:
@@ -54,8 +52,6 @@
   remote_user: centos
   become: yes
   become_method: sudo
-  vars_files:
-    - secret_group_vars/galaxynodes.yml
   roles:
     - role: geerlingguy.repo-epel
       tags: packages
