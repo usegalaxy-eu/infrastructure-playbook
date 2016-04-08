@@ -3,6 +3,12 @@
 # 100 GB
 cvmfs_quota_limit: 100000
 
+directories:
+  - path: /galaxy-repl/test
+  - path: /galaxy-repl/main
+  - path: /var/lib/slurm
+    mode: "0755"
+
 # symlinks for deps must exist due to path issues
 links:
   - path: /galaxy
