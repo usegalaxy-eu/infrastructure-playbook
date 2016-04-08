@@ -1,0 +1,36 @@
+# looking for cvmfs1-iu0? It's in the galaxyenv
+
+jetstream-tacc0.galaxyproject.org ansible_host=129.114.104.158
+
+[baseenv]
+jetstream-tacc0.galaxyproject.org
+
+[baseenv:children]
+galaxynodes
+
+# "contoller" node(s) for this cloud (not necessarily a slurm controller)
+[controllers]
+jetstream-tacc0.galaxyproject.org
+
+[slurmservers]
+jetstream-tacc0.galaxyproject.org
+
+[slurmclients]
+jetstream-tacc0.galaxyproject.org
+
+[slurmclients:children]
+galaxynodes
+
+;[slurmelasticservers]
+;jetstream-tacc0.galaxyproject.org
+
+[cvmfsclients]
+[cvmfsclients:children]
+galaxynodes
+
+[surmexechosts]
+[slurmexechosts:children]
+galaxynodes
+
+[galaxynodes]
+jetstream-tacc0-large0.galaxyproject.org ansible_host=10.0.0.20
