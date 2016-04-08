@@ -6,7 +6,7 @@
 - name: Mount scratch
   mount:
     fstype: nfs4
-    name: /jetstream/iu-scratch0
+    name: {{ jetstream_scratch0_mountpoint }}
     src: "{{ jetstream_scratch0_server }}:/scratch0"
     opts: rw,nosuid,noatime,rsize=1048576,wsize=1048576,intr,soft,tcp
     state: mounted
