@@ -90,3 +90,24 @@
     name: telegraf
     update_cache: yes
   when: ansible_os_family == "RedHat"
+
+- name: Create stats config directory
+  file:
+    path: "{{ stats_conf_dir }}"
+    state: directory
+
+- name: Create sentry var directory
+  file:
+    path: "{{ stats_var_dir }}"
+    state: directory
+    owner: stats
+    group: stats
+    mode: 0700
+
+- name: Copy stats configs
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ stats_conf_dir }}/{{ item }}"
+  with_items:
+    - influxdb.conf
+    - telegraf.conf
