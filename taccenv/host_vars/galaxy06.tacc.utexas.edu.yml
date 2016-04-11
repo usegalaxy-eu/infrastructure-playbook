@@ -18,3 +18,11 @@ local_users:
     home: /var/opt/sentry
     createhome: yes
     shell: /bin/bash
+  - name: stats
+    #group: sentry # this happens automatically if unset
+    groups: nginx
+    comment: 'Stats'
+    system: yes
+    home: /var/opt/stats
+    createhome: yes
+    shell: /bin/bash
