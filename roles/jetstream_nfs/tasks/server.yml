@@ -26,7 +26,7 @@
 - name: Create exports file
   copy:
     content: |
-      /scratch0   10.0.0.0/20(rw,no_subtree_check,root_squash) galaxy01.tacc.utexas.edu(rw,no_subtree_check,root_squash)
+      /scratch0   10.0.0.0/20(rw,no_subtree_check,root_squash) galaxy*.tacc.utexas.edu(rw,no_subtree_check,root_squash)
     dest: /etc/exports.d/galaxy_scratch.exports
   notify:
     - export all
