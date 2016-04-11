@@ -67,5 +67,13 @@
   hosts: cvmfsclients
   remote_user: root
   roles:
+    - role: geerlingguy.repo-epel
     - role: cvmfs
-      tags: cvmfs
+  tags: cvmfs
+
+- name: Tasks for Jetstream NFS clients
+  hosts: jetstreamnfsclients
+  remote_user: root
+  roles:
+    - role: jetstream_nfs
+  tags: nfs

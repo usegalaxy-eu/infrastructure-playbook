@@ -27,5 +27,10 @@ cvmfs_server_urls:
       - "http://cvmfs1-iu0.galaxyproject.org/cvmfs/@fqrn@"
 
 cvmfs_http_proxies:
-  - "http://cvmfs1-tacc0.galaxyproject.org:3128"
-  - "http://cvmfs1-iu0.galaxyproject.org:3128"
+  - "DIRECT"
+
+jetstream_nfs_filesystems:
+  - device: "jetstream-iu0.galaxyproject.org:/scratch0"
+    mountpoint: "/jetstream/iu-scratch0"
+  - device: "jetstream-tacc0.galaxyproject.org:/scratch0"
+    mountpoint: "/jetstream/tacc-scratch0"
