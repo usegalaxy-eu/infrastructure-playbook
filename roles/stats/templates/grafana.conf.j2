@@ -28,7 +28,7 @@ logs = {{ stats_var_dir }}/log/grafana
 ;http_port = 3000
 
 # The public facing domain name used to access grafana from a browser
-;domain = localhost
+domain = stats.galaxyproject.org
 
 # Redirect to correct domain if host header does not match domain
 # Prevents DNS rebinding attacks
@@ -101,13 +101,13 @@ logs = {{ stats_var_dir }}/log/grafana
 #################################### Security ####################################
 [security]
 # default admin user, created on startup
-;admin_user = admin
+admin_user = {{ grafana_admin_user }}
 
 # default admin password, can be changed before first start of grafana,  or in profile settings
-;admin_password = admin
+admin_password = {{ grafana_admin_pass }}
 
 # used for signing
-;secret_key = SW2YcwTIb9zpOOhoPsMm
+secret_key = {{ grafana_secret_key }}
 
 # Auto-login remember days
 ;login_remember_days = 7
@@ -123,7 +123,7 @@ logs = {{ stats_var_dir }}/log/grafana
 #################################### Users ####################################
 [users]
 # disable user signup / registration
-;allow_sign_up = true
+allow_sign_up = false
 
 # Allow non admin users to create organizations
 ;allow_org_create = true
