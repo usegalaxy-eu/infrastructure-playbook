@@ -1,0 +1,33 @@
+
+[program:telegraf]
+process_name    = telegraf
+command         = /usr/bin/telegraf -config {{ stats_conf_dir }}/telegraf.conf
+user            = stats
+directory       = {{ stats_var_dir }}
+autostart       = true
+autorestart     = true
+stdout_logfile  = {{ supervisord_log_dir }}/stats_telegraf.log
+redirect_stderr = true
+
+[program:influxdb]
+process_name    = influxd
+command         = /usr/bin/influxd -config {{ stats_conf_dir }}/influxdb.conf
+user            = stats
+directory       = {{ stats_var_dir }}
+autostart       = true
+autorestart     = true
+stdout_logfile  = {{ supervisord_log_dir }}/stats_influxdb.log
+redirect_stderr = true
+
+[program:grafana]
+process_name    = grafana-server
+command         = /usr/sbin/grafana-server -config {{ stats_conf_dir }}/grafana.conf
+user            = stats
+directory       = {{ stats_var_dir }}
+autostart       = true
+autorestart     = true
+stdout_logfile  = {{ supervisord_log_dir }}/stats_grafana.log
+redirect_stderr = true
+
+[group:stats]
+programs = telegraf, influxdb, grafana
