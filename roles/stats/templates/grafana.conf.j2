@@ -10,11 +10,11 @@
 [paths]
 # Path to where grafana can store temp files, sessions, and the sqlite3 db (if that is used)
 #
-;data = /var/lib/grafana
+data = {{ stats_var_dir }}/lib/grafana
 #
 # Directory where grafana can store logs
 #
-;logs = /var/log/grafana
+logs = {{ stats_var_dir }}/log/grafana
 
 #################################### Server ####################################
 [server]

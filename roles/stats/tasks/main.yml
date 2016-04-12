@@ -154,10 +154,18 @@
     update_cache: yes
   when: ansible_os_family == "RedHat"
 
+#- name: Copy Grafana defaults
+#copy:
+#src: "/usr/share/grafana/conf"
+#dest: "{{ stats_conf_dir }}"
+
 - name: Create stats config directory
   file:
     path: "{{ stats_conf_dir }}"
     state: directory
+    owner: stats
+    group: stats
+    mode: 0700
 
 - name: Create sentry var directory
   file:

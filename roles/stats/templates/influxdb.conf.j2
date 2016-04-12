@@ -4,16 +4,16 @@ hostname = ""
 join = ""
 
 [meta]
-  dir = "/root/.influxdb/meta"
+  dir = "{{ stats_var_dir }}/.influxdb/meta"
   retention-autocreate = true
   logging-enabled = true
   pprof-enabled = false
   lease-duration = "1m0s"
 
 [data]
-  dir = "/root/.influxdb/data"
+  dir = "{{ stats_var_dir }}/.influxdb/data"
   engine = "tsm1"
-  wal-dir = "/root/.influxdb/wal"
+  wal-dir = "{{ stats_var_dir }}/.influxdb/wal"
   wal-logging-enabled = true
   query-log-enabled = true
   cache-max-memory-size = 524288000

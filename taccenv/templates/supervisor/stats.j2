@@ -21,7 +21,8 @@ redirect_stderr = true
 
 [program:grafana]
 process_name    = grafana-server
-command         = /usr/sbin/grafana-server -config {{ stats_conf_dir }}/grafana.conf
+# TODO: The cfg override sucks, see https://github.com/grafana/grafana/issues/3349
+command         = /usr/sbin/grafana-server -config {{ stats_conf_dir }}/grafana.conf -homepath /usr/share/grafana "cfg:default.paths.logs={{ stats_conf_dir }}"
 user            = stats
 directory       = {{ stats_var_dir }}
 autostart       = true
