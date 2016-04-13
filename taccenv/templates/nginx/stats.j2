@@ -3,14 +3,13 @@
 ##
 
 upstream stats_app {
-    localhost:3000;
+    server localhost:3000;
 }
 
 server {
     listen *:80;
     server_name stats.galaxyproject.org;
-
-    return 302 https://$host$request_uri;
+    return 302 https://$server_name$request_uri;
 }
 
 server {
