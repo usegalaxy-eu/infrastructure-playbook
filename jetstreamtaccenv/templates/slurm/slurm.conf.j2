@@ -44,7 +44,7 @@ NodeName={{ node_type.name_prefix }}{{ loop.index0 }} NodeAddr={{ node.addr }} R
 # Partition Configurations
 #
 {% for node_type in slurm_nodes %}
-PartitionName=large State=UP MaxTime=48:20:00 MaxNodes=1 Nodes={{ node_type.name_prefix }}[0-{{ (node_type.nodes | length) - 1 }}]
+PartitionName=multi State=UP MaxTime=48:20:00 MaxNodes=1 Nodes={{ node_type.name_prefix }}[0-{{ (node_type.nodes | length) - 1 }}]
 {% endfor %}
 
 SlurmctldDebug=7
