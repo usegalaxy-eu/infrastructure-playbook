@@ -31,3 +31,9 @@
   notify:
     - export all
     - restart nfs server # technically this probably only needs to happen for the first one
+
+- name: Enable nfs services
+  service:
+    name: nfs-server
+    state: started
+    enabled: yes
