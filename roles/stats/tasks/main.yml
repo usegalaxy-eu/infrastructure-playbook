@@ -33,7 +33,7 @@
   with_items:
     - name: grafana
       description: "Grafana Packages"
-      baseurl: "https://packagecloud.io/grafana/testing/el/6/$basearch"
+      baseurl: "https://packagecloud.io/grafana/stable/el/6/$basearch"
   when: ansible_os_family == "RedHat"
 
 - name: Install InfluxDB yum key
@@ -150,9 +150,12 @@
 
 - name: Install Grafana
   yum:
-    name: grafana
-    update_cache: yes
+    name: https://grafanarel.s3.amazonaws.com/builds/grafana-3.0.1-1.x86_64.rpm
+    state: latest
+#    name: grafana
+#    update_cache: yes
   when: ansible_os_family == "RedHat"
+
 
 #- name: Copy Grafana defaults
 #copy:
