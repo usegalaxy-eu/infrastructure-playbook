@@ -41,6 +41,7 @@
   remote_user: root
   vars_files:
     - secret_group_vars/ssl.yml
+    - secret_group_vars/stats.yml
   roles:
     - role: geerlingguy.repo-epel
       tags: packages
@@ -50,6 +51,8 @@
       tags: postgres
     - role: sentry
       tags: sentry
+    - role: stats
+      tags: stats
     - role: supervisor
       tags: supervisor
 

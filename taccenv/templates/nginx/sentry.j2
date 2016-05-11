@@ -5,8 +5,7 @@
 server {
     listen *:80;
     server_name sentry.galaxyproject.org;
-
-    return 302 https://$host$request_uri;
+    return 302 https://$server_name$request_uri;
 }
 
 server {

@@ -1,0 +1,30 @@
+##
+## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
+##
+
+upstream stats_app {
+    server localhost:3000;
+}
+
+server {
+    listen *:80;
+    server_name stats.galaxyproject.org;
+    return 302 https://$server_name$request_uri;
+}
+
+server {
+    listen *:443 ssl;
+    server_name stats.galaxyproject.org;
+
+    access_log  /var/log/nginx/stats.galaxyproject.org_access.log;
+    error_log   /var/log/nginx/stats.galaxyproject.org_error.log;
+
+    location / {
+        proxy_pass   http://stats_app;
+        proxy_set_header   X-Forwarded-Host $host;
+        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+    }
+
+}
+
+# vim: set filetype=nginx
