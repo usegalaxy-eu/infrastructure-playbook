@@ -1,0 +1,28 @@
+---
+
+- name: Remove static mounts
+  mount:
+    fstype: nfs4
+    name: "{{ item.mountpoint }}"
+    src: "{{ item.device }}"
+    state: unmounted
+  with_items: "{{ jetstream_nfs_filesystems }}"
+
+- name: Install autofs (yum)
+  yum:
+    name: autofs
+  when: ansible_os_family == "RedHat"
+
+- name: Add Jetstream mounts to auto.master
+  copy:
+    dest: /etc/auto.master.d/auto.ansible_jetstream.autofs
+    content: "/jetstream /etc/auto.jetstream --ghost\n"
+    backup: yes
+  notify: reload autofs
+
+- name: Create auto.jetstream
+  template:
+    src: auto.jetstream.j2
+    dest: /etc/auto.jetstream
+    backup: yes
+  notify: reload autofs

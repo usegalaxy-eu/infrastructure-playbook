@@ -1,0 +1,3 @@
+{% for fs in jetstream_nfs_filesystems %}
+{{ fs.dir }} -fstype=nfs4,rw,nosuid,noatime,rsize=1048576,wsize=1048576,intr,soft,tcp {{ fs.device }}
+{% endfor %}

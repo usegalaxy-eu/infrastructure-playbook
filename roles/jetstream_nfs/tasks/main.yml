@@ -3,12 +3,5 @@
 - include: server.yml
   when: "'controllers' in group_names"
 
-- name: Mount scratch
-  mount:
-    fstype: nfs4
-    name: "{{ item.mountpoint }}"
-    src: "{{ item.device }}"
-    opts: rw,nosuid,noatime,rsize=1048576,wsize=1048576,intr,soft,tcp
-    state: mounted
-  with_items: "{{ jetstream_nfs_filesystems }}"
+- include: client.yml
   when: "'jetstreamnfsclients' in group_names"

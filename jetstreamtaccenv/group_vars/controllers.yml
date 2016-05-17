@@ -4,3 +4,13 @@ group_packages:
   - git
 
 jetstream_scratch0_device: /dev/sdb
+
+directories:
+  - path: /jetstream
+  - path: /var/lib/slurm
+    mode: "0755"
+
+links:
+  - path: /jetstream/scratch0
+    src: /scratch0
+    force: yes
