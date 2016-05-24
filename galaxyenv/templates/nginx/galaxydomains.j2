@@ -1,0 +1,31 @@
+##
+## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
+##
+
+server {
+    listen       *:80;
+    server_name  galaxy2.org galaxyworkbench.org repeatme.org;
+
+    return 302 http://galaxyproject.org;
+}
+
+server {
+    listen       *:80;
+    server_name  galaxy.psu.edu;
+
+    return 302 http://galaxyproject.org$request_uri;
+}
+
+server {
+    listen       *:80;
+    server_name  galaxycast.org;
+
+    return 302 https://wiki.galaxyproject.org/Learn/Screencasts;
+}
+
+server {
+    listen       *:80;
+    server_name  getgalaxy.org;
+
+    return 302 https://wiki.galaxyproject.org/Admin/GetGalaxy;
+}

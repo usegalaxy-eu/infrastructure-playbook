@@ -65,6 +65,23 @@
       tags: nfs
   tags: liteenv
 
+- name: Tasks for webservers
+  hosts: webservers
+  remote_user: root
+  vars_files:
+    - "secret_group_vars/sslwebservers.yml"
+  roles:
+    - role: galaxyprojectdotorg.nginx
+      tags: nginx
+
+- name: Install supervisor
+  hosts: all
+  remote_user: root
+  roles:
+    - role: supervisor
+      when: supervisord_group_configs is defined or supervisord_host_configs is defined
+      tags: supervisor,services
+
 - name: Tasks for jenkins hosts
   hosts: jenkinsservers
   remote_user: root

@@ -1,0 +1,40 @@
+##
+## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
+##
+
+server {
+    listen      *:80;
+    server_name eggs.galaxyproject.org eggs.g2.bx.psu.edu;
+
+    access_log  /var/log/nginx/eggs.galaxyproject.org_access.log;
+    error_log   /var/log/nginx/eggs.galaxyproject.org_error.log;
+
+    client_max_body_size 256M;
+
+    root        /srv/nginx/eggs.galaxyproject.org/root;
+
+    location / {
+        autoindex   on;
+    }
+
+#    return 301 https://eggs.galaxyproject.org$request_uri;
+}
+
+server {
+    listen      *:443 ssl;
+    server_name eggs.galaxyproject.org eggs.g2.bx.psu.edu;
+
+    access_log  /var/log/nginx/eggs.galaxyproject.org_access.log;
+    error_log   /var/log/nginx/eggs.galaxyproject.org_error.log;
+
+    client_max_body_size 256M;
+
+    root        /srv/nginx/eggs.galaxyproject.org/root;
+
+    location / {
+        autoindex   on;
+    }
+
+}
+
+# vim: set filetype=nginx

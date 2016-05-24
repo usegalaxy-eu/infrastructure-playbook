@@ -1,0 +1,31 @@
+##
+## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
+##
+
+upstream pypi       { server localhost:9909; }
+
+server {
+    listen      *:80;
+    server_name wheels.galaxyproject.org;
+
+    return 302 https://wheels.galaxyproject.org$request_uri;
+}
+
+server {
+    listen      *:443 ssl;
+    server_name wheels.galaxyproject.org;
+
+    access_log  /var/log/nginx/wheels.galaxyproject.org_access.log;
+    error_log   /var/log/nginx/wheels.galaxyproject.org_error.log;
+
+    root        /srv/nginx/wheels.galaxyproject.org/root;
+
+    location / {
+        proxy_pass         http://pypi;
+        proxy_set_header   X-Forwarded-Host $host;
+        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+        proxy_set_header   X-URL-SCHEME $scheme;
+    }
+}
+
+# vim: set filetype=nginx

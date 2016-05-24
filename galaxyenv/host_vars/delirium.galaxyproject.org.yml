@@ -3,6 +3,10 @@
 local_users:
   - name: docs
     comment: 'Galaxy Docs'
+  - name: wheels
+    comment: 'Galaxy Wheels'
+    home: /srv/nginx/wheels.galaxyproject.org
+    shell: /bin/bash
 
 filesystems:
   - name: /var/lib/mailman
@@ -11,9 +15,29 @@ filesystems:
     mode: 2775
     owner: root
     group: list
+  - name: /srv/nginx/wheels_eggs
+    src: /dev/xvdl
+    fstype: xfs
 
 ldap_server_uris:
   - ldap://localhost/ # prefer self
   - ldap://ldap2.galaxyproject.org/
   - ldap://ldap3.galaxyproject.org/
 
+nginx_conf_ssl_certificate: /etc/nginx/ssl/wildcard_cert.pem
+nginx_conf_ssl_certificate_key: /etc/nginx/ssl/wildcard_privatekey.pem
+
+nginx_configs:
+  - wheels
+  - lists
+  - eggs
+  - galaxydomains
+  - toolshed.tools
+  - galaxy.tools
+  - docs
+
+nginx_default_redirect_uri: https://galaxyproject.org/
+
+supervisord_install: package
+supervisord_host_configs:
+  - pypiserver

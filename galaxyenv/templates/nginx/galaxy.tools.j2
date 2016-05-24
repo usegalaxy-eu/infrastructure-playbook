@@ -1,0 +1,15 @@
+##
+## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
+##
+
+server {
+    listen      *:80;
+    server_name galaxy.tools;
+
+    access_log  /var/log/nginx/galaxy.tools_access.log;
+    error_log   /var/log/nginx/galaxy.tools_error.log;
+
+    root        /srv/nginx/galaxy.tools/root;
+}
+
+# vim: set filetype=nginx

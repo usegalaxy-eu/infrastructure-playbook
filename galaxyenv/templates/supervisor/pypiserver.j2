@@ -1,0 +1,11 @@
+[program:pypiserver]
+command		= /srv/nginx/wheels.galaxyproject.org/venv/bin/pypi-server -p 9909 /srv/nginx/wheels.galaxyproject.org/packages
+directory	= /srv/nginx/wheels.galaxyproject.org/root
+umask		= 022
+autostart	= true
+autorestart	= true
+startsecs	= 5
+user		= nobody
+numprocs	= 1
+stdout_logfile	= /var/log/supervisor/pypiserver.stdout.log
+stderr_logfile	= /var/log/supervisor/pypiserver.stderr.log
