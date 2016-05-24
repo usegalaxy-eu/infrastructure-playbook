@@ -2,6 +2,14 @@
 
 group_packages:
   - git
+  # Pulsar deps
+  - '@development tools'
+  - python-virtualenv
+  - libffi-devel
+  - libcurl-devel
+  - nss-devel
+  - openssl-devel
+  - slurm-drmaa
 
 jetstream_scratch0_device: /dev/sdb
 
@@ -9,6 +17,12 @@ directories:
   - path: /jetstream
   - path: /var/lib/slurm
     mode: "0755"
+  - path: /srv/pulsar/test
+    owner: g2test
+    group: G-803372
+  - path: /srv/pulsar/main
+    owner: g2main
+    group: G-803372
 
 links:
   - path: /jetstream/scratch0
