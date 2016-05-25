@@ -13,14 +13,6 @@ group_users:
     home: /var/lib/slurm
     shell: /bin/bash
 
-# useradd creates this as 0700
-# FIXME: tramples any other directories definition. at the moment this is the
-# only one.
-# FIXME: this does not belong here
-directories:
-  - path: /var/lib/slurm
-    mode: "0755"
-
 slurm_yum_repo_baseurl: https://depot.galaxyproject.org/yum/el/$releasever/$basearch
 
 slurmd_spool_dir: /var/lib/slurm/slurmd/slurmd.spool
