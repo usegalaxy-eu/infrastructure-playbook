@@ -1,0 +1,70 @@
+##
+## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
+##
+
+server {
+    listen      *:80 default_server;
+    server_name duvel.galaxyproject.org;
+
+    return 301 https://duvel.galaxyproject.org$request_uri;
+}
+
+server {
+    listen      *:443 ssl default_server;
+    server_name duvel.galaxyproject.org;
+
+    access_log  /var/log/nginx/duvel.galaxyproject.org_access.log;
+    error_log   /var/log/nginx/duvel.galaxyproject.org_error.log;
+
+    root        /srv/nginx/duvel.galaxyproject.org/root;
+
+    location /install/ {
+        allow 172.18.2.0/24;
+        allow 128.118.200.0/23;
+        allow 128.118.202.0/24;
+        allow 128.118.250.0/27;
+        deny all;
+        autoindex on;
+    }
+
+    location /nagios {
+        auth_pam              "galaxyproject.org auth";
+        auth_pam_service_name "{{ nginx_pam_config_dest | basename }}";
+
+        alias /usr/share/nagios3/htdocs;
+        index index.php;
+    }
+
+    location /nagios/stylesheets {
+        alias /etc/nagios3/stylesheets;
+    }
+
+    location ~ ^/cgi-bin/nagios3/.*\.cgi$ {
+        auth_pam              "galaxyproject.org auth";
+        auth_pam_service_name "{{ nginx_pam_config_dest | basename }}";
+
+        root /usr/lib/cgi-bin/nagios3/;
+        rewrite ^/cgi-bin/nagios3/(.*)\.cgi /$1.cgi break;
+        include fastcgi_params;
+        fastcgi_pass unix:/var/run/fcgiwrap.socket;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        #fastcgi_param REMOTE_USER $remote_user;
+    }
+
+    location ~ ^/nagios/.*\.php$ {
+        auth_pam              "galaxyproject.org auth";
+        auth_pam_service_name "{{ nginx_pam_config_dest | basename }}";
+
+        root /usr/share/nagios3/htdocs/;
+        rewrite ^/nagios/(.*) /$1 break;
+        include fastcgi_params;
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+
+    location / {
+        return 302 http://galaxyproject.org;
+    }
+}
+
+# vim: set filetype=nginx
