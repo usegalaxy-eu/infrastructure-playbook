@@ -20,7 +20,13 @@ directories:
   - path: /srv/pulsar/test
     owner: g2test
     group: G-803372
+  - path: /srv/pulsar/test/pulsar/log
+    owner: g2test
+    group: G-803372
   - path: /srv/pulsar/main
+    owner: g2main
+    group: G-803372
+  - path: /srv/pulsar/main/pulsar/log
     owner: g2main
     group: G-803372
 
@@ -28,3 +34,7 @@ links:
   - path: /jetstream/scratch0
     src: /scratch0
     force: yes
+
+supervisord_install: package
+supervisord_group_configs:
+  - pulsar

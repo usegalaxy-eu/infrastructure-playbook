@@ -1,0 +1,29 @@
+[program:test_pulsar]
+command		= /srv/pulsar/test/pulsar/venv/bin/uwsgi --ini-paste /srv/pulsar/test/pulsar/config/server.ini
+user		= g2test
+directory	= /
+umask		= 077
+autostart	= true
+autorestart	= true
+startsecs	= 15
+numprocs	= 1
+stopsignal	= INT
+stopasgroup	= true
+killasgroup	= true
+stdout_logfile	= /srv/pulsar/test/pulsar/log/stdout.log
+stderr_logfile	= /srv/pulsar/test/pulsar/log/stderr.log
+
+[program:main_pulsar]
+command		= /srv/pulsar/main/pulsar/venv/bin/uwsgi --ini-paste /srv/pulsar/main/pulsar/config/server.ini
+user		= g2main
+directory	= /
+umask		= 077
+autostart	= true
+autorestart	= true
+startsecs	= 15
+numprocs	= 1
+stopsignal	= INT
+stopasgroup	= true
+killasgroup	= true
+stdout_logfile	= /srv/pulsar/main/pulsar/log/stdout.log
+stderr_logfile	= /srv/pulsar/main/pulsar/log/stderr.log
