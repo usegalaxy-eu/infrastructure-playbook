@@ -38,17 +38,8 @@
       tags: system,services
   tags: initial
 
-- name: Tasks for controllers
-  hosts: controllers
-  remote_user: centos
-  become: yes
-  become_method: sudo
-  roles:
-    - role: jetstream_nfs
-      tags: nfs
-
-- name: Tasks for galaxy nodes
-  hosts: galaxynodes
+- name: Filesystem tasks
+  hosts: controllers:galaxynodes
   remote_user: centos
   become: yes
   become_method: sudo
