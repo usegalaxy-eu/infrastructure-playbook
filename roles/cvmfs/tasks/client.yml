@@ -37,7 +37,7 @@
 - name: Configure CernVM-FS client settings
   copy:
     content: |
-      CVMFS_REPOSITORIES="{{ cvmfs_repositories | join(',') }}"
+      CVMFS_REPOSITORIES="{%- for repo in cvmfs_repositories -%}{{ ',' if loop.index0 > 0 else '' }}{{ repo.repository }}{%- endfor -%}"
       CVMFS_HTTP_PROXY="{{ cvmfs_http_proxies | join(';') }}"
       CVMFS_QUOTA_LIMIT="{{ cvmfs_quota_limit | default('4000') }}"
     dest: "/etc/cvmfs/default.local"

@@ -66,5 +66,8 @@
 - include: stratum1.yml
   when: "'cvmfsstratum1servers' in group_names"
 
+- include: stratum0.yml
+  when: "'cvmfsstratum0servers' in group_names"
+
 - include: localproxy.yml
   when: "'cvmfslocalproxies' in group_names"

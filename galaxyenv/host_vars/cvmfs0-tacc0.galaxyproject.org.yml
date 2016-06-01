@@ -1,0 +1,27 @@
+---
+
+cvmfs_repositories:
+  - repository: test.galaxyproject.org
+    stratum0: cvmfs0-tacc0.galaxyproject.org
+    server_options:
+      - CVMFS_AUTO_TAG=false
+      - CVMFS_GARBAGE_COLLECTION=true
+      - CVMFS_AUTO_GC=true
+  - repository: main.galaxyproject.org
+    stratum0: cvmfs0-tacc0.galaxyproject.org
+    server_options:
+      - CVMFS_AUTO_TAG=false
+      - CVMFS_GARBAGE_COLLECTION=true
+      - CVMFS_AUTO_GC=true
+
+host_yum_repositories:
+  - name: dockerrepo
+    contents:
+      name: Docker Repository
+      baseurl: https://yum.dockerproject.org/repo/main/centos/$releasever/
+      enabled: "1"
+      gpgcheck: "1"
+      gpgkey: https://yum.dockerproject.org/gpg
+
+host_packages:
+  - docker-engine

@@ -1,0 +1,76 @@
+---
+
+# TODO: install kernel-ml-aufs and run grub2-set-default
+
+# TODO: `systemctl unmask tmp.mount` to make /tmp tmpfs (`cvmfs_server import`
+# fails if /tmp is xfs, although for some reason was fine on the PSU stratum 0
+# w/ xfs /tmp).
+
+- name: Install CernVM-FS server and dependencies (yum)
+  yum:
+    name: "{{ item }}"
+  with_items:
+    - httpd
+    - cvmfs-server
+    - cvmfs-config
+    - cvmfs
+  when: ansible_os_family == "RedHat"
+
+- name: Install CernVM-FS server and dependencies (apt)
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - apache2
+    - cvmfs-server
+    - cvmfs-config
+    - cvmfs
+  when: ansible_os_family == "Debian"
+
+- name: Install CernVM-FS keys
+  copy:
+    content: "{{ item.key }}"
+    dest: "{{ item.path }}"
+    owner: "root"
+    group: "root"
+    mode: "0444"
+  with_items: "{{ cvmfs_keys }}"
+
+- name: Install CernVM-FS private keys
+  copy:
+    content: "{{ item.key }}"
+    dest: "{{ item.path }}"
+    owner: "root"
+    group: "root"
+    mode: "0400"
+  with_items: "{{ cvmfs_private_keys }}"
+
+- name: Ensure Apache is enabled and running
+  service:
+    # FIXME: RHEL-specific
+    name: httpd
+    state: started
+    enabled: yes
+
+- name: Ensure repositories exist for import
+  stat:
+    path: /srv/cvmfs/{{ item.repository }}
+  register: srv_cvmfs_repo_stat
+  with_items: "{{ cvmfs_repositories }}"
+  failed_when: not srv_cvmfs_repo_stat.stat.exists
+
+- name: Ensure repositories are imported
+  command: /usr/bin/cvmfs_server import -r -o root -f aufs {{ item.repository }}
+  args:
+    creates: /etc/cvmfs/repositories.d/{{ item.repository }}
+  with_items: "{{ cvmfs_repositories }}"
+  notify:
+    - restart apache
+
+- name: Set repository server options
+  lineinfile:
+    dest: "/etc/cvmfs/repositories.d/{{ item.0.repository }}/server.conf"
+    regexp: "^{{ item.1.split('=')[0] }}=.*"
+    line: "{{ item.1 }}"
+  with_subelements:
+    - "{{ cvmfs_repositories }}"
+    - server_options

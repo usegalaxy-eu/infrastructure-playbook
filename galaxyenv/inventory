@@ -87,9 +87,12 @@ liteenv
 liteenv
 
 # CVMFS
+[cvmfsstratum0servers]
+cvmfs0-tacc0.galaxyproject.org ansible_host=galaxy04.tacc.utexas.edu ansible_user=root
+
 [cvmfsstratum1servers]
-cvmfs1-tacc0.galaxyproject.org
-cvmfs1-iu0.galaxyproject.org
+cvmfs1-tacc0.galaxyproject.org ansible_user=centos ansible_become=yes
+cvmfs1-iu0.galaxyproject.org ansible_user=centos ansible_become=yes
 
 # Other stuff
 

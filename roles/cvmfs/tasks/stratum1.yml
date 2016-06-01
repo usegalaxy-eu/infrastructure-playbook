@@ -61,18 +61,18 @@
     enabled: yes
 
 - name: Ensure replicas are configured
-  command: /usr/bin/cvmfs_server add-replica -o root http://cvmfs0.galaxyproject.org/cvmfs/{{ item }} /etc/cvmfs/keys/{{ item }}.pub
+  command: /usr/bin/cvmfs_server add-replica -z -o root http://{{ item.stratum0 }}/cvmfs/{{ item.repository }} /etc/cvmfs/keys/{{ item.repository }}.pub
   args:
-    creates: /etc/cvmfs/repositories.d/{{ item }}
+    creates: /etc/cvmfs/repositories.d/{{ item.repository }}
   with_items: "{{ cvmfs_repositories }}"
   notify:
     - restart apache
 
 - name: Schedule stratum1 snapshots
   cron:
-    name: cvmfs_snapshot_{{ item }}
+    name: cvmfs_snapshot_{{ item.repository }}
     cron_file: ansible_cvmfs_stratum1_snapshot
-    job: /usr/bin/cvmfs_server snapshot {{ item }}
+    job: /usr/bin/cvmfs_server snapshot {{ item.repository }}
     minute: 0,15,30,45
     user: root
   with_items: "{{ cvmfs_repositories }}"

@@ -120,10 +120,9 @@
       with_items: backupusers
 
 - name: Tasks for CVMFS Servers
-  hosts: cvmfsstratum1servers:cvmfslocalproxies
-  # FIXME:
-  remote_user: centos
-  become: yes
+  hosts: cvmfsstratum0servers:cvmfsstratum1servers:cvmfslocalproxies
+  vars_files:
+    - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
   roles:
     # mounts /srv
     - role: paths
@@ -131,5 +130,8 @@
     # need epel for the jq package
     - role: geerlingguy.repo-epel
       tags: cvmfs
+    # This is actually only used to install docker on stratum0s
+    - role: packages
+      tags: system,packages
     - role: cvmfs
       tags: cvmfs
