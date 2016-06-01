@@ -51,6 +51,14 @@
     state: started
     enabled: yes
 
+- name: Ensure Apache is not firewalled
+  # FIXME: RHEL-specific
+  firewalld:
+    service: http
+    state: enabled
+    permanent: yes
+    immediate: yes
+
 - name: Ensure repositories exist for import
   stat:
     path: /srv/cvmfs/{{ item.repository }}

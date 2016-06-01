@@ -60,6 +60,14 @@
     state: started
     enabled: yes
 
+- name: Ensure Squid is not firewalled 
+  # FIXME: RHEL-specific
+  firewalld:
+    service: http
+    state: enabled
+    permanent: yes
+    immediate: yes
+
 - name: Ensure replicas are configured
   command: /usr/bin/cvmfs_server add-replica -z -o root http://{{ item.stratum0 }}/cvmfs/{{ item.repository }} /etc/cvmfs/keys/{{ item.repository }}.pub
   args:
