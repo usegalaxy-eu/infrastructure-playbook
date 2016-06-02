@@ -30,7 +30,7 @@
   copy:
     content: "{{ item.key }}"
     dest: "{{ item.path }}"
-    owner: "root"
+    owner: "{{ item.owner | default('root') }}"
     group: "root"
     mode: "0444"
   with_items: "{{ cvmfs_keys }}"
@@ -39,7 +39,7 @@
   copy:
     content: "{{ item.key }}"
     dest: "{{ item.path }}"
-    owner: "root"
+    owner: "{{ item.owner | default('root') }}"
     group: "root"
     mode: "0400"
   with_items: "{{ cvmfs_private_keys }}"
@@ -67,7 +67,7 @@
   failed_when: not srv_cvmfs_repo_stat.stat.exists
 
 - name: Ensure repositories are imported
-  command: /usr/bin/cvmfs_server import -r -o root -f aufs {{ item.repository }}
+  command: /usr/bin/cvmfs_server import -r -o {{ item.owner | default('root') }} -f aufs {{ item.repository }}
   args:
     creates: /etc/cvmfs/repositories.d/{{ item.repository }}
   with_items: "{{ cvmfs_repositories }}"

@@ -2,6 +2,7 @@
 
 cvmfs_keys:
   - path: /etc/cvmfs/keys/test.galaxyproject.org.pub
+    owner: g2test
     key: |
       -----BEGIN PUBLIC KEY-----
       MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtfc5SSX9ALcrukWYcxkI
@@ -13,6 +14,7 @@ cvmfs_keys:
       PwIDAQAB
       -----END PUBLIC KEY-----
   - path: /etc/cvmfs/keys/test.galaxyproject.org.crt
+    owner: g2test
     key: |
       -----BEGIN CERTIFICATE-----
       MIIC9DCCAdwCCQC3lM3Z8xqGAjANBgkqhkiG9w0BAQsFADA8MTowOAYDVQQDDDF0
@@ -64,6 +66,7 @@ cvmfs_keys:
       umt/c7usl22IscRFArkCPbTMJuUxyJYH8g9rl1AiziVw9zC9SCbD2w==
       -----END CERTIFICATE-----
   - path: /etc/cvmfs/keys/main.galaxyproject.org.pub
+    owner: g2main
     key: |
       -----BEGIN PUBLIC KEY-----
       MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6S6Tugcv4kk4C06f574l
@@ -75,6 +78,7 @@ cvmfs_keys:
       OQIDAQAB
       -----END PUBLIC KEY-----
   - path: /etc/cvmfs/keys/main.galaxyproject.org.crt
+    owner: g2main
     key: |
       -----BEGIN CERTIFICATE-----
       MIIC9DCCAdwCCQCu1/uoOM2BxjANBgkqhkiG9w0BAQsFADA8MTowOAYDVQQDDDFt
@@ -107,8 +111,10 @@ cvmfs_server_urls:
 cvmfs_repositories:
   - repository: test.galaxyproject.org
     stratum0: cvmfs0-tacc0.galaxyproject.org
+    owner: g2test
   - repository: main.galaxyproject.org
     stratum0: cvmfs0-tacc0.galaxyproject.org
+    owner: g2main
   - repository: data.galaxyproject.org
     stratum0: cvmfs0-psu0.galaxyproject.org
 

@@ -24,7 +24,7 @@
   copy:
     content: "{{ item.key }}"
     dest: "{{ item.path }}"
-    owner: "root"
+    owner: "{{ item.owner | default('root') }}"
     group: "root"
     mode: "0444"
   with_items: "{{ cvmfs_keys }}"
@@ -69,7 +69,7 @@
     immediate: yes
 
 - name: Ensure replicas are configured
-  command: /usr/bin/cvmfs_server add-replica -z -o root http://{{ item.stratum0 }}/cvmfs/{{ item.repository }} /etc/cvmfs/keys/{{ item.repository }}.pub
+  command: /usr/bin/cvmfs_server add-replica -z -o {{ item.owner | default('root') }} http://{{ item.stratum0 }}/cvmfs/{{ item.repository }} /etc/cvmfs/keys/{{ item.repository }}.pub
   args:
     creates: /etc/cvmfs/repositories.d/{{ item.repository }}
   with_items: "{{ cvmfs_repositories }}"

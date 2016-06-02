@@ -1,0 +1,16 @@
+---
+
+# for use as a virtualenv/ansible management host
+host_packages:
+  - '@development tools'
+  - git
+  - python-devel
+  - libffi-devel
+  - openssl-devel
+  - pass
+
+host_users:
+  - name: g2test
+    groups: docker
+  - name: g2main
+    groups: docker

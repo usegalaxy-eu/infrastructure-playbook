@@ -3,10 +3,10 @@
 - name: Tasks for "base environment" hosts
   hosts: baseenv
   remote_user: root
-  #vars_files:
+  vars_files:
     #- "secret_group_vars/all.yml"
     # uncomment when necessary
-    #- [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
+    - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
   pre_tasks:
     - name: Locate secret group variable files
       local_action:
