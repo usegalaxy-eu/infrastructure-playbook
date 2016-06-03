@@ -58,6 +58,8 @@
     state: enabled
     permanent: yes
     immediate: yes
+  # Some hosts may not be using firewalld
+  ignore_errors: true
 
 - name: Ensure repositories exist for import
   stat:
@@ -82,3 +84,9 @@
   with_subelements:
     - "{{ cvmfs_repositories }}"
     - server_options
+
+- name: Allow users to manage services
+  template:
+    src: 01-manage-units.rules.j2
+    dest: /etc/polkit-1/rules.d/01-manage-units.rules
+  when: cvmfs_manage_units_group is defined

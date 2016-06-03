@@ -67,6 +67,7 @@
     state: enabled
     permanent: yes
     immediate: yes
+  ignore_errors: true
 
 - name: Ensure replicas are configured
   command: /usr/bin/cvmfs_server add-replica -z -o {{ item.owner | default('root') }} http://{{ item.stratum0 }}/cvmfs/{{ item.repository }} /etc/cvmfs/keys/{{ item.repository }}.pub
@@ -84,3 +85,9 @@
     minute: 0,15,30,45
     user: root
   with_items: "{{ cvmfs_repositories }}"
+
+- name: Allow users to manage services
+  template:
+    src: 01-manage-units.rules.j2
+    dest: /etc/polkit-1/rules.d/01-manage-units.rules
+  when: cvmfs_manage_units_group is defined

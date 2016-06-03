@@ -44,3 +44,12 @@
     owner: "root"
     group: "root"
     mode: "0644"
+
+- name: Install cvmfs_wipecache setuid binary
+  copy:
+    src: cvmfs_wipecache.{{ ansible_distribution | lower }}_{{ ansible_distribution_major_version }}
+    dest: /usr/local/bin/cvmfs_wipecache
+    owner: root
+    group: root
+    mode: 06755
+  when: cvmfs_install_setuid_cvmfs_wipecache
