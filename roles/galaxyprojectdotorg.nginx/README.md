@@ -2,9 +2,9 @@ nginx
 =====
 
 An [Ansible][ansible] role for installing and managing [nginx][nginx] servers.
-This role does **not** install a version of nginx that includes the nginx
-upload module, which [Galaxy][galaxy] uses. Adding support for the Galaxy
-builds of nginx is a TODO item.
+This role can install a version of nginx that includes the nginx upload module,
+which [Galaxy][galaxy] uses, **on Enterprise Linux-based systems only.** Adding
+support for the Galaxy builds of nginx on Debian-based systems is a TODO item.
 
 [ansible]: http://www.ansible.com/
 [nginx]: http://nginx.org/
@@ -13,8 +13,9 @@ builds of nginx is a TODO item.
 Requirements
 ------------
 
-This role installs nginx from APT on Debian systems, or EPEL on Enterprise
-Linux systems.  Other systems and installation methods are not supported.
+This role installs nginx from APT on Debian systems, EPEL on Enterprise Linux
+systems, or pkgin on SmartOS.  Other systems and installation methods are not
+supported.
 
 Role Variables
 --------------
@@ -22,14 +23,19 @@ Role Variables
 ### Optional variables ###
 
 - `nginx_flavor` (default: `full`): nginx package to install (for choices, see
-  the `nginx` metapackage providers for your Debian-based distribution).
-- `nginx_configs`: A list of virtualhost (relative to `templates/nginx/`). 
+  the `nginx` metapackage providers for your Debian-based distribution). On
+  RedHat-based distributions, this can either be `galaxy` (for "Galaxy nginx",
+  which includes the nginx upload and pam modules), or any other value for EPEL
+  nginx. This value is not used on pkgin/SmartOS installations.
+- `nginx_configs`: A list of virtualhosts (relative to `templates/nginx/`). 
 - `nginx_conf_http`: Set arbitrary options in the `http{}` section of
   `nginx.conf`. This is a hash (dictionary) where keys are nginx config options
   and values are the option's value.
 - `nginx_default_redirect_uri`: When using nginx from EPEL, a default
   virtualhost is enabled. This option controls what URI the default virtualhost
   should be redirected to. nginx variables are supported.
+- `nginx_supervisor`: Run nginx under supervisor (requires setting certain
+  supervisor variables).
 
 These variables control the use of SSL. If unset, SSL will not be enabled. See
 Example Playbook for usage.
