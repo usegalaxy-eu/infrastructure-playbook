@@ -1,0 +1,15 @@
+##
+## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
+##
+
+server {
+    listen      *:80;
+    server_name screencast.g2.bx.psu.edu screencast.galaxyproject.org;
+
+    access_log  /var/log/nginx/screencast.galaxyproject.org_access.log;
+    error_log   /var/log/nginx/screencast.galaxyproject.org_error.log;
+
+    root        /srv/nginx/screencast.galaxyproject.org/root;
+}
+
+# vim: set filetype=nginx

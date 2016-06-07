@@ -1,33 +1,48 @@
 ---
 
+# uids and gids were auto-generated on old orval (except nate's) which is the
+# reason for the uid/gid mess
+
 local_users:
   - name: sites
+    uid: 1000
+    gid: 2049
     group: sites
     comment: 'Web sites'
   - name: bioarchive
+    uid: 2049
+    gid: 2050
     group: bioarchive
     comment: 'bioaRchive'
   - name: depot
+    uid: 2052
+    gid: 2053
     group: depot
     comment: 'Galaxy Depot'
   - name: bag
+    uid: 1001
+    gid: 1000
     group: bag
     comment: Björn Grüning
     home: /home/bag
     shell: /bin/bash
   - name: esr
+    uid: 2050
+    gid: 2051
     group: esr
     comment: Eric Rasche
     home: /home/erasche
     shell: /bin/bash
   - name: nate
     uid: 2048
-    group: nate
     gid: 2048
+    group: nate
     comment: Nate Coraor
     home: /home/nate
     shell: /bin/bash
   - name: zfsdump-orval
+    uid: 2051
+    gid: 2052
     group: zfsdump-orval
     comment: 'ZFS send orval'
     home: /home/zfsdump-orval
@@ -159,12 +174,6 @@ crontabs:
     hour: 1
     minute: 15
     job: dataset='promise-1/orval/sample-data' && backupserver='westvleteren.galaxyproject.org' && {{ zfs_backup_job_template }}
-  - name: "Backup wheels"
-    id: backup_wheels
-    user: zfsdump-orval
-    hour: 1
-    minute: 30
-    job: dataset='promise-1/orval/wheels' && backupserver='westvleteren.galaxyproject.org' && {{ zfs_backup_job_template }}
   - name: "Backup screencasts"
     id: backup_screencast
     user: zfsdump-orval
@@ -177,3 +186,18 @@ crontabs:
     hour: 2
     minute: 0
     job: dataset='promise-1/orval/depot' && backupserver='westvleteren.galaxyproject.org' && {{ zfs_backup_job_template }}
+
+nginx_conf_ssl_certificate: /etc/opt/local/nginx/ssl/wildcard_cert.pem
+nginx_conf_ssl_certificate_key: /etc/opt/local/nginx/ssl/wildcard_privatekey.pem
+
+nginx_configs:
+  - orval
+  - snpeff-data
+  - screencast
+  - images
+  - sample-data
+  - bioarchive
+  - depot
+
+nginx_conf_http:
+  server_names_hash_bucket_size: 64
