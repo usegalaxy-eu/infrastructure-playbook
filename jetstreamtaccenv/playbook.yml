@@ -24,6 +24,8 @@
   roles:
     - role: requiretty        # Disable requiretty for Ansible ssh pipelining
       tags: initial,requiretty
+    - role: geerlingguy.repo-epel
+      tags: packages
     - role: packages          # Install packages
       tags: system,packages
     - role: users             # Create users and set up authentication keys
@@ -44,8 +46,6 @@
   become: yes
   become_method: sudo
   roles:
-    - role: geerlingguy.repo-epel
-      tags: packages
     - role: packages
       tags: packages
     - role: cvmfs
