@@ -34,6 +34,8 @@ Role Variables
 - `nginx_default_redirect_uri`: When using nginx from EPEL, a default
   virtualhost is enabled. This option controls what URI the default virtualhost
   should be redirected to. nginx variables are supported.
+- `nginx_enable_default_server` (default: `true`): Enable/disable the default
+  EPEL virtualhost.
 - `nginx_supervisor`: Run nginx under supervisor (requires setting certain
   supervisor variables).
 

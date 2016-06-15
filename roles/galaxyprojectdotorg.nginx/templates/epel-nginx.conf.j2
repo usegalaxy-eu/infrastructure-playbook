@@ -37,6 +37,7 @@ http {
     # for more information.
     include /etc/nginx/conf.d/*.conf;
 
+    {% if nginx_enable_default_server | default(true) %}
     server {
         listen       80 default_server;
         {% if nginx_enable_default_ipv6 %}
@@ -59,4 +60,5 @@ http {
             location = /50x.html {
         }
     }
+    {% endif %}
 }
