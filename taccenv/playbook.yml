@@ -36,17 +36,22 @@
       tags: system,services
   tags: initial
 
+- name: Tasks for webservers
+  hosts: webservers
+  remote_user: root
+  vars_files:
+    - secret_group_vars/sslwebservers.yml
+  roles:
+    - role: geerlingguy.repo-epel
+    - role: galaxyprojectdotorg.nginx
+  tags: nginx
+
 - name: Tasks for stats servers
   hosts: statsservers
   remote_user: root
   vars_files:
-    - secret_group_vars/sslwebservers.yml
     - secret_group_vars/stats.yml
   roles:
-    - role: geerlingguy.repo-epel
-      tags: packages
-    - role: galaxyprojectdotorg.nginx
-      tags: nginx
     - role: galaxyprojectdotorg.postgresql
       tags: postgres
     - role: sentry

@@ -14,3 +14,11 @@ host_users:
     groups: docker
   - name: g2main
     groups: docker
+
+nginx_conf_ssl_certificate: /etc/nginx/ssl/wildcard_cert.pem
+nginx_conf_ssl_certificate_key: /etc/nginx/ssl/wildcard_privatekey.pem
+
+nginx_configs:
+  - galaxy-installers
+
+nginx_enable_default_server: false
