@@ -31,6 +31,7 @@ join = ""
   shard-mapper-timeout = "5s"
   max-concurrent-queries = 0
   query-timeout = "0"
+  log-queries-after = "0"
   max-select-point = 0
   max-select-series = 0
   max-select-buckets = 0
@@ -45,19 +46,19 @@ join = ""
   advance-period = "30m0s"
 
 [admin]
-  enabled = true
+  enabled = false
   bind-address = ":8083"
   https-enabled = false
   https-certificate = "/etc/ssl/influxdb.pem"
   Version = ""
 
 [monitor]
-  store-enabled = true
+  store-enabled = false
   store-database = "_internal"
   store-interval = "10s"
 
 [subscriber]
-  enabled = true
+  enabled = false
 
 [http]
   enabled = true
@@ -82,7 +83,7 @@ join = ""
   separator = "."
   udp-read-buffer = 0
 
-[collectd]
+[[collectd]]
   enabled = false
   bind-address = ":25826"
   database = "collectd"
@@ -93,7 +94,7 @@ join = ""
   read-buffer = 0
   typesdb = "/usr/share/collectd/types.db"
 
-[opentsdb]
+[[opentsdb]]
   enabled = false
   bind-address = ":4242"
   database = "opentsdb"
@@ -116,7 +117,6 @@ join = ""
   read-buffer = 0
   batch-timeout = "1s"
   precision = ""
-  udp-payload-size = 0
 
 [continuous_queries]
   log-enabled = true
