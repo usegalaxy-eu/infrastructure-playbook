@@ -1,4 +1,26 @@
 ---
 
+group_apt_keys:
+  - keyserver: 'hkp://p80.pool.sks-keyservers.net:80'
+    id: '58118E89F3A912897C070ADBF76221572C52609D'
+
+group_apt_repositories:
+  - repo: 'deb https://apt.dockerproject.org/repo debian-jessie main'
+
 group_packages:
+  - git
+  - docker-engine
   - openjdk-7-jre-headless
+  - ntp
+  - ntpdate
+  - build-essential
+
+group_users:
+  - name: jenkins
+    groups: docker
+    system: true
+
+directories:
+  - path: /var/jenkins
+    owner: jenkins
+    group: jenkins
