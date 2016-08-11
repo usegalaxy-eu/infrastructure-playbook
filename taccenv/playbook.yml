@@ -36,6 +36,24 @@
       tags: system,services
   tags: initial
 
+- name: Forward mail for local accounts
+  hosts: all
+  remote_user: root
+  tasks:
+    - name: Forward mail for {{ item }}
+      lineinfile:
+        dest: /etc/aliases
+        regexp: "^{{ item }}:"
+        line: "{{ item }}:	root@galaxyproject.org"
+      with_items:
+        - g2test
+        - g2main
+        - postgres
+      notify: run newaliases
+  handlers:
+    - name: run newaliases
+      command: /usr/bin/newaliases
+
 - name: Tasks for webservers
   hosts: webservers
   remote_user: root
@@ -79,9 +97,11 @@
     - role: cvmfs
   tags: cvmfs
 
-- name: Tasks for Jetstream NFS clients
-  hosts: jetstreamnfsclients
+- name: Tasks for slurm hosts
+  hosts: slurmservers:slurmclients
   remote_user: root
+  vars_files:
+    - secret_group_vars/slurmclients.yml
   roles:
-    - role: jetstream_nfs
-  tags: nfs
+    - role: slurm
+      tags: slurm

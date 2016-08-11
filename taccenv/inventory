@@ -7,8 +7,17 @@ maingalaxyservers
 galaxy01.tacc.utexas.edu
 
 [maingalaxyservers]
+[maingalaxyservers:children]
+maingalaxywebservers
+maingalaxyjobservers
+
+[maingalaxywebservers]
 galaxy-web-01.tacc.utexas.edu
 galaxy-web-02.tacc.utexas.edu
+
+[maingalaxyjobservers]
+galaxy-web-03.tacc.utexas.edu
+galaxy-web-04.tacc.utexas.edu
 
 [galaxynodes]
 roundup[49:64].tacc.utexas.edu
@@ -33,6 +42,6 @@ galaxy06.tacc.utexas.edu
 galaxynodes
 galaxyservers
 
-[jetstreamnfsclients]
-[jetstreamnfsclients:children]
+[slurmclients]
+[slurmclients:children]
 galaxyservers
