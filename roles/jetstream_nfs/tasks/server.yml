@@ -1,12 +1,16 @@
 ---
 
-# need to mkfs.xfs manually
+- name: Create scratch filesystem
+  filesystem:
+    dev: "{{ jetstream_scratch0_device }}"
+    force: no
+    fstype: xfs
 
 - name: Mount scratch
   mount:
-    fstype: xfs
     name: /scratch0
     src: "{{ jetstream_scratch0_device }}"
+    fstype: xfs
     state: mounted
 
 - name: Ensure directories exist

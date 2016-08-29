@@ -1,5 +1,18 @@
 ---
 
+- name: Create /srv filesystem
+  filesystem:
+    dev: "{{ cvmfs_srv_device }}"
+    force: no
+    fstype: ext4
+
+- name: Mount /srv
+  mount:
+    name: /srv
+    src: "{{ cvmfs_srv_device }}"
+    fstype: ext4
+    state: mounted
+
 - name: Install CernVM-FS server and dependencies (yum)
   yum:
     name: "{{ item }}"
@@ -81,7 +94,7 @@
   cron:
     name: cvmfs_snapshot_{{ item.repository }}
     cron_file: ansible_cvmfs_stratum1_snapshot
-    job: /usr/bin/cvmfs_server snapshot {{ item.repository }}
+    job: output=$(/usr/bin/cvmfs_server snapshot {{ item.repository }} 2>&1) || echo "$output"
     minute: 0,15,30,45
     user: root
   with_items: "{{ cvmfs_repositories }}"
