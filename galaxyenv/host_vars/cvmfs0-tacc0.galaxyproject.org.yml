@@ -27,3 +27,8 @@ host_yum_repositories:
 
 host_packages:
   - docker-engine
+
+group_files:
+  - src: files/apache/galaxy-installers.conf
+    dest: /etc/httpd/conf.d/galaxy-installers.conf
+    backup: true
