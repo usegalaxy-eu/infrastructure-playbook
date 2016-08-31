@@ -37,8 +37,10 @@
       tags: system,cron
     - role: services          # Manage services
       tags: system,services
+    # Most baseenv hosts will want mail config
     - role: postfix           # MX and null client configuration
       tags: mail,postfix
+      when: "'baseenv-nomail' not in group_names"
     # This is in the baseenv play for a reason I think, but what's the reason? -nate
     - role: mailman           # Mailing lists
       tags: mail,mailman
