@@ -83,7 +83,7 @@
     line: "{{ item.1 }}"
   with_subelements:
     - "{{ cvmfs_repositories }}"
-    - "{{ server_options if server_options in cvmfs_repositories else [] }}"
+    - server_options
 
 - name: Allow users to manage services
   template:
