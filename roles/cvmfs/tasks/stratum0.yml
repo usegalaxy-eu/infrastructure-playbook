@@ -30,7 +30,7 @@
   copy:
     content: "{{ item.key }}"
     dest: "{{ item.path }}"
-    owner: "{{ item.owner | default('root') }}"
+    owner: "root"
     group: "root"
     mode: "0444"
   with_items: "{{ cvmfs_keys }}"
@@ -90,3 +90,13 @@
     src: 01-manage-units.rules.j2
     dest: /etc/polkit-1/rules.d/01-manage-units.rules
   when: cvmfs_manage_units_group is defined
+
+- name: Schedule key resignings
+  cron:
+    cron_file: "ansible_cvmfs_key_resign"
+    user: "root"
+    name: "Re-sign CVMFS keys"
+    hour: 11
+    minute: 0
+    weekday: 2
+    job: "/usr/bin/cvmfs_server resign {{ cvmfs_repositories | join(' ; /usr/bin/cvmfs_server resign ', attribute='repository' ) }}"
