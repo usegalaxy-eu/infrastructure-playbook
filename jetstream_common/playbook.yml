@@ -53,6 +53,17 @@
     - role: jetstream_nfs
       tags: nfs
 
+- name: Update /etc/hosts
+  hosts: controllers:galaxynodes
+  remote_user: centos
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Update /etc/hosts
+      template:
+        src: templates/etc/hosts.j2
+        dest: /etc/hosts
+
 - name: Install supervisor
   hosts: all
   remote_user: centos

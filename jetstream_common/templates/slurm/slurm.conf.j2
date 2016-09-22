@@ -36,15 +36,16 @@ ReturnToService=1
 #
 # CPUs = Sockets * CoresPerSocket * ThreadsPerCore
 {% for node_type in slurm_nodes %}
-{% for node in node_type.nodes %}
-NodeName={{ node_type.name_prefix }}{{ loop.index0 }} NodeAddr={{ node.addr }} RealMemory={{ node_type.real_memory }} Sockets={{ node_type.sockets }} CoresPerSocket=1 ThreadsPerCore=1 State=UNKNOWN
+{% for host in groups[node_type.inventory_group] %}
+NodeName={{ hostvars[host]['inventory_hostname_short'] }} NodeAddr={{ hostvars[host]['ansible_host'] }} RealMemory={{ node_type.real_memory }} Sockets={{ node_type.sockets }} CoresPerSocket=1 ThreadsPerCore=1 State=UNKNOWN
 {% endfor %}
 {% endfor %}
 #
 # Partition Configurations
 #
+{# well this is less than ideal, it should loop partitions, and then generate a hostlist for that partition. but this works for now... #}
 {% for node_type in slurm_nodes %}
-PartitionName=multi State=UP MaxTime=48:20:00 MaxNodes=1 Nodes={{ node_type.name_prefix }}[0-{{ (node_type.nodes | length) - 1 }}]
+PartitionName=multi State=UP MaxTime=48:20:00 MaxNodes=1 Nodes={{ slurm_hostlists.results[0].stdout }}
 {% endfor %}
 
 SlurmctldDebug=7
