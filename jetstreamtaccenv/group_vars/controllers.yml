@@ -40,3 +40,15 @@ links:
 supervisord_install: package
 supervisord_group_configs:
   - pulsar
+
+crontabs:
+  - id: clean_scratch
+    name: Clean Test Scratch
+    user: g2test
+    minute: 05,20,35,50
+    job: /usr/bin/tmpwatch --mtime --dirmtime 4d /scratch0/test/jobs
+  - id: clean_scratch
+    name: Clean Main Scratch
+    user: g2main
+    minute: 00,15,30,45
+    job: /usr/bin/tmpwatch --mtime --dirmtime 4d /scratch0/main/jobs
