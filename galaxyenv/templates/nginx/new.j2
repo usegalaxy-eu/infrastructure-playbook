@@ -1,0 +1,25 @@
+##
+## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
+##
+
+server {
+    listen      *:80;
+    server_name new.galaxyproject.org;
+
+    access_log  /var/log/nginx/new.galaxyproject.org_access.log;
+    error_log   /var/log/nginx/new.galaxyproject.org_error.log;
+
+    return 301 https://new.galaxyproject.org$request_uri;
+}
+
+server {
+    listen      *:443 ssl;
+    server_name new.galaxyproject.org;
+
+    access_log  /var/log/nginx/new.galaxyproject.org_access.log;
+    error_log   /var/log/nginx/new.galaxyproject.org_error.log;
+
+    root        /srv/nginx/new.galaxyproject.org/root;
+}
+
+# vim: set filetype=nginx

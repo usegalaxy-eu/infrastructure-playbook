@@ -1,5 +1,20 @@
 ---
 
+local_users:
+  - name: sites
+    comment: 'Web sites'
+    system: 'yes'
+    shell: '/bin/bash'
+    groups: 'www-data'
+
+directories:
+  - path: /srv/nginx
+    owner: sites
+    group: sites
+  - path: /srv/nginx/new.galaxyproject.org/root
+    owner: sites
+    group: sites
+
 filesystems:
   - name: /var/mail
     src: /dev/xvdn
@@ -12,3 +27,21 @@ ldap_server_uris:
   - ldap://localhost/ # prefer self
   - ldap://ldap1.galaxyproject.org/
   - ldap://ldap3.galaxyproject.org/
+
+nginx_conf_ssl_certificate: /etc/nginx/ssl/wildcard_cert.pem
+nginx_conf_ssl_certificate_key: /etc/nginx/ssl/wildcard_privatekey.pem
+
+# feed43 does not support GCM ciphers (or TLS1.2 entirely...)
+nginx_conf_ssl_ciphers: EECDH+ECDSA+AESGCM:EECDH+aRSA+AESGCM:EECDH+ECDSA+SHA384:EECDH+ECDSA+SHA256:EECDH+aRSA+SHA384:EECDH+aRSA+SHA256:EECDH+aRSA+RC4:EECDH:EDH+aRSA:RC4:!aNULL:!eNULL:!LOW:!3DES:!MD5:!EXP:!PSK:!SRP:!DSS
+
+nginx_configs:
+  - wiki
+  - intron
+  - galaxydomains
+  - new
+
+# not implemented
+#nginx_pam_config_src: pam_galaxy
+#nginx_pam_config_dest: /etc/pam.d/nginx
+
+nginx_default_redirect_uri: https://galaxyproject.org/

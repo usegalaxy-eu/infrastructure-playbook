@@ -1,0 +1,43 @@
+##
+## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
+##
+
+server {
+    listen      *:80;
+    server_name intron.galaxyproject.org;
+
+    return 301 https://intron.galaxyproject.org$request_uri;
+}
+
+server {
+    listen      *:443 ssl;
+    server_name intron.galaxyproject.org;
+
+    auth_pam              "galaxyproject.org auth";
+    auth_pam_service_name "nginx";
+
+    access_log  /var/log/nginx/intron.galaxyproject.org_access.log;
+    error_log   /var/log/nginx/intron.galaxyproject.org_error.log;
+
+    client_max_body_size 256M;
+
+    root        /srv/moin/intron/htdocs;
+
+    location ~ /moin_static[^/]+/(.*) {
+        alias   /srv/moin/intron/htdocs/$1;
+    }
+
+    location /favicon.ico {
+        alias   /srv/moin/intron/htdocs/$1;
+    }
+
+    location / {
+        include uwsgi_params;
+        uwsgi_param     SCRIPT_NAME /;
+        uwsgi_param     REMOTE_USER $remote_user;
+        uwsgi_modifier1 30;
+        uwsgi_pass unix:/srv/moin/run/uwsgi.sock;
+    }
+}
+
+# vim: set filetype=nginx
