@@ -6,14 +6,18 @@ local_users:
     system: 'yes'
     shell: '/bin/bash'
     groups: 'www-data'
+  - name: gxsite
+    comment: 'Galaxy site'
+    system: 'yes'
+    shell: '/bin/bash'
 
 directories:
   - path: /srv/nginx
     owner: sites
     group: sites
   - path: /srv/nginx/new.galaxyproject.org/root
-    owner: sites
-    group: sites
+    owner: gxsite
+    group: gxsite
 
 filesystems:
   - name: /var/mail
