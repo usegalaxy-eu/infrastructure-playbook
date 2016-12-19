@@ -1,3 +1,54 @@
 ---
 
 cvmfs_srv_device: /dev/vdb
+
+cvmfs_server_urls:
+  - domain: galaxyproject.org
+    urls:
+      - "http://localhost/cvmfs/@fqrn@"
+      - "http://cvmfs1-iu0.galaxyproject.org/cvmfs/@fqrn@"
+      - "http://cvmfs1-psu0.galaxyproject.org/cvmfs/@fqrn@"
+
+host_packages:
+  - rsync
+
+host_services:
+  - name: rsyncd
+    state: started
+    enabled: 'yes'
+
+host_templates:
+  - dest: /etc/rsyncd.conf
+    src: ini.j2
+    contents:
+      indexes:
+        path: /cvmfs/data.galaxyproject.org/byhand
+        comment: Galaxy Genome Indexes
+        'use chroot': 'yes'
+        uid: nobody
+        gid: nobody
+        'read only': 'yes'
+        list: 'yes'
+        exclude: '*/tmp/* */work/* bin/*'
+      location:
+        path: /cvmfs/data.galaxyproject.org/byhand/location
+        comment: Galaxy Data Location Files
+        'use chroot': 'yes'
+        uid: nobody
+        gid: nobody
+        'read only': 'yes'
+        list: 'yes'
+      managed:
+        path: /cvmfs/data.galaxyproject.org/managed
+        comment: Managed Galaxy Data
+        'use chroot': 'yes'
+        uid: nobody
+        gid: nobody
+        'read only': 'yes'
+        list: 'yes'
+
+host_firewall_rules:
+  - service: rsyncd
+    state: enabled
+    permanent: yes
+    immediate: yes
