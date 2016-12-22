@@ -16,3 +16,10 @@ group_packages:
   - openjdk-7-jre-headless
   - ntp
   - ntpdate
+
+# TODO: generate this file automatically from structured data
+group_files:
+  - src: files/jenkins/jenkins_server_user_ssh_config
+    dest: ~jenkins/.ssh/config
+    owner: jenkins
+    group: jenkins

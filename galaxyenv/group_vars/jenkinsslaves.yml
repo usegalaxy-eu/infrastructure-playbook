@@ -24,3 +24,9 @@ directories:
   - path: /var/jenkins
     owner: jenkins
     group: jenkins
+
+group_files:
+  - src: files/jenkins/jenkins_slave_user_ssh_config
+    dest: ~jenkins/.ssh/config
+    owner: jenkins
+    group: jenkins
