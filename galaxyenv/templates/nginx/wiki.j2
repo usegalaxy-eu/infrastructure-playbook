@@ -38,6 +38,8 @@ server {
         alias   /srv/moin/wiki/htdocs/$1;
     }
 
+    include {{ nginx_conf_dir }}/wiki_hub_rewrites.conf;
+
     location / {
         include uwsgi_params;
         uwsgi_param     SCRIPT_NAME /;
