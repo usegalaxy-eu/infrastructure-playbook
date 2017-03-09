@@ -1,0 +1,67 @@
+##
+## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
+##
+
+server {
+    listen      *:80 default_server;
+    server_name galaxyproject.org www.galaxyproject.org;
+
+    return 302 https://$host$request_uri;
+}
+
+server {
+    listen      *:443 ssl default_server;
+    server_name galaxyproject.org www.galaxyproject.org;
+
+    access_log  /var/log/nginx/galaxyproject.org_access.log;
+    error_log   /var/log/nginx/galaxyproject.org_error.log;
+
+    client_max_body_size 256M;
+
+    root        /srv/nginx/galaxyproject.org/root;
+
+	# former wiki redirects
+    rewrite     ^/wiki(.*)          https://moin.galaxyproject.org$1;
+    rewrite     (?i)^/GCC2012.*     /events/gcc2012;
+    rewrite     (?i)^/GCC2013.*     /events/gcc2013;
+    rewrite     (?i)^/GCC2014.*     /events/gcc2014;
+    rewrite     (?i)^/gat2016.*     /events/admin-training2016;
+
+    # external redirects
+    rewrite     ^/bushman.*         https://usegalaxy.org/bushman;
+    rewrite     (?i)^/GCC2015.*     http://gcc2015.tsl.ac.uk/;
+    rewrite     (?i)^/GCC2016.*     https://gcc2016.iu.edu/;
+    rewrite     (?i)^/trello.*      https://github.com/galaxyproject/galaxy/issues/;
+}
+
+# vim: set filetype=nginx
+
+
+
+
+
+##
+## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
+##
+
+server {
+    listen      *:80;
+    server_name new.galaxyproject.org;
+
+    access_log  /var/log/nginx/new.galaxyproject.org_access.log;
+    error_log   /var/log/nginx/new.galaxyproject.org_error.log;
+
+    return 301 https://new.galaxyproject.org$request_uri;
+}
+
+server {
+    listen      *:443 ssl;
+    server_name new.galaxyproject.org;
+
+    access_log  /var/log/nginx/new.galaxyproject.org_access.log;
+    error_log   /var/log/nginx/new.galaxyproject.org_error.log;
+
+    root        /srv/nginx/new.galaxyproject.org/root;
+}
+
+# vim: set filetype=nginx

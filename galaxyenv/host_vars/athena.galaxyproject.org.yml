@@ -11,6 +11,10 @@ local_users:
     system: 'yes'
     shell: '/bin/bash'
     groups: 'www-data'
+  - name: gxsite
+    comment: 'Galaxy site'
+    system: 'yes'
+    shell: '/bin/bash'
 
 directories:
   - path: /srv/cloudlaunch
@@ -19,3 +23,21 @@ directories:
   - path: /srv/nginx
     owner: sites
     group: sites
+  - path: /srv/nginx/new.galaxyproject.org/root
+    owner: gxsite
+    group: gxsite
+
+nginx_flavor: full
+
+nginx_conf_ssl_certificate: /etc/nginx/ssl/athena.galaxyproject.org_cert.pem
+nginx_conf_ssl_certificate_key: /etc/nginx/ssl/athena.galaxyproject.org_privatekey.pem
+
+nginx_conf_http:
+  server_names_hash_bucket_size: 128
+  client_max_body_size: 1g
+  proxy_read_timeout: 3600
+
+nginx_srv: /srv/nginx
+nginx_configs:
+  - galaxyproject
+  - cloudlaunch
