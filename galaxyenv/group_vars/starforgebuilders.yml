@@ -17,7 +17,7 @@ group_packages:
   - python-dev
 
 group_files:
-  - content: '# This file is managed by Ansible.  ALL CHANGES WILL BE OVERWRITTEN.\nw /sys/module/kvm/parameters/ignore_msrs - - - - 1\n'
+  - content: "# This file is managed by Ansible.  ALL CHANGES WILL BE OVERWRITTEN.\nw /sys/module/kvm/parameters/ignore_msrs - - - - 1\n"
     dest: '/etc/tmpfiles.d/qemu-ignore-msrs.conf'
 
 # user_subvol_rm_allowed has to be set on the / mount (and that does not mean

@@ -1,6 +1,6 @@
 # TODO: restrict to debian.
 - name: Install the debs (for linuxbrew)
-  sudo: True
+  become: yes
   apt: name={{ item }}
   with_items:
     - build-essential
@@ -19,31 +19,31 @@
     - cmake
 
 - name: Install linuxbrew
-  sudo: True
-  sudo_user: "{{ linuxbrew_user_name }}"
+  become: yes
+  become_user: "{{ linuxbrew_user_name }}"
   shell: "ruby -e \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)\""
   args:
     creates: "{{ linuxbrew_user_home}}/.linuxbrew"
 
 - name: Tap linuxbrew taps.
-  sudo: True
-  sudo_user: "{{ linuxbrew_user_name }}"
+  become: yes
+  become_user: "{{ linuxbrew_user_name }}"
   shell: "{{ linuxbrew_user_home }}/.linuxbrew/bin/brew tap {{ item }}"
   args:
     creates: "{{ linuxbrew_user_home}}/.linuxbrew/Library/Taps/{{ item.split('/')[0] }}/homebrew-{{ item.split('/')[1] }}"
   with_items: "{{ linuxbrew_taps }}"
 
 - name: Install linuxbrew recipes.
-  sudo: True
-  sudo_user: "{{ linuxbrew_user_name }}"
+  become: yes
+  become_user: "{{ linuxbrew_user_name }}"
   shell: "{{ linuxbrew_user_home }}/.linuxbrew/bin/brew install -v {{ item }}"
   args:
     creates: "{{ linuxbrew_user_home }}/.linuxbrew/Cellar/{{ item }}"
   with_items: "{{ linuxbrew_recipes }}"
 
 - name: Install linuxbrew bash completion
-  sudo: True
-  sudo_user: "{{ linuxbrew_user_name }}"
+  become: yes
+  become_user: "{{ linuxbrew_user_name }}"
   shell: "{{ linuxbrew_user_home }}/.linuxbrew/bin/brew install -v bash-completion"
   args:
     creates: "{{ linuxbrew_user_home }}/.linuxbrew/Cellar/bash-completion"
