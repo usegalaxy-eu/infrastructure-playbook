@@ -20,7 +20,7 @@ server {
 
     root        /srv/nginx/galaxyproject.org/root;
 
-	# former wiki redirects
+    # former wiki redirects
     rewrite     ^/wiki(.*)          https://moin.galaxyproject.org$1;
     rewrite     (?i)^/GCC2012.*     /events/gcc2012;
     rewrite     (?i)^/GCC2013.*     /events/gcc2013;
@@ -30,7 +30,7 @@ server {
     # combined search redirects
     rewrite     (?i)^/search/getgalaxy.*     /search
     rewrite     (?i)^/search/usegalaxy.*     /search
-    rewrite     (?i)^/search/web.*     /search
+    rewrite     (?i)^/search/web.*           /search
 
     # external redirects
     rewrite     ^/bushman.*         https://usegalaxy.org/bushman;
