@@ -27,6 +27,11 @@ server {
     rewrite     (?i)^/GCC2014.*     /events/gcc2014;
     rewrite     (?i)^/gat2016.*     /events/admin-training2016;
 
+    # combined search redirects
+    rewrite     (?i)^/search/getgalaxy.*     /search
+    rewrite     (?i)^/search/usegalaxy.*     /search
+    rewrite     (?i)^/search/web.*     /search
+
     # external redirects
     rewrite     ^/bushman.*         https://usegalaxy.org/bushman;
     rewrite     (?i)^/GCC2015.*     http://gcc2015.tsl.ac.uk/;
