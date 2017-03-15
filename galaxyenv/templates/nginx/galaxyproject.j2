@@ -31,9 +31,10 @@ server {
     rewrite     (?i)^/gat2016.*     /events/admin-training2016;
 
     # combined search redirects
-    rewrite     (?i)^/search/getgalaxy.*     /search;
-    rewrite     (?i)^/search/usegalaxy.*     /search;
-    rewrite     (?i)^/search/web.*           /search;
+    rewrite     (?i)^/search/getgalaxy.*        /search;
+    rewrite     (?i)^/search/mailinglists.*     /search;
+    rewrite     (?i)^/search/usegalaxy.*        /search;
+    rewrite     (?i)^/search/web.*              /search;
 
     # external redirects
     rewrite     ^/bushman.*         https://usegalaxy.org/bushman;
