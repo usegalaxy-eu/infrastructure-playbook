@@ -20,7 +20,8 @@ server {
 
     root        /srv/nginx/galaxyproject.org/root;
 
-    error_page  404   /page-not-found/;
+    error_page  404      /page-not-found/;
+    error_page  403 =404 /page-not-found/;
 
     # former wiki redirects
     rewrite     ^/wiki(.*)          https://moin.galaxyproject.org$1;
