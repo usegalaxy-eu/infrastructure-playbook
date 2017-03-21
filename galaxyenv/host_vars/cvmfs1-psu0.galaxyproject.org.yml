@@ -52,3 +52,55 @@ host_firewall_rules:
     state: enabled
     permanent: yes
     immediate: yes
+  - port: 2377/tcp
+    source: 129.114.17.191/32
+    state: enabled
+    permanent: yes
+    immediate: yes
+  - port: 2377/tcp
+    source: 149.165.168.157/32
+    state: enabled
+    permanent: yes
+    immediate: yes
+  - port: 7946/tcp
+    source: 129.114.17.191/32
+    state: enabled
+    permanent: yes
+    immediate: yes
+  - port: 7946/tcp
+    source: 149.165.168.157/32
+    state: enabled
+    permanent: yes
+    immediate: yes
+  - port: 7946/udp
+    source: 129.114.17.191/32
+    state: enabled
+    permanent: yes
+    immediate: yes
+  - port: 7946/udp
+    source: 149.165.168.157/32
+    state: enabled
+    permanent: yes
+    immediate: yes
+  - port: 4789/udp
+    source: 129.114.17.191/32
+    state: enabled
+    permanent: yes
+    immediate: yes
+  - port: 4789/udp
+    source: 149.165.168.157/32
+    state: enabled
+    permanent: yes
+    immediate: yes
+
+docker_daemon_bip: '172.17.0.1/17'
+docker_swarm_network: '172.17.128.0/17'
+docker_swarm_gateway: '172.17.128.1'
+
+docker_ssl_ca_dn:
+  country: US
+  state: Pennsylvania
+  locality: University Park
+  organization: The Pennsylvania State University
+  organizational_unit: The Galaxy Project
+  common_name: Galaxy Docker CA Root

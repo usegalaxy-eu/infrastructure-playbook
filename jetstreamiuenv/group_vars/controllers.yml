@@ -12,6 +12,20 @@ group_packages:
   - openssl-devel
   - slurm-drmaa
 
+group_files:
+  - src: files/etc/dhclient.conf
+    dest: /etc/dhcp/dhclient.conf
+    backup: yes
+    mode: "0644"
+    owner: root
+    group: root
+  - src: files/etc/ifcfg-eth1
+    dest: /etc/sysconfig/network-scripts/ifcfg-eth1
+    backup: yes
+    mode: "0644"
+    owner: root
+    group: root
+
 jetstream_scratch0_device: /dev/sdb
 
 directories:

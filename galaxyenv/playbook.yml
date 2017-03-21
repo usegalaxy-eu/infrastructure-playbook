@@ -150,8 +150,13 @@
     # need epel for the jq package
     - role: geerlingguy.repo-epel
       tags: cvmfs
-    # This is actually only used to install docker on stratum0s
-    - role: packages
-      tags: system,packages
     - role: cvmfs
       tags: cvmfs
+
+- name: Tasks for Docker Swarm managers
+  hosts: dockerswarmmanagers
+  vars_files:
+    - "secret_group_vars/dockersslservers.yml"
+  roles:
+    - role: docker_swarm
+      tags: docker

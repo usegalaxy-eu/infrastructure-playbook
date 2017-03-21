@@ -1,0 +1,28 @@
+---
+
+# Unbelievably, Ansible does not have a basic docker facts module
+
+- name: Check swarm status
+  command: docker info --format {% raw %}"{{json .Swarm}}"{% endraw %}
+  register: docker_info_swarm_out
+  changed_when: false
+
+- name: Set swarm info fact
+  set_fact:
+    docker_info_swarm: "{{ docker_info_swarm_out.stdout | from_json }}"
+
+# https://github.com/docker/docker/issues/24046
+- name: Create swarm network
+  command: >
+    docker network create
+      --subnet {{ docker_swarm_network }}
+      --gateway {{ docker_swarm_gateway }}
+      -o com.docker.network.bridge.enable_icc=false
+      -o com.docker.network.bridge.name=docker_gwbridge
+      -o com.docker.network.bridge.enable_ip_masquerade=true
+      docker_gwbridge
+  when: not docker_info_swarm.ControlAvailable and docker_swarm_network is defined and docker_swarm_gateway is defined
+
+- name: Initialize Docker Swarm
+  command: "docker swarm init --advertise-addr {{ docker_swarm_addr | default(ansible_default_ipv4.address) }}"
+  when: not docker_info_swarm.ControlAvailable

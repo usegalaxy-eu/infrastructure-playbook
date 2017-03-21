@@ -1,0 +1,72 @@
+---
+
+- name: Check master CA cert existence
+  stat:
+    path: "{{ docker_ssl_ca_dir }}/ca.pem"
+  delegate_to: "{{ groups.dockersslcamaster[0] }}"
+  run_once: true
+  register: docker_ssl_ca_cert_stat_out
+
+- name: Include tasks to create CA cert
+  include: ssl-gen-ca.yml
+  when: "'dockersslcamaster' in group_names and not docker_ssl_ca_cert_stat_out.stat.exists"
+
+- name: Distribute CA cert
+  synchronize:
+    src: "{{ docker_ssl_ca_dir }}/ca.pem"
+    dest: "/etc/docker/ca.pem"
+    # https://github.com/ansible/ansible/issues/16215
+    ssh_args: "-l {{ ansible_user }}"
+    rsync_path: "/usr/bin/sudo /usr/bin/rsync"
+  delegate_to: "{{ groups.dockersslcamaster[0] }}"
+
+- name: Set CA server directory fact
+  set_fact:
+    docker_ssl_ca_server_dir: "{{ docker_ssl_ca_dir }}/{{ inventory_hostname }}"
+
+- name: Check master server cert(s) existence
+  stat:
+    path: "{{ docker_ssl_ca_server_dir }}/server-cert.pem"
+  delegate_to: "{{ groups.dockersslcamaster[0] }}"
+  register: docker_ssl_ca_server_cert_stat_out
+
+- name: Include tasks to create server cert(s)
+  include: ssl-gen-server-cert.yml
+  delegate_to: "{{ groups.dockersslcamaster[0] }}"
+  when: not docker_ssl_ca_server_cert_stat_out.stat.exists
+
+- name: Distribute server certs
+  synchronize:
+    src: "{{ docker_ssl_ca_server_dir }}/server-cert.pem"
+    dest: "/etc/docker/server-cert.pem"
+    ssh_args: "-l {{ ansible_user }}"
+    rsync_path: "/usr/bin/sudo /usr/bin/rsync"
+  delegate_to: "{{ groups.dockersslcamaster[0] }}"
+
+- name: Distribute server keys
+  synchronize:
+    src: "{{ docker_ssl_ca_server_dir }}/server-key.pem"
+    dest: "/etc/docker/server-key.pem"
+    perms: yes
+    ssh_args: "-l {{ ansible_user }}"
+    rsync_path: "/usr/bin/sudo /usr/bin/rsync"
+  delegate_to: "{{ groups.dockersslcamaster[0] }}"
+
+- name: Set docker daemon options for SSL
+  set_fact:
+    docker_daemon_option_list: "{{ docker_daemon_option_list }} + [ '--tlsverify --tlscacert=/etc/docker/ca.pem --tlscert=/etc/docker/server-cert.pem --tlskey=/etc/docker/server-key.pem' ]"
+    docker_daemon_listen_network: "{{ docker_daemon_listen_network | default('tcp://0.0.0.0:2376') }}"
+
+- name: Check master client cert existence
+  stat:
+    path: "{{ docker_ssl_ca_dir }}/cert.pem"
+  delegate_to: "{{ groups.dockersslcamaster[0] }}"
+  run_once: true
+  register: docker_ssl_ca_client_cert_stat_out
+
+- name: Include tasks to create client cert
+  include: ssl-gen-client-cert.yml
+  delegate_to: "{{ groups.dockersslcamaster[0] }}"
+  run_once: true
+
+# TODO: copy client key/cert to clients

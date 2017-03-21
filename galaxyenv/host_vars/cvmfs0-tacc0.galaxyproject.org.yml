@@ -16,17 +16,12 @@ cvmfs_repositories:
       - CVMFS_GARBAGE_COLLECTION=true
       - CVMFS_AUTO_GC=true
 
+# old docker repo, docker now installed by the `docker` role
 host_yum_repositories:
   - name: dockerrepo
     contents:
       name: Docker Repository
-      baseurl: https://yum.dockerproject.org/repo/main/centos/$releasever/
-      enabled: "1"
-      gpgcheck: "1"
-      gpgkey: https://yum.dockerproject.org/gpg
-
-host_packages:
-  - docker-engine
+      state: absent
 
 group_files:
   - src: files/apache/galaxy-installers.conf

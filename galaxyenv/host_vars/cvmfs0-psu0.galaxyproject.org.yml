@@ -8,3 +8,10 @@ cvmfs_repositories:
       - CVMFS_AUTO_TAG=false
       - CVMFS_GARBAGE_COLLECTION=true
       - CVMFS_AUTO_GC=true
+
+# old docker repo, docker now installed by the `docker` role
+host_yum_repositories:
+  - name: dockerrepo
+    contents:
+      name: Docker Repository
+      state: absent

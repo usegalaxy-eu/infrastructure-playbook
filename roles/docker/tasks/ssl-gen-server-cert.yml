@@ -1,0 +1,43 @@
+---
+
+- name: Create server directory
+  file:
+    path: "{{ docker_ssl_ca_server_dir }}"
+    state: directory
+
+- name: Generate server key
+  command: "openssl genrsa -out {{ docker_ssl_ca_server_dir }}/server-key.pem 4096"
+  args:
+    creates: "{{ docker_ssl_ca_server_dir }}/server-key.pem"
+
+- name: Set server key permissions
+  file:
+    path: "{{ docker_ssl_ca_server_dir }}/server-key.pem"
+    mode: "0600"
+
+- name: Generate server certificate request
+  command: openssl req -subj '/CN={{ inventory_hostname }}' -sha256 -new -key {{ docker_ssl_ca_server_dir }}/server-key.pem -out {{ docker_ssl_ca_server_dir }}/server.csr
+  args:
+    creates: "{{ docker_ssl_ca_server_dir }}/server.csr"
+
+- name: Create server extfile
+  copy:
+    content: "subjectAltName = DNS:{{ inventory_hostname }},IP:{{ ansible_default_ipv4.address }}{{ ',IP:' + docker_swarm_addr | default('') if docker_swarm_addr is defined else '' }}"
+    dest: "{{ docker_ssl_ca_server_dir }}/extfile.cnf"
+
+- include: ssl-ca-passphrase.yml
+
+- name: Sign server certificate request
+  command: >
+    openssl x509 -req -days 365 -sha256
+      -in {{ docker_ssl_ca_server_dir }}/server.csr
+      -CA {{ docker_ssl_ca_dir }}/ca.pem
+      -CAkey {{ docker_ssl_ca_dir }}/ca-key.pem
+      -CAcreateserial
+      -out {{ docker_ssl_ca_server_dir }}/server-cert.pem
+      -extfile {{ docker_ssl_ca_server_dir }}/extfile.cnf
+      -passin file:{{ docker_ssl_ca_passphrase_file }}
+  args:
+    creates: "{{ docker_ssl_ca_server_dir }}/server-cert.pem"
+
+- include: ssl-ca-passphrase.yml

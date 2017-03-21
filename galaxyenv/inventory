@@ -3,6 +3,12 @@
 orval.galaxyproject.org ansible_python_interpreter=/opt/local/bin/python
 westvleteren.galaxyproject.org ansible_python_interpreter=/opt/local/bin/python
 biostar.usegalaxy.org ansible_ssh_user=www
+jetstream-tacc0.galaxyproject.org ansible_user=centos ansible_become=yes
+jetstream-iu0.galaxyproject.org ansible_user=centos ansible_become=yes
+cvmfs0-tacc0.galaxyproject.org ansible_user=root
+cvmfs1-tacc0.galaxyproject.org ansible_user=centos ansible_become=yes
+cvmfs1-iu0.galaxyproject.org ansible_user=centos ansible_become=yes
+cvmfs1-psu0.galaxyproject.org ansible_user=root
 
 ## These get all the common roles
 
@@ -23,10 +29,10 @@ duvel.galaxyproject.org
 baseenv-nomail
 
 [baseenv-nomail]
-cvmfs0-tacc0.galaxyproject.org ansible_user=root
-cvmfs1-tacc0.galaxyproject.org ansible_user=centos ansible_become=yes
-cvmfs1-iu0.galaxyproject.org ansible_user=centos ansible_become=yes
-cvmfs1-psu0.galaxyproject.org ansible_user=root
+cvmfs0-tacc0.galaxyproject.org
+cvmfs1-tacc0.galaxyproject.org
+cvmfs1-iu0.galaxyproject.org
+cvmfs1-psu0.galaxyproject.org
 
 # These get LDAP, Kerberos+Auth, and NFS, but not AFS
 [liteenv]
@@ -101,17 +107,33 @@ liteenv
 
 # CVMFS
 [cvmfsstratum0servers]
-cvmfs0-tacc0.galaxyproject.org ansible_user=root
+cvmfs0-tacc0.galaxyproject.org
 # FIXME: add to baseenv?
-cvmfs0-psu0.galaxyproject.org ansible_user=root
+cvmfs0-psu0.galaxyproject.org
 
 [cvmfsstratum1servers]
-cvmfs1-tacc0.galaxyproject.org ansible_user=centos ansible_become=yes
-cvmfs1-iu0.galaxyproject.org ansible_user=centos ansible_become=yes
-cvmfs1-psu0.galaxyproject.org ansible_user=root
+cvmfs1-tacc0.galaxyproject.org
+cvmfs1-iu0.galaxyproject.org
+cvmfs1-psu0.galaxyproject.org
 
 [cvmfsclients]
 cvmfs1-psu0.galaxyproject.org
+
+# Docker Swarm
+
+# there should only be one host in this group
+[dockersslcamaster]
+cvmfs1-psu0.galaxyproject.org # serving double duty here
+
+[dockersslservers]
+cvmfs1-psu0.galaxyproject.org
+jetstream-tacc0.galaxyproject.org
+jetstream-iu0.galaxyproject.org
+
+[dockerswarmmanagers]
+cvmfs1-psu0.galaxyproject.org
+jetstream-tacc0.galaxyproject.org
+jetstream-iu0.galaxyproject.org
 
 # Other stuff
 
