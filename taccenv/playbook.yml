@@ -12,13 +12,13 @@
       local_action:
         module: stat
         path: "{{ inventory_dir }}/secret_group_vars/{{ item }}.yml"
-      with_items: group_names
+      with_items: "{{ group_names }}"
       register: secret_group_vars
       tags: always
     - name: Include secret group variables
       local_action:
         module: "include_vars {{ item.stat.path }}"
-      with_items: secret_group_vars.results
+      with_items: "{{ secret_group_vars.results }}"
       when: item.stat.exists
       tags: always
   roles:
@@ -105,3 +105,10 @@
   roles:
     - role: slurm
       tags: slurm
+
+- name: Tasks for docker clients
+  hosts: dockerclients
+  remote_user: root
+  roles:
+    - role: docker
+      tags: docker
