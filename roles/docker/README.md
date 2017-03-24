@@ -1,3 +1,13 @@
+Groups
+======
+
+- `dockerclients` to install docker with the service set to disabled/stopped
+- `dockerservers` to install docker with the service set to enabled/started
+- `dockersslservers` to additionally install server SSL certificate and key
+  (see SSL below)
+
+Docker "clients" get Docker installed but the service is set to disabled/stopped.
+
 SSL
 ===
 
@@ -19,3 +29,12 @@ docker_ssl_ca_dn:
 ```
 
 And set the CA key passphrase in `docker_ssl_ca_passphrase`.
+
+Create a list of users who should receive the client key/cert in ~/.docker:
+
+```yaml
+docker_ssl_client_users:
+  - mal
+  - zoe
+  - wash
+```

@@ -36,23 +36,14 @@ directories:
 group_packages:
   - nodejs
   - npm
-  - docker-engine
   - collectl
   - slurm-drmaa
 
 group_yum_repositories:
   - name: docker
-    contents:
-      name: Docker
-      baseurl: "https://yum.dockerproject.org/repo/main/centos/{{ ansible_distribution_major_version }}"
-      enabled: "1"
-      gpgcheck: "1"
-      gpgkey: https://yum.dockerproject.org/gpg
+    state: absent
 
-group_services:
-  - name: docker
-    state: stopped
-    enabled: "no"
+docker_service_enabled: no
 
 cvmfs_server_urls:
   - domain: galaxyproject.org

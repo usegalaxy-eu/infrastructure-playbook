@@ -14,6 +14,10 @@
   include: ssl-server.yml
   when: "'dockersslservers' in group_names"
 
+- name: Include SSL client configuration tasks
+  include: ssl-client.yml
+  when: docker_ssl_client_users is defined
+
 - name: Set docker daemon startup options for network listening
   set_fact:
     docker_daemon_option_list: "{{ docker_daemon_option_list }} + [ '{{ \"-H=unix:///var/run/docker.sock -H=\" + docker_daemon_listen_network }}' ]"
