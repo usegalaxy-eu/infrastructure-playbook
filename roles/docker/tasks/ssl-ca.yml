@@ -1,0 +1,12 @@
+---
+
+- name: Check master CA cert existence
+  stat:
+    path: "{{ docker_ssl_ca_dir }}/ca.pem"
+  delegate_to: "{{ groups.dockersslcamaster[0] }}"
+  run_once: true
+  register: docker_ssl_ca_cert_stat_out
+
+- name: Include tasks to create CA cert
+  include: ssl-gen-ca.yml
+  when: "'dockersslcamaster' in group_names and not docker_ssl_ca_cert_stat_out.stat.exists"

@@ -1,0 +1,54 @@
+---
+
+- name: Set up for spawn
+  hosts: imageinstances
+  connection: local
+  tasks:
+    - name: Create instances group
+      group_by:
+        key: instances
+
+- name: Include clouds.yaml play
+  include: inc_clouds_yaml.yml
+
+- name: Docker volume snapshot discovery
+  hosts: instances
+  connection: local
+  environment:
+     OS_CLOUD: "{{ cloud_id }}"
+     OS_IDENTITY_API_VERSION: '3'
+  tasks:
+    - name: Collect docker volume snapshot id
+      command: "openstack volume snapshot list -f value -c ID --volume {{ base_name }}"
+      register: docker_snapshot_id_out
+      delegate_to: localhost
+    - name: Set volume snapshot id fact
+      set_fact:
+        volume_snapshot_id: "{{ docker_snapshot_id_out.stdout }}"
+
+- name: Include spawn play
+  include: inc_spawn.yml
+
+- name: Pull docker image(s)
+  hosts: imageinstances
+  connection: ssh
+  become: yes
+  environment:
+    HISTFILE: null
+  tasks:
+    - name: Pull docker images
+      command: "docker pull {{ image_name }}"
+    - name: Stop docker
+      service:
+        name: docker
+        state: stopped
+    - name: Unmount /var/lib/docker
+      mount:
+        name: "/var/lib/docker"
+        state: unmounted
+
+- name: Include delete play
+  include: inc_delete.yml
+
+- name: Include clouds.yaml play
+  include: inc_clouds_yaml.yml

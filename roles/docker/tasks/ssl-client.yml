@@ -1,0 +1,58 @@
+---
+
+- name: Create ~/.docker
+  file:
+    path: "~{{ item }}/.docker"
+    state: directory
+    mode: "0700"
+    #owner: "{{ item }}"
+    #group: "{{ lookup('pipe', 'id -gn ' + item | quote) }}"
+  become: yes
+  become_user: "{{ item }}"
+  with_items: docker_ssl_client_users
+
+- name: Include CA cert tasks
+  include: ssl-ca.yml
+
+- name: Distribute CA cert
+  synchronize:
+    src: "{{ docker_ssl_ca_dir }}/ca.pem"
+    dest: "~{{ item }}/.docker/ca.pem"
+    perms: yes
+    # https://github.com/ansible/ansible/issues/16215
+    ssh_args: "-l {{ ansible_user }}"
+    rsync_path: "/usr/bin/sudo -u {{ item }} /usr/bin/rsync"
+  delegate_to: "{{ groups.dockersslcamaster[0] }}"
+  with_items: docker_ssl_client_users
+
+- name: Check master client cert existence
+  stat:
+    path: "{{ docker_ssl_ca_dir }}/cert.pem"
+  delegate_to: "{{ groups.dockersslcamaster[0] }}"
+  run_once: true
+  register: docker_ssl_ca_client_cert_stat_out
+
+- name: Include tasks to create client cert
+  include: ssl-gen-client-cert.yml
+  delegate_to: "{{ groups.dockersslcamaster[0] }}"
+  run_once: true
+
+- name: Distribute client cert
+  synchronize:
+    src: "{{ docker_ssl_ca_dir }}/cert.pem"
+    dest: "~{{ item }}/.docker/cert.pem"
+    perms: yes
+    ssh_args: "-l {{ ansible_user }}"
+    rsync_path: "/usr/bin/sudo -u {{ item }} /usr/bin/rsync"
+  delegate_to: "{{ groups.dockersslcamaster[0] }}"
+  with_items: docker_ssl_client_users
+
+- name: Distribute client key
+  synchronize:
+    src: "{{ docker_ssl_ca_dir }}/key.pem"
+    dest: "~{{ item }}/.docker/key.pem"
+    perms: yes
+    ssh_args: "-l {{ ansible_user }}"
+    rsync_path: "/usr/bin/sudo -u {{ item }} /usr/bin/rsync"
+  delegate_to: "{{ groups.dockersslcamaster[0] }}"
+  with_items: docker_ssl_client_users

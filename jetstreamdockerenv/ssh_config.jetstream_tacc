@@ -1,0 +1,11 @@
+Host 10.*
+    UserKnownHostsFile /dev/null
+    StrictHostKeyChecking no
+    ProxyCommand ssh -W %h:%p -l centos jetstream-tacc0.galaxyproject.org
+
+# FIXME: User docker
+Host jetstream-tacc0.galaxyproject.org
+    User docker
+    ControlMaster auto
+    ControlPath ~/.ssh/ansible-%r@%h:%p
+    ControlPersist 5m

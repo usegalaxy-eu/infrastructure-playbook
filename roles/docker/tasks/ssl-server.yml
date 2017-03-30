@@ -1,15 +1,7 @@
 ---
 
-- name: Check master CA cert existence
-  stat:
-    path: "{{ docker_ssl_ca_dir }}/ca.pem"
-  delegate_to: "{{ groups.dockersslcamaster[0] }}"
-  run_once: true
-  register: docker_ssl_ca_cert_stat_out
-
-- name: Include tasks to create CA cert
-  include: ssl-gen-ca.yml
-  when: "'dockersslcamaster' in group_names and not docker_ssl_ca_cert_stat_out.stat.exists"
+- name: Include CA cert tasks
+  include: ssl-ca.yml
 
 - name: Distribute CA cert
   synchronize:
@@ -56,17 +48,3 @@
   set_fact:
     docker_daemon_option_list: "{{ docker_daemon_option_list }} + [ '--tlsverify --tlscacert=/etc/docker/ca.pem --tlscert=/etc/docker/server-cert.pem --tlskey=/etc/docker/server-key.pem' ]"
     docker_daemon_listen_network: "{{ docker_daemon_listen_network | default('tcp://0.0.0.0:2376') }}"
-
-- name: Check master client cert existence
-  stat:
-    path: "{{ docker_ssl_ca_dir }}/cert.pem"
-  delegate_to: "{{ groups.dockersslcamaster[0] }}"
-  run_once: true
-  register: docker_ssl_ca_client_cert_stat_out
-
-- name: Include tasks to create client cert
-  include: ssl-gen-client-cert.yml
-  delegate_to: "{{ groups.dockersslcamaster[0] }}"
-  run_once: true
-
-# TODO: copy client key/cert to clients
