@@ -42,6 +42,11 @@ group_packages:
 group_yum_repositories:
   - name: docker
     state: absent
+  - name: galaxy_gpel
+    description: Galaxy Packages for Enterprise Linux $releasever - $basearch
+    baseurl: https://depot.galaxyproject.org/yum/el/$releasever/$basearch/
+    enabled: yes
+    gpgcheck: no
 
 docker_service_enabled: no
 

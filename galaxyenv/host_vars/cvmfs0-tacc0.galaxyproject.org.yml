@@ -19,9 +19,10 @@ cvmfs_repositories:
 # old docker repo, docker now installed by the `docker` role
 host_yum_repositories:
   - name: dockerrepo
-    contents:
-      name: Docker Repository
-      state: absent
+    state: absent
+    #contents:
+    #  name: Docker Repository
+    #  state: absent
 
 group_files:
   - src: files/apache/galaxy-installers.conf
