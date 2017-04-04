@@ -19,10 +19,17 @@
     mode: "0444"
   with_items: "{{ cvmfs_keys }}"
 
+- name: Check CernVM-FS for setup
+  command: cvmfs_config chksetup
+  changed_when: no
+  ignore_errors: yes
+  register: cvmfs_config_chksetup_out
+
 - name: Perform AutoFS and FUSE configuration for CernVM-FS
   command: cvmfs_config setup
   notify:
     - reload autofs
+  when: not cvmfs_config_chksetup_out | success
 
 - name: Configure CernVM-FS domain
   copy:
