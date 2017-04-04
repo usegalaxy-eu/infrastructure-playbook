@@ -53,6 +53,7 @@
   handlers:
     - name: run newaliases
       command: /usr/bin/newaliases
+  tags: system
 
 - name: Tasks for webservers
   hosts: webservers
@@ -104,11 +105,11 @@
     - secret_group_vars/slurmclients.yml
   roles:
     - role: slurm
-      tags: slurm
+  tags: slurm
 
 - name: Tasks for docker clients
   hosts: dockerclients
   remote_user: root
   roles:
     - role: docker
-      tags: docker
+  tags: docker
