@@ -110,6 +110,8 @@
 - name: Tasks for docker clients
   hosts: dockerclients
   remote_user: root
+  vars_files:
+    - "{{ inventory_dir }}/secret_group_vars/dockersslclients.yml"
   roles:
     - role: docker
   tags: docker

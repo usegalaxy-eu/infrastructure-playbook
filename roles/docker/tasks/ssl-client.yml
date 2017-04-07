@@ -1,20 +1,26 @@
 ---
 
+- name: Lookup user groups
+  command: id -gn {{ item }}
+  register: user_groups_out
+  changed_when: no
+  with_items: "{{ docker_ssl_client_users }}"
+
 - name: Create ~/.docker
   file:
-    path: "~{{ item }}/.docker"
+    path: "~{{ item.0 }}/.docker"
     state: directory
     mode: "0700"
-    #owner: "{{ item }}"
-    #group: "{{ lookup('pipe', 'id -gn ' + item | quote) }}"
-  become: yes
-  become_user: "{{ item }}"
-  with_items: docker_ssl_client_users
+    owner: "{{ item.0 }}"
+    group: "{{ item.1.stdout }}"
+  with_together:
+    - "{{ docker_ssl_client_users }}"
+    - "{{ user_groups_out.results }}"
 
 - name: Include CA cert tasks
   include: ssl-ca.yml
 
-- name: Distribute CA cert
+- name: Distribute CA cert from docker SSL master
   synchronize:
     src: "{{ docker_ssl_ca_dir }}/ca.pem"
     dest: "~{{ item }}/.docker/ca.pem"
@@ -23,7 +29,19 @@
     ssh_args: "-l {{ ansible_user }}"
     rsync_path: "/usr/bin/sudo -u {{ item }} /usr/bin/rsync"
   delegate_to: "{{ groups.dockersslcamaster[0] }}"
-  with_items: docker_ssl_client_users
+  with_items: "{{ docker_ssl_client_users }}"
+  when: docker_ssl_ca_cert is not defined
+
+- name: Distribute CA cert from playbook
+  copy:
+    content: "{{ docker_ssl_ca_cert }}"
+    dest: "~{{ item.0 }}/.docker/ca.pem"
+    owner: "{{ item.0 }}"
+    group: "{{ item.1.stdout }}"
+  with_together:
+    - "{{ docker_ssl_client_users }}"
+    - "{{ user_groups_out.results }}"
+  when: docker_ssl_ca_cert is defined
 
 - name: Check master client cert existence
   stat:
@@ -31,13 +49,15 @@
   delegate_to: "{{ groups.dockersslcamaster[0] }}"
   run_once: true
   register: docker_ssl_ca_client_cert_stat_out
+  when: docker_ssl_client_cert is not defined
 
 - name: Include tasks to create client cert
   include: ssl-gen-client-cert.yml
   delegate_to: "{{ groups.dockersslcamaster[0] }}"
   run_once: true
+  when: docker_ssl_client_cert is not defined and not docker_ssl_ca_client_cert_stat_out.stat.exists
 
-- name: Distribute client cert
+- name: Distribute client cert from docker SSL master
   synchronize:
     src: "{{ docker_ssl_ca_dir }}/cert.pem"
     dest: "~{{ item }}/.docker/cert.pem"
@@ -45,9 +65,21 @@
     ssh_args: "-l {{ ansible_user }}"
     rsync_path: "/usr/bin/sudo -u {{ item }} /usr/bin/rsync"
   delegate_to: "{{ groups.dockersslcamaster[0] }}"
-  with_items: docker_ssl_client_users
+  with_items: "{{ docker_ssl_client_users }}"
+  when: docker_ssl_client_cert is not defined
 
-- name: Distribute client key
+- name: Distribute client cert from playbook
+  copy:
+    content: "{{ docker_ssl_client_cert }}"
+    dest: "~{{ item.0 }}/.docker/cert.pem"
+    owner: "{{ item.0 }}"
+    group: "{{ item.1.stdout }}"
+  with_together:
+    - "{{ docker_ssl_client_users }}"
+    - "{{ user_groups_out.results }}"
+  when: docker_ssl_client_cert is defined
+
+- name: Distribute client key from docker SSL master
   synchronize:
     src: "{{ docker_ssl_ca_dir }}/key.pem"
     dest: "~{{ item }}/.docker/key.pem"
@@ -55,4 +87,17 @@
     ssh_args: "-l {{ ansible_user }}"
     rsync_path: "/usr/bin/sudo -u {{ item }} /usr/bin/rsync"
   delegate_to: "{{ groups.dockersslcamaster[0] }}"
-  with_items: docker_ssl_client_users
+  with_items: "{{ docker_ssl_client_users }}"
+  when: docker_ssl_client_key is not defined
+
+- name: Distribute client key from playbook
+  copy:
+    content: "{{ docker_ssl_client_key }}"
+    dest: "~{{ item.0 }}/.docker/key.pem"
+    owner: "{{ item.0 }}"
+    group: "{{ item.1.stdout }}"
+    mode: "0400"
+  with_together:
+    - "{{ docker_ssl_client_users }}"
+    - "{{ user_groups_out.results }}"
+  when: docker_ssl_client_key is defined
