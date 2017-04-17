@@ -37,7 +37,8 @@
     HISTFILE: null
   tasks:
     - name: Pull docker images
-      command: "docker pull {{ image_name }}"
+      command: "docker pull {{ item }}"
+      with_items: "{{ image_names }}"
     - name: Stop docker
       service:
         name: docker
