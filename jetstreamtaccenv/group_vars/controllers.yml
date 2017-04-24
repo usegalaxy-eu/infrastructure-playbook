@@ -46,10 +46,20 @@ directories:
   - path: /srv/pulsar/main/pulsar/log
     owner: g2main
     group: G-803372
+  # see comment in links
+  - path: /galaxy-repl
+  - path: /galaxy-repl/main
 
 links:
   - path: /jetstream/scratch0
     src: /scratch0
+    force: yes
+  # if Conda is reinstalled in CVMFS with /cvmfs paths (as was done with Test) these symlinks are unnecessary
+  - path: /galaxy
+    src: /galaxy-repl
+    force: yes
+  - path: /galaxy-repl/main/deps
+    src: /cvmfs/main.galaxyproject.org/deps
     force: yes
 
 supervisord_install: package
