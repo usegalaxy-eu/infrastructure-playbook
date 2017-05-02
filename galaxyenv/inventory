@@ -8,6 +8,7 @@ jetstream-iu0.galaxyproject.org ansible_user=centos ansible_become=yes
 cvmfs0-tacc0.galaxyproject.org ansible_user=root
 cvmfs1-tacc0.galaxyproject.org ansible_user=centos ansible_become=yes
 cvmfs1-iu0.galaxyproject.org ansible_user=centos ansible_become=yes
+cvmfs0-psu0.galaxyproject.org ansible_user=root
 cvmfs1-psu0.galaxyproject.org ansible_user=root
 
 ## These get all the common roles
@@ -29,6 +30,7 @@ duvel.galaxyproject.org
 baseenv-nomail
 
 [baseenv-nomail]
+cvmfs0-psu0.galaxyproject.org
 cvmfs0-tacc0.galaxyproject.org
 cvmfs1-tacc0.galaxyproject.org
 cvmfs1-iu0.galaxyproject.org
