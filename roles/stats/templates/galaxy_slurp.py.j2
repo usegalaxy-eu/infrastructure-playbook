@@ -1,0 +1,124 @@
+#!{{ statslurp_venv_dir }}/bin/python
+
+import argparse
+import datetime
+
+import psycopg2
+from influxdb import InfluxDBClient
+
+
+TOP_USAGE_LIMIT = 50
+PGCONNS = {
+    'test': 'host=galaxy07.tacc.utexas.edu user=grafana password={{ galaxy_test_grafana_db_password }} dbname=galaxy_test',
+    'main': 'host=galaxy-db-01.tacc.utexas.edu user=grafana password={{ galaxy_main_grafana_db_password }} dbname=galaxy_main',
+}
+time = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+
+
+def sql_common_filters():
+    return """
+                NOT purged
+            AND
+                disk_usage IS NOT NULL
+            AND
+                id NOT IN (SELECT user_id FROM user_group_association)
+            AND
+                id NOT IN (SELECT user_id FROM user_quota_association)
+    """
+
+def sql_top_usage():
+    return """
+        SELECT
+            id,
+            email,
+            disk_usage/1024/1024/1024
+        FROM
+            galaxy_user
+        WHERE
+            {common_filters}
+        ORDER BY
+            disk_usage DESC
+        LIMIT
+            {top_usage_limit}
+    """.format(
+        common_filters=sql_common_filters(),
+        top_usage_limit=TOP_USAGE_LIMIT
+    )
+
+
+def sql_avg_usage(nonzero=False):
+    return """
+        SELECT
+            avg(disk_usage)/1024/1024/1024
+        FROM
+            galaxy_user
+        WHERE
+            {common_filters}
+            {nonzero_filter}
+    """.format(
+        common_filters=sql_common_filters(),
+        nonzero_filter='AND disk_usage > 0' if nonzero else ''
+    )
+
+
+def pg_execute(pconn_str, sql):
+    pconn = psycopg2.connect(pconn_str)
+    pc = pconn.cursor()
+    pc.execute(sql)
+    for row in pc:
+        yield row
+    pconn.close()
+
+
+def collect(instance):
+    measurements = []
+    pconn_str = PGCONNS[instance]
+    m = {
+        'measurement': 'disk_usage_mean',
+        'time': time,
+        'fields': {
+            'value': float(next(pg_execute(pconn_str, sql_avg_usage()))[0])
+        }
+    }
+    measurements.append(m)
+    m = {
+        'measurement': 'disk_usage_mean_nonzero',
+        'time': time,
+        'fields': {
+            'value': float(next(pg_execute(pconn_str, sql_avg_usage(nonzero=True)))[0])
+        }
+    }
+    measurements.append(m)
+    for row in pg_execute(pconn_str, sql_top_usage()):
+        m = {
+            'measurement': 'disk_usage_top',
+            'tags': {
+                'id': row[0],
+                'email': row[1]
+            },
+            'time': time,
+            'fields': {
+                'value': float(row[2])
+            }
+        }
+        measurements.append(m)
+    return measurements
+
+
+def dump(instance, points):
+    db = '{instance}_sql'.format(instance=instance)
+    client = InfluxDBClient(database=db)
+    client.create_database(db)
+    client.write_points(points)
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Translate Galaxy DB stats from PostgreSQL to InfluxDB")
+    parser.add_argument('instance', default='main', help="Galaxy instance")
+    args = parser.parse_args()
+    points = collect(args.instance)
+    dump(args.instance, points)
+
+
+if __name__ == '__main__':
+    main()

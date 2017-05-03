@@ -191,3 +191,24 @@
     - influxdb.conf
     - telegraf.conf
     - grafana.conf
+
+- name: Create stats slurp virtualenv
+  pip:
+    name: "{{ item }}"
+    virtualenv: "{{ statslurp_venv_dir }}"
+    state: latest
+  with_items:
+    - pip
+    - setuptools
+    - influxdb
+    - psycopg2
+
+- name: Copy stats slurp scripts
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ statslurp_venv_dir }}/bin/{{ item }}"
+    mode: 0750
+    owner: root
+    group: stats
+  with_items:
+    - galaxy_slurp.py
