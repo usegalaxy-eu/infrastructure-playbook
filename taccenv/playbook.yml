@@ -48,7 +48,12 @@
       with_items:
         - g2test
         - g2main
-        - postgres
+      notify: run newaliases
+    - name: Forward root mail to root@galaxyproject.org
+      lineinfile:
+        dest: /etc/aliases
+        regexp: "^root:"
+        line: "root:	root@galaxyproject.org"
       notify: run newaliases
   handlers:
     - name: run newaliases
