@@ -60,6 +60,13 @@
       command: /usr/bin/newaliases
   tags: system
 
+- name: Tasks for RabbitMQ servers
+  hosts: rabbitmqservers
+  remote_user: root
+  roles:
+    - rabbitmq
+  tags: rabbitmq
+
 - name: Tasks for webservers
   hosts: webservers
   remote_user: root
