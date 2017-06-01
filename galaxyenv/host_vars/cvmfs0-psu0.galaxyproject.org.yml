@@ -7,7 +7,8 @@ cvmfs_repositories:
     server_options:
       - CVMFS_AUTO_TAG=false
       - CVMFS_GARBAGE_COLLECTION=true
-      - CVMFS_AUTO_GC=true
+      - CVMFS_AUTO_GC=false
+      - CVMFS_IGNORE_XDIR_HARDLINKS=false
 
 group_users:
   - name: g2test

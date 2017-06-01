@@ -35,6 +35,7 @@ cvmfs_keys:
       ka2GnWe8NST2zVvhBhnKVErSMJa0ZVSikljy8/ftJ24gfCjDFf6mEg==
       -----END CERTIFICATE-----
   - path: /etc/cvmfs/keys/data.galaxyproject.org.pub
+    owner: g2test
     key: |
       -----BEGIN PUBLIC KEY-----
       MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5LHQuKWzcX5iBbCGsXGt
@@ -46,6 +47,7 @@ cvmfs_keys:
       owIDAQAB
       -----END PUBLIC KEY-----
   - path: /etc/cvmfs/keys/data.galaxyproject.org.crt
+    owner: g2test
     key: |
       -----BEGIN CERTIFICATE-----
       MIIC9DCCAdwCCQDHxOGBpJCTaTANBgkqhkiG9w0BAQsFADA8MTowOAYDVQQDDDFk
@@ -112,14 +114,18 @@ cvmfs_repositories:
   - repository: test.galaxyproject.org
     stratum0: cvmfs0-tacc0.galaxyproject.org
     owner: g2test
-    server_options: []
+    server_options:
+      - CVMFS_AUTO_GC=false
   - repository: main.galaxyproject.org
     stratum0: cvmfs0-tacc0.galaxyproject.org
     owner: g2main
-    server_options: []
+    server_options:
+      - CVMFS_AUTO_GC=false
   - repository: data.galaxyproject.org
     stratum0: cvmfs0-psu0.galaxyproject.org
-    server_options: []
+    owner: g2test
+    server_options:
+      - CVMFS_AUTO_GC=false
 
 cvmfs_http_proxies:
   - DIRECT

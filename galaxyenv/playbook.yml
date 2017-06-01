@@ -157,6 +157,8 @@
   hosts: cvmfsstratum0servers:cvmfsstratum1servers:cvmfslocalproxies
   vars_files:
     - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
+    # FIXME: required for cvmfs1-psu0 since the cvmfs role depends on the docker role and that host is also a docker swarm manager
+    - secret_group_vars/dockersslservers.yml
   roles:
     # mounts /srv
     - role: paths

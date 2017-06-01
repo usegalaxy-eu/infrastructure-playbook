@@ -83,7 +83,7 @@
   ignore_errors: true
 
 - name: Ensure replicas are configured
-  command: /usr/bin/cvmfs_server add-replica -z -o {{ item.owner | default('root') }} http://{{ item.stratum0 }}/cvmfs/{{ item.repository }} /etc/cvmfs/keys/{{ item.repository }}.pub
+  command: /usr/bin/cvmfs_server add-replica -o {{ item.owner | default('root') }} http://{{ item.stratum0 }}/cvmfs/{{ item.repository }} /etc/cvmfs/keys/{{ item.repository }}.pub
   args:
     creates: /etc/cvmfs/repositories.d/{{ item.repository }}
   with_items: "{{ cvmfs_repositories }}"
@@ -94,10 +94,21 @@
   cron:
     name: cvmfs_snapshot_{{ item.repository }}
     cron_file: ansible_cvmfs_stratum1_snapshot
+    user: root
     job: output=$(/usr/bin/cvmfs_server snapshot {{ item.repository }} 2>&1) || echo "$output"
     minute: 0,15,30,45
-    user: root
   with_items: "{{ cvmfs_repositories }}"
+
+- name: Schedule stratum1 garbage collection
+  cron:
+    name: cvmfs_gc_{{ item.1.repository }}
+    cron_file: ansible_cvmfs_stratum1_gc
+    user: "{{ item.1.owner | default('root') }}"
+    job: output=$(/usr/bin/cvmfs_server gc -f -t '1 Jan 1970 00:00:00' {{ item.1.repository }} 2>&1) || echo "$output"
+    hour: 3
+    minute: "{{ item.0 }}"
+    weekday: 3
+  with_indexed_items: "{{ cvmfs_repositories }}"
 
 - name: Allow users to manage services
   template:

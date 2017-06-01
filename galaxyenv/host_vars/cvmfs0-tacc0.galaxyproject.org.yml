@@ -7,14 +7,16 @@ cvmfs_repositories:
     server_options:
       - CVMFS_AUTO_TAG=false
       - CVMFS_GARBAGE_COLLECTION=true
-      - CVMFS_AUTO_GC=true
+      - CVMFS_AUTO_GC=false
+      - CVMFS_IGNORE_XDIR_HARDLINKS=false
   - repository: main.galaxyproject.org
     stratum0: cvmfs0-tacc0.galaxyproject.org
     owner: g2main
     server_options:
       - CVMFS_AUTO_TAG=false
       - CVMFS_GARBAGE_COLLECTION=true
-      - CVMFS_AUTO_GC=true
+      - CVMFS_AUTO_GC=false
+      - CVMFS_IGNORE_XDIR_HARDLINKS=false
 
 # old docker repo, docker now installed by the `docker` role
 host_yum_repositories:
