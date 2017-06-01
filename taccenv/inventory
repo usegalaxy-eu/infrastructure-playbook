@@ -25,6 +25,7 @@ roundup[49:64].tacc.utexas.edu
 [baseenv]
 galaxy04.tacc.utexas.edu
 galaxy06.tacc.utexas.edu
+galaxy08.tacc.utexas.edu
 galaxy-db-02.tacc.utexas.edu
 galaxy-web-03.tacc.utexas.edu
 galaxy-web-04.tacc.utexas.edu
@@ -60,6 +61,18 @@ galaxy-web-06.tacc.utexas.edu
 [slurmclients]
 [slurmclients:children]
 galaxyservers
+slurmservers
+slurmexechosts
+
+[slurmdbdservers]
+galaxy08.tacc.utexas.edu
+
+[slurmservers]
+galaxy08.tacc.utexas.edu
+
+[slurmexechosts]
+[slurmexechosts:children]
+#galaxynodes
 
 # anything that'll be using the SSL role should go in sslservers to pick up the group_vars
 [sslservers]

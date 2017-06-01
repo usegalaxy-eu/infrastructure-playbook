@@ -7,10 +7,11 @@ slurm_user:
     home: /var/lib/slurm
     shell: /bin/bash
 
-controller_name: galaxy02
-controller_ip: 129.114.60.174
+slurm_controller_name: galaxy08
+slurm_controller_ip: 129.114.60.125
+slurm_dbd_server_name: galaxy08
+slurm_dbd_server_ip: 129.114.60.125
+slurm_dbd_server_port: 30001
 
-slurm_yum_repo_baseurl: https://depot.galaxyproject.org/yum/el/$releasever/$basearch
-
-slurmd_spool_dir: /var/tmp/slurmd.spool
-slurmctld_state_dir: /tmp/slurm.state
+slurmd_spool_dir: /var/lib/slurm/slurmd/slurmd.spool
+slurmctld_state_dir: /var/lib/slurm/slurmctld/slurm.state
