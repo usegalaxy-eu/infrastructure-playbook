@@ -90,6 +90,15 @@
   notify:
     - restart apache
 
+- name: Set repository server options
+  lineinfile:
+    dest: "/etc/cvmfs/repositories.d/{{ item.0.repository }}/server.conf"
+    regexp: "^{{ item.1.split('=')[0] }}=.*"
+    line: "{{ item.1 }}"
+  with_subelements:
+    - "{{ cvmfs_repositories }}"
+    - server_options
+
 - name: Schedule stratum1 snapshots
   cron:
     name: cvmfs_snapshot_{{ item.repository }}
