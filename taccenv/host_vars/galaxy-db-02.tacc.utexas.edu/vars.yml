@@ -1,3 +1,23 @@
 ---
 
 authorized_key_users: "{{ vault_authorized_key_users }}"
+
+directories:
+  - path: /home/g2main/bin
+    owner: g2main
+    mode: "0755"
+
+host_files:
+  - src: files/galaxy/cancelled.sh
+    dest: /home/g2main/bin/cancelled.sh
+    owner: g2main
+    mode: "0755"
+
+host_crontabs:
+  - id: galaxy_cancelled_jobs
+    name: Galaxy Main Cancelled Jobs Report
+    user: g2main
+    minute: "0"
+    hour: "11"
+    weekday: "1-6"
+    job: "/home/g2main/bin/cancelled.sh '1 week ago' | mail -s 'usegalaxy.org jobs cancelled due to memory limit in the past week' galaxy-lab@lists.galaxyproject.org"
