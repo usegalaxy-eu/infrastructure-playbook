@@ -12,4 +12,14 @@ server {
     return 302 https://galaxyproject.github.io/training-material/;
 }
 
+server {
+    listen      *:443 ssl;
+    server_name training.galaxyproject.org;
+
+    access_log  /var/log/nginx/training.galaxyproject.org_access.log;
+    error_log   /var/log/nginx/training.galaxyproject.org_error.log;
+
+    return 302 https://galaxyproject.github.io/training-material/;
+}
+
 # vim: set filetype=nginx
