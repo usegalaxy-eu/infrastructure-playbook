@@ -45,7 +45,7 @@ NodeName={{ hostvars[host]['inventory_hostname_short'] }} NodeAddr={{ hostvars[h
 #
 {# well this is less than ideal, it should loop partitions, and then generate a hostlist for that partition. but this works for now... #}
 {% for node_type in slurm_nodes %}
-PartitionName=multi State=UP MaxTime=48:20:00 MaxNodes=1 Nodes={{ slurm_hostlists.results[0].stdout }}
+PartitionName=multi State=UP DefaultTime=48:20:00 MaxTime=96:20:00 MaxNodes=1 Nodes={{ slurm_hostlists.results[0].stdout }}
 {% endfor %}
 
 SlurmctldDebug=7
