@@ -7,37 +7,35 @@
   roles:
     - role: dns
 
-#- name: Tasks for "base environment" hosts
-#  hosts: baseenv
-#  remote_user: root
-#  vars_files:
-#    - "secret_group_vars/all.yml"
-#    - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
-#  pre_tasks:
-#    - name: Locate secret group variable files
-#      local_action:
-#        module: stat
-#        path: "{{ inventory_dir }}/secret_group_vars/{{ item }}.yml"
-#      become: no
-#      with_items: "{{ group_names }}"
-#      register: secret_group_vars
-#      tags: always
-#    - name: Include secret group variables
-#      local_action:
-#        module: "include_vars {{ item.stat.path }}"
-#      become: no
-#      with_items: "{{ secret_group_vars.results }}"
-#      when: item.stat.exists
-#      tags: always
-#  roles:
-#    - role: requiretty        # Disable requiretty for Ansible ssh pipelining
-#      tags: initial,requiretty
-#    - role: remote_management # Set up IPMI/serial stuff
-#      tags: initial,remote_management
-#    - role: ssh               # Enable password auth and root logins
-#      tags: initial,ssh
-#    - role: timezone          # Configure system timezone
-#      tags: initial,timezone
+- name: Tasks for "base environment" hosts
+  hosts: infrastructure
+  become: true
+  remote_user: ubuntu
+  vars_files:
+    - "secret_group_vars/all.yml"
+    - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
+  pre_tasks:
+    - name: Locate secret group variable files
+      local_action:
+        module: stat
+        path: "{{ inventory_dir }}/secret_group_vars/{{ item }}.yml"
+      become: no
+      with_items: "{{ group_names }}"
+      register: secret_group_vars
+      tags: always
+    - name: Include secret group variables
+      local_action:
+        module: "include_vars {{ item.stat.path }}"
+      become: no
+      with_items: "{{ secret_group_vars.results }}"
+      when: item.stat.exists
+      tags: always
+
+  roles:
+    - role: ssh               # Enable password auth and root logins
+      tags: initial,ssh
+    - role: timezone          # Configure system timezone
+      tags: initial,timezone
 #    - role: resolv            # Set resolv.conf for static hosts
 #      tags: initial,resolv
 #    - role: packages          # Install packages
