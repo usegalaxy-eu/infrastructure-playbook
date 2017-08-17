@@ -1,156 +1,28 @@
 ## Variables
-
-orval.galaxyproject.org ansible_python_interpreter=/opt/local/bin/python
-westvleteren.galaxyproject.org ansible_python_interpreter=/opt/local/bin/python
-biostar.usegalaxy.org ansible_ssh_user=www
-jetstream-tacc0.galaxyproject.org ansible_user=centos ansible_become=yes
-jetstream-iu0.galaxyproject.org ansible_user=centos ansible_become=yes
-cvmfs0-tacc0.galaxyproject.org ansible_user=root
-cvmfs1-tacc0.galaxyproject.org ansible_user=centos ansible_become=yes
-cvmfs1-iu0.galaxyproject.org ansible_user=centos ansible_become=yes
-cvmfs0-psu0.galaxyproject.org ansible_user=root
-cvmfs1-psu0.galaxyproject.org ansible_user=root
-
-## These get all the common roles
-
-[baseenv]
-delirium.galaxyproject.org
-chouffe.galaxyproject.org
-athena.galaxyproject.org
-radegast.galaxyproject.org
-orval.galaxyproject.org
-westvleteren.galaxyproject.org
-leeroy.galaxyproject.org
-n4.galaxyproject.org
-n6.galaxyproject.org
-mjolnir0.galaxyproject.org
-duvel.galaxyproject.org
-
-[baseenv:children]
-baseenv-nomail
-
-[baseenv-nomail]
-cvmfs0-psu0.galaxyproject.org
-cvmfs0-tacc0.galaxyproject.org
-cvmfs1-tacc0.galaxyproject.org
-cvmfs1-iu0.galaxyproject.org
-cvmfs1-psu0.galaxyproject.org
-
-# These get LDAP, Kerberos+Auth, and NFS, but not AFS
-[liteenv]
-mjolnir0.galaxyproject.org
-radegast.galaxyproject.org
+telescope.galaxyproject.org ansible_ssh_user=ubuntu
+grafana.denbi.uni-freiburg.de ansible_ssh_user=ubuntu
+sentry.denbi.uni-freiburg.de ansible_ssh_user=ubuntu
+jenkins.denbi.uni-freiburg.de ansible_ssh_user=ubuntu
 
 ## Host groupings
-
 [infrastructure]
-delirium.galaxyproject.org
-chouffe.galaxyproject.org
-duvel.galaxyproject.org
+
+[infrastructure:children]
+virtual
 
 [virtual]
-radegast.galaxyproject.org
-
-[virtual:children]
-ec2hosts
-
-[ec2hosts]
-delirium.galaxyproject.org
-chouffe.galaxyproject.org
-athena.galaxyproject.org
-
-## Application groupings
-
-# Mail
-
-[mailservers]
-[mailservers:children]
-mailservers-primarymx
-mailservers-secondarymx
-
-[mailservers-primarymx]
-chouffe.galaxyproject.org
-
-[mailservers-secondarymx]
-delirium.galaxyproject.org
-
-[listservers]
-delirium.galaxyproject.org
+telescope.galaxyproject.org
+grafana.denbi.uni-freiburg.de
+sentry.denbi.uni-freiburg.de
+jenkins.denbi.uni-freiburg.de
 
 # Web
 
 [webservers]
-orval.galaxyproject.org
-delirium.galaxyproject.org
-chouffe.galaxyproject.org
-duvel.galaxyproject.org
-athena.galaxyproject.org
-
-# Kerberos
-
-[kerberosauthclients]
-
-[kerberosauthclients:children]
-liteenv
-
-# LDAP
-
-[ldapnssclients]
-
-[ldapnssclients:children]
-liteenv
-
-# NFS
-
-[nfsldapclients]
-
-[nfsldapclients:children]
-liteenv
-
-# CVMFS
-[cvmfsstratum0servers]
-cvmfs0-tacc0.galaxyproject.org
-# FIXME: add to baseenv?
-cvmfs0-psu0.galaxyproject.org
-
-[cvmfsstratum1servers]
-cvmfs1-tacc0.galaxyproject.org
-cvmfs1-iu0.galaxyproject.org
-cvmfs1-psu0.galaxyproject.org
-
-[cvmfsclients]
-cvmfs1-psu0.galaxyproject.org
-
-# Docker Swarm
-
-# there should only be one host in this group
-[dockersslcamaster]
-cvmfs1-psu0.galaxyproject.org # serving double duty here
-
-[dockersslservers]
-cvmfs1-psu0.galaxyproject.org
-jetstream-tacc0.galaxyproject.org
-jetstream-iu0.galaxyproject.org
-
-[dockerswarmmanagers]
-cvmfs1-psu0.galaxyproject.org
-jetstream-tacc0.galaxyproject.org
-jetstream-iu0.galaxyproject.org
-
-# Other stuff
-
-[zfsbackupservers]
-westvleteren.galaxyproject.org
+telescope.galaxyproject.org
 
 [jenkinsservers]
-leeroy.galaxyproject.org
+jenkins.denbi.uni-freiburg.de
 
 [jenkinsslaves]
-n4.galaxyproject.org
-n6.galaxyproject.org
-
-[biostarservers]
-biostar.usegalaxy.org
-
-[starforgebuilders]
-mjolnir0.galaxyproject.org
+jenkins-worker1.denbi.uni-freiburg.de
