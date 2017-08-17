@@ -1,0 +1,214 @@
+---
+
+- name: Configure InfluxDB yum repositories
+  action:
+    module: yum_repository
+  args:
+    file: "influxdb.repo"
+    name: "{{ item.name }}"
+    description: "{{ item.description }}"
+    baseurl: "{{ item.baseurl }}"
+    gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-InfluxDB"
+    gpgcheck: yes
+    enabled: yes
+    protect: yes
+  with_items:
+    - name: influxdb
+      description: "InfluxDB Packages"
+      baseurl: "https://repos.influxdata.com/rhel/$releasever/$basearch/stable"
+  when: ansible_os_family == "RedHat"
+
+- name: Configure Grafana yum repositories
+  action:
+    module: yum_repository
+  args:
+    file: "{{ item.name }}.repo"
+    name: "{{ item.name }}"
+    description: "{{ item.description }}"
+    baseurl: "{{ item.baseurl }}"
+    gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-grafana"
+    gpgcheck: yes
+    enabled: yes
+    protect: yes
+  with_items:
+    - name: grafana
+      description: "Grafana Packages"
+      baseurl: "https://packagecloud.io/grafana/stable/el/6/$basearch"
+  when: ansible_os_family == "RedHat"
+
+- name: Install InfluxDB yum key
+  copy:
+    content: |
+        -----BEGIN PGP PUBLIC KEY BLOCK-----
+        Version: GnuPG v1
+
+        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
+        vqIHrEqk446nGPDqJPS5
+        =9iF7
+        -----END PGP PUBLIC KEY BLOCK-----
+    dest: "/etc/pki/rpm-gpg/RPM-GPG-KEY-InfluxDB"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  when: ansible_os_family == "RedHat"
+
+- name: Install grafana yum key
+  copy:
+    content: |
+        -----BEGIN PGP PUBLIC KEY BLOCK-----
+        Version: GnuPG v1
+
+        mQENBFUwpBgBCADiV3hEWuw0RS5OujxKBjwPFOqgiO2r385Pa0q/AhPEmlWE0CgP
+        5oUqEfh2l99V6MhkvqDwy23qfl9UfBQ0xx3N0maGlIaNjXNdvj+Gye+M/ShFsIIx
+        O5wSvfdRpBf1bmwW+uc/moUPXAnvzjATU/pJVEGwwBu4Zpeao/VfuxY3MudxCeR5
+        CkcKthvhEIFdT5m7gXMLP3Y5bKFaquePW6MbDh0pUADz8P8T6G9Pgr/UG99SYMpI
+        rWIhuLeUYCDWzg3XiNhHpeQrsn4XGnjN4Ult5YZ1io4nrbsXkhIFhGyGv+xzzvA8
+        VIYH88O5IUWDH/SpZEjMosCy0lM4A6NqgA5jABEBAAG0HUdyYWZhbmEgPGNvbnRh
+        Y3RAZ3JhZmFuYS5vcmc+iQE4BBMBAgAiBQJVMKQYAhsDBgsJCAcDAgYVCAIJCgsE
+        FgIDAQIeAQIXgAAKCRAwo9dyPdGL3TbzB/0Y0EyfIcfa9Pc98oYFOkIYhl29B1aa
+        oCeIxjEeG41RBmuQv/SorW9POqZw7yq4KMguFf6ea5noTdhu4lGHmYeLViII2Bcy
+        yXMymuPHsqMDVGDSWoQ3cWvoOqh2+HGWxuXjOjnXIr7+kUTxb2i8b3TKHkhdCik7
+        LWD7LsSelOOTO/aIZPh6I30zd3mIRaI4+zOjs8sywULDRLGHLvLMLAleOWZ7iZXH
+        q29W8YhEAu9iVP2K4V9kGMgsM9jTonKnIUO68MqmkZTNDQ71VdW2vSQiYV41M7ad
+        2RDYekEu/4XI4czm+fahMuSJEy7X+n/jYjnhp3Kd3KvMjtbp+GDdEL16uQENBFUw
+        pBgBCACyhHnwLARkfp/i1x9tOGzF98/yA6uzXlMhb4Tp0ZS7yj6d3OgLsrDCH4zv
+        RIKM4IOBzc60/Xqhvscc/ocnfGF4fygmB2HJLDbYLbwiQawIy5BrcdR6A1uxddrD
+        FJv4rM9BZlxhA0n2MpSkp1FgveT0FeOzF9vTNMR+6gwHis/+z6ul9a7mEL6ZZ98A
+        H3zPrH6WUcGGt9/dceSLViiqD3yPjCBBJGIZUA2Me8laCv3WkeTTWEEKZfZ/5K3M
+        NbLjw06UGZGEBCexmWDK5jghGIhqV8eL2ohZidENLE/Er3NMrcCmpe+hX4otrYO3
+        eg2LkAijlLCzZExZcoiJjQAOYEs1ABEBAAGJAR8EGAECAAkFAlUwpBgCGwwACgkQ
+        MKPXcj3Ri92g2AgArG+NMyz5eyZ+D2JXL7t6gyR7xJwJM2kiggEMWQqN2Awb1lJB
+        +pUvbIbXbp/7Mwgwd7AEB5RS/x/UlCkffUYxzbEbjJ87KRdh5aZLSSm8IxmZFH0O
+        dQRjE42WuE4jSvvDCRsNsMLyiD2oZuCUN7BR0UPc5c+VMadQJVSkQIRsJn/EcdXH
+        SXMvqMC2ybGOz3c3FxjLfugssnDDyDdKJj6l5QMGSZATN/yDTw5MCJnr+zgn4+tq
+        GoeGJuLsLV64ZWF06OUlWm5I8CjbbaoC3nPLXkH9PZsnPUUh6cnMTBk+jgnw4RfO
+        PN6LmV/EcxZoXokLuBMTaNOtY5hoM6gW7C/rMA==
+        =FvSu
+        -----END PGP PUBLIC KEY BLOCK-----
+    dest: "/etc/pki/rpm-gpg/RPM-GPG-KEY-grafana"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  when: ansible_os_family == "RedHat"
+
+- name: Install InfluxDB (yum)
+  yum:
+    name: influxdb
+    update_cache: yes
+  when: ansible_os_family == "RedHat"
+
+- name: Install Telegraf
+  yum:
+    name: telegraf
+    update_cache: yes
+  when: ansible_os_family == "RedHat"
+
+- name: Download Grafana
+  get_url:
+    url: "https://grafanarel.s3.amazonaws.com/builds/grafana-3.0.1-1.x86_64.rpm"
+    dest: "/tmp/grafana.rpm"
+  when: ansible_os_family == "RedHat"
+
+- name: Install Grafana
+  yum:
+    name: "/tmp/grafana.rpm"
+  when: ansible_os_family == "RedHat"
+#    name: grafana
+#    update_cache: yes
+
+
+#- name: Copy Grafana defaults
+#copy:
+#src: "/usr/share/grafana/conf"
+#dest: "{{ stats_conf_dir }}"
+
+- name: Create stats config directory
+  file:
+    path: "{{ stats_conf_dir }}"
+    state: directory
+    owner: stats
+    group: stats
+    mode: 0700
+
+- name: Create sentry var directory
+  file:
+    path: "{{ stats_var_dir }}"
+    state: directory
+    owner: stats
+    group: stats
+    mode: 0700
+
+- name: Copy stats configs
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ stats_conf_dir }}/{{ item }}"
+  with_items:
+    - influxdb.conf
+    - telegraf.conf
+    - grafana.conf
+
+- name: Create stats slurp virtualenv
+  pip:
+    name: "{{ item }}"
+    virtualenv: "{{ statslurp_venv_dir }}"
+    state: latest
+  with_items:
+    - pip
+    - setuptools
+    - influxdb
+    - psycopg2
+
+- name: Copy stats slurp scripts
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ statslurp_venv_dir }}/bin/{{ item }}"
+    mode: 0750
+    owner: root
+    group: stats
+  with_items:
+    - galaxy_slurp.py
