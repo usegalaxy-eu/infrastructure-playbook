@@ -31,11 +31,15 @@
       when: item.stat.exists
       tags: always
 
-  roles:
-    - role: ssh               # Enable password auth and root logins
-      tags: initial,ssh
-    - role: timezone          # Configure system timezone
-      tags: initial,timezone
+#  roles:
+#    - role: requiretty        # Disable requiretty for Ansible ssh pipelining
+#      tags: initial,requiretty
+#    - role: remote_management # Set up IPMI/serial stuff
+#      tags: initial,remote_management
+#    - role: ssh               # Enable password auth and root logins
+#      tags: initial,ssh
+#    - role: timezone          # Configure system timezone
+#      tags: initial,timezone
 #    - role: resolv            # Set resolv.conf for static hosts
 #      tags: initial,resolv
 #    - role: packages          # Install packages

@@ -1,0 +1,19 @@
+##
+## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
+##
+
+server {
+    listen      *:80;
+    server_name usegalaxy.eu;
+
+    access_log  /var/log/nginx/usegalaxy.eu_access.log;
+    error_log   /var/log/nginx/usegalaxy.eu_error.log;
+
+    root        /srv/nginx/usegalaxy.eu/root;
+
+    location / {
+        autoindex on;
+    }
+}
+
+# vim: set filetype=nginx
