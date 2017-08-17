@@ -1,9 +1,0 @@
----
-
-- name: restart nscd
-  service:
-    name: "nscd"
-    state: "restarted"
-
-- name: run pam-auth-update
-  command: /usr/sbin/pam-auth-update --package
