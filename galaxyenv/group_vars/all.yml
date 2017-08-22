@@ -6,3 +6,28 @@ resolv_nameservers:
   - 54.172.173.123
 resolv_domain: galaxyproject.org
 resolv_search: galaxyproject.org
+
+# Crabby
+dc: ufr-rz
+
+# Telegraf
+telegraf_agent_output:
+  - type: influxdb
+    config:
+    - urls = ["http://grafana.denbi.uni-freiburg.de:8086"]
+    - database = "rancher"
+
+telegraf_plugins_default:
+  - plugin: cpu
+    config:
+      - percpu = true
+  - plugin: disk
+  - plugin: kernel
+  - plugin: processes
+  - plugin: io
+  - plugin: mem
+  - plugin: system
+  - plugin: swap
+  - plugin: net
+  - plugin: netstat
+  - plugin: docker

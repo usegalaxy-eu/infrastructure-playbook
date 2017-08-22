@@ -4,7 +4,6 @@
   become: true
   tags: local,dns
   vars_files:
-    - "host_vars/all.yml"
     - "secret_group_vars/all.yml"
     - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
   roles:
@@ -15,8 +14,6 @@
   hosts: docker
   become: true
   tags: docker
-  vars_files:
-    - "host_vars/all.yml"
   vars:
     pip_install_packages:
       - name: docker
@@ -35,7 +32,6 @@
       - name: docker
       - name: docker-compose
   vars_files:
-    - "host_vars/all.yml"
     - "secret_group_vars/all.yml"
     - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
   roles:
@@ -47,7 +43,6 @@
   hosts: infrastructure
   become: true
   vars_files:
-    - "host_vars/all.yml"
     - "secret_group_vars/all.yml"
     - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
   pre_tasks:
