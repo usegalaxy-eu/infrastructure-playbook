@@ -1,0 +1,20 @@
+---
+telegraf_plugins_default:
+  - plugin: cpu
+    config:
+      - percpu = true
+  - plugin: disk
+  - plugin: kernel
+  - plugin: processes
+  - plugin: io
+  - plugin: mem
+  - plugin: system
+  - plugin: swap
+  - plugin: net
+  - plugin: netstat
+  - plugin: docker
+  - plugin: input.statsd
+    config:
+      - service_address = ":8125"
+      - percentiles = [90]
+      - metric_separator = "."

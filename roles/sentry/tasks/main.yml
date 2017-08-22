@@ -1,93 +1,92 @@
----
-# based on https://github.com/DandyDev/statserver/
+- name: Creates sentry config / data directory
+  file: path=/opt/sentry/ state=directory
 
-- name: Install sentry and dependencies
-  pip:
-    name: "{{ item }}"
-    virtualenv: "{{ sentry_prefix }}"
-  with_items:
-    - python-memcached
-    - sentry[postgres]
-    - uwsgi
-  environment:
-    # FIXME: ditry hack
-    PATH: "/usr/pgsql-9.5/bin:{{ ansible_env.PATH }}"
-
-- name: Create sentry config directory
-  file:
-    path: "{{ sentry_conf_dir }}"
-    state: directory
-
-- name: Create sentry var directory
-  file:
-    path: "{{ sentry_var_dir }}"
-    state: directory
-    owner: sentry
-    group: sentry
-    mode: 0700
-
-- name: Create sentry socket directory
-  file:
-    path: "{{ sentry_sock_dir }}"
-    state: directory
-    owner: sentry
-    group: nginx
-    mode: 0770
-
-- name: Copy sentry configs
+- name: Copy configuration file
   template:
-    src: "{{ item }}.j2"
-    dest: "{{ sentry_conf_dir }}/{{ item }}"
-  with_items:
-    - sentry.conf.py
-    - uwsgi.ini
-  # FIXME: HUP uwsgi
+    src: config.yml
+    dest: /opt/sentry/config.yml
+    owner: root
+    group: root
+    mode: 0644
 
-- name: Initialize/upgrade sentry database
-  become: yes
-  become_user: sentry
-  become_method: su
-  command: "{{ sentry_prefix }}/bin/sentry --config={{ sentry_conf_dir }}/sentry.conf.py upgrade"
-
-# Need to detect first run and do a `sentry createuser here`
-# Actually when running `sentry upgrade` interactively, it prompted me to create a new user
-
-- name: Check for redis
-  stat:
-    path: "{{ sentry_prefix }}/bin/redis-server"
-  register: redis_stat
-
-- name: Create temporary directory for building redis
-  command: mktemp -d
-  register: mktemp_cmd
-  when: not redis_stat.stat.exists
-
-- name: Fetch redis source
-  get_url:
-    url: "http://download.redis.io/redis-stable.tar.gz"
-    dest: "{{ mktemp_cmd.stdout }}/redis-stable.tar.gz"
-  when: not redis_stat.stat.exists
-
-- name: Unarchive redis source
-  unarchive:
-    copy: no
-    dest: "{{ mktemp_cmd.stdout }}"
-    src: "{{ mktemp_cmd.stdout }}/redis-stable.tar.gz"
-  when: not redis_stat.stat.exists
-
-- name: Compile redis
-  command: make PREFIX={{ sentry_prefix }} install
-  args:
-    chdir: "{{ mktemp_cmd.stdout }}/redis-stable"
-  when: not redis_stat.stat.exists
-
-- name: Clean up redis temporary directory
-  file:
-    path: "{{ mktemp_cmd.stdout }}"
-    state: absent
-  when: not redis_stat.stat.exists
-
-- name: Copy redis config
+- name: Copy sentry.conf.py file
   template:
-    src: "redis.conf.j2"
-    dest: "{{ sentry_conf_dir }}/redis.conf"
+    src: sentry.conf.py
+    dest: /opt/sentry/sentry.conf.py
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Copy Dockerfile
+  template:
+    src: Dockerfile
+    dest: /opt/sentry/Dockerfile
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Sentry docker-compose services
+  docker_service:
+    project_name: sentry
+    definition:
+      version: '2'
+      services:
+        base:
+          restart: always
+          build: .
+          environment:
+            SENTRY_MEMCACHED_HOST: memcached
+            SENTRY_REDIS_HOST: redis
+            SENTRY_POSTGRES_HOST: postgres
+            SENTRY_EMAIL_HOST: smtp
+            GITHUB_APP_ID: "{{ github_app_id }}"
+            GITHUB_API_SECRET: "{{ github_api_secret }}"
+            SENTRY_SECRET_KEY: "{{ sentry_secret_key }}"
+          volumes:
+            - ./data/sentry:/var/lib/sentry/files
+        smtp:
+          restart: always
+          image: tianon/exim4
+        memcached:
+          restart: always
+          image: memcached:1.4
+        redis:
+          restart: always
+          image: redis:3.2-alpine
+        postgres:
+          restart: always
+          image: postgres:9.5
+          volumes:
+            - ./data/postgres:/var/lib/postgresql/data
+        web:
+          restart: always
+          extends: base
+          links:
+            - redis
+            - postgres
+            - memcached
+            - smtp
+          ports:
+            - '9000:9000'
+          environment:
+            GITHUB_APP_ID: "{{ github_app_id }}"
+            GITHUB_API_SECRET: "{{ github_api_secret }}"
+            SENTRY_SECRET_KEY: "{{ sentry_secret_key }}"
+        cron:
+          restart: always
+          extends: base
+          command: run cron
+          links:
+            - redis
+            - postgres
+            - memcached
+            - smtp
+        worker:
+          restart: always
+          extends: base
+          command: run worker
+          links:
+            - redis
+            - postgres
+            - memcached
+            - smtp
