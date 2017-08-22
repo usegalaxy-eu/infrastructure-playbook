@@ -1,0 +1,19 @@
+---
+- name: Tasks for "crabby" hosts
+  hosts: crabby
+  become: true
+  tags: crabby
+  vars:
+    docker_install_compose: true
+    pip_install_packages:
+      - name: docker
+      - name: docker-compose
+  vars_files:
+    - "secret_group_vars/all.yml"
+    - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
+  roles:
+    - geerlingguy.pip
+    - geerlingguy.docker
+    - crabby
+    # If it is a crabby host, ensure it is monitored too.
+    - dj-wasabi.telegraf
