@@ -15,6 +15,8 @@
   hosts: docker
   become: true
   tags: docker
+  vars_files:
+    - "host_vars/all.yml"
   vars:
     pip_install_packages:
       - name: docker
