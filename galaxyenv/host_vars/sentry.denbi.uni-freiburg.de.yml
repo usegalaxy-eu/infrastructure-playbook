@@ -13,7 +13,7 @@ telegraf_plugins_default:
   - plugin: net
   - plugin: netstat
   - plugin: docker
-  - plugin: input.statsd
+  - plugin: statsd
     config:
       - service_address = ":8125"
       - percentiles = [90]
