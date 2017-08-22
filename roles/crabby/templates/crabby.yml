@@ -1,23 +1,19 @@
 jobs:
- - name: galaxy.uni-freiburg.de
+ - name: crabby.galaxy.uni-freiburg.de.login
+   type: selenium
+   url:  https://galaxy.uni-freiburg.de/root/login
+   interval: 30
+
+ - name: crabby.galaxy.uni-freiburg.de.index
    type: selenium
    url:  https://galaxy.uni-freiburg.de
    interval: 30
-   #cookies:
-    #- name: auth
-      #domain: mysite.org
-      #path: /
-      #value: DEADBEEFC0W123456789
-      #secure: true
-    #- name: session
-      #domain: mysite.org
-      #path: /
-      #value: abDijfeiF3290FijEIO30NC9jkqQER
-      #secure: false
- #- name: another_page
-   #type: simple
-   #url: https://some-other-site.org/some/page
-   #interval: 10
+   cookies:
+    - name: galaxysession
+      domain: galaxy.uni-freiburg.de
+      path: /
+      value: "{{ galaxysession_cookie }}"
+      secure: true
 
 selenium:
  url: http://selenium:4444/wd/hub
@@ -27,9 +23,9 @@ storage:
     graphite:
         host: grafana.denbi.uni-freiburg.de
         port: 2003
-        metric-namespace: crabby.crabby-unifreiburg-1
+        metric-namespace: "crabby.crabby-{{ dc }}"
         tags:
-            - crabby-unifreiburg-1
+            - "crabby-{{ dc }}"
 
 report-internal-metrics: true
 internal-metrics-gathering-interval: 15

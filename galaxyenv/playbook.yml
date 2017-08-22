@@ -31,11 +31,13 @@
     docker_install_compose: true
     pip_install_packages:
       - name: docker
+  vars_files:
+    - "secret_group_vars/all.yml"
+    - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
   roles:
     - geerlingguy.pip
     - geerlingguy.docker
     - crabby
-
 
 - name: Tasks for "base environment" hosts
   hosts: infrastructure
