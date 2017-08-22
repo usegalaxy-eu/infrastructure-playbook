@@ -1,6 +1,7 @@
 ---
 - name: Tasks for local environment
   hosts: localhost
+  become: true
   vars_files:
     - "secret_group_vars/all.yml"
     - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
