@@ -2,6 +2,7 @@
 - name: Tasks for local environment
   hosts: localhost
   become: true
+  tags: local,dns
   vars_files:
     - "secret_group_vars/all.yml"
     - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
@@ -12,6 +13,7 @@
 - name: Tasks for "docker" hosts
   hosts: docker
   become: true
+  tags: docker
   vars:
     pip_install_packages:
       - name: docker
@@ -23,6 +25,7 @@
 - name: Tasks for "crabby" hosts
   hosts: crabby
   become: true
+  tags: crabby
   roles:
     - geerlingguy.pip
     - geerlingguy.docker
