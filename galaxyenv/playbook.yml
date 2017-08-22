@@ -26,6 +26,9 @@
   hosts: crabby
   become: true
   tags: crabby
+  vars:
+    pip_install_packages:
+      - name: docker
   roles:
     - geerlingguy.pip
     - geerlingguy.docker
