@@ -8,10 +8,19 @@
   roles:
     - role: dns
 
+- name: Tasks for "docker" hosts
+  hosts: docker
+  become: true
+  vars:
+    pip_install_packages:
+      - name: docker
+  roles:
+    - geerlingguy.pip
+    - geerlingguy.docker
+
 - name: Tasks for "base environment" hosts
   hosts: infrastructure
   become: true
-  remote_user: ubuntu
   vars_files:
     - "secret_group_vars/all.yml"
     - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
