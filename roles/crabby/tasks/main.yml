@@ -10,23 +10,24 @@
     mode: 0644
 
 - name: Crabby docker-compose services
-  project_name: crabby
-  definition:
-    version: '2'
-    services:
-      selenium:
-        network_mode: "host"
-        image: selenium/standalone-chrome
-        ports:
-         - "127.0.0.1:4444:4444"
-      crabby:
-        network_mode: "host"
-        image: chrissnell/crabby
-        environment:
-          CRABBY_CONFIG: /config/config.yaml
-        volumes:
-         - /etc/crabby:/config
-        depends_on:
-        - selenium
-        links:
-        - selenium
+  docker_service:
+    project_name: crabby
+    definition:
+      version: '2'
+      services:
+        selenium:
+          network_mode: "host"
+          image: selenium/standalone-chrome
+          ports:
+           - "127.0.0.1:4444:4444"
+        crabby:
+          network_mode: "host"
+          image: chrissnell/crabby
+          environment:
+            CRABBY_CONFIG: /config/config.yaml
+          volumes:
+           - /etc/crabby:/config
+          depends_on:
+          - selenium
+          links:
+          - selenium
