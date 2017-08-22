@@ -19,6 +19,16 @@
     - geerlingguy.pip
     - geerlingguy.docker
 
+
+- name: Tasks for "crabby" hosts
+  hosts: crabby
+  become: true
+  roles:
+    - geerlingguy.pip
+    - geerlingguy.docker
+    - crabby
+
+
 - name: Tasks for "base environment" hosts
   hosts: infrastructure
   become: true
