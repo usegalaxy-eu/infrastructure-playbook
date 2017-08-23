@@ -27,3 +27,14 @@
           - selenium
           links:
           - selenium
+
+# We want telegraf to be able to monitor docker.
+- name: add user to docker group
+  user: name=telegraf groups=docker append=yes
+  sudo: true
+  register: user_task
+  
+- name: Kill open ssh sessions
+  shell: "ps -ef | grep sshd | grep `whoami` | awk '{print \"kill -9\", $2}' | sh"
+  when: user_task | changed
+  failed_when: false
