@@ -15,6 +15,40 @@ jobs:
       value: "{{ galaxysession_cookie }}"
       secure: true
 
+ - name: crabby.galaxy.uni-freiburg.de.tool_jbrowse
+   type: selenium
+   url:  https://galaxy.uni-freiburg.de/?tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fiuc%2Fjbrowse%2Fjbrowse%2F0.5.2&version=0.5.2
+   interval: 120
+   cookies:
+    - name: galaxysession
+      domain: galaxy.uni-freiburg.de
+      path: /
+      value: "{{ galaxysession_cookie }}"
+      secure: true
+
+ - name: crabby.galaxy.uni-freiburg.de.library_list
+   type: selenium
+   url:  https://galaxy.uni-freiburg.de/library/list
+   interval: 120
+   cookies:
+    - name: galaxysession
+      domain: galaxy.uni-freiburg.de
+      path: /
+      value: "{{ galaxysession_cookie }}"
+      secure: true
+
+ - name: crabby.galaxy.uni-freiburg.de.workflow_list
+   type: selenium
+   url:  https://galaxy.uni-freiburg.de/workflow/list_published
+   interval: 120
+   cookies:
+    - name: galaxysession
+      domain: galaxy.uni-freiburg.de
+      path: /
+      value: "{{ galaxysession_cookie }}"
+      secure: true
+
+
 selenium:
  url: http://selenium:4444/wd/hub
  job-stagger-offset: 30
