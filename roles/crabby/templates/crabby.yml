@@ -48,6 +48,16 @@ jobs:
       value: "{{ galaxysession_cookie }}"
       secure: true
 
+ - name: crabby.galaxy.uni-freiburg.de.local_tool
+   type: selenium
+   url:  https://galaxy.uni-freiburg.de/?tool_id=sort1
+   interval: 120
+   cookies:
+    - name: galaxysession
+      domain: galaxy.uni-freiburg.de
+      path: /
+      value: "{{ galaxysession_cookie }}"
+      secure: true
 
 selenium:
  url: http://selenium:4444/wd/hub
