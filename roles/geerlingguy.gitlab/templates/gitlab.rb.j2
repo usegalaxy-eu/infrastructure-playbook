@@ -40,5 +40,10 @@ nginx['listen_port'] = "{{ gitlab_nginx_listen_port }}"
 nginx['listen_https'] = "{{ gitlab_nginx_listen_https }}"
 {% endif %}
 
+nginx['redirect_http_to_https'] = true
+nginx['ssl_certificate']= "/etc/letsencrypt/live/gitlab.denbi.uni-freiburg.de/fullchain.pem"
+nginx['ssl_certificate_key'] = "/etc/letsencrypt/live/gitlab.denbi.uni-freiburg.de/privkey.pem"
+nginx['custom_gitlab_server_config']="location ^~ /.well-known {\n alias /var/www/letsencrypt/.well-known;\n}\n"
+
 # To change other settings, see:
 # https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/README.md#changing-gitlab-yml-settings
