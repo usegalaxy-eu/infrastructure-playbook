@@ -47,6 +47,10 @@ nginx['custom_gitlab_server_config']="location ^~ /.well-known {\n alias /var/ww
 
 # To change other settings, see:
 # https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/README.md#changing-gitlab-yml-settings
+gitlab_rails['omniauth_enabled'] = true
+# Auto-create users
+gitlab_rails['omniauth_allow_single_sign_on'] = true
+# Define providers
 gitlab_rails['omniauth_providers'] = [
 	{
 		"name" => "github",
