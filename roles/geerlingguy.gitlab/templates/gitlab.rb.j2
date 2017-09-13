@@ -50,6 +50,7 @@ nginx['custom_gitlab_server_config']="location ^~ /.well-known {\n alias /var/ww
 gitlab_rails['omniauth_enabled'] = true
 # Auto-create users
 gitlab_rails['omniauth_allow_single_sign_on'] = true
+gitlab_rails['block_auto_created_users'] = false
 # Define providers
 gitlab_rails['omniauth_providers'] = [
 	{
