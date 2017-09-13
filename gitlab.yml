@@ -1,3 +1,7 @@
-- hosts: gitlab
+---
+- name: Gitlab
+  hosts: gitlab
+  become: true
+  tags: gitlab
   roles:
     - { role: geerlingguy.gitlab }
