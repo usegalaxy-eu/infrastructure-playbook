@@ -47,3 +47,10 @@ nginx['custom_gitlab_server_config']="location ^~ /.well-known {\n alias /var/ww
 
 # To change other settings, see:
 # https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/README.md#changing-gitlab-yml-settings
+gitlab_rails['omniauth_providers'] = [
+{
+	"name" => "github",
+	"app_id" => "{{ gitlab_github_oauth_client_id }}",
+	"app_secret" => "{{ gitlab_github_oauth_client_secret }}",
+	"args" => { "scope" => "user:email"  }
+]
