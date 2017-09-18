@@ -31,3 +31,10 @@ telegraf_plugins_default:
   - plugin: net
   - plugin: netstat
   - plugin: docker
+
+unattended_origins_patterns:
+- 'origin=Ubuntu,archive=${distro_codename}-security'
+- 'o=Ubuntu,a=${distro_codename}-updates'
+unattended_automatic_reboot: true
+unattended_minimal_steps: true
+unattended_remove_unused_dependencies: true
