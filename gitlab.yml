@@ -1,0 +1,10 @@
+---
+- name: Gitlab
+  hosts: gitlab
+  become: true
+  tags: gitlab
+  vars_files:
+    - "secret_group_vars/gitlab.yml"
+    - "secret_group_vars/all.yml"
+  roles:
+    - { role: geerlingguy.gitlab }
