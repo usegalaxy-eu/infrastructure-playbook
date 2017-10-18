@@ -6,9 +6,9 @@
     - "secret_group_vars/all.yml"
     - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
   roles:
-    - dev-sec.os-hardening
-    - dev-sec.ssh-hardening
     - geerlingguy.java
     - geerlingguy.jenkins
     - dj-wasabi.telegraf
     - jnv.unattended-upgrades
+    - dev-sec.os-hardening
+    - dev-sec.ssh-hardening
