@@ -1,0 +1,102 @@
+---
+
+- name: Create influxdb group
+  group:
+    name: "{{ influxdb_group }}"
+    state: present
+  tags:
+    - influxdb
+
+- name: Create influxdb user
+  user:
+    name: "{{ influxdb_user }}"
+    group: "{{ influxdb_group }}"
+    state: present
+  tags:
+    - influxdb
+
+- name: Configure collectd
+  include: collectd.yml
+  when: influxdb_collectd_enabled == "true"
+
+- include: install-download.yml
+  when: influxdb_install_method == "download"
+  tags:
+    - influxdb
+
+- include: install-debian.yml
+  when: influxdb_install_method == "repository" and ansible_distribution in ["Debian", "Ubuntu"]
+  tags:
+    - influxdb
+
+- name: Create data and config directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    group: "{{ influxdb_group }}"
+    owner: "{{ influxdb_user }}"
+  with_items:
+    - "{{ influxdb_data_dir }}"
+    - "{{ influxdb_meta_dir }}"
+    - "{{ influxdb_wal_dir }}"
+    - "{{ influxdb_config_dir }}"
+  tags:
+    - influxdb
+
+- name: Write config
+  template:
+    src: conf.j2
+    dest: "{{ influxdb_generated_config }}"
+    group: "{{ influxdb_group }}"
+    owner: "{{ influxdb_user }}"
+  register: write_config
+  notify:
+    - restart influxdb
+  tags:
+    - influxdb
+
+- name: Run config update
+  command: "{{ influxdb_influxd_bin }} config -config {{ influxdb_generated_config }}"
+  register: influxdb_merged_config
+  become: yes
+  when: write_config | changed
+  tags:
+    - influxdb
+
+- name: Write merged config
+  copy:
+    content: "{{ influxdb_merged_config.stdout }}"
+    dest: "{{ influxdb_config_file }}"
+    group: "{{ influxdb_group }}"
+    owner: "{{ influxdb_user }}"
+  when: influxdb_merged_config | changed
+  tags:
+    - influxdb
+
+- name: Ensure directories have correct permissions
+  file:
+    path: "{{ item  }}"
+    owner: "{{ influxdb_user }}"
+    group: "{{ influxdb_group }}"
+    recurse: yes
+  with_items:
+    - "{{ influxdb_meta_dir }}"
+    - "{{ influxdb_data_dir }}"
+    - "{{ influxdb_wal_dir }}"
+  tags:
+    - influxdb
+
+- name: Write init.d script
+  template:
+    src: init.d.influxd.j2
+    dest: "/etc/init.d/influxd"
+    mode: 0755
+  tags:
+    - influxdb
+
+- name: Start influxdb service
+  service:
+    name: influxd
+    state: started
+  tags:
+    - influxdb

@@ -1,0 +1,13 @@
+---
+
+language: ruby
+rvm:
+  - 2.2.3
+before_install:
+  - sudo apt-get update -qq
+  - "curl -fsSL https://get.docker.com/ | sh"
+  - sudo usermod -aG docker travis
+install:
+  - bundle install --jobs=4
+script:
+  - bundle exec kitchen test

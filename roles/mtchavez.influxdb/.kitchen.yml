@@ -1,0 +1,55 @@
+---
+
+driver:
+  name: docker
+
+platforms:
+  - name: "ubuntu-14.04"
+
+verifier:
+  name: shell
+  command: rspec -c -f d -I serverspec spec/*_spec.rb
+
+suites:
+  - name: default
+    provisioner:
+      name: ansible_playbook
+      playbook: role.yml
+      hosts: hosts
+      ansible_extra_flags: "<%= ENV['ANSIBLE_EXTRA_FLAGS'] %>"
+      additional_copy_path:
+        - "."
+    verifier:
+      patterns:
+        - "./spec/*_spec.rb"
+
+suites:
+  - name: collectd
+    provisioner:
+      name: ansible_playbook
+      playbook: role.yml
+      hosts: hosts
+      extra_vars:
+        influxdb_install_method: "repository"
+        influxdb_collectd_enabled: "true"
+        influxdb_admin_enabled: "true"
+      additional_copy_path:
+        - "."
+    verifier:
+      patterns:
+        - "./spec/*_spec.rb"
+
+  - name: download
+    provisioner:
+      name: ansible_playbook
+      playbook: role.yml
+      hosts: hosts
+      extra_vars:
+        influxdb_install_method: "download"
+        influxdb_collectd_enabled: "true"
+        influxdb_admin_enabled: "true"
+      additional_copy_path:
+        - "."
+    verifier:
+      patterns:
+        - "./spec/*_spec.rb"
