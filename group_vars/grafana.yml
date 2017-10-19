@@ -45,7 +45,7 @@ grafana_database_path: grafana.db
 
 grafana_database:
   type: "sqlite3"
-  path: "/home/ubuntu/grafana.db"
+  path: "grafana.db"
 
 
 grafana_session_cookie_secure: "true"
@@ -64,9 +64,6 @@ grafana_security_admin_user: admin
 
 # Default admin password, can be changed before first start of grafana,  or in profile settings
 grafana_security_admin_password: admin
-
-# Used for signing
-grafana_security_secret_key: SW2YcwTIb9zpOOhoPsMm
 
 # Auto-login remember days
 grafana_security_login_remember_days: 7
@@ -119,7 +116,7 @@ grafana_auth__github:
   auth_url: "https://github.com/login/oauth/authorize"
   token_url: "https://github.com/login/oauth/access_token"
   api_url: "https://api.github.com/user"
-  allowed_domains: "usegalaxy.eu galaxyproject"
+  allowed_organisations: "usegalaxy.eu galaxyproject"
 
 grafana_config:
   app_mode: "{{ grafana_app_mode }}"
