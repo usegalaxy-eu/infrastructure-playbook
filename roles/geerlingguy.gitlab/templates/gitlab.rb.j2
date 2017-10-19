@@ -1,6 +1,12 @@
 # The URL through which GitLab will be accessed.
 external_url "{{ gitlab_external_url }}"
 
+mattermost_external_url '{{ gitlab_mattermost_url }}'
+mattermost_nginx['redirect_http_to_https'] = true
+mattermost_nginx['ssl_certificate']= "{{ mattermost_ssl_certificate }}"
+mattermost_nginx['ssl_certificate_key'] = "{{ mattermost_ssl_certificate_key }}"
+mattermost_nginx['custom_gitlab_mattermost_server_config']="location ^~ /.well-known {\n alias /var/www/letsencrypt/.well-known;\n}\n"
+
 # gitlab.yml configuration
 gitlab_rails['time_zone'] = "{{ gitlab_time_zone }}"
 gitlab_rails['backup_keep_time'] = {{ gitlab_backup_keep_time }}
@@ -15,6 +21,7 @@ gitlab_rails['gitlab_email_reply_to'] = "{{ gitlab_email_reply_to }}"
 nginx['redirect_http_to_https'] = {{ gitlab_redirect_http_to_https }}
 nginx['ssl_certificate'] = "{{ gitlab_ssl_certificate }}"
 nginx['ssl_certificate_key'] = "{{ gitlab_ssl_certificate_key }}"
+nginx['custom_gitlab_server_config']="location ^~ /.well-known {\n alias /var/www/letsencrypt/.well-known;\n}\n"
 
 # The directory where Git repositories will be stored.
 git_data_dirs({"default" => "{{ gitlab_git_data_dir }}"})
