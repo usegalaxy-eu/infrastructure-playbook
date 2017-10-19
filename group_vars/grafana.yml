@@ -93,6 +93,7 @@ grafana_users:
   allow_org_create: "{{ grafana_users_allow_org_create }}"
   auto_assign_org: "{{ grafana_users_auto_assign_org }}"
   auto_assign_org_role: "{{ grafana_users_auto_assign_org_role }}"
+  default_theme: "light"
 
 
 # Enable anonymous access
@@ -109,27 +110,16 @@ grafana_auth__anonymous:
   org_name: "{{ grafana_auth__anonymous_org_name }}"
   org_role: "{{ grafana_auth__anonymous_org_role }}"
 
-
-grafana_auth__github_enabled: "false"
-grafana_auth__github_client_id: some_id
-grafana_auth__github_client_secret: some_secret
-grafana_auth__github_scopes: user:email
-grafana_auth__github_auth_url: https://github.com/login/oauth/authorize
-grafana_auth__github_token_url: https://github.com/login/oauth/access_token
-grafana_auth__github_api_url: https://api.github.com/user
-grafana_auth__github_allowed_domains: ""
-grafana_auth__github_allow_sign_up: "false"
-
 grafana_auth__github:
-  enabled: "{{ grafana_auth__github_enabled }}"
+  enabled: "true"
+  allow_sign_up: "true"
   client_id: "{{ grafana_auth__github_client_id }}"
   client_secret: "{{ grafana_auth__github_client_secret }}"
-  scopes: "{{ grafana_auth__github_scopes }}"
-  auth_url: "{{ grafana_auth__github_auth_url }}"
-  token_url: "{{ grafana_auth__github_token_url }}"
-  api_url: "{{ grafana_auth__github_api_url }}"
-  allowed_domains: "{{ grafana_auth__github_allowed_domains }}"
-  allow_sign_up: "{{ grafana_auth__github_allow_sign_up }}"
+  scopes: "user:email,read:org"
+  auth_url: "https://github.com/login/oauth/authorize"
+  token_url: "https://github.com/login/oauth/access_token"
+  api_url: "https://api.github.com/user"
+  allowed_domains: "usegalaxy.eu galaxyproject"
 
 grafana_config:
   app_mode: "{{ grafana_app_mode }}"
