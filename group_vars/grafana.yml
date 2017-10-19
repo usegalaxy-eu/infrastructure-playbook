@@ -1,0 +1,149 @@
+grafana_app_mode: production
+grafana_server_protocol: http
+grafana_server_http_addr: "127.0.0.1"
+grafana_server_http_port: 3000
+grafana_server_domain: grafana.denbi.uni-freiburg.de
+# The full public facing url
+grafana_server_root_url: "https://%(domain)s/"
+grafana_server_router_logging: "false"
+
+# The path relative to the binary where the static (html/js/css) files are placed
+grafana_server_static_root_path: public
+
+# Enable gzip
+grafana_server_enable_gzip: "false"
+
+# SSL cert & key file if grafana_server_protocol is https
+grafana_server_cert_file: ""
+grafana_server_cert_key: ""
+
+grafana_server:
+  protocol: "{{ grafana_server_protocol }}"
+  http_addr: "{{ grafana_server_http_addr }}"
+  http_port: "{{ grafana_server_http_port }}"
+  domain: "{{ grafana_server_domain }}"
+  root_url: "{{ grafana_server_root_url }}"
+  router_logging: "{{ grafana_server_router_logging }}"
+  static_root_path: "{{ grafana_server_static_root_path }}"
+  enable_gzip: "{{ grafana_server_enable_gzip }}"
+  cert_file: "{{ grafana_server_cert_file }}"
+  cert_key: "{{ grafana_server_cert_key }}"
+
+
+# Either "mysql", "postgres" or "sqlite3", it's your choice
+grafana_database_type: sqlite3
+grafana_database_host: 127.0.0.1:3306
+grafana_database_name: grafana
+grafana_database_user: root
+grafana_database_password: ""
+
+# For "postgres" only, either "disable", "require" or "verify-full"
+grafana_database_ssl_mode: disable
+
+# For "sqlite3" only, path relative to data_path setting
+grafana_database_path: grafana.db
+
+grafana_database:
+  type: "sqlite3"
+  path: "/home/ubuntu/grafana.db"
+
+
+grafana_session_cookie_secure: "true"
+grafana_session_session_life_time: 86400
+
+grafana_analytics_reporting_enabled: "false"
+grafana_analytics_google_analytics_ua_id: ""
+
+grafana_analytics:
+  reporting_enabled: "{{ grafana_analytics_reporting_enabled }}"
+  google_analytics_ua_id: "{{ grafana_analytics_google_analytics_ua_id }}"
+
+
+# Default admin user, created on startup
+grafana_security_admin_user: admin
+
+# Default admin password, can be changed before first start of grafana,  or in profile settings
+grafana_security_admin_password: admin
+
+# Used for signing
+grafana_security_secret_key: SW2YcwTIb9zpOOhoPsMm
+
+# Auto-login remember days
+grafana_security_login_remember_days: 7
+grafana_security_cookie_username: grafana_user
+grafana_security_cookie_remember_name: grafana_remember
+
+grafana_security:
+  admin_user: "{{ grafana_security_admin_user }}"
+  admin_password: "{{ grafana_security_admin_password }}"
+  secret_key: "{{ grafana_security_secret_key }}"
+  login_remember_days: "{{ grafana_security_login_remember_days }}"
+  cookie_username: "{{ grafana_security_cookie_username }}"
+  cookie_remember_name: "{{ grafana_security_cookie_remember_name }}"
+
+
+# Disable user signup / registration
+grafana_users_allow_sign_up: "false"
+grafana_users_allow_org_create: "false"
+grafana_users_auto_assign_org: "false"
+grafana_users_auto_assign_org_role: Viewer
+
+grafana_users:
+  allow_sign_up: "{{ grafana_users_allow_sign_up }}"
+  allow_org_create: "{{ grafana_users_allow_org_create }}"
+  auto_assign_org: "{{ grafana_users_auto_assign_org }}"
+  auto_assign_org_role: "{{ grafana_users_auto_assign_org_role }}"
+
+
+# Enable anonymous access
+grafana_auth__anonymous_enabled: "true"
+
+# Specify organization name that should be used for unauthenticated users
+grafana_auth__anonymous_org_name: Main Org.
+
+# Specify role for unauthenticated users
+grafana_auth__anonymous_org_role: Viewer
+
+grafana_auth__anonymous:
+  enabled: "{{ grafana_auth__anonymous_enabled }}"
+  org_name: "{{ grafana_auth__anonymous_org_name }}"
+  org_role: "{{ grafana_auth__anonymous_org_role }}"
+
+
+grafana_auth__github_enabled: "false"
+grafana_auth__github_client_id: some_id
+grafana_auth__github_client_secret: some_secret
+grafana_auth__github_scopes: user:email
+grafana_auth__github_auth_url: https://github.com/login/oauth/authorize
+grafana_auth__github_token_url: https://github.com/login/oauth/access_token
+grafana_auth__github_api_url: https://api.github.com/user
+grafana_auth__github_allowed_domains: ""
+grafana_auth__github_allow_sign_up: "false"
+
+grafana_auth__github:
+  enabled: "{{ grafana_auth__github_enabled }}"
+  client_id: "{{ grafana_auth__github_client_id }}"
+  client_secret: "{{ grafana_auth__github_client_secret }}"
+  scopes: "{{ grafana_auth__github_scopes }}"
+  auth_url: "{{ grafana_auth__github_auth_url }}"
+  token_url: "{{ grafana_auth__github_token_url }}"
+  api_url: "{{ grafana_auth__github_api_url }}"
+  allowed_domains: "{{ grafana_auth__github_allowed_domains }}"
+  allow_sign_up: "{{ grafana_auth__github_allow_sign_up }}"
+
+grafana_config:
+  app_mode: "{{ grafana_app_mode }}"
+  paths: "{{ grafana_paths }}"
+  server: "{{ grafana_server }}"
+  database: "{{ grafana_database }}"
+  session: "{{ grafana_session }}"
+  analytics: "{{ grafana_analytics }}"
+  security: "{{ grafana_security }}"
+  users: "{{ grafana_users }}"
+  auth.anonymous: "{{ grafana_auth__anonymous }}"
+  auth.github: "{{ grafana_auth__github }}"
+  auth.google: "{{ grafana_auth__google }}"
+  log: "{{ grafana_log }}"
+  log.console: "{{ grafana_log__console }}"
+  log.file: "{{ grafana_log__file }}"
+  event_publisher: "{{ grafana_event_publisher }}"

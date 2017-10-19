@@ -29,6 +29,11 @@
   tags:
     - influxdb
 
+- include: install-rhel.yml
+  when: influxdb_install_method == "repository" and ansible_distribution in ["Enterprise Linux", "CentOS"]
+  tags:
+    - influxdb
+
 - name: Create data and config directories
   file:
     path: "{{ item }}"

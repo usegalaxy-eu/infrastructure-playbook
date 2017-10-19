@@ -1,0 +1,17 @@
+- name: "Enable EPEL"
+  yum:
+    name: epel-release
+    state: installed
+
+- name: "Add yum repository | RedHat"
+  yum_repository:
+    name: influxdb
+    description: InfluxDB Repository - RHEL $releasever
+    baseurl: https://repos.influxdata.com/rhel/$releasever/$basearch/stable
+    gpgcheck: yes
+    gpgkey: https://repos.influxdata.com/influxdb.key
+
+- name: "Install telegraf package | RedHat"
+  yum:
+    name: "influxdb"
+    state: installed
