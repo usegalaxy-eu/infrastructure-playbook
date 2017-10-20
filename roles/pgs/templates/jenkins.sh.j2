@@ -1,0 +1,46 @@
+#!/bin/bash
+set -e
+
+args_arr=($@)
+# "zeroth" argument (i.e. $1)
+jenkins_job=${args_arr[0]}
+# Everything after the first two arguments
+exec_parts=${@:2}
+
+stderr_log=`mktemp`
+stdout_log=`mktemp`
+timer=`date +"%s"`
+
+function report() {
+	result=$?
+	timer=$((`date +"%s"` - $timer))
+
+	log=`mktemp`
+	printf "\n=== STDOUT ===\n" >> "$log";
+	cat $stdout_log >> $log
+	printf "\n=== STDERR ===\n" >> "$log";
+	cat $stderr_log >> $log
+	printf "\n\nuser: %s\n" $(whoami) >> "$log";
+	printf "host: %s\n" $(hostname -f) >> "$log";
+	printf "date: %s %s %s %s %s %s\n" $(date) >> "$log";
+	printf "time: %s second(s)\n" $timer >> "$log";
+	printf "exit: %d\n" $result >> "$log"
+	rm -f $stderr_log $stdout_log
+
+	# binary encode the log file for Jenkins
+	msg=`cat "$log" | hexdump -v -e '1/1 "%02x"'`
+	crumb=$(wget --auth-no-challenge --output-document - -q --user {{ jenkins.username }} --password {{ jenkins.password }} '{{ jenkins.url }}/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)')
+
+	# post the log to jenkins
+	curl -X POST \
+		-H "$crumb" \
+		-u "{{ jenkins.username }}:{{ jenkins.password }}" \
+		-d "<run><log encoding=\"hexBinary\">$msg</log><result>$result</result><duration>$timer</duration></run>" \
+		"{{ jenkins.url }}/job/$jenkins_job/postBuildResult"
+
+	rm -f "$log"
+}
+
+trap report EXIT;
+
+eval "$exec_parts" 2>$stderr_log >$stdout_log
