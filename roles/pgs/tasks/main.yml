@@ -10,7 +10,15 @@
   git:
     repo: 'https://github.com/martenson/public-galaxy-servers/'
     dest: "{{ pgs_repo_dir }}"
-    version: 40438581e560b56847248504a6e481e892496085
+    version: master
+    #40438581e560b56847248504a6e481e892496085
+    #
+- name: Correct ownership
+  file:
+    dest: "{{ pgs_repo_dir }}"
+    owner: ubuntu
+    group: ubuntu
+    recurse: yes
 
 - name: "Template runner script"
   template:
@@ -23,6 +31,11 @@
 - name: "Install requirements"
   pip:
     requirements: "{{ pgs_repo_dir }}/requirements.txt"
+    virtualenv: "{{ pgs_dir }}/venv"
+
+- name: "Install influxdb"
+  pip:
+    name: influxdb
     virtualenv: "{{ pgs_dir }}/venv"
 
 - name: Correct ownership
