@@ -16,6 +16,7 @@ function report() {
 	timer=$((`date +"%s"` - $timer))
 
 	log=`mktemp`
+	dump=`mktemp`
 	printf "\n=== STDOUT ===\n" >> "$log";
 	cat $stdout_log >> $log
 	printf "\n=== STDERR ===\n" >> "$log";
@@ -27,15 +28,18 @@ function report() {
 	printf "exit: %d\n" $result >> "$log"
 	rm -f $stderr_log $stdout_log
 
-	# binary encode the log file for Jenkins
-	msg=`cat "$log" | hexdump -v -e '1/1 "%02x"'`
+	# escape + binary encode the log file for Jenkins
+	echo "<run><result>$result</result><duration>$timer</duration><log encoding=\"hexBinary\">" > $dump;
+	cat "$log" | sed -e 's~&~\&amp;~g' -e 's~<~\&lt;~g' -e 's~>~\&gt;~g' -e 's~\"~\&quot;~g' -e "s~\'~\&apos;~g" | hexdump -v -e '1/1 "%02x"' >> $dump;
+	echo "</log></run>" >> $dump;
+
 	crumb=$(wget --auth-no-challenge --output-document - -q --user {{ jenkins.username }} --password {{ jenkins.password }} '{{ jenkins.url }}/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)')
 
 	# post the log to jenkins
 	curl -X POST \
 		-H "$crumb" \
 		-u "{{ jenkins.username }}:{{ jenkins.password }}" \
-		-d "<run><log encoding=\"hexBinary\">$msg</log><result>$result</result><duration>$timer</duration></run>" \
+		-d "@$dump" \
 		"{{ jenkins.url }}/job/$jenkins_job/postBuildResult"
 
 	rm -f "$log"
