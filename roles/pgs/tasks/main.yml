@@ -1,21 +1,39 @@
 ---
-- git:
-    repo: 'https://github.com/martenson/public-galaxy-servers/'
-    dest: "{{ pgs_repo_dir }}"
-    version: 40438581e560b56847248504a6e481e892496085
-
-- template:
-    src: script.sh.j2
-    dest: "{{ pgs_repo_dir }}.sh"
+- name: "Make parent dir"
+  file:
+    dest: "{{ pgs_dir }}"
     owner: ubuntu
     group: ubuntu
     mode: 0755
 
-- pip:
-    requirements: "{{ pgs_repo_dir }}/requirements.txt"
-    virtualenv: "{{ pgs_repo_dir }}/.venv"
+- name: "Clone repository"
+  git:
+    repo: 'https://github.com/martenson/public-galaxy-servers/'
+    dest: "{{ pgs_repo_dir }}"
+    version: 40438581e560b56847248504a6e481e892496085
 
-- cron:
+- name: "Template runner script"
+  template:
+    src: script.sh.j2
+    dest: "{{ pgs_repo_dir }}.sh"
+    owner: ubuntu
+    group: ubuntu
+    mode: 0750
+
+- name: "Install requirements"
+  pip:
+    requirements: "{{ pgs_repo_dir }}/requirements.txt"
+    virtualenv: "{{ pgs_dir }}/venv"
+
+- name: Correct ownership
+  file:
+    dest: "{{ pgs_dir }}/venv"
+    owner: ubuntu
+    group: ubuntu
+    recurse: yes
+
+- name: "Configure hourly cron job"
+  cron:
     name: "run public-galaxy-server collector/processing"
     minute: "0"
     hour: "*"
