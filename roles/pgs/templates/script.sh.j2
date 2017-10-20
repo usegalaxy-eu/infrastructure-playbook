@@ -1,5 +1,35 @@
 #!/bin/bash
-set -ex
+set -e
+
+{% if jenkins %}
+log=`mktemp`
+timer=`date +"%s"`
+
+function report() {
+	result=$?
+	timer=$((`date +"%s"` - $timer))
+
+	echo "`whoami`@`hostname -f` `date`: elapsed $timer second(s)" >> "$log"
+	echo "exit code $result" >> "$log"
+
+	# binary encode the log file for Jenkins
+	msg=`cat "$log" | hexdump -v -e '1/1 "%02x"'`
+	rm -f $log
+
+	# Obtain a crumb
+	crumb=$(wget --auth-no-challenge --output-document - -q --user {{ jenkins.username }} --password {{ jenkins.password }} '{{ jenkins.url }}/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)')
+
+
+	# post the log to jenkins
+	curl -X POST \
+		-H "$crumb" \
+		-u "{{ jenkins.username }}:{{ jenkins.password }}" \
+		-d "<run><log encoding=\"hexBinary\">$msg</log><result>$result</result><duration>$timer</duration></run>" \
+		{{ jenkins.url }}/job/{{ jenkins.job }}/postBuildResult
+}
+trap report EXIT;
+{% endif %}
+
 cd {{ pgs_repo_dir }};
 . {{ pgs_repo_dir }}/.venv;
 python process.py --json_dir {{ web_dir }} --influx --influx_db {{ influx_db }} --influx_host {{ influx_host }} --influx_port {{ influx_port }}
