@@ -26,12 +26,14 @@ function report() {
 	printf "date: %s %s %s %s %s %s\n" $(date) >> "$log";
 	printf "time: %s second(s)\n" $timer >> "$log";
 	printf "exit: %d\n" $result >> "$log"
-	rm -f $stderr_log $stdout_log
 
 	# escape + binary encode the log file for Jenkins
-	echo "<run><result>$result</result><duration>$timer</duration><log encoding=\"hexBinary\">" > $dump;
-	cat "$log" | sed -e 's~&~\&amp;~g' -e 's~<~\&lt;~g' -e 's~>~\&gt;~g' -e 's~\"~\&quot;~g' -e "s~\'~\&apos;~g" | hexdump -v -e '1/1 "%02x"' >> $dump;
-	echo "</log></run>" >> $dump;
+	echo "<run>" > $dump;
+	echo -n "  <log encoding=\"hexBinary\">" >> $dump
+	cat "$log" | hexdump -v -e '1/1 "%02x"' >> $dump;
+	echo "</log>" >> $dump
+	echo "  <result>$result</result>" >> $dump;
+	echo "</run>" >> $dump;
 
 	crumb=$(wget --auth-no-challenge --output-document - -q --user {{ jenkins.username }} --password {{ jenkins.password }} '{{ jenkins.url }}/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)')
 
@@ -42,7 +44,7 @@ function report() {
 		-d "@$dump" \
 		"{{ jenkins.url }}/job/$jenkins_job/postBuildResult"
 
-	rm -f "$log"
+	rm -f $stderr_log $stdout_log $log $dump;
 }
 
 trap report EXIT;
