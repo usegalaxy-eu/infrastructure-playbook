@@ -1,0 +1,23 @@
+---
+- git:
+    repo: 'https://github.com/martenson/public-galaxy-servers/'
+    dest: "{{ pgs_repo_dir }}"
+    version: 40438581e560b56847248504a6e481e892496085
+
+- template:
+    src: script.sh.j2
+    dest: "{{ pgs_repo_dir }}.sh"
+    owner: ubuntu
+    group: ubuntu
+    mode: 0755
+
+- pip:
+    requirements: "{{ pgs_repo_dir }}/requirements.txt"
+    virtualenv: "{{ pgs_repo_dir }}/.venv"
+
+- cron:
+    name: "run public-galaxy-server collector/processing"
+    minute: "0"
+    hour: "*"
+    user: ubuntu
+    job: "bash {{ pgs_repo_dir }}.sh"
