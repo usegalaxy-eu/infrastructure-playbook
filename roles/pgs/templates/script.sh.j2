@@ -30,7 +30,7 @@ function report() {
 trap report EXIT;
 {% endif %}
 
-. {{ pgs_dir }}/venv;
+. {{ pgs_dir }}/venv/bin/activate;
 cd {{ pgs_repo_dir }};
 python process.py --json_dir {{ web_dir }} --influx --influx_db {{ influx_db }} --influx_host {{ influx_host }} --influx_port {{ influx_port }}
 python badges.py {{ web_dir }} {{ web_dir }}/badges/
