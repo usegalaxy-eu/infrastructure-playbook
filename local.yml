@@ -7,8 +7,8 @@
     - "secret_group_vars/all.yml"
     - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
   roles:
-    - dev-sec.os-hardening
-    - dev-sec.ssh-hardening
+    #- dev-sec.os-hardening
+    #- dev-sec.ssh-hardening
     - dns
-    - geerlingguy.pip
-    - geerlingguy.docker
+    #- geerlingguy.pip
+    #- geerlingguy.docker

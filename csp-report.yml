@@ -1,0 +1,32 @@
+
+---
+- name: CSP Reporting Host
+  hosts: csp-report
+  become: true
+  tags: csp-report
+  vars:
+    php_enable_php_fpm: true
+    letsencrypt_webroot_path: /var/www/html
+    letsencrypt_email: hxr@informatik.uni-freiburg.de
+    letsencrypt_cert_domains:
+        - csp.usegalaxy.eu
+    letsencrypt_renewal_command_args: '--renew-hook "systemctl restart httpd"'
+    apache_vhosts_ssl:
+      - servername: "csp.usegalaxy.eu"
+        documentroot: "/var/www/html/"
+        apache_ssl_protocol: "All -SSLv2 -SSLv3"
+        apache_ssl_cipher_suite: "AES256+EECDH:AES256+EDH"
+        apache_allow_override: "All"
+        apache_options: "-Indexes +FollowSymLinks"
+        certificate_file: "/etc/letsencrypt/live/csp.usegalaxy.eu/cert.pem"
+        certificate_key_file: "/etc/letsencrypt/live/csp.usegalaxy.eu/privkey.pem"
+        certificate_chain_file: "/etc/letsencrypt/live/csp.usegalaxy.eu/chain.pem"
+        extra_parameters: |
+              ProxyPassMatch ^/(.*\.php(/.*)?)$ "fcgi://127.0.0.1:9000/var/www/html/"
+
+  roles:
+    - geerlingguy.repo-epel
+    - geerlingguy.apache
+    - geerlingguy.php
+    - geerlingguy.apache-php-fpm
+    - thefinn93.letsencrypt

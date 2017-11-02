@@ -26,3 +26,15 @@
     wait: yes
     aws_access_key: "{{ AWS_ACCESS_KEY }}"
     aws_secret_key: "{{ AWS_SECRET_KEY }}"
+
+- name: CSP Reporting Host
+  route53:
+    command: create
+    zone: "usegalaxy.eu"
+    record: csp.usegalaxy.eu
+    type: A
+    ttl: 7200
+    value: 192.52.3.60
+    wait: yes
+    aws_access_key: "{{ AWS_ACCESS_KEY }}"
+    aws_secret_key: "{{ AWS_SECRET_KEY }}"
