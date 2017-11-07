@@ -82,7 +82,7 @@ influxdb_subscriber_write_concurrency: 40
 influxdb_subscriber_write_buffer_size: 1000
 
 # [[graphite]]
-influxdb_graphite_enabled: "false"
+influxdb_graphite_enabled: "true"
 influxdb_graphite_database: "graphite"
 influxdb_graphite_retention_policy: ""
 influxdb_graphite_bind_address: ":2003"
@@ -94,8 +94,8 @@ influxdb_graphite_batch_timeout: "1s"
 influxdb_graphite_udp_read_buffer: 0
 influxdb_graphite_separator: "."
 #influxdb_graphite_tags: [ "region=us-east", "zone=1c" ]
-influxdb_graphite_templates:
-  - "type.host.measurement.device"
+#influxdb_graphite_templates:
+#  - "type.host.measurement.device"
 
 # [[collectd]]
 influxdb_collectd_enabled: "false"
