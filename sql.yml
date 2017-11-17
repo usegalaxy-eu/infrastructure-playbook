@@ -1,8 +1,6 @@
 ---
 - hosts: sql
   become: true
-  vars:
-    influxdb_base_data_dir: /data
   vars_files:
     - "secret_group_vars/all.yml"
     - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
