@@ -27,3 +27,19 @@ haproxy_global_vars:
     - 'ssl-default-bind-ciphers AES128+EECDH:AES128+EDH'
 
 haproxy_stats: true
+
+telegraf_plugins_default:
+  - plugin: cpu
+    config:
+      - percpu = true
+  - plugin: disk
+  - plugin: kernel
+  - plugin: processes
+  - plugin: io
+  - plugin: mem
+  - plugin: system
+  - plugin: swap
+  - plugin: net
+  - plugin: haproxy
+    config:
+      - servers = ["http://127.0.0.1:8080/haproxy?stats"]
