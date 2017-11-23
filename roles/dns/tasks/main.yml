@@ -3,50 +3,28 @@
   pip:
     name: boto
 
-- name: Set homepage DNS entry
+- name: Set DNS entries
   route53:
     command: create
     zone: "usegalaxy.eu"
-    record: usegalaxy.eu
-    type: A
+    record: "{{ item.record }}"
+    type: "{{ item.type }}"
     ttl: 7200
-    value: 192.52.3.205
+    value: "{{ item.value }}"
     wait: yes
     aws_access_key: "{{ AWS_ACCESS_KEY }}"
     aws_secret_key: "{{ AWS_SECRET_KEY }}"
-
-- name: AWX Tower
-  route53:
-    command: create
-    zone: "usegalaxy.eu"
-    record: tower.usegalaxy.eu
-    type: A
-    ttl: 7200
-    value: 192.52.3.92
-    wait: yes
-    aws_access_key: "{{ AWS_ACCESS_KEY }}"
-    aws_secret_key: "{{ AWS_SECRET_KEY }}"
-
-- name: CSP Reporting Host
-  route53:
-    command: create
-    zone: "usegalaxy.eu"
-    record: csp.usegalaxy.eu
-    type: A
-    ttl: 7200
-    value: 192.52.3.60
-    wait: yes
-    aws_access_key: "{{ AWS_ACCESS_KEY }}"
-    aws_secret_key: "{{ AWS_SECRET_KEY }}"
-
-- name: ELK
-  route53:
-    command: create
-    zone: "usegalaxy.eu"
-    record: elk.usegalaxy.eu
-    type: A
-    ttl: 7200
-    value: 192.52.3.115
-    wait: yes
-    aws_access_key: "{{ AWS_ACCESS_KEY }}"
-    aws_secret_key: "{{ AWS_SECRET_KEY }}"
+    overwrite: true
+  with_items:
+    - record: usegalaxy.eu
+      type: A
+      value: 192.52.3.205
+    - record: csp.usegalaxy.eu
+      type: A
+      value: 192.52.3.60
+    - record: sql.usegalaxy.eu
+      type: A
+      value: 192.52.3.38
+    - record: elk.usegalaxy.eu
+      type: A
+      value: 192.52.3.115
