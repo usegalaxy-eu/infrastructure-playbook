@@ -1,0 +1,14 @@
+- name: Deploy haproxy on bwCloud OpenStack
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+  tasks:
+    - name: Deploy an instance
+      os_server:
+        state: present
+        name: proxy.usegalaxy.eu
+        image: CentOS Server 7 RAW
+        key_name: cloud2
+        flavor: m1.small
+        network: public-new

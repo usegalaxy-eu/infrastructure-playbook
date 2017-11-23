@@ -1,19 +1,21 @@
-haproxy_frontend_name: 'hafrontend'
-haproxy_frontend_bind_address: '*'
-haproxy_frontend_port: 80
-haproxy_frontend_mode: 'http'
+haproxy_frontends:
+    - name: http-in
+      bind: '*'
+      port: 80
+      mode: http
+      custom_config:
+        - option httplog
+        - option forwardfor
+        - option http-server-close
+        - option httpclose
+        - 'redirect scheme https code 301 if !{ ssl fc }'
 
-haproxy_backend_name: 'habackend'
-haproxy_backend_mode: 'http'
-haproxy_backend_balance_method: 'roundrobin'
-haproxy_backend_httpchk: 'HEAD / HTTP/1.1\r\nHost:localhost'
-
-haproxy_backend_servers:
-- name: app1
-  address: 192.168.0.1:80
-- name: app2
-  address: 192.168.0.2:80
-
+haproxy_backends:
+    - name: galaxy
+      balance: roundrobin
+      mode: http
+      custom_config:
+        - 'server server1 132.230.68.85:443 maxconn 32'
 
 haproxy_global_vars:
     - 'ssl-default-bind-options no-sslv3 no-tls-tickets force-tlsv12'
