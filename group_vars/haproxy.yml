@@ -1,22 +1,29 @@
 haproxy_frontends:
     - name: http-in
-      bind: '*'
-      port: 80
+      bind: '*:80'
       mode: http
       custom_config:
         - option httplog
         - option forwardfor
         - option http-server-close
         - option httpclose
-        - 'redirect scheme https code 301 if !{ ssl fc }'
+        #- 'redirect scheme https code 301 if !{ ssl fc }'
+    - name: https-in
+      bind: '*:443 ssl crt /etc/haproxy/certs/complete.pem'
+      mode: http
+      custom_config:
+        - 'reqadd X-Forwarded-Proto:\ https'
+        - 'default_backend galaxy'
 
 haproxy_backends:
     - name: galaxy
       balance: roundrobin
       mode: http
       custom_config:
-        - 'server server1 132.230.68.85:443 maxconn 32'
+        - 'server server1 132.230.68.85:443 maxconn 32 ssl verify none'
 
 haproxy_global_vars:
     - 'ssl-default-bind-options no-sslv3 no-tls-tickets force-tlsv12'
     - 'ssl-default-bind-ciphers AES128+EECDH:AES128+EDH'
+
+haproxy_stats: true
