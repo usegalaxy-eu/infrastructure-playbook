@@ -1,0 +1,47 @@
+- name: Deploy server on bwCloud OpenStack
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+  vars:
+    server_name: git.usegalaxy.eu
+  vars_files:
+    - "secret_group_vars/all.yml"
+
+  tasks:
+    - name: Deploy an instance
+      os_server:
+        state: present
+        name: "{{ server_name }}"
+        image:  Ubuntu Server 16.04 RAW
+        key_name: cloud2
+        flavor: m1.large
+        network: public-new
+        security_groups:
+          - egress
+          - public-ping
+          - public-ssh
+          - public-web
+      register: server
+
+    - name: Wait for SSH on the Instance
+      command: >
+        ssh -oBatchMode=yes -oStrictHostKeyChecking=no
+        ubuntu@{{server.server.public_v4}} true
+      register: result
+      until: result|success
+      retries: 30
+      delay: 10
+
+    - name: Set DNS entries
+      route53:
+        command: create
+        zone: "usegalaxy.eu"
+        record: "{{ server_name }}"
+        type: A
+        ttl: 7200
+        value: "{{ server.server.public_v4 }}"
+        wait: yes
+        aws_access_key: "{{ AWS_ACCESS_KEY }}"
+        aws_secret_key: "{{ AWS_SECRET_KEY }}"
+        overwrite: true

@@ -1,0 +1,22 @@
+---
+services: docker
+
+env:
+  - distro: centos7
+  - distro: centos6
+  - distro: ubuntu1604
+  - distro: ubuntu1404
+  - distro: ubuntu1204
+  - distro: fedora24
+  - distro: debian8
+
+script:
+  # Download test shim.
+  - wget -O ${PWD}/tests/test.sh https://gist.githubusercontent.com/geerlingguy/73ef1e5ee45d8694570f334be385e181/raw/51ef4c5aea346b3f8dd2c2518233a70dac6407d9/ansible-role-test.sh
+  - chmod +x ${PWD}/tests/test.sh
+
+  # Run tests.
+  - ${PWD}/tests/test.sh ${distro}
+
+notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/

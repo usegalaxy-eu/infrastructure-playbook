@@ -1,0 +1,8 @@
+---
+- hosts: ftp
+  become: true
+  roles:
+    - dj-wasabi.telegraf
+    - dev-sec.os-hardening
+    - dev-sec.ssh-hardening
+    - galaxyprojectdotorg.proftpd
