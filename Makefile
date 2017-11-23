@@ -1,3 +1,6 @@
+clean:
+	@rm -f *.retry
+
 ftp:
 	ansible-playbook -i hosts ftp_vm.yml --vault-password-file ~/.vault_pass.txt
 	ansible-playbook -i hosts ftp.yml --vault-password-file ~/.vault_pass.txt
