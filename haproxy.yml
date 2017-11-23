@@ -1,0 +1,9 @@
+---
+- hosts: haproxy
+  become: true
+  tags: haproxy
+  roles:
+    - dj-wasabi.telegraf
+    - dev-sec.os-hardening
+    - dev-sec.ssh-hardening
+    - geerlingguy.haproxy
