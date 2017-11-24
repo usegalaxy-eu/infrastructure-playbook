@@ -7,7 +7,7 @@ haproxy_frontends:
         - option forwardfor
         - option http-server-close
         - option httpclose
-        #- 'redirect scheme https code 301 if !{ ssl fc }'
+        - 'redirect scheme https code 301 if !{ ssl_fc }'
     - name: https-in
       bind: '*:443 ssl crt /etc/haproxy/certs/complete.pem'
       mode: http
