@@ -26,14 +26,14 @@ AllowStoreRestart   on
 
 # Deny use of commands that allow modifying modification times and retrieving files
 <Limit SITE_CHMOD SITE_UTIME MDTM MFMT MFCT MFF>
-	DenyAll
+    DenyAll
 </Limit>
 
 <Limit RETR>
-	{% if proftpd_allow_download %}
-	Order allow,deny
-	AllowUser OR {{ proftpd_allow_download | join(',') }}
-	{% endif %}
+    {% if proftpd_allow_download | default(False) -%}
+    Order allow,deny
+    AllowUser OR {{ proftpd_allow_download | join(',') }}
+    {% endif %}
     DenyAll
 </Limit>
 
@@ -59,8 +59,8 @@ SQLDefaultGID       {{ galaxy_user_gid }}
 # Define named queries for user/salt lookups
 SQLUserInfo         custom:/LookupGalaxyUser
 SQLPasswordUserSalt sql:/GetUserSalt
-SQLNamedQuery       LookupGalaxyUser  SELECT "email, (CASE WHEN substring(password from 1 for 6) = 'PBKDF2' THEN substring(password from 38) ELSE encode(decode(password, 'hex'), 'base64') END),'{{ galaxy_user }}','{{ galaxy_user }}','{{ galaxy_ftp_upload_dir }}/%U','/bin/bash' FROM galaxy_user WHERE email='%U'"
-SQLNamedQuery       GetUserSalt SELECT "(CASE WHEN SUBSTRING (password from 1 for 6) = 'PBKDF2' THEN SUBSTRING (password from 21 for 16) END) FROM galaxy_user WHERE email='%U'"
+SQLNamedQuery       LookupGalaxyUser  SELECT "email, (CASE WHEN substring(password from 1 for 6) = 'PBKDF2' THEN substring(password from 38) ELSE encode(decode(password, 'hex'), 'base64') END),'{{ galaxy_user }}','{{ galaxy_user }}','{{ galaxy_ftp_upload_dir }}/%U','/bin/bash' FROM {{ galaxy_db_schema + '.' }}galaxy_user WHERE email='%U'"
+SQLNamedQuery       GetUserSalt SELECT "(CASE WHEN SUBSTRING (password from 1 for 6) = 'PBKDF2' THEN SUBSTRING (password from 21 for 16) END) FROM {{ galaxy_db_schema + '.' }}galaxy_user WHERE email='%U'"
 
 {% if proftpd_galaxy_auth_context == 'global' %}
 </Global>

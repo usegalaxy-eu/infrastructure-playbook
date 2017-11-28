@@ -1,4 +1,16 @@
 ---
+- name: "Ensure SSL cert group is available"
+  group:
+    name: ssl-cert
+    state: present
+
+- name: Adding existing user telegraf to group ceph
+  user:
+    name: proftpd
+    groups: ssl-cert
+    append: yes
+  notify:
+    - restart proftpd
 # tasks file for galaxyprojectdotorg.proftpd
 
 - name: Set OS-specific variables

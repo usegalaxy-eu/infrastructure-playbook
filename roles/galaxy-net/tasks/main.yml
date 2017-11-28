@@ -1,0 +1,15 @@
+---
+#- name: Static route for galaxy-net
+  #command: route add -net 132.230.68.0/24 gw 10.5.68.1 dev ens4
+
+- name: Persist default gateway because adding galaxy-net causes the default gw to go to the end for braindead reasons.
+  lineinfile:
+    path: /etc/network/interfaces.d/50-cloud-init.cfg
+    insertafter: '^iface ens3'
+    line: '	post-up /sbin/route add default gw 192.52.3.254'
+
+- name: Persist static route for galaxy-net
+  lineinfile:
+    path: /etc/network/interfaces.d/50-cloud-init.cfg
+    insertafter: '^iface ens4'
+    line: '	post-up /sbin/route add -net 132.230.68.0 netmask 255.255.255.0 gw 10.5.68.1'

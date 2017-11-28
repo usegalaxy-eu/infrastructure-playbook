@@ -3,8 +3,8 @@
 ##
 
 # Enable session reuse (must be in the server context)
-LoadModule mod_tls_shmcache.c
-TLSSessionCache shm:/file={{ proftpd_tls_sesscache_path }}&size=8388608 300
+#LoadModule mod_tls_shmcache.c
+#TLSSessionCache shm:/file={{ proftpd_tls_sesscache_path }}&size=8388608 300
 
 {% if proftpd_tls_context == 'global' %}
 <Global>

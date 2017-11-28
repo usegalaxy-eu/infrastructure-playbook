@@ -1,0 +1,17 @@
+# galaxy account
+---
+  - name: galaxy account group
+    group:
+      gid: "{{ galaxy_gid }}"
+      name: galaxy
+      state: present
+
+  - name: galaxy account user
+    user:
+      uid: "{{ galaxy_uid }}"
+      name: galaxy
+      group: galaxy
+      home: /usr/local/galaxy
+      state: present
+      comment: Galaxy Service-Acct
+      createhome: no
