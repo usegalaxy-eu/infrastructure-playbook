@@ -1,8 +1,51 @@
 ---
 - hosts: ftp
   become: true
+  tasks:
+  vars_files:
+    - "secret_group_vars/ftp.yml"
+    - "secret_group_vars/all.yml"
+  vars:
+    hostname: ftp.usegalaxy.eu
+    letsencrypt_webroot_path: /var/www/html
+    letsencrypt_email: hxr@informatik.uni-freiburg.de
+    letsencrypt_cert_domains:
+        - ftp.usegalaxy.eu
+    letsencrypt_renewal_command_args: '--renew-hook "systemctl restart proftpd"'
+    galaxy_user: galaxy
+    galaxy_ftp_upload_dir: /data/0/incoming/
+    proftpd_display_connect: |
+        UFR Galaxy FTP
+    proftpd_galaxy_auth: yes
+    proftpd_options:
+      - User: galaxy
+      - Group: galaxy
+    galaxy_db_schema: galaxy
+    proftpd_tls_cipher_suite: AES128+EECDH:AES128+EDH
+    proftpd_tls_protocol: TLSv1.2
+    proftpd_conf_ssl_certificate:     /etc/letsencrypt/live/ftp.usegalaxy.eu/cert.pem
+    proftpd_conf_ssl_certificate_key: /etc/letsencrypt/live/ftp.usegalaxy.eu/privkey.pem
+    proftpd_conf_ssl_ca_certificate:  /etc/letsencrypt/live/ftp.usegalaxy.eu/chain.pem
+    proftpd_virtualhosts:
+      - id: galaxy
+        address: ftp.usegalaxy.eu
+        options:
+          - ServerAdmin: admin@ftp.usegalaxy.eu
+          - ServerName: UFR Galaxy FTP
+          - TransferLog: /var/log/proftpd/xfer/ftp.usegalaxy.eu
+          - MaxLoginAttempts: 3
+          - RequireValidShell: no
+          - DefaultRoot: /srv/ftp_root
+          - AllowOverwrite: yes
+
   roles:
+    - hostname
+    - thefinn93.letsencrypt
+    - jnv.unattended-upgrades
+    - galaxy
+    - galaxy-net
+    - autofs
+    - galaxyprojectdotorg.proftpd
     - dj-wasabi.telegraf
     - dev-sec.os-hardening
     - dev-sec.ssh-hardening
-    - galaxyprojectdotorg.proftpd

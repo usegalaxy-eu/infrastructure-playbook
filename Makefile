@@ -12,3 +12,6 @@ haproxy:
 gitlab:
 	ansible-playbook -i hosts gitlab_vm.yml --vault-password-file ~/.vault_pass.txt
 	ansible-playbook -i hosts gitlab.yml --vault-password-file ~/.vault_pass.txt
+
+pgs:
+	ansible-playbook -i hosts pgs.yml --vault-password-file ~/.vault_pass.txt
