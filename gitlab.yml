@@ -5,7 +5,9 @@
   tags: gitlab
   vars:
       os_ignore_users:
-          - git
+        - git
+      pip_install_packages:
+        - name: docker
   vars_files:
     - "secret_group_vars/gitlab.yml"
     - "secret_group_vars/all.yml"
@@ -15,4 +17,6 @@
     - dev-sec.os-hardening
     - dev-sec.ssh-hardening
     - geerlingguy.gitlab
+    - geerlingguy.pip
     - geerlingguy.docker
+    - matterircd

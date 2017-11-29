@@ -1,0 +1,10 @@
+---
+- name: MatterIRCd
+  docker_container:
+    name: 42wim
+    image: 42wim/matterircd:latest
+    state: started
+    recreate: yes
+    command: "-bind 0.0.0.0:6667"
+    ports:
+      - "0.0.0.0:6667:6667"
