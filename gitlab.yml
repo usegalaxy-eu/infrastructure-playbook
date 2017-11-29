@@ -3,10 +3,14 @@
   hosts: gitlab
   become: true
   tags: gitlab
+  vars:
+      os_ignore_users:
+          - git
   vars_files:
     - "secret_group_vars/gitlab.yml"
     - "secret_group_vars/all.yml"
   roles:
+    - jnv.unattended-upgrades
     - dj-wasabi.telegraf
     - dev-sec.os-hardening
     - dev-sec.ssh-hardening
