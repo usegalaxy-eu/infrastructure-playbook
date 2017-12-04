@@ -9,13 +9,25 @@
     zone: "usegalaxy.eu"
     record: "{{ item.record }}"
     type: "{{ item.type }}"
-    ttl: 7200
+    ttl: "{{ item.ttl | default(7200) }}"
     value: "{{ item.value }}"
     wait: yes
     aws_access_key: "{{ AWS_ACCESS_KEY }}"
     aws_secret_key: "{{ AWS_SECRET_KEY }}"
     overwrite: true
   with_items:
+    - record: usegalaxy.eu
+      type: MX
+      value: "10 mxa.mailgun.org,10 mxb.mailgun.org"
+      ttl: 300
+    - record: usegalaxy.eu
+      type: TXT
+      value: '"v=spf1 include:mailgun.org ~all"'
+      ttl: 300
+    - record: mailo._domainkey.usegalaxy.eu
+      type: TXT
+      value: '"k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDWqARw6lby+yJNifDd1Nf9FfegF2TB4VJAdupceZ6pAHwYvS/2WFUwc3ZxdA8+awjDfLr6cAWERnP6YsBqZ7/1jCvtvOM2RLvsKMrzKG+KycfSfaGfFLZw/qPHM+82Mz7o5PdmcVehDSjKrnRXWGjliF/bazOoPg4OJObmAlhovwIDAQAB"'
+      ttl: 300
     - record: usegalaxy.eu
       type: A
       value: 192.52.3.205
