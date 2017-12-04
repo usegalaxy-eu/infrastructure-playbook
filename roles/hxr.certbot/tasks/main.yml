@@ -9,3 +9,6 @@
 
 - include: renew-cron.yml
   when: certbot_auto_renew
+
+- include: request-cert.yml
+  when: certbot_domains
