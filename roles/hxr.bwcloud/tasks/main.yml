@@ -1,0 +1,28 @@
+---
+- name: Deploy the instance
+  os_server:
+    state: present
+    name: "{{ server_names[0] }}"
+    image: 676d7e7a-54eb-4738-8443-8cb889a79b51 # ubuntu 1604 multinic
+    key_name: "{{ server.key_name | default('cloud2')}}"
+    flavor: "{{ server.flavor | default('m1.small')}}"
+    nics: "{{ server.nics | default('net-name=public-new')}}"
+    security_groups: "{{ server.security_groups }}"
+  register: server
+
+- name: Set DNS entries
+  route53:
+    command: create
+    zone: "usegalaxy.eu"
+    record: "{{ item }}"
+    type: A
+    ttl: 7200
+    value: "{{ server.server.public_v4 }}"
+    wait: yes
+    aws_access_key: "{{ AWS_ACCESS_KEY }}"
+    aws_secret_key: "{{ AWS_SECRET_KEY }}"
+    overwrite: true
+  with_items: "{{ server_names }}"
+
+#- name: Run multinic manually on first boot
+  #when: multinic
