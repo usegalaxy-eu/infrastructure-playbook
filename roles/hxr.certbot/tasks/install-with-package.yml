@@ -1,0 +1,19 @@
+---
+- name: Install software-properties-common
+  package:
+    name: software-properties-common
+    state: present
+
+- name: Install PPA for ubuntu
+  apt_repository:
+    repo: 'ppa:certbot/certbot'
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Install Certbot.
+  package:
+    name: "{{ certbot_package }}"
+    state: present
+
+- name: Set Certbot script variable.
+  set_fact:
+    certbot_script: "{{ certbot_package }}"
