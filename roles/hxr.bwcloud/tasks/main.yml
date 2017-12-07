@@ -23,6 +23,7 @@
     aws_secret_key: "{{ AWS_SECRET_KEY }}"
     overwrite: true
   with_items: "{{ server_names }}"
+  when: set_dns | default(true)
 
 #- name: Run multinic manually on first boot
   #when: multinic
