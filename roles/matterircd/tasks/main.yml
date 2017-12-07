@@ -5,6 +5,7 @@
     image: 42wim/matterircd:latest
     state: started
     recreate: yes
+    restart_policy: always
     command: "-bind 0.0.0.0:6667"
     ports:
       - "0.0.0.0:6667:6667"
