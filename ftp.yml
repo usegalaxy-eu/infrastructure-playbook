@@ -11,8 +11,7 @@
     certbot_auto_renew_user: root
     certbot_auto_renew_hour: 17
     certbot_auto_renew_minute: 28
-
-    certbot_environment: staging
+    certbot_environment: production #staging
     certbot_domains:
       - ftp.usegalaxy.eu
     certbot_agree_tos: --agree-tos
@@ -48,10 +47,20 @@
         extra_parameters: |
             Header always set X-Frame-Options DENY
             Header always set X-Content-Type-Options nosniff
+            # Allow https backend connections
+            SSLProxyEngine On
+            # Pass subdir first
+            ProxyPass /galaxy-freiburg/        https://usegalaxy-eu.github.io/galaxy-freiburg/
+            ProxyPassReverse /galaxy-freiburg/ https://usegalaxy-eu.github.io/galaxy-freiburg/
+            # Then proxy the index page to a static ftp without header.
+            ProxyPass /        https://usegalaxy-eu.github.io/galaxy-freiburg/ftp.html
+            ProxyPassReverse /        https://usegalaxy-eu.github.io/galaxy-freiburg/ftp.html
         certificate_file: "/etc/letsencrypt/live/ftp.usegalaxy.eu/cert.pem"
         certificate_key_file: "/etc/letsencrypt/live/ftp.usegalaxy.eu/privkey.pem"
         certificate_chain_file: "/etc/letsencrypt/live/ftp.usegalaxy.eu/chain.pem"
 
+    galaxy_ftp_upload_dir: /data/0/incoming/
+    galaxy_user: galaxy
     proftpd_display_connect: |
         UFR Galaxy FTP
     proftpd_galaxy_auth: yes
