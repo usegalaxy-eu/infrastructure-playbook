@@ -4,6 +4,11 @@
     certbot_cmd_environment: "--test-cert"
   when: certbot_environment == 'staging'
 
+- name: Set Certbot script variable when not staging.
+  set_fact:
+    certbot_cmd_environment: ""
+  when: certbot_environment != 'staging'
+
 - name: Request certificate
   command: "certbot certonly {{ certbot_cmd_environment }} --standalone  -m {{ certbot_admin_email }} {{ certbot_agree_tos }} -d {{ ','.join(certbot_domains) }}"
   register: request
