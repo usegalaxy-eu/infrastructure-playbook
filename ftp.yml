@@ -7,13 +7,51 @@
     - "secret_group_vars/all.yml"
   vars:
     hostname: ftp.usegalaxy.eu
-    letsencrypt_webroot_path: /var/www/html
-    letsencrypt_email: hxr@informatik.uni-freiburg.de
-    letsencrypt_cert_domains:
-        - ftp.usegalaxy.eu
-    letsencrypt_renewal_command_args: '--renew-hook "systemctl restart proftpd"'
-    galaxy_user: galaxy
-    galaxy_ftp_upload_dir: /data/0/incoming/
+    certbot_auto_renew: yes
+    certbot_auto_renew_user: root
+    certbot_auto_renew_hour: 17
+    certbot_auto_renew_minute: 28
+
+    certbot_environment: staging
+    certbot_domains:
+      - ftp.usegalaxy.eu
+    certbot_agree_tos: --agree-tos
+    certbot_admin_email: hxr@informatik.uni-freiburg.de
+
+    apache_remove_default_vhost: true
+    apache_mods_enabled:
+      - rewrite
+      - ssl
+      - headers
+      - proxy
+      - proxy_http
+
+    apache_vhosts:
+      - servername: "ftp.usegalaxy.eu"
+        serveradmin: admin@usegalaxy.eu
+        documentroot: "/var/www/html/"
+        extra_parameters: |
+            RewriteEngine on
+            RewriteCond %{SERVER_NAME} =ftp.usegalaxy.eu
+            RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
+            ErrorLog ${APACHE_LOG_DIR}/ftp.usegalaxy.eu-error.log
+            CustomLog ${APACHE_LOG_DIR}/ftp.usegalaxy.eu-access.log combined
+
+    apache_vhosts_ssl:
+      - servername: "ftp.usegalaxy.eu"
+        serveradmin: admin@usegalaxy.eu
+        documentroot: "/var/www/html/"
+        apache_ssl_protocol: "All -SSLv2 -SSLv3 -TLSv1 -TLSv1.1"
+        apache_ssl_cipher_suite: "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH"
+        apache_allow_override: "All"
+        apache_options: "-Indexes +FollowSymLinks"
+        extra_parameters: |
+            Header always set X-Frame-Options DENY
+            Header always set X-Content-Type-Options nosniff
+        certificate_file: "/etc/letsencrypt/live/ftp.usegalaxy.eu/cert.pem"
+        certificate_key_file: "/etc/letsencrypt/live/ftp.usegalaxy.eu/privkey.pem"
+        certificate_chain_file: "/etc/letsencrypt/live/ftp.usegalaxy.eu/chain.pem"
+
     proftpd_display_connect: |
         UFR Galaxy FTP
     proftpd_galaxy_auth: yes
@@ -39,8 +77,10 @@
 
   roles:
     - hostname
-    - thefinn93.letsencrypt
+    - hxr.certbot
+    - geerlingguy.apache
     - jnv.unattended-upgrades
+    - multinic
     - galaxy
     - galaxy-net
     - autofs
