@@ -30,6 +30,7 @@
 - name: Download Telegraf apt key.
   apt_key:
     url: "https://repos.influxdata.com/influxdb.key"
+    validate_certs: False
     state: present
   become: yes
   tags:
