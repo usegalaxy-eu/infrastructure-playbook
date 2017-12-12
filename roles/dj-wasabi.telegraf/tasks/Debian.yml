@@ -18,6 +18,15 @@
     - telegraf
     - packages
 
+- name: Ensure ca-certs avialable
+  apt:
+    name: "ca-certificates"
+    state: latest
+  become: yes
+  tags:
+    - telegraf
+    - packages
+
 - name: Download Telegraf apt key.
   apt_key:
     url: "https://repos.influxdata.com/influxdb.key"
