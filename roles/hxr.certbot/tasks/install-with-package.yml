@@ -3,11 +3,18 @@
   package:
     name: software-properties-common
     state: present
+  when: ansible_distribution == 'Ubuntu'
 
 - name: Install PPA for ubuntu
   apt_repository:
     repo: 'ppa:certbot/certbot'
   when: ansible_distribution == 'Ubuntu'
+
+#- name: Install yum-utils
+  #package:
+    #name: yum-utils
+    #state: present
+  #when: ansible_distribution == 'Centos'
 
 - name: Install Certbot.
   package:
