@@ -2,10 +2,22 @@
 - hosts: haproxy
   become: true
   tags: haproxy
-  tasks:
-   - hostname:
-       name: proxy.usegalaxy.eu
+  vars:
+    hostname: proxy.usegalaxy.eu
+    certbot_auto_renew: yes
+    certbot_auto_renew_user: root
+    certbot_auto_renew_hour: 10
+    certbot_auto_renew_minute: 59
+
+    certbot_environment: production #staging
+    certbot_domains:
+      - usegalaxy.eu
+      - proxy.usegalaxy.eu
+    certbot_agree_tos: --agree-tos
+    certbot_admin_email: security@usegalaxy.eu
   roles:
+    - hostname
+    - hxr.certbot
     - dj-wasabi.telegraf
     - dev-sec.os-hardening
     - dev-sec.ssh-hardening

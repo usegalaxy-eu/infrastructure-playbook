@@ -3,11 +3,16 @@
   connection: local
   become: false
   gather_facts: false
+  vars:
+    server_name: usegalaxy.eu
+  vars_files:
+    - "secret_group_vars/all.yml"
+
   tasks:
     - name: Deploy an instance
       os_server:
         state: present
-        name: proxy.usegalaxy.eu
+        name: usegalaxy.eu
         image: CentOS Server 7 RAW
         key_name: cloud2
         flavor: m1.small
@@ -19,3 +24,16 @@
           - public-ssh
           - ufr-ssh
           - ufr-ingress
+
+    - name: Set DNS entries
+      route53:
+        command: create
+        zone: "usegalaxy.eu"
+        record: "{{ server_name }}"
+        type: A
+        ttl: 7200
+        value: "{{ server.server.public_v4 }}"
+        wait: yes
+        aws_access_key: "{{ AWS_ACCESS_KEY }}"
+        aws_secret_key: "{{ AWS_SECRET_KEY }}"
+        overwrite: true
