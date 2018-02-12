@@ -16,6 +16,5 @@ gitlab:
 pgs:
 	ansible-playbook -i hosts pgs.yml --vault-password-file ~/.vault_pass.txt
 
-depot:
-	ansible-playbook -i hosts depot_vm.yml --vault-password-file ~/.vault_pass.txt
-	ansible-playbook -i hosts depot.yml --vault-password-file ~/.vault_pass.txt
+jenkins:
+	ansible-playbook -i hosts jenkins.yml --vault-password-file ~/.vault_pass.txt
