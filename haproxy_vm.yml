@@ -4,36 +4,21 @@
   become: false
   gather_facts: false
   vars:
-    server_name: usegalaxy.eu
-  vars_files:
-    - "secret_group_vars/all.yml"
-
-  tasks:
-    - name: Deploy an instance
-      os_server:
-        state: present
-        name: usegalaxy.eu
-        image: CentOS Server 7 RAW
-        key_name: cloud2
-        flavor: m1.small
-        network: public-new
+    set_dns: false
+    server_names:
+      - usegalaxy.eu
+    server:
+        image: m1.small
+        nics:
+          - net-name=public-new
         security_groups:
           - egress
           - public-ping
           - public-web
-          - public-ssh
           - ufr-ssh
           - ufr-ingress
+  vars_files:
+    - "secret_group_vars/all.yml"
 
-    - name: Set DNS entries
-      route53:
-        command: create
-        zone: "usegalaxy.eu"
-        record: "{{ server_name }}"
-        type: A
-        ttl: 7200
-        value: "{{ server.server.public_v4 }}"
-        wait: yes
-        aws_access_key: "{{ AWS_ACCESS_KEY }}"
-        aws_secret_key: "{{ AWS_SECRET_KEY }}"
-        overwrite: true
+  roles:
+    - hxr.bwcloud

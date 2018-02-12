@@ -1,14 +1,13 @@
-- name: Deploy server on bwCloud OpenStack
+- name: Deploy jenkins on bwCloud OpenStack
   hosts: localhost
   connection: local
   become: false
   gather_facts: false
   vars:
-    set_dns: false
     server_names:
-      - git.usegalaxy.eu
+      - build.usegalaxy.eu
     server:
-        image: m1.large
+        image: m1.small
         nics:
           - net-name=public-new
         security_groups:
