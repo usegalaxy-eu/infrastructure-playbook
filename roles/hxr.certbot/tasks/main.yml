@@ -12,3 +12,6 @@
 
 - include: request-cert.yml
   when: certbot_domains
+
+- include: post-renewal.yml
+  when: certbot_post_renewal is defined

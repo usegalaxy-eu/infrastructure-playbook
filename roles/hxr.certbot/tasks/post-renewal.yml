@@ -1,0 +1,11 @@
+---
+- name: Write the file
+  copy:
+    content: "#!/bin/bash\n{{ certbot_post_renewal }}"
+    dest: /etc/letsencrypt/renewal-hooks/post/ansible.sh
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: exec the file
+  command: /etc/letsencrypt/renewal-hooks/post/ansible.sh
