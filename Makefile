@@ -17,4 +17,5 @@ pgs:
 	ansible-playbook -i hosts pgs.yml --vault-password-file ~/.vault_pass.txt
 
 jenkins:
+	ansible-playbook -i hosts jenkins_vm.yml --vault-password-file ~/.vault_pass.txt
 	ansible-playbook -i hosts jenkins.yml --vault-password-file ~/.vault_pass.txt
