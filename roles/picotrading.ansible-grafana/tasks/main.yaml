@@ -41,3 +41,12 @@
     name: grafana-server
     enabled: yes
     state: running
+
+- name: Cron job
+  cron:
+    name: "update plugins"
+    minute: 0
+    hour: 0
+    weekday: 0
+    user: root
+    job: "grafana-cli plugins update-all && systemctl restart grafana-server"
