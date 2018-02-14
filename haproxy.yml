@@ -4,6 +4,10 @@
   tags: haproxy
   vars:
     hostname: proxy.usegalaxy.eu
+    server_names:
+      - usegalaxy.eu
+      - proxy.usegalaxy.eu
+      - hicexplorer.usegalaxy.eu
     certbot_auto_renew: yes
     certbot_auto_renew_user: root
     certbot_auto_renew_hour: 10
@@ -13,9 +17,13 @@
     certbot_domains:
       - usegalaxy.eu
       - proxy.usegalaxy.eu
+      - hicexplorer.usegalaxy.eu
     certbot_agree_tos: --agree-tos
     certbot_admin_email: security@usegalaxy.eu
+  vars_files:
+    - "secret_group_vars/all.yml"
   roles:
+    - hxr.dns
     - hostname
     - hxr.certbot
     - dj-wasabi.telegraf
