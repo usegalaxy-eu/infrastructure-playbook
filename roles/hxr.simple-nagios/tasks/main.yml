@@ -1,4 +1,9 @@
 ---
+- name: install the latest version of ntpdate
+  package:
+    name: bc
+    state: present
+
 - name: "Install simple-nagios replacement script"
   copy:
     src: simple-nagios.sh
