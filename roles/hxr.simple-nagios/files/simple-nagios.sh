@@ -15,27 +15,27 @@ expect_http() {
 	else
 		status=1
 	fi
-	echo "$service code=$response_code,time=$t_delta,status=$status"
+	echo "eu.usegalaxy.pages page=$service,code=$response_code,time=$t_delta,status=$status"
 }
 
 
-expect_http eu.usegalaxy.pages.home_nossl http://usegalaxy.eu 301
-expect_http eu.usegalaxy.pages.home https://usegalaxy.eu 200
-expect_http eu.usegalaxy.pages.hicexplorer https://hicexplorer.usegalaxy.eu 200
+expect_http home_nossl http://usegalaxy.eu 301
+expect_http home https://usegalaxy.eu 200
+expect_http hicexplorer https://hicexplorer.usegalaxy.eu 200
 
-expect_http eu.usegalaxy.pages.stats https://stats.usegalaxy.eu 200
-expect_http eu.usegalaxy.pages.stats https://stats.usegalaxy.eu 200
+expect_http stats https://stats.usegalaxy.eu 200
+expect_http stats https://stats.usegalaxy.eu 200
 
-expect_http eu.usegalaxy.pages.grt https://telescope.galaxyproject.org/ 200
-expect_http eu.usegalaxy.pages.grt_api https://telescope.galaxyproject.org/api/instance/top_all.json 200
-expect_http eu.usegalaxy.pages.grt_login https://telescope.galaxyproject.org/grt-admin/accounts/login/ 200
+expect_http grt https://telescope.galaxyproject.org/ 200
+expect_http grt_api https://telescope.galaxyproject.org/api/instance/top_all.json 200
+expect_http grt_login https://telescope.galaxyproject.org/grt-admin/accounts/login/ 200
 
-expect_http eu.usegalaxy.pages.build https://build.usegalaxy.eu/ 200
+expect_http build https://build.usegalaxy.eu/ 200
 
-expect_http eu.usegalaxy.pages.sql https://sql.usegalaxy.eu/login/ 200
-expect_http eu.usegalaxy.pages.csp https://csp.usegalaxy.eu/ 200
-expect_http eu.usegalaxy.pages.git https://gitlab.denbi.uni-freiburg.de/users/sign_in 200
-expect_http eu.usegalaxy.pages.ftp_docs https://ftp.usegalaxy.eu/ 200
+expect_http sql https://sql.usegalaxy.eu/login/ 200
+expect_http csp https://csp.usegalaxy.eu/ 200
+expect_http git https://gitlab.denbi.uni-freiburg.de/users/sign_in 200
+expect_http ftp_docs https://ftp.usegalaxy.eu/ 200
 
-expect_http eu.usegalaxy.pages.influx http://influxdb.denbi.uni-freiburg.de:8086/ping 204
-expect_http eu.usegalaxy.pages.sentry https://sentry.denbi.uni-freiburg.de/auth/login/sentry/ 200
+expect_http influx http://influxdb.denbi.uni-freiburg.de:8086/ping 204
+expect_http sentry https://sentry.denbi.uni-freiburg.de/auth/login/sentry/ 200
