@@ -134,3 +134,11 @@ grafana_config:
   log.console: "{{ grafana_log__console }}"
   log.file: "{{ grafana_log__file }}"
   event_publisher: "{{ grafana_event_publisher }}"
+
+
+telegraf_plugins_extra:
+  - plugin: exec
+    config:
+      - commands = ["/usr/bin/simple-nagios"]
+      - timeout = "30s"
+      - data_format = "influx"
