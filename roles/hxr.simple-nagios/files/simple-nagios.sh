@@ -8,7 +8,7 @@ expect_http() {
 	t_start=$(date +%s.%N)
 	response_code=$(curl 2>/dev/null --silent --connect-timeout 30 $url -I | head -n1 | awk '{print $2}');
 	t_end=$(date +%s.%N)
-	t_delta=$(echo "$t_end - $t_start" | bc -l)
+	t_delta=$(echo "1000000 * ($t_end - $t_start)" | bc -l)
 
 	if [[ $response_code -eq $expected_status ]]; then
 		status=0
