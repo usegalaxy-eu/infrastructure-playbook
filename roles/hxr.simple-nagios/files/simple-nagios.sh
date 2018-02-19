@@ -15,7 +15,7 @@ expect_http() {
 	else
 		status=1
 	fi
-	echo "eu.usegalaxy.pages page=$service,code=$response_code,time=$t_delta,status=$status"
+	echo "eu.usegalaxy.pages,page=$service code=$response_code,time=0$t_delta,status=$status"
 }
 
 
