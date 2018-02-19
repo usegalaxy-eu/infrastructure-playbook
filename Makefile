@@ -1,21 +1,13 @@
+LAUNCH_VM := 0
+
+help:
+	@echo "Run 'make [grafana|jenkins|haproxy|...]' to re-run ansible for that machine. Supply LAUNCH_VM=1 to launch a VM as well."
+
 clean:
 	@rm -f *.retry
 
-ftp:
-	ansible-playbook -i hosts ftp_vm.yml --vault-password-file ~/.vault_pass.txt
-	ansible-playbook -i hosts ftp.yml --vault-password-file ~/.vault_pass.txt
-
-haproxy:
-	ansible-playbook -i hosts haproxy_vm.yml --vault-password-file ~/.vault_pass.txt
-	ansible-playbook -i hosts haproxy.yml --vault-password-file ~/.vault_pass.txt
-
-gitlab:
-	ansible-playbook -i hosts gitlab_vm.yml --vault-password-file ~/.vault_pass.txt
-	ansible-playbook -i hosts gitlab.yml --vault-password-file ~/.vault_pass.txt
-
-pgs:
-	ansible-playbook -i hosts pgs.yml --vault-password-file ~/.vault_pass.txt
-
-jenkins:
-	ansible-playbook -i hosts jenkins_vm.yml --vault-password-file ~/.vault_pass.txt
-	ansible-playbook -i hosts jenkins.yml --vault-password-file ~/.vault_pass.txt
+%:
+  ifeq ($(LAUNCH_VM), 1)
+	ansible-playbook -i hosts $@_vm.yml --vault-password-file ~/.vault_pass.txt
+  endif
+	ansible-playbook -i hosts $@.yml --vault-password-file ~/.vault_pass.txt
