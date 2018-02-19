@@ -53,8 +53,8 @@
             ProxyPass /galaxy-freiburg/        https://usegalaxy-eu.github.io/galaxy-freiburg/
             ProxyPassReverse /galaxy-freiburg/ https://usegalaxy-eu.github.io/galaxy-freiburg/
             # Then proxy the index page to a static ftp without header.
-            ProxyPass /        https://usegalaxy-eu.github.io/galaxy-freiburg/ftp.html
-            ProxyPassReverse /        https://usegalaxy-eu.github.io/galaxy-freiburg/ftp.html
+            ProxyPass /        https://usegalaxy-eu.github.io/galaxy-freiburg/ftp/index.html
+            ProxyPassReverse /        https://usegalaxy-eu.github.io/galaxy-freiburg/ftp/index.html
         certificate_file: "/etc/letsencrypt/live/ftp.usegalaxy.eu/cert.pem"
         certificate_key_file: "/etc/letsencrypt/live/ftp.usegalaxy.eu/privkey.pem"
         certificate_chain_file: "/etc/letsencrypt/live/ftp.usegalaxy.eu/chain.pem"
