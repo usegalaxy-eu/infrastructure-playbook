@@ -1,0 +1,115 @@
+---
+# Setup of the CernVM-File system (CVMFS) and configure so that the reference
+# data hosted by Galaxy on usegalaxy.org is available to the remote target.
+
+# Install autofs
+#- name: Install autofs system package
+  #apt:
+    #pkg: "{{ item }}"
+    #state: present
+  #with_items:
+    #- autofs
+    #- uuid-runtime
+  #when: ansible_os_family == 'Debian'
+
+- name: Install autofs system package
+  apt:
+    pkg: "{{ item }}"
+    state: present
+  with_items:
+    - autofs
+    - uuid
+  when: ansible_os_family == 'RedHat'
+
+# Install & setup CermVM-FS
+#- name: Download cvmfs
+  #get_url:
+    #url="{{ cvmfs_deb_url }}"
+    #dest="/tmp/cvmfs.deb"
+  #when: ansible_os_family == 'Debian'
+
+#- name: Download cvmfs-config
+  #get_url:
+    #url="{{ cvmfs_deb_config_url }}"
+    #dest="/tmp/cvmfs-config.deb"
+  #when: ansible_os_family == 'Debian'
+
+#- name: Install cvmfs-config
+  #apt: deb="/tmp/cvmfs-config.deb"
+  #when: ansible_os_family == 'Debian'
+
+#- name: Install cvmfs
+  #apt: deb="/tmp/cvmfs.deb"
+  #when: ansible_os_family == 'Debian'
+
+- name: Install CVMFS Repo
+  shell: sudo yum install https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest.noarch.rpm
+  when: ansible_os_family == 'RedHat'
+
+- name: Install CVMFS
+  package:
+    name: "{{ item }}"
+  with_items:
+    - cvmfs
+    - cvmfs-config
+  when: ansible_os_family == 'RedHat'
+
+
+- name: Install CernVM-FS keys
+  copy:
+    content: "{{ item.key }}"
+    dest: "{{ item.path }}"
+    owner: "root"
+    group: "root"
+    mode: "0444"
+  with_items: "{{ cvmfs_keys }}"
+
+- name: Perform AutoFS and FUSE configuration for CernVM-FS
+  command: cvmfs_config setup
+
+- name: Configure CernVM-FS domain
+  copy:
+    content: |
+      CVMFS_SERVER_URL="{{ item.urls | join(';') }}"
+    dest: "/etc/cvmfs/domain.d/{{ item.domain }}.conf"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  with_items: "{{ cvmfs_server_urls }}"
+
+- name: Configure CernVM-FS client settings
+  copy:
+    content: |
+      CVMFS_REPOSITORIES="{%- for repo in cvmfs_repositories -%}{{ ',' if loop.index0 > 0 else '' }}{{ repo.repository }}{%- endfor -%}"
+      CVMFS_HTTP_PROXY="{{ cvmfs_http_proxies | join(';') }}"
+      CVMFS_QUOTA_LIMIT="{{ cvmfs_quota_limit | default('4000') }}"
+      CVMFS_USE_GEOAPI="{{ cvmfs_use_geoapi | default('yes') }}"
+    dest: "/etc/cvmfs/default.local"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
+# Create a symlink from the CVMFS to /galaxy/data because that is where the
+# .loc files from CVMFS point (and consequently tool_data_table_conf.xml)
+- name: Create /galaxy dir
+  file: path=/galaxy state=directory
+
+# This is required to be able to use Galaxy .len files from Main w/o mods
+- name: Create a symlink from CVMFS to /galaxy/data
+  file: src=/cvmfs/data.galaxyproject.org/byhand dest=/galaxy/data state=link force=yes
+
+- name: Use tool_data_table_conf.xml from usegalaxy-playbook
+  get_url:
+    url: https://raw.githubusercontent.com/galaxyproject/usegalaxy-playbook/067433f547f67b848f2e4597274a379f06da04b2/files/galaxy/usegalaxy.org/config/tool_data_table_conf.xml
+    dest: "{{ galaxy_tool_data_table_config_file }}"
+
+# The following two tasks need to be at the bottom of this file
+- name: Stop autofs service
+  service:
+    name: autofs
+    state: stopped
+
+- name: Remove autofs service file since we're using Supervisor
+  file:
+    path: /etc/init/autofs.conf
+    state: absent

@@ -1,0 +1,302 @@
+# All default values here based on usage within
+# https://github.com/bgruening/docker-galaxy-stable.
+
+galaxy_extras_config_nginx: true
+galaxy_extras_config_nginx_upload: true
+galaxy_extras_config_postgres: true
+galaxy_extras_config_proftpd: true
+galaxy_extras_config_slurm: true
+galaxy_extras_config_pbs: false
+galaxy_extras_config_condor: false
+galaxy_extras_config_condor_docker: false
+galaxy_extras_config_k8s_jobs: false
+galaxy_extras_config_supervisor: true
+galaxy_extras_config_galaxy_root: true
+galaxy_extras_config_galaxy_extra_dependencies: false
+galaxy_extras_config_galaxy_job_metrics: true
+galaxy_extras_config_uwsgi: true
+galaxy_extras_config_ie_proxy: true
+galaxy_extras_config_neo4j_ie: false  # Configure routes for the Neo4j Interactive Environment
+galaxy_extras_config_scripts: true
+galaxy_extras_config_ssl: false
+galaxy_extras_config_ssl_method: self-signed  # This may be 'own', 'self-signed' or 'letsencrypt'
+galaxy_extras_galaxy_domain: "localhost"  # This is used by letsencrypt, set it to the domain name under which galaxy can be reached
+galaxy_extras_config_startup: true
+galaxy_extras_config_rabbitmq: false
+galaxy_extras_config_cvmfs: true
+
+# Default destination for Galaxy jobs in generated job_conf.xml - can
+# tweak this to allow for a different default for Docker-enabled tools.
+galaxy_extras_galaxy_destination_default: slurm_cluster
+galaxy_extras_galaxy_destination_docker_default: "{{ galaxy_extras_galaxy_destination_default }}"
+galaxy_extras_galaxy_destination_singularity_default: "{{ galaxy_extras_galaxy_destination_default }}"
+
+galaxy_extras_config_container_resolution: false
+container_resolution_explicit: true
+container_resolution_mulled: true
+container_resolution_cached_mulled: "{{ container_resolution_mulled }}"
+container_resolution_build_mulled: "{{ container_resolution_mulled }}"
+container_resolution_mulled_namespace: biocontainers
+
+# set the FQDN for the pbs server, only used when galaxy_extras_config_pbs: true
+pbs_server_name: pbsqueue
+
+# Only used when galaxy_extras_config_slurm: true, sets slurm ntask in job_conf.xml.
+# Will be overwritten if NATIVE_SPEC environmental variable is set.
+# In the default setting controls the value of GALAXY_SLOTS.
+# Use ansible_processor_cores: "{{ ansible_processor_vcpus  }}" to set this to the number of
+# threads per core * processor count * cores per processor
+galaxy_extras_slurm_ntask: 1
+
+# Install OS packages corresponding to each service being configured.
+galaxy_extras_install_packages: false
+# If galaxy_extras_install_packages is enabled - should be these packages
+# be 'present' or 'latest'.
+galaxy_extras_apt_package_state: present
+
+galaxy_extras_ie_fetch_jupyter: false
+galaxy_extras_ie_jupyter_image: quay.io/bgruening/docker-jupyter-notebook:17.05
+galaxy_extras_ie_fetch_rstudio: false
+galaxy_extras_ie_rstudio_image: erasche/docker-rstudio-notebook:17.01
+galaxy_extras_ie_fetch_ethercalc: false
+galaxy_extras_ie_ethercalc_image: shiltemann/ethercalc-galaxy-ie:17.05
+galaxy_extras_ie_fetch_phinch: false
+galaxy_extras_ie_phinch_image: shiltemann/docker-phinch-galaxy:16.04
+galaxy_extras_ie_fetch_neo: false
+galaxy_extras_ie_neo_image: quay.io/sanbi-sa/neo_ie:3.1
+# The storage backend to use for docker-in-docker.
+# aufs on parent docker cannot be combined with aufs in child docker
+galaxy_extras_docker_storage_backend: aufs
+galaxy_extras_docker_legacy: true
+
+galaxy_extras_gcc_available: false
+
+# Docker defaults
+galaxy_docker_enabled: false
+galaxy_docker_sudo: false
+galaxy_docker_default_image: 'busybox:ubuntu-14.04'
+galaxy_docker_volumes_from: ""
+galaxy_docker_volumes : "$defaults"
+
+# Singularity defaults
+galaxy_singularity_enabled: false
+galaxy_singularity_sudo: false
+# ToDo create default image
+galaxy_singularity_default_image: ''
+galaxy_singularity_volumes_from: ""
+# rw directories are not considered if the parent is ro
+galaxy_singularity_volumes : "$defauls"
+
+# Point at the existing Galaxy configuration.
+galaxy_server_dir: "/galaxy-central"
+galaxy_job_conf_path: "{{ galaxy_server_dir }}/config/job_conf.xml"
+galaxy_container_resolvers_conf_path: "{{ galaxy_server_dir }}/config/container_resolvers_conf.xml"
+galaxy_job_metrics_conf_path: "{{ galaxy_server_dir }}/config/job_metrics_conf.xml"
+galaxy_user_name: "galaxy"
+galaxy_home_dir: "/home/{{ galaxy_user_name }}"
+galaxy_source_shellrc: false
+galaxy_user_shellrc: "{{ galaxy_home_dir }}/.bashrc"
+galaxy_log_dir: "{{ galaxy_home_dir }}/"
+galaxy_venv_dir: "{{ galaxy_home_dir }}/venv"
+galxy_egg_cache: "{{ galaxy_home_dir }}/.python-eggs"
+
+galaxy_config_dir: "{{ galaxy_server_dir }}/config"
+galaxy_reports_config_file: "{{ galaxy_config_dir }}/reports_wsgi.ini"
+galaxy_toolshed_config_file: "{{ galaxy_config_dir }}/tool_shed.ini"
+galaxy_tool_data_table_config_file: "{{ galaxy_config_dir }}/tool_data_table_conf.xml"
+
+galaxy_config_file: "{{ galaxy_config_dir }}/galaxy.ini"
+galaxy_reports_port: "9001"
+galaxy_reports_log: "{{ galaxy_log_dir }}/reports.log"
+
+galaxy_db_port: "5432"
+galaxy_database_connection: "postgres://{{ galaxy_user_name }}@localhost:{{ galaxy_db_port }}/galaxy"
+
+# Minimum version to target with configuration.
+galaxy_minimum_version: "17.01"
+
+# Port to serve uwsgi on.
+galaxy_uwsgi: true
+uwsgi_log: "{{ galaxy_log_dir }}/uwsgi.log"
+uwsgi_port: 4001
+
+# Set to true to write thread/process number into supervisor config. If false, uses environmental variables.
+galaxy_uwsgi_static_conf: false
+# number of uwsgi threads to use if galaxy_uwsgi_static_conf is true
+uwsgi_threads: 2
+
+# Set the following to true - to run paste processes for Galaxy
+# handlers (should not longer be needed).
+galaxy_paste_handlers: false
+galaxy_web_processes: 2
+galaxy_handler_processes: 2
+
+# Follow job_conf attributes set if galaxy_extras_config_k8s_jobs is true.
+galaxy_k8s_jobs_use_service_account: true
+galaxy_k8s_jobs_persistent_volume_claim_name: galaxy-web-claim0
+galaxy_k8s_jobs_persistent_volume_claim_mount_path: /export
+galaxy_k8s_jobs_namespace: default
+galaxy_k8s_jobs_supplemental_group_id: 0
+galaxy_k8s_jobs_fs_group_id: 0
+galaxy_k8s_jobs_pull_policy: IfNotPresent
+galaxy_k8s_jobs_pods_retrials: 1
+
+startup_export_user_files: true
+startup_chown_on_directory: ""
+startup_sleeplock: false
+
+slurm_log_dir: "{{ galaxy_log_dir }}"
+
+# Nginx configuration.
+nginx_conf_path: /etc/nginx/nginx.conf
+nginx_conf_directory: /etc/nginx/conf.d
+nginx_upload_store_path: "/tmp/nginx_upload_store"
+
+# Use nginx_*_location variables to control serving apps at subdirectories.
+# If galaxy should be served at subdirectory (e.g. example.com/galaxy) set nginx_galaxy_location: /galaxy
+# If all apps should be served on a common subdirectory, use nginx_prefix_location: /your_common_dir
+nginx_prefix_location: ""
+nginx_galaxy_location: "{{ nginx_prefix_location }}"
+nginx_interactive_environment_location: "{{ nginx_galaxy_location }}/gie_proxy"
+nginx_reports_location: "{{ nginx_prefix_location }}/reports"
+nginx_planemo_web_location: "{{ nginx_prefix_location }}/planemo"
+nginx_ide_location: "{{ nginx_prefix_location }}/ide"
+nginx_welcome_location: "{{ nginx_prefix_location }}/etc/galaxy/web"
+nginx_welcome_path: "/etc/galaxy/web"
+
+# Synchronize error handling with ansible-galaxy role.
+galaxy_errordocs_dest: "/root"
+
+#web security
+nginx_use_passwords: False
+nginx_htpasswds:
+  - "admin:WiBKbsJTSQ8dc"
+nginx_use_remote_header: False
+
+# Additional configurations to be appended to nginx config
+nginx_additional_config : []
+
+# Configure proxy to planemo-machine-web.
+nginx_serve_planemo_machine_web: false
+nginx_proxy_reports: true
+
+galaxy_job_metrics_core: true
+galaxy_job_metrics_env: false
+galaxy_job_metrics_cpuinfo: true
+galaxy_job_metrics_meminfo: true
+galaxy_job_metrics_uname: true
+# TODO: configure collectl, individual env files
+# TODO: alternative to configure metrics all at once using yml datastructure.
+
+## Proftp Configuration.
+proftpd_conf_path:  /etc/proftpd/proftpd.conf
+proftpd_db_connection: galaxy@localhost
+proftpd_db_username: galaxy
+proftpd_db_password: galaxy
+# Set proftpd_sql_auth_type to SHA1 if use_pbkd2=False in your galaxy.ini,
+# or PBKDF2 if you have use_pbkd2=True or if you haven't changed the default.
+# If you want to use PBKDF-2 you will need proftpd version 1.3.5rc3 or later
+# (which is not available by default for ubuntu-12.04)
+proftpd_sql_auth_type: SHA1
+proftpd_welcome: "Public Galaxy FTP"
+proftpd_files_dir: /export/galaxy-central/database/ftp
+proftpd_ftp_port: 21
+proftpd_passive_port_low: 30000
+proftpd_passive_port_high: 40000
+# Set proftpd_use_sftp to true to use sftp instead of ftp
+proftpd_use_sftp: false
+# Default behavior when using ssh: generate a new key
+proftpd_generate_ssh_key: true
+proftpd_sftp_port: 22
+# Set masquearade to true if host is NAT'ed.
+proftpd_nat_masquerade: false
+# proftpd_masquerade_address refefers to the ip that clients use to establish an ftp connection.
+# Can be a command that returns an IP or an IP address and applies only if proftpd_nat_masquerade is true.
+# ec2metadata --public-ipv4 returns the public ip for amazon's ec2 service.
+proftpd_masquerade_address: "`ec2metadata --public-ipv4`"
+
+## Supervisor Configuration.
+supervisor_conf_path: "/etc/supervisor/conf.d/galaxy.conf"
+supervisor_manage_slurm: true
+supervisor_manage_uwsgi: true
+supervisor_slurm_config_dir: "/home/galaxy"
+supervisor_manage_postgres: true
+postgresql_version: 9.3
+supervisor_postgres_config_path: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
+supervisor_postgres_database_path: "/export/postgresql/{{ postgresql_version }}/main"
+supervisor_postgres_options: "-D {{ supervisor_postgres_database_path }} -c \"config_file={{ supervisor_postgres_config_path }}\""
+supervisor_manage_proftp: true
+supervisor_manage_nginx: true
+supervisor_manage_reports: true
+supervisor_manage_ie_proxy: true
+supervisor_manage_condor: true
+supervisor_manage_cron: true
+supervisor_manage_autofs: "{{ galaxy_extras_config_cvmfs }}"
+supervisor_manage_docker: true
+supervisor_manage_toolshed: false
+
+supervisor_galaxy_startsecs: 20
+# had to increase retries to ensure the postgres database is available,
+# wasn't needed in the past.
+supervisor_galaxy_startretries: 15
+
+supervisor_ie_proxy_autostart: false
+supervisor_reports_autostart: false
+supervisor_condor_autostart: false
+supervisor_proftpd_autostart: false
+supervisor_postgres_autostart: true
+supervisor_cron_autostart: false
+supervisor_autofs_autostart: "{{ galaxy_extras_config_cvmfs }}"
+supervisor_docker_autostart: false
+supervisor_docker_autorestart: true
+
+supervisor_webserver: true
+supervisor_webserver_port: "0.0.0.0:9002"
+supervisor_webserver_username: null
+supervisor_webserver_password: changeme
+
+use_pbkdf2: false
+
+# Used to check if container is privileged
+host_docker_legacy: true
+
+nginx_ssl_certificate_key: /etc/ssl/private/nginx.key
+nginx_ssl_certificate: /etc/ssl/private/nginx.crt
+
+# Here you can set a path to a pair of ssl keys
+# These will be copied if galaxy_extras_config_ssl_method is set to 'own'
+# This defaults to a set of self-generated keys
+src_nginx_ssl_certificate_key: nginx_sample.key
+src_nginx_ssl_certificate: nginx_sample.crt
+
+cvmfs_deb_url: "https://ecsft.cern.ch/dist/cvmfs/cvmfs-2.3.5/cvmfs_2.3.5_amd64.deb"
+cvmfs_deb_config_url: "https://ecsft.cern.ch/dist/cvmfs/cvmfs-config/cvmfs-config-default_latest_all.deb"
+cvmfs_keys:
+  - path: /etc/cvmfs/keys/data.galaxyproject.org.pub
+    key: |
+      -----BEGIN PUBLIC KEY-----
+      MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5LHQuKWzcX5iBbCGsXGt
+      6CRi9+a9cKZG4UlX/lJukEJ+3dSxVDWJs88PSdLk+E25494oU56hB8YeVq+W8AQE
+      3LWx2K2ruRjEAI2o8sRgs/IbafjZ7cBuERzqj3Tn5qUIBFoKUMWMSIiWTQe2Sfnj
+      GzfDoswr5TTk7aH/FIXUjLnLGGCOzPtUC244IhHARzu86bWYxQJUw0/kZl5wVGcH
+      maSgr39h1xPst0Vx1keJ95AH0wqxPbCcyBGtF1L6HQlLidmoIDqcCQpLsGJJEoOs
+      NVNhhcb66OJHah5ppI1N3cZehdaKyr1XcF9eedwLFTvuiwTn6qMmttT/tHX7rcxT
+      owIDAQAB
+      -----END PUBLIC KEY-----
+
+cvmfs_server_urls:
+  - domain: galaxyproject.org
+    urls:
+      - "http://cvmfs1-iu0.galaxyproject.org/cvmfs/@fqrn@;http://cvmfs1-tacc0.galaxyproject.org/cvmfs/@fqrn@;http://cvmfs1-psu0.galaxyproject.org/cvmfs/@fqrn@;http://galaxy.jrc.ec.europa.eu:8008/cvmfs/@fqrn@"
+
+cvmfs_repositories:
+  - repository: data.galaxyproject.org
+    stratum0: cvmfs0-psu0.galaxyproject.org
+
+cvmfs_http_proxies:
+  - DIRECT
+
+cvmfs_stratum1_servers:
+  - "cvmfs1-tacc0.galaxyproject.org"
+  - "cvmfs1-iu0.galaxyproject.org"
+  - "cvmfs1-psu0.galaxyproject.org"
