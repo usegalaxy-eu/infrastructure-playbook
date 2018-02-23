@@ -10,11 +10,17 @@
     repo: 'ppa:certbot/certbot'
   when: ansible_distribution == 'Ubuntu'
 
-#- name: Install yum-utils
-  #package:
-    #name: yum-utils
-    #state: present
-  #when: ansible_distribution == 'Centos'
+- name: Install yum-utils
+  package:
+    name: yum-utils
+    state: present
+  when: ansible_distribution == 'Centos'
+
+- name: "Enable EPEL"
+  yum:
+    name: epel-release
+    state: present
+  when: ansible_distribution == 'Centos'
 
 - name: Install Certbot.
   package:
