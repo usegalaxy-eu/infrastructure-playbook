@@ -25,8 +25,8 @@ defaults
         srvtimeout 50000
 {% else %}
         timeout connect 5000
-        timeout client 50000
-        timeout server 50000
+        timeout client 100000
+        timeout server 100000
 {% endif %}
 {% if ansible_os_family == 'Debian' %}
   errorfile 400 /etc/haproxy/errors/400.http
