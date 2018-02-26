@@ -17,6 +17,14 @@
     group: telegraf
     mode: 0640
 
+- name: "Install galaxy API creds"
+  copy:
+    src: gx-api-creds.txt
+    dest: /etc/gx-api-creds.txt
+    owner: telegraf
+    group: telegraf
+    mode: 0640
+
 - name: "Install simple-nagios replacement script"
   copy:
     src: simple-nagios.sh
