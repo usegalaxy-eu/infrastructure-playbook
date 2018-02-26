@@ -4,6 +4,14 @@
     name: bc
     state: present
 
+- name: "Install credentials for FTP access"
+  copy:
+    src: simple-nagios.sh
+    dest: /etc/ftp-creds.txt
+    owner: telegraf
+    group: telegraf
+    mode: 0640
+
 - name: "Install simple-nagios replacement script"
   copy:
     src: simple-nagios.sh

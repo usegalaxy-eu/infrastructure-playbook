@@ -19,6 +19,45 @@ expect_http() {
 	echo "eu.usegalaxy.pages,page=$service code=$response_code,request_time=0$t_delta,status=$status"
 }
 
+expect_ftps(){
+	service=$1
+	url=$2
+
+	random=$RANDOM
+	tmpfile=$(mktemp galaxy.nagios.XXXXXXXX --tmpdir)
+	fromserver=$(mktemp galaxy.nagios.XXXXXXXX --tmpdir)
+
+	echo $random > $tmpfile
+
+	t_start=$(date +%s.%N)
+	# Upload the file
+	lftp -u $(cat /etc/ftp-creds.txt) $url <<EOF
+set ftp:ssl-force true
+set ftp:ssl-protect-data true
+put $tmpfile -o nagios
+exit
+EOF
+
+	# Remove the target file, lftp doesn't like to overwrite.
+	rm -f $fromserver
+	lftp -u $(cat /etc/ftp-creds.txt) $url <<EOF
+set ftp:ssl-force true
+set ftp:ssl-protect-data true
+get nagios -o $fromserver
+exit
+EOF
+
+	diff $tmpfile $fromserver
+	exit_code=$?
+
+	t_end=$(date +%s.%N)
+	t_delta=$(echo "1000000 * ($t_end - $t_start)" | bc -l)
+	t_delta=$(echo $t_delta | sed 's/\..*//')
+
+	echo "eu.usegalaxy.services,service=$service request_time=0$t_delta,status=$exit_code"
+
+}
+
 
 expect_http home_nossl http://usegalaxy.eu 301
 expect_http home https://usegalaxy.eu 200
@@ -40,3 +79,5 @@ expect_http ftp_docs https://ftp.usegalaxy.eu/ 200
 
 expect_http influx http://influxdb.denbi.uni-freiburg.de:8086/ping 204
 expect_http sentry https://sentry.denbi.uni-freiburg.de/auth/login/sentry/ 200
+
+expect_ftps ftp_ssl ftp://ftp.usegalaxy.eu
