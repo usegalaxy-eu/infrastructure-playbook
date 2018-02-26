@@ -31,7 +31,8 @@ expect_ftps(){
 
 	t_start=$(date +%s.%N)
 	# Upload the file
-	lftp -u $(cat /etc/ftp-creds.txt) $url <<EOF
+	lftp $url <<EOF
+login $(cat /etc/ftp-creds.txt)
 set ftp:ssl-force true
 set ftp:ssl-protect-data true
 put $tmpfile -o nagios
@@ -40,7 +41,8 @@ EOF
 
 	# Remove the target file, lftp doesn't like to overwrite.
 	rm -f $fromserver
-	lftp -u $(cat /etc/ftp-creds.txt) $url <<EOF
+	lftp $url <<EOF
+login $(cat /etc/ftp-creds.txt)
 set ftp:ssl-force true
 set ftp:ssl-protect-data true
 get nagios -o $fromserver
