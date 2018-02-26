@@ -1,0 +1,8 @@
+---
+
+dependencies:
+  # need epel for the jq package
+  - role: geerlingguy.repo-epel
+  - role: docker
+    docker_install: "{{ 'cvmfsstratum0servers' in group_names }}"
+    docker_service_enabled: no

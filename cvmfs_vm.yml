@@ -1,0 +1,22 @@
+- name: Deploy CVMFS Stratum 1 on bwCloud OpenStack
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+  vars:
+    server_names:
+      - cvmfs-stratum1.usegalaxy.eu
+    server:
+        flavor: m1.small
+        nics:
+          - net-name=public-new
+        security_groups:
+          - egress
+          - public-ping
+          - public-web
+          - public-ssh
+  vars_files:
+    - "secret_group_vars/all.yml"
+
+  roles:
+    - hxr.bwcloud
