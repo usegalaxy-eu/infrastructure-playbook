@@ -52,11 +52,11 @@
             # Allow https backend connections
             SSLProxyEngine On
             # Pass subdir first
-            ProxyPass /galaxy-freiburg/        https://usegalaxy-eu.github.io/galaxy-freiburg/
-            ProxyPassReverse /galaxy-freiburg/ https://usegalaxy-eu.github.io/galaxy-freiburg/
+            ProxyPass /assets/        https://usegalaxy-eu.github.io/assets/
+            ProxyPassReverse /assets/ https://usegalaxy-eu.github.io/assets/
             # Then proxy the index page to a static ftp without header.
-            ProxyPass /        https://usegalaxy-eu.github.io/galaxy-freiburg/ftp/index.html
-            ProxyPassReverse /        https://usegalaxy-eu.github.io/galaxy-freiburg/ftp/index.html
+            ProxyPass /        https://usegalaxy-eu.github.io/ftp/index.html
+            ProxyPassReverse /        https://usegalaxy-eu.github.io/ftp/index.html
         certificate_file: "/etc/letsencrypt/live/ftp.usegalaxy.eu/cert.pem"
         certificate_key_file: "/etc/letsencrypt/live/ftp.usegalaxy.eu/privkey.pem"
         certificate_chain_file: "/etc/letsencrypt/live/ftp.usegalaxy.eu/chain.pem"
@@ -95,7 +95,6 @@
     - galaxy-net
     - autofs
     - galaxyprojectdotorg.proftpd
-
     - jnv.unattended-upgrades
     - dj-wasabi.telegraf
     - dev-sec.os-hardening
