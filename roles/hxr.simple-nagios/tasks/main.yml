@@ -4,6 +4,11 @@
     name: bc
     state: present
 
+- name: install lftp
+  package:
+    name: lft
+    state: present
+
 - name: "Install credentials for FTP access"
   copy:
     src: ftp-creds.txt
