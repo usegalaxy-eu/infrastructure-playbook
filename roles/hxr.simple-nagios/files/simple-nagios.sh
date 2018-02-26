@@ -49,10 +49,12 @@ EOF
 
 	diff $tmpfile $fromserver
 	exit_code=$?
+	rm -f $tmpfile $fromserver
 
 	t_end=$(date +%s.%N)
 	t_delta=$(echo "1000000 * ($t_end - $t_start)" | bc -l)
 	t_delta=$(echo $t_delta | sed 's/\..*//')
+
 
 	echo "eu.usegalaxy.services,service=$service request_time=0$t_delta,status=$exit_code"
 
