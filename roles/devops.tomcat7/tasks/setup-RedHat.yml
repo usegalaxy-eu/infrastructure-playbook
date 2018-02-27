@@ -1,0 +1,8 @@
+---
+# tasks file for RedHat
+
+- name: Ensure Tomcat packages are installed (RedHat).
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items: '{{ tomcat7_packages }}'

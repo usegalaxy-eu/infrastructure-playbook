@@ -1,0 +1,18 @@
+---
+# tasks for tomcat 7 Configure
+
+- name: Copy tomcat server.xml.
+  template:
+    src: server.xml.j2
+    dest: /etc/tomcat/server.xml
+    owner: root
+    group: root
+    mode: 0664
+    backup: yes
+  notify: restart tomcat
+
+- name: Ensure tomcat services is started and enabled at boot.
+  service:
+    name: tomcat
+    state: started
+    enabled: yes
