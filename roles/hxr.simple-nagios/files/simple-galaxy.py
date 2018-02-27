@@ -5,22 +5,9 @@ import time
 api_key = open('/etc/gx-api-creds.txt', 'r').read().strip()
 url = "https://usegalaxy.eu"
 
-handlers = [
-    "handler0",
-    "handler1",
-    "handler2",
-    "handler3",
-    "handler4",
-    "handler5",
-    "handler6",
-    "handler7",
-    "handler8",
-    "handler9",
-    "handler10",
-    "handler11",
-    "drmaa",
-    "condor"
-]
+handlers = ["handler0", "handler1", "handler2", "handler3", "handler4",
+            "handler5", "handler6", "handler7", "handler8", "handler9",
+            "handler10", "handler11", "drmaa", "condor"]
 
 history_name = "Nagios Run %s" % time.time()
 gi = galaxy.GalaxyInstance(url, api_key)
