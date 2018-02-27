@@ -25,6 +25,10 @@
     group: telegraf
     mode: 0640
 
+- name: "Install pip for galaxy script"
+  pip:
+    name: bioblend
+
 - name: "Install simple-galaxy script"
   copy:
     src: simple-galaxy.py
