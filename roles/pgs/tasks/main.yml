@@ -28,14 +28,6 @@
     group: ubuntu
     mode: 0750
 
-- name: "Template jenkins wrapper script"
-  template:
-    src: jenkins.sh.j2
-    dest: "{{ pgs_dir }}/jenkins_wrapper.sh"
-    owner: ubuntu
-    group: ubuntu
-    mode: 0750
-
 - name: "Install requirements"
   pip:
     requirements: "{{ pgs_repo_dir }}/requirements.txt"
@@ -59,4 +51,4 @@
     minute: "0"
     hour: "*"
     user: ubuntu
-    job: "bash {{ pgs_dir }}/jenkins_wrapper.sh public-galaxy-servers bash {{ pgs_repo_dir }}.sh"
+    job: "bash {{ pgs_repo_dir }}.sh"
