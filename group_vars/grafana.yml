@@ -143,3 +143,11 @@ telegraf_plugins_extra:
       - timeout = "10s"
       - data_format = "influx"
       - interval = "1m"
+
+  - plugin: exec
+    disambiguation: galaxy-jobs
+    config:
+      - commands = ["/usr/local/bin/simple-galaxy"]
+      - timeout = "120s"
+      - data_format = "influx"
+      - interval = "60m"
