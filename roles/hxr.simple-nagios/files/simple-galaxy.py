@@ -70,3 +70,5 @@ try:
 
 except Exception as e:
     gi.histories.delete_history(history_id, purge=True)
+    for handler in handlers:
+        print("eu.usegalaxy.services,service=%s request_time=60,status=1")
