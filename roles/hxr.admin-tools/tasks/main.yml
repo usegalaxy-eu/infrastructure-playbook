@@ -1,0 +1,20 @@
+---
+- name: Install useful tools
+  package:
+    name: "{{ item }}"
+    state: installed
+  with_items:
+    - vim
+    - htop
+    - atop
+    - strace
+    - jq
+    - iftop
+    - wget
+    - curl
+    - tmux
+    - git
+    - nmap
+    - tcpdump
+    - net-tools
+    - nmap-ncat
