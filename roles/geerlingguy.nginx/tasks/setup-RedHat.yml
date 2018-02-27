@@ -12,3 +12,9 @@
   yum:
     name: "{{ nginx_package_name }}"
     state: installed
+
+- name: "Allow connecting to localhost"
+  seboolean:
+    name: httpd_can_network_connect
+    state: yes
+    persistent: yes
