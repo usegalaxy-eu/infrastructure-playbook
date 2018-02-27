@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 from bioblend import galaxy
-import sys
 import time
 
 api_key = open('/etc/gx-api-creds.txt', 'r').read().strip()
@@ -27,7 +26,6 @@ history_name = "Nagios Run %s" % time.time()
 gi = galaxy.GalaxyInstance(url, api_key)
 history = gi.histories.create_history(name=history_name)
 history_id = history['id']
-print("History created %s" % history_id)
 
 jobs = []
 
@@ -40,28 +38,18 @@ try:
             'job': job,
             'started': time.time()
         })
-        print(job)
-except Exception as e:
-    print(e)
 
-    deleted = gi.histories.delete_history(history_id, purge=True)
-    print("History deleted %s" % deleted['id'])
-    sys.exit(1)
-
-try:
     # Check all the jobs
     for i in range(20):
         states = []
         for job in jobs:
             state = gi.jobs.get_state(job['job']['jobs'][0]['id'])
             states.append(state)
-            if state == 'ok' and 'finished' not in job:
+            if state in ('ok', 'error') and 'finished' not in job:
                 job['finished'] = time.time()
 
         if all([state in ('ok', 'error') for state in states]):
             break
-
-        print(i, states)
 
         # Otherwies we run until we hit end of range
         time.sleep(2)
@@ -81,7 +69,4 @@ try:
         ))
 
 except Exception as e:
-    print(e)
-
-    deleted = gi.histories.delete_history(history_id, purge=True)
-    print("History deleted %s" % deleted['id'])
+    gi.histories.delete_history(history_id, purge=True)

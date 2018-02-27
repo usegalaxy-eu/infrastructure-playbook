@@ -42,9 +42,8 @@
     enabled: yes
     state: running
 
-- name: Make sure grafana service is enabled and running
-  exec:
-    command: "grafana-cli plugins install {{ item }}"
+- name: Cron job
+  command: "grafana-cli plugins install {{ item }}"
   with_items:
     - natel-discrete-panel
     - grafana-piechart-panel
