@@ -1,0 +1,19 @@
+---
+- name: Apollo
+  hosts: apollo
+  become: true
+  vars:
+    hostname: apollo.usegalaxy.eu
+  vars_files:
+    - "secret_group_vars/all.yml"
+    - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
+  roles:
+    - hostname
+    - geerlingguy.repo-epel
+    - hxr.certbot
+    - hxr.admin-tools
+    - geerlingguy.nginx
+    - devops.tomcat7
+    - dj-wasabi.telegraf
+    - dev-sec.os-hardening
+    - dev-sec.ssh-hardening
