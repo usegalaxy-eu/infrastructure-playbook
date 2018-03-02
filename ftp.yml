@@ -19,6 +19,7 @@
       - ftp.usegalaxy.eu
     certbot_agree_tos: --agree-tos
     certbot_admin_email: hxr@informatik.uni-freiburg.de
+    certbot_auto_renew_extra: "--webroot --webroot-path /var/www/html/"
 
     apache_remove_default_vhost: true
     apache_mods_enabled:
@@ -55,6 +56,8 @@
             # Pass subdir first
             ProxyPass /assets/        https://usegalaxy-eu.github.io/assets/
             ProxyPassReverse /assets/ https://usegalaxy-eu.github.io/assets/
+            # Skip well-known dir for certbot renewal.
+            ProxyPass /.well-known/ !
             # Then proxy the index page to a static ftp without header.
             ProxyPass /        https://usegalaxy-eu.github.io/ftp/index.html
             ProxyPassReverse /        https://usegalaxy-eu.github.io/ftp/index.html
