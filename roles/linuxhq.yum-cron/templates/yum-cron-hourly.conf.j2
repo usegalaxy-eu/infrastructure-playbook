@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+
+{% for section in yum_cron_hourly_conf|sort %}
+[{{ section }}]
+{%   for key, value in yum_cron_hourly_conf[section].items()|sort %}
+{%     if value is sameas true %}
+{{ key }} = yes
+{%     elif value is sameas false %}
+{{ key }} = no
+{%     elif value is string or value is number %}
+{{ key }} = {{ value }}
+{%     else %}
+{{ key }} = {{ value|join(', ') }}
+{%     endif %}
+{%   endfor %}
+
+{% endfor %}

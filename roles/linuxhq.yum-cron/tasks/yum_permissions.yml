@@ -1,0 +1,12 @@
+---
+- name: Applying directory and file permissions
+  tags: yum
+  become: true
+  file:
+    path: "{{ item.path }}"
+    owner: "{{ item.owner|default(omit) }}"
+    group: "{{ item.group|default(omit) }}"
+    mode: "{{ item.mode|default(omit) }}"
+  with_items: "{{ yum_permissions }}"
+  when: item.path is defined
+...

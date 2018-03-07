@@ -1,0 +1,14 @@
+# {{ ansible_managed }}
+
+[main]
+{% for key, value in yum_plugin_fastestmirror.items()|sort %}
+{%   if value is sameas true %}
+{{ key }}=true
+{%   elif value is sameas false %}
+{{ key }}=false
+{%   elif value is string or value is number %}
+{{ key }}={{ value }}
+{%   else %}
+{{ key }}={{ value|join(', ') }}
+{%   endif %}
+{% endfor %}

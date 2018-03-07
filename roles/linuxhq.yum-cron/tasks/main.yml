@@ -1,0 +1,37 @@
+---
+- name: Executing yum update tasks
+  import_tasks: yum_update.yml
+  when:
+    - yum_packages_update is defined
+    - yum_packages_update|bool == true
+
+- name: Executing yum plugins tasks
+  import_tasks: yum_plugins.yml
+  when:
+    - yum_plugin_packages is defined
+    - yum_plugin_packages|length > 0
+
+- name: Executing yum packages tasks
+  import_tasks: yum_packages.yml
+  when:
+    - yum_packages_install is defined
+    - yum_packages_remove is defined
+
+- name: Executing yum permissions tasks
+  import_tasks: yum_permissions.yml
+  when:
+    - yum_permissions is defined
+    - yum_permissions|length > 0
+
+- name: Executing yum protected tasks
+  import_tasks: yum_protected.yml
+  when:
+    - yum_protected is defined
+    - yum_protected|length > 0
+
+- name: Executing yum crontab tasks
+  import_tasks: yum_cron.yml
+  when:
+    - yum_cron is defined
+    - yum_cron|bool == true
+...

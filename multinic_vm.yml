@@ -1,0 +1,23 @@
+- name: Deploy multinic test
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+  vars:
+    server_names:
+      - multinic.usegalaxy.eu
+    server:
+        flavor: m1.large
+        nics:
+          - net-name=public
+          - net-name=galaxy-net
+        security_groups:
+          - egress
+          - public-ping
+          - public-web
+          - public-ssh
+  vars_files:
+    - "secret_group_vars/all.yml"
+
+  roles:
+    - hxr.bwcloud

@@ -1,0 +1,5 @@
+# {{ ansible_managed }}
+
+{% for i in yum_protected[item]|sort %}
+{{ i }}
+{% endfor %}
