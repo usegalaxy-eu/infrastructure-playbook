@@ -3,7 +3,6 @@
 - name: CSP Reporting Host
   hosts: csp-report
   become: true
-  tags: csp-report
   vars:
     php_enable_php_fpm: true
     letsencrypt_webroot_path: /var/www/html
@@ -25,6 +24,9 @@
               ProxyPassMatch ^/(.*\.php(/.*)?)$ "fcgi://127.0.0.1:9000/var/www/html/"
 
   roles:
+    - linuxhq.yum-cron
+    - hostname
+    - hxr.admin-tools
     - geerlingguy.repo-epel
     - geerlingguy.apache
     - geerlingguy.php

@@ -1,7 +1,7 @@
 ---
-- hosts: haproxy
+- name: Haproxy
+  hosts: haproxy
   become: true
-  tags: haproxy
   vars:
     hostname: proxy.usegalaxy.eu
     server_names:
@@ -12,6 +12,7 @@
     certbot_auto_renew_user: root
     certbot_auto_renew_hour: 10
     certbot_auto_renew_minute: 59
+    certbot_auto_renew_extra: "--http-01-port 63443"
 
     certbot_environment: production #staging
     certbot_domains:
@@ -23,6 +24,7 @@
   vars_files:
     - "secret_group_vars/all.yml"
   roles:
+    - linuxhq.yum-cron
     - hxr.dns
     - hostname
     - geerlingguy.repo-epel

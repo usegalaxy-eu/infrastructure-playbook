@@ -1,0 +1,6 @@
+---
+- name: Ensure Tomcat packages are installed (Debian).
+  package:
+    name: "{{ item }}"
+    state: installed
+  with_items: '{{ tomcat7_packages }}'

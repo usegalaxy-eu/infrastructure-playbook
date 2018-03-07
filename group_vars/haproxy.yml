@@ -7,6 +7,8 @@ haproxy_frontends:
         - option forwardfor
         - option http-server-close
         - option httpclose
+        - acl app_letsencrypt path_beg /.well-known/acme-challenge/
+        - use_backend certbot if app_letsencrypt
         - 'redirect scheme https code 301 if !{ ssl_fc }'
     - name: https-in
       bind: '*:443 ssl crt /etc/haproxy/certs/complete.pem'
@@ -21,6 +23,11 @@ haproxy_backends:
       mode: http
       custom_config:
         - 'server server1 132.230.68.85:443 maxconn 32 ssl verify none'
+    - name: certbot
+      balance: roundrobin
+      mode: http
+      custom_config:
+        - 'server server1 127.0.0.1:63443 maxconn 32'
 
 haproxy_global_vars:
     - 'ssl-default-bind-options no-sslv3 no-tls-tickets force-tlsv12'

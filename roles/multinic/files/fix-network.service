@@ -1,0 +1,10 @@
+[Unit]
+Description=Fix networking
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/fix-network
+
+[Install]
+WantedBy=network-online.target

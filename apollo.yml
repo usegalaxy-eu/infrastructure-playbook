@@ -13,8 +13,18 @@
     - geerlingguy.repo-epel
     - hxr.certbot
     - hxr.admin-tools
+    - linuxhq.yum-cron
+    - hxr.autofs
     - geerlingguy.nginx
+    # Remap 999:999 to other ids.
+    - hxr.remap-user
+    # Now add custom tomcat user with hardcoded ID.
+    - hxr.tomcat-user
+    # Finally safe to install tomcat.
     - devops.tomcat7
+    # Deploy our apollo instance.
+    - hxr.apollo
     - dj-wasabi.telegraf
     - dev-sec.os-hardening
     - dev-sec.ssh-hardening
+    - multinic

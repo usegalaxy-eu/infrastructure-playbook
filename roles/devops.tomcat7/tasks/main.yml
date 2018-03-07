@@ -9,5 +9,9 @@
 - include: setup-RedHat.yml
   when: ansible_os_family == 'RedHat'
 
+# Setup/install tasks.
+- include: setup-Debian.yml
+  when: ansible_os_family == 'Debian'
+
 # Configure.
 - include: configure.yml

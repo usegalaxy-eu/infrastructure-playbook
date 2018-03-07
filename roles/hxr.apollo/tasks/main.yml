@@ -1,0 +1,30 @@
+---
+- name: Configure apollo env vars
+  template:
+    src: webapollo.conf
+    dest: /etc/tomcat/conf.d/webapollo.conf
+    owner: tomcat
+    group: tomcat
+    mode: 0640
+
+- name: "Fix weird tomcat bug"
+  command: "yum reinstall -y tomcat-lib"
+
+- name: Download apollo
+  get_url:
+    url: "https://build.usegalaxy.eu/job/usegalaxy.eu/job/apollo-builder/lastSuccessfulBuild/artifact/apollo-2.0.7-snapshot.war"
+    dest: "/tmp/apollo.war"
+
+- name: Wipe out old apollo
+  command: "rm -rf /usr/share/tomcat/webapps/ROOT"
+
+- name: Make new root webapp
+  command: "mkdir /usr/share/tomcat/webapps/ROOT"
+
+- name: Extract new apollo into root webapp.
+  command: "unzip -q /tmp/apollo.war"
+  args:
+    chdir: /usr/share/tomcat/webapps/ROOT
+
+- name: Fix perms
+  command: "chown tomcat:tomcat -R /usr/share/tomcat/webapps/ROOT/"

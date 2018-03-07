@@ -1,0 +1,70 @@
+---
+# Centos uses systemd-bus-proxy:ssh_keys for (999:999) which we need to map to
+# the tomcat user/group. These are then mapped to the galaxy user over the
+# network.
+#
+# systemd-bus-proxy does not own any files so we're safe there, just remap the
+# ID and we should be good to go. Also don't seem to be running any processes
+# so that's nice.
+#
+# [root@apollo /]# find bin boot dev etc home lib lib64 media mnt opt root run srv sys tmp usr var -type f -user systemd-bus-proxy
+# [root@apollo /]# find bin boot dev etc home lib lib64 media mnt opt root run srv sys tmp usr var -type f -group systemd-bus-proxy
+# [root@apollo /]#
+#
+
+- lineinfile:
+    path: /etc/passwd
+    state: absent
+    regexp: '^systemd-bus-proxy:x:999:997:systemd Bus Proxy:/:/sbin/nologin$'
+
+- lineinfile:
+    path: /etc/passwd
+    state: present
+    insertbefore: "^systemd-network"
+    line: 'systemd-bus-proxy:x:993:997:systemd Bus Proxy:/:/sbin/nologin'
+
+- lineinfile:
+    path: /etc/passwd-
+    state: absent
+    regexp: '^systemd-bus-proxy:x:999:997:systemd Bus Proxy:/:/sbin/nologin$'
+
+- lineinfile:
+    path: /etc/passwd-
+    state: present
+    insertbefore: "^systemd-network"
+    line: 'systemd-bus-proxy:x:993:997:systemd Bus Proxy:/:/sbin/nologin'
+
+# Unfortunately ssh_keys owns some files.
+#
+# [root@apollo /]# find bin boot dev etc home lib lib64 media mnt opt root run srv sys tmp usr var -type f -group ssh_keys
+# etc/ssh/ssh_host_rsa_key
+# etc/ssh/ssh_host_ecdsa_key
+# etc/ssh/ssh_host_ed25519_key
+# usr/libexec/openssh/ssh-keysign
+#
+# But this also isn't too bad.
+
+- command: "find bin boot dev etc home lib lib64 media mnt opt root run srv sys tmp usr var -type f -group ssh_keys -exec chgrp 990 '{}' +"
+  args:
+    chdir: '/'
+
+
+- lineinfile:
+    path: /etc/group
+    state: absent
+    regexp: '^ssh_keys:x:999:'
+
+- lineinfile:
+    path: /etc/group
+    state: present
+    line: 'ssh_keys:x:990:'
+
+- lineinfile:
+    path: /etc/group-
+    state: absent
+    regexp: '^ssh_keys:x:999:'
+
+- lineinfile:
+    path: /etc/group-
+    state: present
+    line: 'ssh_keys:x:990:'

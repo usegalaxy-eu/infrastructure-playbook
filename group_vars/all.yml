@@ -43,3 +43,50 @@ sftp_enabled: true
 
 galaxy_uid: 999
 galaxy_gid: 999
+
+yum_cron_conf:
+  base:
+    debuglevel: -2
+    mdpolicy: 'group:main'
+  commands:
+    apply_updates: false
+    download_updates: true
+    random_sleep: 360
+    update_cmd: default
+    update_messages: true
+  email:
+    email_from: root@localhost
+    email_host: localhost
+    email_to: root
+  emitters:
+    emit_via: stdio
+    output_width: 160
+    system_name: None
+  groups:
+    group_list: None
+    package_types:
+      - mandatory
+      - default
+yum_cron_hourly_conf:
+  base:
+    debuglevel: -2
+    mdpolicy: 'group:main'
+  commands:
+    apply_updates: true
+    download_updates: true
+    random_sleep: 15
+    update_cmd: security
+    update_messages: false
+  email:
+    email_from: root
+    email_host: localhost
+    email_to: root
+  emitters:
+    emit_via: stdio
+    output_width: 160
+    system_name: None
+  groups:
+    group_list: None
+    package_types:
+      - mandatory
+      - default

@@ -1,0 +1,19 @@
+---
+
+- name: "Deploy downloader script"
+  copy:
+    src: usegalaxy-error-pages.sh
+    dest: /usr/local/bin/usegalaxy-error-pages.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Exec once the downloader script"
+  command: usegalaxy-error-pages.sh
+
+- name: Schedule re-fetch/template of error pages
+  cron:
+    name: "Re-fetch error pages"
+    user: "root"
+    hour: 0
+    job: /usr/local/bin/usegalaxy-error-pages.sh
