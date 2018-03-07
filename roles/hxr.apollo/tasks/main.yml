@@ -28,3 +28,8 @@
 
 - name: Fix perms
   command: "chown tomcat:tomcat -R /usr/share/tomcat/webapps/ROOT/"
+
+- name: Restart tomcat
+  service:
+    name: tomcat
+    state: restarted
