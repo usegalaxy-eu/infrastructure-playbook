@@ -96,6 +96,7 @@ expect_http hicexplorer https://hicexplorer.usegalaxy.eu 200
 
 expect_http stats https://stats.usegalaxy.eu 200
 expect_http stats https://stats.usegalaxy.eu 200
+expect_http apollo https://apollo.usegalaxy.eu/annotator/index 200
 
 expect_http grt https://telescope.galaxyproject.org/ 200
 expect_http grt_api https://telescope.galaxyproject.org/api/instance/top_all.json 200
