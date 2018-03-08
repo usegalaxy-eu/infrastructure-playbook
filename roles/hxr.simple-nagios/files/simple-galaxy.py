@@ -57,5 +57,9 @@ try:
 
 except Exception as e:
     gi.histories.delete_history(history_id, purge=True)
+    # Just fail all handlers, something is up, leave it up to the admin to figure out.
     for handler in handlers:
         print("eu.usegalaxy.services,service=%s request_time=60,status=1")
+
+# Cleanup histories
+gi.histories.delete_history(history_id, purge=True)
