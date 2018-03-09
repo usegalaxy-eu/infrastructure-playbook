@@ -151,3 +151,11 @@ telegraf_plugins_extra:
       - timeout = "120s"
       - data_format = "influx"
       - interval = "15m"
+
+  - plugin: dns_query
+    config:
+      - servers = ["8.8.8.8", "132.230.201.111", "132.230.200.200"]
+      - timeout = "5s"
+      - domains = ["google.com", "usegalaxy.eu"]
+      - record_type = "A"
+      - interval = "5m"
