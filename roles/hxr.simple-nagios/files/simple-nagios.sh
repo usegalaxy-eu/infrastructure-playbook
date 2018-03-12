@@ -7,16 +7,22 @@ expect_http() {
 	expected_status=$3
 
 	t_start=$(date +%s.%N)
-	response_code=$(timeout 10 curl 2>/dev/null --silent --connect-timeout 10 $url -I | head -n1 | awk '{print $2}');
+	curl_output=$(timeout 6 curl 2>/dev/null --silent --connect-timeout 6 $url -I)
+	if [[ $? -eq 0 ]]; then
+		response_code=$(echo $curl_output | head -n1 | awk '{print $2}');
+		if [[ $response_code -eq $expected_status ]]; then
+			status=0
+		else
+			status=1
+		fi
+	else
+		response_code=999
+		status=1
+	fi
+
 	t_end=$(date +%s.%N)
 	t_delta=$(echo "1000000 * ($t_end - $t_start)" | bc -l)
 	t_delta=$(echo $t_delta | sed 's/\..*//')
-
-	if [[ $response_code -eq $expected_status ]]; then
-		status=0
-	else
-		status=1
-	fi
 	echo "eu.usegalaxy.pages,page=$service code=$response_code,request_time=0$t_delta,status=$status"
 }
 
@@ -67,12 +73,17 @@ expect_gx_ftp_age() {
 	url=$2
 	t_start=$(date +%s.%N)
 	# Fetch the timestamp from the remote_files api
-	timestamp=$(curl --silent $url/api/remote_files?key=$GALAXY_API_KEY | jq '.[] | select(.path = "nagios") | .ctime' -r)
-	# Parse the date
-	created_at=$(date --date="$timestamp" "+%s")
-	now=$(date "+%s")
-	# Calculate its age.
-	file_age=$(echo "$now - $created_at" | bc)
+	curl_output=$(timeout 6 curl --connect-timeout 6 --silent $url/api/remote_files?key=$GALAXY_API_KEY)
+	if [[ $? -eq 0 ]]; then
+		timestamp=$(echo $curl_output | jq '.[] | select(.path = "nagios") | .ctime' -r)
+		# Parse the date
+		created_at=$(date --date="$timestamp" "+%s")
+		now=$(date "+%s")
+		# Calculate its age.
+		file_age=$(echo "$now - $created_at" | bc)
+	else
+		file_age=600
+	fi
 
 	t_end=$(date +%s.%N)
 	t_delta=$(echo "1000000 * ($t_end - $t_start)" | bc -l)
