@@ -12,22 +12,23 @@
 
 - name: Download apollo
   get_url:
-    url: "https://build.usegalaxy.eu/job/usegalaxy.eu/job/apollo-builder/lastSuccessfulBuild/artifact/apollo-2.0.7-snapshot.war"
+    url: "https://build.usegalaxy.eu/job/usegalaxy.eu/job/apollo-builder/lastSuccessfulBuild/artifact/apollo-2.0.8.war"
     dest: "/tmp/apollo.war"
+    checksum: md5:02c39dab97ab1e0fe9a4b838046debda
 
 - name: Wipe out old apollo
-  command: "rm -rf /usr/share/tomcat/webapps/ROOT"
+  command: "rm -rf /usr/share/tomcat/webapps/apollo/"
 
 - name: Make new root webapp
-  command: "mkdir /usr/share/tomcat/webapps/ROOT"
+  command: "mkdir /usr/share/tomcat/webapps/apollo/"
 
 - name: Extract new apollo into root webapp.
   command: "unzip -q /tmp/apollo.war"
   args:
-    chdir: /usr/share/tomcat/webapps/ROOT
+    chdir: /usr/share/tomcat/webapps/apollo/
 
 - name: Fix perms
-  command: "chown tomcat:tomcat -R /usr/share/tomcat/webapps/ROOT/"
+  command: "chown tomcat:tomcat -R /usr/share/tomcat/webapps/apollo/"
 
 - name: Restart tomcat
   service:

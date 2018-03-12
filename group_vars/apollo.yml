@@ -77,3 +77,23 @@ nginx_vhosts:
         add_header X-Content-Type-Options nosniff;
         add_header X-XSS-Protection "1; mode=block";
         add_header X-Robots-Tag none;
+
+telegraf_plugins_extra:
+  - plugin: statsd
+    config:
+      - protocol = "udp"
+      - max_tcp_connections = 250
+      - service_address = ":8125"
+      - delete_gauges = true
+      - delete_counters = true
+      - delete_sets = true
+      - delete_timings = true
+      - percentiles = [90]
+      - metric_separator = "."
+      - parse_data_dog_tags = false
+      - allowed_pending_messages = 10000
+      - percentile_limit = 1000
+  - plugin: tomcat
+    config:
+      - username = "monitor"
+      - password = "{{ tomcat7_monitor_password }}"
