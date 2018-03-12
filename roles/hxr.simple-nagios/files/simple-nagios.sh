@@ -7,7 +7,7 @@ expect_http() {
 	expected_status=$3
 
 	t_start=$(date +%s.%N)
-	response_code=$(curl 2>/dev/null --silent --connect-timeout 10 $url -I | head -n1 | awk '{print $2}');
+	response_code=$(timeout 10 curl 2>/dev/null --silent --connect-timeout 10 $url -I | head -n1 | awk '{print $2}');
 	t_end=$(date +%s.%N)
 	t_delta=$(echo "1000000 * ($t_end - $t_start)" | bc -l)
 	t_delta=$(echo $t_delta | sed 's/\..*//')
