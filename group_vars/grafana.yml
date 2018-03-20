@@ -14,8 +14,8 @@ certbot_post_renewal: |
     chmod 644 /etc/ssl/certs/{{ hostname }}
     chmod 640 /etc/ssl/private/privkey.pem
     chmod 750 /etc/ssl/private/
-    chown root:nginx /etc/ssl/private/privkey.pem
-    chown root:nginx -R /etc/ssl/private/privkey.pem
+    chown www-data:www-data /etc/ssl/private/privkey.pem
+    chown www-data:www-data -R /etc/ssl/private/privkey.pem
     systemctl restart nginx || true
 
 nginx_remove_default_vhost: true
@@ -34,12 +34,17 @@ nginx_vhosts:
     state: "present"
     filename: "{{ hostname }}.conf"
     extra_parameters: |
+
+        location /raw {
+            root /var/www/html/;
+        }
+
         location / {
             proxy_set_header           Host $host:$server_port;
             proxy_set_header           X-Real-IP $remote_addr;
             proxy_set_header           X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header           X-Forwarded-Proto $scheme;
-            proxy_pass                 http://127.0.0.1:8080;
+            proxy_pass                 http://127.0.0.1:3000;
             proxy_pass_request_headers on;
         }
         ssl_certificate /etc/ssl/certs/{{ hostname }};
