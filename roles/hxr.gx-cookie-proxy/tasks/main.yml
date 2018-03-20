@@ -1,0 +1,42 @@
+---
+- group:
+    name: gxp
+    state: present
+
+- user:
+    name: gxp
+    comment: "Galaxy Cookie Proxy"
+    group: gxp
+    shell: /sbin/nologin
+    system: yes
+
+- name: Download proxy
+  get_url:
+    url: "https://github.com/erasche/gx-cookie-proxy/releases/download/v0.9.10/default.gx-cookie-proxy_linux_amd64"
+    dest: "/usr/bin/gx-cookie-proxy"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Deploy env file
+  template:
+    src: env
+    dest: /etc/sysconfig/gx-cookie-proxy
+    owner: gxp
+    group: gxp
+    mode: 0640
+
+- name: Deploy systemd unit
+  copy:
+    src: gx-cookie-proxy.service
+    dest: /etc/systemd/system/gx-cookie-proxy.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Make sure the service is running
+  systemd:
+    daemon_reload: yes
+    state: started
+    name: gx-cookie-proxy
+    enabled: yes

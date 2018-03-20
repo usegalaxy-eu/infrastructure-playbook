@@ -1,0 +1,13 @@
+[Unit]
+Description=Galaxy Cookie Proxy
+After=network-online.target
+
+[Service]
+EnvironmentFile=/etc/sysconfig/gx-cookie-proxy
+Type=simple
+ExecStart=/usr/bin/gx-cookie-proxy
+Restart=always
+User=gxp
+
+[Install]
+WantedBy=network-online.target
