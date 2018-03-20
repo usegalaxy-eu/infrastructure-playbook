@@ -7,7 +7,7 @@ expect_http() {
 	expected_status=$3
 
 	t_start=$(date +%s.%N)
-	curl_output=$(timeout 6 curl 2>/dev/null --silent --connect-timeout 6 $url -I)
+	curl_output=$(timeout 10 curl 2>/dev/null --silent --connect-timeout 10 $url -I)
 	if [[ $? -eq 0 ]]; then
 		response_code=$(echo $curl_output | head -n1 | awk '{print $2}');
 		if [[ $response_code -eq $expected_status ]]; then
@@ -106,7 +106,7 @@ expect_http hicexplorer https://hicexplorer.usegalaxy.eu 200
 
 expect_http stats https://stats.usegalaxy.eu 200
 expect_http stats https://stats.usegalaxy.eu 200
-expect_http apollo https://apollo.usegalaxy.eu/annotator/index 200
+expect_http apollo https://apollo.usegalaxy.eu/apollo_api/annotator/index 200
 
 expect_http grt https://telescope.galaxyproject.org/ 200
 expect_http grt_api https://telescope.galaxyproject.org/api/instance/top_all.json 200
