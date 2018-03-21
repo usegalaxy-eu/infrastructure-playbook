@@ -1,0 +1,17 @@
+<tool id="echo_main_{{ item }}" name="Echo on main_{{ item }}">
+    <requirements>
+      <requirement type="package" version="2.7">python</requirement>
+      <yield/>
+    </requirements>
+    <hidden>True</hidden>
+    <command><![CDATA[
+        echo "$echo" >; "$output";
+        python -V > "$output";
+    ]]></command>
+    <inputs>
+        <param name="echo" type="text" title="Text to echo"/>
+    </inputs>
+    <outputs>
+        <data name="output" format="txt" />
+    </outputs>
+</tool>

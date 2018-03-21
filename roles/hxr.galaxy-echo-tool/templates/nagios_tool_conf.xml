@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='utf-8'?>
+<toolbox>
+    {% for handler in galaxy_test_user.handlers %}
+    <tool file="nagios/{{ handler }}.xml" />
+    {% endfor %}
+</toolbox>
