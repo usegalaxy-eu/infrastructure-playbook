@@ -1,6 +1,6 @@
 #! /bin/bash
-GALAXY_API_KEY=$(cat /etc/gx-api-creds.txt | jq .api_key -r)
-GALAXY_NAME=$(cat /etc/gx-api-creds.txt | jq .galaxy_test_name -r)
+GALAXY_API_KEY=$(cat /etc/gx-api-creds.json | jq .api_key -r)
+GALAXY_NAME=$(cat /etc/gx-api-creds.json | jq .galaxy_test_name -r)
 
 expect_http() {
 	service=$1
