@@ -15,6 +15,6 @@ expect_ftps {{ c.name }} {{ c.url }}
 
 {% if galaxy_nagios_urls.ftp_age_tests %}
 {% for c in galaxy_nagios_urls.ftp_age_tests %}
-expect_ftps {{ c.name }} {{ c.url }}
+expect_gx_ftp_age {{ c.name }} {{ c.url }}
 {% endfor %}
 {% endif %}
