@@ -113,3 +113,80 @@ telegraf_plugins_extra:
       - domains = ["google.com", "usegalaxy.eu", "registry.npmjs.org"]
       - record_type = "A"
       - interval = "5m"
+
+galaxy_test_url: https://usegalaxy.eu
+galaxy_test_user:
+    api_key: "{{ galaxy_test_user__api_key }}"
+    username: bot@usegalaxy.eu
+    password: "{{ galaxy_test_user__password }}"
+    handlers:
+        - "handler0"
+        - "handler1"
+        - "handler2"
+        - "handler3"
+        - "handler4"
+        - "handler5"
+        - "handler6"
+        - "handler7"
+        - "handler8"
+        - "handler9"
+        - "handler10"
+        - "handler11"
+        - "drmaa"
+        - "condor"
+
+galaxy_nagios_urls:
+  ftps_tests:
+    - name: ftp_ssl
+      url: ftp://ftp.usegalaxy.eu
+
+  ftp_age_tests:
+    - name: ftp_age
+      url: https://usegalaxy.eu
+
+  http_tests:
+    - name: home_nossl
+      url: "http://usegalaxy.eu"
+      code: 301
+    - name: home
+      url: "https://usegalaxy.eu"
+      code: 200
+    - name: hicexplorer
+      url: "https://hicexplorer.usegalaxy.eu"
+      code: 200
+    - name: stats
+      url: "https://stats.usegalaxy.eu"
+      code: 200
+    - name: apollo
+      url: "https://apollo.usegalaxy.eu/apollo_api/annotator/index"
+      code: 200
+    - name: grt
+      url: "https://telescope.galaxyproject.org/"
+      code: 200
+    - name: grt_api
+      url: "https://telescope.galaxyproject.org/api/instance/top_all.json"
+      code: 200
+    - name: grt_login
+      url: "https://telescope.galaxyproject.org/grt-admin/accounts/login/"
+      code: 200
+    - name: build
+      url: "https://build.usegalaxy.eu"
+      code: 200
+    - name: sql
+      url: "https://sql.usegalaxy.eu/lgoin/"
+      code: 200
+    - name: csp
+      url: "https://csp.usegalaxy.eu"
+      code: 200
+    - name: git
+      url: "https://gitlab.denbi.uni-freiburg.de/users/sign_in"
+      code: 200
+    - name: ftp_docs
+      url: "https://ftp.usegalaxy.eu"
+      code: 200
+    - name: influx
+      url: "http://influxdb.denbi.uni-freiburg.de:8086/ping"
+      code: 204
+    - name: sentry
+      url: "https://sentry.denbi.uni-freiburg.de/auth/login/sentry/"
+      code: 200

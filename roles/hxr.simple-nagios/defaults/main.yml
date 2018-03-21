@@ -1,0 +1,19 @@
+---
+galaxy_test_url: https://usegalaxy.eu
+galaxy_test_name: usegalaxy-eu
+galaxy_test_user:
+    api_key: deadbeefcafe
+    username: bot@usegalaxy.eu
+    password: password
+    handlers:
+        - "handler0"
+        - "handler1"
+
+galaxy_nagios_urls:
+  http_tests:
+    - name: home_nossl
+      url: "http://usegalaxy.eu"
+      code: 301
+    - name: home
+      url: "https://usegalaxy.eu"
+      code: 200

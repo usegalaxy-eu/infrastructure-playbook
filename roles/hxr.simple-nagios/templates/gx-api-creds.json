@@ -1,0 +1,12 @@
+{
+  "url": "{{ galaxy_test_url }}",
+  "username": "{{ galaxy_test_user.username }}",
+  "password": "{{ galaxy_test_user.password }}",
+  "api_key": "{{ galaxy_test_user.api_key }}",
+  "galaxy_test_name": "{{ galaxy_test_name }}",
+  "handlers": [
+  {% for handler in galaxy_test_user.handlers %}
+    "{{ handler }}"{% if !loop.last %},{% endif %}
+  {% endfor %}
+  ]
+}

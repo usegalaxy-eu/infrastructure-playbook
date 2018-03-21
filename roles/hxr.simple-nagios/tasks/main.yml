@@ -1,16 +1,15 @@
 ---
-- name: install bc
+- name: install dependencies
   package:
-    name: bc
+    name: "{{ item }}"
     state: present
-
-- name: install lftp
-  package:
-    name: lft
-    state: present
+  with_items:
+    - bc
+    - jq
+    - lftp
 
 - name: "Install credentials for FTP access"
-  copy:
+  template:
     src: ftp-creds.txt
     dest: /etc/ftp-creds.txt
     owner: telegraf
@@ -18,9 +17,9 @@
     mode: 0640
 
 - name: "Install galaxy API creds"
-  copy:
-    src: gx-api-creds.txt
-    dest: /etc/gx-api-creds.txt
+  template:
+    src: gx-api-creds.json
+    dest: /etc/gx-api-creds.json
     owner: telegraf
     group: telegraf
     mode: 0640
@@ -37,8 +36,16 @@
     group: root
     mode: 0755
 
-- name: "Install simple-nagios replacement script"
+- name: "Install simple-nagios-library script"
   copy:
+    src: simple-nagios.sh
+    dest: /usr/bin/simple-nagios-library
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Install simple-nagios-executor script"
+  template:
     src: simple-nagios.sh
     dest: /usr/bin/simple-nagios
     owner: root

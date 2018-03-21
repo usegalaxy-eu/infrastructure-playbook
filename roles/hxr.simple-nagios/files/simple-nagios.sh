@@ -1,5 +1,6 @@
 #! /bin/bash
-GALAXY_API_KEY=$(cat /etc/gx-api-creds.txt)
+GALAXY_API_KEY=$(cat /etc/gx-api-creds.txt | jq .api_key -r)
+GALAXY_NAME=$(cat /etc/gx-api-creds.txt | jq .galaxy_test_name -r)
 
 expect_http() {
 	service=$1
@@ -23,7 +24,7 @@ expect_http() {
 	t_end=$(date +%s.%N)
 	t_delta=$(echo "1000000 * ($t_end - $t_start)" | bc -l)
 	t_delta=$(echo $t_delta | sed 's/\..*//')
-	echo "eu.usegalaxy.pages,page=$service code=$response_code,request_time=0$t_delta,status=$status"
+	echo "$GALAXY_NAME.pages,page=$service code=$response_code,request_time=0$t_delta,status=$status"
 }
 
 expect_ftps(){
@@ -64,7 +65,7 @@ EOF
 	t_delta=$(echo "1000000 * ($t_end - $t_start)" | bc -l)
 	t_delta=$(echo $t_delta | sed 's/\..*//')
 
-	echo "eu.usegalaxy.services,service=$service request_time=0$t_delta,status=$exit_code"
+	echo "$GALAXY_NAME.services,service=$service request_time=0$t_delta,status=$exit_code"
 
 }
 
@@ -96,31 +97,5 @@ expect_gx_ftp_age() {
 		status=1
 	fi
 
-	echo "eu.usegalaxy.services,service=$service request_time=0$t_delta,status=$status"
+	echo "$GALAXY_NAME.services,service=$service request_time=0$t_delta,status=$status"
 }
-
-
-expect_http home_nossl http://usegalaxy.eu 301
-expect_http home https://usegalaxy.eu 200
-expect_http hicexplorer https://hicexplorer.usegalaxy.eu 200
-
-expect_http stats https://stats.usegalaxy.eu 200
-expect_http stats https://stats.usegalaxy.eu 200
-expect_http apollo https://apollo.usegalaxy.eu/apollo_api/annotator/index 200
-
-expect_http grt https://telescope.galaxyproject.org/ 200
-expect_http grt_api https://telescope.galaxyproject.org/api/instance/top_all.json 200
-expect_http grt_login https://telescope.galaxyproject.org/grt-admin/accounts/login/ 200
-
-expect_http build https://build.usegalaxy.eu/ 200
-
-expect_http sql https://sql.usegalaxy.eu/login/ 200
-expect_http csp https://csp.usegalaxy.eu/ 200
-expect_http git https://gitlab.denbi.uni-freiburg.de/users/sign_in 200
-expect_http ftp_docs https://ftp.usegalaxy.eu/ 200
-
-expect_http influx http://influxdb.denbi.uni-freiburg.de:8086/ping 204
-expect_http sentry https://sentry.denbi.uni-freiburg.de/auth/login/sentry/ 200
-
-expect_ftps ftp_ssl ftp://ftp.usegalaxy.eu
-expect_gx_ftp_age ftp_age https://usegalaxy.eu

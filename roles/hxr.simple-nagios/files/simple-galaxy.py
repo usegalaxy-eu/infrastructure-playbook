@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 from bioblend import galaxy
+import json
 import time
 
-api_key = open('/etc/gx-api-creds.txt', 'r').read().strip()
-url = "https://usegalaxy.eu"
+with open('/etc/gx-api-creds.json', 'r') as handle:
+    secrets = json.load(handle)
 
-handlers = ["handler0", "handler1", "handler2", "handler3", "handler4",
-            "handler5", "handler6", "handler7", "handler8", "handler9",
-            "handler10", "handler11", "drmaa", "condor"]
+api_key = secrets['api_key']
+url = secrets['url']
+handlers = secrets['handlers']
 
 history_name = "Nagios Run %s" % time.time()
 gi = galaxy.GalaxyInstance(url, api_key)
@@ -49,7 +50,7 @@ try:
 
     # Now we're done, output something useful.
     for job in jobs:
-        print("eu.usegalaxy.services,service=%s request_time=%s,status=%s" % (
+        print(secrets['galaxy_test_name'] + ".services,service=%s request_time=%s,status=%s" % (
             job['handler'],
             job['finished'] - job['started'],
             0 if job['final_state'] == 'ok' else 1
@@ -59,7 +60,7 @@ except Exception as e:
     gi.histories.delete_history(history_id, purge=True)
     # Just fail all handlers, something is up, leave it up to the admin to figure out.
     for handler in handlers:
-        print("eu.usegalaxy.services,service=%s request_time=60,status=1")
+        print(secrets['galaxy_test_name'] + ".services,service=%s request_time=60,status=1")
 
 # Cleanup histories
 gi.histories.delete_history(history_id, purge=True)
