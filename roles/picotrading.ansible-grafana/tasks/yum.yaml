@@ -1,4 +1,16 @@
 ---
+- name: Add grafana packagecloud repo
+  yum_repository:
+    name: grafana
+    baseurl: https://packagecloud.io/grafana/stable/el/7/$basearch
+    enabled: yes
+    description: Grafana packagecloud repo
+    gpgcheck: true
+    gpgkey: https://packagecloud.io/gpg.key https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana
+    sslverify: true
+    sslcacert: /etc/pki/tls/certs/ca-bundle.crt
+    repo_gpgcheck: true
+
 - name: Install Grafana package for RedHat
   yum:
     name: "{{ grafana_pkg }}"
