@@ -10,6 +10,8 @@
     security_groups: "{{ server.security_groups }}"
   register: server
 
+- debug: var=server
+
 - name: Set DNS entries
   route53:
     command: create
