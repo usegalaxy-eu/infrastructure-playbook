@@ -1,21 +1,36 @@
+haproxy_chroot: ''
 haproxy_frontends:
     - name: http-in
       bind: '*:80'
       mode: http
       custom_config:
-        - option httplog
         - option forwardfor
         - option http-server-close
         - option httpclose
-        - acl app_letsencrypt path_beg /.well-known/acme-challenge/
-        - use_backend certbot if app_letsencrypt
+        - use_backend certbot if { path_beg /.well-known/acme-challenge/ }
         - 'redirect scheme https code 301 if !{ ssl_fc }'
     - name: https-in
       bind: '*:443 ssl crt /etc/haproxy/certs/complete.pem'
       mode: http
       custom_config:
         - 'reqadd X-Forwarded-Proto:\ https'
-        - 'default_backend galaxy'
+        # Is it going to hicexplorer
+        - 'acl hic_host hdr_dom(host) -i hicexplorer.usegalaxy.eu'
+        # Requests for welcome page.
+        - 'acl welcome path beg /static/welcome.html'
+        # there's no default because haproxy behaves stupidly if there is.
+        - 'use_backend apollo if { path_beg /apollo/ }'
+        - 'use_backend hicwelcome if hic_host welcome'
+        - 'use_backend hichome if hic_host'
+        - 'use_backend galaxy if !{ path_beg /apollo/ }'
+        # Custom error pages. TODO: automate.
+        - 'errorfile 400 /etc/haproxy/errors/400.html'
+        - 'errorfile 403 /etc/haproxy/errors/403.html'
+        - 'errorfile 408 /etc/haproxy/errors/408.html'
+        - 'errorfile 500 /etc/haproxy/errors/500.html'
+        - 'errorfile 502 /etc/haproxy/errors/502.html'
+        - 'errorfile 503 /etc/haproxy/errors/503.html'
+        - 'errorfile 504 /etc/haproxy/errors/504.html'
 
 haproxy_backends:
     - name: galaxy
@@ -23,6 +38,22 @@ haproxy_backends:
       mode: http
       custom_config:
         - 'server server1 132.230.68.85:443 maxconn 32 ssl verify none'
+    - name: hichome
+      balance: roundrobin
+      mode: http
+      custom_config:
+        - 'server server1 132.230.68.85:443 maxconn 32 ssl verify none'
+    - name: hicwelcome
+      balance: roundrobin
+      mode: http
+      custom_config:
+        - 'reqrep ^GET\ /static/welcome.html\ HTTP/1.1 GET\ /static/welcome-hic.html\ HTTP/1.1'
+        - 'server server1 132.230.68.85:443 maxconn 32 ssl verify none'
+    - name: apollo
+      balance: roundrobin
+      mode: http
+      custom_config:
+        - 'server server1 apollo.usegalaxy.eu:443 maxconn 32 ssl verify none'
     - name: certbot
       balance: roundrobin
       mode: http
