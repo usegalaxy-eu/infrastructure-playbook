@@ -18,11 +18,13 @@ haproxy_frontends:
         - 'acl hic_host hdr_dom(host) -i hicexplorer.usegalaxy.eu'
         # Requests for welcome page.
         - 'acl welcome path beg /static/welcome.html'
+        - 'acl basecss path beg /static/style/base.css'
         # there's no default because haproxy behaves stupidly if there is.
-        - 'use_backend apollo if { path_beg /apollo/ }'
-        - 'use_backend hicwelcome if hic_host welcome'
-        - 'use_backend hichome if hic_host'
-        - 'use_backend galaxy if !{ path_beg /apollo/ }'
+        - 'use_backend apollo     if { path_beg /apollo/ }'
+        - 'use_backend hicspecial if hic_host welcome'
+        - 'use_backend hicspecial if hic_host basecss'
+        - 'use_backend hichome    if hic_host'
+        - 'use_backend galaxy     if !{ path_beg /apollo/ }'
         # Custom error pages. TODO: automate.
         - 'errorfile 400 /etc/haproxy/errors/400.html'
         - 'errorfile 403 /etc/haproxy/errors/403.html'
@@ -43,10 +45,11 @@ haproxy_backends:
       mode: http
       custom_config:
         - 'server server1 132.230.68.85:443 maxconn 32 ssl verify none'
-    - name: hicwelcome
+    - name: hicspecial
       balance: roundrobin
       mode: http
       custom_config:
+        - 'reqrep ^GET\ /static/style/base.css(.*)\ HTTP/1.1 GET\ /static/style/base-hic.css\1\ HTTP/1.1'
         - 'reqrep ^GET\ /static/welcome.html\ HTTP/1.1 GET\ /static/welcome-hic.html\ HTTP/1.1'
         - 'server server1 132.230.68.85:443 maxconn 32 ssl verify none'
     - name: apollo
