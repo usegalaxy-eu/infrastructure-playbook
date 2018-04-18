@@ -1,0 +1,14 @@
+---
+- group:
+    name: "{{ hxr_custom_group.name }}"
+    state: present
+    gid: 999
+
+- user:
+    name: "{{ hxr_custom_user.name }}"
+    comment: "{{ hxr_custom_user.comment }}"
+    uid: 999
+    group: "{{ hxr_custom_group.name }}"
+    shell: "{{ hxr_custom_user.shell }}"
+    createhome: no
+    system: yes

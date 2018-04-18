@@ -18,8 +18,8 @@
     - geerlingguy.nginx
     # Remap 999:999 to other ids.
     - hxr.remap-user
-    # Now add custom tomcat user with hardcoded ID.
-    - hxr.tomcat-user
+    # Now add custom tomcat user with hardcoded ID. The user info is in group_vars/apollo.yml
+    - hxr.replace-galaxy-user
     # Finally safe to install tomcat.
     - devops.tomcat7
     # Deploy our apollo instance.
