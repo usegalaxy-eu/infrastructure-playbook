@@ -12,3 +12,10 @@
     shell: "{{ hxr_custom_user.shell }}"
     createhome: no
     system: yes
+
+- user:
+    name: "{{ hxr_custom_group.name }}"
+    groups: "{{ item }}"
+    append: yes
+  when: hxr_custom_user.extra_groups
+  with_items: "{{ hxr_custom_user.extra_groups }}"
