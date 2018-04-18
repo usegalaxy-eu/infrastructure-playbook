@@ -1,15 +1,15 @@
 ---
 certbot_environment: production #staging
 certbot_domains:
-  - test.usegalaxy.eu
+  - "{{ hostname }}"
 certbot_agree_tos: --agree-tos
 certbot_admin_email: security@usegalaxy.eu
 certbot_post_renewal: |
     mkdir -p /etc/ssl/private/
     chmod 750 /etc/ssl/private/
-    cp /etc/letsencrypt/live/test.usegalaxy.eu/fullchain.pem /etc/ssl/certs/test.usegalaxy.eu
-    cp /etc/letsencrypt/live/test.usegalaxy.eu/privkey.pem   /etc/ssl/private/privkey.pem
-    chmod 644 /etc/ssl/certs/test.usegalaxy.eu
+    cp /etc/letsencrypt/live/{{ hostname }}/fullchain.pem /etc/ssl/certs/{{ hostname }}
+    cp /etc/letsencrypt/live/{{ hostname }}/privkey.pem   /etc/ssl/private/privkey.pem
+    chmod 644 /etc/ssl/certs/{{ hostname }}
     chmod 640 /etc/ssl/private/privkey.pem
     chown root:nginx /etc/ssl/private/privkey.pem
     chown root:nginx -R /etc/ssl/private/privkey.pem
@@ -18,18 +18,18 @@ certbot_post_renewal: |
 nginx_remove_default_vhost: true
 nginx_vhosts:
   - listen: "80"
-    server_name: "test.usegalaxy.eu"
-    return: "301 https://test.usegalaxy.eu$request_uri"
-    filename: "test.usegalaxy.eu.80.conf"
+    server_name: "{{ hostname }}"
+    return: "301 https://{{ hostname }}$request_uri"
+    filename: "{{ hostname }}.80.conf"
 
   - listen: "443 ssl"
-    server_name: "test.usegalaxy.eu"
-    root: "/var/www/test.usegalaxy.eu"
+    server_name: "{{ hostname }}"
+    root: "/var/www/{{ hostname }}"
     index: "index.html"
     access_log: "/var/log/nginx/access.log"
     error_log: "/var/log/nginx/error.log"
     state: "present"
-    filename: "test.usegalaxy.eu.conf"
+    filename: "{{ hostname }}.conf"
     extra_parameters: |
         location / {
             proxy_set_header           Host $host:$server_port;
@@ -39,7 +39,7 @@ nginx_vhosts:
             proxy_pass                 http://127.0.0.1:8080;
             proxy_pass_request_headers on;
         }
-        ssl_certificate /etc/ssl/certs/test.usegalaxy.eu;
+        ssl_certificate /etc/ssl/certs/{{ hostname }};
         ssl_certificate_key /etc/ssl/private/privkey.pem;
 
         ssl_protocols TLSv1.2;# Requires nginx >= 1.13.0 else use TLSv1.2
