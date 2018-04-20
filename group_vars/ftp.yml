@@ -28,6 +28,7 @@ certbot_post_renewal: |
 
 
 nginx_remove_default_vhost: true
+nginx_proxy_cache_path: /tmp/cache levels=1:2 keys_zone=STATIC:100m inactive=24h max_size=1g
 nginx_vhosts:
   - listen: "80"
     server_name: "{{ hostname }}"
@@ -44,20 +45,16 @@ nginx_vhosts:
     filename: "{{ hostname }}.conf"
     extra_parameters: |
         location /assets/ {
-            proxy_set_header           Host $host:$server_port;
-            proxy_set_header           X-Real-IP $remote_addr;
-            proxy_set_header           X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header           X-Forwarded-Proto $scheme;
             proxy_pass                 https://usegalaxy-eu.github.io/assets/;
-            proxy_pass_request_headers on;
+            proxy_cache                STATIC;
+            proxy_cache_valid          200  1d;
+            proxy_cache_use_stale      error timeout invalid_header updating http_500 http_502 http_503 http_504;
         }
         location / {
-            proxy_set_header           Host $host:$server_port;
-            proxy_set_header           X-Real-IP $remote_addr;
-            proxy_set_header           X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header           X-Forwarded-Proto $scheme;
-            proxy_pass                 https://usegalaxy-eu.github.io/ftp/index.html;
-            proxy_pass_request_headers on;
+            proxy_pass                 https://usegalaxy-eu.github.io/ftp/;
+            proxy_cache                STATIC;
+            proxy_cache_valid          200  1d;
+            proxy_cache_use_stale      error timeout invalid_header updating http_500 http_502 http_503 http_504;
         }
         ssl_certificate /etc/ssl/certs/{{ hostname }};
         ssl_certificate_key /etc/ssl/private/privkey.pem;
