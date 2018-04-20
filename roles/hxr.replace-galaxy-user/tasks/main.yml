@@ -18,4 +18,4 @@
     groups: "{{ item }}"
     append: yes
   when: hxr_custom_user.extra_groups
-  with_items: "{{ hxr_custom_user.extra_groups }}"
+  with_items: "{{ hxr_custom_user.extra_groups | default([]) }}"
