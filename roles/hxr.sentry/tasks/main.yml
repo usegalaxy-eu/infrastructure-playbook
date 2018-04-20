@@ -1,0 +1,30 @@
+---
+- command: make
+  become: yes
+  become_user: sentry
+  args:
+    chdir: /data/0/sentry/onpremise
+
+- command: docker-compose pull postgres redis smtp memcached
+  become: yes
+  become_user: sentry
+  args:
+    chdir: /data/0/sentry/onpremise
+
+- command: docker-compose kill
+  become: yes
+  become_user: sentry
+  args:
+    chdir: /data/0/sentry/onpremise
+
+- command: docker-compose rm -f
+  become: yes
+  become_user: sentry
+  args:
+    chdir: /data/0/sentry/onpremise
+
+- command: docker-compose up -d
+  become: yes
+  become_user: sentry
+  args:
+    chdir: /data/0/sentry/onpremise
