@@ -1,106 +1,25 @@
 ---
 - hosts: ftp
   become: true
-  tasks:
+  vars:
+    hostname: ftp.usegalaxy.eu
   vars_files:
     - "secret_group_vars/ftp.yml"
     - "secret_group_vars/all.yml"
-  vars:
-    proftpd_allow_download:
-      - hxr@informatik.uni-freiburg.de
-      - bot@usegalaxy.eu
-    hostname: ftp.usegalaxy.eu
-    certbot_auto_renew: yes
-    certbot_auto_renew_user: root
-    certbot_auto_renew_hour: 17
-    certbot_auto_renew_minute: 28
-    certbot_environment: production #staging
-    certbot_domains:
-      - ftp.usegalaxy.eu
-    certbot_agree_tos: --agree-tos
-    certbot_admin_email: hxr@informatik.uni-freiburg.de
-    certbot_auto_renew_extra: "--webroot --webroot-path /var/www/html/"
-
-    apache_remove_default_vhost: true
-    apache_mods_enabled:
-      - rewrite
-      - ssl
-      - headers
-      - proxy
-      - proxy_http
-
-    apache_vhosts:
-      - servername: "ftp.usegalaxy.eu"
-        serveradmin: admin@usegalaxy.eu
-        documentroot: "/var/www/html/"
-        extra_parameters: |
-            RewriteEngine on
-            RewriteCond %{SERVER_NAME} =ftp.usegalaxy.eu
-            RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
-            ErrorLog ${APACHE_LOG_DIR}/ftp.usegalaxy.eu-error.log
-            CustomLog ${APACHE_LOG_DIR}/ftp.usegalaxy.eu-access.log combined
-
-    apache_vhosts_ssl:
-      - servername: "ftp.usegalaxy.eu"
-        serveradmin: admin@usegalaxy.eu
-        documentroot: "/var/www/html/"
-        apache_ssl_protocol: "All -SSLv2 -SSLv3 -TLSv1 -TLSv1.1"
-        apache_ssl_cipher_suite: "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH"
-        apache_allow_override: "All"
-        apache_options: "-Indexes +FollowSymLinks"
-        extra_parameters: |
-            Header always set X-Frame-Options DENY
-            Header always set X-Content-Type-Options nosniff
-            # Allow https backend connections
-            SSLProxyEngine On
-            # Pass subdir first
-            ProxyPass /assets/        https://usegalaxy-eu.github.io/assets/
-            ProxyPassReverse /assets/ https://usegalaxy-eu.github.io/assets/
-            # Skip well-known dir for certbot renewal.
-            ProxyPass /.well-known/ !
-            # Then proxy the index page to a static ftp without header.
-            ProxyPass /        https://usegalaxy-eu.github.io/ftp/index.html
-            ProxyPassReverse /        https://usegalaxy-eu.github.io/ftp/index.html
-        certificate_file: "/etc/letsencrypt/live/ftp.usegalaxy.eu/cert.pem"
-        certificate_key_file: "/etc/letsencrypt/live/ftp.usegalaxy.eu/privkey.pem"
-        certificate_chain_file: "/etc/letsencrypt/live/ftp.usegalaxy.eu/chain.pem"
-
-    galaxy_ftp_upload_dir: /data/0/incoming/
-    galaxy_user: galaxy
-    proftpd_display_connect: |
-        UFR Galaxy FTP
-    proftpd_galaxy_auth: yes
-    proftpd_options:
-      - User: galaxy
-      - Group: galaxy
-    galaxy_db_schema: galaxy
-    proftpd_tls_cipher_suite: AES128+EECDH:AES128+EDH
-    proftpd_tls_protocol: TLSv1.2
-    proftpd_conf_ssl_certificate:     /etc/letsencrypt/live/ftp.usegalaxy.eu/cert.pem
-    proftpd_conf_ssl_certificate_key: /etc/letsencrypt/live/ftp.usegalaxy.eu/privkey.pem
-    proftpd_conf_ssl_ca_certificate:  /etc/letsencrypt/live/ftp.usegalaxy.eu/chain.pem
-    proftpd_virtualhosts:
-      - id: galaxy
-        address: ftp.usegalaxy.eu
-        options:
-          - ServerAdmin: admin@usegalaxy.eu
-          - ServerName: UFR Galaxy FTP
-          - TransferLog: /var/log/proftpd/xfer/ftp.usegalaxy.eu
-          - MaxLoginAttempts: 3
-          - RequireValidShell: no
-          - AllowOverwrite: yes
-
   roles:
     - hostname
+    - geerlingguy.repo-epel
     - hxr.certbot
     - hxr.admin-tools
-    - geerlingguy.apache
-    - multinic
-    - galaxy
-    - galaxy-net
-    - autofs
+    - linuxhq.yum-cron
+    - hxr.autofs
+    - geerlingguy.nginx
+    # Remap 999:999 to other ids.
+    - hxr.remap-user
+    # Now add custom galaxy user with hardcoded ID. The user info is in group_vars/ftp.yml
+    - hxr.replace-galaxy-user
     - galaxyprojectdotorg.proftpd
-    - jnv.unattended-upgrades
     - dj-wasabi.telegraf
     - dev-sec.os-hardening
     - dev-sec.ssh-hardening
+    - multinic

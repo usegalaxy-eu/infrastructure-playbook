@@ -1,0 +1,112 @@
+hxr_custom_group:
+  name: galaxy
+hxr_custom_user:
+  name: galaxy
+  comment: "Galaxy Service-Acct"
+  shell: /bin/bash
+
+certbot_auto_renew: yes
+certbot_auto_renew_user: root
+certbot_auto_renew_hour: 17
+certbot_auto_renew_minute: 28
+
+certbot_environment: production #staging
+certbot_domains:
+  - "{{ hostname }}"
+certbot_agree_tos: --agree-tos
+certbot_admin_email: security@usegalaxy.eu
+certbot_post_renewal: |
+    mkdir -p /etc/ssl/private/
+    chmod 750 /etc/ssl/private/
+    cp /etc/letsencrypt/live/{{ hostname }}/fullchain.pem /etc/ssl/certs/{{ hostname }}
+    cp /etc/letsencrypt/live/{{ hostname }}/privkey.pem   /etc/ssl/private/privkey.pem
+    chmod 644 /etc/ssl/certs/{{ hostname }}
+    chmod 640 /etc/ssl/private/privkey.pem
+    chown root:nginx /etc/ssl/private/privkey.pem
+    chown root:nginx -R /etc/ssl/private/privkey.pem
+    systemctl restart nginx || true
+
+
+nginx_remove_default_vhost: true
+nginx_vhosts:
+  - listen: "80"
+    server_name: "{{ hostname }}"
+    return: "301 https://{{ hostname }}$request_uri"
+    filename: "{{ hostname }}.80.conf"
+
+  - listen: "443 ssl"
+    server_name: "{{ hostname }}"
+    root: "/var/www/{{ hostname }}"
+    index: "index.html"
+    access_log: "/var/log/nginx/access.log"
+    error_log: "/var/log/nginx/error.log"
+    state: "present"
+    filename: "{{ hostname }}.conf"
+    extra_parameters: |
+        location /assets/ {
+            proxy_set_header           Host $host:$server_port;
+            proxy_set_header           X-Real-IP $remote_addr;
+            proxy_set_header           X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header           X-Forwarded-Proto $scheme;
+            proxy_pass                 https://usegalaxy-eu.github.io/assets/;
+            proxy_pass_request_headers on;
+        }
+        location / {
+            proxy_set_header           Host $host:$server_port;
+            proxy_set_header           X-Real-IP $remote_addr;
+            proxy_set_header           X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header           X-Forwarded-Proto $scheme;
+            proxy_pass                 https://usegalaxy-eu.github.io/ftp/index.html;
+            proxy_pass_request_headers on;
+        }
+        ssl_certificate /etc/ssl/certs/{{ hostname }};
+        ssl_certificate_key /etc/ssl/private/privkey.pem;
+
+        ssl_protocols TLSv1.2;# Requires nginx >= 1.13.0 else use TLSv1.2
+        ssl_prefer_server_ciphers on;
+        #ssl_dhparam /etc/nginx/dhparam.pem; # openssl dhparam -out /etc/nginx/dhparam.pem 4096
+        ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384;
+        ssl_ecdh_curve secp384r1; # Requires nginx >= 1.1.0
+        ssl_session_timeout  10m;
+        ssl_session_cache shared:SSL:10m;
+        ssl_session_tickets off; # Requires nginx >= 1.5.9
+        ssl_stapling on; # Requires nginx >= 1.3.7
+        ssl_stapling_verify on; # Requires nginx => 1.3.7
+
+        resolver 8.8.8.8 8.8.4.4 valid=300s;
+        resolver_timeout 5s;
+
+        add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";
+        add_header X-Content-Type-Options nosniff;
+        add_header X-XSS-Protection "1; mode=block";
+        add_header X-Robots-Tag none;
+
+
+
+proftpd_allow_download:
+  - hxr@informatik.uni-freiburg.de
+  - bot@usegalaxy.eu
+galaxy_ftp_upload_dir: /data/0/incoming/
+galaxy_user: galaxy
+proftpd_display_connect: |
+    UseGalaxy.eu FTP
+proftpd_galaxy_auth: yes
+proftpd_options:
+  - User: galaxy
+  - Group: galaxy
+galaxy_db_schema: galaxy
+proftpd_tls_cipher_suite: AES128+EECDH:AES128+EDH
+proftpd_tls_protocol: TLSv1.2
+proftpd_conf_ssl_certificate:     "/etc/letsencrypt/live/{{ hostname }}/cert.pem"
+proftpd_conf_ssl_certificate_key: "/etc/letsencrypt/live/{{ hostname }}/privkey.pem"
+proftpd_conf_ssl_ca_certificate:  "/etc/letsencrypt/live/{{ hostname }}/chain.pem"
+proftpd_virtualhosts:
+  - id: galaxy
+    address: "{{ hostname }}"
+    options:
+      - ServerAdmin: admin@usegalaxy.eu
+      - ServerName: UFR Galaxy FTP
+      - TransferLog: "/var/log/proftpd/xfer/{{ hostname }}"
+      - MaxLoginAttempts: 3
+      - RequireValidShell: no
+      - AllowOverwrite: yes

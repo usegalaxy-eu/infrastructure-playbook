@@ -7,10 +7,10 @@
     server_names:
       - ftp.usegalaxy.eu
     server:
-        image: "ubuntu-16.04-multinic"
         flavor: m1.small
         nics:
           - net-name=public-new
+          - net-name=galaxy-net
         security_groups:
           - egress
           - Public
