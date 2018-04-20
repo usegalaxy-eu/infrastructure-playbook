@@ -32,3 +32,15 @@
     state: started
     name: fix-network
     enabled: yes
+
+- name: Put default route device in /etc/sysconfig/network
+  lineinfile:
+    path: /etc/sysconfig/network
+    regexp: '^GATEWAYDEV='
+    line: "GATEWAYDEV=eth0"
+
+- name: Put default route in /etc/sysconfig/network
+  lineinfile:
+    path: /etc/sysconfig/network
+    regexp: '^GATEWAY='
+    line: "GATEWAY={{ ansible_default_ipv4.gateway }}"
