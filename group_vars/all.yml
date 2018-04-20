@@ -95,3 +95,7 @@ yum_cron_hourly_conf:
     package_types:
       - mandatory
       - default
+
+# Do NOT disable ipv6
+sysctl_config:
+  net.ipv6.conf.all.disable_ipv6: 0
