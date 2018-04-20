@@ -7,4 +7,10 @@
     - "secret_group_vars/all.yml"
     - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
   roles:
-    - hxr.galaxy-echo-tool
+    - geerlingguy.repo-epel
+    - hxr.admin-tools
+    - linuxhq.yum-cron
+    #- hxr.galaxy-echo-tool
+    - dj-wasabi.telegraf
+    - dev-sec.os-hardening
+    - dev-sec.ssh-hardening
