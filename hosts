@@ -5,7 +5,7 @@ build.usegalaxy.eu ansible_ssh_user=ubuntu
 telescope.galaxyproject.org ansible_ssh_user=ubuntu
 
 [influxdb]
-influxdb.denbi.uni-freiburg.de ansible_ssh_user=centos
+influxdb.denbi.uni-freiburg.de
 
 [grafana]
 stats.usegalaxy.eu ansible_ssh_user=ubuntu
@@ -14,19 +14,19 @@ stats.usegalaxy.eu ansible_ssh_user=ubuntu
 gitlab.denbi.uni-freiburg.de ansible_ssh_user=ubuntu
 
 [csp-report]
-csp.usegalaxy.eu ansible_ssh_user=centos
+csp.usegalaxy.eu
 
 [galaxy]
 galaxy.uni-freiburg.de ansible_ssh_user=root
 
 [haproxy]
-proxy.usegalaxy.eu ansible_ssh_user=centos
+proxy.usegalaxy.eu
 
 [sql]
 sql.usegalaxy.eu ansible_ssh_user=ubuntu
 
 [ftp]
-ftp.usegalaxy.eu ansible_ssh_user=ubuntu
+ftp.usegalaxy.eu
 
 [testing]
 testing.usegalaxy.eu ansible_ssh_user=ubuntu
@@ -35,22 +35,25 @@ testing.usegalaxy.eu ansible_ssh_user=ubuntu
 git-ci-0.usegalaxy.eu ansible_ssh_user=ubuntu
 
 [cvmfsstratum1servers]
-cvmfs-stratum1.usegalaxy.eu ansible_ssh_user=centos
+cvmfs-stratum1.usegalaxy.eu
 
 [apollo]
-apollo.usegalaxy.eu ansible_ssh_user=centos
+apollo.usegalaxy.eu
 
 [multinic]
-multinic.usegalaxy.eu ansible_ssh_user=centos
+multinic.usegalaxy.eu
 
 [galaxy]
 galaxy.uni-freiburg.de ansible_ssh_user=root
 
 [hpc_grafana]
-mon01.bwcloud.uni-freiburg.de ansible_ssh_user=centos
+mon01.bwcloud.uni-freiburg.de
 
 [build01]
 build01.rz.privat ansible_ssh_user=root
 
 [sentry]
-sentry.usegalaxy.eu ansible_ssh_user=centos
+sentry.usegalaxy.eu
+
+[all:vars]
+ansible_ssh_user=centos
