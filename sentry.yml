@@ -1,0 +1,32 @@
+---
+- name: Sentry
+  hosts: sentry
+  become: true
+  vars:
+    hostname: sentry.usegalaxy.eu
+    pip_install_packages:
+      - name: docker
+      - name: docker-compose
+  vars_files:
+    - "secret_group_vars/all.yml"
+    - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
+  roles:
+    #- hostname
+    #- geerlingguy.repo-epel
+    #- hxr.certbot
+    #- hxr.admin-tools
+    #- linuxhq.yum-cron
+    #- hxr.autofs
+    #- geerlingguy.nginx
+    # Remap 999:999 to other ids.
+    #- hxr.remap-user
+    # Now add custom tomcat user with hardcoded ID.
+    - hxr.replace-galaxy-user
+    # Finally safe to install sentry stuff
+    - geerlingguy.pip
+    - geerlingguy.docker
+    #- hxr.sentry
+    #- dj-wasabi.telegraf
+    #- dev-sec.os-hardening
+    #- dev-sec.ssh-hardening
+    - multinic
