@@ -8,6 +8,7 @@
       - usegalaxy.eu
       - proxy.usegalaxy.eu
       - hicexplorer.usegalaxy.eu
+      - static.usegalaxy.eu
     certbot_auto_renew: yes
     certbot_auto_renew_user: root
     certbot_auto_renew_hour: 10
@@ -19,14 +20,15 @@
       - usegalaxy.eu
       - proxy.usegalaxy.eu
       - hicexplorer.usegalaxy.eu
+      - static.usegalaxy.eu
     certbot_agree_tos: --agree-tos
     certbot_admin_email: security@usegalaxy.eu
   vars_files:
     - "secret_group_vars/all.yml"
   roles:
-    - linuxhq.yum-cron
     - hxr.dns
     - hostname
+    - linuxhq.yum-cron
     - geerlingguy.repo-epel
     - hxr.certbot
     - hxr.admin-tools
