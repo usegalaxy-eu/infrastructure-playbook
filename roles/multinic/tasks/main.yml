@@ -7,6 +7,14 @@
     group: root
     mode: 0644
 
+- name: ifcfg for eth0
+  copy:
+    src: ifcfg-eth0
+    dest: /etc/sysconfig/network-scripts/ifcfg-eth0
+    owner: root
+    group: root
+    mode: 0644
+
 - name: Deploy networking hotfix script
   copy:
     src: fix-network.sh
@@ -32,15 +40,3 @@
     state: started
     name: fix-network
     enabled: yes
-
-- name: Put default route device in /etc/sysconfig/network
-  lineinfile:
-    path: /etc/sysconfig/network
-    regexp: '^GATEWAYDEV='
-    line: "GATEWAYDEV=eth0"
-
-- name: Put default route in /etc/sysconfig/network
-  lineinfile:
-    path: /etc/sysconfig/network
-    regexp: '^GATEWAY='
-    line: "GATEWAY={{ ansible_default_ipv4.gateway }}"
