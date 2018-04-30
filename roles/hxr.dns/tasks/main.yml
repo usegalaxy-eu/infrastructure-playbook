@@ -19,5 +19,19 @@
   with_items: "{{ server_names }}"
   when: set_dns | default(true)
 
-#- name: Run multinic manually on first boot
-  #when: multinic
+- name: Template cert refresh command
+  template:
+    src: refresh.sh
+    dest: /usr/sbin/cert-refresh
+    owner: root
+    group: root
+    mode: 0755
+  register: refresh_command
+
+- name: Execute cert refresh if domains have changed
+  command: /usr/sbin/cert-refresh
+  when: refresh_command.changed
+
+- name: Execute haproxy restart with new certs
+  command: /etc/letsencrypt/renewal-hooks/post/haproxy.sh
+  when: refresh_command.changed
