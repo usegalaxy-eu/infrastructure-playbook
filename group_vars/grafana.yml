@@ -109,7 +109,8 @@ telegraf_plugins_extra:
 
   - plugin: dns_query
     config:
-      - servers = ["8.8.8.8", "132.230.201.111", "132.230.200.200"]
+      #            cf         goog       quad9      opendns           BelWü
+      - servers = ["1.1.1.1", "8.8.8.8", "9.9.9.9", "208.67.222.222", "132.230.201.111", "132.230.200.200"]
       - timeout = 15
       - domains = ["google.com", "usegalaxy.eu", "registry.npmjs.org"]
       - record_type = "A"
