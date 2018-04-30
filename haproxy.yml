@@ -17,25 +17,20 @@
     certbot_auto_renew_extra: "--preferred-challenges http-01 --http-01-port 8118"
 
     certbot_environment: production #staging
-    certbot_domains:
-      - usegalaxy.eu
-      - proxy.usegalaxy.eu
-      - hicexplorer.usegalaxy.eu
-      - static.usegalaxy.eu
-      - metagenomics.usegalaxy.eu
+    certbot_domains: "{{ server_names }}"
     certbot_agree_tos: --agree-tos
     certbot_admin_email: security@usegalaxy.eu
   vars_files:
     - "secret_group_vars/all.yml"
   roles:
     - hxr.dns
-    - hostname
-    - linuxhq.yum-cron
-    - geerlingguy.repo-epel
-    - hxr.certbot
-    - hxr.admin-tools
+    #- hostname
+    #- linuxhq.yum-cron
+    #- geerlingguy.repo-epel
+    #- hxr.certbot
+    #- hxr.admin-tools
     - geerlingguy.haproxy
-    - hxr.haproxy-error-pages
-    - dj-wasabi.telegraf
-    - dev-sec.os-hardening
-    - dev-sec.ssh-hardening
+    #- hxr.haproxy-error-pages
+    #- dj-wasabi.telegraf
+    #- dev-sec.os-hardening
+    #- dev-sec.ssh-hardening
