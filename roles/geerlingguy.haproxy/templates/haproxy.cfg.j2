@@ -40,7 +40,9 @@ defaults
 
 {% for frontend in haproxy_frontends %}
 frontend {{ frontend.name }}
-	bind {{ frontend.bind }}
+{% for bind_addr in frontend.bind %}
+	bind {{ bind_addr }}
+{% endfor %}
 	mode {{ frontend.mode }}
 
 {% for line in frontend.custom_config %}
