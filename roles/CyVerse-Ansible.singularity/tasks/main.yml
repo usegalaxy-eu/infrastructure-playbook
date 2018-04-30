@@ -1,0 +1,65 @@
+---
+# tasks file for ansible-singularity
+- name: Ubuntu package installation
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    - autogen
+    - autoconf
+    - libtool
+    - make
+  when: ansible_distribution == "Ubuntu"
+
+- name: CentOS package installation
+  yum:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    - autoconf
+    - libtool
+    - make
+  when: ansible_distribution == "CentOS"
+
+- name: clone the singularity repo
+  git:
+    repo: 'https://github.com/singularityware/singularity.git'
+    dest: /opt/singularity
+    version: "{{ singularity_version }}"
+
+- name: execute autogen.sh
+  command: /opt/singularity/autogen.sh chdir=/opt/singularity
+
+- name: execute configure
+  command: /opt/singularity/configure --prefix=/usr/local chdir=/opt/singularity --sysconfdir=/etc
+
+- name: execute make
+  command: make chdir=/opt/singularity
+
+- name: execute make install
+  umask: 0022
+  command: make install chdir=/opt/singularity
+
+- name: Make conf dir
+  file:
+    dest: /etc/singularity/
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Deploy conf file
+  template:
+    src: singularity.conf.j2
+    dest: /etc/singularity/singularity.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Fix permissions
+  command: chmod ugo+rx /usr/local/libexec/ /etc/singularity
+
+- name: Fix permissions v2
+  command: chmod ugo+rx -R /usr/local/lib/singularity/ /usr/local/libexec/singularity/
