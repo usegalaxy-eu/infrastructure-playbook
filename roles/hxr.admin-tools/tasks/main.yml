@@ -1,5 +1,5 @@
 ---
-- name: Install useful tools
+- name: Install useful tools (Generic)
   package:
     name: "{{ item }}"
     state: installed
@@ -18,5 +18,11 @@
     - tcpdump
     - net-tools
     - unzip
+
+- name: Install useful tools (CentOS)
+  package:
+    name: "{{ item }}"
+    state: installed
+  with_items:
     - setools-console
-    #- nmap-ncat
+  when: ansible_distribution == 'CentOS'
