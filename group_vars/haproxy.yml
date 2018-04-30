@@ -1,30 +1,32 @@
 haproxy_chroot: ''
 haproxy_frontends:
-    - name: http-in
-      bind: '*:80'
-      mode: http
-      custom_config:
-        - option forwardfor
-        - option http-server-close
-        - option httpclose
-        - use_backend certbot if { path_beg /.well-known/acme-challenge/ }
-        - 'redirect scheme https code 301 if !{ ssl_fc }'
     - name: https-in
-      bind: '*:443 ssl crt /etc/haproxy/certs/complete.pem'
+      bind:
+        - '*:80'
+        - '*:443 ssl crt /etc/haproxy/certs/complete.pem'
       mode: http
       custom_config:
-        - 'reqadd X-Forwarded-Proto:\ https'
-        # Is it going to hicexplorer
-        - 'acl hic_host hdr_dom(host) -i hicexplorer.usegalaxy.eu'
-        # Requests for welcome page.
-        - 'acl welcome path beg /static/welcome.html'
-        - 'acl basecss path beg /static/style/base.css'
-        # there's no default because haproxy behaves stupidly if there is.
-        - 'use_backend apollo     if { path_beg /apollo/ }'
-        - 'use_backend hicspecial if hic_host welcome'
-        - 'use_backend hicspecial if hic_host basecss'
-        - 'use_backend hichome    if hic_host'
-        - 'use_backend galaxy     if !{ path_beg /apollo/ }'
+        - 'acl certbot_path      path_beg /.well-known/'
+        # Add header if this was over HTTPS
+        - 'reqadd X-Forwarded-Proto:\ https if { ssl_fc }'
+        # Unless this is going to certbot, redirect to HTTPS
+        - 'redirect scheme https code 301 if !{ ssl_fc } !certbot_path'
+        # ACLs
+        - 'acl hic_host          hdr_dom(host) -i hicexplorer.usegalaxy.eu'
+        - 'acl metagenomics_host hdr_dom(host) -i metagenomics.usegalaxy.eu'
+        - 'acl welcome           path_beg /static/welcome.html'
+        - 'acl basecss           path_beg /static/style/base.css'
+        - 'acl apollo_path       path_beg /apollo/'
+        # Which go to specific backends.
+        - 'use_backend certbot     if certbot_path'
+        - 'use_backend apollo      if apollo_path'
+        - 'use_backend hicspecial  if hic_host welcome'
+        - 'use_backend hicspecial  if hic_host basecss'
+        - 'use_backend metaspecial if metagenomics_host welcome'
+        - 'use_backend metaspecial if metagenomics_host basecss'
+        - 'use_backend galaxy'
+
+
         # Custom error pages. TODO: automate.
         - 'errorfile 400 /etc/haproxy/errors/400.html'
         - 'errorfile 403 /etc/haproxy/errors/403.html'
@@ -40,10 +42,12 @@ haproxy_backends:
       mode: http
       custom_config:
         - 'server server1 132.230.68.85:443 maxconn 32 ssl verify none'
-    - name: hichome
+    - name: metaspecial
       balance: roundrobin
       mode: http
       custom_config:
+        - 'reqrep ^GET\ /static/style/base.css(.*)\ HTTP/1.1 GET\ /static/style/base-metagenomics.css\1\ HTTP/1.1'
+        - 'reqrep ^GET\ /static/welcome.html\ HTTP/1.1 GET\ /static/welcome-metagenomics.html\ HTTP/1.1'
         - 'server server1 132.230.68.85:443 maxconn 32 ssl verify none'
     - name: hicspecial
       balance: roundrobin
@@ -61,7 +65,7 @@ haproxy_backends:
       balance: roundrobin
       mode: http
       custom_config:
-        - 'server server1 127.0.0.1:63443 maxconn 32'
+        - 'server server1 127.0.0.1:8118 maxconn 32'
 
 haproxy_global_vars:
     - 'ssl-default-bind-options no-sslv3 no-tls-tickets force-tlsv12'
