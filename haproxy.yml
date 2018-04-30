@@ -9,11 +9,12 @@
       - proxy.usegalaxy.eu
       - hicexplorer.usegalaxy.eu
       - static.usegalaxy.eu
+      - metagenomics.usegalaxy.eu
     certbot_auto_renew: yes
     certbot_auto_renew_user: root
     certbot_auto_renew_hour: 10
     certbot_auto_renew_minute: 59
-    certbot_auto_renew_extra: "--http-01-port 63443"
+    certbot_auto_renew_extra: "--preferred-challenges http-01 --http-01-port 8118"
 
     certbot_environment: production #staging
     certbot_domains:
@@ -21,6 +22,7 @@
       - proxy.usegalaxy.eu
       - hicexplorer.usegalaxy.eu
       - static.usegalaxy.eu
+      - metagenomics.usegalaxy.eu
     certbot_agree_tos: --agree-tos
     certbot_admin_email: security@usegalaxy.eu
   vars_files:
