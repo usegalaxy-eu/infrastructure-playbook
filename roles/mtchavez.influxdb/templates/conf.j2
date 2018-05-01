@@ -277,28 +277,28 @@ hostname = "{{ influxdb_hostname }}"
 
   # Use a separate private key location.
   # https-private-key = ""
-  https_private_key = "{{ influxdb_http_https_private_key }}"
+  https-private-key = "{{ influxdb_http_https_private_key }}"
 
   # The JWT auth shared secret to validate requests using JSON web tokens.
   # shared-sercret = ""
-  shared_sercret = "{{ influxdb_http_shared_sercret }}"
+  shared-sercret = "{{ influxdb_http_shared_sercret }}"
 
   # The default chunk size for result sets that should be chunked.
   # max-row-limit = 10000
-  max_row_limit = {{ influxdb_http_max_row_limit }}
+  max-row-limit = {{ influxdb_http_max_row_limit }}
 
   # The maximum number of HTTP connections that may be open at once.  New connections that
   # would exceed this limit are dropped.  Setting this value to 0 disables the limit.
   # max-connection-limit = 0
-  max_connection_limit = {{ influxdb_http_max_connection_limit }}
+  max-connection-limit = {{ influxdb_http_max_connection_limit }}
 
   # Enable http service over unix domain socket
   # unix-socket-enabled = false
-  unix_socket_enabled = {{ influxdb_http_unix_socket_enabled }}
+  unix-socket-enabled = {{ influxdb_http_unix_socket_enabled }}
 
   # The path of the unix domain socket.
   # bind-socket = "/var/run/influxdb.sock"
-  bind_socket = "{{ influxdb_http_bind_socket }}"
+  bind-socket = "{{ influxdb_http_bind_socket }}"
 
 ###
 ### [subscriber]
