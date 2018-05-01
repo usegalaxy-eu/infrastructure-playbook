@@ -1,0 +1,32 @@
+###############
+# Mail Server #
+###############
+{% if hxr_sentry_mail %}
+{% for prop in hxr_sentry_mail.keys() %}
+mail.{{ prop }} = {{ hxr_sentry_mail[prop] }}
+{% endfor %}
+{% endif %}
+
+
+
+# mail.backend: 'smtp'  # Use dummy if you want to disable email entirely
+# mail.host: 'localhost'
+# mail.port: 25
+# mail.username: ''
+# mail.password: ''
+# mail.use-tls: false
+# mail.from: 'root@localhost'
+# mail.enable-replies: false
+# mail.reply-hostname: ''
+# mail.mailgun-api-key: ''
+
+# Uploaded media uses these `filestore` settings. The available
+# backends are either `filesystem` or `s3`.
+# filestore.backend: 'filesystem'
+# filestore.options:
+#   location: '/tmp/sentry-files'
+# filestore.backend: 's3'
+# filestore.options:
+#   access_key: 'AKIXXXXXX'
+#   secret_key: 'XXXXXXX'
+#   bucket_name: 's3-bucket-name'

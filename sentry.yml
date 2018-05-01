@@ -12,20 +12,20 @@
     - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
   roles:
     - hostname
+    - multinic
     - geerlingguy.repo-epel
     - hxr.certbot
     - hxr.admin-tools
     - linuxhq.yum-cron
     - hxr.autofs
     - geerlingguy.nginx
+    - geerlingguy.pip
+    - geerlingguy.docker
     # Remap 999:999 to other ids.
     - hxr.remap-user
     - hxr.replace-galaxy-user
     # Finally safe to install sentry stuff
-    - geerlingguy.pip
-    - geerlingguy.docker
     - hxr.sentry
     - dj-wasabi.telegraf
     - dev-sec.os-hardening
     - dev-sec.ssh-hardening
-    - multinic

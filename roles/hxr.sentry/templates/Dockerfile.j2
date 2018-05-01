@@ -1,0 +1,3 @@
+FROM sentry:8.22-onbuild
+# Decrease required GH permissions since not operating on private repos.
+RUN sed -i 's/user:email,read:org,repo/user:email,read:org/' /usr/local/lib/python2.7/site-packages/sentry_auth_github/constants.py
