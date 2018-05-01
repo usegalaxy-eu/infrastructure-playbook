@@ -149,7 +149,7 @@ def collect(instance):
 def dump(instance, points):
     db = '{instance}_sql'.format(instance=instance)
     client = InfluxDBClient(database=db)
-    client.create_database(db)
+    # client.create_database(db)
     client.write_points(points)
 
 
