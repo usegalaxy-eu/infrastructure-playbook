@@ -4,6 +4,14 @@ set -ex
 # Temporarily set umask usch that www-data can read our files.
 umask 0003
 # Contact all servers
-python {{ pgs_repo_dir }}/process.py --json_dir {{ web_dir }} --influx --influx_db {{ influx_db }} --influx_host {{ influx_host }} --influx_port {{ influx_port }} {{ pgs_repo_dir }}/servers.csv {% if jenkins %} | tee $log {% endif %}
+python {{ pgs_repo_dir }}/process.py --json_dir {{ web_dir }} \
+	--influx \
+	--influx_ssl \
+	--influx_db   {{ influxdb.galaxy.database }} \
+	--influx_host {{ influxdb.host }} \
+	--influx_port 8086 \
+	--influx_user {{ influxdb.galaxy.username }} \
+	--influx_pass {{ influxdb.galaxy.password }} \
+	{{ pgs_repo_dir }}/servers.csv {% if jenkins %} | tee $log {% endif %}
 # Build badges
 python {{ pgs_repo_dir }}/badges.py {{ web_dir }} {{ web_dir }}/badges/ {% if jenkins %} | tee $log {% endif %}
