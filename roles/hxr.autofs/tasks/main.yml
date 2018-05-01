@@ -4,23 +4,22 @@
     name: autofs
     state: latest
 
-- name: autofs map master
-  copy:
+- name: autofs master
+  template:
+    src: auto.master.j2
     dest: /etc/auto.master
-    content: |
-      /data           /etc/auto.data          nfsvers=3
+    owner: root
+    group: root
+    mode: 0644
 
-- name: autofs map config
-  copy:
-    dest: /etc/auto.config
-    content: |
-      condor  -rw,hard,intr,nosuid,quota      sn03.bi.uni-freiburg.de:/export/galaxy1/system/config/&
-
-- name: autofs map data
-  copy:
-    dest: /etc/auto.data
-    content: |
-      0       -rw,hard,intr,nosuid,quota      sn01.bi.uni-freiburg.de:/export/data3/galaxy/net/data/&
+- name: Copy all other conf files
+  file:
+    src: "auto.{{ item }}"
+    dest: "/etc/auto.{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items: "{{ usegalaxy_eu_autofs_mounts }}"
 
 - name: autofs service enable
   service:

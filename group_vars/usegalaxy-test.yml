@@ -15,6 +15,9 @@ certbot_post_renewal: |
     chown root:nginx -R /etc/ssl/private/privkey.pem
     systemctl restart nginx || true
 
+usegalaxy_eu_autofs_mounts:
+ - data
+
 nginx_remove_default_vhost: true
 nginx_vhosts:
   - listen: "80"
