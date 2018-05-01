@@ -15,9 +15,9 @@ dc: ufr-rz
 telegraf_agent_output:
   - type: influxdb
     config:
-    - urls = ["{{ influxdb.galaxy.url }}"]
-    - password = "{{ influxdb.galaxy.database }}"
-    - password = "{{ influxdb.galaxy.username }}"
+    - urls = ["{{ influxdb.url }}"]
+    - database = "{{ influxdb.galaxy.database }}"
+    - username = "{{ influxdb.galaxy.username }}"
     - password = "{{ influxdb.galaxy.password }}"
 
 telegraf_plugins_default:
