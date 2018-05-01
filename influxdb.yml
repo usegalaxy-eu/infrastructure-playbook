@@ -4,6 +4,8 @@
   become: true
   vars:
     hostname: influxdb.usegalaxy.eu
+  vars_files:
+    - "secret_group_vars/all.yml"
   roles:
     #- hostname
     #- geerlingguy.repo-epel
@@ -14,7 +16,8 @@
     #- hxr.autofs
     #- geerlingguy.nginx
     # BEGIN custom
-    - mtchavez.influxdb
+    #- mtchavez.influxdb
+    - hxr.influxdb
     # END custom
     #- dj-wasabi.telegraf
     #- dev-sec.os-hardening
