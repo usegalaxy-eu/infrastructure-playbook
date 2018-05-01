@@ -13,17 +13,16 @@
     - hxr.certbot
     - hxr.admin-tools
     - linuxhq.yum-cron
+    - multinic
     - hxr.autofs
     - geerlingguy.nginx
-    # Remap 999:999 to other ids.
     - hxr.remap-user
     # Now add custom tomcat user with hardcoded ID. The user info is in group_vars/apollo.yml
     - hxr.replace-galaxy-user
-    # Finally safe to install tomcat.
+    # BEGIN custom
     - devops.tomcat7
-    # Deploy our apollo instance.
     - hxr.apollo
+    # END custom
     - dj-wasabi.telegraf
     - dev-sec.os-hardening
     - dev-sec.ssh-hardening
-    - multinic
