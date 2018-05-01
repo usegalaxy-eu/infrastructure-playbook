@@ -15,8 +15,10 @@ dc: ufr-rz
 telegraf_agent_output:
   - type: influxdb
     config:
-    - urls = ["http://influxdb.denbi.uni-freiburg.de:8086"]
-    - database = "rancher"
+    - urls = ["{{ influxdb.galaxy.url }}"]
+    - password = "{{ influxdb.galaxy.database }}"
+    - password = "{{ influxdb.galaxy.username }}"
+    - password = "{{ influxdb.galaxy.password }}"
 
 telegraf_plugins_default:
   - plugin: cpu
