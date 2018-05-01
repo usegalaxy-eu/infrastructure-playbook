@@ -5,11 +5,12 @@
   gather_facts: false
   vars:
     server_names:
-      - influx.usegalaxy.eu
+      - influxdb.usegalaxy.eu
     server:
         flavor: m1.large
         nics:
           - net-name=public
+          - net-name=galaxy-net
         security_groups:
           - egress
           - public-ping

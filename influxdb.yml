@@ -3,14 +3,19 @@
   hosts: influxdb
   become: true
   vars:
-    influxdb_base_data_dir: /data/influxdata
-  vars_files:
-    - "secret_group_vars/all.yml"
-    - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
+    hostname: influxdb.usegalaxy.eu
   roles:
+    #- hostname
+    #- geerlingguy.repo-epel
+    #- hxr.certbot
+    #- hxr.admin-tools
+    #- linuxhq.yum-cron
+    #- multinic
+    #- hxr.autofs
+    #- geerlingguy.nginx
+    # BEGIN custom
     - mtchavez.influxdb
-    - geerlingguy.repo-epel
-    - hxr.admin-tools
-    - dj-wasabi.telegraf
-    - dev-sec.os-hardening
-    - dev-sec.ssh-hardening
+    # END custom
+    #- dj-wasabi.telegraf
+    #- dev-sec.os-hardening
+    #- dev-sec.ssh-hardening
