@@ -1,0 +1,100 @@
+---
+- name: Make sure pip is available
+  package:
+    name: python-pip
+    state: installed
+
+- name: Ensure influxdb is available
+  pip:
+    name: influxdb
+    state: latest
+
+- name: Create galaxy user
+  influxdb_user:
+    user_name: "{{ influxdb.galaxy.username }}"
+    user_password: "{{ influxdb.galaxy.password }}"
+    hostname: influxdb.usegalaxy.eu
+    ssl: yes
+    login_username: "{{ influxdb.admin.username }}"
+    login_password: "{{ influxdb.admin.password }}"
+
+- name: Grant permissions to galaxy
+  influxdb_query:
+    hostname: influxdb.usegalaxy.eu
+    ssl: yes
+    login_username: "{{ influxdb.admin.username }}"
+    login_password: "{{ influxdb.admin.password }}"
+    database_name: "{{ item }}"
+    query: "GRANT ALL ON {{ item }} TO {{ influxdb.galaxy.username }}"
+  with_items:
+    - rancher
+    - test
+    - main_sql
+    - grt_usage
+
+- name: Create bwcloud user
+  influxdb_user:
+    user_name: "{{ influxdb.bwcloud.username }}"
+    user_password: "{{ influxdb.bwcloud.password }}"
+    hostname: influxdb.usegalaxy.eu
+    ssl: yes
+    login_username: "{{ influxdb.admin.username }}"
+    login_password: "{{ influxdb.admin.password }}"
+
+- name: Grant permissions to bwcloud
+  influxdb_query:
+    hostname: influxdb.usegalaxy.eu
+    ssl: yes
+    login_username: "{{ influxdb.admin.username }}"
+    login_password: "{{ influxdb.admin.password }}"
+    database_name: "{{ item }}"
+    query: "GRANT ALL ON {{ item }} TO {{ influxdb.bwcloud.username }}"
+  with_items:
+    - bwcloud
+    - nemo
+
+- name: Create grafana user
+  influxdb_user:
+    user_name: "{{ influxdb.grafana.username }}"
+    user_password: "{{ influxdb.grafana.password }}"
+    hostname: influxdb.usegalaxy.eu
+    ssl: yes
+    login_username: "{{ influxdb.admin.username }}"
+    login_password: "{{ influxdb.admin.password }}"
+
+- name: Grant permissions to grafana
+  influxdb_query:
+    hostname: influxdb.usegalaxy.eu
+    ssl: yes
+    login_username: "{{ influxdb.admin.username }}"
+    login_password: "{{ influxdb.admin.password }}"
+    database_name: "{{ item }}"
+    query: "GRANT READ ON {{ item }} TO {{ influxdb.grafana.username }}"
+  with_items:
+    - rancher
+    - '_internal'
+    - test
+    - main_sql
+    - grt_usage
+
+
+- name: Create bwgraf user
+  influxdb_user:
+    user_name: "{{ influxdb.bwgraf.username }}"
+    user_password: "{{ influxdb.bwgraf.password }}"
+    hostname: influxdb.usegalaxy.eu
+    ssl: yes
+    login_username: "{{ influxdb.admin.username }}"
+    login_password: "{{ influxdb.admin.password }}"
+
+- name: Grant permissions to bwgraf
+  influxdb_query:
+    hostname: influxdb.usegalaxy.eu
+    ssl: yes
+    login_username: "{{ influxdb.admin.username }}"
+    login_password: "{{ influxdb.admin.password }}"
+    database_name: "{{ item }}"
+    query: "GRANT READ ON {{ item }} TO {{ influxdb.bwgraf.username }}"
+  with_items:
+    - bwcloud
+    - nemo
