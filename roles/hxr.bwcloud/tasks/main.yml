@@ -8,6 +8,7 @@
     flavor: "{{ server.flavor | default('m1.small')}}"
     nics: "{{ server.nics | default('net-name=public-new')}}"
     security_groups: "{{ server.security_groups }}"
+    userdata: "{{ server.userdata | default(None) }}"
   register: server
 
 - debug: var=server
