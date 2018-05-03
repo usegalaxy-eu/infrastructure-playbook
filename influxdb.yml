@@ -16,6 +16,18 @@
     - hxr.autofs
     - geerlingguy.nginx
     # BEGIN custom
+    # So this part is a bit strange. hxr.certbot will request the certificates
+    # but the chown to `influxdb:influxdb` will fail because the user/group
+    # doesn't exist yet. I don't feel like duplicating the code in
+    # mtchavez.influxdb to create the role early, so we just let the chown step
+    # fail.
+    #
+    # Fortunately the role below also states "please start the service" rather
+    # than "ensure it is running". This works in our favour as the service will
+    # start and immediately fail on inaccessible SSL certificates.
+    #
+    # Solution: Run the playbook twice. The second run hxr.cerbot will run the
+    # chown, and this role will start it.
     - mtchavez.influxdb
     - hxr.influxdb
     # END custom
