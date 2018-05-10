@@ -11,7 +11,7 @@
     userdata: "{{ server.userdata | default(None) }}"
   register: server
 
-- debug: var=server.openstack.addresses.public
+- debug: var=server.server.public_v4
 
 - name: Set DNS entries
   route53:
