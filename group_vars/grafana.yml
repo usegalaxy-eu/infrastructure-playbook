@@ -107,6 +107,27 @@ telegraf_plugins_extra:
       - data_format = "influx"
       - interval = "15m"
 
+  - plugin: exec
+    disambiguation: ssl-expiry
+    config:
+      - commands = [
+          "/usr/bin/simple-ssl-check usegalaxy.eu",
+          "/usr/bin/simple-ssl-check build.usegalaxy.eu",
+          "/usr/bin/simple-ssl-check stats.usegalaxy.eu",
+          "/usr/bin/simple-ssl-check influxdb.usegalaxy.eu",
+          "/usr/bin/simple-ssl-check influxdb.usegalaxy.eu 8086",
+          "/usr/bin/simple-ssl-check proxy.usegalaxy.eu",
+          "/usr/bin/simple-ssl-check metagenomics.usegalaxy.eu",
+          "/usr/bin/simple-ssl-check hicexplorer.usegalaxy.eu",
+          "/usr/bin/simple-ssl-check ftp.usegalaxy.eu",
+          "/usr/bin/simple-ssl-check telescope.galaxyproject.org",
+          "/usr/bin/simple-ssl-check sentry.usegalaxy.eu",
+          "/usr/bin/simple-ssl-check mon01.bwcloud.uni-freiburg.de",
+        ]
+      - timeout = "15s"
+      - data_format = "influx"
+      - interval = "15m"
+
   - plugin: dns_query
     config:
       #            cf         goog       quad9      opendns           BelWü
