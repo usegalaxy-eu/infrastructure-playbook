@@ -1,3 +1,11 @@
 ---
+cvmfs_stratum1_create_directory: false
 
-cvmfs_srv_device: /dev/vdb
+cvmfs_stratum1_cache_dir:
+  dir: /var/cache/squid/
+  # 'Mbytes' is the amount of disk space (MB) to use under this
+  # directory.  The default is 100 MB.  Change this to suit your
+  # configuration.  Do NOT put the size of your disk drive here.
+  # Instead, if you want Squid to use the entire disk drive,
+  # subtract 20% and use that value.
+  size: "{{ 1024 * 1024 }}" # 1 TB
