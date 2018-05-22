@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  become: true
+  vars:
+    cvmfs_role: 'client'
+    cvmfs_stratum1_servers:
+      - "ssds1.nemo.privat"
+  roles:
+    - cvmfs
