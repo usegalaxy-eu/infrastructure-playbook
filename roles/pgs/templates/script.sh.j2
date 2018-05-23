@@ -5,5 +5,7 @@ set -ex
 umask 0003
 # Contact all servers
 python {{ pgs_repo_dir }}/process.py --json_dir {{ web_dir }} {{ pgs_repo_dir }}/servers.csv
+# Send to influxdb
+python {{ pgs_repo_dir }}/send-to-influx.py --influx_db test --influx_ssl --influx_host {{ influxdb.host }} --influx_user {{ influxdb.galaxy.username }} --influx_pass {{ influxdb.galaxy.password }} --json_dir {{ web_dir }}
 # Build badges
 python {{ pgs_repo_dir }}/badges.py {{ web_dir }} {{ web_dir }}/badges/
