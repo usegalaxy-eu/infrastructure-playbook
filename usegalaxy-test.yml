@@ -10,6 +10,7 @@
     - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
   roles:
     - hostname
+    - hxr.vault
     - geerlingguy.repo-epel
     - influxdata.chrony
     - hxr.certbot
