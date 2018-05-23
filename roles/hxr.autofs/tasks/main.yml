@@ -4,18 +4,10 @@
     name: autofs
     state: latest
 
-- name: autofs master
-  template:
-    src: auto.master.j2
-    dest: /etc/auto.master
-    owner: root
-    group: root
-    mode: 0644
-
 - name: Copy all other conf files
   copy:
     src: "auto.{{ item }}"
-    dest: "/etc/auto.{{ item }}"
+    dest: "/etc/auto.master.d/{{ item }}.autofs"
     owner: root
     group: root
     mode: 0644
