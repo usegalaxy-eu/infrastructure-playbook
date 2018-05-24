@@ -1,19 +1,14 @@
 ---
-- name: ifcfg for eth1
+- name: Upload ifcfg files
   copy:
-    src: ifcfg-eth1
-    dest: /etc/sysconfig/network-scripts/ifcfg-eth1
+    src: '{{ item }}'
+    dest: '/etc/sysconfig/network-scripts/{{ item }}'
     owner: root
     group: root
     mode: 0644
-
-- name: ifcfg for eth0
-  copy:
-    src: ifcfg-eth0
-    dest: /etc/sysconfig/network-scripts/ifcfg-eth0
-    owner: root
-    group: root
-    mode: 0644
+  with_items:
+    - ifcfg-eth0
+    - ifcfg-eth1
 
 - name: Deploy networking hotfix script
   copy:
