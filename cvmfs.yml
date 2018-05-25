@@ -6,13 +6,28 @@
     hostname: cvmfs-stratum1.usegalaxy.eu
   vars_files:
     - "secret_group_vars/all.yml"
+  pre_tasks:
+    # Create 'srv' directory
+    - file:
+        path: /data/
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+    #- file:
+        #src: /data/dnb01/cvmfs/
+        #dest: /srv/
+        #owner: root
+        #group: root
+        #state: link
+        #force: true
   roles:
     - hostname
+    - multinic
     - hxr.vault
     - geerlingguy.repo-epel
     - hxr.certbot
     - hxr.admin-tools
-    - multinic
     - hxr.autofs
     - cvmfs
     - dj-wasabi.telegraf
