@@ -1,16 +1,38 @@
 ---
-- name: ifcfg for eth1
+- name: Install NetworkManager module
+  yum:
+    name: NetworkManager-config-routing-tables
+    state: present
+
+- name: Upload ifcfg files
   copy:
-    src: ifcfg-eth1
-    dest: /etc/sysconfig/network-scripts/ifcfg-eth1
+    src: '{{ item }}'
+    dest: '/etc/sysconfig/network-scripts/{{ item }}'
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - ifcfg-eth0
+    - ifcfg-eth1
+
+- name: Create second routing table
+  copy:
+    src: rt_tables
+    dest: /etc/iproute2/rt_tables
     owner: root
     group: root
     mode: 0644
 
-- name: ifcfg for eth0
+- name: Upload routing modifications:
   copy:
-    src: ifcfg-eth0
-    dest: /etc/sysconfig/network-scripts/ifcfg-eth0
+    src: route-eth1
+    dest: /etc/sysconfig/network-scripts/route-eth1
+    owner: root
+    group: root
+    mode: 0644
+- template:
+    src: rule-eth1.j2
+    dest: /etc/sysconfig/network-scripts/rule-eth1
     owner: root
     group: root
     mode: 0644
@@ -22,6 +44,11 @@
     owner: root
     group: root
     mode: 0755
+
+- name: Restart network
+  service:
+    name: network
+    state: restarted
 
 - name: Execute it anyway
   command: /usr/sbin/fix-network
