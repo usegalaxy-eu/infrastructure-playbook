@@ -15,6 +15,14 @@
     - ifcfg-eth0
     - ifcfg-eth1
 
+- name: Update sysctl configuration
+  copy:
+    src: 99-multinic.conf
+    dest: /etc/sysctl.d/
+    owner: root
+    group: root
+    mode: 0644
+
 - name: Create second routing table
   copy:
     src: rt_tables
