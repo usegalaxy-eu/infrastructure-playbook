@@ -1,4 +1,5 @@
 LAUNCH_VM := 0
+DEBUG := 
 ifdef DRY_RUN
   DRY_RUN_C := --check --diff
 else
@@ -24,6 +25,6 @@ clean:
 
 %:
   ifeq ($(LAUNCH_VM), 1)
-	ansible-playbook -i hosts $@_vm.yml --vault-password-file .vault_password $(DRY_RUN_C) $(DIFF_C)
+	ansible-playbook -i hosts $@_vm.yml --vault-password-file .vault_password $(DRY_RUN_C) $(DIFF_C) $(DEBUG)
   endif
-	ansible-playbook -i hosts $@.yml --vault-password-file .vault_password $(DRY_RUN_C) $(DIFF_C)
+	ansible-playbook -i hosts $@.yml --vault-password-file .vault_password $(DRY_RUN_C) $(DIFF_C) $(DEBUG)
