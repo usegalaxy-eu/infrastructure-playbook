@@ -15,13 +15,23 @@
     - ifcfg-eth0
     - ifcfg-eth1
 
-- name: Update sysctl configuration
-  copy:
-    src: 99-multinic.conf
-    dest: /etc/sysctl.d/
-    owner: root
-    group: root
-    mode: 0644
+- sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    state: present
+    sysctl_set: yes
+
+- sysctl:
+    name: net.ipv4.conf.default.rp_filter
+    value: 0
+    state: present
+    sysctl_set: yes
+
+- sysctl:
+    name: net.ipv4.conf.all.rp_filter
+    value: 0
+    state: present
+    sysctl_set: yes
 
 - name: Create second routing table
   copy:
@@ -38,6 +48,7 @@
     owner: root
     group: root
     mode: 0644
+
 - template:
     src: rule-eth1.j2
     dest: /etc/sysconfig/network-scripts/rule-eth1
@@ -53,13 +64,13 @@
     group: root
     mode: 0755
 
-- name: Restart network
-  service:
-    name: network
-    state: restarted
-
 - name: Execute it anyway
   command: /usr/sbin/fix-network
+
+#- name: Restart network
+  #service:
+    #name: network
+    #state: restarted
 
 - name: Deploy systemd unit
   copy:
