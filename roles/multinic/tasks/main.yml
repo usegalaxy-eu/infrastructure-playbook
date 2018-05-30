@@ -67,11 +67,6 @@
 - name: Execute it anyway
   command: /usr/sbin/fix-network
 
-#- name: Restart network
-  #service:
-    #name: network
-    #state: restarted
-
 - name: Deploy systemd unit
   copy:
     src: fix-network.service
@@ -86,3 +81,8 @@
     state: started
     name: fix-network
     enabled: yes
+
+- name: Restart network
+  service:
+    name: network
+    state: restarted
