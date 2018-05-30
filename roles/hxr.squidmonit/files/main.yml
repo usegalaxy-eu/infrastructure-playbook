@@ -1,0 +1,13 @@
+---
+- name: Ensure curl is installed
+  package:
+    name: curl
+    state: present
+
+- name: Deploy squid data parser
+  copy:
+    src: "parse_squid.py"
+    dest: "/usr/bin/parse_squid"
+    owner: root
+    group: root
+    mode: 0755
