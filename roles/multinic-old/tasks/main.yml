@@ -1,0 +1,42 @@
+---
+- name: ifcfg for eth1
+  copy:
+    src: ifcfg-eth1
+    dest: /etc/sysconfig/network-scripts/ifcfg-eth1
+    owner: root
+    group: root
+    mode: 0644
+
+- name: ifcfg for eth0
+  copy:
+    src: ifcfg-eth0
+    dest: /etc/sysconfig/network-scripts/ifcfg-eth0
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Deploy networking hotfix script
+  copy:
+    src: fix-network.sh
+    dest: /usr/sbin/fix-network
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Execute it anyway
+  command: /usr/sbin/fix-network
+
+- name: Deploy systemd unit
+  copy:
+    src: fix-network.service
+    dest: /etc/systemd/system/fix-network.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Make sure the service is running
+  systemd:
+    daemon_reload: yes
+    state: started
+    name: fix-network
+    enabled: yes
