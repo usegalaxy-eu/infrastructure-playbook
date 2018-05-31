@@ -3,17 +3,17 @@
   hosts: cvmfsstratum1servers
   become: true
   vars:
-    hostname: cvmfs-stratum1.usegalaxy.eu
+    hostname: cvmfs1-ufr0.usegalaxy.eu
   vars_files:
     - "secret_group_vars/all.yml"
   pre_tasks:
     # Create 'srv' directory
-    - file:
-        path: /data/
-        state: directory
-        owner: root
-        group: root
-        mode: 0755
+    #- file:
+        #path: /data/
+        #state: directory
+        #owner: root
+        #group: root
+        #mode: 0755
     #- file:
         #src: /data/dnb01/cvmfs/
         #dest: /srv/
@@ -25,10 +25,10 @@
     - hostname
     - multinic
     - hxr.vault
-    - geerlingguy.repo-epel
-    - hxr.certbot
-    - hxr.admin-tools
     - hxr.autofs
+    - geerlingguy.repo-epel
+    #- hxr.certbot
+    - hxr.admin-tools
     - cvmfs
     - dj-wasabi.telegraf
     - linuxhq.yum-cron

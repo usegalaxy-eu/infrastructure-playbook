@@ -91,7 +91,7 @@ telegraf_agent_output:
 telegraf_plugins_extra:
   - plugin: exec
     config:
-      - commands = ["/usr/bin/simple-nagios"]
+      - commands = ["echo 'alive state=1'", "/usr/bin/simple-nagios"]
       - timeout = "120s"
       - data_format = "influx"
       - interval = "1m"
