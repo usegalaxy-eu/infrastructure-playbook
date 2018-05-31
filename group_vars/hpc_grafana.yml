@@ -79,3 +79,59 @@ grafana_auth__anonymous_org_name: Main Org.
 # Specify role for unauthenticated users
 grafana_auth__anonymous_org_role: Viewer
 grafana_server_root_url: "%(protocol)s://%(domain)s/"
+
+telegraf_agent_output:
+  - type: influxdb
+    config:
+    - urls = ["{{ influxdb.url }}"]
+    - database = "{{ influxdb.bwcloud.database }}"
+    - username = "{{ influxdb.bwcloud.username }}"
+    - password = "{{ influxdb.bwcloud.password }}"
+
+telegraf_plugins_extra:
+  - plugin: exec
+    config:
+      - commands = ["/usr/bin/simple-nagios"]
+      - timeout = "120s"
+      - data_format = "influx"
+      - interval = "1m"
+
+  - plugin: exec
+    disambiguation: ssl-expiry
+    config:
+      - commands = [
+          "/usr/bin/simple-ssl-check mon01.bwcloud.uni-freiburg.de",
+          "/usr/bin/simple-ssl-check portal.bw-cloud.org",
+          "/usr/bin/simple-ssl-check idm01.bw-cloud.org",
+          "/usr/bin/simple-ssl-check idm01.bw-cloud.org 5000",
+        ]
+      - timeout = "15s"
+      - data_format = "influx"
+      - interval = "15m"
+
+  - plugin: dns_query
+    config:
+      #            cf         goog       quad9      opendns           BelWü
+      - servers = ["1.1.1.1", "8.8.8.8", "9.9.9.9", "208.67.222.222", "132.230.201.111", "132.230.200.200"]
+      - timeout = 15
+      - domains = ["mm01.bwcloud.uni-freiburg.de", "api01.fr.bw-cloud.org", "portal.bw-cloud.org", "idm01.bw-cloud.org"]
+      - record_type = "A"
+      - interval = "5m"
+
+galaxy_nagios_urls:
+  ftp_tests: []
+  ftp_age_tests: []
+
+  http_tests:
+    - name: monitoring
+      url: "https://mon01.bwcloud.uni-freiburg.de/"
+      code: 200
+    - name: home_redir
+      url: "https://portal.bw-cloud.org"
+      code: 302
+    - name: home
+      url: "https://portal.bw-cloud.org/auth/login/?next=/"
+      code: 200
+    - name: api
+      url: "https://idm01.bw-cloud.org:5000"
+      code: 200

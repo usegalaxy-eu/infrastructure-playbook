@@ -4,6 +4,8 @@
   become: true
   vars:
     hostname: mon01.bwcloud.uni-freiburg.de
+  vars_files:
+    - "secret_group_vars/all.yml"
   roles:
     - hostname
     - hxr.vault
@@ -12,6 +14,7 @@
     - hxr.certbot
     - hxr.admin-tools
     - geerlingguy.nginx
+    - hxr.simple-nagios
     - picotrading.ansible-grafana
     - dj-wasabi.telegraf
     - linuxhq.yum-cron
