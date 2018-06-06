@@ -36,11 +36,11 @@ def parse_line(block, line):
 			val = line.split('\t')[1].strip()
 			yield key, val
 		elif 'Average HTTP requests per minute since start' in line:
-			key = 'avg_http_per_minute' 
+			key = 'avg_http_per_minute'
 			val = line.split('\t')[1].strip()
 			yield key, val
 		elif 'Average ICP messages per minute since start' in line:
-			key = 'avg_icp_per_minute' 
+			key = 'avg_icp_per_minute'
 			val = line.split('\t')[1].strip()
 			yield key, val
 		elif 'Select loop called' in line:
@@ -53,50 +53,54 @@ def parse_line(block, line):
 		kv = [x.strip() for x in line.split(':')]
 		if 'Hits as % of all requests' in line:
 			key = 'hits_perc_reqs'
-			val = kv[1].strip('%')
-			yield key, val
-			val = kv[3].strip('%')
-			yield key, val
+			vals = ' '.join(kv[1:]).split(' ')
+			val = vals[1].strip('%,')
+			yield key + '_5m', val
+			val = vals[3].strip('%,')
+			yield key + '_60m', val
 		elif 'Hits as % of bytes sent' in line:
 			key = 'hits_perc_bytes'
-			val = kv[1].strip('%')
-			yield key, val
-			val = kv[3].strip('%')
-			yield key, val
+			vals = ' '.join(kv[1:]).split(' ')
+			val = vals[1].strip('%,')
+			yield key + '_5m', val
+			val = vals[3].strip('%,')
+			yield key + '_60m', val
 		elif 'Memory hits as % of hit requests' in line:
 			key = 'mem_hits_perc_req'
-			val = kv[1].strip('%')
-			yield key, val
-			val = kv[3].strip('%')
-			yield key, val
+			vals = ' '.join(kv[1:]).split(' ')
+			val = vals[1].strip('%,')
+			yield key + '_5m', val
+			val = vals[3].strip('%,')
+			yield key + '_60m', val
 		elif 'Disk hits as % of hit requests' in line:
 			key = 'disk_hits_perc_req'
-			val = kv[1].strip('%')
-			yield key, val
-			val = kv[3].strip('%')
-			yield key, val
+			vals = ' '.join(kv[1:]).split(' ')
+			val = vals[1].strip('%,')
+			yield key + '_5m', val
+			val = vals[3].strip('%,')
+			yield key + '_60m', val
 		elif 'Storage Swap size' in line:
 			key = 'stor_swap_size'
-			yield key, kv[0].strip(' KB')
+			yield key, kv[1].strip(' KB')
 		elif 'Storage Swap capacity' in line:
 			key = 'stor_swap_cap'
 			val = kv[1].split(' ')
-			yield key, val[0].strip('%')
-			yield key, val[2].strip('%')
+			yield key + '_used', val[0].strip('%')
+			yield key + '_free', val[2].strip('%')
 		elif 'Storage Mem size' in line:
 			key = 'stor_mem_size'
-			yield key, kv[0].strip(' KB')
+			yield key, kv[1].strip(' KB')
 		elif 'Storage Mem capacity' in line:
 			key = 'stor_mem_cap'
-			val = kv[1].split(' ')
-			yield key, val[0].strip('%')
-			yield key, val[2].strip('%')
+			val = kv[1].split()
+			yield key + '_used', val[0].strip('%')
+			yield key + '_free', val[2].strip('%')
 		elif 'Mean Object Size' in line:
 			key = 'mean_obj_size'
-			yield key, kv[0].strip(' KB')
+			yield key, kv[1].strip(' KB')
 		elif 'Requests given to unlinkd' in line:
 			key = 'request_to_unlink'
-			yield key, kv[0]
+			yield key, kv[1]
 	elif block == 'timing':
 		if 'HTTP Requests (All)' in line:
 			key = 'http_reqs'

@@ -7,6 +7,14 @@
 - name: Deploy squid data parser
   copy:
     src: "parse_squid.py"
+    dest: "/usr/bin/parse_squid.py"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Deploy squid data wrapper
+  copy:
+    src: "parse_squid.sh"
     dest: "/usr/bin/parse_squid"
     owner: root
     group: root
