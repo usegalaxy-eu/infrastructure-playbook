@@ -1,0 +1,13 @@
+---
+- name: Ensure curl is installed
+  package:
+    name: curl
+    state: present
+
+- name: Deploy CVMFS data processor
+  copy:
+    src: main.sh
+    dest: /usr/bin/check_cvmfs_repos
+    owner: root
+    group: root
+    mode: 0755
