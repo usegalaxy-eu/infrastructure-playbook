@@ -38,7 +38,7 @@ telegraf_plugins_extra:
   - plugin: exec
     disambiguation: squid_stats
     config:
-      - commands = ["/usr/bin/parse_squid"]
+      - commands = ["/usr/bin/parse_squid", "/usr/bin/check_cvmfs_repos"]
       - timeout = "10s"
       - data_format = "influx"
       - interval = "5m"

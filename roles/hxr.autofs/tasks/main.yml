@@ -5,9 +5,17 @@
     state: latest
 
 - name: Copy all other conf files
+  template:
+    src: data.autofs.j2
+    dest: "/etc/auto.master.d/data.autofs"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Copy all other conf files
   copy:
     src: "auto.{{ item }}"
-    dest: "/etc/auto.master.d/{{ item }}.autofs"
+    dest: "/etc/auto.master.d/{{ item }}.conf"
     owner: root
     group: root
     mode: 0644
@@ -17,4 +25,4 @@
   service:
     name: autofs
     enabled: yes
-    state: started
+    state: restarted

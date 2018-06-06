@@ -1,0 +1,3 @@
+{% for item in usegalaxy_eu_autofs_mounts %}
+/{{ item }}  /etc/auto.master.d/{{ item }}.conf nfsvers=3
+{% endfor %}
