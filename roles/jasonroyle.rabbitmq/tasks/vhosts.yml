@@ -1,0 +1,14 @@
+---
+- name: remove rabbitmq virtual hosts
+  rabbitmq_vhost:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ rabbitmq_vhosts_absent }}"
+
+- name: add rabbitmq virtual hosts
+  rabbitmq_vhost:
+    name: "{{ item.name | default(item) }}"
+    node: "{{ item.node | default('rabbit') }}"
+    state: present
+    tracing: "{{ item.tracing | default(False) }}"
+  with_items: "{{ rabbitmq_vhosts }}"

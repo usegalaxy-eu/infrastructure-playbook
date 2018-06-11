@@ -1,0 +1,19 @@
+---
+- name: Tasks for cvmfs-nfs-preload hosts
+  hosts: cvmfspreload
+  become: true
+  vars:
+    hostname: nfs-cvmfs1-ufr0.usegalaxy.eu
+  vars_files:
+    - "secret_group_vars/all.yml"
+  roles:
+    - hostname
+    - hxr.vault
+    - geerlingguy.repo-epel
+    - cvmfs
+    - hxr.admin-tools
+    - dj-wasabi.telegraf
+    - geerlingguy.nfs
+    - linuxhq.yum-cron
+    - dev-sec.os-hardening
+    - dev-sec.ssh-hardening

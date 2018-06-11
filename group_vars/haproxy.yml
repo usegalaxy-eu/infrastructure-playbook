@@ -73,6 +73,20 @@ haproxy_global_vars:
 
 haproxy_stats: true
 
+rabbitmq_version: 3.6.15
+rabbitmq_users:
+  - user: admin
+    password: "{{ rabbitmq_password_admin }}"
+    tags: administrator
+    vhost: /
+  - user: telegraf
+    password: "{{ rabbitmq_password_telegraf }}"
+    tags: administrator
+    vhost: /
+  - user: galaxy_cz
+    password: "{{ rabbitmq_password_galaxy_cz }}"
+    vhost: /pulsar/galaxy_cz/
+
 telegraf_plugins_default:
   - plugin: cpu
     config:
