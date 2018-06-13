@@ -11,7 +11,7 @@
       ucase_prop=false) %}
 
   {#- First process vars without a section #}
-  {%- for property, value in item.iteritems() | sort %}
+  {%- for property, value in item.items() | sort %}
     {%- if value is not mapping %}
       {%- if first | length == 0 -%}
         {%- if first.append(1) %}{% endif %}
@@ -30,7 +30,7 @@
   {%- endfor %}
 
   {#- Then process vars with a section #}
-  {%- for section, options in item.iteritems() | sort %}
+  {%- for section, options in item.items() | sort %}
     {%- if options is mapping -%}
       {%- if first | length == 0 -%}
         {%- if first.append(1) %}{% endif %}
@@ -42,7 +42,7 @@
       {%- else -%}
         {{ "[" ~ section ~ "]\n" }}
       {%- endif %}
-      {%- for property, value in options.iteritems() | sort -%}
+      {%- for property, value in options.items() | sort -%}
         {%- if value is string or value is number -%}
           {{ (property | upper if ucase_prop else property) ~
               delimiter ~ quote ~ value ~ quote ~ "\n" }}

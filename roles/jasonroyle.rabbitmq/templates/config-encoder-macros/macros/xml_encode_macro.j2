@@ -14,7 +14,7 @@
 
     {%- set prev_list = [0] %}
 
-    {%- for key, val in item.iteritems() | sort -%}
+    {%- for key, val in item.items() | sort -%}
       {%- if first | length > 0 and prev_list[0] == 0 -%}
         {{ "\n" }}
       {%- endif -%}

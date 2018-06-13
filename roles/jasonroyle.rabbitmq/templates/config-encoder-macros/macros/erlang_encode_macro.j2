@@ -17,7 +17,7 @@
 
     {%- if first.append(1) %}{% endif %}
 
-    {%- for key, val in item.iteritems() | sort -%}
+    {%- for key, val in item.items() | sort -%}
       {{ indent * level ~ "{" ~ key ~ "," }}
 
       {%- if val is not mapping -%}

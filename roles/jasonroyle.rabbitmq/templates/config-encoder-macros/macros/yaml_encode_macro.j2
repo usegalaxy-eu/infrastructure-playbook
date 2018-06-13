@@ -13,7 +13,7 @@
 
   {%- if item is mapping %}
     {#- The item is a dict #}
-    {%- for key, val in item.iteritems() | sort -%}
+    {%- for key, val in item.items() | sort -%}
       {%- if skip_indent and loop.first -%}
         {{ " " }}
       {%- else -%}

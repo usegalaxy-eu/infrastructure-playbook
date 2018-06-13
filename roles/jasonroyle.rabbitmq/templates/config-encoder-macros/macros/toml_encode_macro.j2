@@ -17,7 +17,7 @@
     {#- The item is a dict #}
 
     {#- First process all strings, numbers, booleans and lists #}
-    {%- for key, val in item.iteritems() | sort -%}
+    {%- for key, val in item.items() | sort -%}
       {%- if val is string or
           val is number or
           val in [True, False] or
@@ -40,7 +40,7 @@
     {%- endfor %}
 
     {#- Then process all data structures #}
-    {%- for key, val in item.iteritems() | sort %}
+    {%- for key, val in item.items() | sort %}
       {%- if val is not string and
           val is not number and
           val not in [True, False] and

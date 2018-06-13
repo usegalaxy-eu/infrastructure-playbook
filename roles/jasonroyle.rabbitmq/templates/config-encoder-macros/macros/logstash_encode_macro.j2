@@ -17,7 +17,7 @@
       {{ "{\n" }}
     {%- endif -%}
 
-    {%- for key, val in item.iteritems() | sort -%}
+    {%- for key, val in item.items() | sort -%}
       {%- if key[0] == ":" -%}
         {{ indent * level ~ key[1:] ~ " {\n" }}{{ logstash_encode(
           val,

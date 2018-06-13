@@ -86,7 +86,7 @@
 
   {%- elif type == "options" %}
     {%- for o in item -%}
-      {%- for key, val in o.iteritems() | sort -%}
+      {%- for key, val in o.items() | sort -%}
         {{  indent * (level-1) ~ key ~ " " ~
             apache_encode(
               val,
