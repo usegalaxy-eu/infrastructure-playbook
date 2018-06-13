@@ -7,6 +7,9 @@ certbot certonly \
 	{% for domain in server_names %}
 	-d {{ domain }} \
 	{% endfor %}
+	{% for domain in server_names_de %}
+	-d {{ domain }} \
+	{% endfor %}
 	--standalone \
 	--agree-tos \
 	-m security@usegalaxy.eu
