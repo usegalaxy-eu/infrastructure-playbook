@@ -12,6 +12,7 @@ certbot_auto_renew: yes
 certbot_auto_renew_user: root
 certbot_auto_renew_hour: 17
 certbot_auto_renew_minute: 28
+certbot_auto_renew_extra: "--preferred-challenges http-01 --http-01-port 8118"
 
 certbot_environment: production #staging
 certbot_domains:
@@ -59,6 +60,16 @@ nginx_vhosts:
             proxy_cache_valid          200  1d;
             proxy_cache_use_stale      error timeout invalid_header updating http_500 http_502 http_503 http_504;
         }
+
+        location /.well-known/ {
+            proxy_set_header           Host $host:$server_port;
+            proxy_set_header           X-Real-IP $remote_addr;
+            proxy_set_header           X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header           X-Forwarded-Proto $scheme;
+            proxy_pass                 http://127.0.0.1:8118;
+            proxy_pass_request_headers on;
+        }
+
         ssl_certificate /etc/ssl/certs/{{ hostname }};
         ssl_certificate_key /etc/ssl/private/privkey.pem;
 
