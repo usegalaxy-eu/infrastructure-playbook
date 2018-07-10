@@ -90,12 +90,3 @@ influxdb_graphite_enabled: "false"
 influxdb_collectd_enabled: "false"
 influxdb_tsb_enabled: "false"
 influxdb_udp_enabled: "false"
-
-telegraf_plugins_extra:
-  - plugin: exec
-    disambiguation: email_counter
-    config:
-      - commands = ["/usr/bin/check_mail_counts"]
-      - timeout = "10s"
-      - data_format = "influx"
-      - interval = "1m"

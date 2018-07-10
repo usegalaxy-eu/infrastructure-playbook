@@ -1,0 +1,30 @@
+---
+- name: Deploy mail counter
+  copy:
+    src: main.sh
+    dest: /usr/bin/check_mail_counts
+    owner: root
+    group: root
+    mode: 0755
+  notify: 'Restart Telegraf'
+
+- name: "Allow telegraf to run check_mail_counts"
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    insertafter: EOF
+    line: 'telegraf ALL=(ALL) NOPASSWD: /usr/bin/check_mail_counts'
+  notify: 'Restart Telegraf'
+
+- set_fact:
+    mail_counter_telegraf:
+      - plugin: exec
+        disambiguation: email_counter
+        config:
+          - commands = ["sudo /usr/bin/check_mail_counts"]
+          - timeout = "10s"
+          - data_format = "influx"
+          - interval = "1m"
+
+- set_fact:
+    telegraf_plugins_extra: "{{ telegraf_plugins_extra + mail_counter_telegraf }}"
