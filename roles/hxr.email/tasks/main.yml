@@ -7,3 +7,10 @@
     group: root
     mode: 0755
   notify: 'Restart Telegraf'
+
+- name: "Allow telegraf to run check_mail_counts"
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    insertafter: EOF
+    line: 'telegraf ALL=(ALL) NOPASSWD: /usr/bin/check_mail_counts'
