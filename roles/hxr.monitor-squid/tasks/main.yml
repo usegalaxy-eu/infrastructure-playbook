@@ -11,6 +11,7 @@
     owner: root
     group: root
     mode: 0755
+  notify: 'Restart Telegraf'
 
 - name: Deploy squid data wrapper
   copy:
@@ -19,3 +20,17 @@
     owner: root
     group: root
     mode: 0755
+  notify: 'Restart Telegraf'
+
+- set_fact:
+    check_squid_telegraf:
+      - plugin: exec
+        disambiguation: check_squid
+        config:
+          - commands = ["/usr/bin/parse_squid"]
+          - timeout = "10s"
+          - data_format = "influx"
+          - interval = "5m"
+
+- set_fact:
+    telegraf_plugins_extra: "{{ telegraf_plugins_extra + check_squid_telegraf }}"

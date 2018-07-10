@@ -33,12 +33,3 @@ certbot_post_renewal: |
     chown root:nginx /etc/ssl/private/privkey.pem
     chown root:nginx -R /etc/ssl/private/privkey.pem
     systemctl restart nginx || true
-
-telegraf_plugins_extra:
-  - plugin: exec
-    disambiguation: squid_stats
-    config:
-      - commands = ["/usr/bin/parse_squid", "/usr/bin/check_cvmfs_repos"]
-      - timeout = "10s"
-      - data_format = "influx"
-      - interval = "5m"
