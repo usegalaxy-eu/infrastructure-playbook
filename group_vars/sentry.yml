@@ -17,6 +17,7 @@ certbot_auto_renew: yes
 certbot_auto_renew_user: root
 certbot_auto_renew_hour: 23
 certbot_auto_renew_minute: 45
+certbot_auto_renew_extra: "--preferred-challenges http-01 --http-01-port 8118"
 
 certbot_environment: production #staging
 certbot_domains:
@@ -70,6 +71,16 @@ nginx_vhosts:
         location / {
             proxy_pass                 http://127.0.0.1:8080;
         }
+
+        location /.well-known/ {
+            proxy_set_header           Host $host:$server_port;
+            proxy_set_header           X-Real-IP $remote_addr;
+            proxy_set_header           X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header           X-Forwarded-Proto $scheme;
+            proxy_pass                 http://127.0.0.1:8118;
+            proxy_pass_request_headers on;
+        }
+
         ssl_certificate /etc/ssl/certs/{{ hostname }};
         ssl_certificate_key /etc/ssl/private/privkey.pem;
 
@@ -107,3 +118,10 @@ telegraf_plugins_extra:
       - parse_data_dog_tags = false
       - allowed_pending_messages = 10000
       - percentile_limit = 1000
+  - plugin: exec
+    disambiguation: email_counter
+    config:
+      - commands = ["/usr/bin/check_mail_counts"]
+      - timeout = "10s"
+      - data_format = "influx"
+      - interval = "1m"
