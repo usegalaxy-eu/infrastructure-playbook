@@ -12,18 +12,23 @@ haproxy_frontends:
         # Unless this is going to certbot, redirect to HTTPS
         - 'redirect scheme https code 301 if !{ ssl_fc } !certbot_path'
         # ACLs
+        - 'acl de_host           hdr_dom(host) -i usegalaxy.de'
         - 'acl hic_host          hdr_dom(host) -i hicexplorer.usegalaxy.eu'
         - 'acl metagenomics_host hdr_dom(host) -i metagenomics.usegalaxy.eu'
         - 'acl welcome           path_beg /static/welcome.html'
         - 'acl basecss           path_beg /static/style/base.css'
         - 'acl apollo_path       path_beg /apollo/'
+        - 'acl rabbit_path       path_beg /rabbit/'
         # Which go to specific backends.
         - 'use_backend certbot     if certbot_path'
         - 'use_backend apollo      if apollo_path'
+        - 'use_backend rabbit      if rabbit_path'
         - 'use_backend hicspecial  if hic_host welcome'
         - 'use_backend hicspecial  if hic_host basecss'
         - 'use_backend metaspecial if metagenomics_host welcome'
         - 'use_backend metaspecial if metagenomics_host basecss'
+        - 'use_backend despecial   if de_host welcome'
+        - 'use_backend despecial   if de_host basecss'
         - 'use_backend galaxy'
 
 
@@ -56,11 +61,23 @@ haproxy_backends:
         - 'reqrep ^GET\ /static/style/base.css(.*)\ HTTP/1.1 GET\ /static/style/base-hic.css\1\ HTTP/1.1'
         - 'reqrep ^GET\ /static/welcome.html\ HTTP/1.1 GET\ /static/welcome-hic.html\ HTTP/1.1'
         - 'server server1 132.230.68.85:443 maxconn 32 ssl verify none'
+    - name: despecial
+      balance: roundrobin
+      mode: http
+      custom_config:
+        - 'reqrep ^GET\ /static/style/base.css(.*)\ HTTP/1.1 GET\ /static/style/base-de.css\1\ HTTP/1.1'
+        - 'server server1 132.230.68.85:443 maxconn 32 ssl verify none'
     - name: apollo
       balance: roundrobin
       mode: http
       custom_config:
         - 'server server1 apollo.usegalaxy.eu:443 maxconn 32 ssl verify none'
+    - name: rabbit
+      balance: roundrobin
+      mode: http
+      custom_config:
+        - 'reqrep ^GET\ /rabbit/(.*)\ HTTP/1.1 GET\ /\1\ HTTP/1.1'
+        - 'server server1 localhost:15672 maxconn 32'
     - name: certbot
       balance: roundrobin
       mode: http
@@ -73,7 +90,7 @@ haproxy_global_vars:
 
 haproxy_stats: true
 
-rabbitmq_version: 3.6.15
+rabbitmq_version: 3.6.15-1
 rabbitmq_users:
   - user: admin
     password: "{{ rabbitmq_password_admin }}"
@@ -85,7 +102,30 @@ rabbitmq_users:
     vhost: /
   - user: galaxy_cz
     password: "{{ rabbitmq_password_galaxy_cz }}"
-    vhost: /pulsar/galaxy_cz/
+    vhost: /pulsar/galaxy_cz
+  - user: galaxy_test
+    password: "{{ rabbitmq_password_galaxy_test }}"
+    vhost: /pulsar/galaxy_test
+
+rabbitmq_vhosts:
+  - /pulsar/galaxy_cz
+  - /pulsar/galaxy_test
+
+rabbitmq_plugins:
+  - rabbitmq_management
+
+
+rabbitmq_config:
+- rabbit:
+  #- tcp_listeners:
+    #- "'0.0.0.0'": 5671
+  - ssl_listeners:
+    - 5671
+  - ssl_options:
+    - cacertfile: /etc/rabbitmq/tls/fullchain.pem
+    - certfile: /etc/rabbitmq/tls/cert.pem
+    - keyfile: /etc/rabbitmq/tls/privkey.pem
+    - fail_if_no_peer_cert: 'false'
 
 telegraf_plugins_default:
   - plugin: cpu
@@ -102,3 +142,8 @@ telegraf_plugins_default:
   - plugin: haproxy
     config:
       - servers = ["http://127.0.0.1:8080/haproxy?stats"]
+  - plugin: rabbitmq
+    config:
+      - url = "http://localhost:15672"
+      - username = "telegraf"
+      - password = "{{ rabbitmq_password_telegraf }}"
