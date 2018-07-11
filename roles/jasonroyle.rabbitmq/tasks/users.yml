@@ -14,4 +14,6 @@
     read_priv: "{{ item.read_priv | default('.*') }}"
     write_priv: "{{ item.write_priv | default('.*') }}"
     tags: "{{ item.tags | default('') }}"
+    # req ansible 2.6
+    update_password: always
   with_items: "{{ rabbitmq_users }}"
