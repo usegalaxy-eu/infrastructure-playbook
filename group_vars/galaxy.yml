@@ -1,25 +1,29 @@
 ---
 ssh_allow_root_with_key: true
 
-galaxy_root_dir: /usr/local/galaxy/galaxy-dist
-galaxy_tool_dir: "{{ galaxy_root_dir }}/tools"
-galaxy_conf_dir: "{{ galaxy_root_dir }}/config"
-galaxy_user: galaxy
-galaxy_group: galaxy
+cvmfs_role: client
+galaxy_cvmfs_repos_enabled: true
 
-galaxy_test_user:
-    handlers:
-        - "handler0"
-        - "handler1"
-        - "handler2"
-        - "handler3"
-        - "handler4"
-        - "handler5"
-        - "handler6"
-        - "handler7"
-        - "handler8"
-        - "handler9"
-        - "handler10"
-        - "handler11"
-        - "drmaa"
-        - "condor"
+galaxy_cvmfs_server_urls:
+  - domain: galaxyproject.org
+    urls:
+      - "http://cvmfs1-ufr0.usegalaxy.eu/cvmfs/@fqrn@"
+
+galaxy_cvmfs_repositories:
+  - repository: main.galaxyproject.org
+    stratum0: cvmfs0-tacc0.galaxyproject.org
+    key_dir: /etc/cvmfs/keys/galaxyproject.org
+    server_options:
+      - CVMFS_AUTO_GC=false
+    client_options: []
+  - repository: data.galaxyproject.org
+    stratum0: cvmfs0-psu0.galaxyproject.org
+    key_dir: /etc/cvmfs/keys/galaxyproject.org
+    server_options:
+      - CVMFS_AUTO_GC=false
+    client_options: []
+  - repository: singularity.galaxyproject.org
+    stratum0: cvmfs0-psu0.galaxyproject.org
+    key_dir: /etc/cvmfs/keys/galaxyproject.org
+    server_options: []
+    client_options: []
