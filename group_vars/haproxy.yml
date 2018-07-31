@@ -25,6 +25,8 @@ haproxy_frontends:
         - 'use_backend hicspecial  if hic_host basecss'
         - 'use_backend metaspecial if metagenomics_host welcome'
         - 'use_backend metaspecial if metagenomics_host basecss'
+        - 'use_backend rnaspecial if rna_host welcome'
+        - 'use_backend rnaspecial if rna_host basecss'
         - 'use_backend galaxy'
 
 
