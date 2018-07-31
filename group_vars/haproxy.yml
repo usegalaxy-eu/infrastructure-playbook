@@ -14,6 +14,7 @@ haproxy_frontends:
         # ACLs
         - 'acl hic_host          hdr_dom(host) -i hicexplorer.usegalaxy.eu'
         - 'acl metagenomics_host hdr_dom(host) -i metagenomics.usegalaxy.eu'
+        - 'acl rna_host          hdr_dom(host) -i rna.usegalaxy.eu'
         - 'acl welcome           path_beg /static/welcome.html'
         - 'acl basecss           path_beg /static/style/base.css'
         - 'acl apollo_path       path_beg /apollo/'
@@ -24,6 +25,8 @@ haproxy_frontends:
         - 'use_backend hicspecial  if hic_host basecss'
         - 'use_backend metaspecial if metagenomics_host welcome'
         - 'use_backend metaspecial if metagenomics_host basecss'
+        - 'use_backend rnaspecial if rna_host welcome'
+        - 'use_backend rnaspecial if rna_host basecss'
         - 'use_backend galaxy'
 
 
@@ -48,6 +51,13 @@ haproxy_backends:
       custom_config:
         - 'reqrep ^GET\ /static/style/base.css(.*)\ HTTP/1.1 GET\ /static/style/base-metagenomics.css\1\ HTTP/1.1'
         - 'reqrep ^GET\ /static/welcome.html\ HTTP/1.1 GET\ /static/welcome-metagenomics.html\ HTTP/1.1'
+        - 'server server1 132.230.68.85:443 maxconn 32 ssl verify none'
+    - name: rnaspecial
+      balance: roundrobin
+      mode: http
+      custom_config:
+        - 'reqrep ^GET\ /static/style/base.css(.*)\ HTTP/1.1 GET\ /static/style/base-rna.css\1\ HTTP/1.1'
+        - 'reqrep ^GET\ /static/welcome.html\ HTTP/1.1 GET\ /static/welcome-rna.html\ HTTP/1.1'
         - 'server server1 132.230.68.85:443 maxconn 32 ssl verify none'
     - name: hicspecial
       balance: roundrobin
