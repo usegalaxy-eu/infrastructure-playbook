@@ -22,6 +22,14 @@
     dest: "{{ pgs_repo_dir }}.sh"
     mode: 0750
 
+- name: "Template runner script"
+  become: true
+  become_user: ubuntu
+  template:
+    src: count-tools.sh.j2
+    dest: "{{ pgs_dir }}.sh"
+    mode: 0750
+
 - name: "Install requirements"
   become: true
   become_user: ubuntu
