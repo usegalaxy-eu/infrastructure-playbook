@@ -109,6 +109,16 @@ telegraf_plugins_extra:
       - interval = "15m"
 
   - plugin: exec
+    disambiguation: count-tools
+    config:
+      - commands = [
+          "/opt/pgs/count-tools.sh",
+        ]
+      - timeout = "10m"
+      - data_format = "influx"
+      - interval = "24h"
+
+  - plugin: exec
     disambiguation: ssl-expiry
     config:
       - commands = [

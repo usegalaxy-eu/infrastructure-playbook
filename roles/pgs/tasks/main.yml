@@ -13,6 +13,7 @@
     repo: 'https://github.com/martenson/public-galaxy-servers/'
     dest: "{{ pgs_repo_dir }}"
     version: master
+    force: yes
 
 - name: "Template runner script"
   become: true
@@ -20,15 +21,15 @@
   template:
     src: script.sh.j2
     dest: "{{ pgs_repo_dir }}.sh"
-    mode: 0750
+    mode: 0755
 
 - name: "Template runner script"
   become: true
   become_user: ubuntu
   template:
     src: count-tools.sh.j2
-    dest: "{{ pgs_dir }}.sh"
-    mode: 0750
+    dest: "{{ pgs_dir }}/count-tools.sh"
+    mode: 0755
 
 - name: "Install requirements"
   become: true

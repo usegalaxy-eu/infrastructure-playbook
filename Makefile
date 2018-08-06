@@ -1,9 +1,9 @@
 LAUNCH_VM := 0
 DEBUG := 
-ifdef DRY_RUN
-  DRY_RUN_C := --check --diff
+ifdef CHECK
+  CHECK_C := --check --diff
 else
-  DRY_RUN_C := 
+  CHECK_C := 
 endif
 ifdef DIFF
   DIFF_C := --diff
@@ -18,13 +18,13 @@ help:
 	@echo "Make Variables: (make ... VAR=VALUE)"
 	@echo "  LAUNCH_VM=1    launch a VM as well"
 	@echo "  DIFF=1         show changes made"
-	@echo "  DRY_RUN=1      run in --check mode (implies DIFF=1)"
+	@echo "  CHECK=1      run in --check mode (implies DIFF=1)"
 
 clean:
 	@rm -f *.retry
 
 %:
   ifeq ($(LAUNCH_VM), 1)
-	ansible-playbook -i hosts $@_vm.yml --vault-password-file .vault_password $(DRY_RUN_C) $(DIFF_C) $(DEBUG)
+	ansible-playbook -i hosts $@_vm.yml --vault-password-file .vault_password $(CHECK_C) $(DIFF_C) $(DEBUG)
   endif
-	ansible-playbook -i hosts $@.yml --vault-password-file .vault_password $(DRY_RUN_C) $(DIFF_C) $(DEBUG)
+	ansible-playbook -i hosts $@.yml --vault-password-file .vault_password $(CHECK_C) $(DIFF_C) $(DEBUG)
