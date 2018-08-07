@@ -16,6 +16,7 @@ haproxy_frontends:
         - 'acl hic_host          hdr_dom(host) -i hicexplorer.usegalaxy.eu'
         - 'acl metagenomics_host hdr_dom(host) -i metagenomics.usegalaxy.eu'
         - 'acl rna_host          hdr_dom(host) -i rna.usegalaxy.eu'
+        - 'acl ecology_host      hdr_dom(host) -i ecology.usegalaxy.eu'
         - 'acl welcome           path_beg /static/welcome.html'
         - 'acl basecss           path_beg /static/style/base.css'
         - 'acl apollo_path       path_beg /apollo/'
@@ -32,6 +33,8 @@ haproxy_frontends:
         - 'use_backend despecial   if de_host basecss'
         - 'use_backend rnaspecial if rna_host welcome'
         - 'use_backend rnaspecial if rna_host basecss'
+        - 'use_backend ecologyspecial if ecology_host welcome'
+        - 'use_backend ecologyspecial if ecology_host basecss'
         - 'use_backend galaxy'
 
 
@@ -70,6 +73,13 @@ haproxy_backends:
       custom_config:
         - 'reqrep ^GET\ /static/style/base.css(.*)\ HTTP/1.1 GET\ /static/style/base-hic.css\1\ HTTP/1.1'
         - 'reqrep ^GET\ /static/welcome.html\ HTTP/1.1 GET\ /static/welcome-hic.html\ HTTP/1.1'
+        - 'server server1 132.230.68.85:443 maxconn 32 ssl verify none'
+    - name: ecologyspecial
+      balance: roundrobin
+      mode: http
+      custom_config:
+        - 'reqrep ^GET\ /static/style/base.css(.*)\ HTTP/1.1 GET\ /static/style/base-ecology.css\1\ HTTP/1.1'
+        - 'reqrep ^GET\ /static/welcome.html\ HTTP/1.1 GET\ /static/welcome-ecology.html\ HTTP/1.1'
         - 'server server1 132.230.68.85:443 maxconn 32 ssl verify none'
     - name: despecial
       balance: roundrobin
