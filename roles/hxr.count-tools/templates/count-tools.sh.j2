@@ -1,0 +1,5 @@
+#!/bin/bash
+set -ex
+. {{ pgs_dir }}/venv/bin/activate;
+cd {{ pgs_repo_dir }}
+cat servers.csv | awk -F, '{print "curl --user-agent \"Galaxy Public Server Monitoring Bot (+https://github.com/martenson/public-galaxy-servers)\" --connect-timeout 5 --silent "$2"/api/tools | jq . | python tool-count.py \""$1"\""}' | bash
