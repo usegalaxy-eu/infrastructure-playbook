@@ -1,0 +1,15 @@
+---
+- name: install dependencies
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - curl
+
+- name: "Install http-api-check script"
+  template:
+    src: http-api-check.sh
+    dest: /usr/bin/http-api-check
+    owner: root
+    group: root
+    mode: 0755
