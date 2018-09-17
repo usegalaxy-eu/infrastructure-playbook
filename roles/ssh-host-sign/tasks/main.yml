@@ -1,0 +1,33 @@
+---
+- name: Copy server key into VM temporarily
+  copy:
+    src: server_ca
+    dest: /tmp/server_ca
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Sign Keys
+  command: ssh-keygen -s /tmp/server_ca -I key_for_test1 -h -V +52w /etc/ssh/ssh_host_{{ item }}_key.pub
+  with_items:
+    - rsa
+    - ecdsa
+    - ed25519
+
+- lineinfile:
+    path: /etc/selinux/config
+    regexp: "^HostKey /etc/ssh/ssh_host_{{ item }}_key"
+    line: "HostKey /etc/ssh/ssh_host_{{ item }}_key\nHostCertificate /etc/ssh/ssh_host_{{ item }}_key-cert.pub"
+  with_items:
+    - rsa
+    - ecdsa
+    - ed25519
+
+- name: Ensure server key is gone
+  file:
+    path: server_ca
+    state: absent
+
+- name: "Helper"
+  debug:
+    msg: "Please add the following to your known_hosts file: @cert-authority <ip-range|*.domain> {{ lookup('file', 'server_ca.pub')  }}"

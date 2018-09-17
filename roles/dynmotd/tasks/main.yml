@@ -1,0 +1,29 @@
+---
+- name: dynmotd file
+  template:
+    src: dynmotd.sh.j2
+    dest: /usr/bin/dynmotd
+    owner: root
+    group: root
+    mode: 0755
+
+- name: identicon script
+  copy:
+    src: identicon.py
+    dest: /usr/bin/identicon
+    owner: root
+    group: root
+    mode: 0755
+
+- name: add to profile
+  lineinfile:
+    path: /etc/profile
+    line: "/usr/bin/dynmotd"
+
+#- name: Add tag file
+  #template:
+    #src: vgcn-release.j2
+    #dest: /etc/vgcn-release
+    #owner: root
+    #group: root
+    #mode: 0444

@@ -1,0 +1,31 @@
+#!/bin/bash
+icon="$(hostname -f | /usr/bin/identicon)"
+
+line() {
+	head -n $1 | tail -n 1
+}
+
+
+
+
+echo "
+                _                      ______  _    _
+               | |                    |  ____|| |  | |   $(line 1 <<< "$icon")
+   __ _   __ _ | |  __ _ __  __ _   _ | |__   | |  | |   $(line 2 <<< "$icon")
+  / _` | / _` || | / _` |\ \/ /| | | ||  __|  | |  | |   $(line 3 <<< "$icon")
+ | (_| || (_| || || (_| | >  < | |_| || |____ | |__| |   $(line 4 <<< "$icon")
+  \__, | \__,_||_| \__,_|/_/\_\ \__, ||______| \____/    $(line 5 <<< "$icon")
+   __/ |                         __/ |
+  |___/                         |___/
+
+====================================================
+Hostname..........: `hostname -f`
+Release...........: {{ ansible_distribution }} Linux release {{ ansible_distribution_version }} ({{ ansible_distribution_release }})
+Current user......: `whoami`
+Load..............: `cat /proc/loadavg`
+Uptime............: `uptime -p`
+{% for custom_command in dynmotd_custom %}
+{%set periods = custom_command.name | length%}
+{{ custom_command.name }}{%for i in range(18 - periods)%}.{% endfor %}: `{{ custom_command.command }}`
+{% endfor %}
+===================================================="
