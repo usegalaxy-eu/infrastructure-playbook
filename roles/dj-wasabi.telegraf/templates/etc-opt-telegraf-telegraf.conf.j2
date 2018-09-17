@@ -1,9 +1,15 @@
-# Telegraf configuration
+### MANAGED BY {{ role_path|basename }} ANSIBLE ROLE ###
 
 [tags]
 {% if telegraf_global_tags is defined and telegraf_global_tags is iterable %}
 {% for item in telegraf_global_tags %}
     {{ item.tag_name }} = "{{ item.tag_value }}"
+{% endfor %}
+{% endif %}
+
+{% if telegraf_agent_aws_tags == true and ec2_tags is defined and ec2_tags != None %}
+{% for key, value in ec2_tags.tags.iteritems()%}
+   {{telegraf_agent_aws_tags_prefix}}{{ key }} = "{{ value }}"
 {% endfor %}
 {% endif %}
 

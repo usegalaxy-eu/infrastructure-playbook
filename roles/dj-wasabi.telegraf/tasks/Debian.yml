@@ -4,9 +4,6 @@
   stat:
     path: /usr/lib/apt/methods/https
   register: apt_https_transport
-  tags:
-    - telegraf
-    - packages
 
 - name: Install APT HTTPS transport.
   apt:
@@ -14,28 +11,12 @@
     state: present
   when: not apt_https_transport.stat.exists
   become: yes
-  tags:
-    - telegraf
-    - packages
-
-- name: Ensure ca-certs avialable
-  apt:
-    name: "ca-certificates"
-    state: latest
-  become: yes
-  tags:
-    - telegraf
-    - packages
 
 - name: Download Telegraf apt key.
   apt_key:
     url: "https://repos.influxdata.com/influxdb.key"
-    validate_certs: False
     state: present
   become: yes
-  tags:
-    - telegraf
-    - packages
 
 - name: Add Telegraf repository (using LSB).
   apt_repository:
@@ -43,9 +24,6 @@
     filename: "telegraf"
     state: present
   become: yes
-  tags:
-    - telegraf
-    - packages
   when: ansible_lsb is defined and ansible_lsb.codename is defined
 
 - name: Add Telegraf repository.
@@ -54,17 +32,11 @@
     filename: "telegraf"
     state: present
   become: yes
-  tags:
-    - telegraf
-    - packages
   when: ansible_lsb is not defined or ansible_lsb.codename is not defined
 
 - name: "Install telegraf package | Debian"
   apt:
-    name: telegraf
-    state: installed
+    name: "telegraf"
+    state: present
   notify: "Restart Telegraf"
   become: yes
-  tags:
-    - telegraf
-    - packages

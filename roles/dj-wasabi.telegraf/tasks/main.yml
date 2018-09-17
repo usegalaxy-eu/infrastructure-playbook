@@ -2,43 +2,15 @@
 # tasks file for ansible-telegraf
 
 - name: "Install the correct repository"
-  include: "RedHat.yml"
+  include_tasks: "RedHat.yml"
   when: ansible_os_family == "RedHat"
 
 - name: "Install the correct repository"
-  include: "Debian.yml"
+  include_tasks: "Debian.yml"
   when: ansible_os_family == "Debian"
+  tags:
+    - telegraf
+    - packages
 
-- name: "Copy the template for versions < 0.10.0"
-  template:
-    src: etc-opt-telegraf-telegraf.conf.j2
-    dest: /etc/opt/telegraf/telegraf.conf
-    owner: telegraf
-    group: telegraf
-    mode: 0640
-  become: yes
-  when: telegraf_agent_version|version_compare('0.10.0', '<')
-  notify: "Restart Telegraf"
-
-- name: "Copy the template for versions >= 0.10.0"
-  template:
-    src: telegraf.conf.j2
-    dest: /etc/telegraf/telegraf.conf
-    owner: telegraf
-    group: telegraf
-    mode: 0640
-  become: yes
-  when: telegraf_agent_version|version_compare('0.10.0', '>=')
-  notify: "Restart Telegraf"
-
-- name: "Copy telegraf extra plugins"
-  template:
-    src: "telegraf-extra-plugin.conf.j2"
-    dest: "/etc/telegraf/telegraf.d/{{ item.plugin }}{{ item.disambiguation | default('') }}.conf"
-    owner: telegraf
-    group: telegraf
-    mode: 0640
-  with_items: "{{ telegraf_plugins_extra }}"
-  when: "telegraf_plugins_extra is defined and telegraf_plugins_extra is iterable"
-  become: yes
-  notify: "Restart Telegraf"
+- name: "Configure telegraf"
+  include_tasks: "configure.yml"

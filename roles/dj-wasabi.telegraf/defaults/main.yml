@@ -1,13 +1,15 @@
 ---
 # defaults file for ansible-telegraf
 
-telegraf_agent_version: 1.4.0
+telegraf_agent_version: 1.7.3
 telegraf_agent_hostname: "{{ ansible_fqdn }}"
 telegraf_agent_interval: 10
 telegraf_agent_debug: False
 telegraf_agent_round_interval: True
 telegraf_agent_flush_interval: 10
 telegraf_agent_flush_jitter: 0
+telegraf_agent_aws_tags: False
+telegraf_agent_aws_tags_prefix: ""
 
 # v0.13 settings (not sure if supported in older version):
 telegraf_agent_collection_jitter: 0
@@ -28,6 +30,7 @@ telegraf_agent_output:
       - database = "telegraf"
       - precision = "s"
 
+# defaults - /etc/telegraf/telegraf.conf
 telegraf_plugins_default:
   - plugin: cpu
     config:
@@ -39,5 +42,11 @@ telegraf_plugins_default:
   - plugin: system
   - plugin: swap
   - plugin: netstat
+  - plugin: processes
+  - plugin: kernel
 
-telegraf_plugins_extra:
+# extra configuration - /etc/telegraf/telegraf.d/*
+telegraf_plugins_extra: {}
+
+# RedHat specific settings for convenience
+telegraf_redhat_releasever: "$releasever"

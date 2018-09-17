@@ -5,6 +5,25 @@ Below an overview of all changes in the releases.
 
 Version (Release date)
 
+0.10.0 (2018-08-12)
+
+  * Updating to telegraf 1.7.3
+  * Fix Deprecation warnings #54
+  * Changed 'include' to 'include_tasks' to remove deprecation warning #53 (By pull request: tjend (Thanks!))
+  * Add option to remove extra plugin config files #52 (By pull request: tjend (Thanks!))
+  * Plugins extra hash allow multiple inputs same type #50 (By pull request: tjend (Thanks!))
+  * Using specific version for tests
+  * Update minimum Ansible version to 2.4
+
+0.9.0 (2018-05-06)
+
+  * plugins: be able to specify the filename of extra plugings #40 (By pull request: gaelL (Thanks!))
+  * Fix markdown #41 (By pull request: Angristan (Thanks!))
+  * Allow to override RedHat release version #43 (By pull request: tszym (Thanks!))
+  * Improved comments, split up role, moved tags and added defaults #45 (By pull request: boxrick (Thanks!))
+  * Fix Travis Tests #42
+  * Convert the telegraf_plugins_extra varaible to a hash so that we can … #46 (By pull request: tjend (Thanks!))
+
 0.8.0 (2017-10-30)
 
   * Updating to Molecule V2

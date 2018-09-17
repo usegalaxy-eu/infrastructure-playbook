@@ -36,6 +36,8 @@ The following parameters can be set for the Telegraf agent:
 * `telegraf_agent_round_interval`: Rounds collection interval to 'interval' Default: True
 * `telegraf_agent_flush_interval`: Default data flushing interval for all outputs. Default: 10
 * `telegraf_agent_flush_jitter`: Jitter the flush interval by a random amount. Default: 0
+* `telegraf_agent_aws_tags`: Configure AWS ec2 tags into Telegraf tags section Default: `False`
+* `telegraf_agent_aws_tags_prefix`: Define a prefix for AWS ec2 tags. Default: `""`
 * `telegraf_agent_collection_jitter`: Jitter the collection by a random amount. Default: 0 (since v0.13)
 * `telegraf_agent_metric_batch_size`: The agent metric batch size. Default: 1000  (since v0.13)
 * `telegraf_agent_metric_buffer_limit`: The agent metric buffer limit. Default: 10000  (since v0.13)
@@ -68,7 +70,7 @@ The config will be printed line by line into the configuration, so you could als
 
 and it will be printed in the configuration file.
 
-There are two properties which are the same, but are used differently. Those are:
+There are two properties which are similar, but are used differently. Those are:
 
 * `telegraf_plugins_default`
 * `telegraf_plugins_extra`
@@ -88,11 +90,11 @@ With the property `telegraf_plugins_default` it is set to use the default set of
 
 Every telegraf agent has these as a default configuration.
 
-The 2nd parameter `telegraf_plugins_extra` can be used to add plugins specific to the servers goal. Following is an example for using this parameter for MySQL database servers:
+The 2nd parameter `telegraf_plugins_extra` can be used to add plugins specific to the servers goal. It is a hash instead of a list, so that you can merge values from multiple var files together. Following is an example for using this parameter for MySQL database servers:
 
 	cat group_vars/mysql_database
 	telegraf_plugins_extra:
-		- plugin: mysql
+		mysql:
 		  config:
 		  	- servers = ["root:{{ mysql_root_password }}@tcp(localhost:3306)/"]
 
@@ -129,15 +131,28 @@ No dependencies
       roles:
          - { role: dj-wasabi.telegraf }
 
-##Contributors
+## Contributors
+
 The following have contributed to this Ansible role:
 
-  * aferrari-technisys
-  * stvnwrgs
-  * lhoss
-  * thecodeassassin
-  * Ismael
-  * romainbureau
+ * Thomas Szymanski
+ * Alejandro
+ * Slawomir Skowron
+ * Ismael
+ * Laurent Hoss
+ * Anthony ARNAUD
+ * Rick Box
+ * Emerson Knapp
+ * gaelL
+ * Steven Wirges
+ * zend0
+ * Angristan
+ * Olivier Boukili
+ * Romain BUREAU
+ * TheCodeAssassin
+ * tjend
+
+Thank you all!
 
 ## Molecule
 
