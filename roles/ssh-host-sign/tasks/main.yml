@@ -1,4 +1,7 @@
 ---
+- stat: path=/etc/ssh/ssh_host_rsa_key-cert.pub
+  register: st
+
 - name: Copy server key into VM temporarily
   copy:
     src: server_ca
@@ -6,6 +9,7 @@
     owner: root
     group: root
     mode: 0600
+  when: not st.stat.exists
 
 - name: Sign Keys
   command: ssh-keygen -s /tmp/server_ca -I key_for_test1 -h -V +52w /etc/ssh/ssh_host_{{ item }}_key.pub
@@ -13,20 +17,35 @@
     - rsa
     - ecdsa
     - ed25519
+  when: not st.stat.exists
 
-- lineinfile:
-    path: /etc/selinux/config
-    regexp: "^HostKey /etc/ssh/ssh_host_{{ item }}_key"
-    line: "HostKey /etc/ssh/ssh_host_{{ item }}_key\nHostCertificate /etc/ssh/ssh_host_{{ item }}_key-cert.pub"
-  with_items:
-    - rsa
-    - ecdsa
-    - ed25519
+#- lineinfile:
+    #path: /etc/ssh/sshd_config
+    #regexp: "^HostKey /etc/ssh/ssh_host_{{ item }}_key$"
+    #line: "HostKey /etc/ssh/ssh_host_{{ item }}_key\nHostCertificate /etc/ssh/ssh_host_{{ item }}_key-cert.pub"
+  #with_items:
+    #- rsa
+    #- ecdsa
+    #- ed25519
+  #when: not st.stat.exists
+- set_fact:
+    ssh_host_key_cert_files:
+      - /etc/ssh/ssh_host_rsa_key-cert.pub
+      - /etc/ssh/ssh_host_ecdsa_key-cert.pub
+      - /etc/ssh/ssh_host_ed25519_key-cert.pub
+  notify: "restart sshd"
 
 - name: Ensure server key is gone
   file:
     path: server_ca
     state: absent
+  when: not st.stat.exists
+
+#- name: Reload SSH
+  #service:
+    #name: sshd
+    #state: reloaded
+  #when: not st.stat.exists
 
 - name: "Helper"
   debug:

@@ -17,14 +17,14 @@
   notify: 'Restart Telegraf'
 
 - set_fact:
-    mail_counter_telegraf:
-      - plugin: exec
-        disambiguation: email_counter
+    plugin_config:
+      email_counter:
+        plugin: "exec"
         config:
           - commands = ["sudo /usr/bin/check_mail_counts"]
           - timeout = "10s"
           - data_format = "influx"
-          - interval = "1m"
+          - interval = "1h"
 
 - set_fact:
-    telegraf_plugins_extra: "{{ telegraf_plugins_extra + mail_counter_telegraf }}"
+    telegraf_plugins_extra: "{{ telegraf_plugins_extra | combine(plugin_config) }}"

@@ -3,13 +3,13 @@
   file:
     state: directory
     dest: "{{ pgs_dir }}"
-    owner: ubuntu
-    group: ubuntu
+    owner: centos
+    group: centos
     mode: 0755
 
 - name: "Clone repository"
   become: true
-  become_user: ubuntu
+  become_user: centos
   umask: 0022
   git:
     repo: 'https://github.com/martenson/public-galaxy-servers/'
@@ -21,13 +21,13 @@
   file:
     state: directory
     dest: "{{ pgs_repo_dir }}"
-    owner: ubuntu
-    group: ubuntu
+    owner: centos
+    group: centos
     mode: 0755
 
 - name: "Template runner script"
   become: true
-  become_user: ubuntu
+  become_user: centos
   template:
     src: script.sh.j2
     dest: "{{ pgs_repo_dir }}.sh"
@@ -35,15 +35,20 @@
 
 - name: "Template runner script"
   become: true
-  become_user: ubuntu
+  become_user: centos
   template:
     src: count-tools.sh.j2
     dest: "{{ pgs_dir }}/count-tools.sh"
     mode: 0755
 
+- name: "Install virtualenv"
+  package:
+    name: python-virtualenv
+    state: installed
+
 - name: "Install requirements"
   become: true
-  become_user: ubuntu
+  become_user: centos
   pip:
     requirements: "{{ pgs_repo_dir }}/requirements.txt"
     virtualenv: "{{ pgs_dir }}/venv"
@@ -53,13 +58,13 @@
   file:
     state: directory
     dest: "{{ pgs_dir }}/venv"
-    owner: ubuntu
-    group: ubuntu
+    owner: centos
+    group: centos
     mode: 0755
 
 - name: "Install influxdb"
   become: true
-  become_user: ubuntu
+  become_user: centos
   pip:
     name: influxdb
     virtualenv: "{{ pgs_dir }}/venv"
@@ -69,5 +74,5 @@
     name: "run public-galaxy-server collector/processing"
     minute: "0"
     hour: "*"
-    user: ubuntu
+    user: centos
     job: "bash {{ pgs_repo_dir }}.sh"

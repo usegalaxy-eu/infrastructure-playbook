@@ -27,6 +27,11 @@ ListenAddress {{address}}
 HostKey {{key}}          # Req 20
 {% endfor %}
 
+# usegalaxyeu addition
+{% for cert in ssh_host_key_cert_files -%}
+HostCertificate {{cert}}
+{% endfor %}
+
 # Security configuration
 # ======================
 
