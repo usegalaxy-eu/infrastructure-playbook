@@ -1,6 +1,7 @@
 ---
 - name: "Make parent dir"
   file:
+    state: directory
     dest: "{{ pgs_dir }}"
     owner: ubuntu
     group: ubuntu
@@ -9,11 +10,20 @@
 - name: "Clone repository"
   become: true
   become_user: ubuntu
+  umask: 0022
   git:
     repo: 'https://github.com/martenson/public-galaxy-servers/'
     dest: "{{ pgs_repo_dir }}"
     version: master
     force: yes
+
+- name: "Fix perms here"
+  file:
+    state: directory
+    dest: "{{ pgs_repo_dir }}"
+    owner: ubuntu
+    group: ubuntu
+    mode: 0755
 
 - name: "Template runner script"
   become: true
@@ -37,6 +47,15 @@
   pip:
     requirements: "{{ pgs_repo_dir }}/requirements.txt"
     virtualenv: "{{ pgs_dir }}/venv"
+  umask: 0022
+
+- name: "Fix perms here"
+  file:
+    state: directory
+    dest: "{{ pgs_dir }}/venv"
+    owner: ubuntu
+    group: ubuntu
+    mode: 0755
 
 - name: "Install influxdb"
   become: true

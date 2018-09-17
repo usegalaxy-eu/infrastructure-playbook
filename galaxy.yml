@@ -3,12 +3,42 @@
   hosts: galaxy
   vars_files:
     - "secret_group_vars/all.yml"
+  pre_tasks:
+    - name: Create Galaxy code owner user
+      user:
+        name: gxcode
+        comment: "Galaxy Code"
+        system: yes
+        home: /opt/galaxy
+        createhome: yes
+        uid: 1998
+      become: yes
+    - name: Create Galaxy runtime user
+      user:
+        name: galaxy
+        comment: "Galaxy Server"
+        system: yes
+        home: /var/opt/galaxy
+        createhome: yes
+        uid: 1999
+      become: yes
+    - name: Install Dependencies
+      package:
+        name: "{{ item }}"
+      become: yes
+      with_items:
+        - git
+        - python-psycopg2
+        - python-virtualenv
   roles:
     #- geerlingguy.repo-epel
     #- hxr.admin-tools
-    - cvmfs
-    - linuxhq.yum-cron
-    - influxdata.chrony
-    - dj-wasabi.telegraf
-    - dev-sec.os-hardening
-    - dev-sec.ssh-hardening
+    - htcondor
+    #- cvmfs
+    #- linuxhq.yum-cron
+    #- influxdata.chrony
+    #- hxr.bioinf-mounts
+    #- galaxyproject.galaxy
+    #- dj-wasabi.telegraf
+    #- dev-sec.os-hardening
+    #- dev-sec.ssh-hardening
