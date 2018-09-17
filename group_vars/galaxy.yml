@@ -1,6 +1,5 @@
 ---
-ssh_allow_root_with_key: true
-
+# CVMFS
 cvmfs_role: client
 galaxy_cvmfs_repos_enabled: true
 
@@ -27,3 +26,69 @@ galaxy_cvmfs_repositories:
     key_dir: /etc/cvmfs/keys/galaxyproject.org
     server_options: []
     client_options: []
+
+# HTCondor
+
+htcondor:
+    interface: 'ens2'
+    host: '10.5.68.16'
+    allow_write: '10.5.68.0/24, 10.19.0.0/16, 132.230.68.0/24, *.bi.uni-freiburg.de'
+    ### 09/15/17 09:22:07 (pid:568706) PERMISSION DENIED to unauthenticated@unmapped from host 132.230.68.63 for command 416 (NEGOTIATE), access level NEGOTIATOR: reason: NEGOTIATOR authorization policy contains no matching ALLOW entry for this request; identifiers used for this host: 132.230.68.63,cn030.bi.uni-freiburg.de, hostname size = 1, original ip address = 132.230.68.63
+    #ALLOW_NEGOTIATOR = 132.230.68.85
+    role: 'submit'
+    fs_domain: 'bi.uni-freiburg.de'
+    uid_domain: 'bi.uni-freiburg.de'
+    trust_uid_domain: true
+    # HXR: 2018-04-23 Per @bgruening's request, enlarged from 2d to
+    # Put jobs using resources excessively on hold
+    # http://pages.cs.wisc.edu/~adesmet/status.html#condor-jobstatus
+    jobs:
+        hold_older_than: '{{ 86400 * 7 }}'
+
+# GALAXY
+galaxy_log_dir: '/var/log/galaxy/'
+galaxy_server_dir: '/opt/galaxy/server'
+galaxy_config_dir: '/opt/galaxy/config'
+galaxy_mutable_config_dir: /var/opt/galaxy/config
+galaxy_mutable_data_dir: /var/opt/galaxy/data
+galaxy_config_style: 'yaml'
+
+galaxy_manage_clone: true
+galaxy_manage_static_setup: true
+galaxy_manage_mutable_setup: true
+galaxy_manage_database: true
+galaxy_fetch_dependencies: true
+galaxy_manage_errordocs: false
+
+galaxy_repo: 'https://github.com/usegalaxy-eu/galaxy.git'
+galaxy_commit_id: '287a4c46b712f09b1186a6ee641169f711f587f7' # release_18.05_europe'
+galaxy_force_checkout: true # discard any modified files
+galaxy_admin_email_to: 'contact@usegalaxy.eu'
+galaxy_admin_email_from: 'noreply@usegalaxy.eu'
+
+galaxy_config:
+  uwsgi:
+    socket: 127.0.0.1:4001
+    buffer-size: 16384
+    processes: 1
+    threads: 4
+    offload-threads: 2
+    static-map:
+      - /static/style={{ galaxy_server_dir }}/static/style/blue
+      - /static={{ galaxy_server_dir }}/static
+    master: true
+    virtualenv: "{{ galaxy_venv_dir }}"
+    pythonpath: "{{ galaxy_server_dir }}/lib"
+    module: galaxy.webapps.galaxy.buildapp:uwsgi_app()
+    thunder-lock: true
+    die-on-term: true
+    hook-master-start:
+      - unix_signal:2 gracefully_kill_them_all
+      - unix_signal:15 gracefully_kill_them_all
+    py-call-osafterfork: true
+    enable-threads: true
+    mule: lib/galaxy/main.py
+    mule: lib/galaxy/main.py
+    farm: job-handlers:1,2
+  galaxy:
+    database_connection: "postgresql://galaxy2:eF9WxpN9o9fCSq9RAO62Njiqeb5tF@sn03.bi.uni-freiburg.de/galaxy2"
