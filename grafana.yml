@@ -5,17 +5,22 @@
   vars_files:
     - "secret_group_vars/all.yml"
   vars:
-    hostname: stats.usegalaxy.eu
+    hostname: stats.new.usegalaxy.eu
   roles:
     - hostname
-    - hxr.vault
+    - dynmotd
+    - ssh-host-sign
     - influxdata.chrony
-    - hxr.certbot
+    - geerlingguy.repo-epel
     - hxr.admin-tools
+    - hxr.monitor-email
+    - linuxhq.yum-cron
     - geerlingguy.nginx
+    # Custom
     - hxr.simple-nagios
     - picotrading.ansible-grafana
-    #- pgs
+    - pgs
+    # End Custom
     - dj-wasabi.telegraf
     - dev-sec.os-hardening
     - dev-sec.ssh-hardening
