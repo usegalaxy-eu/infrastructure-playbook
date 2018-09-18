@@ -17,6 +17,10 @@ haproxy_frontends:
         - 'acl metagenomics_host hdr_dom(host) -i metagenomics.usegalaxy.eu'
         - 'acl rna_host          hdr_dom(host) -i rna.usegalaxy.eu'
         - 'acl ecology_host      hdr_dom(host) -i ecology.usegalaxy.eu'
+        - 'acl stats_host        hdr_dom(host) -i stats.galaxyproject.org'
+        - 'acl build_host        hdr_dom(host) -i build.galaxyproject.org'
+        - 'acl influxdb_host     hdr_dom(host) -i influxdb.galaxyproject.org'
+        - 'acl apollo_host       hdr_dom(host) -i apollo.usegalaxy.eu'
         - 'acl welcome           path_beg /static/welcome.html'
         - 'acl basecss           path_beg /static/style/base.css'
         - 'acl apollo_path       path_beg /apollo/'
@@ -91,7 +95,7 @@ haproxy_backends:
       balance: roundrobin
       mode: http
       custom_config:
-        - 'server server1 apollo.usegalaxy.eu:443 maxconn 32 ssl verify none'
+        - 'server server1 apollo.internal.usegalaxy.eu:443 maxconn 32 ssl verify none'
     - name: rabbit
       balance: roundrobin
       mode: http

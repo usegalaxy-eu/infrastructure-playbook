@@ -5,8 +5,10 @@
   vars:
     hostname: proxy.usegalaxy.eu
     server_names:
-      - usegalaxy.eu
       - proxy.usegalaxy.eu
+      # Galaxy
+      - usegalaxy.eu
+      # Galaxy aliases
       - hicexplorer.usegalaxy.eu
       - static.usegalaxy.eu
       - metagenomics.usegalaxy.eu
@@ -15,7 +17,14 @@
       - xn--cw8h.usegalaxy.eu
       - xn--ls8h.usegalaxy.eu
       - xn--2n8h.usegalaxy.eu
-      #- xn--dw8h.usegalaxy.eu
+      # other services
+      - stats.galaxyproject.eu
+      - build.galaxyproject.eu
+      - influxdb.galaxyproject.eu
+      - apollo.usegalaxy.eu # this one must be under here for the cookie auth magic.
+      # Intentionally NOT on this list:
+      #  cvmfs1-ufr0.galaxyproject.eu
+      #  ftp.usegalaxy.eu
     server_names_de:
       - usegalaxy.de
     certbot_auto_renew: yes

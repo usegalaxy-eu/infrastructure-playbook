@@ -1,0 +1,19 @@
+---
+- hosts: etherpad
+  become: true
+  vars:
+    hostname: pad.usegalaxy.eu
+  vars_files:
+    - "secret_group_vars/all.yml"
+    - "secret_group_vars/apollo.yml"
+  roles:
+    - hostname
+    - geerlingguy.repo-epel
+    - hxr.certbot
+    - hxr.admin-tools
+    - linuxhq.yum-cron
+    - geerlingguy.nginx
+    - systemli.etherpad
+    - dj-wasabi.telegraf
+    - dev-sec.os-hardening
+    - dev-sec.ssh-hardening
