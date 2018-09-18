@@ -8,14 +8,18 @@
     - "secret_group_vars/all.yml"
   roles:
     - hostname
-    - hxr.vault
-    - jnv.unattended-upgrades
-    - hxr.certbot
+    - dynmotd
+    - influxdata.chrony
+    - geerlingguy.repo-epel
     - hxr.admin-tools
+    - hxr.monitor-email
+    - linuxhq.yum-cron
     - geerlingguy.nginx
+    - dj-wasabi.telegraf
+    # CUSTOM
     - geerlingguy.java
     - geerlingguy.jenkins
     - hxr.jenkins-extra
-    - dj-wasabi.telegraf
+    # END CUSTOM
     - dev-sec.os-hardening
     - dev-sec.ssh-hardening

@@ -1,5 +1,5 @@
 ---
-- name: Install useful tools (Generic)
+- name: Install useful tools
   package:
     name: "{{ item }}"
     state: installed
@@ -20,11 +20,5 @@
     - unzip
     - mutt
     - byobu
-
-- name: Install useful tools (CentOS)
-  package:
-    name: "{{ item }}"
-    state: installed
-  with_items:
+    # centos specific
     - setools-console
-  when: ansible_distribution == 'CentOS'
