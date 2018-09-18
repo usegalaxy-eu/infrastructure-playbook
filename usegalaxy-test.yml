@@ -7,7 +7,6 @@
   vars_files:
     - "group_vars/usegalaxy-test.yml"
     - "secret_group_vars/all.yml"
-    - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
   roles:
     - hostname
     - hxr.vault

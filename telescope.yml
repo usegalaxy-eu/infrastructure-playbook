@@ -6,7 +6,6 @@
     hostname: telescope.galaxyproject.org
   vars_files:
     - "secret_group_vars/all.yml"
-    - [ "secret_host_vars/{{ inventory_hostname }}.yml", "secret_host_vars/default.yml" ]
   roles:
     - hostname
     - hxr.vault
