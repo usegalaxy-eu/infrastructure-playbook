@@ -17,6 +17,7 @@ haproxy_frontends:
         - 'acl metagenomics_host hdr_dom(host) -i metagenomics.usegalaxy.eu'
         - 'acl rna_host          hdr_dom(host) -i rna.usegalaxy.eu'
         - 'acl ecology_host      hdr_dom(host) -i ecology.usegalaxy.eu'
+        - 'acl proteomics_host   hdr_dom(host) -i proteomics.usegalaxy.eu'
         - 'acl stats_host        hdr_dom(host) -i stats.galaxyproject.org'
         - 'acl build_host        hdr_dom(host) -i build.galaxyproject.org'
         - 'acl influxdb_host     hdr_dom(host) -i influxdb.galaxyproject.org'
@@ -39,6 +40,8 @@ haproxy_frontends:
         - 'use_backend rnaspecial if rna_host basecss'
         - 'use_backend ecologyspecial if ecology_host welcome'
         - 'use_backend ecologyspecial if ecology_host basecss'
+        - 'use_backend proteomicsspecial if proteomics_host welcome'
+        - 'use_backend proteomicsspecial if proteomics_host basecss'
         - 'use_backend galaxy'
 
 
@@ -84,6 +87,13 @@ haproxy_backends:
       custom_config:
         - 'reqrep ^GET\ /static/style/base.css(.*)\ HTTP/1.1 GET\ /static/style/base-ecology.css\1\ HTTP/1.1'
         - 'reqrep ^GET\ /static/welcome.html\ HTTP/1.1 GET\ /static/welcome-ecology.html\ HTTP/1.1'
+        - 'server server1 132.230.68.85:443 maxconn 32 ssl verify none'
+    - name: proteomicsspecial
+      balance: roundrobin
+      mode: http
+      custom_config:
+        - 'reqrep ^GET\ /static/style/base.css(.*)\ HTTP/1.1 GET\ /static/style/base-proteomics.css\1\ HTTP/1.1'
+        - 'reqrep ^GET\ /static/welcome.html\ HTTP/1.1 GET\ /static/welcome-proteomics.html\ HTTP/1.1'
         - 'server server1 132.230.68.85:443 maxconn 32 ssl verify none'
     - name: despecial
       balance: roundrobin
