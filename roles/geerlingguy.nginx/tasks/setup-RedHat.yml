@@ -13,8 +13,18 @@
     name: "{{ nginx_package_name }}"
     state: installed
 
+
+- name: check if selinux is enabled
+  tags: selinuxCheck
+  register: selinuxCheckOut
+  command: getenforce
+
+
+
+
 - name: "Allow connecting to localhost"
   seboolean:
     name: httpd_can_network_connect
     state: yes
     persistent: yes
+  when: selinuxCheckOut.stdout_lines == "Enforcing"
