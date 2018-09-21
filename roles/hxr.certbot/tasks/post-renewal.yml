@@ -1,7 +1,30 @@
 ---
+- name: Create the ssl-cert group if it doesn't exist
+  group:
+    name: ssl-cert
+    state: present
+    system: yes
+
+- set_fact:
+    ssl_cert_group_available: true
+
 - name: Write the file
   copy:
-    content: "#!/bin/bash\n{{ certbot_post_renewal }}"
+    content: |
+        #!/bin/bash
+        mkdir -p  /etc/ssl/private/
+        chmod 750 /etc/ssl/private/
+        # Chain
+        cp /etc/letsencrypt/live/{{ hostname }}/fullchain.pem /etc/ssl/certs/{{ hostname }}
+        chmod 644 /etc/ssl/certs/{{ hostname }}
+        # Privkey
+        cp /etc/letsencrypt/live/{{ hostname }}/privkey.pem   /etc/ssl/private/privkey.pem
+        chown root:ssl-cert -R /etc/ssl/private/
+        chmod 750 /etc/ssl/private/
+        chmod 640 /etc/ssl/private/privkey.pem
+        # Other
+        {{ certbot_post_renewal }}
+
     dest: /etc/letsencrypt/renewal-hooks/post/ansible.sh
     owner: root
     group: root

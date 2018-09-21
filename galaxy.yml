@@ -4,15 +4,15 @@
   vars_files:
     - "secret_group_vars/all.yml"
   pre_tasks:
-    - name: Create Galaxy code owner user
-      user:
-        name: gxcode
-        comment: "Galaxy Code"
-        system: yes
-        home: /opt/galaxy
-        createhome: yes
-        uid: 1998
-      become: yes
+    #- name: Create Galaxy code owner user
+      #user:
+        #name: gxcode
+        #comment: "Galaxy Code"
+        #system: yes
+        #home: /opt/galaxy
+        #createhome: yes
+        #uid: 1998
+      #become: yes
     - name: Create Galaxy runtime user
       user:
         name: galaxy
@@ -20,7 +20,7 @@
         system: yes
         home: /var/opt/galaxy
         createhome: yes
-        uid: 1999
+        uid: 999
       become: yes
     - name: Install Dependencies
       package:
@@ -31,6 +31,7 @@
         - python-psycopg2
         - python-virtualenv
   roles:
+    - hxr.autofs
     - dynmotd
     - ssh-host-sign
     - geerlingguy.repo-epel

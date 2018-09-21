@@ -10,7 +10,7 @@
   when: certbot_environment != 'staging'
 
 - name: Request certificate
-  command: "certbot certonly {{ certbot_cmd_environment }} --standalone  -m {{ certbot_admin_email }} {{ certbot_agree_tos }} -d {{ ','.join(certbot_domains) }}"
+  command: "certbot certonly {{ certbot_cmd_environment }} --non-interactive --standalone  -m {{ certbot_admin_email }} {{ certbot_agree_tos }} -d {{ ','.join(certbot_domains) }}"
   register: request
   args:
     creates: "/etc/letsencrypt/renewal/{{ certbot_domains[0] }}.conf"

@@ -27,6 +27,17 @@
 - include: setup-Archlinux.yml
   when: ansible_os_family == 'Archlinux'
 
+
+# Ensure user is part of ssl-cert group and will have access to that data.
+- name: Add nginx to ssl-cert
+  user:
+    name: "{{ __nginx_user }}"
+    groups: ssl-cert
+    append: yes
+  when: ssl_cert_group_available is defined and ssl_cert_group_available
+
+
+
 # Vhost configuration.
 - include: vhosts.yml
 
