@@ -15,6 +15,14 @@
   tags:
     - influxdb
 
+# HXR: Ensure user is part of ssl-cert group and will have access to that data.
+- name: Add influxdb to ssl-cert
+  user:
+    name: "{{ influxdb_user }}"
+    groups: ssl-cert
+    append: yes
+  when: ssl_cert_group_available is defined and ssl_cert_group_available
+
 - name: Configure collectd
   include: collectd.yml
   when: influxdb_collectd_enabled == "true"

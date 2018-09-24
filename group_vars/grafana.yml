@@ -9,13 +9,6 @@ certbot_domains:
 certbot_agree_tos: --agree-tos
 certbot_admin_email: security@usegalaxy.eu
 certbot_post_renewal: |
-    cp /etc/letsencrypt/live/{{ hostname }}/fullchain.pem /etc/ssl/certs/{{ hostname }}
-    cp /etc/letsencrypt/live/{{ hostname }}/privkey.pem   /etc/ssl/private/privkey.pem
-    chmod 644 /etc/ssl/certs/{{ hostname }}
-    chmod 640 /etc/ssl/private/privkey.pem
-    chmod 750 /etc/ssl/private/
-    chown www-data:www-data /etc/ssl/private/privkey.pem
-    chown www-data:www-data -R /etc/ssl/private/privkey.pem
     systemctl restart nginx || true
 
 nginx_remove_default_vhost: true

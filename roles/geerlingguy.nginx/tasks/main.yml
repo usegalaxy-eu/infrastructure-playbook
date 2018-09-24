@@ -28,7 +28,7 @@
   when: ansible_os_family == 'Archlinux'
 
 
-# Ensure user is part of ssl-cert group and will have access to that data.
+# HXR: Ensure user is part of ssl-cert group and will have access to that data.
 - name: Add nginx to ssl-cert
   user:
     name: "{{ __nginx_user }}"
