@@ -12,16 +12,3 @@ cvmfs_stratum1_cache_dir:
 
 usegalaxy_eu_autofs_mounts:
  - data
-
-certbot_auto_renew: yes
-certbot_auto_renew_user: root
-certbot_auto_renew_hour: 5
-certbot_auto_renew_minute: 33
-
-certbot_environment: production #staging
-certbot_domains:
-  - "{{ hostname }}"
-certbot_agree_tos: --agree-tos
-certbot_admin_email: security@usegalaxy.eu
-certbot_post_renewal: |
-    systemctl restart nginx || true

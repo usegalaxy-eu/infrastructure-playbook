@@ -1,6 +1,5 @@
 ---
-- name: Tasks for "cvmfs" hosts
-  hosts: cvmfsstratum1servers
+- hosts: cvmfsstratum1servers
   become: true
   vars:
     hostname: cvmfs1-ufr0.galaxyproject.eu
@@ -8,24 +7,27 @@
     cvmfs_role: 'stratum1'
   vars_files:
     - "secret_group_vars/all.yml"
-  pre_tasks:
-    - file:
-        src: /data/dnb01/cvmfs/
-        dest: /srv
-        owner: root
-        group: root
-        state: link
-        force: true
+  #pre_tasks:
+    #- file:
+        #src: /data/dnb01/cvmfs/
+        #dest: /srv
+        #owner: root
+        #group: root
+        #state: link
+        #force: true
   roles:
     - hostname
-    - multinic-old
-    - hxr.autofs
-    - geerlingguy.repo-epel
     - hxr.admin-tools
+    - influxdata.chrony
+    - geerlingguy.repo-epel
+    - hxr.monitor-email
+    - linuxhq.yum-cron
+    - hxr.autofs
+    # BEGIN custom
     - cvmfs
     - hxr.monitor-squid
     - hxr.monitor-cvmfs
+    # END custom
     - dj-wasabi.telegraf
-    - linuxhq.yum-cron
     - dev-sec.os-hardening
     - dev-sec.ssh-hardening
