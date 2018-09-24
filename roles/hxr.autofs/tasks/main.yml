@@ -13,13 +13,12 @@
     mode: 0644
 
 - name: Copy all other conf files
-  copy:
-    src: "auto.{{ item }}"
-    dest: "/etc/auto.master.d/{{ item }}.conf"
+  template:
+    src: "data.conf.j2"
+    dest: "/etc/auto.master.d/data.conf"
     owner: root
     group: root
     mode: 0644
-  with_items: "{{ usegalaxy_eu_autofs_mounts }}"
 
 - name: autofs service enable
   service:

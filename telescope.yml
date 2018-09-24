@@ -1,15 +1,23 @@
 ---
-- name: Telescope
-  hosts: telescope
+- hosts: telescope
   become: true
   vars:
-    hostname: telescope.galaxyproject.org
+    hostname: telescope.galaxyproject.eu
   vars_files:
     - "secret_group_vars/all.yml"
   roles:
     - hostname
     - hxr.admin-tools
+    - influxdata.chrony
+    - geerlingguy.repo-epel
+    - hxr.certbot
+    - hxr.monitor-email
+    - linuxhq.yum-cron
+    - geerlingguy.nginx
+    - hxr.autofs
+    # BEGIN custom
+    - hxr.radio-telescope
+    # END custom
     - dj-wasabi.telegraf
-    - jnv.unattended-upgrades
     - dev-sec.os-hardening
     - dev-sec.ssh-hardening
