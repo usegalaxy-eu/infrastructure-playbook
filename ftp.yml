@@ -8,18 +8,20 @@
     - "secret_group_vars/all.yml"
   roles:
     - hostname
+    - hxr.admin-tools
+    - influxdata.chrony
     - geerlingguy.repo-epel
     - hxr.certbot
-    - hxr.admin-tools
+    - hxr.monitor-email
     - linuxhq.yum-cron
-    - hxr.autofs
     - geerlingguy.nginx
+    - hxr.autofs
+    # BEGIN custom
     # Remap 999:999 to other ids.
-    - hxr.remap-user
-    # Now add custom galaxy user with hardcoded ID. The user info is in group_vars/ftp.yml
-    - hxr.replace-galaxy-user
-    - galaxyprojectdotorg.proftpd
+    #- hxr.remap-user
+    ## Now add custom galaxy user with hardcoded ID. The user info is in group_vars/ftp.yml
+    #- hxr.replace-galaxy-user
+    #- galaxyprojectdotorg.proftpd
     - dj-wasabi.telegraf
     - dev-sec.os-hardening
     - dev-sec.ssh-hardening
-    - multinic

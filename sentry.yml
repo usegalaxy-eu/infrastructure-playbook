@@ -1,6 +1,5 @@
 ---
-- name: Sentry
-  hosts: sentry
+- hosts: sentry
   become: true
   vars:
     hostname: sentry.galaxyproject.eu
@@ -11,20 +10,16 @@
     - "secret_group_vars/all.yml"
   roles:
     - hostname
-    - multinic
+    - hxr.admin-tools
+    - influxdata.chrony
     - geerlingguy.repo-epel
     - hxr.certbot
-    - hxr.admin-tools
     - hxr.monitor-email
     - linuxhq.yum-cron
-    - hxr.autofs
     - geerlingguy.nginx
+    - hxr.autofs
     - geerlingguy.pip
     - geerlingguy.docker
-    # Remap 999:999 to other ids.
-    - hxr.remap-user
-    - hxr.replace-galaxy-user
-    # Finally safe to install sentry stuff
     - hxr.sentry
     - dj-wasabi.telegraf
     - dev-sec.os-hardening

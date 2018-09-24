@@ -1,6 +1,5 @@
 ---
-- name: Tasks for "grafana" hosts
-  hosts: grafana
+- hosts: grafana
   become: true
   vars_files:
     - "secret_group_vars/all.yml"
@@ -8,10 +7,10 @@
     hostname: stats.galaxyproject.eu
   roles:
     - hostname
-    - dynmotd
+    - hxr.admin-tools
     - influxdata.chrony
     - geerlingguy.repo-epel
-    - hxr.admin-tools
+    - hxr.certbot
     - hxr.monitor-email
     - linuxhq.yum-cron
     - geerlingguy.nginx
