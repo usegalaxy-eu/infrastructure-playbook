@@ -1,0 +1,19 @@
+---
+- hosts: hicbrowser
+  become: true
+  vars_files:
+    - "secret_group_vars/all.yml"
+  roles:
+    - hxr.admin-tools
+    - influxdata.chrony
+    - geerlingguy.repo-epel
+    - hxr.monitor-email
+    - linuxhq.yum-cron
+    - hxr.autofs
+    # BEGIN custom
+    - geerlingguy.pip
+    - geerlingguy.docker
+    # END custom
+    - dj-wasabi.telegraf
+    - dev-sec.os-hardening
+    - dev-sec.ssh-hardening
