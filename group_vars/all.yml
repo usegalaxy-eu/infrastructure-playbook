@@ -19,9 +19,9 @@ telegraf_agent_output:
   - type: influxdb
     config:
     - urls = ["{{ influxdb.url }}"]
-    - database = "{{ influxdb.galaxy.database }}"
-    - username = "{{ influxdb.galaxy.username }}"
-    - password = "{{ influxdb.galaxy.password }}"
+    - database = "{{ influxdb.node.database }}"
+    - username = "{{ influxdb.node.username }}"
+    - password = "{{ influxdb.node.password }}"
 
 telegraf_plugins_default:
   - plugin: cpu
@@ -37,16 +37,6 @@ telegraf_plugins_default:
   - plugin: net
   - plugin: netstat
   - plugin: chrony
-
-unattended_origins_patterns:
-- 'origin=Ubuntu,archive=${distro_codename}'
-- 'origin=Ubuntu,archive=${distro_codename}-security'
-- 'origin=Ubuntu,archive=${distro_codename}-updates'
-- 'origin=Ubuntu,archive=${distro_codename}-proposed'
-
-unattended_automatic_reboot: true
-unattended_minimal_steps: true
-unattended_remove_unused_dependencies: true
 
 # Anything else prevents more login
 ssh_use_pam: true
