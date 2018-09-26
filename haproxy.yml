@@ -15,13 +15,13 @@
     certbot_auto_renew_hour: 10
     certbot_auto_renew_minute: 59
     certbot_auto_renew_extra: "--dns-route53"
-    certbot_hostname_override: usegalaxy.eu
     certbot_post_renewal: |
         # Haproxy is weird and needs the full chain + privkey in a single file.
-        cat /etc/letsencrypt/live/usegalaxy.eu/fullchain.pem > /etc/pki/tls/private/full.pem
-        cat /etc/letsencrypt/live/usegalaxy.eu/privkey.pem  >> /etc/pki/tls/private/full.pem
+        cat /etc/ssl/certs/fullchain.pem       > /etc/pki/tls/private/full.pem
+        cat /etc/ssl/private/privkey.pem  >> /etc/pki/tls/private/full.pem
         chown root:ssl-cert /etc/pki/tls/private/full.pem
         systemctl reload haproxy || true
+        systemctl restart rabbitmq-server || true
 
     certbot_environment: production #staging
     certbot_domains: "{{ server_names }}"
@@ -35,10 +35,10 @@
     #- geerlingguy.repo-epel
     #- hxr.admin-tools
     #- hxr.aws-cli
-    #- hxr.certbot-wildcard
-    #- hxr.haproxy-error-pages
-    - geerlingguy.haproxy
-    #- dj-wasabi.telegraf
-    #- dev-sec.os-hardening
-    #- dev-sec.ssh-hardening
-    #- jasonroyle.rabbitmq
+    - hxr.certbot
+    ##- hxr.haproxy-error-pages
+    #- geerlingguy.haproxy
+    - jasonroyle.rabbitmq
+    - dj-wasabi.telegraf
+    - dev-sec.os-hardening
+    - dev-sec.ssh-hardening

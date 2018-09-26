@@ -9,7 +9,7 @@ haproxy_frontends:
     - name: https-in
       bind:
         - '*:80'
-        - '*:443 ssl crt /etc/pki/tls/private/full.pem'
+        - '*:443  ssl crt /etc/pki/tls/private/full.pem'
       mode: http
       custom_config:
         - 'acl certbot_path      path_beg /.well-known/'
@@ -53,11 +53,11 @@ haproxy_backends:
       mode: http
       custom_config:
           - "{{ haproxy_galaxy_backend }}"
-    - name: apollo
-      balance: roundrobin
-      mode: http
-      custom_config:
-        - 'server server1 apollo.internal.usegalaxy.eu:443 maxconn 32 ssl verify none'
+    #- name: apollo
+      #balance: roundrobin
+      #mode: http
+      #custom_config:
+        #- 'server server1 apollo.usegalaxy.eu:443 maxconn 32 ssl verify none'
     - name: rabbit
       balance: roundrobin
       mode: http
@@ -106,11 +106,11 @@ rabbitmq_config:
   #- tcp_listeners:
     #- "'0.0.0.0'": 5671
   - ssl_listeners:
-    - 5671
+    - "'0.0.0.0'": 5671
   - ssl_options:
-    - cacertfile: /etc/rabbitmq/tls/fullchain.pem
-    - certfile: /etc/rabbitmq/tls/cert.pem
-    - keyfile: /etc/rabbitmq/tls/privkey.pem
+    - cacertfile: /etc/ssl/certs/fullchain.pem
+    - certfile: /etc/ssl/certs/cert.pem
+    - keyfile: /etc/ssl/private/privkey.pem
     - fail_if_no_peer_cert: 'false'
 
 telegraf_plugins_default:

@@ -14,14 +14,19 @@
         #!/bin/bash
         mkdir -p  /etc/ssl/private/
         chmod 750 /etc/ssl/private/
+        chown root:ssl-cert /etc/ssl/private/
         # Chain
-        cp /etc/letsencrypt/live/{{ hostname }}/fullchain.pem /etc/ssl/certs/{{ hostname }}
-        chmod 644 /etc/ssl/certs/{{ hostname }}
+        cp /etc/letsencrypt/live/{{ certbot_hostname_override | default(certbot_domains[0]) }}/fullchain.pem /etc/ssl/certs/fullchain.pem
+        chmod 644           /etc/ssl/certs/fullchain.pem
+        chown root:ssl-cert /etc/ssl/certs/fullchain.pem
+        # Cert
+        cp /etc/letsencrypt/live/{{ certbot_hostname_override | default(certbot_domains[0]) }}/cert.pem      /etc/ssl/certs/cert.pem
+        chmod 644           /etc/ssl/certs/cert.pem
+        chown root:ssl-cert /etc/ssl/certs/cert.pem
         # Privkey
-        cp /etc/letsencrypt/live/{{ hostname }}/privkey.pem   /etc/ssl/private/privkey.pem
-        chown root:ssl-cert -R /etc/ssl/private/
-        chmod 750 /etc/ssl/private/
-        chmod 640 /etc/ssl/private/privkey.pem
+        cp /etc/letsencrypt/live/{{ certbot_hostname_override | default(certbot_domains[0]) }}/privkey.pem   /etc/ssl/private/privkey.pem
+        chmod 640           /etc/ssl/private/privkey.pem
+        chown root:ssl-cert /etc/ssl/private/privkey.pem
         # Other
         {{ certbot_post_renewal }}
 
