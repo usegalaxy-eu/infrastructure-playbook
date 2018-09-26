@@ -27,6 +27,12 @@
     name: "{{ certbot_package }}"
     state: present
 
+- name: Install Certbot DNS package
+  package:
+    name: "certbot-dns-{{ certbot_dns_provider }}"
+    state: present
+  when: certbot_dns_provider is defined
+
 - name: Set Certbot script variable.
   set_fact:
     certbot_script: "{{ certbot_package }}"
