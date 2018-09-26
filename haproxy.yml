@@ -5,34 +5,23 @@
   vars:
     hostname: proxy.galaxyproject.eu
     server_names:
-      - proxy.usegalaxy.eu
-      # Galaxy
-      - usegalaxy.eu
-      # Galaxy aliases
-      - hicexplorer.usegalaxy.eu
-      - static.usegalaxy.eu
-      - metagenomics.usegalaxy.eu
-      - rna.usegalaxy.eu
-      - ecology.usegalaxy.eu
-      - proteomics.usegalaxy.eu
-      - xn--cw8h.usegalaxy.eu
-      - xn--ls8h.usegalaxy.eu
-      - xn--2n8h.usegalaxy.eu
-      # other services
-      - stats.galaxyproject.eu
-      - build.galaxyproject.eu
-      - influxdb.galaxyproject.eu
-      - apollo.usegalaxy.eu # this one must be under here for the cookie auth magic.
-      # Intentionally NOT on this list:
-      #  cvmfs1-ufr0.galaxyproject.eu
-      #  ftp.usegalaxy.eu
-    server_names_de:
-      - usegalaxy.de
+      - 'usegalaxy.eu'
+      - '*.usegalaxy.eu'
+      - 'usegalaxy.de'
+      - '*.usegalaxy.de'
+      - '*.galaxyproject.eu'
     certbot_auto_renew: yes
     certbot_auto_renew_user: root
     certbot_auto_renew_hour: 10
     certbot_auto_renew_minute: 59
-    certbot_auto_renew_extra: "--preferred-challenges http-01 --http-01-port 8118"
+    certbot_auto_renew_extra: "--dns-route53"
+    certbot_hostname_override: usegalaxy.eu
+    certbot_post_renewal: |
+        # Haproxy is weird and needs the full chain + privkey in a single file.
+        cat /etc/letsencrypt/live/usegalaxy.eu/fullchain.pem > /etc/pki/tls/private/full.pem
+        cat /etc/letsencrypt/live/usegalaxy.eu/privkey.pem  >> /etc/pki/tls/private/full.pem
+        chown root:ssl-cert /etc/pki/tls/private/full.pem
+        systemctl reload haproxy || true
 
     certbot_environment: production #staging
     certbot_domains: "{{ server_names }}"
@@ -41,15 +30,15 @@
   vars_files:
     - "secret_group_vars/all.yml"
   roles:
-    - hxr.dns
-    - hostname
-    - linuxhq.yum-cron
-    - geerlingguy.repo-epel
-    - hxr.certbot
-    - hxr.admin-tools
+    #- hostname
+    #- linuxhq.yum-cron
+    #- geerlingguy.repo-epel
+    #- hxr.admin-tools
+    #- hxr.aws-cli
+    #- hxr.certbot-wildcard
+    #- hxr.haproxy-error-pages
     - geerlingguy.haproxy
-    - hxr.haproxy-error-pages
-    - dj-wasabi.telegraf
-    - dev-sec.os-hardening
-    - dev-sec.ssh-hardening
-    - jasonroyle.rabbitmq
+    #- dj-wasabi.telegraf
+    #- dev-sec.os-hardening
+    #- dev-sec.ssh-hardening
+    #- jasonroyle.rabbitmq

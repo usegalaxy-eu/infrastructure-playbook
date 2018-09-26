@@ -49,6 +49,17 @@ frontend {{ frontend.name }}
 	{{ line }}
 {% endfor %}
 
+{% for gx_host in frontend.galaxy_hosts %}
+	acl {{ gx_host.id }}_host  hdr_dom(host) -i {{ gx_host.domain }}
+{% endfor %}
+
+{% for gx_host in frontend.galaxy_hosts %}
+	use_backend {{ gx_host.id }}_special   if {{ gx_host.id }}_host welcome
+	use_backend {{ gx_host.id }}_special   if {{ gx_host.id }}_host basecss
+	use_backend {{ gx_host.id }}_base      if {{ gx_host.id }}_host
+{% endfor %}
+	use_backend galaxy
+
 {% endfor %}
 
 {% for backend in haproxy_backends %}
@@ -57,6 +68,24 @@ backend {{ backend.name }}
 	balance {{ backend.balance }}
 {% for line in backend.custom_config %}
 	{{ line }}
+{% endfor %}
+
+{% endfor %}
+
+{% for frontend in haproxy_frontends %}
+{% for gx_host in frontend.galaxy_hosts %}
+backend {{ gx_host.id }}_special
+	mode http
+	balance roundrobin
+	reqrep ^GET\ /static/style/base.css(.*)\ HTTP/1.1 GET\ /static/style/base-{{ gx_host.id }}.css\1\ HTTP/1.1
+	reqrep ^GET\ /static/welcome.html\ HTTP/1.1 GET\ /static/welcome-{{ gx_host.id }}.html\ HTTP/1.1
+	{{ haproxy_galaxy_backend }}
+
+backend {{ gx_host.id }}_base
+	mode http
+	balance roundrobin
+	{{ haproxy_galaxy_backend }}
+
 {% endfor %}
 
 {% endfor %}
