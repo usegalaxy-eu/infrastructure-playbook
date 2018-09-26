@@ -1,4 +1,7 @@
 ---
+- name: "ensure sentry user part of docker group"
+  command: usermod -a -G docker {{ hxr_sentry_user }}
+
 - name: "Make data dir"
   file:
     dest: "{{ hxr_sentry_datadir }}"

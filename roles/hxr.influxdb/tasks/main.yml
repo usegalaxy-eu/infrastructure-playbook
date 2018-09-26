@@ -31,8 +31,8 @@
     ssl: yes
     validate_certs: yes
   with_items:
-    - u: "{{ influxdb.galaxy.username }}"
-      p: "{{ influxdb.galaxy.password }}"
+    - u: "{{ influxdb.node.username }}"
+      p: "{{ influxdb.node.password }}"
     - u: "{{ influxdb.grafana.username }}"
       p: "{{ influxdb.grafana.password }}"
 
@@ -47,8 +47,8 @@
     validate_certs: yes
   with_items:
     - galaxy
-    - nodes
     - grt
+    - galaxy_stats
 
 - name: create 1 week retention policy
   influxdb_retention_policy:
@@ -64,13 +64,12 @@
     validate_certs: yes
   with_items:
     - galaxy
-    - nodes
     - grt
 
 - name: Grant permissions to galaxy
   influxdb_query:
     database_name: "{{ item }}"
-    query: "GRANT ALL ON {{ item }} TO {{ influxdb.galaxy.username }}"
+    query: "GRANT ALL ON {{ item }} TO {{ influxdb.node.username }}"
     # Auth
     username: "{{ influxdb.admin.username }}"
     password: "{{ influxdb.admin.password }}"
@@ -79,7 +78,7 @@
     validate_certs: yes
   with_items:
     - galaxy
-    - nodes
+    - galaxy_stats
     - grt
 
 - name: Grant permissions to grafana
@@ -95,5 +94,5 @@
   with_items:
     - '_internal'
     - galaxy
-    - nodes
+    - galaxy_stats
     - grt
