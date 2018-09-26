@@ -21,6 +21,14 @@
   changed_when: false
   check_mode: no
 
+# HXR: Ensure user is part of ssl-cert group and will have access to that data.
+- name: Add nginx to ssl-cert
+  user:
+    name: haproxy
+    groups: ssl-cert
+    append: yes
+  when: ssl_cert_group_available is defined and ssl_cert_group_available
+
 - name: Set HAProxy version.
   set_fact:
     haproxy_version: "{{ '1.5' if '1.5.' in haproxy_version_result.stdout else '1.4' }}"
