@@ -1,10 +1,10 @@
 # The URL through which GitLab will be accessed.
 external_url "{{ gitlab_external_url }}"
 
-mattermost_external_url '{{ gitlab_mattermost_url }}'
+mattermost_external_url 'https://chat.bwcloud.uni-freiburg.de'
 mattermost_nginx['redirect_http_to_https'] = true
-mattermost_nginx['ssl_certificate']= "{{ mattermost_ssl_certificate }}"
-mattermost_nginx['ssl_certificate_key'] = "{{ mattermost_ssl_certificate_key }}"
+mattermost_nginx['ssl_certificate']= "/etc/letsencrypt/live/git.bwcloud.uni-freiburg.de/cert.pem"
+mattermost_nginx['ssl_certificate_key'] = "/etc/letsencrypt/live/git.bwcloud.uni-freiburg.de/privkey.pem"
 mattermost_nginx['custom_gitlab_mattermost_server_config']="location ^~ /.well-known {\n alias /var/www/letsencrypt/.well-known;\n}\n"
 
 # gitlab.yml configuration
@@ -17,13 +17,14 @@ gitlab_rails['gitlab_email_display_name'] = "{{ gitlab_email_display_name }}"
 gitlab_rails['gitlab_email_reply_to'] = "{{ gitlab_email_reply_to }}"
 {% endif %}
 
+
 # Default Theme
 gitlab_rails['gitlab_default_theme'] = "{{ gitlab_default_theme }}"
 
 # Whether to redirect http to https.
 nginx['redirect_http_to_https'] = {{ gitlab_redirect_http_to_https }}
-nginx['ssl_certificate'] = "{{ gitlab_ssl_certificate }}"
-nginx['ssl_certificate_key'] = "{{ gitlab_ssl_certificate_key }}"
+nginx['ssl_certificate'] = "/etc/letsencrypt/live/git.bwcloud.uni-freiburg.de/cert.pem"
+nginx['ssl_certificate_key'] = "/etc/letsencrypt/live/git.bwcloud.uni-freiburg.de/privkey.pem"
 nginx['custom_gitlab_server_config']="location ^~ /.well-known {\n alias /var/www/letsencrypt/.well-known;\n}\n"
 
 # The directory where Git repositories will be stored.
