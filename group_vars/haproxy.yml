@@ -18,10 +18,14 @@ haproxy_frontends:
         # Unless this is going to certbot, redirect to HTTPS
         - 'redirect scheme https code 301 if !{ ssl_fc } !certbot_path'
         # ACLs
+        - 'acl website_domain    hdr_dom(host) -i galaxyproject.eu'
+        - 'acl main_domain       hdr_dom(host) -i usegalaxy.eu'
         - 'acl apollo_path       path_beg /apollo/'
         - 'acl rabbit_path       path_beg /rabbit/'
         - 'acl welcome           path_beg /static/welcome.html'
         - 'acl basecss           path_beg /static/style/base.css'
+        - 'use_backend website   if website_domain'
+        #- 'use_backend apollo    if main_domain apollo_path'
 
       galaxy_hosts:
         - domain: usegalaxy.de
@@ -58,6 +62,12 @@ haproxy_backends:
       #mode: http
       #custom_config:
         #- 'server server1 apollo.usegalaxy.eu:443 maxconn 32 ssl verify none'
+    - name: website
+      balance: roundrobin
+      mode: http
+      custom_config:
+        - 'http-request set-header Host usegalaxy-eu.github.io'
+        - 'server server1 usegalaxy-eu.github.io:443 maxconn 32 ssl verify none'
     - name: rabbit
       balance: roundrobin
       mode: http
