@@ -1,23 +1,28 @@
 ---
-- name: Gitlab
-  hosts: gitlab
+- hosts: gitlab
   become: true
-  tags: gitlab
   vars:
-      os_ignore_users:
-        - git
-      pip_install_packages:
-        - name: docker
+    hostname: git.bwcloud.uni-freiburg.de
+    os_ignore_users:
+      - git
+    pip_install_packages:
+      - name: docker
   vars_files:
     - "secret_group_vars/gitlab.yml"
     - "secret_group_vars/all.yml"
   roles:
-    - hxr.admin-tools
-    - jnv.unattended-upgrades
-    - dj-wasabi.telegraf
-    - dev-sec.os-hardening
-    - dev-sec.ssh-hardening
+    #- hostname
+    #- geerlingguy.repo-epel
+    #- hxr.admin-tools
+    #- influxdata.chrony
+    #- hxr.certbot
+    #- geerlingguy.nginx
+    #- linuxhq.yum-cron
+    # BEGIN custom
     - geerlingguy.gitlab
-    - geerlingguy.pip
-    - geerlingguy.docker
+    #- geerlingguy.pip
+    #- geerlingguy.docker
     - matterircd
+    ## END custom
+    #- dev-sec.os-hardening
+    #- dev-sec.ssh-hardening

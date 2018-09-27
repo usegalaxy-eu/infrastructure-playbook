@@ -18,7 +18,7 @@
         {% if certbot_dns_provider is defined %}
         --dns-{{ certbot_dns_provider }}
         {% else %}
-        --standalone
+        {{ certbot_auth_method | default("--standalone") }}
         {% endif %}
         -m {{ certbot_admin_email }}
         {{ certbot_agree_tos }}
