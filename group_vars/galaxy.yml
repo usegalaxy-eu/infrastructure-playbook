@@ -3,6 +3,9 @@ usegalaxy_eu_autofs_mounts:
  - data
  - usrlocal
 
+condor_host: manager.vgcn.galaxyproject.eu
+
+
 # CVMFS
 cvmfs_role: client
 galaxy_cvmfs_repos_enabled: true
@@ -95,4 +98,4 @@ galaxy_config:
     mule: lib/galaxy/main.py
     farm: job-handlers:1,2
   galaxy:
-    database_connection: "postgresql://galaxy2:eF9WxpN9o9fCSq9RAO62Njiqeb5tF@sn03.bi.uni-freiburg.de/galaxy2"
+    database_connection: "{{ galaxy_db_connection }}"

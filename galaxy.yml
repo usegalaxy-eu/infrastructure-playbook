@@ -31,18 +31,19 @@
         - python-psycopg2
         - python-virtualenv
   roles:
+    - geerlingguy.repo-epel
     - hxr.autofs
+    - cvmfs
     - dynmotd
     - ssh-host-sign
-    - geerlingguy.repo-epel
     - hxr.admin-tools
     - hxr.monitor-email
-    - htcondor
-    - cvmfs
+    #- htcondor
     - linuxhq.yum-cron
     - influxdata.chrony
-    - hxr.bioinf-mounts
+    # galaxy
     - galaxyproject.galaxy
+    #
     - dj-wasabi.telegraf
     - dev-sec.os-hardening
     - dev-sec.ssh-hardening
