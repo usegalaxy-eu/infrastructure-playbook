@@ -1,0 +1,10 @@
+a.navbar-brand::after{
+    content: "Galaxy / {{ item.brand }}";
+}
+span.navbar-brand-title {
+    display: none;
+}
+
+{% if item.custom_css is defined %}
+{{ item.custom_css }}
+{% endif %}

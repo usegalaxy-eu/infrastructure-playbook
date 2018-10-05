@@ -1,0 +1,450 @@
+<?xml version='1.0' encoding='utf-8'?>
+<toolbox>
+  <!-- +++++++++++++++++++++++++++++++++++++++++++ -->
+  <label id="file_meta_label" text="File and Meta Tools" />
+  <!-- +++++++++++++++++++++++++++++++++++++++++++ -->
+  <section id="get_data" name="Get Data">
+    <tool file="data_source/upload.xml" />
+    <tool file="data_source/ucsc_tablebrowser.xml" />
+    <!-- <tool file="data_source/ucsc_tablebrowser_test.xml" /> -->
+    <tool file="data_source/ucsc_tablebrowser_archaea.xml" />
+    <tool file="data_source/ebi_sra.xml" />
+    <tool file="data_source/microbial_import.xml" />
+    <tool file="data_source/biomart.xml" />
+    <tool file="data_source/biomart_test.xml" />
+    <tool file="data_source/cbi_rice_mart.xml" />
+    <tool file="data_source/gramene_mart.xml" />
+    <tool file="data_source/dorina_galaxy.xml" />
+    <tool file="data_source/fairdomhub.xml" />
+    <tool file="data_source/fly_modencode.xml" />
+    <tool file="data_source/flymine.xml" />
+    <!-- <tool file="data_source/flymine_test.xml" /> -->
+    <tool file="data_source/modmine.xml" />
+    <tool file="data_source/mousemine.xml" />
+    <tool file="data_source/ratmine.xml" />
+    <tool file="data_source/yeastmine.xml" />
+    <tool file="data_source/metabolicmine.xml" />
+    <tool file="data_source/worm_modencode.xml" />
+    <tool file="data_source/wormbase.xml" />
+    <!-- <tool file="data_source/wormbase_test.xml" /> -->
+    <tool file="data_source/zebrafishmine.xml" />
+    <tool file="data_source/eupathdb.xml" />
+    <tool file="data_source/hbvar.xml" />
+    <tool file="genomespace/genomespace_importer.xml" />
+    <tool file="genomespace/genomespace_push.xml" />
+  </section>
+  <section id="send" name="Send Data">
+    <tool file="genomespace/genomespace_exporter.xml" />
+  </section>
+  <section id="convert_formats" name="Convert Formats">
+    <tool file="filters/axt_to_concat_fasta.xml" />
+    <tool file="filters/axt_to_fasta.xml" />
+    <tool file="filters/axt_to_lav.xml" />
+    <tool file="filters/bed2gff.xml" />
+    <tool file="filters/gff2bed.xml" />
+    <tool file="filters/lav_to_bed.xml" />
+    <tool file="maf/maf_to_bed.xml" />
+    <tool file="maf/maf_to_interval.xml" />
+    <tool file="maf/maf_to_fasta.xml" />
+    <tool file="filters/wiggle_to_simple.xml" />
+    <tool file="filters/sff_extractor.xml" />
+    <tool file="filters/gtf2bedgraph.xml" />
+    <tool file="filters/wig_to_bigwig.xml" />
+    <tool file="filters/bed_to_bigbed.xml" />
+    <tool file="extract/liftOver_wrapper.xml" />
+  </section>
+  <!--section id="EncodeTools" name="ENCODE Tools">
+    <tool file="encode/gencode_partition.xml" />
+    <tool file="encode/random_intervals.xml" />
+  </section-->
+  <section id="collection_operations" name="Collection Operations">
+    <tool file="${model_tools_path}/unzip_collection.xml" />
+    <tool file="${model_tools_path}/zip_collection.xml" />
+    <tool file="${model_tools_path}/filter_failed_collection.xml" />
+    <tool file="${model_tools_path}/flatten_collection.xml" />
+    <tool file="${model_tools_path}/merge_collection.xml" />
+    <tool file="${model_tools_path}/relabel_from_file.xml" />
+    <tool file="${model_tools_path}/filter_from_file.xml" />
+    <tool file="${model_tools_path}/sort_collection_list.xml" />
+    <tool file="${model_tools_path}/tag_collection_from_file.xml" />
+    <tool file="${model_tools_path}/apply_rules.xml" />
+  </section>
+
+  <!-- +++++++++++++++++++++++++++++++++++++++++++ -->
+  <label id="general_text_label" text="General Text Tools" />
+  <!-- +++++++++++++++++++++++++++++++++++++++++++ -->
+  <section id="text_manipulation" name="Text Manipulation">
+    <tool file="filters/fixedValueColumn.xml" />
+    <!--tool file="stats/column_maker.xml" /-->
+    <tool file="filters/catWrapper.xml" />
+    <tool file="filters/cutWrapper.xml" />
+    <tool file="filters/mergeCols.xml" />
+    <tool file="filters/convert_characters.xml" />
+    <tool file="filters/CreateInterval.xml" />
+    <tool file="filters/cutWrapper.xml" />
+    <tool file="filters/changeCase.xml" />
+    <tool file="filters/pasteWrapper.xml" />
+    <tool file="filters/remove_beginning.xml" />
+    <tool file="filters/randomlines.xml" />
+    <tool file="filters/headWrapper.xml" />
+    <tool file="filters/tailWrapper.xml" />
+    <tool file="filters/trimmer.xml" />
+    <tool file="filters/wc_gnu.xml" />
+    <tool file="filters/secure_hash_message_digest.xml" />
+    <!--tool file="new_operations/tables_arithmetic_operations.xml" /-->
+
+    <tool file="unix_tools/remove_ending.xml" hidden="True" />
+    <tool file="unix_tools/find_and_replace.xml" hidden="True" />
+    <tool file="unix_tools/replace_text_in_column.xml" hidden="True" />
+    <tool file="unix_tools/replace_text_in_line.xml" hidden="True" />
+  </section>
+  <section id="filter_and_sort" name="Filter and Sort">
+    <tool file="stats/filtering.xml" />
+    <tool file="filters/sorter.xml" />
+    <tool file="filters/grep.xml" />
+    <tool file="filters/gff/extract_GFF_Features.xml" />
+    <tool file="filters/gff/gff_filter_by_attribute.xml" />
+    <tool file="filters/gff/gff_filter_by_feature_count.xml" />
+    <tool file="filters/gff/gtf_filter_by_attribute_values_list.xml" />
+    <tool file="unix_tools/word_list_grep.xml" hidden="True" />
+    <tool file="unix_tools/uniq_tool.xml" hidden="True" />
+  </section>
+  <section id="join,_subtract_and_group" name="Join, Subtract and Group" version="">
+    <tool file="filters/joiner.xml" />
+    <tool file="filters/compare.xml" />
+    <!--tool file="new_operations/subtract_query.xml" /-->
+    <tool file="stats/grouping.xml" />
+    <!--tool file="new_operations/column_join.xml" /-->
+  </section>
+  <section id="unix_tools" name="Unix Tools">
+    <tool file="unix_tools/sed_tool.xml" hidden="True" />
+    <tool file="unix_tools/awk_tool.xml" hidden="True" />
+    <tool file="unix_tools/grep_tool.xml" hidden="True" />
+    <tool file="unix_tools/sort-header.xml" hidden="True" />
+    <tool file="unix_tools/cut_tool.xml" hidden="True" />
+    <tool file="unix_tools/easyjoin.xml" hidden="True" />
+    <tool file="unix_tools/multijoin.xml" hidden="True" />
+  </section>
+
+  <!-- +++++++++++++++++++++++++++++++++++++++++++ -->
+  <label id="genomics_label" text="Genomics, NGS" />
+  <!-- +++++++++++++++++++++++++++++++++++++++++++ -->
+  <section id="extract_features" name="Extract Features">
+    <tool file="filters/ucsc_gene_bed_to_exon_bed.xml" />
+    <tool file="extract/extract_genomic_dna.xml" hidden="True" />
+  </section>
+
+  <section id="bed_tools" name="BED Tools" />
+  <section id="fetch_alignments" name="Fetch Alignments">
+    <tool file="maf/interval2maf_pairwise.xml" />
+    <tool file="maf/interval2maf.xml" />
+    <tool file="maf/maf_split_by_species.xml" />
+    <tool file="maf/interval_maf_to_merged_fasta.xml" />
+    <tool file="maf/genebed_maf_to_fasta.xml" />
+    <tool file="maf/maf_stats.xml" />
+    <tool file="maf/maf_thread_for_species.xml" />
+    <tool file="maf/maf_limit_to_species.xml" />
+    <tool file="maf/maf_limit_size.xml" />
+    <tool file="maf/maf_by_block_number.xml" />
+    <tool file="maf/maf_reverse_complement.xml" />
+    <tool file="maf/maf_filter.xml" />
+  </section>
+  <section id="operate_on_genomic_intervals" name="Operate on Genomic Intervals">
+    <!--tool file="new_operations/intersect.xml" /-->
+    <tool file="/data/0/bgruening_tools/tools-iuc/tools/bedtools/mergeBed.xml" hidden="True" />
+    <!--tool file="new_operations/subtract.xml" /-->
+    <!--tool file="new_operations/merge.xml" /-->
+    <!--tool file="new_operations/coverage.xml" /-->
+    <!--tool file="new_operations/join.xml" /-->
+    <!--tool file="new_operations/get_flanks.xml" /-->
+    <!--tool file="new_operations/flanking_features.xml" /-->
+    <tool file="stats/aggregate_binned_scores_in_intervals.xml" />
+    <!--<tool file="extract/phastOdds/phastOdds_tool.xml" />-->
+  </section>
+  <section id="multiple_alignments" name="Multiple Alignments" />
+
+  <section id="fasta_fastq_manipulation" name="FASTA/FASTQ manipulation" version="">
+    <label id="solid" text="AB-SOLiD data" />
+    <tool file="next_gen_conversion/solid2fastq.xml" />
+  </section>
+
+  <section id="picard" name="Picard" version="" />
+
+  <section id="quality_control" name="Quality Control" version="">
+    <!--tool file="test/bam2wig.xml" /-->
+    <label id="fastqcsambam" text="FastQC: fastq/sam/bam" />
+    <label id="illumina" text="Illumina fastq" />
+    <label id="454" text="Roche-454 data" />
+    <label id="solid" text="AB-SOLiD data" />
+    <tool file="solid_tools/solid_qual_stats.xml" />
+    <tool file="solid_tools/solid_qual_boxplot.xml" />
+    <label id="generic_fastq" text="Generic FASTQ manipulation" />
+    <label id="fastx_toolkit" text="FASTX-Toolkit for FASTQ data" />
+  </section>
+  <!--
+  Keep this section commented until it includes tools that
+  will be hosted on test/main.  The velvet wrappers have been
+  included in the distribution but will not be hosted on our
+  public servers for the current time.-->
+  <section id="assembly" name="Assembly" version="">
+    <tool file="sr_assembly/velvetg.xml" labels="training-only"/>
+    <tool file="sr_assembly/velveth.xml" labels="training-only"/>
+  </section>
+  <section id="mapping" name="Mapping" version="">
+    <tool file="sr_mapping/bfast_wrapper.xml" />
+    <tool file="sr_mapping/PerM.xml" />
+    <tool file="sr_mapping/srma_wrapper.xml" />
+    <tool file="sr_mapping/mosaik.xml" />
+  </section>
+  <section id="variant_calling" name="Variant Calling">
+    <!--tool file="indels/sam_indel_filter.xml" />
+    <tool file="indels/indel_sam2interval.xml" />
+    <tool file="indels/indel_table.xml" />
+    <tool file="indels/indel_analysis.xml" /-->
+  </section>
+  <section id="genome_editing" name="Genome editing" />
+  <section id="gatk" name="GATK Tools" />
+  <section id="gemini_tools" name="Gemini Tools" />
+  <section id="rna_analysis" name="RNA Analysis">
+    <!--label id="rna_seq" text="RNA-seq" /-->
+    <tool file="test/deseq2/deseq2_matrix.xml" hidden="True" />
+    <tool file="test/deseq2/deseq2_single.xml" hidden="True" />
+    <tool file="test/blockbuster/blockbuster.xml" />
+    <!--<tool file="test/blockclust/blockclust.xml" /-->
+    <!--tool file="test/graphclust/graphclust.xml" /-->
+
+    <!-- Trinity is very memory-intensive and should only be enabled/run
+    on instances with sufficient resources.
+    <label text="De novo Assembly" id="de_novo_assembly "/>
+    <tool file="ngs_rna/trinity_all.xml" />
+    -->
+  </section>
+  <section id="peak_calling" name="Peak Calling">
+    <label id="macs2" text="MACS2" />
+    <tool file="/data/0/bgruening_tools/galaxytools/macs2/macs2_callpeak.xml"  hidden="True" />
+    <tool file="/data/0/bgruening_tools/galaxytools/macs2/macs2_bdgbroadcall.xml"  hidden="True" />
+    <tool file="/data/0/bgruening_tools/galaxytools/macs2/macs2_bdgcmp.xml"  hidden="True" />
+    <tool file="/data/0/bgruening_tools/galaxytools/macs2/macs2_bdgdiff.xml"  hidden="True" />
+    <tool file="/data/0/bgruening_tools/galaxytools/macs2/macs2_bdgpeakcall.xml"  hidden="True" />
+    <tool file="/data/0/bgruening_tools/galaxytools/macs2/macs2_filterdup.xml"  hidden="True" />
+    <tool file="/data/0/bgruening_tools/galaxytools/macs2/macs2_predictd.xml"  hidden="True" />
+    <tool file="/data/0/bgruening_tools/galaxytools/macs2/macs2_randsample.xml"  hidden="True" />
+    <tool file="/data/0/bgruening_tools/galaxytools/macs2/macs2_refinepeak.xml"  hidden="True" />
+    <tool file="test/p_clip_peaks/p_clip_peaks.xml" />
+  </section>
+  <section id="epigenetics" name="Epigenetics">
+    <tool file="bismark/bismark_bowtie2_wrapper.xml" hidden="True" />
+    <tool file="bismark/bismark_bowtie_wrapper.xml" hidden="True" />
+    <tool file="bismark/bismark_methylation_extractor.xml" hidden="True" />
+    <tool file="dna_methylation/calling.xml" />
+    <tool file="dna_methylation/destrand.xml" />
+    <tool file="dna_methylation/dmr.xml" />
+    <tool file="dna_methylation/filter.xml" />
+    <tool file="dna_methylation/plot.xml" />
+    <tool file="dna_methylation/tiling.xml" />
+    <tool file="dna_methylation/smooth.xml" />
+    <tool file="/data/0/bgruening_tools/galaxytools/methtools/correlation_matrix.xml" />
+  </section>
+
+  <section id="phylogenetics" name="Phylogenetics" />
+  <section id="phenotype_association" name="Phenotype Association">
+    <tool file="evolution/codingSnps.xml" />
+    <tool file="evolution/add_scores.xml" />
+    <tool file="phenotype_association/sift.xml" />
+    <tool file="phenotype_association/linkToGProfile.xml" />
+    <tool file="phenotype_association/linkToDavid.xml" />
+    <tool file="phenotype_association/ldtools.xml" />
+    <tool file="phenotype_association/pass.xml" />
+    <tool file="phenotype_association/gpass.xml" />
+    <tool file="phenotype_association/beam.xml" />
+    <tool file="phenotype_association/lps.xml" />
+    <tool file="phenotype_association/master2pg.xml" />
+    </section>
+  <section id="ngs:_other_tools" name="Other Tools">
+    <tool file="ngs_simulation/ngs_simulation.xml" />
+  </section>
+
+  <!-- +++++++++++++++++++++++++++++++++++++++++++ -->
+  <label id="metagenomics_label" text="Metagenomics" />
+  <!-- +++++++++++++++++++++++++++++++++++++++++++ -->
+  <section id="metagenomic_analyses" name="Metagenomic analyses" />
+  <section id="metagenomic_analyses" name="Metagenomic analyses" />
+  <section id="qiime" name="Qiime" />
+  <section id="biom_manipulation" name="BIOM Manipulation" />
+  <section id="mothur" name="Mothur" />
+
+  <!-- +++++++++++++++++++++++++++++++++++++++++++ -->
+  <label id="proteomics_metabolomics_chemistry_label" text="Proteomics, Metabolomics, Chemistry" />
+  <!-- +++++++++++++++++++++++++++++++++++++++++++ -->
+  <section id="proteomics" name="Proteomics">
+    <tool file="test/tandem.xml" />
+    <tool file="test/tandem_github.xml" />
+  </section>
+
+  <section id="metabolomics" name="Metabolomics">
+    <label id="preprocessing_lcms" text="Preprocessing LCMS" />
+    <label id="preprocessing_fiams" text="Preprocessing FIAMS" />
+    <label id="preprocessing_gcms" text="Preprocessing GCMS" />
+    <label id="preprocessing_nmr" text="Preprocessing NMR" />
+    <label id="normalization_quality_lcms_fiams" text="Normalization quality LCMS FIAMS" />
+    <label id="normalization_quality_all" text="Normalization quality ALL" />
+    <label id="statistics_all" text="Statistics ALL" />
+    <label id="annotation_lcms_fiams" text="Annotation LCMS FIAMS" />
+    <label id="annotation_lcms" text="Annotation LCMS" />
+    <label id="annotation_gcms" text="Annotation GCMS" />
+    <label id="data_handling_all" text="Data handling ALL" />
+  </section>
+    
+  <section id="chemicaltoolbox" name="ChemicalToolBox" version="">
+    <tool file="/data/0/bgruening_tools/galaxytools/chemicaltoolbox/fragmenter/fragmenter.xml" />
+    <tool file="/data/0/bgruening_tools/galaxytools/chemicaltoolbox/fragmenter/merger.xml" />
+  </section>
+
+  <!-- +++++++++++++++++++++++++++++++++++++++++++ -->
+  <label id="annotation_label" text="Annotation, Ontologies" />
+  <!-- +++++++++++++++++++++++++++++++++++++++++++ -->
+  <section id="annotation" name="Annotation" version="">
+    <tool file="/usr/local/galaxy/shed_tools/toolshed.g2.bx.psu.edu/repos/iuc/snpeff/e8adfc4c0a6b/snpeff/snpSift_geneSets.xml" />
+    <tool file="test/dexseq/dexseq_annotate.xml"/>
+    <tool file="test/dexseq/mapDEXSeqBinsToExons.xml"/>
+  </section>
+  <section id="ONTO-ToolKit" name="OBO Ontology manipulation">
+    <tool file="test/onto-perl-toolkit/get_ancestor_terms.xml" hidden="True" />
+    <tool file="test/onto-perl-toolkit/get_child_terms.xml" hidden="True" />
+    <tool file="test/onto-perl-toolkit/get_descendent_terms.xml" hidden="True" />
+    <tool file="test/onto-perl-toolkit/get_intersection_ontology_from.xml" hidden="True" />
+    <tool file="test/onto-perl-toolkit/get_list_intersection_from.xml" hidden="True" />
+    <tool file="test/onto-perl-toolkit/get_parent_terms_by_relationship_type.xml" hidden="True" />
+    <tool file="test/onto-perl-toolkit/get_parent_terms.xml" hidden="True" />
+    <tool file="test/onto-perl-toolkit/get_relationship_types.xml" hidden="True" />
+    <tool file="test/onto-perl-toolkit/get_subontology_from.xml" hidden="True" />
+    <tool file="test/onto-perl-toolkit/get_terms_by_relationship_type.xml" hidden="True" />
+    <tool file="test/onto-perl-toolkit/obo2rdf.xml" hidden="True" />
+    <tool file="test/onto-perl-toolkit/obo2tran.xml" hidden="True" />
+    <tool file="test/onto-perl-toolkit/obo2owl.xml" hidden="True" />
+    <tool file="test/onto-perl-toolkit/term_id_vs_term_def.xml" hidden="True" />
+    <tool file="test/onto-perl-toolkit/term_id_vs_term_name.xml" hidden="True" />
+  </section>
+  <section id="Apollo" name="Apollo">
+  </section>
+
+  <!-- +++++++++++++++++++++++++++++++++++++++++++ -->
+  <label id="other_and_toolsuites_label" text="Diverse other Tools, Toolsuites" />
+  <!-- +++++++++++++++++++++++++++++++++++++++++++ -->
+  <section id="statistics" name="Statistics">
+    <tool file="test/statistical_hypothesis_testing.xml" />
+    <tool file="stats/gsummary.xml" />
+    <tool file="filters/uniq.xml" />
+    <!--tool file="regVariation/linear_regression.xml" />
+    <tool file="regVariation/logistic_regression_vif.xml" />
+    <tool file="regVariation/rcve.xml" />
+    <tool file="regVariation/partialR_square.xml" /-->
+  </section>
+  <section id="graph/display_data" name="Graph/Display Data" version="">
+    <tool file="plotting/bar_chart.xml" />
+    <tool file="plotting/boxplot.xml" />
+    <tool file="visualization/LAJ.xml" />
+    <tool file="maf/vcf_to_maf_customtrack.xml" />
+    <!--tool file="mutation/visualize.xml" /-->
+    <tool file="chromatra/chromatral.xml" />
+    <tool file="chromatra/chromatrat.xml" />
+    <!--fuer ralf, can be deleted in a few month-->
+    <tool file="plotting/foldchanges_heatmap.xml" />
+  </section>
+  <!--section id="regional_variation" name="Regional Variation">
+    <tool file="regVariation/windowSplitter.xml" />
+    <tool file="regVariation/featureCounter.xml" />
+    <tool file="regVariation/WeightedAverage.xml" />
+    <tool file="regVariation/quality_filter.xml" />
+    <tool file="regVariation/maf_cpg_filter.xml" />
+    <tool file="regVariation/getIndels_2way.xml" />
+    <tool file="regVariation/getIndelRates_3way.xml" />
+    <tool file="regVariation/substitutions.xml" />
+    <tool file="regVariation/substitution_rates.xml" />
+    <tool file="regVariation/microsats_alignment_level.xml" />
+    <tool file="regVariation/microsats_mutability.xml" />
+  </section-->
+  <section id="evolution" name="Evolution">
+    <tool file="evolution/codingSnps.xml" />
+    <tool file="evolution/add_scores.xml" />
+  </section>
+  <section id="motif_tools" name="Motif Tools">
+    <tool file="meme/meme.xml" hidden="True" />
+    <tool file="meme/fimo.xml" hidden="True" />
+    </section>
+  <section id="bg-test-tools" name="Test Tools" labels="beta">
+    <tool file="test/tpp/peptide_prophet.xml"  />
+    <tool file="test/tpp/pepxml_and_protxml_to_table.xml" />
+    <tool file="test/tpp/protein_prophet.xml"  />
+    <tool file="test/tpp/interprophet.xml" />
+
+    <tool file="test/ml/discriminant.xml" />
+    <tool file="test/ml/eden_converter.xml" />
+    <tool file="test/ml/eden_vectorizer.xml" />
+    <tool file="test/ml/nn_classifier.xml" />
+    <tool file="test/ml/numeric_clustering.xml" />
+    <tool file="test/ml/svm.xml" />
+    <tool file="test/ml/sparse.xml" />
+    <tool file="test/ml/pre_process.xml" />
+    <tool file="test/ml/pairwise_metrics.xml" />
+    <tool file="test/ml/sample_generator.xml" />
+    <tool file="test/ml/generalized_linear.xml" />
+    <tool file="test/ml/ensemble.xml" />
+    <tool file="test/ml/clf_metrics.xml" />
+    <tool file="test/ml/proteasis/protease.xml" />
+    <!--<tool file="test/moff/moff.xml" />-->
+
+    <tool file="test/bigwigCorrelate.xml" />
+    <tool file="test/bwtool.xml" />
+    <tool file="test/bigwig_to_bedgraph.xml" />
+    <tool file="test/protein_properties.xml" />
+
+    <tool file="test/HiCExplorer/galaxy/wrapper/hicBuildMatrix.xml" hidden="True" />
+    <tool file="test/HiCExplorer/galaxy/wrapper/hicCorrectMatrix.xml" hidden="True" />
+    <tool file="test/HiCExplorer/galaxy/wrapper/hicCorrelate.xml" hidden="True" />
+    <tool file="test/HiCExplorer/galaxy/wrapper/hicFindTADs.xml" hidden="True" />
+    <tool file="test/HiCExplorer/galaxy/wrapper/hicPlotDistVsCounts.xml" hidden="True" />
+    <tool file="test/HiCExplorer/galaxy/wrapper/hicPlotMatrix.xml" hidden="True" />
+    <tool file="test/HiCExplorer/galaxy/wrapper/hicPlotTADs.xml" hidden="True" />
+    <tool file="test/HiCExplorer/galaxy/wrapper/hicSumMatrices.xml" hidden="True" />
+
+    <tool file="test/biopython/base_distribution.xml" />
+    <tool file="test/biopython/codon_count.xml" />
+    <tool file="test/biopython/gb_embl_to_gff.xml" />
+    <tool file="test/biopython/gb_to_sequence.xml" />
+    <tool file="test/biopython/gff_to_sequence.xml" />
+    <!--tool file="test/biopython/reverse_complement.xml" /-->
+    <tool file="test/biopython/sequence_converter.xml" />
+    <tool file="test/biopython/translate.xml" />
+
+    <tool file="test/bctools/convert_bc_to_binary_RY.xml" hidden="True" />
+    <tool file="test/bctools/coords2clnt.xml" hidden="True" />
+    <tool file="test/bctools/extract_aln_ends.xml" hidden="True" />
+    <tool file="test/bctools/extract_bcs.xml" hidden="True" />
+    <tool file="test/bctools/flexbar_no_split.xml" hidden="True" />
+    <tool file="test/bctools/flexbar_split_RR_bcs.xml" hidden="True" />
+    <tool file="test/bctools/flexbar_split_RYYR_bcs.xml" hidden="True" />
+    <tool file="test/bctools/flexbar.xml" hidden="True" />
+    <tool file="test/bctools/flexbar_dsc.xml" hidden="True" />
+    <tool file="test/bctools/merge_pcr_duplicates.xml" hidden="True" />
+    <tool file="test/bctools/remove_tail.xml" hidden="True" />
+    <tool file="test/bctools/rm_spurious_events.xml" hidden="True" />
+    <tool file="test/secret_bowtie2_test/secret_bowtie2_wrapper.xml" hidden="True" />
+    <tool file="test/lfoldz/rnalfoldz.xml" />
+
+    <tool file="test/chira/chira.xml" />
+
+  </section>
+  <section id="emboss_tools" name="EMBOSS Tools" />
+  <section id="ncbi_blast" name="NCBI Blast" />
+  <section id="deeptools" name="deepTools" />
+  <section id="hicexplorer" name="HiCExplorer"/>
+  <section id="mimodd" name="MiModD"/>
+  <section id="sam_tools" name="SAM Tools" />
+  <section id="regional_variation" name="Regional Variation" />
+  <section id="genome_diversity" name="Genome Diversity" />
+  <section id="rad_seq" name="RAD-seq" />
+  <section id="graphclust" name="GraphClust" />
+  <section id="graph/display_data" name="Graph/Display Data" />
+
+</toolbox>

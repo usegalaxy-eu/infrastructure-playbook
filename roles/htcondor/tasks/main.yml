@@ -1,0 +1,86 @@
+---
+- name: condor repo pubkey file
+  copy:
+    dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-HTCondor
+    content: |
+      -----BEGIN PGP PUBLIC KEY BLOCK-----
+      Version: GnuPG v1.4.11 (GNU/Linux)
+
+      mQENBFKovZMBCADXUjHZz0xDLMh91DaHiQaIAdGMsDrk3+YXrMw/3yad3YTK3NJe
+      PvpegjM2bZXZb28HT2zNKeb80bju9+gjABjthVTWUyhKDgiN1CBKw0myPpcZKGRH
+      2T7WNwA2F4htev5oHNgscO8XwLhamuay5YZo2UKJ6ihrzulXpEPT86A+gvCL8RTY
+      9hoUveHUuJv4uEO+g6Ui2HdfTaURnObdSes7R9wF7klsjY9Y1d52Papiyv3tP8nN
+      YcgWgweTMMdJSmezwfssKshLRrHnAXcfx6/jh/l7fzODFZRCRn5Nl0E5TSg/IbMd
+      BiBGCeSuJM7FZLk2WYAUhnHHrzVExB+Wc26NABEBAAG0OFRpbSBUaGVpc2VuIChI
+      VENvbmRvciBSZWxlYXNlIE1hbmFnZXIpIDx0aW1AY3Mud2lzYy5lZHU+iQE4BBMB
+      AgAiBQJSqL2TAhsDBgsJCAcDAgYVCAIJCgsEFgIDAQIeAQIXgAAKCRCXP8fSZwB5
+      9lLPB/9KTWTYUOFI0V9En4LFdZ/d7mCiWwDTxUO/QnfsMtZb2XcULH6ZGW32XEQ1
+      xookP0wGa6298LBStbA3UF7okRFFRQAxsATVV0SBr9JhbCb0jXqvxcg//UCo5gyu
+      LbELqpo+SVYkT1/dGK3MVs2m2amsWVrRwntyQJ6JPYGQJkYq0wkY23jB5rjbNNtQ
+      CeBzwpUW4rUBzdQslYDV7nCweAZ00pmcn0AzmX29wxN8Z3So8Kt2unIhvk0rffIn
+      4ViNS0/rn6H1lAIrVsGEnb/p8PG96OvmumiFpY60Z2OxR6mq7PtTMhYTPecEElRF
+      nK3Xqx7Sq/sNQFXy7UPIoNDT7GMDuQENBFKovZMBCADKJ0Y586ufDMhoRgxLbg0t
+      POPQt60TjHzGfRCPDcaLKihdRaEp7Ui6HzNd1ErbtHO6PdU71dLy6UaexVpWKzrk
+      yYr2LZsNzcVzJnN7bglMnzYdo+4vnsIfOWiUjKR+SbR62JWpPR7W6YvhCVsw4tWE
+      DqjD7vxTle1/+QPH3T4ABrjSrYl9B8LsBXsC4SAT9WGvbYEZg4I0WAI/8ATicR7S
+      HCIqXQqTeV5NZuPbbAyaJzto7HkIP1FV4755GSnKiKBcZDpoIhDmHckvhjcuOM/A
+      sKUVJdwX3LKELlB6sFQs2gTluSIYH0iciYCVrP/HK4uuAYMtwHykqPrXNT+U7jwJ
+      ABEBAAGJAR8EGAECAAkFAlKovZMCGwwACgkQlz/H0mcAefYjaAgA1WPlbp7vvKiO
+      7LT1Cm3DupMyQ54dAGTR1NaTqf37frlVvLOkaqYwaJX9ZOSw1cw6DczBzF/muDEG
+      FibZKkffFxLE58g9CLn+dJL7QtkzefwNIrQMYMGnrb+nBcyFmkQsqz1w96mAl8Xq
+      AVGqOEmG2wFNdTOkxu87zOvuj1y77gLxFvpArRDjfB9CGmWEiPedXghK65fkGVRM
+      hQe8pymCsxTUkPdUvFuUqR6yVmBiJgmsu5gIzUKMUrHnn94SY+XycgF0DsrSCWQn
+      fsIIQrkp47tj9v9QBSh0mz2u8OetvMeUdlh0TQV1tarn0ZUlNGFOdX0j3Z6AIi8D
+      yQI5vSZjow==
+      =2cZc
+      -----END PGP PUBLIC KEY BLOCK-----
+
+- name: condor repo pubkey import
+  rpm_key:
+    key: /etc/pki/rpm-gpg/RPM-GPG-KEY-HTCondor
+    state: present
+
+- name: condor epel exclude, via lineinfile
+  lineinfile:
+    dest: /etc/yum.repos.d/epel.repo
+    line: 'exclude=condor*'
+    insertafter: '^ *enabled=1'
+
+- name: condor repo file
+  copy:
+    dest: /etc/yum.repos.d/htcondor-stable-rhel7.repo
+    content: |
+      [htcondor-stable]
+      name=HTCondor Stable RPM Repository for RHEL7
+      baseurl=http://research.cs.wisc.edu/htcondor/yum/stable/rhel7
+      enabled=1
+      gpgcheck=1
+
+- name: condor install
+  package:
+    name: condor-all
+    state: latest
+    use: yum
+
+- name: Require local config
+  lineinfile:
+    dest: /etc/condor/condor_config
+    line: 'REQUIRE_LOCAL_CONFIG_FILE = true'
+    regexp: '^ *REQUIRE_LOCAL_CONFIG_FILE.*'
+  notify: reload condor
+
+- name: Send local config
+  template:
+    src: condor_config.j2
+    dest: /etc/condor/condor_config.local
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload condor
+
+- name: condor walltime script
+  copy:
+    dest: /etc/condor/meta_walltime.py
+    src:  meta_walltime.py
+    mode: 0755
+  notify: reload condor

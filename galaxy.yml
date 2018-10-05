@@ -1,24 +1,17 @@
 ---
 - name: galaxy
   hosts: galaxy
+  vars:
+    hostname: sn04.bi.uni-freiburg.de
   vars_files:
     - "secret_group_vars/all.yml"
   pre_tasks:
-    #- name: Create Galaxy code owner user
-      #user:
-        #name: gxcode
-        #comment: "Galaxy Code"
-        #system: yes
-        #home: /opt/galaxy
-        #createhome: yes
-        #uid: 1998
-      #become: yes
     - name: Create Galaxy runtime user
       user:
         name: galaxy
         comment: "Galaxy Server"
         system: yes
-        home: /var/opt/galaxy
+        home: /opt/galaxy
         createhome: yes
         uid: 999
       become: yes
@@ -30,20 +23,34 @@
         - git
         - python-psycopg2
         - python-virtualenv
+        - nodejs
+        - npm
   roles:
-    - geerlingguy.repo-epel
-    - hxr.autofs
-    - cvmfs
-    - dynmotd
-    - ssh-host-sign
-    - hxr.admin-tools
-    - hxr.monitor-email
+    #- geerlingguy.repo-epel
+    #- hxr.autofs
+    #- cvmfs
+    #- dynmotd
+    #- ssh-host-sign
+    #- hxr.admin-tools
+    #- hxr.monitor-email
     #- htcondor
-    - linuxhq.yum-cron
-    - influxdata.chrony
+    #- linuxhq.yum-cron
+    #- influxdata.chrony
+    #- hxr.certbot
     # galaxy
-    - galaxyproject.galaxy
+    #- packages
+    #- supervisor
+    #- geerlingguy.nginx
+    - role: hxr.welcome_pages
+      become: yes
+      become_user: galaxy
+    - role: galaxyproject.interactive_environments
+      become: yes
+      become_user: galaxy
+    - role: galaxyproject.galaxy
+      become: yes
+      become_user: galaxy
     #
-    - dj-wasabi.telegraf
-    - dev-sec.os-hardening
-    - dev-sec.ssh-hardening
+    #- dj-wasabi.telegraf
+    #- dev-sec.os-hardening
+    #- dev-sec.ssh-hardening

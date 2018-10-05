@@ -1,0 +1,20 @@
+special_sections = set([
+{% for section in toolbox.toolbox_sections %}{% for incl in section.include_sections %}
+    "{{ incl }}",
+{% endfor %}{% endfor %}
+])
+
+{% for section in toolbox.toolbox_sections %}
+def section_{{ section.name | regex_replace('[^A-Za-z0-9_]*', '') }}(context, section):
+    """
+        Toolbox filter for {{ section.name }}
+        
+        This filter will hide all tools in the section "{{ section.name }}".
+    """
+    # By default we should return true for non-special sections
+    if section.name not in special_sections:
+        return True
+
+    return section.name in ["{{ section.include_sections | join('", "')}}"]
+
+{% endfor %}

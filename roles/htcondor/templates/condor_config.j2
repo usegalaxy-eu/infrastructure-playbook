@@ -1,0 +1,37 @@
+# HTCondor configuration for Virtual Galaxy submit host
+CONDOR_HOST = {{ condor_host }}
+ALLOW_WRITE = {{ condor_allow_write }}
+ALLOW_READ = $(ALLOW_WRITE)
+## 09/15/17 09:22:07 (pid:568706) PERMISSION DENIED to unauthenticated@unmapped from host 132.230.68.63 for command 416 (NEGOTIATE), access level NEGOTIATOR: reason: NEGOTIATOR authorization policy contains no matching ALLOW entry for this request; identifiers used for this host: 132.230.68.63,cn030.bi.uni-freiburg.de, hostname size = 1, original ip address = 132.230.68.63
+ALLOW_NEGOTIATOR = {{ condor_allow_negotiator }}
+
+###ALLOW_ADMINISTRATOR = 10.19.0.0/16
+###ALLOW_NEGOTIATOR = $(ALLOW_ADMINISTRATOR)
+###ALLOW_CONFIG = $(ALLOW_ADMINISTRATOR)
+###ALLOW_DAEMON = $(ALLOW_ADMINISTRATOR)
+
+ALLOW_OWNER = $(ALLOW_ADMINISTRATOR)
+ALLOW_CLIENT = *
+DAEMON_LIST = COLLECTOR, MASTER, NEGOTIATOR, SCHEDD
+# Define FS and UID domain
+FILESYSTEM_DOMAIN = bi.uni-freiburg.de
+UID_DOMAIN = bi.uni-freiburg.de
+TRUST_UID_DOMAIN = True
+SOFT_UID_DOMAIN = True
+
+# HXR: 2018-04-23 Per @bgruening's request, enlarged from 2d to
+# Put jobs using resources excessively on hold
+SYSTEM_PERIODIC_HOLD = \
+  (JobStatus == 1 || JobStatus == 2) && \
+  ((time() - JobStartDate) >= ({{ condor_system_periodic_hold }}))
+SYSTEM_PERIODIC_HOLD_REASON = \
+  ifThenElse(((time() - JobStartDate) >= ({{ condor_system_periodic_hold }}), \
+             "Maximum wallclock time exceeded", \
+             "Unspecified reason")
+
+NETWORK_INTERFACE = {{ condor_network_interface }}
+# http://research.cs.wisc.edu/htcondor/manual/v8.6/3_5Configuration_Macros.html#sec:Collector-Config-File-Entries
+# Keep classads for only 5 minutes which should mean dead cloud nodes are expired much faster.
+CLASSAD_LIFETIME = 300
+# Try and consider new negotations a little bit sooner?
+NEGOTIATOR_INTERVAL = 30
