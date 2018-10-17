@@ -5,11 +5,17 @@ usegalaxy_eu_autofs_mounts:
 
 nginx_package_name: nginx-galaxy
 nodejs_version: "8.x"
+nodejs_npm_global_packages:
+    - yarn
 telegraf_plugins_extra: {}
 
 pip_venv_path: "{{ galaxy_venv_dir }}"
 pip_install_dependencies:
+    # phdcomics
     - beautifulsoup4
+    # Used by code_files for apollo
+    - biopython
+    - bcbio-gff
 
 
 yum_exclude_repos:
@@ -336,7 +342,7 @@ base_app_main: &BASE_APP_MAIN
   file_path: /data/0/galaxy_db/files
 
   tool_config_file: "{{ galaxy_config_dir }}/tool_conf.xml,{{ galaxy_shed_tool_conf_file }},{{ galaxy_config_dir }}/nagios_tool_conf.xml"
-  tool_dependency_dir: /usr/local/tools
+  tool_dependency_dir: /opt/galaxy/deps
   job_working_directory: /data/7/galaxy_db/job_working_directory
   cluster_files_directory: /data/7/galaxy_db/pbs
   tool_data_path: "{{ galaxy_root }}/tool_data"
@@ -362,10 +368,10 @@ base_app_main: &BASE_APP_MAIN
   migrated_tools_config: "{{ galaxy_config_dir }}/migrated_tools_conf.xml"
   integrated_tool_panel_config: "{{ galaxy_mutable_config_dir }}/integrated_tool_panel.xml"
 
-  shed_tool_data_table_config: "{{ galaxy_mutable_config_dir }}/shed_tool_data_table_conf.xml"
 
-  tool_data_path: "{{ galaxy_root }}/tool_data"
-  shed_tool_data_path: "{{ galaxy_mutable_config_dir }}/shed_tool_data_table_conf.xml"
+  tool_data_path: "{{ galaxy_root }}/tool-data"
+  shed_tool_data_path: "{{ galaxy_root }}/tool-data/"
+  shed_tool_data_table_config: "{{ galaxy_mutable_config_dir }}/shed_tool_data_table_conf.xml"
   #
   #shed_data_manager_config_file: "/cvmfs/main.galaxyproject.org/config/shed_data_manager_conf.xml"
   sanitize_all_html: "False"
@@ -389,7 +395,6 @@ base_app_main: &BASE_APP_MAIN
   #dynamic_proxy_prefix: gie_proxy
   #galaxy_infrastructure_url: https://usegalaxy.org
   trust_jupyter_notebook_conversion: "True"
-
 
   # general stuff
   allow_user_impersonation: true
