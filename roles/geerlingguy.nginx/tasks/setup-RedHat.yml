@@ -19,12 +19,9 @@
   register: selinuxCheckOut
   command: getenforce
 
-
-
-
 - name: "Allow connecting to localhost"
   seboolean:
     name: httpd_can_network_connect
     state: yes
     persistent: yes
-  when: selinuxCheckOut.stdout_lines == "Enforcing"
+  when: not ansible_check_mode and selinuxCheckOut.stdout_lines == "Enforcing"
