@@ -20,6 +20,7 @@ haproxy_frontends:
         # ACLs
         - 'acl website_domain    hdr_dom(host) -i galaxyproject.eu'
         - 'acl main_domain       hdr_dom(host) -i usegalaxy.eu'
+        - 'acl beta_domain       hdr_dom(host) -i beta.usegalaxy.eu'
         - 'acl apollo_path       path_beg /apollo/'
         - 'acl rabbit_path       path_beg /rabbit/'
         - 'acl welcome           path_beg /static/welcome.html'
@@ -30,6 +31,10 @@ haproxy_frontends:
         - 'redirect prefix https://stats.galaxyproject.eu  code 301 if { hdr(host) -i stats.usegalaxy.eu  }'
         - 'redirect prefix https://build.galaxyproject.eu  code 301 if { hdr(host) -i build.usegalaxy.eu  }'
         - 'redirect prefix https://sentry.galaxyproject.eu code 301 if { hdr(host) -i sentry.usegalaxy.eu  }'
+        # Beta/test galaxy.
+        - 'use_backend beta_special   if beta_domain welcome'
+        - 'use_backend beta_special   if beta_domain basecss'
+        - 'use_backend beta_base      if beta_domain'
 
       galaxy_hosts:
         - domain: usegalaxy.de
@@ -61,6 +66,18 @@ haproxy_backends:
       mode: http
       custom_config:
           - "{{ haproxy_galaxy_backend }}"
+    - name: beta_base
+      balance: roundrobin
+      mode: http
+      custom_config:
+          - 'server server1 sn04.bi.uni-freiburg.de:443 maxconn 32 ssl verify none'
+    - name: beta_special
+      balance: roundrobin
+      mode: http
+      custom_config:
+          - 'reqrep ^GET\ /static/style/base.css(.*)\ HTTP/1.1 GET\ /static/style/base-beta.css\1\ HTTP/1.1'
+          - 'reqrep ^GET\ /static/welcome.html\ HTTP/1.1 GET\ /static/welcome-beta.html\ HTTP/1.1'
+          - 'server server1 sn04.bi.uni-freiburg.de:443 maxconn 32 ssl verify none'
     #- name: apollo
       #balance: roundrobin
       #mode: http

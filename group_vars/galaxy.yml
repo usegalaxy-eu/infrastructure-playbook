@@ -4,6 +4,18 @@ usegalaxy_eu_autofs_mounts:
  - usrlocal
 
 nginx_package_name: nginx-galaxy
+nodejs_version: "8.x"
+telegraf_plugins_extra: {}
+
+pip_venv_path: "{{ galaxy_venv_dir }}"
+pip_install_dependencies:
+    - beautifulsoup4
+
+
+yum_exclude_repos:
+    - condor*
+    - nodejs*
+    - npm*
 
 supervisord_group_configs:
   - galaxy
@@ -34,6 +46,8 @@ certbot_post_renewal: |
     systemctl restart nginx || true
 
 nginx_remove_default_vhost: true
+nginx_proxy_cache_path: "/var/cache/nginx/static levels=1:2 keys_zone=STATIC:10m inactive=24h  max_size=1g"
+
 nginx_vhosts:
   - listen: "80"
     server_name: "{{ hostname }}"
@@ -49,7 +63,6 @@ nginx_vhosts:
     state: "present"
     filename: "{{ hostname }}.conf"
     extra_parameters: |
-
         location / {
             uwsgi_pass      127.0.0.1:4001;
 
@@ -100,6 +113,39 @@ nginx_vhosts:
             proxy_pass_request_headers on;
         }
 
+        location /join-training/ {
+            proxy_pass    http://127.0.0.1:5000/join-training/;
+        }
+
+        location /external/phdcomics/ {
+                proxy_pass http://phdcomics.com/;
+                # The comics are extremely cacheable. No sense waiting for a server from USA to respond.
+                proxy_cache           STATIC;
+                proxy_cache_valid     200  10d;
+                proxy_cache_use_stale error timeout invalid_header updating http_500 http_502 http_503 http_504;
+        }
+
+        location /quota-increase {
+                return 301 https://docs.google.com/forms/d/e/1FAIpQLSf9w2MOS6KOlu9XdhRSDqWnCDkzoVBqHJ3zH_My4p8D8ZgkIQ/viewform;
+        }
+
+        location /freiburg/ {
+                proxy_pass https://usegalaxy-eu.github.io/freiburg/;
+        }
+        location /erasmusmc/ {
+                proxy_pass https://usegalaxy-eu.github.io/erasmusmc/;
+        }
+        location /about/ {
+                proxy_pass https://usegalaxy-eu.github.io/about;
+        }
+        location /people/ {
+                proxy_pass https://usegalaxy-eu.github.io/people;
+        }
+        location /terms {
+                proxy_pass https://usegalaxy-eu.github.io/gdpr;
+        }
+
+
         ssl_certificate /etc/ssl/certs/cert.pem;
         ssl_certificate_key /etc/ssl/private/privkey.pem;
 
@@ -121,8 +167,14 @@ nginx_vhosts:
 
 condor_host: "manager.vgcn.galaxyproject.eu"
 condor_allow_write: "10.5.68.0/24, 10.19.0.0/16, 132.230.68.0/24, *.bi.uni-freiburg.de"
-condor_allow_negotiator: "132.230.68.85"
-condor_system_periodic_hold: "{{ 7 * 24 * 60 * 60}}"
+# TODO: replace with 'condor-role'?
+condor_daemons:
+    - MASTER
+    - SCHEDD
+condor_allow_negotiator: "132.230.68.5,132.230.68.85,$(CONDOR_HOST)"
+condor_allow_administrator: "$(ALLOW_NEGOTIATOR)"
+
+#condor_system_periodic_hold: "{{ 7 * 24 * 60 * 60}}"
 condor_network_interface: ens2
 
 # CVMFS
@@ -200,7 +252,7 @@ galaxy_fetch_dependencies: true
 galaxy_manage_errordocs: false
 
 galaxy_repo: 'https://github.com/usegalaxy-eu/galaxy.git'
-galaxy_commit_id: 'fa1f677c7796300559498f05920678c5164cd41e' # release_18.05_europe'
+galaxy_commit_id: '00f136dd39ab9b4d3a69beb979e62c16d4dba7f2' # release_18.05_europe-test'
 galaxy_force_checkout: true # discard any modified files
 galaxy_admin_email_to: 'contact@usegalaxy.eu'
 #galaxy_admin_email_from: 'noreply@usegalaxy.eu'
@@ -235,10 +287,10 @@ interactive_environments_config_files: []
 base_app_main: &BASE_APP_MAIN
 
   # message box
-  #message_box_visible: "True"
+  message_box_visible: "True"
 
   #message_box_class: info
-  #message_box_class: warning
+  message_box_class: warning
   #message_box_class: error
 
   #message_box_content: Galaxy's primary cluster has recently been reconfigured to handle memory limits differently. If you are receiving unexpected memory errors with tools, please report them using the bug icon.
@@ -246,12 +298,13 @@ base_app_main: &BASE_APP_MAIN
   #message_box_content: 'Cluster upgrades are in progress, jobs will not run until upgrades are complete (by <a target="_blank" href="https://www.timeanddate.com/worldclock/fixedtime.html?iso=20180417T160000&p1=24&ah=">9:00 PM UTC, Tuesday, April 17</a>).'
   #message_box_content: 'Jobs are currently paused due to unexpected filesystem issues. We are working on the issue and jobs will be resumed as soon as possible.'
   #message_box_content: 'Galaxy will be down for two hours beginning at <a target="_blank" href="https://www.timeanddate.com/worldclock/fixedtime.html?iso=20180820T120000&p1=24&ah=">5:00 PM UTC, Monday, August 20</a> for database maintenance.'
-  brand: "Europe"
+  message_box_content: "Testing Server; Non-production; ALL DATA WILL BE DELETED"
+  brand: "TEST"
   enable_old_display_applications: 'false'
 
   # secrets
   database_connection: "{{ galaxy_db_connection }}"
-  #install_database_connection: "sqlite:////cvmfs/main.galaxyproject.org/var/galaxy_main_install.sqlite?isolation_level=IMMEDIATE"
+  install_database_connection: "sqlite:///{{ galaxy_mutable_config_dir }}/galaxy_main_install.sqlite?isolation_level=IMMEDIATE"
   id_secret: "{{ id_secret }}"
   admin_users: "hxr@informatik.uni-freiburg.de"
   #biostar_key: "{{ galaxy_config_biostar_key }}"
@@ -265,7 +318,7 @@ base_app_main: &BASE_APP_MAIN
   file_path: /data/0/galaxy_db/files
 
   tool_config_file: "{{ galaxy_config_dir }}/tool_conf.xml,{{ galaxy_shed_tool_conf_file }},{{ galaxy_config_dir }}/nagios_tool_conf.xml"
-  tool_dependency_dir: "{{ galaxy_root }}/deps"
+  tool_dependency_dir: /usr/local/tools
   job_working_directory: /data/7/galaxy_db/job_working_directory
   cluster_files_directory: /data/7/galaxy_db/pbs
   tool_data_path: "{{ galaxy_root }}/tool_data"
@@ -291,7 +344,10 @@ base_app_main: &BASE_APP_MAIN
   migrated_tools_config: "{{ galaxy_config_dir }}/migrated_tools_conf.xml"
   integrated_tool_panel_config: "{{ galaxy_mutable_config_dir }}/integrated_tool_panel.xml"
 
-  shed_tool_data_table_config: "{{ galaxy_config_dir }}/shed_tool_data_table_conf.xml"
+  shed_tool_data_table_config: "{{ galaxy_mutable_config_dir }}/shed_tool_data_table_conf.xml"
+
+  tool_data_path: "{{ galaxy_root }}/tool_data"
+  shed_tool_data_path: "{{ galaxy_mutable_config_dir }}/shed_tool_data_table_conf.xml"
   #
   #shed_data_manager_config_file: "/cvmfs/main.galaxyproject.org/config/shed_data_manager_conf.xml"
   sanitize_all_html: "False"
@@ -318,7 +374,7 @@ base_app_main: &BASE_APP_MAIN
 
 
   # general stuff
-
+  allow_user_impersonation: true
   database_engine_option_pool_size: 20
   database_engine_option_max_overflow: 20
   database_engine_option_server_side_cursors: "True"
@@ -565,3 +621,13 @@ galaxy_custom_sites:
   - name: ecology
     brand: Ecology
     index: /index-ecology.html
+  - name: proteomics
+    brand: Proteomics
+    index: /index-proteomics.html
+  - name: beta
+    brand: TEST
+    index: /index-beta.html
+    custom_css: '#masthead { background-color: red !important; } #masthead .navbar-nav > li .nav-link{color: black;} #masthead .navbar-nav > li.active .nav-link { color: white !important; }'
+
+
+

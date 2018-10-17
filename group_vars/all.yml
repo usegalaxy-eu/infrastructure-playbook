@@ -51,7 +51,7 @@ yum_cron_conf:
     debuglevel: -2
     mdpolicy: 'group:main'
   commands:
-    apply_updates: false
+    apply_updates: true
     download_updates: true
     random_sleep: 360
     update_cmd: default
@@ -80,7 +80,7 @@ yum_cron_hourly_conf:
     update_cmd: security
     update_messages: false
   email:
-    email_from: root
+    email_from: root@localhost
     email_host: localhost
     email_to: root
   emitters:
