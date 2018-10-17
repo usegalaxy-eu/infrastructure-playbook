@@ -2,6 +2,7 @@
   template:
     src: welcome.html
     dest: "{{ galaxy_server_dir }}/static/welcome.html"
+    mode: 0644
   with_items:
     - index: "/galaxy/"
 
@@ -9,6 +10,7 @@
   template:
     src: welcome.html
     dest: "{{ galaxy_server_dir }}/static/welcome-{{ item.name }}.html"
+    mode: 0644
   with_items: "{{ galaxy_custom_sites }}"
 
 - name: Set multisite dir to a subdirectory of mutable data dir

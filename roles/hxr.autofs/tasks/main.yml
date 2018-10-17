@@ -4,7 +4,7 @@
     name: autofs
     state: latest
 
-- name: Copy all other conf files
+- name: Copy main autofs file
   template:
     src: data.autofs.j2
     dest: "/etc/auto.master.d/data.autofs"
@@ -12,13 +12,22 @@
     group: root
     mode: 0644
 
-- name: Copy all other conf files
+- name: Copy data conf file
   template:
     src: "data.conf.j2"
     dest: "/etc/auto.master.d/data.conf"
     owner: root
     group: root
     mode: 0644
+
+- name: Copy usrlocal conf file
+  template:
+    src: "usrlocal.conf.j2"
+    dest: "/etc/auto.master.d/usrlocal.conf"
+    owner: root
+    group: root
+    mode: 0644
+  when: "usrlocal" in usegalaxy_eu_autofs_mounts
 
 - name: autofs service enable
   service:

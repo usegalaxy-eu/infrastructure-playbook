@@ -40,12 +40,6 @@
     key: /etc/pki/rpm-gpg/RPM-GPG-KEY-HTCondor
     state: present
 
-- name: condor epel exclude, via lineinfile
-  lineinfile:
-    dest: /etc/yum.repos.d/epel.repo
-    line: 'exclude=condor*'
-    insertafter: '^ *enabled=1'
-
 - name: condor repo file
   copy:
     dest: /etc/yum.repos.d/htcondor-stable-rhel7.repo

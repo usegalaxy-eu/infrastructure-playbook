@@ -1,1 +1,4 @@
 /data  /etc/auto.master.d/data.conf
+{% if "usrlocal" in usegalaxy_eu_autofs_mounts %}
+/-     /etc/auto.master.d/usrlocal.conf
+{% endif %}
