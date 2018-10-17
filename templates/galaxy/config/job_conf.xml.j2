@@ -1,116 +1,16 @@
 <?xml version="1.0"?>
 <job_conf>
-    <plugins>
-        <!-- "workers" is the number of threads for the runner's work queue.
-             The default from <plugins> is used if not defined for a <plugin>.
-          -->
-        <plugin id="drmaa" type="runner" load="galaxy.jobs.runners.drmaa:DRMAAJobRunner" workers="3"/>
+    <plugins workers="4">
         <plugin id="condor" type="runner" load="galaxy.jobs.runners.condor:CondorJobRunner" />
         <plugin id="local" type="runner" load="galaxy.jobs.runners.local:LocalJobRunner"/>
     </plugins>
     <handlers default="handlers">
-        <!-- Additional job handlers - the id should match the name of a
-             [server:<id>] in universe_wsgi.ini.
-         -->
         {% for n in range(galaxy_handler_count) %}
         <handler id="handler{{ n }}" tags="handlers"/>
         {% endfor %}
     </handlers>
-    <destinations default="gateway">
-        <!-- By default *everything* goes to the main dynamic destination -->
-        <destination id="gateway" runner="dynamic">
-            <param id="type">python</param>
-            <param id="function">gateway</param>
-            <resubmit condition="attempt &lt;=3" destination="resubmit_gateway"/>
-        </destination>
-
-        <destination id="resubmit_gateway" runner="dynamic">
-            <param id="type">python</param>
-            <param id="function">resubmit_gateway</param>
-        </destination>
-
-        <destination id="24cores_15G_BLAST" runner="dynamic">
-            <param id="type">python</param>
-            <param id="function">blast_destinations</param>
-        </destination>
-
-        <destination id="wig_to_bigWig" runner="dynamic">
-            <param id="type">python</param>
-            <param id="function">wig_to_bigwig</param>
-        </destination>
-
-        <destination id="dexseq_dynamic" runner="dynamic">
-            <param id="type">python</param>
-            <param id="function">dexseq_memory_mapper</param>
-        </destination>
-
+    <destinations default="condor">
         <destination id="local" runner="local"/>
         <destination id="condor" runner="condor"/>
-        <destination id="drmaa" runner="drmaa"/>
-
-        <destination id="remote_cluster_mq_cz"   runner="pulsar_eu_cz">
-            <param id="jobs_directory">/storage/brno11-elixir/home/galaxyeu/galaxy-staging/</param>
-        </destination>
-
-        <destination id="remote_cluster_mq_test" runner="pulsar_eu_test">
-            <param id="jobs_directory">/asdf</param>
-        </destination>
-
-        <destination id="condor_singularity" runner="condor">
-            <param id="singularity_enabled">true</param>
-            <param id="singularity_volumes">$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro</param>
-            <param id="singularity_default_container_id">/data/0/cvmfs/singularity/ubuntu:18.04</param>
-        </destination>
-        <destination id="condor_singularity2" runner="condor">
-            <param id="singularity_enabled">true</param>
-            <param id="singularity_volumes">$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro</param>
-            <param id="singularity_default_container_id">/data/0/cvmfs/singularity/ubuntu:18.04</param>
-            <param id="container">
-                <container type="singularity" shell="/bin/sh" resolve_dependencies="true">/data/0/cvmfs/singularity/ubuntu:18.04</container>
-            </param>
-        </destination>
-        <destination id="condor_docker" runner="condor">
-            <param id="docker_enabled">true</param>
-            <param id="docker_volumes">$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro</param>
-            <param id="docker_default_container_id">ubuntu:18.04</param>
-            <!--param id="docker_memory"></param-->
-            <param id="docker_auto_rm">true</param>
-            <param id="docker_sudo">false</param>
-        </destination>
-
     </destinations>
-    <tools>
-        <!-- Everything goes to 'gateway' destination by default. -->
-        <tool id="upload1" destination="gateway"/>
-
-        <!-- Custom Destinations -->
-        <tool id="wig_to_bigWig" destination="wig_to_bigWig" />
-        <tool id="dexseq" destination="dexseq_dynamic"/> <!--6cores_180G-->
-        <tool id="ncbi_blastn_wrapper" destination="24cores_15G_BLAST" />
-        <tool id="ncbi_blastx_wrapper" destination="24cores_15G_BLAST" />
-        <tool id="ncbi_tblastn_wrapper" destination="24cores_15G_BLAST" />
-        <tool id="ncbi_tblastx_wrapper" destination="24cores_15G_BLAST" />
-        <tool id="ncbi_blastp_wrapper" destination="24cores_15G_BLAST" />
-        <tool id="ncbi_rpsblast_wrapper" destination="24cores_15G_BLAST" />
-
-        {% for n in range(galaxy_handler_count) %}
-        <tool id="echo_main_handler{{ n }}" destination="local" handler="handler{{ n }}"/>
-        {% endfor %}
-        <tool id="echo_main_condor" destination="condor" />
-        <tool id="echo_main_drmaa" destination="drmaa" />
-    </tools>
-    <limits>
-        <!-- walltime:
-                Amount of time a job can run (in any destination) before it
-                will be terminated by Galaxy.
-         -->
-        <limit type="walltime">148:00:00</limit>
-        <!-- output_size:
-                Size that any defined tool output can grow to before the job
-                will be terminated. This does not include temporary files
-                created by the job. Format is flexible, e.g.:
-                '10GB' = '10g' = '10240 Mb' = '10737418240'
-        -->
-        <limit type="output_size">300GB</limit>
-    </limits>
 </job_conf>

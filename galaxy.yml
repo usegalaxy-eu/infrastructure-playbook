@@ -6,41 +6,54 @@
   vars_files:
     - "secret_group_vars/all.yml"
   pre_tasks:
-    - name: Create Galaxy runtime user
-      user:
-        name: galaxy
-        comment: "Galaxy Server"
-        system: yes
-        home: /opt/galaxy
-        createhome: yes
-        uid: 999
-      become: yes
-    - name: Install Dependencies
-      package:
-        name: "{{ item }}"
-      become: yes
-      with_items:
-        - git
-        - python-psycopg2
-        - python-virtualenv
-        - nodejs
-        - npm
+    - name: Create nginx cache dir
+      file:
+          path: /var/cache/nginx/static
+          state: directory
+          owner: nginx
+          group: root
+          mode: 0700
+    #- name: Create Galaxy runtime user
+      #user:
+        #name: galaxy
+        #comment: "Galaxy Server"
+        #system: yes
+        #home: /opt/galaxy
+        #createhome: yes
+        #uid: 999
+      #become: yes
+    #- name: Install Dependencies
+      #package:
+        #name: "{{ item }}"
+      #become: yes
+      #with_items:
+        #- git
+        #- python-psycopg2
+        #- python-virtualenv
+        #- bc
   roles:
-    #- geerlingguy.repo-epel
-    #- hxr.autofs
-    #- cvmfs
-    #- dynmotd
-    #- ssh-host-sign
-    #- hxr.admin-tools
-    #- hxr.monitor-email
-    #- htcondor
-    #- linuxhq.yum-cron
-    #- influxdata.chrony
-    #- hxr.certbot
-    # galaxy
-    #- packages
-    #- supervisor
-    #- geerlingguy.nginx
+    - geerlingguy.repo-epel
+    - hxr.exclude-repo # Exclude epel repos for condor, node, npm
+    - geerlingguy.nodejs
+    - hxr.autofs
+    - cvmfs
+    - dynmotd
+    - ssh-host-sign
+    - hxr.admin-tools
+    - hxr.monitor-email
+    - htcondor
+    - linuxhq.yum-cron
+    - influxdata.chrony
+    - hxr.certbot
+
+    ## GALAXY
+    - packages
+    - supervisor
+    - role: hxr.install-to-venv
+      become: yes
+      become_user: galaxy
+    - geerlingguy.nginx
+    - role: hxr.tiaas
     - role: hxr.welcome_pages
       become: yes
       become_user: galaxy
@@ -50,7 +63,7 @@
     - role: galaxyproject.galaxy
       become: yes
       become_user: galaxy
-    #
-    #- dj-wasabi.telegraf
-    #- dev-sec.os-hardening
-    #- dev-sec.ssh-hardening
+
+    - dj-wasabi.telegraf
+    - dev-sec.os-hardening
+    - dev-sec.ssh-hardening
