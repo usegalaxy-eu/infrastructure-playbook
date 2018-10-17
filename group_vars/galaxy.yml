@@ -32,6 +32,24 @@ supervisord_install: package
 supervisord_inet_user: super
 supervisord_inet_pass: "{{ supervisord_inet_pass }}"
 
+
+# TIaaS Configuration
+tiaas_galaxy_db_url: "{{ galaxy_db_connection }}"
+tiaas_galaxy_idsecret: "{{ id_secret }}"
+tiaas_galaxy_url: "https://beta.usegalaxy.eu"
+tiaas_galaxy_key: "{{ admin_api_key_erasche }}"
+tiaas_trainings:
+  - beta
+
+# TIaaS Deployment
+tiaas_dir: /opt/tiaas
+tiaas_user: tiaas
+tiaas_group: tiaas
+tiaas_version: master
+tiaas_create_user: true
+tiaas_create_group: true
+
+
 certbot_auto_renew: yes
 certbot_auto_renew_user: root
 certbot_auto_renew_hour: 3
