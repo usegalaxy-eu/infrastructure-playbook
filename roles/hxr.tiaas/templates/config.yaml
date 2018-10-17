@@ -1,0 +1,22 @@
+---
+DEBUG: false
+
+# database URL
+db: '{{ tiaas_galaxy_db_url }}'
+
+# Where to send them once they've successfully joined the training
+redirect_location: '{{ tiaas_redirect_url | default(tiaas_galaxy_url) }}'
+
+# Galaxy information
+galaxy:
+    cookiename: galaxysession
+    idsecret: '{{ tiaas_galaxy_idsecret }}'
+
+    api:
+        url: "{{ tiaas_galaxy_url }}"
+        key: "{{ tiaas_galaxy_key }}"
+
+# List of valid training identifiers
+trainings:
+{% for training in tiaas_trainings %}    - {{ training }}
+{% endfor %}

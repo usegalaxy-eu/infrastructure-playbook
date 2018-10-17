@@ -1,0 +1,15 @@
+[Unit]
+Description=Galaxy TIaaS group joining service
+Documentation=https://github.com/usegalaxy-eu/tiaas-group-join
+After=network.target
+
+[Service]
+User={{ tiaas_user }}
+Group={{ tiaas_group }}
+ExecStart={{ tiaas_dir }}/run.sh
+Restart=on-failure
+RestartForceExitStatus=SIGPIPE
+KillMode=control-group
+
+[Install]
+WantedBy=multi-user.target

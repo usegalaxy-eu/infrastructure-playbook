@@ -1,0 +1,72 @@
+- name: Create group
+  user:
+    name: "{{ tiaas_group }}"
+    state: present
+  when: tiaas_create_group
+
+- name: Create user account
+  user:
+    name: "{{ tiaas_user }}"
+    comment: Training Infrastructure as a Service User
+    group: "{{ tiaas_group }}"
+    home: "{{ tiaas_dir }}"
+  when: tiaas_create_user
+
+- name: Ensure directory is available
+  file:
+    path: "{{ tiaas_dir }}"
+    state: directory
+    owner: "{{ tiaas_user }}"
+    group: "{{ tiaas_group }}"
+    mode: 0750
+
+- name: Ensure config directory is available
+  file:
+    path: "{{ tiaas_dir }}/config"
+    state: directory
+    owner: "{{ tiaas_user }}"
+    group: "{{ tiaas_group }}"
+    mode: 0750
+
+- name: Clone repository
+  become: true
+  become_user: "{{ tiaas_user }}"
+  git:
+    repo: "https://github.com/usegalaxy-eu/tiaas-group-join"
+    dest: "{{ tiaas_dir }}/code/"
+    version: "{{ tiaas_version }}"
+  notify: 'reload tiaas'
+
+- name: Send templates
+  template:
+    src: "{{ item }}"
+    dest: "{{ tiaas_dir }}/config/{{ item }}"
+    owner: "{{ tiaas_user }}"
+    group: "{{ tiaas_group }}"
+    mode: 0640
+  with_items:
+    - config.yaml
+  notify: 'reload tiaas'
+
+- name: Send runner script
+  template:
+    src: "run.sh"
+    dest: "{{ tiaas_dir }}/run.sh"
+    owner: "{{ tiaas_user }}"
+    group: "{{ tiaas_group }}"
+    mode: 0750
+  notify: 'reload tiaas'
+
+- name: Install all of the necessary dependencies
+  become: true
+  become_user: "{{ tiaas_user }}"
+  pip:
+    virtualenv: "{{ tiaas_dir }}/venv/"
+    requirements: "{{ tiaas_dir }}/code/requirements.txt"
+  notify: 'reload tiaas'
+
+- name: Install systemd unit file
+  template:
+    src: tiaas.service
+    dest: /etc/systemd/system/tiaas.service
+  notify: setup tiaas systemd

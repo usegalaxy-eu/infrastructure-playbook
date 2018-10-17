@@ -1,0 +1,12 @@
+---
+- name: reload tiaas
+  systemd:
+    state: restarted
+    name: tiaas
+
+- name: setup tiaas systemd
+  systemd:
+    state: started
+    enabled: true
+    name: tiaas
+    daemon_reload: yes
