@@ -2,6 +2,7 @@
 - name: add bintray rabbitmq-server repo
   yum_repository:
     name: bintray-rabbitmq-rpm
+    description: 'asdf'
     baseurl: "https://dl.bintray.com/rabbitmq/rpm/rabbitmq-server/v3.7.x/el/$releasever/"
     gpgcheck: false
     repo_gpgcheck: false
@@ -10,6 +11,7 @@
 - name: add bintray erlang repo
   yum_repository:
     name: bintray-erlang
+    description: 'asdf'
     baseurl: "https://dl.bintray.com/rabbitmq/rpm/erlang/21/el/$releasever/"
     gpgcheck: false
     repo_gpgcheck: false
