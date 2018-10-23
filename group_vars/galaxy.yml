@@ -334,7 +334,7 @@ base_app_main: &BASE_APP_MAIN
   #biostar_key: "{{ galaxy_config_biostar_key }}"
   #sentry_dsn: "{{ galaxy_config_sentry_dsn }}"
   sentry_sloreq_threshold: 3.0
-  #amqp_internal_connection: "{{ galaxy_config_amqp_internal_connection }}"
+  amqp_internal_connection: "pyamqp://galaxy:{{ rabbitmq_password_galaxy }}@proxy.galaxyproject.eu:5671/galaxy?ssl=1"
 
   use_pbkdf2: "False"
   # paths
@@ -345,7 +345,6 @@ base_app_main: &BASE_APP_MAIN
   tool_dependency_dir: /opt/galaxy/deps
   job_working_directory: /data/7/galaxy_db/job_working_directory
   cluster_files_directory: /data/7/galaxy_db/pbs
-  tool_data_path: "{{ galaxy_root }}/tool_data"
   #nginx_upload_store: /galaxy-repl/main/upload
   #nginx_upload_job_files_store: /galaxy-repl/main/upload_job_files
   ftp_upload_dir: /data/0/incoming/
@@ -464,7 +463,6 @@ base_app_main: &BASE_APP_MAIN
 
   show_welcome_with_login: 'True'
   allow_user_deletion: 'True'
-  #allow_user_impersonation: 'True'
   new_user_dataset_access_role_default_private: 'True'
   enable_beta_gdpr: 'True'
   enable_beta_ts_api_install: 'True'
@@ -528,7 +526,6 @@ base_app_main: &BASE_APP_MAIN
 galaxy_config_hash:
   "app:main":
     <<: *BASE_APP_MAIN
-    allow_user_impersonation: "False"
     new_file_path: /data/7/galaxy_db/tmp
 
 

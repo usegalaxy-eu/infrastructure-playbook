@@ -117,6 +117,9 @@ rabbitmq_users:
     password: "{{ rabbitmq_password_telegraf }}"
     tags: administrator
     vhost: /
+  - user: galaxy
+    password: "{{ rabbitmq_password_galaxy }}"
+    vhost: galaxy
   - user: galaxy_cz
     password: "{{ rabbitmq_password_galaxy_cz }}"
     vhost: /pulsar/galaxy_cz
@@ -125,6 +128,7 @@ rabbitmq_users:
     vhost: /pulsar/galaxy_test
 
 rabbitmq_vhosts:
+  - galaxy
   - /pulsar/galaxy_cz
   - /pulsar/galaxy_test
 

@@ -32,19 +32,19 @@
         #- python-virtualenv
         #- bc
   roles:
-    - geerlingguy.repo-epel
-    - hxr.exclude-repo # Exclude epel repos for condor, node, npm
-    - geerlingguy.nodejs
-    - hxr.autofs
-    - cvmfs
-    - dynmotd
-    - ssh-host-sign
-    - hxr.admin-tools
-    - hxr.monitor-email
-    - htcondor
-    - linuxhq.yum-cron
-    - influxdata.chrony
-    - hxr.certbot
+    #- geerlingguy.repo-epel
+    #- hxr.exclude-repo # Exclude epel repos for condor, node, npm
+    #- geerlingguy.nodejs
+    #- hxr.autofs
+    #- cvmfs
+    #- dynmotd
+    #- ssh-host-sign
+    #- hxr.admin-tools
+    #- hxr.monitor-email
+    #- htcondor
+    #- linuxhq.yum-cron
+    #- influxdata.chrony
+    #- hxr.certbot
 
     ## GALAXY
     - packages
@@ -64,6 +64,6 @@
       become: yes
       become_user: galaxy
 
-    - dj-wasabi.telegraf
-    - dev-sec.os-hardening
-    - dev-sec.ssh-hardening
+    #- dj-wasabi.telegraf
+    #- dev-sec.os-hardening
+    #- dev-sec.ssh-hardening

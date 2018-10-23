@@ -2,9 +2,12 @@
 # defaults file for galaxyproject.galaxy
 
 # TODO: Magical restarters depending on how you're running Galaxy.
+#- name: restart galaxy
+  #debug:
+    #msg: "RESTARTER NOT IMPLEMENTED - Please restart Galaxy manually"
+
 - name: restart galaxy
-  debug:
-    msg: "RESTARTER NOT IMPLEMENTED - Please restart Galaxy manually"
+  command: "/opt/galaxy/gxadmin zerg swap asdf; /opt/galay/gxadmin handler restart"
 
 - name: email administrator with commit id
   mail:
