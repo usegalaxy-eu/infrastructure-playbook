@@ -1,25 +1,16 @@
 from galaxy.jobs import JobDestination
-#from galaxy.jobs.mapper import JobMappingException
+from galaxy.jobs.mapper import JobMappingException
 
-import backoff
 import copy
-import json
-import logging
 import math
 import os
-import requests
 import subprocess
 import time
 import yaml
 
-logging.basicConfig(level=logging.DEBUG)
-log = logging.getLogger(__name__)
-
 # Maximum resources
-CONDOR_MAX_CORES = 40
-CONDOR_MAX_MEM = 250 - 2
-SGE_MAX_CORES = 24
-SGE_MAX_MEM = 256 - 2
+CONDOR_MAX_CORES = 32
+CONDOR_MAX_MEM = 240
 
 # The default / base specification for the different environments.
 SPECIFICATION_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'destination_specifications.yaml')
@@ -101,8 +92,6 @@ def get_tool_id(tool_id):
         (server, _, owner, repo, name, version) = tool_id.split('/')
         return name
 
-    # No idea what this is.
-    log.warning("Strange tool ID (%s), runner was not sure how to handle it.\n", tool_id)
     return tool_id
 
 
@@ -143,10 +132,7 @@ def build_spec(tool_spec, runner_hint=None):
     # produce unschedulable jobs, requesting more ram/cpu than is available in a
     # given location. Currently we clamp those values rather than intelligently
     # re-scheduling to a different location due to TaaS constraints.
-    if destination == 'sge':
-        tool_memory = min(tool_memory, SGE_MAX_MEM)
-        tool_cores = min(tool_cores, SGE_MAX_CORES)
-    elif 'condor' in destination:
+    if 'condor' in destination:
         tool_memory = min(tool_memory, CONDOR_MAX_MEM)
         tool_cores = min(tool_cores, CONDOR_MAX_CORES)
 
@@ -162,27 +148,7 @@ def build_spec(tool_spec, runner_hint=None):
         params['nativeSpecification'] = params['nativeSpecification'].replace('\n', ' ').strip()
 
     # We have some destination specific kwargs. `nativeSpecExtra` and `tmp` are only defined for SGE
-    if destination == 'sge':
-        if 'cores' in tool_spec:
-            kwargs['PARALLELISATION'] = '-pe "pe*" %s' % tool_cores
-            # memory is defined per-core, and the input number is in gigabytes.
-            real_memory = int(1024 * tool_memory / tool_spec['cores'])
-            # Supply to kwargs with M for megabyte.
-            kwargs['MEMORY'] = '%sM' % real_memory
-            raw_allocation_details['mem'] = tool_memory
-            raw_allocation_details['cpu'] = tool_cores
-
-        if 'nativeSpecExtra' in tool_spec:
-            kwargs['NATIVE_SPEC_EXTRA'] = tool_spec['nativeSpecExtra']
-
-        # Large TMP dir
-        if tool_spec.get('tmp', None) == 'large':
-            kwargs['NATIVE_SPEC_EXTRA'] += '-l has_largetmp=1'
-
-        # Environment variables, SGE specific.
-        if 'env' in tool_spec and '_JAVA_OPTIONS' in tool_spec['env']:
-            params['nativeSpecification'] = params['nativeSpecification'].replace('-v _JAVA_OPTIONS', '')
-    elif 'condor' in destination:
+    if 'condor' in destination:
         if 'cores' in tool_spec:
             kwargs['PARALLELISATION'] = tool_cores
             raw_allocation_details['cpu'] = tool_cores
@@ -219,35 +185,6 @@ def build_spec(tool_spec, runner_hint=None):
 
     env = [dict(name=k, value=v) for (k, v) in env.items()]
     return env, params, runner, raw_allocation_details
-
-
-def drmaa_is_available():
-    try:
-        os.stat('/usr/local/galaxy/temporarily-disable-drmaa')
-        return False
-    except OSError:
-        return True
-
-
-def condor_is_available():
-    try:
-        os.stat('/usr/local/galaxy/temporarily-disable-condor')
-        logging.debug('File was touched; condor disabled')
-        return False
-    except OSError:
-        pass
-
-    try:
-        executors = subprocess.check_output(['condor_status'])
-        logging.debug('Executors: %s' % len(executors.strip()))
-        # If no executors output, assume offline.
-        return len(executors.strip()) > 0
-    except subprocess.CalledProcessError as cpe:
-        log.exception(cpe)
-        return False
-    except IOError:
-        # No condor binary
-        return False
 
 
 def get_training_machines(group='training'):
@@ -398,51 +335,24 @@ def _finalize_tool_spec(tool_id, user_roles, memory_scale=1.0):
     return tool_spec
 
 
-def convert_condor_to_sge(tool_spec):
-    # Send this to SGE
-    tool_spec['runner'] = 'sge'
-    # SGE does not support partials
-    tool_spec['mem'] = int(math.ceil(tool_spec['mem']))
-    return tool_spec
+def convert_to(tool_spec, runner):
+    tool_spec['runner'] = runner
 
-
-def convert_sge_to_condor(tool_spec):
-    tool_spec['runner'] = 'condor'
-    return tool_spec
-
-
-def handle_downed_runners(tool_spec):
-    # In the event that it was going to condor and condor is unavailable, re-schedule to sge
-    avail_condor = condor_is_available()
-    avail_drmaa = drmaa_is_available()
-
-    if not avail_condor and not avail_drmaa:
-        raise Exception("Both clusters are currently down")
-
-    if tool_spec.get('runner', 'local') == 'condor':
-        if avail_drmaa and not avail_condor:
-            tool_spec = convert_condor_to_sge(tool_spec)
-
-    elif tool_spec.get('runner', 'local') == 'sge':
-        if avail_condor and not avail_drmaa:
-            tool_spec = convert_condor_to_sge(tool_spec)
+    if runner == 'sge':
+        # sge doesn't accept non-ints
+        tool_spec['mem'] = int(math.ceil(tool_spec['mem']))
 
     return tool_spec
 
 
 def _gateway(tool_id, user_roles, user_email, memory_scale=1.0):
-    tool_spec = handle_downed_runners(_finalize_tool_spec(tool_id, user_roles, memory_scale=memory_scale))
-
-    # Send special users to condor temporarily.
-    if 'gx-admin-force-jobs-to-condor' in user_roles:
-        tool_spec = convert_sge_to_condor(tool_spec)
-    if 'gx-admin-force-jobs-to-drmaa' in user_roles:
-        tool_spec = convert_condor_to_sge(tool_spec)
+    tool_spec = _finalize_tool_spec(tool_id, user_roles, memory_scale=memory_scale)
 
     # Now build the full spec
     runner_hint = None
-    #if user_email == 'hxr@informatik.uni-freiburg.de' and tool_id != 'upload1':
-    #    runner_hint = 'remote_cluster_mq_cz'
+
+    if tool_id != 'upload1' and 'destination-pulsar-cz' in user_roles:
+        runner_hint = 'remote_cluster_mq_cz'
 
     # Ensure that this tool is permitted to run, otherwise, throw an exception.
     assert_permissions(tool_spec, user_email, user_roles)
@@ -450,24 +360,6 @@ def _gateway(tool_id, user_roles, user_email, memory_scale=1.0):
     env, params, runner, _ = build_spec(tool_spec, runner_hint=runner_hint)
 
     return env, params, runner, tool_spec
-
-
-@backoff.on_exception(backoff.fibo,
-                      # Parent class of all requests exceptions, should catch
-                      # everything.
-                      requests.exceptions.RequestException,
-                      # https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/
-                      jitter=backoff.full_jitter,
-                      max_tries=8)
-def _gateway2(tool_id, user_roles, user_email, memory_scale=1.0):
-    payload = {
-        'tool_id': tool_id,
-        'user_roles': user_roles,
-        'email': user_email,
-    }
-    r = requests.post('http://127.0.0.1:8090', data=json.dumps(payload), timeout=1, headers={'Content-Type': 'application/json'})
-    data = r.json()
-    return data['env'], data['params'], data['runner'], data['spec']
 
 
 def gateway(tool_id, user, memory_scale=1.0):
@@ -480,10 +372,9 @@ def gateway(tool_id, user, memory_scale=1.0):
         email = ''
 
     try:
-        env, params, runner, spec = _gateway2(tool_id, user_roles, email, memory_scale=memory_scale)
-    except requests.exceptions.RequestException:
-        # We really failed, so fall back to old algo.
         env, params, runner, spec = _gateway(tool_id, user_roles, email, memory_scale=memory_scale)
+    except Exception as e:
+        return JobMappingException(str(e))
 
     name = name_it(spec)
     return JobDestination(
@@ -510,26 +401,3 @@ def resubmit_gateway(tool_id, user):
     job_destination['resubmit'] = []
     job_destination['id'] = job_destination['id'] + '_resubmit'
     return job_destination
-
-
-def toXml(env, params, runner, spec):
-    name = name_it(spec)
-
-    print('        <destination id="%s" runner="%s">' % (name, runner))
-    for (k, v) in params.items():
-        print('            <param id="%s">%s</param>' % (k, v))
-    for k in env:
-        print('            <env id="%s">%s</env>' % (k['name'], k['value']))
-    print('        </destination>')
-    print("")
-
-
-if __name__ == '__main__':
-    seen_destinations = []
-    for tool in TOOL_DESTINATIONS:
-        if TOOL_DESTINATIONS[tool] not in seen_destinations:
-            seen_destinations.append(TOOL_DESTINATIONS[tool])
-
-    for spec in seen_destinations:
-        (env, params, runner, _) = build_spec(spec)
-        toXml(env, params, runner, spec)

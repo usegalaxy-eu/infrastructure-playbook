@@ -1,0 +1,728 @@
+---
+__default__: {}
+
+
+AccurateMassSearch: {cores: 4, mem: 8}
+AdditiveSeries: {cores: 4, mem: 8}
+BaselineFilter: {cores: 4, mem: 8}
+CONVERTER_bedgraph_to_bigwig: {mem: 8}
+CVInspector: {cores: 4, mem: 8}
+CompNovo: {cores: 4, mem: 8}
+CompNovoCID: {cores: 4, mem: 8}
+ConsensusID: {cores: 1, mem: 58}
+ConsensusMapNormalizer: {cores: 4, mem: 8}
+DeMeanderize: {cores: 4, mem: 8}
+Decharger: {cores: 4, mem: 8}
+DecoyDatabase: {cores: 4, mem: 8}
+Digestor: {cores: 4, mem: 8}
+DigestorMotif: {cores: 4, mem: 8}
+EICExtractor: {cores: 4, mem: 8}
+'EMBOSS: fuzztran39': {mem: 10}
+ERPairFinder: {cores: 4, mem: 8}
+FFEval: {cores: 4, mem: 8}
+FalseDiscoveryRate: {cores: 4, mem: 8}
+FeatureFinderCentroided: {cores: 4, mem: 8}
+FeatureFinderIsotopeWavelet: {cores: 4, mem: 8}
+FeatureFinderMRM: {cores: 4, mem: 8}
+FeatureFinderMetabo: {cores: 4, mem: 8}
+FeatureFinderMultiplex: {cores: 8, mem: 8}
+FeatureFinderSuperHirn: {cores: 4, mem: 8}
+FeatureLinkerLabeled: {cores: 4, mem: 8}
+FeatureLinkerUnlabeled: {cores: 4, mem: 8}
+FeatureLinkerUnlabeledQT: {cores: 4, mem: 8}
+FidoAdapter: {cores: 8, mem: 8}
+FileConverter: {cores: 4, mem: 8}
+FileFilter: {cores: 4, mem: 8}
+FileInfo: {cores: 4, mem: 8}
+FileMerger: {cores: 4, mem: 16}
+HighResPrecursorMassCorrector: {cores: 4, mem: 8}
+IDConflictResolver: {cores: 4, mem: 8}
+IDEvaluator: {cores: 4, mem: 8}
+IDExtractor: {cores: 4, mem: 8}
+IDFileConverter: {cores: 4, mem: 8}
+IDFilter: {cores: 4, mem: 8}
+IDMapper: {cores: 4, mem: 8}
+IDMassAccuracy: {cores: 4, mem: 8}
+IDMerger: {cores: 1, mem: 30}
+IDPosteriorErrorProbability: {cores: 4, mem: 8}
+IDRTCalibration: {cores: 4, mem: 8}
+IDSplitter: {cores: 4, mem: 8}
+ITRAQAnalyzer: {cores: 4, mem: 8}
+ImageCreator: {cores: 4, mem: 8}
+InclusionExclusionListCreator: {cores: 4, mem: 8}
+InternalCalibration: {cores: 4, mem: 8}
+IsobaricAnalyzer: {cores: 4, mem: 8}
+LabeledEval: {cores: 4, mem: 8}
+MRMMapper: {cores: 4, mem: 8}
+MRMPairFinder: {cores: 4, mem: 8}
+msgfplus:
+  cores: 10
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+  mem: 12
+  name: special
+  runner: condor
+MSGFPlusAdapter:
+  cores: 10
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+  mem: 12
+  name: special
+  runner: condor
+mass_spectrometry_imaging_segmentations: {mem: 92}
+mass_spectrometry_imaging_combine: {mem: 12}
+mass_spectrometry_imaging_mzplots: {mem: 24}
+msi_ion_images: {mem: 92}
+msi_spectra_plot: {mem: 210}
+MSSimulator: {cores: 4, mem: 8}
+MapAlignerIdentification: {cores: 4, mem: 8}
+MapAlignerPoseClustering: {cores: 4, mem: 8}
+MapAlignerSpectrum: {cores: 4, mem: 8}
+MapAlignmentEvaluation: {cores: 4, mem: 8}
+MapNormalizer: {cores: 4, mem: 8}
+MapRTTransformer: {cores: 4, mem: 8}
+MapStatistics: {cores: 4, mem: 8}
+MassCalculator: {cores: 4, mem: 8}
+MassTraceExtractor: {cores: 4, mem: 8}
+MyriMatchAdapter: {cores: 4, mem: 8}
+MzTabExporter: {cores: 4, mem: 8}
+QCCalculator: {mem: 8}
+mira_assembler: {mem: 24}
+mothur_align_check: {env: {TERM: vt100}}
+mothur_align_seqs: {env: {TERM: vt100}}
+mothur_amova: {env: {TERM: vt100}}
+mothur_anosim: {env: {TERM: vt100}}
+mothur_bin_seqs: {env: {TERM: vt100}}
+mothur_chimera_bellerophon: {env: {TERM: vt100}}
+mothur_chimera_ccode: {env: {TERM: vt100}}
+mothur_chimera_check: {env: {TERM: vt100}}
+mothur_chimera_perseus: {env: {TERM: vt100}}
+mothur_chimera_pintail: {env: {TERM: vt100}}
+mothur_chimera_slayer: {env: {TERM: vt100}}
+mothur_chimera_uchime: {env: {TERM: vt100}}
+mothur_chop_seqs: {env: {TERM: vt100}}
+mothur_classify_otu: {env: {TERM: vt100}}
+mothur_classify_rf: {env: {TERM: vt100}}
+mothur_classify_seqs: {mem: 8, env: {TERM: vt100}}
+mothur_classify_tree: {env: {TERM: vt100}}
+mothur_clearcut: {env: {TERM: vt100}}
+mothur_cluster: {env: {TERM: vt100}}
+mothur_cluster_classic: {env: {TERM: vt100}}
+mothur_cluster_fragments: {env: {TERM: vt100}}
+mothur_cluster_split: {env: {TERM: vt100}}
+mothur_collect_shared: {env: {TERM: vt100}}
+mothur_collect_single: {env: {TERM: vt100}}
+mothur_consensus_seqs: {env: {TERM: vt100}}
+mothur_cooccurrence: {env: {TERM: vt100}}
+mothur_corr_axes: {env: {TERM: vt100}}
+mothur_count_groups: {env: {TERM: vt100}}
+mothur_count_seqs: {env: {TERM: vt100}}
+mothur_create_database: {env: {TERM: vt100}}
+mothur_degap_seqs: {env: {TERM: vt100}}
+mothur_deunique_seqs: {env: {TERM: vt100}}
+mothur_deunique_tree: {env: {TERM: vt100}}
+mothur_dist_seqs: {env: {TERM: vt100}}
+mothur_dist_shared: {env: {TERM: vt100}}
+mothur_fastq_info: {env: {TERM: vt100}}
+mothur_filter_seqs: {env: {TERM: vt100}}
+mothur_filter_shared: {env: {TERM: vt100}}
+mothur_get_communitytype: {env: {TERM: vt100}}
+mothur_get_coremicrobiome: {env: {TERM: vt100}}
+mothur_get_dists: {env: {TERM: vt100}}
+mothur_get_group: {env: {TERM: vt100}}
+mothur_get_groups: {env: {TERM: vt100}}
+mothur_get_label: {env: {TERM: vt100}}
+mothur_get_lineage: {env: {TERM: vt100}}
+mothur_get_mimarkspackage: {env: {TERM: vt100}}
+mothur_get_otulabels: {env: {TERM: vt100}}
+mothur_get_otulist: {env: {TERM: vt100}}
+mothur_get_oturep: {env: {TERM: vt100}}
+mothur_get_otus: {env: {TERM: vt100}}
+mothur_get_rabund: {env: {TERM: vt100}}
+mothur_get_relabund: {env: {TERM: vt100}}
+mothur_get_sabund: {env: {TERM: vt100}}
+mothur_get_seqs: {env: {TERM: vt100}}
+mothur_get_sharedseqs: {env: {TERM: vt100}}
+mothur_hcluster: {env: {TERM: vt100}}
+mothur_heatmap_bin: {env: {TERM: vt100}}
+mothur_heatmap_sim: {env: {TERM: vt100}}
+mothur_homova: {env: {TERM: vt100}}
+mothur_indicator: {env: {TERM: vt100}}
+mothur_lefse: {env: {TERM: vt100}}
+mothur_libshuff: {env: {TERM: vt100}}
+mothur_list_otulabels: {env: {TERM: vt100}}
+mothur_list_seqs: {env: {TERM: vt100}}
+mothur_make_biom: {env: {TERM: vt100}}
+mothur_make_contigs: {env: {TERM: vt100}}
+mothur_make_design: {env: {TERM: vt100}}
+mothur_make_fastq: {env: {TERM: vt100}}
+mothur_make_group: {env: {TERM: vt100}}
+mothur_make_lefse: {env: {TERM: vt100}}
+mothur_make_lookup: {env: {TERM: vt100}}
+mothur_make_shared: {env: {TERM: vt100}}
+mothur_make_sra: {env: {TERM: vt100}}
+mothur_mantel: {env: {TERM: vt100}}
+mothur_merge_files: {env: {TERM: vt100}}
+mothur_merge_groups: {env: {TERM: vt100}}
+mothur_merge_sfffiles: {env: {TERM: vt100}}
+mothur_merge_taxsummary: {env: {TERM: vt100}}
+mothur_metastats: {env: {TERM: vt100}}
+mothur_mimarks_attributes: {env: {TERM: vt100}}
+mothur_nmds: {env: {TERM: vt100}}
+mothur_normalize_shared: {env: {TERM: vt100}}
+mothur_otu_association: {env: {TERM: vt100}}
+mothur_otu_hierarchy: {env: {TERM: vt100}}
+mothur_pairwise_seqs: {env: {TERM: vt100}}
+mothur_parse_list: {env: {TERM: vt100}}
+mothur_parsimony: {env: {TERM: vt100}}
+mothur_pca: {env: {TERM: vt100}}
+mothur_pcoa: {env: {TERM: vt100}}
+mothur_pcr_seqs: {env: {TERM: vt100}}
+mothur_phylo_diversity: {env: {TERM: vt100}}
+mothur_phylotype: {env: {TERM: vt100}}
+mothur_pre_cluster: {env: {TERM: vt100}}
+mothur_primer_design: {env: {TERM: vt100}}
+mothur_rarefaction_shared: {env: {TERM: vt100}}
+mothur_rarefaction_single: {env: {TERM: vt100}}
+mothur_remove_dists: {env: {TERM: vt100}}
+mothur_remove_groups: {env: {TERM: vt100}}
+mothur_remove_lineage: {env: {TERM: vt100}}
+mothur_remove_otulabels: {env: {TERM: vt100}}
+mothur_remove_otus: {env: {TERM: vt100}}
+mothur_remove_rare: {env: {TERM: vt100}}
+mothur_remove_seqs: {env: {TERM: vt100}}
+mothur_reverse_seqs: {env: {TERM: vt100}}
+mothur_screen_seqs: {env: {TERM: vt100}}
+mothur_sens_spec: {env: {TERM: vt100}}
+mothur_seq_error: {env: {TERM: vt100}}
+mothur_sffinfo: {env: {TERM: vt100}}
+mothur_shhh_flows: {env: {TERM: vt100}}
+mothur_shhh_seqs: {env: {TERM: vt100}}
+mothur_sort_seqs: {env: {TERM: vt100}}
+mothur_split_abund: {env: {TERM: vt100}}
+mothur_split_groups: {env: {TERM: vt100}}
+mothur_sub_sample: {env: {TERM: vt100}}
+mothur_summary_qual: {env: {TERM: vt100}}
+mothur_summary_seqs: {env: {TERM: vt100}}
+mothur_summary_shared: {env: {TERM: vt100}}
+mothur_summary_single: {env: {TERM: vt100}}
+mothur_summary_tax: {env: {TERM: vt100}}
+mothur_tree_shared: {env: {TERM: vt100}}
+mothur_trim_flows: {env: {TERM: vt100}}
+mothur_trim_seqs: {env: {TERM: vt100}}
+mothur_unifrac_unweighted: {env: {TERM: vt100}}
+mothur_unifrac_weighted: {env: {TERM: vt100}}
+mothur_unique_seqs: {env: {TERM: vt100}}
+mothur_venn: {env: {TERM: vt100}}
+
+NSPDK_candidateClust: {mem: 32}
+NoiseFilterGaussian: {cores: 4, mem: 8}
+NoiseFilterSGolay: {cores: 4, mem: 8}
+OMSSAAdapter: {cores: 4, mem: 8}
+OpenSwathAnalyzer: {cores: 4, mem: 8}
+OpenSwathChromatogramExtractor: {cores: 4, mem: 8}
+OpenSwathConfidenceScoring: {cores: 4, mem: 8}
+OpenSwathDIAPreScoring: {cores: 4, mem: 8}
+OpenSwathDecoyGenerator: {cores: 4, mem: 8}
+OpenSwathFeatureXMLToTSV: {cores: 4, mem: 8}
+OpenSwathRTNormalizer: {cores: 4, mem: 8}
+OpenSwathRewriteToFeatureXML: {cores: 4, mem: 8}
+PTModel: {cores: 4, mem: 8}
+PTPredict: {cores: 4, mem: 8}
+PeakPickerHiRes: {cores: 4, mem: 8}
+PeakPickerWavelet: {cores: 4, mem: 8}
+PepNovoAdapter: {cores: 4, mem: 8}
+PeptideIndexer: {cores: 4, mem: 8}
+PicardASMetrics: {mem: 12}
+PicardGCBiasMetrics: {mem: 12}
+PicardHsMetrics: {mem: 12}
+PicardInsertSize: {mem: 12}
+picard_CleanSam: {mem: 12}
+PrecursorIonSelector: {cores: 4, mem: 8}
+PrecursorMassCorrector: {cores: 4, mem: 8}
+ProteinInference: {cores: 4, mem: 8}
+ProteinQuantifier: {cores: 4, mem: 8}
+ProteinResolver: {cores: 4, mem: 8}
+RNPxl: {cores: 4, mem: 8}
+RTEvaluation: {cores: 4, mem: 8}
+RTModel: {cores: 4, mem: 8}
+RTPredict: {cores: 4, mem: 8}
+Resampler: {cores: 4, mem: 8}
+SeedListGenerator: {cores: 4, mem: 8}
+SemanticValidator: {cores: 4, mem: 8}
+SequenceCoverageCalculator: {cores: 4, mem: 8}
+SpecLibCreator: {cores: 4, mem: 8}
+SpecLibSearcher: {cores: 4, mem: 8}
+SpectraFilterBernNorm: {cores: 4, mem: 8}
+SpectraFilterMarkerMower: {cores: 4, mem: 8}
+SpectraFilterNLargest: {cores: 4, mem: 8}
+SpectraFilterNormalizer: {cores: 4, mem: 8}
+SpectraFilterParentPeakMower: {cores: 4, mem: 8}
+SpectraFilterScaler: {cores: 4, mem: 8}
+SpectraFilterSqrtMower: {cores: 4, mem: 8}
+SpectraFilterThresholdMower: {cores: 4, mem: 8}
+SpectraFilterWindowMower: {cores: 4, mem: 8}
+SpectraMerger: {cores: 4, mem: 8}
+TMTAnalyzer: {cores: 4, mem: 8}
+TOFCalibration: {cores: 4, mem: 8}
+TextExporter: {cores: 4, mem: 8}
+TransformationEvaluation: {cores: 4, mem: 8}
+XMLValidator: {cores: 4, mem: 8}
+XTandemAdapter: {cores: 4, mem: 8}
+racon: {cores: 4, mem: 24}
+abims_xcms_fillPeaks: {mem: 32}
+abims_xcms_retcor: {mem: 32}
+abims_CAMERA_annotateDiffreport: {mem: 32}
+antismash:
+  cores: 12
+  mem: 120
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx96G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+bam-to-wig: {mem: 20}
+bamCompare_deepTools: {mem: 10}
+bamCorrelate_deepTools: {cores: 12, mem: 120}
+bamCoverage_deepTools: {mem: 10}
+bamFingerprint: {mem: 10}
+bctools_extract_alignment_ends: {runner: condor}
+bedtools_intersectbed: {mem: 20}
+bedtools_intersectbed_bam: {mem: 20}
+bedtools_mergebed: {mem: 15}
+bedtools_sortbed: {mem: 20}
+bedtools_subtractbed: {mem: 8}
+bfast_wrapper: {cores: 12, mem: 20}
+bg_diamond: {cores: 6, mem: 90}
+bg_diamond_makedb: {cores: 12, mem: 40}
+bgchem_fragment_merger: {cores: 12, mem: 40}
+bigwig_to_bedgraph: {mem: 12}
+biosigner: {mem: 12}
+bismark_bowtie: {cores: 6, mem: 30, name: bismark, tmp: large}
+bismark_bowtie2: {cores: 6, mem: 30, name: bismark, tmp: large}
+blast_parser: {mem: 8}
+blast2go: {mem: 20}
+blast_parser: {mem: 8}
+blockbuster: {mem: 64}
+blockclust: {mem: 10}
+bowtie2: {cores: 8, mem: 20}
+bwa: {cores: 8, mem: 20}
+bwa_mem: {cores: 8, mem: 60}
+bwa_mem_index_builder_data_manager: {mem: 120}
+bwameth_index_builder_data_manager: {mem: 120}
+bwameth: {cores: 8, mem: 24}
+bwtool-lift: {mem: 80}
+canu: {cores: 12, mem: 64}
+mass_spectrometry_imaging_preprocessing: {mem: 110}
+mass_spectrometry_imaging_ion_images: {mem: 20}
+mass_spectrometry_imaging_qc: {mem: 110}
+mass_spectrometry_imaging_filtering: {mem: 20}
+metaspades: {cores: 10, mem: 110}
+megahit: {cores: 10, mem: 110}
+charts: {mem: 10}
+circgraph: {mem: 10}
+computeMatrix: {mem: 80}
+correctGCBias: {mem: 10}
+cshl_fastx_collapser: {mem: 16}
+crispr_recognition_tool: {mem: 10}
+ctb_np-likeness-calculator: {mem: 12}
+ctb_online_data_fetch: {mem: 10}
+ctb_openmg:
+  mem: 20
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+ctb_pubchem_download_as_smiles: {cores: 12, mem: 20}
+cuffcompare: {mem: 10}
+cuffdiff: {cores: 6, mem: 40}
+cufflinks: {cores: 6, mem: 30}
+cuffnorm: {cores: 6, mem: 20}
+cuffquant: {cores: 6, mem: 20}
+data_manager_gemini_download: {mem: 20}
+data_manager_humann2_download: {mem: 25}
+data_manager_snpeff_databases: {mem: 12}
+data_manager_snpeff_download: {mem: 12}
+deeptools_bamCompare: {cores: 12, mem: 12}
+deeptools_bamCorrelate: {cores: 12, mem: 90}
+deeptools_bamCoverage: {cores: 12, mem: 48}
+deeptools_bamFingerprint: {cores: 12, mem: 12}
+deeptools_bam_compare: {cores: 12, mem: 24}
+deeptools_bam_coverage: {cores: 12, mem: 24}
+deeptools_bam_pe_fragmentsize: {cores: 12, mem: 24}
+deeptools_bigwigCompare: {cores: 12, mem: 12}
+deeptools_bigwigCorrelate: {cores: 12, mem: 40}
+deeptools_bigwig_compare: {cores: 12, mem: 24}
+deeptools_computeGCBias: {cores: 12, mem: 24}
+deeptools_computeMatrix: {cores: 12, mem: 24}
+deeptools_compute_gc_bias: {cores: 12, mem: 24}
+deeptools_compute_matrix: {cores: 12, mem: 30}
+deeptools_correctGCBias: {cores: 12, mem: 24}
+deeptools_correct_gc_bias: {cores: 12, mem: 24}
+deeptools_heatmapper: {mem: 25}
+deeptools_multi_bam_summary: {cores: 12, mem: 24}
+deeptools_multi_bigwig_summary: {cores: 12, mem: 40}
+deeptools_plot_correlation: {mem: 20}
+deeptools_plot_coverage: {mem: 20}
+deeptools_plot_fingerprint: {mem: 20}
+deeptools_plot_heatmap: {mem: 25}
+deeptools_plot_pca: {mem: 20}
+deeptools_plot_profile: {mem: 20}
+deeptools_profiler: {mem: 20}
+demo2D00:
+  env:
+    HOME: /data/2/galaxy_db/tmp
+  mem: 20
+  name: matlab
+  nativeSpecExtra: -l lic_matlab=1
+deseq2: {mem: 8}
+dexseq_count: {mem: 25}
+diamond_database_builder: {cores: 12, mem: 90}
+dt_profiler: {mem: 10}
+eukaryotic_ncbi_submission: {cores: 24, mem: 24}
+fastq_dump: {mem: 20}
+fastqc: {mem: 20}
+featurecounts: {cores: 8, mem: 18}
+feebayes: {cores: 12, mem: 12}
+flashlfq:
+  env:
+    MONO_GC_PARAMS: max-heap-size=2g
+  mem: 32
+flexbar: {cores: 12, mem: 12}
+flexbar_no_split: {cores: 12, mem: 12}
+flexbar_split_RR_bcs: {cores: 12, mem: 12}
+flexbar_split_RYYR_bcs: {cores: 12, mem: 12}
+freebayes: {cores: 12, mem: 12}
+gatk2_base_recalibrator:
+  cores: 12
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx8G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+  mem: 24
+  name: _special
+gatk2_depth_of_coverage: {cores: 12, mem: 24}
+gatk2_haplotype_caller: {cores: 12, mem: 24}
+gatk2_indel_realigner: {mem: 10}
+gatk2_print_reads: {cores: 12, mem: 24}
+gatk2_realigner_target_creator: {cores: 12, mem: 24}
+gatk2_reduce_reads:
+  cores: 12
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx8G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+  mem: 24
+  name: _special
+gatk2_unified_genotyper: {cores: 12, mem: 24}
+gatk2_variant_annotator: {cores: 12, mem: 24}
+gatk2_variant_apply_recalibration: {cores: 12, mem: 24}
+gatk2_variant_combine: {cores: 12, mem: 24}
+gatk2_variant_eval: {cores: 12, mem: 24}
+gatk2_variant_filtration: {mem: 10}
+gatk2_variant_recalibrator: {cores: 12, mem: 24}
+gatk2_variant_select: {cores: 12, mem: 24}
+gatk2_variant_validate: {cores: 12, mem: 24}
+gatk_picard_index_builder: {mem: 12}
+gemini_load: {cores: 12, mem: 40}
+
+# Permissions
+gemini_query:
+    permissions:
+        allow:
+            roles:
+                - admin
+
+ggplot2_heatmap2: {mem: 24}
+graphprot_predict_profile: {mem: 8}
+hammock_1.0:
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+  mem: 20
+  name: java_temp
+heatmapper: {mem: 25}
+heatmapper_deepTools: {mem: 25}
+hicexplorer_hicbuildmatrix: {cores: 10, mem: 90}
+hicexplorer_hiccorrectmatrix: {mem: 64}
+hicexplorer_hiccorrelate: {mem: 20}
+hicexplorer_hicfindtads: {mem: 20}
+hicexplorer_hicplotmatrix: {mem: 100}
+hicexplorer_hicplottads: {mem: 20}
+hicexplorer_hicsummatrices: {mem: 48}
+hicexplorer_hicpca: {cores: 12, mem: 60}
+hicexplorer_hicmergematrixbins: {mem: 80}
+hicexplorer_hictransform: {cores: 12, mem: 60}
+hicexplorer_hicplotviewpoint: {mem: 12}
+hicexplorer_hicaggregatecontacts: {mem: 12}
+hicup_mapper: {cores: 6, mem: 24}
+hisat: {cores: 12, mem: 20}
+#hisat2: {cores: 8, mem: 20_singularity}
+thermo_raw_file_converter: {runner: condor}
+hisat2: {cores: 8, mem: 20}
+
+hisat2_index_builder_data_manager: {cores: 12, mem: 180}
+hmmer_hmmsearch: {mem: 10}
+htseq_count: {mem: 32}
+humann2: {mem: 8}
+infernal_cmbuild: {cores: 20, mem: 20}
+interproscan: {cores: 12, mem: 40}
+iqtree: {cores: 12}
+iterative_map_pipeline: {mem: 60}
+je_clip: {cores: 8}
+je_demultiplex: {cores: 8, mem: 20}
+je_demultiplex_illu: {cores: 8}
+je_markdupes: {cores: 8}
+join1: {mem: 18}
+bamFilter: {runner: condor}
+#bamFilter:  {runner: remote_cluster_mq_cz}
+
+jq: {runner: remote_cluster_mq_cz}
+kallisto_quant: {cores: 8, mem: 20}
+## uha,	with the reference.fa file from	the history it is not working?
+## kallisto_quant: {cores: 8, mem: 20_singularity}
+lastz_wrapper_2: {mem: 8}
+limma_voom: {mem: 4}
+macs2_bdgdiff: {mem: 10}
+macs2_callpeak: {mem: 15}
+maldi_quant_preprocessing: {mem: 128}
+maldi_quant_peak_detection: {mem: 192}
+mass_spectrometry_imaging_classification: {mem: 128}
+megablast_wrapper: {mem: 20}
+meme_dreme: {mem: 16}
+meme_fimo: {mem: 4}
+merge_pcr_duplicates.py: {mem: 4}
+methtools_calling: {cores: 12, mem: 40}
+methtools_filter: {mem: 10}
+methtools_plot: {cores: 12, mem: 20}
+metilene: {cores: 12, mem: 20}
+minced: {mem: 10}
+migmap:
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=6G -Xmx90G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+  mem: 96
+  name: java_temp
+proteomics_moff: {mem: 10, cores: 6}
+mmbios01:
+  env:
+    HOME: /data/2/galaxy_db/tmp
+  mem: 20
+  name: matlab
+  nativeSpecExtra: -l lic_matlab=1
+mmbios02:
+  env:
+    HOME: /data/2/galaxy_db/tmp
+  mem: 20
+  name: matlab
+  nativeSpecExtra: -l lic_matlab=1
+mmbios03:
+  env:
+    HOME: /data/2/galaxy_db/tmp
+  mem: 20
+  name: matlab
+  nativeSpecExtra: -l lic_matlab=1
+morpheus:
+  env:
+    MONO_GC_PARAMS: max-heap-size=2g
+  mem: 64
+  runner: condor
+msaboot: {mem: 6}
+naive_variant_caller: {mem: 20}
+ncbi_makeblastdb: {mem: 20}
+nspdk_sparse: {mem: 16}
+numeric_clustering: {mem: 12}
+peakachu: {mem: 16}
+peptide_shaker:
+  cores: 12
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx8G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+  mem: 24
+  name: _special
+picard_ARRG: {mem: 12}
+picard_AddOrReplaceReadGroups: {mem: 12}
+picard_BamIndexStats: {mem: 12}
+picard_CASM: {mem: 12}
+picard_CollectInsertSizeMetrics: {mem: 12}
+picard_CollectRnaSeqMetrics: {mem: 12}
+picard_DownsampleSam: {mem: 12}
+picard_EstimateLibraryComplexity: {mem: 12}
+picard_NormalizeFasta: {mem: 12}
+picard_FilterSamReads:
+  env:
+    TMP_DIR: $TMPDIR
+  mem: 12
+  tmp: large
+picard_FixMateInformation: {mem: 12}
+picard_FastqToSam: {mem: 12}
+picard_MarkDuplicates: {mem: 12}
+picard_MergeSamFiles: {mem: 12}
+picard_QualityScoreDistribution: {mem: 12}
+picard_ReorderSam: {mem: 12}
+picard_ReplaceSamHeader: {mem: 12}
+picard_SamToFastq: {mem: 12}
+picard_SortSam:
+  env:
+    _JAVA_OPTIONS: -Xmx4G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+  mem: 10
+  name: java_temp
+picard_index_builder_data_manager: {mem: 12}
+piranha: {mem: 15}
+preproc: {mem: 10}
+prokaryotic_ncbi_submission: {cores: 24, mem: 24}
+prokka:
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+  mem: 20
+proteomics_search_msgfplus_1: {mem: 10}
+pureclip: {mem: 32, cores: 2}
+quality_metrics: {mem: 12}
+r_correlation_matrix: {mem: 80}
+racon: {cores: 4, mem: 12}
+rbc_mirdeep2_mapper: {cores: 12, mem: 20}
+rcas: {cores: 4, mem: 16}
+reactome_pathwaymatcher:
+  mem: 20
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx17G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+rgEstLibComp: {mem: 12}
+rgPicFixMate: {mem: 12}
+rgPicardMarkDups: {mem: 12}
+rm_spurious_events.py: {mem: 4}
+rna_star: {cores: 12, mem: 100}
+rna_star_index_builder_data_manager:
+  cores: 12
+  mem: 160
+  params:
+    local_slots: 6
+rnbeads: {mem: 20}
+rsem_calculate_expression: {mem: 16}
+rseqc_bam2wig: {cores: 8, mem: 16}
+sailfish: {cores: 6, mem: 70}
+salmon: {cores: 6, mem: 70}
+sam_merge2:
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+  mem: 32
+search_gui:
+  cores: 12
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+  mem: 12
+  name: special
+secretbt2test: {cores: 12, mem: 20}
+segemehl: {mem: 80}
+seq_filter_by_mapping: {mem: 8}
+shovill:
+  cores: 4
+  mem: 20
+  runner: condor
+  env:
+    SHOVILL_RAM: 20
+show_2D_image_reshape:
+  env:
+    HOME: /data/2/galaxy_db/tmp
+  mem: 20
+  name: matlab
+  nativeSpecExtra: -l lic_matlab=1
+show_3D_image_reshape:
+  env:
+    HOME: /data/2/galaxy_db/tmp
+  mem: 20
+  name: matlab
+  nativeSpecExtra: -l lic_matlab=1
+show_3D_surface_plot:
+  env:
+    HOME: /data/2/galaxy_db/tmp
+  mem: 20
+  name: matlab
+  nativeSpecExtra: -l lic_matlab=1
+signalp3: {mem: 10}
+sklearn_searchcv: {cores: 1, mem: 8}
+smooth_running_window: {mem: 32}
+snippy: {mem: 12}
+snpEff: {mem: 12}
+snpEff_databases: {mem: 12}
+snpEff_download: {mem: 12}
+snpEff_build_gb:
+  mem: 48
+  runner: condor
+  env:
+    _JAVA_OPTIONS: -Xmx48G -Xms1G
+snpSift_annotate: {mem: 12}
+snpSift_caseControl: {mem: 12}
+snpSift_filter: {mem: 12}
+snpSift_geneSets: {mem: 12}
+snpSift_int: {mem: 12}
+spades: {cores: 12, mem: 180}
+sshmm: {mem: 16}
+structurefold: {mem: 12}
+rnaspades: {cores: 12, mem: 90}
+stringtie: {mem: 25}
+t_coffee:
+  env:
+    DIR_4_TCOFFEE: $TMP
+    TMP_4_TCOFFEE: $TMP
+    CACHE_4_TCOFFEE: $TMP
+tophat2: {cores: 12, mem: 90}
+tp_easyjoin_tool: {mem: 12}
+tp_multijoin_tool: {mem: 8}
+tp_uniq_tool: {mem: 12}
+trimmomatic:
+  runner: condor
+  cores: 6
+  mem: 12
+  name: special
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+trinity:
+  cores: 4
+  mem: 220
+  runner: condor
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx170G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+  name: special
+umi_tools_group: {mem: 12}
+umi_tools_dedup: {mem: 12}
+umi_tools_extract: {mem: 4}
+unicycler:
+  cores: 12
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+    TERM: vt100
+  runner: condor
+  mem: 180
+  name: special
+varscan_somatic: {mem: 12}
+varscan_mplieup: {mem: 12}
+varscan_copynumber: {mem: 12}
+velvetg:
+  cores: 4
+  env:
+    OMP_NUM_THREADS: 4
+    OMP_THREAD_LIMIT: 4
+  mem: 32
+  name: _velvetg
+velveth:
+  cores: 4
+  env:
+    OMP_NUM_THREADS: 4
+    OMP_THREAD_LIMIT: 4
+  mem: 16
+  name: _velveth
+vsearch_search: {mem: 80}
+
+
+
+# Some admin tools
+echo_main_env:
+    permissions:
+        allow:
+            roles:
+                - admin
+
+# permissions testing.
+_test_permissions_0: {}
+
+_test_permissions_1:
+    permissions:
+        allow:
+            users:
+                - b@example.com
+
+_test_permissions_2:
+    permissions:
+        allow:
+            users:
+                - a@example.com
+            roles:
+                - role-b

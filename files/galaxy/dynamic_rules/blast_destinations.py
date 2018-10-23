@@ -1,8 +1,8 @@
 from galaxy.jobs import JobDestination
 import os
 
+
 def blast_destinations( job, tool ):
-    # Assign admin users' jobs to special admin_project.
     # Allocate extra time
     inp_data = dict( [ ( da.name, da.dataset ) for da in job.input_datasets ] )
     inp_data.update( [ ( da.name, da.dataset ) for da in job.input_library_datasets ] )
