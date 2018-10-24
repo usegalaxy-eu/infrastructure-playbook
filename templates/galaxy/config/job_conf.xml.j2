@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 <job_conf>
     <plugins workers="4">
+       <plugin id="dynamic" type="runner">
+           <!-- These live on the pythonpath -->
+           <param id="rules_module">usegalaxy.jobs.rules</param>
+        </plugin>
         <plugin id="condor" type="runner" load="galaxy.jobs.runners.condor:CondorJobRunner" />
         <plugin id="local" type="runner" load="galaxy.jobs.runners.local:LocalJobRunner"/>
     </plugins>

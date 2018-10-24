@@ -47,14 +47,17 @@
     #- hxr.certbot
 
     ## GALAXY
-    - packages
-    - supervisor
-    - role: hxr.install-to-venv
-      become: yes
-      become_user: galaxy
-    - geerlingguy.nginx
-    - role: hxr.tiaas
-    - role: hxr.welcome_pages
+    #- packages
+    #- supervisor
+    #- role: hxr.install-to-venv
+      #become: yes
+      #become_user: galaxy
+    #- geerlingguy.nginx
+    #- role: hxr.tiaas
+    #- role: hxr.welcome_pages
+      #become: yes
+      #become_user: galaxy
+    - role: usegalaxy_privileged
       become: yes
       become_user: galaxy
     - role: galaxyproject.interactive_environments

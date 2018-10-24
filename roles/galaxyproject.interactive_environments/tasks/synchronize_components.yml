@@ -1,7 +1,8 @@
 ---
 - name: Ensure parent directory is available
-  command: "mkdir -p {{ interactive_environments_plugins_path }}"
-  creates: "{{ interactive_environments_plugins_path }}"
+  file:
+    path: "{{ interactive_environments_plugins_path }}"
+    state: directory
 
 - name: Synchronize IE plugins
   synchronize:

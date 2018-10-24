@@ -263,7 +263,10 @@ galaxy_mutable_data_dir: /opt/galaxy/mutable-data
 galaxy_server_dir: "{{ galaxy_root  }}/server"
 galaxy_config_dir: "{{ galaxy_root  }}/config"
 galaxy_venv_dir: "{{ galaxy_root  }}/venv"
+
 galaxy_dynamic_rule_dir: "{{ galaxy_root }}/dynamic_rules"
+usegalaxy_dynamic_job_rules:
+  - sorting_hat.py
 
 galaxy_instance_hostname: usegalaxy.eu
 galaxy_config_style: 'ini'
@@ -648,6 +651,3 @@ galaxy_custom_sites:
     brand: TEST
     index: /index-beta.html
     custom_css: '#masthead { background-color: red !important; } #masthead .navbar-nav > li .nav-link{color: black;} #masthead .navbar-nav > li.active .nav-link { color: white !important; }'
-
-
-
