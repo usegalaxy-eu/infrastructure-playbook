@@ -4,8 +4,6 @@ from galaxy.jobs.mapper import JobMappingException
 import copy
 import math
 import os
-import subprocess
-import time
 import yaml
 
 # Maximum resources
@@ -20,9 +18,6 @@ with open(SPECIFICATION_PATH, 'r') as handle:
 TOOL_DESTINATION_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'tool_destinations.yaml')
 with open(TOOL_DESTINATION_PATH, 'r') as handle:
     TOOL_DESTINATIONS = yaml.load(handle)
-
-TRAINING_MACHINES = {}
-STALE_CONDOR_HOST_INTERVAL = 60  # seconds
 
 
 def assert_permissions(tool_spec, user_email, user_roles):
@@ -187,114 +182,31 @@ def build_spec(tool_spec, runner_hint=None):
     return env, params, runner, raw_allocation_details
 
 
-def get_training_machines(group='training'):
-    # IF more than 60 seconds out of date, refresh.
-    global TRAINING_MACHINES
-
-    # Define the group if it doesn't exist.
-    if group not in TRAINING_MACHINES:
-        TRAINING_MACHINES[group] = {
-            'updated': 0,
-            'machines': [],
-        }
-
-    if time.time() - TRAINING_MACHINES[group]['updated'] > STALE_CONDOR_HOST_INTERVAL:
-        # Fetch a list of machines
-        try:
-            machine_list = subprocess.check_output(['condor_status', '-long', '-attributes', 'Machine'])
-        except subprocess.CalledProcessError:
-            machine_list = ''
-        except IOError:
-            machine_list = ''
-
-        # Strip them
-        TRAINING_MACHINES[group]['machines'] = [
-            x[len("Machine = '"):-1]
-            for x in machine_list.strip().split('\n\n')
-            if '-' + group + '-' in x
-        ]
-        # And record that this has been updated recently.
-        TRAINING_MACHINES[group]['updated'] = time.time()
-    return TRAINING_MACHINES[group]['machines']
-
-
-def avoid_machines(permissible=None):
-    """
-    Obtain a list of the special training machines in the form that can be used
-    in a rank/requirement expression.
-
-    :param permissible: A list of training groups that are permissible to the user and shouldn't be included in the expression
-    :type permissible: list(str) or None
-
-    """
-    if permissible is None:
-        permissible = []
-    machines = set(get_training_machines())
-    # List of those to remove.
-    to_remove = set()
-    # Loop across permissible machines in order to remove them from the machine dict.
-    for allowed in permissible:
-        for m in machines:
-            if allowed in m:
-                to_remove = to_remove.union(set([m]))
-    # Now we update machine list with removals.
-    machines = machines.difference(to_remove)
-    # If we want to NOT use the machines, construct a list with `!=`
-    data = ['(machine != "%s")' % m for m in sorted(machines)]
-    if len(data):
-        return '( ' + ' && '.join(data) + ' )'
-    return ''
-
-
-def prefer_machines(training_identifiers, machine_group='training'):
-    """
-    Obtain a list of the specially tagged machines in the form that can be used
-    in a rank/requirement expression.
-
-    :param training_identifiers: A list of training groups that are permissible to the user and shouldn't be included in the expression
-    :type training_identifiers: list(str) or None
-    """
-    if training_identifiers is None:
-        training_identifiers = []
-
-    machines = set(get_training_machines(group=machine_group))
-    allowed = set()
-    for identifier in training_identifiers:
-        for m in machines:
-            if identifier in m:
-                allowed = allowed.union(set([m]))
-
-    # If we want to use the machines, construct a list with `==`
-    data = ['(machine == "%s")' % m for m in sorted(allowed)]
-    if len(data):
-        return '( ' + ' || '.join(data) + ' )'
-    return ''
-
-
 def reroute_to_dedicated(tool_spec, user_roles):
     """
     Re-route users to correct destinations. Some users will be part of a role
     with dedicated training resources.
     """
     # Collect their possible training roles identifiers.
-    training_roles = [role[len('training-'):] for role in user_roles if role.startswith('training-')]
+    training_roles = [role for role in user_roles if role.startswith('training-')]
 
     # No changes to specification.
     if len(training_roles) == 0:
         # However if it is running on condor, make sure that it doesn't run on the training machines.
         if 'runner' in tool_spec and tool_spec['runner'] == 'condor':
             # Require that the jobs do not run on these dedicated training machines.
-            return {'requirements': avoid_machines()}
+            return {'requirements': 'GalaxyTraining == False'}
         # If it isn't running on condor, no changes.
         return {}
 
     # Otherwise, the user does have one or more training roles.
     # So we must construct a requirement / ranking expression.
+    training_expr = " || ".join(['(GalaxyGroup == "%s")' % role for role in training_roles])
     return {
         # We require that it does not run on machines that the user is not in the role for.
-        'requirements': avoid_machines(permissible=training_roles),
+        'requirements': '(GalaxyTraining == False) || (%s)' % training_expr,
         # We then rank based on what they *do* have the roles for
-        'rank': prefer_machines(training_roles),
+        'rank': training_expr,
         'runner': 'condor',
     }
 
@@ -321,7 +233,7 @@ def _finalize_tool_spec(tool_id, user_roles, memory_scale=1.0):
         tool_spec = {
             'mem': 0.3,
             'runner': 'condor',
-            'rank': prefer_machines(['upload'], machine_group='upload'),
+            'rank': 'GalaxyGroup == upload',
             'env': {
                 'TEMP': '/data/1/galaxy_db/tmp/'
             }
@@ -330,7 +242,7 @@ def _finalize_tool_spec(tool_id, user_roles, memory_scale=1.0):
         tool_spec = {
             'mem': 0.3,
             'runner': 'condor',
-            'rank': prefer_machines(['metadata'], machine_group='metadata')
+            'rank': 'GalaxyGroup == metadata',
         }
     return tool_spec
 
