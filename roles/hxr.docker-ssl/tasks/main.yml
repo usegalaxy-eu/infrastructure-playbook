@@ -1,0 +1,82 @@
+---
+# Certs
+- name: Deploy stuff
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  with_items:
+    - src: ca-key.pem
+      dest: /etc/pki/tls/private/ca-key.pem
+      mode: '0640'
+    - src: ca.pem
+      dest: /etc/pki/tls/certs/ca.pem
+      mode: '0644'
+    - src: cert.pem
+      dest: /etc/pki/tls/certs/cert.pem
+      mode: '0644'
+    - src: key.pem
+      dest: /etc/pki/tls/private/key.pem
+      mode: '0640'
+  register: docker_cert
+
+
+# Server
+#- openssl_privatekey:
+    #path: "{{ docker_server_key }}"
+
+#- openssl_csr:
+    #path: "{{ docker_server_csr }}"
+    #privatekey_path: "{{ docker_server_key }}"
+    #common_name: docker.galaxyproject.eu
+
+#- name: Generate a Self Signed OpenSSL certificate
+  #openssl_certificate:
+    #path: "{{ docker_server_crt }}"
+    #privatekey_path: "{{ docker_server_key }}"
+    #csr_path: "{{ docker_server_csr }}"
+    #provider: selfsigned
+    #extended_key_usage: serverAuth
+  #register: docker_cert
+
+## Client
+#- openssl_privatekey:
+    #path: "{{ docker_client_key }}"
+
+#- openssl_csr:
+    #path: "{{ docker_client_csr }}"
+    #privatekey_path: "{{ docker_client_key }}"
+    #common_name: client
+
+#- name: Generate a client certificate
+  #openssl_certificate:
+    #path: "{{ docker_client_crt }}"
+    #privatekey_path: "{{ docker_client_key }}"
+    #csr_path: "{{ docker_client_csr }}"
+    #provider: selfsigned
+    #extended_key_usage: clientAuth
+
+- file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Deploy systemd environment override
+  template:
+    src: docker-env.conf
+    dest: /etc/systemd/system/docker.service.d/custom.conf
+    owner: root
+    group: root
+    mode: 0644
+  register: docker_override
+
+- name: restart docker
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: docker
+  when: docker_cert.changed or docker_override.changed

@@ -1,20 +1,47 @@
 <?xml version="1.0"?>
 <job_conf>
-    <plugins workers="4">
-       <plugin id="dynamic" type="runner">
-           <!-- These live on the pythonpath -->
-           <param id="rules_module">usegalaxy.jobs.rules</param>
-        </plugin>
-        <plugin id="condor" type="runner" load="galaxy.jobs.runners.condor:CondorJobRunner" />
-        <plugin id="local" type="runner" load="galaxy.jobs.runners.local:LocalJobRunner"/>
-    </plugins>
-    <handlers default="handlers">
-        {% for n in range(galaxy_handler_count) %}
-        <handler id="handler{{ n }}" tags="handlers"/>
-        {% endfor %}
-    </handlers>
-    <destinations default="condor">
-        <destination id="local" runner="local"/>
-        <destination id="condor" runner="condor"/>
-    </destinations>
+	<plugins workers="{{ galaxy_jobconf.plugin_workers }}">
+		{% for plugin in galaxy_jobconf['plugins'] %}
+		<plugin id="{{ plugin['id'] }}" type="runner" {% if 'load' in plugin %}load="{{ plugin['load'] }}"{% endif %}>
+			{% if 'params' in plugin %}
+			{% for k in plugin['params'] | sort %}
+			<param id="{{ k }}">{{ plugin['params'][k] }}</param>
+			{% endfor %}
+			{% endif %}
+		</plugin>
+		{% endfor %}
+	</plugins>
+	<handlers default="handlers">
+		{% for n in range(galaxy_handler_count) %}
+		<handler id="handler{{ n }}" tags="handlers"/>
+		{% endfor %}
+	</handlers>
+	<destinations default="gateway">
+		{% for destination in galaxy_jobconf['destinations'] %}
+		<destination id="{{ destination['id'] }}" runner="{{ destination['runner'] }}">
+			{% if 'params' in destination %}
+			{% for k in destination['params'] | sort %}
+			<param id="{{ k }}">{{ destination['params'][k] }}</param>
+			{% endfor %}
+			{% endif %}
+			{% if 'raw' in destination %}
+			{{ destination['raw'] }}
+			{% endif %}
+		</destination>
+		{% endfor %}
+	</destinations>
+	<tools>
+		{% for tool in galaxy_jobconf['tools'] %}
+		<tool id="{{ tool['id'] }}" destination="{{ tool['destination'] }}" />
+		{% endfor %}
+		<!-- Per handler echos-->
+		{% for n in range(galaxy_handler_count) %}
+		<tool id="echo_main_handler{{ n }}" destination="local" handler="handler{{ n }}"/>
+		{% endfor %}
+	</tools>
+	<limits>
+		{% for k in galaxy_jobconf['limits'] | sort %}
+		<limit type="{{ k }}">{{ galaxy_jobconf['limits'][k] }}</limit>
+		{% endfor %}
+	</limits>
 </job_conf>
