@@ -1,0 +1,36 @@
+---
+# Certs
+- name: mkdir
+  become: true
+  become_user: "{{ docker_account }}"
+  file:
+    path: "~/.docker"
+    state: directory
+    mode: '0750'
+
+- name: Setup docker for user
+  become: true
+  become_user: "{{ docker_account }}"
+  copy:
+    src: "{{ item }}"
+    dest: "~/.docker/{{ item }}"
+    mode: "0640"
+  with_items:
+    - ca.pem
+    - cert.pem
+    - key.pem
+
+- name: Add env vars
+  become: true
+  become_user: "{{ docker_account }}"
+  lineinfile:
+    path: "~/.bashrc"
+    regexp: "^export {{ item.var }}"
+    line: "export {{ item.var }}='{{ item.val }}'"
+  with_items:
+    - var: DOCKER_HOST
+      val: 'tcp://docker.galaxyproject.eu:443'
+    - var: DOCKER_TLS_VERIFY
+      val: 1
+    - var: DOCKER_CERT_PATH
+      val: "{{ galaxy_root }}/.docker"
