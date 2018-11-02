@@ -6,13 +6,13 @@
   vars_files:
     - "secret_group_vars/all.yml"
   pre_tasks:
-    - name: Create nginx cache dir
-      file:
-          path: /var/cache/nginx/static
-          state: directory
-          owner: nginx
-          group: root
-          mode: 0700
+    #- name: Create nginx cache dir
+      #file:
+          #path: /var/cache/nginx/static
+          #state: directory
+          #owner: nginx
+          #group: root
+          #mode: 0700
     #- name: Create Galaxy runtime user
       #user:
         #name: galaxy
@@ -32,6 +32,10 @@
         #- python-virtualenv
         #- bc
   roles:
+    #- geerlingguy.docker
+    - role: hxr.docker-ssl-client
+      vars:
+        docker_account: galaxy
     #- geerlingguy.repo-epel
     #- hxr.exclude-repo # Exclude epel repos for condor, node, npm
     #- geerlingguy.nodejs

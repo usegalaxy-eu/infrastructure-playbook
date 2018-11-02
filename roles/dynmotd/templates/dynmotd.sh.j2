@@ -1,15 +1,18 @@
 #!/bin/bash
-icon="$(hostname | /usr/bin/identicon)"
+data=$(hostname -f)
+icon="$(echo "$data" | /usr/bin/identicon)"
+color_fg=$((16#$(echo "$data" | tr -d '\n' | sha256sum | cut -c1-2)))
+color_bg=$(( color_fg + 15 ))
+bg="\033[48;5;${color_bg}m"
+fg="\033[38;5;${color_fg}m"
+clear="\033[0m"
 
 line() {
 	head -n $1 | tail -n 1
 }
 
 
-
-
 echo "
-
                      _____         _
                     / ____|       | |                                    $(line 1 <<< "$icon")
   _   _  ___   ___ | |  __   __ _ | |  __ _ __  __ _   _     ___  _   _  $(line 2 <<< "$icon")
