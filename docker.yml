@@ -1,0 +1,20 @@
+---
+- name: docker
+  hosts: docker
+  become: true
+  vars:
+    hostname: docker.galaxyproject.eu
+  vars_files:
+    - "secret_group_vars/all.yml"
+  roles:
+    #- geerlingguy.repo-epel
+    #- hxr.admin-tools
+    #- hxr.monitor-email
+    #- linuxhq.yum-cron
+    #- influxdata.chrony
+    #- geerlingguy.pip
+    #- geerlingguy.docker
+    - hxr.docker-ssl
+    - dj-wasabi.telegraf
+    - dev-sec.os-hardening
+    - dev-sec.ssh-hardening
