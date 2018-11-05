@@ -475,8 +475,12 @@ base_app_main: &BASE_APP_MAIN
 
   tool_config_file: "{{ galaxy_config_dir }}/tool_conf.xml,{{ galaxy_shed_tool_conf_file }},{{ galaxy_config_dir }}/nagios_tool_conf.xml"
   tool_dependency_dir: /usr/local/tools
-  job_working_directory: /data/7/galaxy_db/job_working_directory
-  cluster_files_directory: /data/7/galaxy_db/pbs
+
+  # TODO(hxr): change back to /data/7/
+  job_working_directory: /data/dnb01/galaxy-new-testing/job-working
+  cluster_files_directory: /data/dnb01/galaxy-new-testing/pbs
+  new_file_path: /data/dnb01/galaxy-new-testing//galaxy_db/tmp
+
   #nginx_upload_store: /galaxy-repl/main/upload
   #nginx_upload_job_files_store: /galaxy-repl/main/upload_job_files
   ftp_upload_dir: /data/0/incoming/
@@ -658,8 +662,7 @@ base_app_main: &BASE_APP_MAIN
 galaxy_config_hash:
   "app:main":
     <<: *BASE_APP_MAIN
-    new_file_path: /data/7/galaxy_db/tmp
-
+    #new_file_path: /data/dnb01/galaxy-new-testing//galaxy_db/tmp
 
 galaxy_config: "{{ galaxy_config_hash }}"
 
