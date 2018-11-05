@@ -108,7 +108,7 @@ def name_it(tool_spec):
 
 
 def build_spec(tool_spec, runner_hint=None):
-    destination = tool_spec.get('runner', 'sge')
+    destination = tool_spec.get('runner', 'condor')
 
     # TODO: REMOVE. Temporary hack, should be safe to remove now
     if runner_hint is not None:

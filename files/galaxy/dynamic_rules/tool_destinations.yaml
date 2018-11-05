@@ -61,14 +61,12 @@ msgfplus:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
   mem: 12
   name: special
-  runner: condor
 MSGFPlusAdapter:
   cores: 10
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
   mem: 12
   name: special
-  runner: condor
 mass_spectrometry_imaging_segmentations: {mem: 92}
 mass_spectrometry_imaging_combine: {mem: 12}
 mass_spectrometry_imaging_mzplots: {mem: 24}
@@ -283,7 +281,7 @@ bamCompare_deepTools: {mem: 10}
 bamCorrelate_deepTools: {cores: 12, mem: 120}
 bamCoverage_deepTools: {mem: 10}
 bamFingerprint: {mem: 10}
-bctools_extract_alignment_ends: {runner: condor}
+bctools_extract_alignment_ends: {}
 bedtools_intersectbed: {mem: 20}
 bedtools_intersectbed_bam: {mem: 20}
 bedtools_mergebed: {mem: 15}
@@ -448,7 +446,7 @@ hicexplorer_hicaggregatecontacts: {mem: 12}
 hicup_mapper: {cores: 6, mem: 24}
 hisat: {cores: 12, mem: 20}
 #hisat2: {cores: 8, mem: 20_singularity}
-thermo_raw_file_converter: {runner: condor}
+thermo_raw_file_converter: {}
 hisat2: {cores: 8, mem: 20}
 
 hisat2_index_builder_data_manager: {cores: 12, mem: 180}
@@ -464,7 +462,7 @@ je_demultiplex: {cores: 8, mem: 20}
 je_demultiplex_illu: {cores: 8}
 je_markdupes: {cores: 8}
 join1: {mem: 18}
-bamFilter: {runner: condor}
+bamFilter: {}
 #bamFilter:  {runner: remote_cluster_mq_cz}
 
 jq: {runner: remote_cluster_mq_cz}
@@ -515,7 +513,6 @@ morpheus:
   env:
     MONO_GC_PARAMS: max-heap-size=2g
   mem: 64
-  runner: condor
 msaboot: {mem: 6}
 naive_variant_caller: {mem: 20}
 ncbi_makeblastdb: {mem: 20}
@@ -605,7 +602,6 @@ seq_filter_by_mapping: {mem: 8}
 shovill:
   cores: 4
   mem: 20
-  runner: condor
   env:
     SHOVILL_RAM: 20
 show_2D_image_reshape:
@@ -635,7 +631,6 @@ snpEff_databases: {mem: 12}
 snpEff_download: {mem: 12}
 snpEff_build_gb:
   mem: 48
-  runner: condor
   env:
     _JAVA_OPTIONS: -Xmx48G -Xms1G
 snpSift_annotate: {mem: 12}
@@ -658,7 +653,6 @@ tp_easyjoin_tool: {mem: 12}
 tp_multijoin_tool: {mem: 8}
 tp_uniq_tool: {mem: 12}
 trimmomatic:
-  runner: condor
   cores: 6
   mem: 12
   name: special
@@ -667,7 +661,6 @@ trimmomatic:
 trinity:
   cores: 4
   mem: 220
-  runner: condor
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx170G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
   name: special
@@ -679,7 +672,6 @@ unicycler:
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
     TERM: vt100
-  runner: condor
   mem: 180
   name: special
 varscan_somatic: {mem: 12}

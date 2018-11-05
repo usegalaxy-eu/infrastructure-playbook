@@ -1,12 +1,14 @@
 <?xml version="1.0"?>
 <object_store type="distributed" id="primary" order="0">
     <backends>
-        <backend id="files1" type="disk" weight="1">
+        <backend id="files1" type="disk" weight="1000000000">
             <files_dir path="/data/dnb01/galaxy-new-testing/files"/>
             <extra_dir type="temp" path="/data/dnb01/galaxy-new-testing/tmp"/>
             <extra_dir type="job_work" path="/data/dnb01/galaxy-new-testing/job_working_directory"/>
         </backend>
-        <!--
+
+
+
         <backend id="files1" type="disk" weight="0">
             <files_dir path="/data/1/galaxy_db/files"/>
             <extra_dir type="temp" path="/data/1/galaxy_db/tmp"/>
@@ -42,17 +44,15 @@
             <extra_dir type="temp" path="/data/dnb01/galaxy_db/tmp"/>
             <extra_dir type="job_work" path="/data/dnb01/galaxy_db/job_working_directory"/>
         </backend>
-        <backend id="files9" type="disk" weight="10">
+        <backend id="files9" type="disk" weight="0">
             <files_dir path="/data/dnb02/galaxy_db/files"/>
             <extra_dir type="temp" path="/data/dnb02/galaxy_db/tmp"/>
             <extra_dir type="job_work" path="/data/dnb02/galaxy_db/job_working_directory"/>
         </backend>
-
         <backend id="secondary" type="disk" weight="0">
             <files_dir path="/data/0/galaxy_db/files"/>
             <extra_dir type="temp" path="/data/0/galaxy_db/tmp"/>
             <extra_dir type="job_work" path="/data/0/galaxy_db/job_working_directory"/>
         </backend>
-        -->
     </backends>
 </object_store>
