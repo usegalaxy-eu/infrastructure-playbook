@@ -70,3 +70,11 @@
     src: tiaas.service
     dest: /etc/systemd/system/tiaas.service
   notify: setup tiaas systemd
+
+- name: Allow specified users to manage tiaas
+  template:
+    src: sudoers.j2
+    dest: /etc/sudoers.d/tiaas
+    validate: 'visudo -cf %s'
+    mode: 0440
+  when: tiaas_manage_user is defined
