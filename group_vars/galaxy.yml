@@ -58,6 +58,8 @@ tiaas_version: master
 tiaas_create_user: true
 tiaas_create_group: true
 
+tiaas_manage_user: "{{ galaxy_user }}"
+
 
 certbot_auto_renew: yes
 certbot_auto_renew_user: root
@@ -249,6 +251,12 @@ htcondor:
     # http://pages.cs.wisc.edu/~adesmet/status.html#condor-jobstatus
     jobs:
         hold_older_than: '{{ 86400 * 7 }}'
+
+# gxadmin
+postgres_user: galaxy2
+postgres_host: sn03.bi.uni-freiburg.de
+postgres_port: 5432
+# postgres_pass defined in secret_group_vars/all.yml
 
 # GALAXY
 galaxy_user: galaxy
