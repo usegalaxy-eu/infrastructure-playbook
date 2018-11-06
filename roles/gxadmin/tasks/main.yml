@@ -1,0 +1,19 @@
+---
+- name: Download gxadmin
+  get_url:
+    url: "https://raw.githubusercontent.com/usegalaxy-eu/gxadmin/master/gxadmin"
+    dest: /usr/bin/gxadmin
+    mode: 0755
+
+- name: Add env vars
+  become: true
+  become_user: "{{ galaxy_user }}"
+  lineinfile:
+    path: "~/.bashrc"
+    regexp: "^export {{ item.var }}"
+    line: "export {{ item.var }}='{{ item.val }}'"
+  with_items:
+    - var: GALAXY_CONFIG_DIR
+      val: "{{ galaxy_config_dir }}"
+    - var: GALAXY_MUTABLE_CONFIG_DIR
+      val: "{{ galaxy_mutable_config_dir }}"
