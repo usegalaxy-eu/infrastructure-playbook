@@ -4,21 +4,23 @@
     path: /etc/group
     regexp: 'input:x:999:'
     line: 'input:x:500:'
+  register: user_input
   when: replace_non_galaxy_999 is defined
 
 - command: "find / -gid 999 -exec chgrp 500 '{}' +"
   ignore_errors: yes
-  when: replace_non_galaxy_999 is defined
+  when: replace_non_galaxy_999 is defined and user_input.changed
 
 - lineinfile:
     path: /etc/passwd
     regexp: 'polkitd:x:999:998:User for polkitd:/:/sbin/nologin'
     line: 'polkitd:x:500:998:User for polkitd:/:/sbin/nologin'
+  register: group_polkit
   when: replace_non_galaxy_999 is defined
 
 - command: "find / -uid 999 -exec chown 500 '{}' +"
   ignore_errors: yes
-  when: replace_non_galaxy_999 is defined
+  when: replace_non_galaxy_999 is defined and group_polkit.changed
 
 - name: galaxy account group
   group:
@@ -31,7 +33,7 @@
     uid: "{{ galaxy_uid }}"
     name: galaxy
     group: galaxy
-    home: /usr/local/galaxy
+    home: /opt/galaxy
     state: present
     comment: Galaxy Service-Acct
     createhome: no
