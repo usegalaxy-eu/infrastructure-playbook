@@ -32,12 +32,13 @@
     - "secret_group_vars/all.yml"
   roles:
     - hostname
-    - linuxhq.yum-cron
+    - linuxhq.yum_cron
     - geerlingguy.repo-epel
     - hxr.admin-tools
     - hxr.aws-cli
     - hxr.certbot
-    - hxr.haproxy-error-pages
+    # TODO(hxr): find downloader script
+    #- hxr.haproxy-error-pages
     - geerlingguy.haproxy
     - jasonroyle.rabbitmq
     - dj-wasabi.telegraf

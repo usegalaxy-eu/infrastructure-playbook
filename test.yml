@@ -1,0 +1,12 @@
+---
+- hosts: localhost
+  pre_tasks:
+    - uri:
+        url: https://does.not.exist
+      register: example2
+      ignore_errors: true
+    - uri:
+        url: https://example.com
+      register: example
+    - debug:
+        var: example2

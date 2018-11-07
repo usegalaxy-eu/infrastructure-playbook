@@ -16,63 +16,65 @@
           #owner: nginx
           #group: root
           #mode: 0700
-    - name: Create Galaxy runtime user
-      user:
-        name: galaxy
-        comment: "Galaxy Server"
-        system: yes
-        home: /opt/galaxy
-        createhome: yes
-        uid: 999
-      become: yes
+    #- name: Create Galaxy runtime user
+      #user:
+        #name: galaxy
+        #comment: "Galaxy Server"
+        #system: yes
+        #home: /opt/galaxy
+        #createhome: yes
+        #uid: 999
+      #become: yes
     - name: Install Dependencies
       package:
-        name: "{{ item }}"
+        name: ['git', 'python-psycopg2', 'python-virtualenv', 'bc']
       become: yes
-      with_items:
-        - git
-        - python-psycopg2
-        - python-virtualenv
-        - bc
   roles:
-    - geerlingguy.docker
-    - role: hxr.docker-ssl-client
-      vars:
-        docker_account: galaxy
-    - geerlingguy.repo-epel
-    - hxr.exclude-repo # Exclude epel repos for condor, node, npm
-    - geerlingguy.nodejs
-    - hxr.autofs
-    - cvmfs
-    - dynmotd
-    - ssh-host-sign
-    - hxr.admin-tools
-    - hxr.monitor-email
-    - htcondor
-    - linuxhq.yum-cron
-    - influxdata.chrony
-    - hxr.certbot
+    #- hxr.galaxy-user
+    #- geerlingguy.docker
+    # TODO(hxr): fails whenever galaxy homedir is created without bashrc
+    #- role: hxr.docker-ssl-client
+      #vars:
+        #docker_account: galaxy
+    #- geerlingguy.repo-epel
+    #- hxr.exclude-repo # Exclude epel repos for condor, node, npm
+    #- geerlingguy.nodejs
+    # TODO(hxr): missing gxmnt etc
+    #- hxr.autofs
+    #- cvmfs
+    #- dynmotd
+    #- ssh-host-sign
+    #- hxr.admin-tools
+    #- hxr.monitor-email
+    #- htcondor
+    #- linuxhq.yum_cron
+    #- influxdata.chrony
+    # TODO(hxr): maybe don't run on temp testing VMs?
+    #- hxr.certbot
 
     # GALAXY
-    - hxr.postgres-connection
-    - gxadmin
-    - packages
-    - supervisor
-    - role: hxr.install-to-venv
+    #- hxr.postgres-connection
+    #- gxadmin
+    #- packages
+    #- hxr.galaxy-log-dir
+    # TODO(hxr): /var/log/galaxy doesn't exist
+    #- supervisor
+    #- role: hxr.install-to-venv
+      #become: yes
+      #become_user: galaxy
+    #- geerlingguy.nginx
+    #- role: hxr.tiaas
+    #- role: usegalaxy_privileged
+      #become: yes
+      #become_user: galaxy
+    - role: galaxyproject.galaxy
       become: yes
       become_user: galaxy
-    - geerlingguy.nginx
-    - role: hxr.tiaas
+    # TODO: cannot come before galaxy
     - role: hxr.welcome_pages
       become: yes
       become_user: galaxy
-    - role: usegalaxy_privileged
-      become: yes
-      become_user: galaxy
     - role: galaxyproject.interactive_environments
-      become: yes
-      become_user: galaxy
-    - role: galaxyproject.galaxy
       become: yes
       become_user: galaxy
 
