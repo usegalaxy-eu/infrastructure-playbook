@@ -1,8 +1,8 @@
 # {{ ansible_managed }}
 
-{% for section in yum_cron_hourly_conf|sort %}
+{% for section in yum_cron_hourly|sort %}
 [{{ section }}]
-{%   for key, value in yum_cron_hourly_conf[section].items()|sort %}
+{%   for key, value in yum_cron_hourly[section].iteritems()|sort %}
 {%     if value is sameas true %}
 {{ key }} = yes
 {%     elif value is sameas false %}
@@ -13,5 +13,7 @@
 {{ key }} = {{ value|join(', ') }}
 {%     endif %}
 {%   endfor %}
+{%   if not loop.last %}
 
+{%   endif %}
 {% endfor %}

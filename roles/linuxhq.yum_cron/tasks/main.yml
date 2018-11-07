@@ -1,37 +1,33 @@
 ---
-- name: Executing yum update tasks
-  import_tasks: yum_update.yml
-  when:
-    - yum_packages_update is defined
-    - yum_packages_update|bool == true
+- name: Ensure that the yum-cron package is installed
+  tags: yum_cron
+  become: true
+  yum:
+    name: yum-cron
+    state: present
+  register: yum_cron_yum
 
-- name: Executing yum plugins tasks
-  import_tasks: yum_plugins.yml
-  when:
-    - yum_plugin_packages is defined
-    - yum_plugin_packages|length > 0
+- name: Attempting to overlay yum-cron configurations
+  tags: yum_cron
+  become: true
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dst }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart yum-cron
+  with_items:
+    - { src: yum-cron.conf.j2, dst: /etc/yum/yum-cron.conf }
+    - { src: yum-cron-hourly.conf.j2, dst: /etc/yum/yum-cron-hourly.conf }
+  when: yum_cron_yum is success
 
-- name: Executing yum packages tasks
-  import_tasks: yum_packages.yml
-  when:
-    - yum_packages_install is defined
-    - yum_packages_remove is defined
-
-- name: Executing yum permissions tasks
-  import_tasks: yum_permissions.yml
-  when:
-    - yum_permissions is defined
-    - yum_permissions|length > 0
-
-- name: Executing yum protected tasks
-  import_tasks: yum_protected.yml
-  when:
-    - yum_protected is defined
-    - yum_protected|length > 0
-
-- name: Executing yum crontab tasks
-  import_tasks: yum_cron.yml
-  when:
-    - yum_cron is defined
-    - yum_cron|bool == true
+- name: Enable and start the yum-cron service on boot
+  tags: yum_cron
+  become: true
+  service:
+    enabled: yes
+    name: yum-cron
+    state: started
+  when: yum_cron_yum is success
 ...

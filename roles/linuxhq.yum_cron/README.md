@@ -1,8 +1,10 @@
-# ansible-role-yum
+# ansible-role-yum_cron
 
-[![Build Status](https://travis-ci.org/linuxhq/ansible-role-yum.svg?branch=master)](https://travis-ci.org/linuxhq/ansible-role-yum)
+[![Build Status](https://travis-ci.org/linuxhq/ansible-role-yum_cron.svg?branch=master)](https://travis-ci.org/linuxhq/ansible-role-yum_cron)
+[![Ansible Galaxy](https://img.shields.io/badge/ansible--galaxy-yum_cron-blue.svg?style=flat)](https://galaxy.ansible.com/linuxhq/yum_cron)
+[![License](https://img.shields.io/badge/license-GPLv3-brightgreen.svg?style=flat)](COPYING)
 
-RHEL/CentOS - Package upgrades, permissions setting, plugin configuration and scheduled updates
+RHEL/CentOS - An interface to conveniently call yum from cron
 
 ## Requirements
 
@@ -12,8 +14,7 @@ None
 
 Available variables are listed below, along with default values:
 
-    yum_cron: true
-    yum_cron_conf:
+    yum_cron:
       base:
         debuglevel: -2
         mdpolicy: 'group:main'
@@ -36,7 +37,7 @@ Available variables are listed below, along with default values:
         package_types:
           - mandatory
           - default
-    yum_cron_hourly_conf:
+    yum_cron_hourly:
       base:
         debuglevel: -2
         mdpolicy: 'group:main'
@@ -59,40 +60,6 @@ Available variables are listed below, along with default values:
         package_types:
           - mandatory
           - default
-    yum_module_opts:
-      allow_downgrade: false
-      conf_file: ''
-      disable_gpg_check: false
-      disablerepo: []
-      enablerepo: []
-      exclude: ''
-      installroot: /
-      security: false
-      skip_broken: false
-      update_cache: false
-      validate_certs: true
-    yum_packages_install: []
-    yum_packages_remove: []
-    yum_packages_update: true
-    yum_permissions: []
-    yum_plugin_packages:
-      - yum-plugin-fastestmirror
-      - yum-plugin-post-transaction-actions
-    yum_plugin_fastestmirror:
-      always_print_best_host: true
-      enabled: 1
-      hostfilepath: timedhosts.txt
-      maxhostfileage: 10
-      maxthreads: 15
-      socket_timeout: 3
-      verbose: 0
-    yum_plugin_post_transaction_actions:
-      actiondir: /etc/yum/post-actions/
-      actions: []
-      enabled: 1
-    yum_protected:
-      systemd:
-        - systemd
 
 ## Dependencies
 
@@ -102,30 +69,21 @@ None
 
     - hosts: servers
       roles:
-        - role: linuxhq.yum
-          yum_module_opts:
-            enablerepo:
-              - epel
-          yum_packages_install:
-            - bind-utils
-            - wget
-          yum_permissions:
-            - path: /bin/su
-              owner: root
-              group: root
-              mode: 700
-          yum_plugin_post_transaction_actions:
-            actiondir: /etc/yum/post-actions/
-            actions:
-              - action_key: kernel-ml
-                transaction_state: install
-                command: /usr/sbin/shutdown -r
-            enabled: 1
+        - role: linuxhq.yum_cron
 
 ## License
 
-GPLv3
+Copyright (C) 2018 Taylor Kimball <tkimball@linuxhq.org>
 
-## Author Information
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-This role was created by [Taylor Kimball](http://www.linuxhq.org).
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
