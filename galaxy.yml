@@ -1,11 +1,14 @@
 ---
 - name: galaxy
   hosts: galaxy
+  become: true
+  become_user: root
   vars:
     hostname: sn04.bi.uni-freiburg.de
   vars_files:
     - "secret_group_vars/all.yml"
   pre_tasks:
+    # TODO(hxr): fails due to nginx user not available yet.
     #- name: Create nginx cache dir
       #file:
           #path: /var/cache/nginx/static
@@ -13,66 +16,66 @@
           #owner: nginx
           #group: root
           #mode: 0700
-    #- name: Create Galaxy runtime user
-      #user:
-        #name: galaxy
-        #comment: "Galaxy Server"
-        #system: yes
-        #home: /opt/galaxy
-        #createhome: yes
-        #uid: 999
-      #become: yes
-    #- name: Install Dependencies
-      #package:
-        #name: "{{ item }}"
-      #become: yes
-      #with_items:
-        #- git
-        #- python-psycopg2
-        #- python-virtualenv
-        #- bc
+    - name: Create Galaxy runtime user
+      user:
+        name: galaxy
+        comment: "Galaxy Server"
+        system: yes
+        home: /opt/galaxy
+        createhome: yes
+        uid: 999
+      become: yes
+    - name: Install Dependencies
+      package:
+        name: "{{ item }}"
+      become: yes
+      with_items:
+        - git
+        - python-psycopg2
+        - python-virtualenv
+        - bc
   roles:
-    #- geerlingguy.docker
-    #- role: hxr.docker-ssl-client
-      #vars:
-        #docker_account: galaxy
-    #- geerlingguy.repo-epel
-    #- hxr.exclude-repo # Exclude epel repos for condor, node, npm
-    #- geerlingguy.nodejs
-    #- hxr.autofs
-    #- cvmfs
-    #- dynmotd
-    #- ssh-host-sign
-    #- hxr.admin-tools
-    #- hxr.monitor-email
-    #- htcondor
-    #- linuxhq.yum-cron
-    #- influxdata.chrony
-    #- hxr.certbot
+    - geerlingguy.docker
+    - role: hxr.docker-ssl-client
+      vars:
+        docker_account: galaxy
+    - geerlingguy.repo-epel
+    - hxr.exclude-repo # Exclude epel repos for condor, node, npm
+    - geerlingguy.nodejs
+    - hxr.autofs
+    - cvmfs
+    - dynmotd
+    - ssh-host-sign
+    - hxr.admin-tools
+    - hxr.monitor-email
+    - htcondor
+    - linuxhq.yum-cron
+    - influxdata.chrony
+    - hxr.certbot
 
-    ## GALAXY
+    # GALAXY
     - hxr.postgres-connection
     - gxadmin
-    #- packages
-    #- supervisor
-    #- role: hxr.install-to-venv
-      #become: yes
-      #become_user: galaxy
-    #- geerlingguy.nginx
-    #- role: hxr.tiaas
-    #- role: hxr.welcome_pages
-      #become: yes
-      #become_user: galaxy
+    - packages
+    - supervisor
+    - role: hxr.install-to-venv
+      become: yes
+      become_user: galaxy
+    - geerlingguy.nginx
+    - role: hxr.tiaas
+    - role: hxr.welcome_pages
+      become: yes
+      become_user: galaxy
     - role: usegalaxy_privileged
       become: yes
       become_user: galaxy
-    #- role: galaxyproject.interactive_environments
-      #become: yes
-      #become_user: galaxy
+    - role: galaxyproject.interactive_environments
+      become: yes
+      become_user: galaxy
     - role: galaxyproject.galaxy
       become: yes
       become_user: galaxy
 
-    #- dj-wasabi.telegraf
-    #- dev-sec.os-hardening
-    #- dev-sec.ssh-hardening
+    - dj-wasabi.telegraf
+    - dev-sec.os-hardening
+    - dev-sec.ssh-hardening

@@ -76,7 +76,7 @@ certbot_post_renewal: |
 
 nginx_remove_default_vhost: true
 nginx_proxy_cache_path: "/var/cache/nginx/static levels=1:2 keys_zone=STATIC:10m inactive=24h  max_size=1g"
-
+nginx_conf_template: "{{ playbook_dir  }}/templates/nginx/main.j2"
 nginx_vhosts:
   - listen: "80"
     server_name: "{{ hostname }}"
@@ -575,7 +575,6 @@ base_app_main: &BASE_APP_MAIN
   smtp_server: smtp.informatik.uni-freiburg.de
   smtp_username: "{{ smtp_username }}"
   smtp_password: "{{ smtp_password }}"
-  mailing_join_addr: ''
 
   error_email_to: 'contact@usegalaxy.eu'
   email_from: 'European Galaxy Team <contact@usegalaxy.eu>'
@@ -599,7 +598,6 @@ base_app_main: &BASE_APP_MAIN
   #
   wiki_url: "https://galaxyproject.eu/"
   terms_url: "https://{{ galaxy_instance_hostname }}/terms"
-  #ga_code: "UA-45719423-10"
 
   static_enabled: "True"
   x_frame_options: ''

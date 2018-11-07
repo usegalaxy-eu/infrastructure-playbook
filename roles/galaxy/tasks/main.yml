@@ -1,17 +1,37 @@
 # galaxy account
 ---
-  - name: galaxy account group
-    group:
-      gid: "{{ galaxy_gid }}"
-      name: galaxy
-      state: present
+- lineinfile:
+    path: /etc/group
+    regexp: 'input:x:999:'
+    line: 'input:x:500:'
+  when: replace_non_galaxy_999 is defined
 
-  - name: galaxy account user
-    user:
-      uid: "{{ galaxy_uid }}"
-      name: galaxy
-      group: galaxy
-      home: /usr/local/galaxy
-      state: present
-      comment: Galaxy Service-Acct
-      createhome: no
+- command: "find / -gid 999 -exec chgrp 500 '{}' +"
+  ignore_errors: yes
+  when: replace_non_galaxy_999 is defined
+
+- lineinfile:
+    path: /etc/passwd
+    regexp: 'polkitd:x:999:998:User for polkitd:/:/sbin/nologin'
+    line: 'polkitd:x:500:998:User for polkitd:/:/sbin/nologin'
+  when: replace_non_galaxy_999 is defined
+
+- command: "find / -uid 999 -exec chown 500 '{}' +"
+  ignore_errors: yes
+  when: replace_non_galaxy_999 is defined
+
+- name: galaxy account group
+  group:
+    gid: "{{ galaxy_gid }}"
+    name: galaxy
+    state: present
+
+- name: galaxy account user
+  user:
+    uid: "{{ galaxy_uid }}"
+    name: galaxy
+    group: galaxy
+    home: /usr/local/galaxy
+    state: present
+    comment: Galaxy Service-Acct
+    createhome: no
