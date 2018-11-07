@@ -15,7 +15,7 @@
 - name: Copy data conf file
   template:
     src: "data.conf.j2"
-    dest: "/etc/auto.master.d/data.conf"
+    dest: "/etc/auto.data"
     owner: root
     group: root
     mode: 0644
@@ -23,7 +23,7 @@
 - name: Copy usrlocal conf file
   template:
     src: "usrlocal.conf.j2"
-    dest: "/etc/auto.master.d/usrlocal.conf"
+    dest: "/etc/auto.usrlocal"
     owner: root
     group: root
     mode: 0644
