@@ -93,10 +93,10 @@
     <tool file="filters/secure_hash_message_digest.xml" />
     <!--tool file="new_operations/tables_arithmetic_operations.xml" /-->
 
-    <tool file="unix_tools/remove_ending.xml" hidden="True" />
-    <tool file="unix_tools/find_and_replace.xml" hidden="True" />
-    <tool file="unix_tools/replace_text_in_column.xml" hidden="True" />
-    <tool file="unix_tools/replace_text_in_line.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/unix_tools/remove_ending.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/unix_tools/find_and_replace.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/unix_tools/replace_text_in_column.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/unix_tools/replace_text_in_line.xml" hidden="True" />
   </section>
   <section id="filter_and_sort" name="Filter and Sort">
     <tool file="stats/filtering.xml" />
@@ -106,8 +106,8 @@
     <tool file="filters/gff/gff_filter_by_attribute.xml" />
     <tool file="filters/gff/gff_filter_by_feature_count.xml" />
     <tool file="filters/gff/gtf_filter_by_attribute_values_list.xml" />
-    <tool file="unix_tools/word_list_grep.xml" hidden="True" />
-    <tool file="unix_tools/uniq_tool.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/unix_tools/word_list_grep.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/unix_tools/uniq_tool.xml" hidden="True" />
   </section>
   <section id="join,_subtract_and_group" name="Join, Subtract and Group" version="">
     <tool file="filters/joiner.xml" />
@@ -116,14 +116,14 @@
     <tool file="stats/grouping.xml" />
     <!--tool file="new_operations/column_join.xml" /-->
   </section>
-  <section id="unix_tools" name="Unix Tools">
-    <tool file="unix_tools/sed_tool.xml" hidden="True" />
-    <tool file="unix_tools/awk_tool.xml" hidden="True" />
-    <tool file="unix_tools/grep_tool.xml" hidden="True" />
-    <tool file="unix_tools/sort-header.xml" hidden="True" />
-    <tool file="unix_tools/cut_tool.xml" hidden="True" />
-    <tool file="unix_tools/easyjoin.xml" hidden="True" />
-    <tool file="unix_tools/multijoin.xml" hidden="True" />
+  <section id="/opt/galaxy/custom-tools/unix_tools" name="Unix Tools">
+    <tool file="/opt/galaxy/custom-tools/unix_tools/sed_tool.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/unix_tools/awk_tool.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/unix_tools/grep_tool.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/unix_tools/sort-header.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/unix_tools/cut_tool.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/unix_tools/easyjoin.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/unix_tools/multijoin.xml" hidden="True" />
   </section>
 
   <!-- +++++++++++++++++++++++++++++++++++++++++++ -->
@@ -151,7 +151,7 @@
   </section>
   <section id="operate_on_genomic_intervals" name="Operate on Genomic Intervals">
     <!--tool file="new_operations/intersect.xml" /-->
-    <tool file="/data/0/bgruening_tools/tools-iuc/tools/bedtools/mergeBed.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/tools-iuc/tools/bedtools/mergeBed.xml" hidden="True" />
     <!--tool file="new_operations/subtract.xml" /-->
     <!--tool file="new_operations/merge.xml" /-->
     <!--tool file="new_operations/coverage.xml" /-->
@@ -171,7 +171,7 @@
   <section id="picard" name="Picard" version="" />
 
   <section id="quality_control" name="Quality Control" version="">
-    <!--tool file="test/bam2wig.xml" /-->
+    <!--tool file="/opt/galaxy/custom-tools/test/bam2wig.xml" /-->
     <label id="fastqcsambam" text="FastQC: fastq/sam/bam" />
     <label id="illumina" text="Illumina fastq" />
     <label id="454" text="Roche-454 data" />
@@ -207,11 +207,11 @@
   <section id="gemini_tools" name="Gemini Tools" />
   <section id="rna_analysis" name="RNA Analysis">
     <!--label id="rna_seq" text="RNA-seq" /-->
-    <tool file="test/deseq2/deseq2_matrix.xml" hidden="True" />
-    <tool file="test/deseq2/deseq2_single.xml" hidden="True" />
-    <tool file="test/blockbuster/blockbuster.xml" />
-    <!--<tool file="test/blockclust/blockclust.xml" /-->
-    <!--tool file="test/graphclust/graphclust.xml" /-->
+    <tool file="/opt/galaxy/custom-tools/test/deseq2/deseq2_matrix.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/deseq2/deseq2_single.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/blockbuster/blockbuster.xml" />
+    <!--<tool file="/opt/galaxy/custom-tools/test/blockclust/blockclust.xml" /-->
+    <!--tool file="/opt/galaxy/custom-tools/test/graphclust/graphclust.xml" /-->
 
     <!-- Trinity is very memory-intensive and should only be enabled/run
     on instances with sufficient resources.
@@ -221,21 +221,21 @@
   </section>
   <section id="peak_calling" name="Peak Calling">
     <label id="macs2" text="MACS2" />
-    <tool file="/data/0/bgruening_tools/galaxytools/macs2/macs2_callpeak.xml"  hidden="True" />
-    <tool file="/data/0/bgruening_tools/galaxytools/macs2/macs2_bdgbroadcall.xml"  hidden="True" />
-    <tool file="/data/0/bgruening_tools/galaxytools/macs2/macs2_bdgcmp.xml"  hidden="True" />
-    <tool file="/data/0/bgruening_tools/galaxytools/macs2/macs2_bdgdiff.xml"  hidden="True" />
-    <tool file="/data/0/bgruening_tools/galaxytools/macs2/macs2_bdgpeakcall.xml"  hidden="True" />
-    <tool file="/data/0/bgruening_tools/galaxytools/macs2/macs2_filterdup.xml"  hidden="True" />
-    <tool file="/data/0/bgruening_tools/galaxytools/macs2/macs2_predictd.xml"  hidden="True" />
-    <tool file="/data/0/bgruening_tools/galaxytools/macs2/macs2_randsample.xml"  hidden="True" />
-    <tool file="/data/0/bgruening_tools/galaxytools/macs2/macs2_refinepeak.xml"  hidden="True" />
-    <tool file="test/p_clip_peaks/p_clip_peaks.xml" />
+    <tool file="/opt/galaxy/custom-tools/galaxytools/macs2/macs2_callpeak.xml"  hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/galaxytools/macs2/macs2_bdgbroadcall.xml"  hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/galaxytools/macs2/macs2_bdgcmp.xml"  hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/galaxytools/macs2/macs2_bdgdiff.xml"  hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/galaxytools/macs2/macs2_bdgpeakcall.xml"  hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/galaxytools/macs2/macs2_filterdup.xml"  hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/galaxytools/macs2/macs2_predictd.xml"  hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/galaxytools/macs2/macs2_randsample.xml"  hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/galaxytools/macs2/macs2_refinepeak.xml"  hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/p_clip_peaks/p_clip_peaks.xml" />
   </section>
   <section id="epigenetics" name="Epigenetics">
-    <tool file="bismark/bismark_bowtie2_wrapper.xml" hidden="True" />
-    <tool file="bismark/bismark_bowtie_wrapper.xml" hidden="True" />
-    <tool file="bismark/bismark_methylation_extractor.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/bismark/bismark_bowtie2_wrapper.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/bismark/bismark_bowtie_wrapper.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/bismark/bismark_methylation_extractor.xml" hidden="True" />
     <tool file="dna_methylation/calling.xml" />
     <tool file="dna_methylation/destrand.xml" />
     <tool file="dna_methylation/dmr.xml" />
@@ -243,7 +243,7 @@
     <tool file="dna_methylation/plot.xml" />
     <tool file="dna_methylation/tiling.xml" />
     <tool file="dna_methylation/smooth.xml" />
-    <tool file="/data/0/bgruening_tools/galaxytools/methtools/correlation_matrix.xml" />
+    <tool file="/opt/galaxy/custom-tools/galaxytools/methtools/correlation_matrix.xml" />
   </section>
 
   <section id="phylogenetics" name="Phylogenetics" />
@@ -277,8 +277,8 @@
   <label id="proteomics_metabolomics_chemistry_label" text="Proteomics, Metabolomics, Chemistry" />
   <!-- +++++++++++++++++++++++++++++++++++++++++++ -->
   <section id="proteomics" name="Proteomics">
-    <tool file="test/tandem.xml" />
-    <tool file="test/tandem_github.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/tandem.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/tandem_github.xml" />
   </section>
 
   <section id="metabolomics" name="Metabolomics">
@@ -296,8 +296,8 @@
   </section>
 
   <section id="chemicaltoolbox" name="ChemicalToolBox" version="">
-    <tool file="/data/0/bgruening_tools/galaxytools/chemicaltoolbox/fragmenter/fragmenter.xml" />
-    <tool file="/data/0/bgruening_tools/galaxytools/chemicaltoolbox/fragmenter/merger.xml" />
+    <tool file="/opt/galaxy/custom-tools/galaxytools/chemicaltoolbox/fragmenter/fragmenter.xml" />
+    <tool file="/opt/galaxy/custom-tools/galaxytools/chemicaltoolbox/fragmenter/merger.xml" />
   </section>
 
   <!-- +++++++++++++++++++++++++++++++++++++++++++ -->
@@ -305,25 +305,25 @@
   <!-- +++++++++++++++++++++++++++++++++++++++++++ -->
   <section id="annotation" name="Annotation" version="">
     <tool file="/opt/galaxy/shed_tools/toolshed.g2.bx.psu.edu/repos/iuc/snpeff/e8adfc4c0a6b/snpeff/snpSift_geneSets.xml" />
-    <tool file="test/dexseq/dexseq_annotate.xml"/>
-    <tool file="test/dexseq/mapDEXSeqBinsToExons.xml"/>
+    <tool file="/opt/galaxy/custom-tools/test/dexseq/dexseq_annotate.xml"/>
+    <tool file="/opt/galaxy/custom-tools/test/dexseq/mapDEXSeqBinsToExons.xml"/>
   </section>
   <section id="ONTO-ToolKit" name="OBO Ontology manipulation">
-    <tool file="test/onto-perl-toolkit/get_ancestor_terms.xml" hidden="True" />
-    <tool file="test/onto-perl-toolkit/get_child_terms.xml" hidden="True" />
-    <tool file="test/onto-perl-toolkit/get_descendent_terms.xml" hidden="True" />
-    <tool file="test/onto-perl-toolkit/get_intersection_ontology_from.xml" hidden="True" />
-    <tool file="test/onto-perl-toolkit/get_list_intersection_from.xml" hidden="True" />
-    <tool file="test/onto-perl-toolkit/get_parent_terms_by_relationship_type.xml" hidden="True" />
-    <tool file="test/onto-perl-toolkit/get_parent_terms.xml" hidden="True" />
-    <tool file="test/onto-perl-toolkit/get_relationship_types.xml" hidden="True" />
-    <tool file="test/onto-perl-toolkit/get_subontology_from.xml" hidden="True" />
-    <tool file="test/onto-perl-toolkit/get_terms_by_relationship_type.xml" hidden="True" />
-    <tool file="test/onto-perl-toolkit/obo2rdf.xml" hidden="True" />
-    <tool file="test/onto-perl-toolkit/obo2tran.xml" hidden="True" />
-    <tool file="test/onto-perl-toolkit/obo2owl.xml" hidden="True" />
-    <tool file="test/onto-perl-toolkit/term_id_vs_term_def.xml" hidden="True" />
-    <tool file="test/onto-perl-toolkit/term_id_vs_term_name.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/onto-perl-toolkit/get_ancestor_terms.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/onto-perl-toolkit/get_child_terms.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/onto-perl-toolkit/get_descendent_terms.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/onto-perl-toolkit/get_intersection_ontology_from.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/onto-perl-toolkit/get_list_intersection_from.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/onto-perl-toolkit/get_parent_terms_by_relationship_type.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/onto-perl-toolkit/get_parent_terms.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/onto-perl-toolkit/get_relationship_types.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/onto-perl-toolkit/get_subontology_from.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/onto-perl-toolkit/get_terms_by_relationship_type.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/onto-perl-toolkit/obo2rdf.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/onto-perl-toolkit/obo2tran.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/onto-perl-toolkit/obo2owl.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/onto-perl-toolkit/term_id_vs_term_def.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/onto-perl-toolkit/term_id_vs_term_name.xml" hidden="True" />
   </section>
   <section id="Apollo" name="Apollo">
   </section>
@@ -332,7 +332,7 @@
   <label id="other_and_toolsuites_label" text="Diverse other Tools, Toolsuites" />
   <!-- +++++++++++++++++++++++++++++++++++++++++++ -->
   <section id="statistics" name="Statistics">
-    <tool file="test/statistical_hypothesis_testing.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/statistical_hypothesis_testing.xml" />
     <tool file="stats/gsummary.xml" />
     <tool file="filters/uniq.xml" />
     <!--tool file="regVariation/linear_regression.xml" />
@@ -372,67 +372,67 @@
     <tool file="meme/meme.xml" hidden="True" />
     <tool file="meme/fimo.xml" hidden="True" />
     </section>
-  <section id="bg-test-tools" name="Test Tools" labels="beta">
-    <tool file="test/tpp/peptide_prophet.xml"  />
-    <tool file="test/tpp/pepxml_and_protxml_to_table.xml" />
-    <tool file="test/tpp/protein_prophet.xml"  />
-    <tool file="test/tpp/interprophet.xml" />
+  <section id="bg-test-tools" name="/opt/galaxy/custom-tools/Test Tools" labels="beta">
+    <tool file="/opt/galaxy/custom-tools/test/tpp/peptide_prophet.xml"  />
+    <tool file="/opt/galaxy/custom-tools/test/tpp/pepxml_and_protxml_to_table.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/tpp/protein_prophet.xml"  />
+    <tool file="/opt/galaxy/custom-tools/test/tpp/interprophet.xml" />
 
-    <tool file="test/ml/discriminant.xml" />
-    <tool file="test/ml/eden_converter.xml" />
-    <tool file="test/ml/eden_vectorizer.xml" />
-    <tool file="test/ml/nn_classifier.xml" />
-    <tool file="test/ml/numeric_clustering.xml" />
-    <tool file="test/ml/svm.xml" />
-    <tool file="test/ml/sparse.xml" />
-    <tool file="test/ml/pre_process.xml" />
-    <tool file="test/ml/pairwise_metrics.xml" />
-    <tool file="test/ml/sample_generator.xml" />
-    <tool file="test/ml/generalized_linear.xml" />
-    <tool file="test/ml/ensemble.xml" />
-    <tool file="test/ml/clf_metrics.xml" />
-    <tool file="test/ml/proteasis/protease.xml" />
-    <!--<tool file="test/moff/moff.xml" />-->
+    <tool file="/opt/galaxy/custom-tools/test/ml/discriminant.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/ml/eden_converter.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/ml/eden_vectorizer.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/ml/nn_classifier.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/ml/numeric_clustering.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/ml/svm.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/ml/sparse.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/ml/pre_process.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/ml/pairwise_metrics.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/ml/sample_generator.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/ml/generalized_linear.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/ml/ensemble.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/ml/clf_metrics.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/ml/proteasis/protease.xml" />
+    <!--<tool file="/opt/galaxy/custom-tools/test/moff/moff.xml" />-->
 
-    <tool file="test/bigwigCorrelate.xml" />
-    <tool file="test/bwtool.xml" />
-    <tool file="test/bigwig_to_bedgraph.xml" />
-    <tool file="test/protein_properties.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/bigwigCorrelate.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/bwtool.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/bigwig_to_bedgraph.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/protein_properties.xml" />
 
-    <tool file="test/HiCExplorer/galaxy/wrapper/hicBuildMatrix.xml" hidden="True" />
-    <tool file="test/HiCExplorer/galaxy/wrapper/hicCorrectMatrix.xml" hidden="True" />
-    <tool file="test/HiCExplorer/galaxy/wrapper/hicCorrelate.xml" hidden="True" />
-    <tool file="test/HiCExplorer/galaxy/wrapper/hicFindTADs.xml" hidden="True" />
-    <tool file="test/HiCExplorer/galaxy/wrapper/hicPlotDistVsCounts.xml" hidden="True" />
-    <tool file="test/HiCExplorer/galaxy/wrapper/hicPlotMatrix.xml" hidden="True" />
-    <tool file="test/HiCExplorer/galaxy/wrapper/hicPlotTADs.xml" hidden="True" />
-    <tool file="test/HiCExplorer/galaxy/wrapper/hicSumMatrices.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicBuildMatrix.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicCorrectMatrix.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicCorrelate.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicFindTADs.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicPlotDistVsCounts.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicPlotMatrix.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicPlotTADs.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicSumMatrices.xml" hidden="True" />
 
-    <tool file="test/biopython/base_distribution.xml" />
-    <tool file="test/biopython/codon_count.xml" />
-    <tool file="test/biopython/gb_embl_to_gff.xml" />
-    <tool file="test/biopython/gb_to_sequence.xml" />
-    <tool file="test/biopython/gff_to_sequence.xml" />
-    <!--tool file="test/biopython/reverse_complement.xml" /-->
-    <tool file="test/biopython/sequence_converter.xml" />
-    <tool file="test/biopython/translate.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/biopython/base_distribution.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/biopython/codon_count.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/biopython/gb_embl_to_gff.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/biopython/gb_to_sequence.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/biopython/gff_to_sequence.xml" />
+    <!--tool file="/opt/galaxy/custom-tools/test/biopython/reverse_complement.xml" /-->
+    <tool file="/opt/galaxy/custom-tools/test/biopython/sequence_converter.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/biopython/translate.xml" />
 
-    <tool file="test/bctools/convert_bc_to_binary_RY.xml" hidden="True" />
-    <tool file="test/bctools/coords2clnt.xml" hidden="True" />
-    <tool file="test/bctools/extract_aln_ends.xml" hidden="True" />
-    <tool file="test/bctools/extract_bcs.xml" hidden="True" />
-    <tool file="test/bctools/flexbar_no_split.xml" hidden="True" />
-    <tool file="test/bctools/flexbar_split_RR_bcs.xml" hidden="True" />
-    <tool file="test/bctools/flexbar_split_RYYR_bcs.xml" hidden="True" />
-    <tool file="test/bctools/flexbar.xml" hidden="True" />
-    <tool file="test/bctools/flexbar_dsc.xml" hidden="True" />
-    <tool file="test/bctools/merge_pcr_duplicates.xml" hidden="True" />
-    <tool file="test/bctools/remove_tail.xml" hidden="True" />
-    <tool file="test/bctools/rm_spurious_events.xml" hidden="True" />
-    <tool file="test/secret_bowtie2_test/secret_bowtie2_wrapper.xml" hidden="True" />
-    <tool file="test/lfoldz/rnalfoldz.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/bctools/convert_bc_to_binary_RY.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/bctools/coords2clnt.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/bctools/extract_aln_ends.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/bctools/extract_bcs.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/bctools/flexbar_no_split.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/bctools/flexbar_split_RR_bcs.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/bctools/flexbar_split_RYYR_bcs.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/bctools/flexbar.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/bctools/flexbar_dsc.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/bctools/merge_pcr_duplicates.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/bctools/remove_tail.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/bctools/rm_spurious_events.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/secret_bowtie2_test/secret_bowtie2_wrapper.xml" hidden="True" />
+    <tool file="/opt/galaxy/custom-tools/test/lfoldz/rnalfoldz.xml" />
 
-    <tool file="test/chira/chira.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/chira/chira.xml" />
 
   </section>
   <section id="emboss_tools" name="EMBOSS Tools" />

@@ -42,4 +42,9 @@ def blast_destinations( job, tool ):
                 query_bin = sizeBinMap[bound]
         params["nativeSpecification"] += " -p -%s" % binPriorityMap[query_bin]
 
-    return JobDestination(id="blast_dynamic_job_destination", runner="drmaa", params=params)
+    params['request_memory'] = vmem / 1024
+    params['request_cpus'] = cores
+    params['priority'] = 128
+
+    # return JobDestination(id="blast_dynamic_job_destination", runner="drmaa", params=params)
+    return JobDestination(id="blast_dynamic_job_destination", runner="condor", params=params)

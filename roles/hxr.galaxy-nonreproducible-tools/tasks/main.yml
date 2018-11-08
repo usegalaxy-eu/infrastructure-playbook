@@ -1,0 +1,5 @@
+- name: Clone repository
+  git:
+    repo: "https://github.com/usegalaxy-eu/temporary-tools"
+    dest: "{{ galaxy_nonrepro_tools }}"
+    version: "{{ galaxy_nonrepro_commit }}"

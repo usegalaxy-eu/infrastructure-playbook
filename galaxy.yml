@@ -31,15 +31,18 @@
       become: yes
   roles:
     #- hxr.galaxy-user
-    - geerlingguy.docker
-    # TODO(hxr): fails whenever galaxy homedir is created without bashrc
-    - role: hxr.docker-ssl-client
-      vars:
-        docker_account: galaxy
-    - geerlingguy.repo-epel
-    - hxr.exclude-repo # Exclude epel repos for condor, node, npm
-    - geerlingguy.nodejs
+    #- geerlingguy.docker
+    ## TODO(hxr): fails whenever galaxy homedir is created without bashrc
+    #- role: hxr.docker-ssl-client
+      #vars:
+        #docker_account: galaxy
+    #- geerlingguy.repo-epel
+    #- hxr.exclude-repo # Exclude epel repos for condor, node, npm
+    #- geerlingguy.nodejs
     # TODO(hxr): missing gxmnt etc
+    - hxr.galaxy-cron
+    - hxr.galaxy-nonreproducible-tools
+    - hxr.galaxy-misc
     - hxr.autofs
     - cvmfs
     - dynmotd
@@ -63,7 +66,7 @@
       become: yes
       become_user: galaxy
     - geerlingguy.nginx
-    - role: hxr.tiaas
+    - hxr.tiaas
     - role: usegalaxy_privileged
       become: yes
       become_user: galaxy
@@ -78,6 +81,6 @@
       become: yes
       become_user: galaxy
 
-    - dj-wasabi.telegraf
-    - dev-sec.os-hardening
-    - dev-sec.ssh-hardening
+    #- dj-wasabi.telegraf
+    #- dev-sec.os-hardening
+    #- dev-sec.ssh-hardening

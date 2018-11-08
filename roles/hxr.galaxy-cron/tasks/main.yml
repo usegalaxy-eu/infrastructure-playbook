@@ -1,0 +1,17 @@
+---
+- cron:
+    name: Docker cleanup
+    job: "docker system prune -f"
+    minute: 30
+    hour: 2
+
+# TODO(hxr): re-enable cleanup
+#- cron:
+    #name: Galaxy dataset cleanup
+    #job: gxadmin
+
+
+- cron:
+    name: Cleanup held jobs
+    job: condor_q -hold -autoformat ClusterId EnteredCurrentStatus CurrentTime | awk '(($3-$2) > (60*60)){print $1}' | xargs --no-run-if-empty condor_rm
+    minute: 15

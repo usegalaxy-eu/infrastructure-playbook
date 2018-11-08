@@ -48,7 +48,11 @@ tiaas_galaxy_idsecret: "{{ id_secret }}"
 tiaas_galaxy_url: "https://beta.usegalaxy.eu"
 tiaas_galaxy_key: "{{ admin_api_key_erasche }}"
 tiaas_trainings:
-  - beta
+    - bioinfbrad2018_1
+    - 20181106ngs
+    - ucabgt2018
+    - big-data2018
+    - emc2018
 
 # TIaaS Deployment
 tiaas_dir: /opt/tiaas
@@ -283,6 +287,7 @@ usegalaxy_dynamic_job_rules:
   - destination_specifications.yaml
   - blast_destinations.py
   - tool_destinations.yaml
+  - dexseq.py
 
 galaxy_instance_hostname: usegalaxy.eu
 galaxy_config_style: 'ini'
@@ -382,20 +387,19 @@ galaxy_jobconf:
             docker_default_container_id: 'ubuntu:18.04'
             docker_auto_rm: 'true'
             docker_sudo: 'false'
-
-        # UNMIGRATED
-        #- id: 24cores_15G_BLAST
-          #runner: dynamic
-          #param_type: python
-          #param_function: blast_destinations
-        #- id: wig_to_bigWig
-          #runner: dynamic
-          #param_type: python
-          #param_function: wig_to_bigwig
-        #- id: dexseq_dynamic
-          #runner: dynamic
-          #param_type: python
-          #param_function: dexseq_memory_mapper
+        # TODO(hxr): check functionality
+        - id: 24cores_15G_BLAST
+          runner: dynamic
+          param_type: python
+          param_function: blast_destinations
+        - id: wig_to_bigWig
+          runner: dynamic
+          param_type: python
+          param_function: wig_to_bigwig
+        - id: dexseq_dynamic
+          runner: dynamic
+          param_type: python
+          param_function: dexseq
     tools:
         - id: upload1
           destination: gateway
@@ -455,8 +459,8 @@ base_app_main: &BASE_APP_MAIN
   # message box
   message_box_visible: "True"
 
-  #message_box_class: info
-  message_box_class: warning
+  message_box_class: info
+  #message_box_class: warning
   #message_box_class: error
 
   #message_box_content: Galaxy's primary cluster has recently been reconfigured to handle memory limits differently. If you are receiving unexpected memory errors with tools, please report them using the bug icon.
@@ -464,8 +468,8 @@ base_app_main: &BASE_APP_MAIN
   #message_box_content: 'Cluster upgrades are in progress, jobs will not run until upgrades are complete (by <a target="_blank" href="https://www.timeanddate.com/worldclock/fixedtime.html?iso=20180417T160000&p1=24&ah=">9:00 PM UTC, Tuesday, April 17</a>).'
   #message_box_content: 'Jobs are currently paused due to unexpected filesystem issues. We are working on the issue and jobs will be resumed as soon as possible.'
   #message_box_content: 'Galaxy will be down for two hours beginning at <a target="_blank" href="https://www.timeanddate.com/worldclock/fixedtime.html?iso=20180820T120000&p1=24&ah=">5:00 PM UTC, Monday, August 20</a> for database maintenance.'
-  message_box_content: "Testing Server; Non-production; ALL DATA WILL BE DELETED"
-  brand: "TEST"
+  message_box_content: "You are using the new UseGalaxy.eu backend server, let us know if you encounter any issues!"
+  brand: "Europe"
   enable_old_display_applications: 'false'
 
   # secrets
@@ -786,6 +790,5 @@ galaxy_custom_sites:
     brand: Proteomics
     index: /index-proteomics.html
   - name: beta
-    brand: TEST
+    brand: Europe
     index: /index-beta.html
-    custom_css: '#masthead { background-color: red !important; } #masthead .navbar-nav > li .nav-link{color: black;} #masthead .navbar-nav > li.active .nav-link { color: white !important; }'

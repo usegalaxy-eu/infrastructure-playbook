@@ -1,0 +1,25 @@
+- cron:
+    job: /usr/bin/fix-conda-env
+    minute: 0
+  become: true
+  become_user: galaxy
+
+- copy:
+    src: "fix-conda.sh"
+    dest: /usr/bin/fix-conda-env
+    mode: '0755'
+    owner: root
+    group: root
+
+- copy:
+    src: "fix-ftp.sh"
+    dest: /usr/bin/fix-ftp
+    mode: '0755'
+    owner: root
+    group: root
+
+- cron:
+    job: /usr/bin/fix-ftp
+    minute: "*/15"
+  become: true
+  become_user: galaxy
