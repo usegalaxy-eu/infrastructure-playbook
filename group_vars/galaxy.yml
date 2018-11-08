@@ -656,12 +656,10 @@ base_app_main: &BASE_APP_MAIN
 
   #containers_config_file: "{{ galaxy_config_dir }}/containers.yml"
   #enable_beta_containers_interface: "True"
-
-
   # For handler heartbeats
-  #use_heartbeat: "True"
-  #heartbeat_interval: "-1"
-  #heartbeat_log: "{{ galaxy_log_dir }}/heartbeat_{server_name}_{pid}.log"
+  use_heartbeat: "True"
+  heartbeat_interval: "-1"
+  heartbeat_log: "{{ galaxy_log_dir }}/heartbeat_{server_name}_{pid}.log"
 
 
 # galaxy.ini contents

@@ -13,7 +13,7 @@
 	</plugins>
 	<handlers default="handlers">
 		{% for n in range(galaxy_handler_count) %}
-		<handler id="handler{{ n }}" tags="handlers"/>
+		<handler id="handler_{{ galaxy_instance_codename }}_{{ n }}" tags="handlers"/>
 		{% endfor %}
 	</handlers>
 	<destinations default="gateway">

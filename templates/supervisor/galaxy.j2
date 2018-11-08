@@ -38,9 +38,9 @@ redirect_stderr = true
 {% endfor %}
 
 [program:hd]
-command         = {{ galaxy_venv_dir }}/bin/python ./scripts/galaxy-main -c {{ galaxy_config_dir }}/galaxy.ini --server-name=handler%(process_num)s
+command         = {{ galaxy_venv_dir }}/bin/python ./scripts/galaxy-main -c {{ galaxy_config_dir }}/galaxy.ini --server-name=handler_{{ galaxy_instance_codename }}_%(process_num)s
 directory       = {{ galaxy_server_dir }}
-process_name    = handler%(process_num)s
+process_name    = handler_{{ galaxy_instance_codename }}_%(process_num)s
 numprocs        = {{ galaxy_handler_count }}
 umask           = 022
 autostart       = true
@@ -48,7 +48,7 @@ autorestart     = true
 startsecs       = 30
 user            = {{ galaxy_user }}
 environment     = HOME={{ galaxy_home_dir }},VIRTUAL_ENV={{ galaxy_venv_dir }},PATH={{ galaxy_venv_dir }}/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin,PYTHONPATH={{ galaxy_dynamic_rule_dir }}
-stdout_logfile  = {{ galaxy_log_dir }}/handler%(process_num)s.log
+stdout_logfile  = {{ galaxy_log_dir }}/handler_{{ galaxy_instance_codename }}_%(process_num)s.log
 stdout_logfile_maxbytes = 128MB
 stdout_logfile_backups = 64
 redirect_stderr = true

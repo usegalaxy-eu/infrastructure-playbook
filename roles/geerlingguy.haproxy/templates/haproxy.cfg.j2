@@ -74,6 +74,7 @@ backend {{ backend.name }}
 
 {% for frontend in haproxy_frontends %}
 {% for gx_host in frontend.galaxy_hosts %}
+{% if 'disable_default_backend' not in gx_host %}
 backend {{ gx_host.id }}_special
 	mode http
 	balance roundrobin
@@ -86,6 +87,7 @@ backend {{ gx_host.id }}_base
 	balance roundrobin
 	{{ haproxy_galaxy_backend }}
 
+{% endif %}
 {% endfor %}
 
 {% endfor %}

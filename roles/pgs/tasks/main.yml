@@ -10,7 +10,6 @@
 - name: "Clone repository"
   become: true
   become_user: centos
-  umask: 0022
   git:
     repo: 'https://github.com/martenson/public-galaxy-servers/'
     dest: "{{ pgs_repo_dir }}"
@@ -52,7 +51,6 @@
   pip:
     requirements: "{{ pgs_repo_dir }}/requirements.txt"
     virtualenv: "{{ pgs_dir }}/venv"
-  umask: 0022
 
 - name: "Fix perms here"
   file:

@@ -1,28 +1,8 @@
 ---
 - name: Install useful tools
-  package:
-    name: "{{ item }}"
+  yum:
+    name: "{{ admin_packages }}"
     state: installed
-  with_items:
-    - vim
-    - htop
-    - atop
-    - strace
-    - jq
-    - iftop
-    - wget
-    - curl
-    - tmux
-    - git
-    - nmap
-    - tcpdump
-    - net-tools
-    - unzip
-    - mutt
-    - byobu
-    # centos specific
-    - setools-console
-    - yum-utils
 
 - name: Stop firewalld
   service:

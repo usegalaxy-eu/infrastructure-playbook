@@ -33,6 +33,5 @@
 
 - name: Merge CSS files
   shell: "cat {{ galaxy_server_dir }}/static/style/blue/base.css {{ multisite_dir }}/{{ item.name }}.css > {{ galaxy_server_dir }}/static/style/blue/base-{{ item.name }}.css"
-  umask: 0122
   with_items: "{{ galaxy_custom_sites }}"
   when: custom_css.changed

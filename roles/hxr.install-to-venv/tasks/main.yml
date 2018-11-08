@@ -1,5 +1,4 @@
 - name: Install all of the necessary dependencies
   pip:
-    name: "{{ item }}"
+    name: "{{ pip_install_dependencies }}"
     virtualenv: "{{ pip_venv_path }}"
-  with_items: "{{ pip_install_dependencies }}"

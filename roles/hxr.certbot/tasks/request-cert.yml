@@ -24,8 +24,7 @@
         {{ certbot_agree_tos }}
         -d {{ ','.join(certbot_domains) }}
   register: request
-  args:
-    creates: "/etc/letsencrypt/renewal/{{ certbot_hostname_override | default(certbot_domains[0]) }}.conf"
+  creates: "/etc/letsencrypt/renewal/{{ certbot_hostname_override | default(certbot_domains[0]) }}.conf"
 
 - name: Output of command
   debug: var=request

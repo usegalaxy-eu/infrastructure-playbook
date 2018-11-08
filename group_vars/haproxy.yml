@@ -51,6 +51,9 @@ haproxy_frontends:
           id: proteomics
         - domain: clipseq.usegalaxy.eu
           id: clipseq
+        - domain: test.usegalaxy.eu
+          id: test
+          disable_default_backend: true
 
 # Custom error pages. TODO: automate.
 #- 'errorfile 400 /etc/haproxy/errors/400.html'
@@ -102,6 +105,18 @@ haproxy_backends:
       mode: http
       custom_config:
         - 'server server1 127.0.0.1:8118 maxconn 32'
+
+    - name: test_base
+      balance: roundrobin
+      mode: http
+      custom_config:
+        - 'server server1 192.52.33.7:80  maxconn 32'
+    - name: test_special
+      balance: roundrobin
+      mode: http
+      custom_config:
+        - 'server server1 192.52.33.7:80  maxconn 32'
+        #- 'server server1 192.52.33.67:80 maxconn 32'
 
 haproxy_global_vars:
     - 'ssl-default-bind-options no-sslv3 no-tls-tickets force-tlsv12'
