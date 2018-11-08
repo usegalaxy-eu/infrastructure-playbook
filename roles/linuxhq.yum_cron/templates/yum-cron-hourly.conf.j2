@@ -2,7 +2,7 @@
 
 {% for section in yum_cron_hourly|sort %}
 [{{ section }}]
-{%   for key, value in yum_cron_hourly[section].iteritems()|sort %}
+{%   for key, value in yum_cron_hourly[section].items()|sort %}
 {%     if value is sameas true %}
 {{ key }} = yes
 {%     elif value is sameas false %}

@@ -2,7 +2,7 @@
 
 {% for section in yum_cron|sort %}
 [{{ section }}]
-{%   for key, value in yum_cron[section].iteritems()|sort %}
+{%   for key, value in yum_cron[section].items()|sort %}
 {%     if value is sameas true %}
 {{ key }} = yes
 {%     elif value is sameas false %}
