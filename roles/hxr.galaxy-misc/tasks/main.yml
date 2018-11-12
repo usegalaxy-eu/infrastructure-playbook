@@ -1,11 +1,4 @@
-- cron:
-    job: /usr/bin/fix-conda-env
-    minute: 0
-  become: true
-  become_user: galaxy
-
 - copy:
-    name: "Fix conda env"
     src: "fix-conda.sh"
     dest: /usr/bin/fix-conda-env
     mode: '0755'
@@ -18,6 +11,13 @@
     mode: '0755'
     owner: root
     group: root
+
+- cron:
+    name: "Fix conda env"
+    job: /usr/bin/fix-conda-env
+    minute: 0
+  become: true
+  become_user: galaxy
 
 - cron:
     name: "Fix ftp"
