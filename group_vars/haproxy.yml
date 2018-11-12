@@ -54,6 +54,9 @@ haproxy_frontends:
         - domain: test.usegalaxy.eu
           id: test
           disable_default_backend: true
+        - domain: old.usegalaxy.eu
+          id: old
+          disable_default_backend: true
 
 # Custom error pages. TODO: automate.
 #- 'errorfile 400 /etc/haproxy/errors/400.html'
@@ -105,6 +108,17 @@ haproxy_backends:
       mode: http
       custom_config:
         - 'server server1 127.0.0.1:8118 maxconn 32'
+
+    - name: old_base
+      balance: roundrobin
+      mode: http
+      custom_config:
+        - 'server server1 132.230.68.85:443  maxconn 32'
+    - name: old_special
+      balance: roundrobin
+      mode: http
+      custom_config:
+        - 'server server1 132.230.68.85:443  maxconn 32'
 
     - name: test_base
       balance: roundrobin
