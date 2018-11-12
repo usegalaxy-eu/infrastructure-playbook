@@ -1,0 +1,42 @@
+---
+- name: "Send sge cluster utilisation monitor"
+  copy:
+    src: "cluster_util-sge.sh"
+    dest: "/usr/bin/monitor-sge-utilisation"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Send sge queue monitor"
+  copy:
+    src: "cluster_queue-sge.sh"
+    dest: "/usr/bin/monitor-sge-queue"
+    owner: root
+    group: root
+    mode: 0755
+
+#- set_fact:
+    #monitor_sge_queue:
+      #- plugin: exec
+        #disambiguation: monitor_sge_queue
+        #config:
+          #- commands = ["/usr/bin/monitor-sge-queue"]
+          #- timeout = "5s"
+          #- data_format = "influx"
+          #- interval = "10s"
+
+#- set_fact:
+    #telegraf_plugins_extra: "{{ telegraf_plugins_extra + monitor_sge_queue }}"
+
+#- set_fact:
+    #monitor_sge_util:
+      #- plugin: exec
+        #disambiguation: monitor_sge_util
+        #config:
+          #- commands = ["/usr/bin/monitor-sge-utilisation"]
+          #- timeout = "5s"
+          #- data_format = "influx"
+          #- interval = "10s"
+
+#- set_fact:
+    #telegraf_plugins_extra: "{{ telegraf_plugins_extra + monitor_sge_util }}"

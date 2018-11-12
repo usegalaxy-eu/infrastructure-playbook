@@ -1,0 +1,8 @@
+---
+- name: "Send slurm queue monitor"
+  copy:
+    src: "cluster_queue-slurm.sh"
+    dest: "/usr/bin/monitor-slurm-queue"
+    owner: root
+    group: root
+    mode: 0755

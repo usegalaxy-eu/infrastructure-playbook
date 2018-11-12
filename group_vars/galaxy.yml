@@ -41,6 +41,10 @@ supervisord_install: package
 supervisord_inet_user: super
 supervisord_inet_pass: "{{ supervisord_inet_pass }}"
 
+# Galaxy monitoring
+monitor_condor: true
+monitor_condor_split_util: true
+
 
 # TIaaS Configuration
 tiaas_galaxy_db_url: "{{ galaxy_db_connection }}"
