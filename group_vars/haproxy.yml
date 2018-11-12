@@ -64,7 +64,7 @@ haproxy_frontends:
 #- 'errorfile 503 /etc/haproxy/errors/503.html'
 #- 'errorfile 504 /etc/haproxy/errors/504.html'
 
-haproxy_galaxy_backend: 'server server1 132.230.68.85:443 maxconn 32 ssl verify none'
+haproxy_galaxy_backend: 'server server1 132.230.68.5:443 maxconn 32 ssl verify none'
 haproxy_backends:
     - name: galaxy
       balance: roundrobin
