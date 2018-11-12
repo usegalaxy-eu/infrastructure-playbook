@@ -40,9 +40,13 @@
     #- hxr.exclude-repo # Exclude epel repos for condor, node, npm
     #- geerlingguy.nodejs
     # TODO(hxr): missing gxmnt etc
-    - hxr.galaxy-cron
+    - role: hxr.galaxy-cron
+      become: yes
+      become_user: galaxy
     - hxr.galaxy-nonreproducible-tools
-    - hxr.galaxy-misc
+    - role: hxr.galaxy-misc
+      become: yes
+      become_user: galaxy
     - hxr.autofs
     - cvmfs
     - dynmotd

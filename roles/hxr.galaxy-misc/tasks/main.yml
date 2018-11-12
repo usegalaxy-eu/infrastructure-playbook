@@ -5,6 +5,7 @@
   become_user: galaxy
 
 - copy:
+    name: "Fix conda env"
     src: "fix-conda.sh"
     dest: /usr/bin/fix-conda-env
     mode: '0755'
@@ -19,6 +20,7 @@
     group: root
 
 - cron:
+    name: "Fix ftp"
     job: /usr/bin/fix-ftp
     minute: "*/15"
   become: true
