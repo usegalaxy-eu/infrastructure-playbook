@@ -195,7 +195,7 @@ def reroute_to_dedicated(tool_spec, user_roles):
         # However if it is running on condor, make sure that it doesn't run on the training machines.
         if 'runner' in tool_spec and tool_spec['runner'] == 'condor':
             # Require that the jobs do not run on these dedicated training machines.
-            return {'requirements': 'GalaxyTraining == False'}
+            return {'requirements': 'GalaxyGroup == "compute"'}
         # If it isn't running on condor, no changes.
         return {}
 
@@ -204,7 +204,7 @@ def reroute_to_dedicated(tool_spec, user_roles):
     training_expr = " || ".join(['(GalaxyGroup == "%s")' % role for role in training_roles])
     return {
         # We require that it does not run on machines that the user is not in the role for.
-        'requirements': '(GalaxyTraining == False) || (%s)' % training_expr,
+        'requirements': '(GalaxyGroup == "compute") || (%s)' % training_expr,
         # We then rank based on what they *do* have the roles for
         'rank': training_expr,
         'runner': 'condor',
