@@ -1,8 +1,33 @@
 ---
 __default__: {}
 
+cardinal_combine: {mem: 12}
+cardinal_classification: {mem: 128}
+cardinal_filtering: {mem: 40}
+cardinal_mz_images: {mem: 128}
+cardinal_preprocessing: {mem: 110}
+cardinal_quality_report: {mem: 120}
+cardinal_segmentations: {mem: 92}
+cardinal_spectra_plots: {mem: 32}
+cardinal_data_exporter: {mem: 64}
 
+heatmap: {mem: 12}
+Heatmap: {mem: 12}
+
+cuffmerge: {mem: 8}
+
+viz_overlay_moving_and_fixed_image: {mem: 12}
+ip_projective_transformation: {mem: 24}
+scale_image: {mem: 12}
+re_he_maldi_image_registration: {mem: 48}
+nanopolish_eventalign: {cores: 10, mem: 12}
+nanopolish_methylation: {cores: 10, mem: 12}
+minimap2: {cores: 8, mem: 20}
+flye: {cores: 20, mem: 24}
+nanopolish_variants: {cores: 20, mem: 12}
+nanopolish_eventalign: {cores: 20, mem: 12}
 AccurateMassSearch: {cores: 4, mem: 8}
+AdditiveSeries: {cores: 20, mem: 12}
 AdditiveSeries: {cores: 4, mem: 8}
 BaselineFilter: {cores: 4, mem: 8}
 CONVERTER_bedgraph_to_bigwig: {mem: 8}
@@ -281,7 +306,6 @@ bamCompare_deepTools: {mem: 10}
 bamCorrelate_deepTools: {cores: 12, mem: 120}
 bamCoverage_deepTools: {mem: 10}
 bamFingerprint: {mem: 10}
-bctools_extract_alignment_ends: {}
 bedtools_intersectbed: {mem: 20}
 bedtools_intersectbed_bam: {mem: 20}
 bedtools_mergebed: {mem: 15}
@@ -303,11 +327,11 @@ blockclust: {mem: 10}
 bowtie2: {cores: 8, mem: 20}
 bwa: {cores: 8, mem: 20}
 bwa_mem: {cores: 8, mem: 60}
-bwa_mem_index_builder_data_manager: {mem: 120}
-bwameth_index_builder_data_manager: {mem: 120}
+bwa_mem_index_builder_data_manager: {mem: 48}
+bwameth_index_builder_data_manager: {mem: 48}
 bwameth: {cores: 8, mem: 24}
 bwtool-lift: {mem: 80}
-canu: {cores: 12, mem: 64}
+canu: {cores: 20, mem: 64}
 mass_spectrometry_imaging_preprocessing: {mem: 110}
 mass_spectrometry_imaging_ion_images: {mem: 20}
 mass_spectrometry_imaging_qc: {mem: 110}
@@ -416,11 +440,11 @@ gatk_picard_index_builder: {mem: 12}
 gemini_load: {cores: 12, mem: 40}
 
 # Permissions
-gemini_query:
-    permissions:
-        allow:
-            roles:
-                - admin
+#gemini_query:
+#    permissions:
+#        allow:
+#            roles:
+#                - admin
 
 ggplot2_heatmap2: {mem: 24}
 graphprot_predict_profile: {mem: 8}
@@ -435,7 +459,7 @@ hicexplorer_hicbuildmatrix: {cores: 10, mem: 90}
 hicexplorer_hiccorrectmatrix: {mem: 64}
 hicexplorer_hiccorrelate: {mem: 20}
 hicexplorer_hicfindtads: {mem: 20}
-hicexplorer_hicplotmatrix: {mem: 100}
+hicexplorer_hicplotmatrix: {mem: 210}
 hicexplorer_hicplottads: {mem: 20}
 hicexplorer_hicsummatrices: {mem: 48}
 hicexplorer_hicpca: {cores: 12, mem: 60}
@@ -446,7 +470,6 @@ hicexplorer_hicaggregatecontacts: {mem: 12}
 hicup_mapper: {cores: 6, mem: 24}
 hisat: {cores: 12, mem: 20}
 #hisat2: {cores: 8, mem: 20_singularity}
-thermo_raw_file_converter: {}
 hisat2: {cores: 8, mem: 20}
 
 hisat2_index_builder_data_manager: {cores: 12, mem: 180}
@@ -462,10 +485,9 @@ je_demultiplex: {cores: 8, mem: 20}
 je_demultiplex_illu: {cores: 8}
 je_markdupes: {cores: 8}
 join1: {mem: 18}
-bamFilter: {}
 #bamFilter:  {runner: remote_cluster_mq_cz}
 
-jq: {runner: remote_cluster_mq_cz}
+#jq: {runner: remote_cluster_mq_cz}
 kallisto_quant: {cores: 8, mem: 20}
 ## uha,	with the reference.fa file from	the history it is not working?
 ## kallisto_quant: {cores: 8, mem: 20_singularity}
@@ -473,8 +495,8 @@ lastz_wrapper_2: {mem: 8}
 limma_voom: {mem: 4}
 macs2_bdgdiff: {mem: 10}
 macs2_callpeak: {mem: 15}
-maldi_quant_preprocessing: {mem: 128}
-maldi_quant_peak_detection: {mem: 192}
+maldi_quant_preprocessing: {mem: 180}
+maldi_quant_peak_detection: {mem: 180}
 mass_spectrometry_imaging_classification: {mem: 128}
 megablast_wrapper: {mem: 20}
 meme_dreme: {mem: 16}
@@ -490,7 +512,7 @@ migmap:
     _JAVA_OPTIONS: -XX:MaxPermSize=6G -Xmx90G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
   mem: 96
   name: java_temp
-proteomics_moff: {mem: 10, cores: 6}
+proteomics_moff: {mem: 20, cores: 6}
 mmbios01:
   env:
     HOME: /data/2/galaxy_db/tmp
@@ -522,8 +544,8 @@ peakachu: {mem: 16}
 peptide_shaker:
   cores: 12
   env:
-    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx8G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
-  mem: 24
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx25G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+  mem: 32
   name: _special
 picard_ARRG: {mem: 12}
 picard_AddOrReplaceReadGroups: {mem: 12}
@@ -578,7 +600,7 @@ rm_spurious_events.py: {mem: 4}
 rna_star: {cores: 12, mem: 100}
 rna_star_index_builder_data_manager:
   cores: 12
-  mem: 160
+  mem: 100
   params:
     local_slots: 6
 rnbeads: {mem: 20}
@@ -635,7 +657,7 @@ snpEff_build_gb:
     _JAVA_OPTIONS: -Xmx48G -Xms1G
 snpSift_annotate: {mem: 12}
 snpSift_caseControl: {mem: 12}
-snpSift_filter: {mem: 12}
+snpSift_filter: {mem: 18}
 snpSift_geneSets: {mem: 12}
 snpSift_int: {mem: 12}
 spades: {cores: 12, mem: 180}
