@@ -348,6 +348,8 @@ galaxy_jobconf:
           runner: local
         - id: condor
           runner: condor
+          params:
+            tmp_dir: "True"
         #- id: drmaa
           #runner: drmaa
         - id: gateway
