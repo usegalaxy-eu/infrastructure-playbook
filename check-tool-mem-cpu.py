@@ -3,7 +3,7 @@ import yaml
 import sys
 
 
-jcaas_conf = yaml.load(open('roles/jcaas/files/tool_destinations.yaml', 'r'))
+jcaas_conf = yaml.load(open('files/galaxy/dynamic_rules/tool_destinations.yaml', 'r'))
 jcaas_conf2 = {}
 for (k, v) in jcaas_conf.items():
     jcaas_conf2[k.lower()] = v
