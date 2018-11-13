@@ -39,8 +39,10 @@
     #- geerlingguy.repo-epel
     #- hxr.exclude-repo # Exclude epel repos for condor, node, npm
     #- geerlingguy.nodejs
-    # TODO(hxr): missing gxmnt etc
+    # TODO(hxr): fix ordering of these
     - hxr.monitor-cluster
+    - hxr.monitor-galaxy
+    # TODO(hxr): missing gxmnt etc
     - role: hxr.galaxy-cron
       become: yes
       become_user: galaxy
