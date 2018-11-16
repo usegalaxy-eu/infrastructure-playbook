@@ -1,6 +1,6 @@
 ---
 - name: "Send machine group monitor"
-  template:
+  copy:
     src: "cluster_util-condor-split.sh"
     dest: "/usr/bin/monitor-condor-utilisation-split"
     owner: root
