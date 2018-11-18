@@ -10,7 +10,24 @@ nginx_package_name: nginx-galaxy
 nodejs_version: "8.x"
 nodejs_npm_global_packages:
     - yarn
-telegraf_plugins_extra: {}
+
+telegraf_plugins_extra:
+  monitor_condor_queue:
+    plugin: "exec"
+    config:
+      - commands = ["/usr/bin/monitor-condor-queue"]
+      - timeout = "10s"
+      - data_format = "influx"
+      - interval = "15s"
+
+  monitor_condor_util:
+    plugin: "exec"
+    config:
+      - commands = ["/usr/bin/monitor-condor-utilisation"]
+      - timeout = "10s"
+      - data_format = "influx"
+      - interval = "1m"
+
 
 pip_venv_path: "{{ galaxy_venv_dir }}"
 pip_install_dependencies:
