@@ -233,7 +233,7 @@ def _finalize_tool_spec(tool_id, user_roles, memory_scale=1.0):
         tool_spec = {
             'mem': 0.3,
             'runner': 'condor',
-            'rank': 'GalaxyGroup == upload',
+            'rank': 'GalaxyGroup == "upload"',
             'env': {
                 'TEMP': '/data/1/galaxy_db/tmp/'
             }
@@ -242,7 +242,7 @@ def _finalize_tool_spec(tool_id, user_roles, memory_scale=1.0):
         tool_spec = {
             'mem': 0.3,
             'runner': 'condor',
-            'rank': 'GalaxyGroup == metadata',
+            'rank': 'GalaxyGroup == "metadata"',
         }
     return tool_spec
 
