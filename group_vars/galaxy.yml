@@ -355,6 +355,7 @@ usegalaxy_dynamic_job_rules:
   - blast_destinations.py
   - tool_destinations.yaml
   - dexseq.py
+  - wig2bigwig.py
 
 galaxy_instance_hostname: usegalaxy.eu
 galaxy_config_style: 'ini'
@@ -460,16 +461,19 @@ galaxy_jobconf:
         # TODO(hxr): check functionality
         - id: 24cores_15G_BLAST
           runner: dynamic
-          param_type: python
-          param_function: blast_destinations
+          params:
+              type: python
+              function: blast_destinations
         - id: wig_to_bigWig
           runner: dynamic
-          param_type: python
-          param_function: wig_to_bigwig
+          params:
+              type: python
+              function: wig_to_bigwig
         - id: dexseq_dynamic
           runner: dynamic
-          param_type: python
-          param_function: dexseq
+          params:
+              type: python
+              function: dexseq
     tools:
         - id: upload1
           destination: gateway
