@@ -100,11 +100,11 @@ GROUP BY
 
 COLLECTION_INFO_QUERY = """
 SELECT
-    collection_type, count(*)
+    dc.collection_type, count(*)
 FROM
-    dataset_collection
+    history_dataset_collection_association as hdca inner join dataset_collection as dc on hdca.dataset_collection_id = dc.id
 GROUP BY
-    collection_type;
+    dc.collection_type;
 """
 
 TS_REPOS_QUERY = """
