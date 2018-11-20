@@ -102,7 +102,7 @@ COLLECTION_INFO_QUERY = """
 SELECT
     dc.collection_type, count(*)
 FROM
-    history_dataset_collection_association as hdca inner join dataset_collection as dc on hdca.dataset_collection_id = dc.id
+    history_dataset_collection_association as hdca inner join dataset_collection as dc on hdca.collection_id = dc.id
 GROUP BY
     dc.collection_type;
 """
