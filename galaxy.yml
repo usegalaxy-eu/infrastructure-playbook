@@ -46,7 +46,9 @@
     - role: hxr.galaxy-cron
       become: yes
       become_user: galaxy
-    - hxr.galaxy-nonreproducible-tools
+    - role: hxr.galaxy-nonreproducible-tools
+      become: yes
+      become_user: galaxy
     - hxr.galaxy-misc
     #- hxr.autofs
     #- cvmfs
