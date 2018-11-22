@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# usegalaxy.eu sorting hat
 from galaxy.jobs import JobDestination
 from galaxy.jobs.mapper import JobMappingException
 
