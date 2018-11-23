@@ -6,6 +6,16 @@
     path: "{{ galaxy_server_dir }}/lib/galaxy"
   register: galaxy_stat_out
 
+# Example just ensuring the repo checkout exists
+- name: Get current Galaxy commit id
+  git:
+    repo: "{{ galaxy_repo }}"
+    dest: "{{ galaxy_server_dir }}"
+    update: no
+  register: asdf
+
+- debug: var=asdf
+
 - name: Get current Galaxy commit id
   command: "{{ git_executable | default('git') }} rev-parse HEAD"
   args:
