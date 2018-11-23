@@ -65,9 +65,9 @@
     # GALAXY
     #- hxr.postgres-connection
     - gxadmin
-    - packages
     - hxr.galaxy-log-dir
     # TODO(hxr): /var/log/galaxy doesn't exist
+    - packages
     - supervisor
     - role: hxr.install-to-venv
       become: yes
@@ -87,7 +87,6 @@
     - role: galaxyproject.interactive_environments
       become: yes
       become_user: galaxy
-
     #- dj-wasabi.telegraf
     #- dev-sec.os-hardening
     #- dev-sec.ssh-hardening
