@@ -1,7 +1,7 @@
 ---
 - name: Download gxadmin
   get_url:
-    url: "https://raw.githubusercontent.com/usegalaxy-eu/gxadmin/master/gxadmin"
+    url: "https://raw.githubusercontent.com/usegalaxy-eu/gxadmin/{{ gxadmin_commit | default('master') }}/gxadmin"
     dest: /usr/bin/gxadmin
     mode: 0755
 
