@@ -64,14 +64,14 @@
 
     # GALAXY
     #- hxr.postgres-connection
-    #- gxadmin
-    #- packages
-    #- hxr.galaxy-log-dir
+    - gxadmin
+    - hxr.galaxy-log-dir
     # TODO(hxr): /var/log/galaxy doesn't exist
-    #- supervisor
-    #- role: hxr.install-to-venv
-      #become: yes
-      #become_user: galaxy
+    - packages
+    - supervisor
+    - role: hxr.install-to-venv
+      become: yes
+      become_user: galaxy
     - geerlingguy.nginx
     - hxr.tiaas
     - role: usegalaxy_privileged
@@ -87,7 +87,6 @@
     - role: galaxyproject.interactive_environments
       become: yes
       become_user: galaxy
-
     #- dj-wasabi.telegraf
     #- dev-sec.os-hardening
     #- dev-sec.ssh-hardening

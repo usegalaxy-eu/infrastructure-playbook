@@ -330,6 +330,7 @@ postgres_user: galaxy
 postgres_host: sn03.bi.uni-freiburg.de
 postgres_port: 5432
 # postgres_pass defined in secret_group_vars/all.yml
+gxadmin_commit: '427a33c333e9b149460390bb4ac4e1ec0174e68c'
 
 # GALAXY
 galaxy_user: galaxy
@@ -533,7 +534,7 @@ interactive_environments_config_files: []
 base_app_main: &BASE_APP_MAIN
 
   # message box
-  message_box_visible: "True"
+  message_box_visible: "False"
 
   message_box_class: info
   #message_box_class: warning
@@ -742,6 +743,9 @@ base_app_main: &BASE_APP_MAIN
   use_heartbeat: "True"
   heartbeat_interval: "-1"
   heartbeat_log: "{{ galaxy_log_dir }}/heartbeat_{server_name}_{pid}.log"
+  # Potentially fix the "could not recover job"
+  # xref https://github.com/galaxyproject/galaxy/pull/6924/
+  monitor_thread_join_timeout: 30
 
 
 # galaxy.ini contents
