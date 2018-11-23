@@ -743,6 +743,9 @@ base_app_main: &BASE_APP_MAIN
   use_heartbeat: "True"
   heartbeat_interval: "-1"
   heartbeat_log: "{{ galaxy_log_dir }}/heartbeat_{server_name}_{pid}.log"
+  # Potentially fix the "could not recover job"
+  # xref https://github.com/galaxyproject/galaxy/pull/6924/
+  monitor_thread_join_timeout: 30
 
 
 # galaxy.ini contents
