@@ -462,21 +462,21 @@ galaxy_jobconf:
             docker_auto_rm: 'true'
             docker_sudo: 'false'
         # TODO(hxr): check functionality
-        - id: 24cores_15G_BLAST
-          runner: dynamic
-          params:
-              type: python
-              function: blast_destinations
-        - id: wig_to_bigWig
-          runner: dynamic
-          params:
-              type: python
-              function: wig_to_bigwig
-        - id: dexseq_dynamic
-          runner: dynamic
-          params:
-              type: python
-              function: dexseq
+        #- id: 24cores_15G_BLAST
+        #  runner: dynamic
+        #  params:
+        #      type: python
+        #      function: blast_destinations
+        #- id: wig_to_bigWig
+        #  runner: dynamic
+        #  params:
+        #      type: python
+        #      function: wig_to_bigwig
+        #- id: dexseq_dynamic
+        #  runner: dynamic
+        #  params:
+        #      type: python
+        #      function: dexseq
     tools:
         - id: upload1
           destination: gateway
