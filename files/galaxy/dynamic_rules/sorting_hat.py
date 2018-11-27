@@ -259,7 +259,7 @@ def convert_to(tool_spec, runner):
     return tool_spec
 
 
-def _gateway(tool_id, user_roles, user_email, memory_scale=1.0):
+def _gateway(tool_id, user_roles, user_id, user_email, memory_scale=1.0):
     tool_spec = _finalize_tool_spec(tool_id, user_roles, memory_scale=memory_scale)
 
     # Now build the full spec
@@ -272,6 +272,8 @@ def _gateway(tool_id, user_roles, user_email, memory_scale=1.0):
     assert_permissions(tool_spec, user_email, user_roles)
 
     env, params, runner, _ = build_spec(tool_spec, runner_hint=runner_hint)
+    params['accounting_group_user'] = str(user_id)
+    params['description'] = get_tool_id(tool_id)
 
     return env, params, runner, tool_spec
 
@@ -281,12 +283,14 @@ def gateway(tool_id, user, memory_scale=1.0):
     if user:
         user_roles = [role.name for role in user.all_roles() if not role.deleted]
         email = user.email
+        user_id = user.id
     else:
         user_roles = []
         email = ''
+        user_id = -1
 
     try:
-        env, params, runner, spec = _gateway(tool_id, user_roles, email, memory_scale=memory_scale)
+        env, params, runner, spec = _gateway(tool_id, user_roles, user_id, email, memory_scale=memory_scale)
     except Exception as e:
         return JobMappingException(str(e))
 
