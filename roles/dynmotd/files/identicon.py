@@ -5,8 +5,8 @@ import sys
 import hashlib
 
 
-def colored(num, value):
-    return '\x1b[38;5;{0}m{1}\x1b[0m'.format(num, value)
+def colored(fg, bg, value):
+    return '\x1b[38;5;{0}m\x1b[48;5;{1}m{2}\x1b[0m'.format(fg, bg, value)
 
 
 class Iden:
@@ -24,8 +24,7 @@ class Iden:
     def getIcon(self, num, hash_string):
         for x in self.build(hash_string):
             yield ''.join([
-                colored(num, '██') if q else
-                colored((num + 15) % 255, '██')
+                colored(num, num + 15 % 255, '██' if q else '  ')
                 for q in x
             ])
 

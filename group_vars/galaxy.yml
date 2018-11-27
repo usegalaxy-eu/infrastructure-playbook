@@ -12,6 +12,23 @@ nodejs_npm_global_packages:
     - yarn
 
 telegraf_plugins_extra:
+  listen_galaxy_routes:
+    plugin: "statsd"
+    config:
+      - service_address = ":8125"
+      - percentiles = [90]
+      - metric_separator = "."
+      - allowed_pending_messages = 10000
+      - percentile_limit = 100
+
+  monitor_condor_queue_split:
+    plugin: "exec"
+    config:
+      - commands = ["/usr/bin/monitor-condor-queue-split"]
+      - timeout = "10s"
+      - data_format = "influx"
+      - interval = "15s"
+
   monitor_condor_queue:
     plugin: "exec"
     config:

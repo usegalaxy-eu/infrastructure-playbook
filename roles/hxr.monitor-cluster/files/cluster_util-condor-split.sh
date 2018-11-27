@@ -1,5 +1,5 @@
 #!/bin/bash
-for cluster in $(condor_status -autoformat GalaxyGroup | sort | uniq); do
+for cluster in $(condor_status -autoformat GalaxyGroup | sort | grep -v undefined | uniq); do
 	mem_total=$(condor_status  -autoformat TotalMemory  -constraint 'GalaxyGroup == "'$cluster'" && Activity == "Idle"' | paste -s -d'+' | bc)
 	mem_remain=$(condor_status -autoformat Memory       -constraint 'GalaxyGroup == "'$cluster'" && Activity == "Idle"' | paste -s -d'+' | bc)
 	cpu_total=$(condor_status  -autoformat DetectedCpus -constraint 'GalaxyGroup == "'$cluster'" && Activity == "Idle"' | paste -s -d'+' | bc)

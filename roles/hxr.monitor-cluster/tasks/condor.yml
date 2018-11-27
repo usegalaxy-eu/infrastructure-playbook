@@ -8,6 +8,15 @@
     mode: 0755
   when: monitor_condor_split_util
 
+- name: Allow telegraf to run monitor-condor-utilisation-split
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    insertafter: EOF
+    line: 'telegraf ALL=(ALL) NOPASSWD: /usr/bin/monitor-condor-utilisation-split'
+    validate: 'visudo -cf %s'
+  when: monitor_condor_split_util
+
 - name: "Send condor cluster utilisation monitor"
   copy:
     src: "cluster_util-condor.sh"
@@ -16,6 +25,14 @@
     group: root
     mode: 0755
 
+- name: Allow telegraf to run monitor-condor-utilisation
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    insertafter: EOF
+    line: 'telegraf ALL=(ALL) NOPASSWD: /usr/bin/monitor-condor-utilisation'
+    validate: 'visudo -cf %s'
+
 - name: "Send condor queue monitor"
   copy:
     src: "cluster_queue-condor.sh"
@@ -23,6 +40,14 @@
     owner: root
     group: root
     mode: 0755
+
+- name: Allow telegraf to run monitor-condor-queue
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    insertafter: EOF
+    line: 'telegraf ALL=(ALL) NOPASSWD: /usr/bin/monitor-condor-queue'
+    validate: 'visudo -cf %s'
 
 #- set_fact:
     #monitor_condor_queue:
