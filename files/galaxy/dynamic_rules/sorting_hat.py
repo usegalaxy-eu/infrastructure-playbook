@@ -225,17 +225,11 @@ def _finalize_tool_spec(tool_id, user_roles, memory_scale=1.0):
 
     # Only two tools are truly special.
     if tool_id == 'upload1':
-        #tool_spec = {
-        #    'mem': 1,
-        #    'runner': 'sge',
-        #    'env': {
-        #        'TEMP': '/data/1/galaxy_db/tmp/'
-        #    }
-        #}
         tool_spec = {
             'mem': 0.3,
             'runner': 'condor',
             'rank': 'GalaxyGroup == "upload"',
+            'requirements': 'GalaxyTraining == false',
             'env': {
                 'TEMP': '/data/1/galaxy_db/tmp/'
             }
@@ -245,6 +239,7 @@ def _finalize_tool_spec(tool_id, user_roles, memory_scale=1.0):
             'mem': 0.3,
             'runner': 'condor',
             'rank': 'GalaxyGroup == "metadata"',
+            'requirements': 'GalaxyTraining == false',
         }
     return tool_spec
 
@@ -300,22 +295,4 @@ def gateway(tool_id, user, memory_scale=1.0):
         runner=runner,
         params=params,
         env=env,
-        resubmit=[{
-            'condition': 'any_failure',
-            'destination': 'resubmit_gateway',
-        }]
     )
-
-
-def resubmit_gateway(tool_id, user):
-    """Gateway to handle jobs which have been resubmitted once.
-
-    We don't want to try re-running them forever so the ONLY DIFFERENCE in
-    these methods is that this one doesn't include a 'resubmission'
-    specification in the returned JobDestination
-    """
-
-    job_destination = gateway(tool_id, user, memory_scale=1.5)
-    job_destination['resubmit'] = []
-    job_destination['id'] = job_destination['id'] + '_resubmit'
-    return job_destination
