@@ -587,7 +587,7 @@ base_app_main: &BASE_APP_MAIN
   #logo_url: /
 
   # The URL linked by the "Wiki" link in the "Help" menu.
-  #wiki_url: 'https://galaxyproject.org/'
+  wiki_url: 'https://galaxyproject.org/'
 
   # The URL linked by the "Support" link in the "Help" menu.
   #support_url: 'https://galaxyproject.org/support'
@@ -694,7 +694,7 @@ base_app_main: &BASE_APP_MAIN
   # Redirect.  This should be set to the path defined in the nginx
   # config as an internal redirect with access to Galaxy's data files
   # (see documentation linked above).
-  #nginx_x_accel_redirect_base: null
+  nginx_x_accel_redirect_base: /_x_accel_redirect
 
   # If using compression in the upstream proxy server, use this option
   # to disable gzipping of library .tar.gz and .zip archives, since the
@@ -941,7 +941,7 @@ base_app_main: &BASE_APP_MAIN
   # server (above, sentry_dsn).  A value of '0' is disabled.  For
   # example, you would set this to .005 to log all queries taking longer
   # than 5 milliseconds.
-  #sentry_sloreq_threshold: 0
+  sentry_sloreq_threshold: 3.0
 
   # Log to statsd Statsd is an external statistics aggregator
   # (https://github.com/etsy/statsd) Enabling the following options will
@@ -971,7 +971,7 @@ base_app_main: &BASE_APP_MAIN
   # them to InfluxDB, Galaxy can provide more nicely tagged metrics.
   # Instead of sending prefix + dot-separated-path, Galaxy will send
   # prefix with a tag path set to the page url
-  statsd_influxdb: true
+  statsd_influxdb: 'true'
 
   # Log to graphite Graphite is an external statistics aggregator
   # (https://github.com/graphite-project/carbon) Enabling the following
@@ -1076,7 +1076,7 @@ base_app_main: &BASE_APP_MAIN
   # higher the boost, the more importance the scoring algorithm gives to
   # the given field.  Section refers to the tool group in the tool
   # panel.  Rest of the fields are tool's attributes.
-  #tool_label_boost: 1.0
+  tool_label_boost: 1
 
   # Boosts are used to customize this instance's toolbox search. The
   # higher the boost, the more importance the scoring algorithm gives to
@@ -1088,7 +1088,7 @@ base_app_main: &BASE_APP_MAIN
   # higher the boost, the more importance the scoring algorithm gives to
   # the given field.  Section refers to the tool group in the tool
   # panel.  Rest of the fields are tool's attributes.
-  tool_help_boost: 0.5
+  tool_help_boost: 1
 
   # Limits the number of results in toolbox search.  Can be used to
   # tweak how many results will appear.
@@ -1701,9 +1701,7 @@ base_app_main: &BASE_APP_MAIN
   #error_email_to: galaxy-bugs@bx.psu.edu
   #activation_email: "Galaxy Activation <activate@galaxyproject.org>"
 
-
-  #enable_cloud_launch: "True"
-  #nginx_x_accel_redirect_base: /_x_accel_redirect
+  # ??
   #nginx_upload_path: /_upload
   #nginx_upload_job_files_path: /_job_files
   #log_events: "False"
