@@ -16,7 +16,7 @@ def per_host_tool_labels( context, label ):
     valid_labels = [ "file_meta_label", "general_text_label"]
     general_ngs_labels = [ "genomics_label" ]
     # HiCtools mode: published in NAR 2018
-    if "hicexplorer.usegalaxy.eu" in host or "metagenomics.usegalaxy.eu" in host:
+    if "hicexplorer.usegalaxy.eu" in host or "metagenomics.usegalaxy.eu" in host or "rna.usegalaxy.eu" in host:
         valid_labels += general_ngs_labels
         return label.id in valid_labels
     return True
@@ -44,6 +44,11 @@ def per_host_tool_sections( context, section ):
     if "metagenomics.usegalaxy.eu" in host:
         valid_sections += [ "fasta_fastq_manipulation", "quality_control", "multiple_alignments", "assembly", "annotation", "display_data"]
         valid_sections += [ "metagenomic_analyses", "mothur", "qiime", "biom_manipulation"]
+        return section.id in valid_sections
+    if "rna.usegalaxy.eu" in host:
+        valid_sections += general_ngs_sections
+        valid_sections += [ "rna_analysis" ]
+        
         return section.id in valid_sections
 
     return True
