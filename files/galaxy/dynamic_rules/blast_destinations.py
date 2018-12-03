@@ -44,6 +44,7 @@ def blast_destinations( job, tool ):
 
     params['request_memory'] = vmem / 1024
     params['request_cpus'] = cores
+    params['requirements'] = '(GalaxyGroup == "compute")'
     params['priority'] = 128
 
     # return JobDestination(id="blast_dynamic_job_destination", runner="drmaa", params=params)

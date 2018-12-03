@@ -87,11 +87,7 @@ tiaas_galaxy_url: "https://usegalaxy.eu"
 tiaas_galaxy_key: "{{ admin_api_key_erasche }}"
 tiaas_trainings:
     - bioinfbrad2018_1
-    - 20181106ngs
-    - ucabgt2018
-    - big-data2018
-    - emc2018
-    - genomika1
+    - genomika3
     - bioinformatika2018
 
 # TIaaS Deployment
@@ -172,6 +168,13 @@ nginx_vhosts:
                 add_header X-Content-Type-Options nosniff;
                 add_header Access-Control-Allow-Origin "https://www.bx.psu.edu";
             }
+        }
+
+        location /_x_accel_redirect {
+              internal;
+              alias /;
+              add_header X-Frame-Options SAMEORIGIN;
+              add_header X-Content-Type-Options nosniff;
         }
 
         location /phinch {
@@ -366,7 +369,7 @@ galaxy_server_dir: "{{ galaxy_root  }}/server"
 galaxy_config_dir: "{{ galaxy_root  }}/config"
 galaxy_venv_dir: "{{ galaxy_root  }}/venv"
 galaxy_nonrepro_tools: "{{ galaxy_root }}/custom-tools"
-galaxy_nonrepro_commit: ebaa227c5220d52a3286f6c0da788ea35f82f774
+galaxy_nonrepro_commit: master
 
 galaxy_dynamic_rule_dir: "{{ galaxy_root }}/dynamic_rules"
 usegalaxy_dynamic_job_rules:
@@ -497,28 +500,28 @@ galaxy_jobconf:
     tools:
         - id: upload1
           destination: gateway
-        - id: wig_to_bigWig
-          destination: wig_to_bigWig
-        - id: dexseq
-          destination: dexseq_dynamic
-        - id: ncbi_blastn_wrapper
-          destination: 24cores_15G_BLAST
-        - id: ncbi_blastx_wrapper
-          destination: 24cores_15G_BLAST
-        - id: ncbi_tblastn_wrapper
-          destination: 24cores_15G_BLAST
-        - id: ncbi_tblastx_wrapper
-          destination: 24cores_15G_BLAST
-        - id: ncbi_blastp_wrapper
-          destination: 24cores_15G_BLAST
-        - id: ncbi_rpsblast_wrapper
-          destination: 24cores_15G_BLAST
-        - id: echo_main_condor
-          destination: condor
-        #echo_main_drmaa: drmaa
+        #- id: wig_to_bigWig
+          #destination: wig_to_bigWig
+        #- id: dexseq
+          #destination: dexseq_dynamic
+        #- id: ncbi_blastn_wrapper
+          #destination: 24cores_15G_BLAST
+        #- id: ncbi_blastx_wrapper
+          #destination: 24cores_15G_BLAST
+        #- id: ncbi_tblastn_wrapper
+          #destination: 24cores_15G_BLAST
+        #- id: ncbi_tblastx_wrapper
+          #destination: 24cores_15G_BLAST
+        #- id: ncbi_blastp_wrapper
+          #destination: 24cores_15G_BLAST
+        #- id: ncbi_rpsblast_wrapper
+          #destination: 24cores_15G_BLAST
     limits:
         walltime: '148:00:00'
         output_size: '300GB'
+        registered_user_concurrent_jobs: '30'
+        anonymous_user_concurrent_jobs: '10'
+
 
 
 # IE insanity

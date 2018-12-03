@@ -14,5 +14,6 @@ def wig_to_bigwig( job, tool ):
     params = {}
     # params["nativeSpecification"] = """ -q galaxy1.q,all.q -p -128 -l galaxy1_slots=1 -l h_vmem=%sM -v _JAVA_OPTIONS -v TEMP -v TMPDIR -v PATH -v PYTHONPATH -v LD_LIBRARY_PATH -v XAPPLRESDIR -v GDFONTPATH -v GNUPLOT_DEFAULT_GDFONT -v MPLCONFIGDIR -soft -l galaxy1_dedicated=1 """ % (required_memory)
     params['request_memory'] = required_memory / 1024
+    params['requirements'] = '(GalaxyGroup == "compute")'
 
     return JobDestination(id="wig_to_bigwig_job_destination", runner="condor", params=params)

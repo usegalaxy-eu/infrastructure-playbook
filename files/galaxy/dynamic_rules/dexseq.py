@@ -24,6 +24,7 @@ def dexseq_memory_mapper( job, tool ):
         # """ % (vmem, cores)
     params['request_memory'] = vmem / 1024
     params['request_cpus'] = cores
+    params['requirements'] = '(GalaxyGroup == "compute")'
     params['priority'] = 128
     env = {
         '_JAVA_OPTIONS': "-Xmx4G -Xms1G",
