@@ -12,6 +12,23 @@ nodejs_npm_global_packages:
     - yarn
 
 telegraf_plugins_extra:
+  listen_galaxy_routes:
+    plugin: "statsd"
+    config:
+      - service_address = ":8125"
+      - percentiles = [90]
+      - metric_separator = "."
+      - allowed_pending_messages = 10000
+      - percentile_limit = 100
+
+  monitor_condor_queue_split:
+    plugin: "exec"
+    config:
+      - commands = ["/usr/bin/monitor-condor-queue-split"]
+      - timeout = "10s"
+      - data_format = "influx"
+      - interval = "15s"
+
   monitor_condor_queue:
     plugin: "exec"
     config:
@@ -330,6 +347,7 @@ postgres_user: galaxy
 postgres_host: sn03.bi.uni-freiburg.de
 postgres_port: 5432
 # postgres_pass defined in secret_group_vars/all.yml
+gxadmin_commit: '427a33c333e9b149460390bb4ac4e1ec0174e68c'
 
 # GALAXY
 galaxy_user: galaxy
@@ -528,227 +546,6 @@ interactive_environments_config_files: []
           #analysis in many different languages. This image features the Python,
           #R, Julia, Haskell, Bash kernels and many scientific analysis stacks for
           #each.
-
-## used by: galaxyproject.galaxy
-base_app_main: &BASE_APP_MAIN
-
-  # message box
-  message_box_visible: "True"
-
-  message_box_class: info
-  #message_box_class: warning
-  #message_box_class: error
-
-  #message_box_content: Galaxy's primary cluster has recently been reconfigured to handle memory limits differently. If you are receiving unexpected memory errors with tools, please report them using the bug icon.
-  #message_box_content: Galaxy has recently been upgraded to a pre-release of the next Galaxy stable release (18.05). Please report any issues you encounter using the bug icon on error (red) datasets, or email <a href="mailto:galaxy-bugs@lists.galaxyproject.org">galaxy-bugs</a>.
-  #message_box_content: 'Cluster upgrades are in progress, jobs will not run until upgrades are complete (by <a target="_blank" href="https://www.timeanddate.com/worldclock/fixedtime.html?iso=20180417T160000&p1=24&ah=">9:00 PM UTC, Tuesday, April 17</a>).'
-  #message_box_content: 'Jobs are currently paused due to unexpected filesystem issues. We are working on the issue and jobs will be resumed as soon as possible.'
-  #message_box_content: 'Galaxy will be down for two hours beginning at <a target="_blank" href="https://www.timeanddate.com/worldclock/fixedtime.html?iso=20180820T120000&p1=24&ah=">5:00 PM UTC, Monday, August 20</a> for database maintenance.'
-  message_box_content: "You are using the new UseGalaxy.eu backend server, let us know if you encounter any issues!"
-  brand: "Europe"
-  enable_old_display_applications: 'false'
-
-  # secrets
-  database_connection: "{{ galaxy_db_connection }}"
-  install_database_connection: "sqlite:///{{ galaxy_mutable_config_dir }}/galaxy_main_install.sqlite?isolation_level=IMMEDIATE"
-  id_secret: "{{ id_secret }}"
-  admin_users: "hxr@informatik.uni-freiburg.de,bjoern.gruening@gmail.com"
-  #biostar_key: "{{ galaxy_config_biostar_key }}"
-  #sentry_dsn: "{{ galaxy_config_sentry_dsn }}"
-  sentry_sloreq_threshold: 3.0
-  amqp_internal_connection: "pyamqp://galaxy:{{ rabbitmq_password_galaxy }}@proxy.galaxyproject.eu:5671/galaxy?ssl=1"
-
-  use_pbkdf2: "False"
-  # paths
-
-  file_path: /data/0/galaxy_db/files
-
-  tool_config_file: "{{ galaxy_config_dir }}/tool_conf.xml,{{ galaxy_shed_tool_conf_file }},{{ galaxy_config_dir }}/nagios_tool_conf.xml"
-  tool_dependency_dir: /usr/local/tools
-
-  # TODO(hxr): change back to /data/7/
-  job_working_directory: /data/dnb01/galaxy-new-testing/job-working
-  cluster_files_directory: /data/dnb01/galaxy-new-testing/pbs
-  new_file_path: /data/dnb01/galaxy-new-testing//galaxy_db/tmp
-
-  #nginx_upload_store: /galaxy-repl/main/upload
-  #nginx_upload_job_files_store: /galaxy-repl/main/upload_job_files
-  ftp_upload_dir: /data/0/incoming/
-  ftp_upload_site: 'ftps://ftp.usegalaxy.eu'
-  #user_library_import_dir: /galaxy-repl/main/ftp
-  #library_import_dir: /galaxy-repl/main/import
-  galaxy_data_manager_data_path: /data/db/data_managers
-
-  tool_sheds_config_file: "{{ galaxy_config_dir }}/tool_sheds_conf.xml"
-  tool_data_table_config_path: "{{ galaxy_config_dir }}/tool_data_table_conf.xml"
-  build_sites_config_file: "{{ galaxy_config_dir }}/build_sites.yml"
-  datatypes_config_file: "{{ galaxy_config_dir }}/datatypes_conf.xml"
-  object_store_config_file: "{{ galaxy_config_dir }}/object_store_conf.xml"
-  job_config_file: "{{ galaxy_config_dir }}/job_conf.xml"
-  #job_resource_params_file: "{{ galaxy_config_dir }}/job_resource_params_conf.xml"
-  data_manager_config_file: "{{ galaxy_config_dir }}/data_manager_conf.xml"
-  job_metrics_config_file: "{{ galaxy_config_dir }}/job_metrics_conf.xml"
-  dependency_resolvers_config_file: "{{ galaxy_config_dir }}/dependency_resolvers_conf.xml"
-
-  migrated_tools_config: "{{ galaxy_config_dir }}/migrated_tools_conf.xml"
-  integrated_tool_panel_config: "{{ galaxy_mutable_config_dir }}/integrated_tool_panel.xml"
-
-
-  tool_data_path: "{{ galaxy_root }}/tool-data"
-  shed_tool_data_path: "{{ galaxy_root }}/tool-data/"
-  shed_tool_data_table_config: "{{ galaxy_mutable_config_dir }}/shed_tool_data_table_conf.xml"
-  #
-  #shed_data_manager_config_file: "/cvmfs/main.galaxyproject.org/config/shed_data_manager_conf.xml"
-  sanitize_all_html: "False"
-  serve_xss_vulnerable_mimetypes: "True"
-  #sanitize_whitelist_file: /galaxy-repl/main/config/sanitize_whitelist.txt
-
-  #environment_setup_file: /galaxy/main/job_env.bash
-
-  # TODO
-  builds_file_path: "{{ galaxy_config_dir }}/builds.txt"
-  ucsc_build_sites: "{{ galaxy_config_dir }}/ucsc_build_sites.txt"
-
-  # interactive environments
-  interactive_environment_plugins_directory: "{{ galaxy_root }}/interactive_environments/plugins"
-  #dynamic_proxy_manage: "False"
-  dynamic_proxy_session_map: "{{ galaxy_mutable_data_dir }}/gie_proxy_session_map.sqlite"
-  #dynamic_proxy_bind_port: 4280
-  #dynamic_proxy_bind_ip: 0.0.0.0
-  #dynamic_proxy_debug: "True"
-  #dynamic_proxy_external_proxy: "True"
-  #dynamic_proxy_prefix: gie_proxy
-  #galaxy_infrastructure_url: https://usegalaxy.org
-  trust_jupyter_notebook_conversion: "True"
-
-  # general stuff
-  allow_user_impersonation: true
-  database_engine_option_pool_size: 20
-  database_engine_option_max_overflow: 20
-  database_engine_option_server_side_cursors: "True"
-
-  conda_prefix: "/usr/local/tools/_conda"
-  conda_ensure_channels: 'iuc,bioconda,conda-forge,defaults,bgruening'
-  # TODO: remove someday.
-  conda_auto_install: "True"
-  conda_copy_dependencies: 'True'
-  use_cached_dependency_manager: 'True'
-  enable_beta_mulled_containers: 'True'
-  container_image_cache_path: '/data/0/cvmfs/singularity/'
-  # stats
-  statsd_host: "127.0.0.1"
-  statsd_port: "8125"
-  statsd_prefix: "galaxy_page_timings"
-  statsd_influxdb: "true"
-
-  # start high, decrease when we've fixed things
-  slow_query_log_threshold: "2"
-
-  # disable the new late object store assignment for the moment due to some bugs
-  legacy_eager_objectstore_initialization: "True"
-  webhooks_dir: 'config/plugins/webhooks,config/plugins/webhooks/demo'
-
-
-
-
-
-
-
-  smtp_server: smtp.informatik.uni-freiburg.de
-  smtp_username: "{{ smtp_username }}"
-  smtp_password: "{{ smtp_password }}"
-
-  error_email_to: 'contact@usegalaxy.eu'
-  email_from: 'European Galaxy Team <contact@usegalaxy.eu>'
-  blacklist_file: "{{ galaxy_config_dir }}/disposable_email_blacklist.conf"
-
-
-
-
-  #len_file_path: /cvmfs/data.galaxyproject.org/managed/len/ucsc
-  #collect_outputs_from: job_working_directory
-  #error_email_to: galaxy-bugs@bx.psu.edu
-  #activation_email: "Galaxy Activation <activate@galaxyproject.org>"
-  instance_resource_url: "https://galaxyproject.org/support"
-  #screencasts_url: "https://vimeo.com/galaxyproject"
-  search_url: "https://galaxyproject.org/search/"
-  user_activation_on: 'True'
-  activation_grace_period: 48
-  registration_warning_message: "Please register only one account. The {{ galaxy_instance_hostname }} service is provided free of charge and has limited computational and data storage resources. <strong>Registration and usage of multiple accounts is tracked and such accounts are subject to termination and data deletion.</strong>"
-  inactivity_box_content: "Your account has not been activated yet.  Feel free to browse around and see what's available, but you won't be able to upload data or run jobs until you have verified your email address."
-  #
-  #
-  wiki_url: "https://galaxyproject.eu/"
-  terms_url: "https://{{ galaxy_instance_hostname }}/terms"
-
-  static_enabled: "True"
-  x_frame_options: ''
-  allow_path_paste: 'True'
-
-  show_welcome_with_login: 'True'
-  allow_user_deletion: 'True'
-  new_user_dataset_access_role_default_private: 'True'
-  enable_beta_gdpr: 'True'
-  enable_beta_ts_api_install: 'True'
-
-
-  #enable_cloud_launch: "True"
-  #cloudlaunch_default_ami: ami-a7dbf6ce
-  #nginx_x_accel_redirect_base: /_x_accel_redirect
-  #nginx_upload_path: /_upload
-  #nginx_upload_job_files_path: /_job_files
-  #log_events: "False"
-  #log_actions: "False"
-  #debug: "False"
-  #use_interactive: "False"
-  #use_pbkdf2: "True"
-  #allow_user_deletion: "True"
-  #allow_user_dataset_purge: "True"
-  #enable_openid: "True"
-  #ftp_upload_site: "ftp://{{ galaxy_instance_hostname }}"
-  enable_quotas: "True"
-  expose_dataset_path: 'True'
-  expose_potentially_sensitive_job_metrics: 'True'
-  #track_jobs_in_database: "True"
-  retry_job_output_collection: 30
-  #retry_metadata_internally: "False"
-  #retry_job_output_collection: 5
-  cleanup_job: onsuccess
-  cache_user_job_count: 'True'
-
-  tool_label_filters: 'global_host_filters:per_host_tool_labels'
-  tool_section_filters: 'global_host_filters:per_host_tool_sections'
-  user_tool_section_filters: "{% for section in toolbox.toolbox_sections %}user_filters:section_{{ section.name | regex_replace('[^A-Za-z0-9_]*', '') }}{% if not loop.last %}, {% endif %}{% endfor %}"
-  #amqp_internal_connection: "{{ amqp_url }}"
-  #biostar_url: "https://biostar.usegalaxy.org"
-  #biostar_key_name: biostar-login
-  #biostar_enable_bug_reports: "False"
-  #max_metadata_value_size: 1000000
-  #
-  tool_name_boost: 40
-  tool_section_boost: 1
-  tool_description_boost: 40
-  tool_label_boost: 1
-  tool_stub_boost: 1
-  tool_help_boost: 1
-  tool_search_limit: 160
-  #tool_search_limit: 30
-  #tool_name_boost: 12
-  #tool_section_boost: 5
-
-  #containers_config_file: "{{ galaxy_config_dir }}/containers.yml"
-  #enable_beta_containers_interface: "True"
-  # For handler heartbeats
-  use_heartbeat: "True"
-  heartbeat_interval: "-1"
-  heartbeat_log: "{{ galaxy_log_dir }}/heartbeat_{server_name}_{pid}.log"
-
-
-# galaxy.ini contents
-galaxy_config_hash:
-  "app:main":
-    <<: *BASE_APP_MAIN
-    #new_file_path: /data/dnb01/galaxy-new-testing//galaxy_db/tmp
 
 galaxy_config: "{{ galaxy_config_hash }}"
 

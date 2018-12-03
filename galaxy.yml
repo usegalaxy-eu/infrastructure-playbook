@@ -6,6 +6,7 @@
   vars:
     hostname: sn04.bi.uni-freiburg.de
   vars_files:
+    - "group_vars/gxconfig.yml"
     - "secret_group_vars/all.yml"
   pre_tasks:
     # TODO(hxr): fails due to nginx user not available yet.
@@ -64,14 +65,14 @@
 
     # GALAXY
     #- hxr.postgres-connection
-    #- gxadmin
-    #- packages
-    #- hxr.galaxy-log-dir
+    - gxadmin
+    - hxr.galaxy-log-dir
     # TODO(hxr): /var/log/galaxy doesn't exist
-    #- supervisor
-    #- role: hxr.install-to-venv
-      #become: yes
-      #become_user: galaxy
+    - packages
+    - supervisor
+    - role: hxr.install-to-venv
+      become: yes
+      become_user: galaxy
     - geerlingguy.nginx
     - hxr.tiaas
     - role: usegalaxy_privileged
@@ -87,7 +88,6 @@
     - role: galaxyproject.interactive_environments
       become: yes
       become_user: galaxy
-
     #- dj-wasabi.telegraf
     #- dev-sec.os-hardening
     #- dev-sec.ssh-hardening

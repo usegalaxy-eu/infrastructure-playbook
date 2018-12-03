@@ -6,19 +6,18 @@
     path: "{{ galaxy_server_dir }}/lib/galaxy"
   register: galaxy_stat_out
 
+# Example just ensuring the repo checkout exists
 - name: Get current Galaxy commit id
-  command: "{{ git_executable | default('git') }} rev-parse HEAD"
-  args:
-      chdir: "{{ galaxy_server_dir }}"
-  register: current_commit_id
-  changed_when: no
-  when: galaxy_stat_out.stat.exists
+  git:
+    repo: "{{ galaxy_repo }}"
+    dest: "{{ galaxy_server_dir }}"
+    update: no
+  register: current_repo_state
 
 - name: Report current Galaxy commit id
   debug:
-    msg: "Current version of {{ galaxy_server_dir }} {{ current_commit_id.stdout | default(-1) }} does not match playbook version {{ galaxy_commit_id }}"
-  changed_when: True
-  when: galaxy_stat_out.stat.exists and (current_commit_id.stdout | default(-1) != galaxy_commit_id)
+    msg: "Current version of {{ galaxy_server_dir }} {{ current_repo_state.before }} does not match playbook version {{ galaxy_commit_id }}"
+  when: galaxy_stat_out.stat.exists and (current_repo_state.before != galaxy_commit_id)
 
 - name: Update Galaxy to correct ref (git)
   git:

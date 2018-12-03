@@ -20,11 +20,11 @@ defaults
 	option  httplog
 	option  dontlognull
 {% if haproxy_version == '1.4' %}
-	contimeout 5000
+	contimeout 50000
 	clitimeout 50000
 	srvtimeout 50000
 {% else %}
-	timeout connect 5000
+	timeout connect 50000
 	timeout client 1000000
 	timeout server 1000000
 {% endif %}

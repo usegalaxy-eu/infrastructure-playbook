@@ -225,17 +225,11 @@ def _finalize_tool_spec(tool_id, user_roles, memory_scale=1.0):
 
     # Only two tools are truly special.
     if tool_id == 'upload1':
-        #tool_spec = {
-        #    'mem': 1,
-        #    'runner': 'sge',
-        #    'env': {
-        #        'TEMP': '/data/1/galaxy_db/tmp/'
-        #    }
-        #}
         tool_spec = {
             'mem': 0.3,
             'runner': 'condor',
             'rank': 'GalaxyGroup == "upload"',
+            'requirements': 'GalaxyTraining == false',
             'env': {
                 'TEMP': '/data/1/galaxy_db/tmp/'
             }
@@ -245,6 +239,7 @@ def _finalize_tool_spec(tool_id, user_roles, memory_scale=1.0):
             'mem': 0.3,
             'runner': 'condor',
             'rank': 'GalaxyGroup == "metadata"',
+            'requirements': 'GalaxyTraining == false',
         }
     return tool_spec
 
@@ -259,7 +254,7 @@ def convert_to(tool_spec, runner):
     return tool_spec
 
 
-def _gateway(tool_id, user_roles, user_email, memory_scale=1.0):
+def _gateway(tool_id, user_roles, user_id, user_email, memory_scale=1.0):
     tool_spec = _finalize_tool_spec(tool_id, user_roles, memory_scale=memory_scale)
 
     # Now build the full spec
@@ -272,6 +267,8 @@ def _gateway(tool_id, user_roles, user_email, memory_scale=1.0):
     assert_permissions(tool_spec, user_email, user_roles)
 
     env, params, runner, _ = build_spec(tool_spec, runner_hint=runner_hint)
+    params['accounting_group_user'] = str(user_id)
+    params['description'] = get_tool_id(tool_id)
 
     return env, params, runner, tool_spec
 
@@ -281,12 +278,14 @@ def gateway(tool_id, user, memory_scale=1.0):
     if user:
         user_roles = [role.name for role in user.all_roles() if not role.deleted]
         email = user.email
+        user_id = user.id
     else:
         user_roles = []
         email = ''
+        user_id = -1
 
     try:
-        env, params, runner, spec = _gateway(tool_id, user_roles, email, memory_scale=memory_scale)
+        env, params, runner, spec = _gateway(tool_id, user_roles, user_id, email, memory_scale=memory_scale)
     except Exception as e:
         return JobMappingException(str(e))
 
@@ -296,22 +295,4 @@ def gateway(tool_id, user, memory_scale=1.0):
         runner=runner,
         params=params,
         env=env,
-        resubmit=[{
-            'condition': 'any_failure',
-            'destination': 'resubmit_gateway',
-        }]
     )
-
-
-def resubmit_gateway(tool_id, user):
-    """Gateway to handle jobs which have been resubmitted once.
-
-    We don't want to try re-running them forever so the ONLY DIFFERENCE in
-    these methods is that this one doesn't include a 'resubmission'
-    specification in the returned JobDestination
-    """
-
-    job_destination = gateway(tool_id, user, memory_scale=1.5)
-    job_destination['resubmit'] = []
-    job_destination['id'] = job_destination['id'] + '_resubmit'
-    return job_destination
