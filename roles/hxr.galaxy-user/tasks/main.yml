@@ -1,6 +1,7 @@
 # galaxy account
 ---
 - lineinfile:
+    # TODO(hxr): fails due to nginx user not available yet.
     path: /etc/group
     regexp: 'input:x:999:'
     line: 'input:x:500:'
