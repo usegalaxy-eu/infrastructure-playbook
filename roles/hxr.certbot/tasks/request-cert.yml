@@ -11,7 +11,7 @@
 
 - name: Request certificate
   command: |
-      certbot
+      {{ certbot_script }}
         certonly
         {{ certbot_cmd_environment }}
         --non-interactive
