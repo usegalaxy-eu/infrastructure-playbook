@@ -194,12 +194,8 @@ def reroute_to_dedicated(tool_spec, user_roles):
 
     # No changes to specification.
     if len(training_roles) == 0:
-        # However if it is running on condor, make sure that it doesn't run on the training machines.
-        if 'runner' in tool_spec and tool_spec['runner'] == 'condor':
-            # Require that the jobs do not run on these dedicated training machines.
-            return {'requirements': 'GalaxyGroup == "compute"'}
-        # If it isn't running on condor, no changes.
-        return {}
+        # Require that the jobs do not run on these dedicated training machines.
+        return {'requirements': 'GalaxyGroup == "compute"'}
 
     # Otherwise, the user does have one or more training roles.
     # So we must construct a requirement / ranking expression.
