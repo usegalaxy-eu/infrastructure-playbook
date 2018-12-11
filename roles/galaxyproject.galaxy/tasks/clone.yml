@@ -28,7 +28,6 @@
     executable: "{{ git_executable | default(omit) }}"
   notify:
     - restart galaxy
-    - email administrator with commit id
 
 - name: Include virtualenv setup tasks
   include_tasks: virtualenv.yml

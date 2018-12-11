@@ -1,7 +1,7 @@
 ---
 - lineinfile:
     path: /etc/group
-    regexp: 'input:x:999:'
+    regexp: 'input:x:.*:'
     line: 'input:x:500:'
   register: user_input
   when: replace_non_galaxy_999 is defined
@@ -12,7 +12,7 @@
 
 - lineinfile:
     path: /etc/passwd
-    regexp: 'polkitd:x:999:998:User for polkitd:/:/sbin/nologin'
+    regexp: 'polkitd:x:.*:998:User for polkitd:/:/sbin/nologin'
     line: 'polkitd:x:500:998:User for polkitd:/:/sbin/nologin'
   register: group_polkit
   when: replace_non_galaxy_999 is defined
@@ -35,4 +35,26 @@
     home: /opt/galaxy
     state: present
     comment: Galaxy Service-Acct
-    createhome: no
+    createhome: yes
+
+- file:
+    path: "{{ galaxy_root }}"
+    state: directory
+    owner: "galaxy"
+    group: "galaxy"
+    mode: 0755
+
+- name: Check for bashrc
+  stat:
+    path: "{{ galaxy_root }}/.bashrc"
+  register: bashrc_stat_out
+
+- name: Copy default bashrc when not existing
+  copy:
+    src: /etc/skel/.bashrc
+    dest: "{{ galaxy_root }}/.bashrc"
+    remote_src: yes
+    owner: "galaxy"
+    group: "galaxy"
+    mode: 0750
+  when: not bashrc_stat_out.stat.exists
