@@ -1,0 +1,17 @@
+---
+- name: HAProxy internal
+  hosts: haproxy-internal
+  become: true
+  vars:
+    hostname: proxy.internal.galaxyproject.eu
+  vars_files:
+    - "secret_group_vars/all.yml"
+  roles:
+    - hostname
+    - linuxhq.yum_cron
+    - geerlingguy.repo-epel
+    - hxr.admin-tools
+    - geerlingguy.haproxy
+    - dj-wasabi.telegraf
+    - dev-sec.os-hardening
+    - dev-sec.ssh-hardening

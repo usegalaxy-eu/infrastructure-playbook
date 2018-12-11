@@ -1,0 +1,43 @@
+haproxy_chroot: ''
+haproxy_frontends:
+    - name: https-in
+      bind:
+        - '*:80'
+      mode: http
+      custom_config:
+        - 'acl certbot_path      path_beg /.well-known/'
+        # Add header if this was over HTTPS
+        - 'reqadd X-Forwarded-Proto:\ https if { ssl_fc }'
+        # Unless this is going to certbot, redirect to HTTPS
+        - 'redirect scheme https code 301 if !{ ssl_fc } !certbot_path'
+        # ACLs
+        - 'acl website_domain    hdr_dom(host) -i galaxyproject.eu'
+        - 'acl main_domain       hdr_dom(host) -i usegalaxy.eu'
+        - 'acl beta_domain       hdr_dom(host) -i beta.usegalaxy.eu'
+        - 'acl apollo_path       path_beg /apollo/'
+        - 'acl rabbit_path       path_beg /rabbit/'
+        - 'acl welcome           path_beg /static/welcome.html'
+        - 'acl basecss           path_beg /static/style/base.css'
+
+        # Beta/test galaxy.
+        - 'use_backend galaxy'
+      galaxy_hosts: []
+
+
+haproxy_backends:
+    - name: galaxy
+      balance: roundrobin
+      mode: http
+      custom_config:
+          # Retry requests up to 8 times. The default is 3
+          # https://cbonte.github.io/haproxy-dconv/1.5/configuration.html#4.2-retries
+          - "retries 8"
+          - "server server1 test.internal.usegalaxy.eu:443 maxconn 128 ssl verify none"
+
+haproxy_stats: true
+
+telegraf_plugins_extra:
+  haproxy:
+    plugin: haproxy
+    config:
+      - servers = ["http://127.0.0.1:8080/haproxy?stats"]

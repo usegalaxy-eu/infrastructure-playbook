@@ -1,0 +1,495 @@
+---
+replace_non_galaxy_999: true
+
+
+
+galaxy_instance_hostname: test.usegalaxy.eu
+galaxy_instance_codename: test
+galaxy_host_codename: test
+
+docker_service_state: stopped
+docker_service_enabled: false
+
+nginx_package_name: nginx-galaxy
+nodejs_version: "8.x"
+nodejs_npm_global_packages:
+    - yarn
+
+pip_venv_path: "{{ galaxy_venv_dir }}"
+pip_install_dependencies:
+    # phdcomics
+    - beautifulsoup4
+    # Used by code_files for apollo
+    - biopython
+    - bcbio-gff
+    # Needed for tool watching
+    - watchdog
+
+
+yum_exclude_repos:
+    - condor*
+    - nodejs*
+    - npm*
+
+supervisord_group_configs:
+  - galaxy
+
+all_yum_repositories:
+  - name: galaxy_gpel
+    description: Galaxy Packages for Enterprise Linux $releasever - $basearch
+    baseurl: https://depot.galaxyproject.org/yum/el/$releasever/$basearch/
+    enabled: yes
+    gpgcheck: no
+
+supervisord_conf_dir: /etc/supervisor.d/
+supervisord_install: package
+supervisord_inet_user: super
+supervisord_inet_pass: "{{ supervisord_inet_pass }}"
+
+
+certbot_auto_renew: yes
+certbot_auto_renew_user: root
+certbot_auto_renew_hour: 3
+certbot_auto_renew_minute: 30
+
+certbot_environment: production #staging
+certbot_domains:
+  - "{{ hostname }}"
+certbot_agree_tos: --agree-tos
+certbot_admin_email: security@usegalaxy.eu
+certbot_post_renewal: |
+    systemctl restart nginx || true
+
+nginx_remove_default_vhost: true
+nginx_proxy_cache_path: "/var/cache/nginx/static levels=1:2 keys_zone=STATIC:10m inactive=24h  max_size=1g"
+nginx_conf_template: "{{ playbook_dir  }}/templates/nginx/main.j2"
+nginx_vhosts:
+  - listen: "80"
+    server_name: "{{ hostname }}"
+    return: "301 https://{{ hostname }}$request_uri"
+    filename: "{{ hostname }}.80.conf"
+
+  - listen: "443 ssl"
+    server_name: "{{ hostname }}"
+    root: "/var/www/{{ hostname }}"
+    index: "index.html"
+    access_log: "/var/log/nginx/access.log"
+    error_log: "/var/log/nginx/error.log"
+    state: "present"
+    filename: "{{ hostname }}.conf"
+    extra_parameters: |
+        error_page 404 /404.html;
+        error_page 502 /502.html;
+        error_page 503 /503.html;
+        error_page 504 /503.html;
+
+        location /404.html {
+                root /usr/share/nginx/html;
+                internal;
+        }
+        location /502.html {
+                root /usr/share/nginx/html;
+                internal;
+        }
+        location /503.html {
+                root /usr/share/nginx/html;
+                internal;
+        }
+        location /504.html {
+                root /usr/share/nginx/html;
+                internal;
+        }
+
+        location / {
+            uwsgi_pass      127.0.0.1:4001;
+
+            include         uwsgi_params;
+            proxy_hide_header x-frame-options;
+            add_header X-Content-Type-Options nosniff;
+            location ~ biom_simple {
+                uwsgi_pass      127.0.0.1:4001;
+                include         uwsgi_params;
+                proxy_hide_header x-frame-options;
+                proxy_hide_header Content-Security-Policy-Report-Only;
+                add_header X-Content-Type-Options nosniff;
+                add_header Access-Control-Allow-Origin "https://www.bx.psu.edu";
+            }
+        }
+
+        location /_x_accel_redirect {
+              internal;
+              alias /;
+              add_header X-Frame-Options SAMEORIGIN;
+              add_header X-Content-Type-Options nosniff;
+        }
+
+        location /phinch {
+                root /opt;
+        }
+
+        location /static {
+                alias {{ galaxy_server_dir }}/static;
+                expires 24h;
+        }
+        location /static/style {
+                alias {{ galaxy_server_dir }}/static/style/blue;
+                expires 24h;
+        }
+        location /static/scripts {
+                alias {{ galaxy_server_dir }}/static/scripts;
+                expires 24h;
+        }
+
+        location /robots.txt {
+                alias {{ galaxy_server_dir }}/static/robots.txt;
+        }
+
+
+        location ~ ^/plugins/(?<plug_type>.+?)/(?<vis_name>.+?)/static/(?<static_file>.*?)$ {
+                alias /opt/galaxy/server/config/plugins/$plug_type/$vis_name/static/$static_file;
+        }
+
+        location /favicon.ico {
+                alias {{ galaxy_server_dir }}/static/favicon.ico;
+        }
+
+
+        location /.well-known/ {
+            proxy_set_header           Host $host:$server_port;
+            proxy_set_header           X-Real-IP $remote_addr;
+            proxy_set_header           X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header           X-Forwarded-Proto $scheme;
+            proxy_pass                 http://127.0.0.1:8118;
+            proxy_pass_request_headers on;
+        }
+
+        location /join-training/ {
+            proxy_pass    http://127.0.0.1:5000/join-training/;
+        }
+
+        location /external/phdcomics/ {
+                proxy_pass http://phdcomics.com/;
+                # The comics are extremely cacheable. No sense waiting for a server from USA to respond.
+                proxy_cache           STATIC;
+                proxy_cache_valid     200  10d;
+                proxy_cache_use_stale error timeout invalid_header updating http_500 http_502 http_503 http_504;
+        }
+
+        location /quota-increase {
+                return 301 https://docs.google.com/forms/d/e/1FAIpQLSf9w2MOS6KOlu9XdhRSDqWnCDkzoVBqHJ3zH_My4p8D8ZgkIQ/viewform;
+        }
+
+        location /request-tiaas {
+                return 301 https://docs.google.com/forms/d/e/1FAIpQLSdoPRDhpYwNFuZSlGRNQj3dDWwfsdemP5yntAdcqhN3YHbqLA/viewform;
+        }
+
+        location /freiburg/ {
+                proxy_pass https://galaxyproject.eu/freiburg/;
+        }
+        location /erasmusmc/ {
+                proxy_pass https://galaxyproject.eu/erasmusmc/;
+        }
+        location /pasteur/ {
+                proxy_pass https://galaxyproject.eu/pasteur/;
+        }
+        location /belgium/ {
+                proxy_pass https://galaxyproject.eu/belgium/;
+        }
+        location /about/ {
+                proxy_pass https://galaxyproject.eu/about;
+        }
+        location /people/ {
+                proxy_pass https://galaxyproject.eu/people;
+        }
+        location /terms {
+                proxy_pass https://galaxyproject.eu/gdpr;
+        }
+
+
+        ssl_certificate /etc/ssl/certs/cert.pem;
+        ssl_certificate_key /etc/ssl/private/privkey.pem;
+
+        ssl_protocols TLSv1.2;# Requires nginx >= 1.13.0 else use TLSv1.2
+        ssl_prefer_server_ciphers on;
+        ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384;
+        ssl_ecdh_curve secp384r1;
+        ssl_session_timeout  10m;
+        ssl_session_cache shared:SSL:10m;
+        ssl_session_tickets off;
+        #ssl_stapling on;
+        #ssl_stapling_verify on;
+
+        resolver 8.8.8.8 8.8.4.4 valid=300s;
+        resolver_timeout 5s;
+        add_header X-Content-Type-Options nosniff;
+        add_header X-XSS-Protection "1; mode=block";
+        add_header X-Robots-Tag none;
+
+        client_max_body_size 10G; # aka max upload size, defaults to 1M
+        uwsgi_read_timeout 2400;
+
+
+condor_host: "manager.vgcn.galaxyproject.eu"
+condor_allow_write: "10.5.68.0/24, 10.19.0.0/16, 132.230.68.0/24, *.bi.uni-freiburg.de"
+# TODO: replace with 'condor-role'?
+condor_daemons:
+    - MASTER
+    - SCHEDD
+condor_allow_negotiator: "132.230.68.5,132.230.68.85,$(CONDOR_HOST)"
+condor_allow_administrator: "$(ALLOW_NEGOTIATOR)"
+
+#condor_system_periodic_hold: "{{ 7 * 24 * 60 * 60}}"
+condor_network_interface: ens2
+
+# CVMFS
+cvmfs_role: client
+galaxy_cvmfs_repos_enabled: true
+
+galaxy_cvmfs_server_urls:
+  - domain: galaxyproject.org
+    urls:
+      - "http://cvmfs1-ufr0.usegalaxy.eu/cvmfs/@fqrn@"
+
+galaxy_cvmfs_repositories:
+  - repository: main.galaxyproject.org
+    stratum0: cvmfs0-tacc0.galaxyproject.org
+    key_dir: /etc/cvmfs/keys/galaxyproject.org
+    server_options:
+      - CVMFS_AUTO_GC=false
+    client_options: []
+  - repository: data.galaxyproject.org
+    stratum0: cvmfs0-psu0.galaxyproject.org
+    key_dir: /etc/cvmfs/keys/galaxyproject.org
+    server_options:
+      - CVMFS_AUTO_GC=false
+    client_options: []
+  - repository: singularity.galaxyproject.org
+    stratum0: cvmfs0-psu0.galaxyproject.org
+    key_dir: /etc/cvmfs/keys/galaxyproject.org
+    server_options: []
+    client_options: []
+
+# HTCondor
+
+htcondor:
+    interface: 'ens2'
+    host: '10.5.68.16'
+    allow_write: '10.5.68.0/24, 10.19.0.0/16, 132.230.68.0/24, *.bi.uni-freiburg.de'
+    ### 09/15/17 09:22:07 (pid:568706) PERMISSION DENIED to unauthenticated@unmapped from host 132.230.68.63 for command 416 (NEGOTIATE), access level NEGOTIATOR: reason: NEGOTIATOR authorization policy contains no matching ALLOW entry for this request; identifiers used for this host: 132.230.68.63,cn030.bi.uni-freiburg.de, hostname size = 1, original ip address = 132.230.68.63
+    #ALLOW_NEGOTIATOR = 132.230.68.85
+    role: 'submit'
+    fs_domain: 'bi.uni-freiburg.de'
+    uid_domain: 'bi.uni-freiburg.de'
+    trust_uid_domain: true
+    # HXR: 2018-04-23 Per @bgruening's request, enlarged from 2d to
+    # Put jobs using resources excessively on hold
+    # http://pages.cs.wisc.edu/~adesmet/status.html#condor-jobstatus
+    jobs:
+        hold_older_than: '{{ 86400 * 7 }}'
+
+# gxadmin
+postgres_user: galaxy
+postgres_host: sn03.bi.uni-freiburg.de
+postgres_port: 5432
+# postgres_pass defined in secret_group_vars/all.yml
+gxadmin_commit: '427a33c333e9b149460390bb4ac4e1ec0174e68c'
+
+# GALAXY
+galaxy_user: galaxy
+galaxy_system_group: galaxy
+galaxy_log_dir: '/var/log/galaxy/'
+
+galaxy_root: /opt/galaxy
+galaxy_handler_count: 12
+galaxy_home_dir: /opt/galaxy
+galaxy_mutable_config_dir: /opt/galaxy/mutable-config
+galaxy_mutable_data_dir: /opt/galaxy/mutable-data
+
+galaxy_server_dir: "{{ galaxy_root  }}/server"
+galaxy_config_dir: "{{ galaxy_root  }}/config"
+galaxy_venv_dir: "{{ galaxy_root  }}/venv"
+galaxy_nonrepro_tools: "{{ galaxy_root }}/custom-tools"
+galaxy_nonrepro_commit: master
+
+galaxy_dynamic_rule_dir: "{{ galaxy_root }}/dynamic_rules"
+usegalaxy_dynamic_job_rules:
+  - sorting_hat.py
+  - destination_specifications.yaml
+  - blast_destinations.py
+  - tool_destinations.yaml
+  - dexseq.py
+  - wig2bigwig.py
+
+galaxy_config_style: 'ini'
+
+galaxy_manage_clone: true
+galaxy_manage_static_setup: true
+galaxy_manage_mutable_setup: true
+# TODO: undo this.
+galaxy_manage_database: false
+galaxy_fetch_dependencies: true
+galaxy_manage_errordocs: false
+
+galaxy_repo: 'https://github.com/usegalaxy-eu/galaxy.git'
+galaxy_commit_id: 'e987fb36f349a1c0909f09d045f1bfe9aed19bcb' # release_18.05_europe-test'
+galaxy_force_checkout: false # discard any modified files
+galaxy_admin_email_to: 'contact@{{ galaxy_instance_hostname }}'
+#galaxy_admin_email_from: 'noreply@usegalaxy.eu'
+
+# Job Conf
+
+galaxy_jobconf:
+    plugin_workers: 4
+    plugins:
+        # These live on the pythonpath
+        - id: dynamic
+          params:
+            rules_module: 'usegalaxy.jobs.rules'
+        - id: condor
+          load: galaxy.jobs.runners.condor:CondorJobRunner
+        - id: local
+          load: galaxy.jobs.runners.local:LocalJobRunner
+    destinations:
+        - id: local
+          runner: local
+        - id: condor
+          runner: condor
+          params:
+            tmp_dir: "True"
+        - id: gateway
+          runner: dynamic
+          params:
+              type: python
+              function: gateway
+    tools:
+        - id: upload1
+          destination: gateway
+    limits:
+        walltime: '148:00:00'
+        output_size: '300GB'
+        registered_user_concurrent_jobs: '30'
+        anonymous_user_concurrent_jobs: '10'
+
+
+
+# IE insanity
+
+interactive_environments_install_method: copy
+interactive_environments_plugins_path: "{{ galaxy_root }}/interactive_environments/plugins"
+interactive_environments_proxy_path: "{{ galaxy_root }}/interactive_environments/proxy"
+
+interactive_environments_enabled:
+  - jupyter
+interactive_environments_config_files: []
+  #- ie_name: jupyter
+    #file: jupyter.ini
+    #contents:
+      #docker:
+        #command: "docker -H tcp://docker.example.org:2376 --tlsverify {docker_args}"
+        #galaxy_url: "https://example.galaxyproject.org"
+        #docker_hostname: "docker.example.org"
+  #- ie_name: jupyter
+    #file: allowed_images.yml
+    #contents:
+      #- image: "bgruening/docker-jupyter-notebook:16.01.1"
+        #description: >
+          #The Jupyter notebook is the next iteration of IPython, allowing
+          #analysis in many different languages. This image features the Python,
+          #R, Julia, Haskell, Bash kernels and many scientific analysis stacks for
+          #each.
+
+galaxy_config: "{{ galaxy_config_hash }}"
+
+galaxy_config_files:
+  # TODO(bgruening): sync this with cvmfs? can we have ours be just a small additional builds.txt?
+  - src: files/galaxy/config/builds.txt
+    dest: "{{ galaxy_config['app:main']['builds_file_path'] }}"
+
+  - src: files/galaxy/config/data_manager_conf.xml
+    dest: "{{ galaxy_config['app:main']['data_manager_config_file'] }}"
+  - src: files/galaxy/config/datatypes_conf.xml
+    dest: "{{ galaxy_config['app:main']['datatypes_config_file'] }}"
+  - src: files/galaxy/config/dependency_resolvers_conf.xml
+    dest: "{{ galaxy_config['app:main']['dependency_resolvers_config_file'] }}"
+  - src: files/galaxy/config/disposable_email_blacklist.conf
+    dest: "{{ galaxy_config['app:main']['blacklist_file'] }}"
+  # test? Unknown if this works.
+  - src: files/galaxy/config/error_report.yml
+    dest: "{{ galaxy_config_dir }}/error_report.yml"
+  - src: files/galaxy/config/job_metrics_conf.xml
+    dest: "{{ galaxy_config['app:main']['job_metrics_config_file'] }}"
+  - src: files/galaxy/config/migrated_tools_conf.xml
+    dest: "{{ galaxy_config['app:main']['migrated_tools_config'] }}"
+  - src: files/galaxy/config/object_store_conf.xml
+    dest: "{{ galaxy_config['app:main']['object_store_config_file'] }}"
+  - src: files/galaxy/config/tool_conf.xml
+    dest: "{{ galaxy_config_dir }}/tool_conf.xml"
+  - src: files/galaxy/config/tool_data_table_conf.xml
+    dest: "{{ galaxy_config_dir }}/tool_data_table_conf.xml"
+  - src: files/galaxy/config/tool_sheds_conf.xml
+    dest: "{{ galaxy_config['app:main']['tool_sheds_config_file'] }}"
+  - src: files/galaxy/config/ucsc_build_sites.txt
+    dest: "{{ galaxy_config['app:main']['ucsc_build_sites'] }}"
+
+  #- src: files/galaxy/config/job_resource_params_conf.xml
+    #dest: "{{ galaxy_config['app:main']['job_resource_params_file'] }}"
+  #- src: files/galaxy/config/pulsar_stampede_actions.yml
+    #dest: "{{ galaxy_config_dir }}/pulsar_stampede_actions.yml"
+  #- src: files/galaxy/config/pulsar_bridges_actions.yml
+    #dest: "{{ galaxy_config_dir }}/pulsar_bridges_actions.yml"
+  #- src: files/galaxy/config/pulsar_jetstream.yml
+    #dest: "{{ galaxy_config_dir }}/pulsar_jetstream.yml"
+  #- src: files/galaxy/config/pulsar_jetstream_actions.yml
+    #dest: "{{ galaxy_config_dir }}/pulsar_jetstream_actions.yml"
+
+galaxy_config_templates:
+  - src: templates/galaxy/config/build_sites.yml.j2
+    dest: "{{ galaxy_config['app:main']['build_sites_config_file'] }}"
+  - src: templates/galaxy/config/global_host_filters.py.j2
+    dest: "{{ galaxy_server_dir }}/lib/galaxy/tools/toolbox/filters/global_host_filters.py"
+  - src: templates/galaxy/config/job_conf.xml.j2
+    dest: "{{ galaxy_config_dir }}/job_conf.xml"
+  - src: templates/galaxy/config/user_filters.py.j2
+    dest: "{{ galaxy_server_dir }}/lib/galaxy/tools/toolbox/filters/user_filters.py"
+  - src: templates/galaxy/config/uwsgi.ini.j2
+    dest: "{{ galaxy_config_dir }}/uwsgi.ini"
+  #- src: files/galaxy/config/nagios_tool_conf.xml
+    #dest: "{{ galaxy_config_dir }}/nagios_tool_conf.xml"
+
+
+
+
+# Custom EU nonsense
+#
+toolbox:
+    toolbox_sections:
+      - name: Genomics (NGS)
+        include_sections:
+        - Variant calling
+        - Epigenetics
+        - Assembly
+        - RAD-seq
+        - Genome editing
+
+      - name: Metagenomics
+        include_sections:
+        - Metagenomic analyses
+        - Qiime
+        - Mothur
+
+      - name: Proteomics
+        include_sections:
+        - Proteomics
+
+      - name: Metabolomics
+        include_sections:
+        - Metabolomics
+
+      - name: Cheminformatics
+        include_sections:
+        - ChemicalToolBox
+
+      - name: Genome Annotation
+        include_sections:
+        - Annotation
+        - OBO Ontology manipulatoin
