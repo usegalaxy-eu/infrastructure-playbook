@@ -20,10 +20,39 @@
     path: /etc/profile
     line: "/usr/bin/dynmotd"
 
-#- name: Add tag file
-  #template:
-    #src: vgcn-release.j2
-    #dest: /etc/vgcn-release
-    #owner: root
-    #group: root
-    #mode: 0444
+- name: add fg color
+  lineinfile:
+    path: /etc/bashrc
+    regexp: '^fg_color'
+    line: 'fg_color=$((16#$(hostname -f | perl -pe "chomp if eof" | sha256sum | cut -c1-2)))'
+
+- name: add bg color
+  lineinfile:
+    path: /etc/bashrc
+    regexp: '^bg_color'
+    line: 'bg_color=$(($fg_color + 15))'
+
+- name: update PS1
+  lineinfile:
+    path: /etc/bashrc
+    regexp: '^export PS1.*'
+    line: 'export PS1="\u@\033[38;5;${fg_color}m\033[48;5;${bg_color}m\h\033[0m:\w\$ "'
+
+- name: fix hist time format
+  lineinfile:
+    path: /etc/bashrc
+    regexp: '^export HISTTIMEFORMAT'
+    line: 'export HISTTIMEFORMAT="%d/%m/%y %T"'
+
+- name: fix hist size
+  lineinfile:
+    path: /etc/bashrc
+    regexp: '^export HISTSIZE'
+    line: 'export HISTSIZE=5000'
+
+- name: fix hist file size
+  lineinfile:
+    path: /etc/bashrc
+    regexp: '^export HISTFILESIZE'
+    line: 'export HISTFILESIZE=1000000'
+
