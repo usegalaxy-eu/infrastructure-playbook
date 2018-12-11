@@ -17,6 +17,7 @@
     <tool file="data_source/dorina_galaxy.xml" />
     <tool file="data_source/fairdomhub.xml" />
     <tool file="data_source/fly_modencode.xml" />
+    <tool file="data_source/intermine.xml" />
     <tool file="data_source/flymine.xml" />
     <!-- <tool file="data_source/flymine_test.xml" /> -->
     <tool file="data_source/modmine.xml" />
@@ -61,6 +62,7 @@
     <tool file="${model_tools_path}/unzip_collection.xml" />
     <tool file="${model_tools_path}/zip_collection.xml" />
     <tool file="${model_tools_path}/filter_failed_collection.xml" />
+    <tool file="${model_tools_path}/filter_empty_collection.xml" />
     <tool file="${model_tools_path}/flatten_collection.xml" />
     <tool file="${model_tools_path}/merge_collection.xml" />
     <tool file="${model_tools_path}/relabel_from_file.xml" />
@@ -68,14 +70,12 @@
     <tool file="${model_tools_path}/sort_collection_list.xml" />
     <tool file="${model_tools_path}/tag_collection_from_file.xml" />
     <tool file="${model_tools_path}/apply_rules.xml" />
+    <tool file="${model_tools_path}/build_list.xml" />
+    <tool file="${model_tools_path}/extract_dataset.xml" />
   </section>
-
-  <!-- +++++++++++++++++++++++++++++++++++++++++++ -->
   <label id="general_text_label" text="General Text Tools" />
-  <!-- +++++++++++++++++++++++++++++++++++++++++++ -->
   <section id="text_manipulation" name="Text Manipulation">
     <tool file="filters/fixedValueColumn.xml" />
-    <!--tool file="stats/column_maker.xml" /-->
     <tool file="filters/catWrapper.xml" />
     <tool file="filters/cutWrapper.xml" />
     <tool file="filters/mergeCols.xml" />
@@ -91,7 +91,6 @@
     <tool file="filters/trimmer.xml" />
     <tool file="filters/wc_gnu.xml" />
     <tool file="filters/secure_hash_message_digest.xml" />
-    <!--tool file="new_operations/tables_arithmetic_operations.xml" /-->
 
     <tool file="/opt/galaxy/custom-tools/unix_tools/remove_ending.xml" hidden="True" />
     <tool file="/opt/galaxy/custom-tools/unix_tools/find_and_replace.xml" hidden="True" />
@@ -102,6 +101,7 @@
     <tool file="stats/filtering.xml" />
     <tool file="filters/sorter.xml" />
     <tool file="filters/grep.xml" />
+    <label id="gff" text="GFF" />
     <tool file="filters/gff/extract_GFF_Features.xml" />
     <tool file="filters/gff/gff_filter_by_attribute.xml" />
     <tool file="filters/gff/gff_filter_by_feature_count.xml" />
@@ -112,9 +112,7 @@
   <section id="join,_subtract_and_group" name="Join, Subtract and Group" version="">
     <tool file="filters/joiner.xml" />
     <tool file="filters/compare.xml" />
-    <!--tool file="new_operations/subtract_query.xml" /-->
     <tool file="stats/grouping.xml" />
-    <!--tool file="new_operations/column_join.xml" /-->
   </section>
   <section id="unix_tools" name="Unix Tools">
     <tool file="/opt/galaxy/custom-tools/unix_tools/sed_tool.xml" hidden="True" />
@@ -150,16 +148,8 @@
     <tool file="maf/maf_filter.xml" />
   </section>
   <section id="operate_on_genomic_intervals" name="Operate on Genomic Intervals">
-    <!--tool file="new_operations/intersect.xml" /-->
     <tool file="/opt/galaxy/custom-tools/tools-iuc/tools/bedtools/mergeBed.xml" hidden="True" />
-    <!--tool file="new_operations/subtract.xml" /-->
-    <!--tool file="new_operations/merge.xml" /-->
-    <!--tool file="new_operations/coverage.xml" /-->
-    <!--tool file="new_operations/join.xml" /-->
-    <!--tool file="new_operations/get_flanks.xml" /-->
-    <!--tool file="new_operations/flanking_features.xml" /-->
     <tool file="stats/aggregate_binned_scores_in_intervals.xml" />
-    <!--<tool file="extract/phastOdds/phastOdds_tool.xml" />-->
   </section>
   <section id="multiple_alignments" name="Multiple Alignments" />
 

@@ -43,6 +43,14 @@
        are enforced, we can try to grep some information from this. -->
   <cgroup />
   <!--<cgroup verbose="true" />-->
+  <!-- All params from the `cpuacct,cpu` and `memory` controllers can be
+       recorded.  -->
+  <!-- <cgroup verbose="true" /> -->
+  <!-- Or, specific params can be recorded. -->
+  <!-- <cgroup params="cpuacct.usage,memory.max_usage_in_bytes,memory.memsw.max_usage_in_bytes" /> -->
+
+  <!-- Uncomment to record hostname - *nix only -->
+  <!-- <hostname /> -->
 
   <!-- <collectl /> -->
   <!-- Collectl (http://collectl.sourceforge.net/) is a powerful monitoring
