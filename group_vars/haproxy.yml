@@ -45,6 +45,8 @@ haproxy_frontends:
           id: metagenomics
         - domain: rna.usegalaxy.eu
           id: rna
+        - domain: graphclust.usegalaxy.eu
+          id: graphclust
         - domain: ecology.usegalaxy.eu
           id: ecology
         - domain: proteomics.usegalaxy.eu
@@ -119,6 +121,7 @@ haproxy_backends:
       mode: http
       custom_config:
         - 'server server1 132.230.68.85:443  maxconn 32'
+
     - name: old_special
       balance: roundrobin
       mode: http
@@ -130,6 +133,7 @@ haproxy_backends:
       mode: http
       custom_config:
         - 'server server1 192.52.33.7:80  maxconn 32'
+
     - name: test_special
       balance: roundrobin
       mode: http
