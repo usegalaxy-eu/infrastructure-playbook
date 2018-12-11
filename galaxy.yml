@@ -1,4 +1,6 @@
 ---
+# TODO:
+# - atop service not ednaled
 - name: galaxy
   hosts: galaxy
   become: true
@@ -40,19 +42,19 @@
     #- geerlingguy.repo-epel
     #- hxr.exclude-repo # Exclude epel repos for condor, node, npm
     #- geerlingguy.nodejs
-    # TODO(hxr): fix ordering of these
-    - hxr.monitor-cluster
-    - hxr.monitor-galaxy
-    # TODO(hxr): missing gxmnt etc
-    - role: hxr.galaxy-cron
-      become: yes
-      become_user: galaxy
-    - role: hxr.galaxy-nonreproducible-tools
-      become: yes
-      become_user: galaxy
-    - hxr.galaxy-misc
-    #- hxr.autofs
-    #- cvmfs
+    ## TODO(hxr): fix ordering of these
+    #- hxr.monitor-cluster
+    #- hxr.monitor-galaxy
+    ## TODO(hxr): missing gxmnt etc
+    #- role: hxr.galaxy-cron
+      #become: yes
+      #become_user: galaxy
+    #- role: hxr.galaxy-nonreproducible-tools
+      #become: yes
+      #become_user: galaxy
+    #- hxr.galaxy-misc
+    ##- hxr.autofs
+    ##- cvmfs
     #- dynmotd
     #- ssh-host-sign
     #- hxr.admin-tools
@@ -60,20 +62,20 @@
     #- htcondor
     #- linuxhq.yum_cron
     #- influxdata.chrony
-    # TODO(hxr): maybe don't run on temp testing VMs?
-    #- hxr.certbot
+    ## TODO(hxr): maybe don't run on temp testing VMs?
+    ##- hxr.certbot
 
-    # GALAXY
+    ## GALAXY
     #- hxr.postgres-connection
-    - gxadmin
-    - hxr.galaxy-log-dir
-    # TODO(hxr): /var/log/galaxy doesn't exist
-    - packages
-    - supervisor
-    - role: hxr.install-to-venv
-      become: yes
-      become_user: galaxy
-    - geerlingguy.nginx
+    #- gxadmin
+    #- hxr.galaxy-log-dir
+    ## TODO(hxr): /var/log/galaxy doesn't exist
+    #- packages
+    #- supervisor
+    #- role: hxr.install-to-venv
+      #become: yes
+      #become_user: galaxy
+    #- geerlingguy.nginx
     - hxr.tiaas
     - role: usegalaxy_privileged
       become: yes

@@ -89,7 +89,6 @@ tiaas_galaxy_url: "https://usegalaxy.eu"
 tiaas_galaxy_key: "{{ admin_api_key_erasche }}"
 tiaas_trainings:
     - bioinfbrad2018_1
-    - genomika3
     - bioinformatika2018
 
 # TIaaS Deployment
@@ -97,6 +96,7 @@ tiaas_dir: /opt/tiaas
 tiaas_user: tiaas
 tiaas_group: tiaas
 tiaas_version: master
+tiaas_force_checkout: true
 tiaas_create_user: true
 tiaas_create_group: true
 
@@ -395,7 +395,7 @@ galaxy_manage_errordocs: false
 
 galaxy_repo: 'https://github.com/usegalaxy-eu/galaxy.git'
 galaxy_commit_id: '14818f18473e2e9a8c22f9fd5104c768e3999abe' # release_18.05_europe
-galaxy_force_checkout: false # discard any modified files
+galaxy_force_checkout: true # discard any modified files
 galaxy_admin_email_to: 'contact@usegalaxy.eu'
 #galaxy_admin_email_from: 'noreply@usegalaxy.eu'
 

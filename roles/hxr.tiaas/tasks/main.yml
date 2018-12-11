@@ -35,6 +35,7 @@
     repo: "https://github.com/usegalaxy-eu/tiaas-group-join"
     dest: "{{ tiaas_dir }}/code/"
     version: "{{ tiaas_version }}"
+    force: "{{ tiaas_force_checkout }}"
   notify: 'reload tiaas'
 
 - name: Send templates
