@@ -8,7 +8,7 @@
 - set_fact:
     ssl_cert_group_available: true
 
-- name: Write the file
+- name: Write the certificate post-renewal script
   copy:
     content: |
         #!/bin/bash
@@ -35,5 +35,5 @@
     group: root
     mode: "0755"
 
-- name: exec the file
+- name: Execute the certificate post-renewal script
   command: /etc/letsencrypt/renewal-hooks/post/ansible.sh
