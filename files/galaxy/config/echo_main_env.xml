@@ -1,0 +1,20 @@
+<tool id="echo_main_env" name="Admin Debugging Tool" version="0.0.1">
+	<command detect_errors="exit_code">
+		sleep $sleep;
+		#if $dump_env == "true":
+			env | sort > $out_file1;
+		#else
+			echo "hi" > $out_file1;
+		#end if
+		exit $exit_code;
+	</command>
+	<inputs>
+		<param name="input" type="data" />
+		<param name="dump_env" type="boolean" label="Dump environment variables" />
+		<param name="sleep" label="How long to sleep" type="integer" value="0" />
+		<param name="exit_code" label="Exit code" type="integer" value="0" />
+	</inputs>
+	<outputs>
+		<data format="tabular" name="out_file1"/>
+	</outputs>
+</tool>
