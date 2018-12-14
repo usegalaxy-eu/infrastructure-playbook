@@ -511,8 +511,10 @@ galaxy_jobconf:
         #      type: python
         #      function: dexseq
     tools:
+        # TODO(hxr): implement validation that checks that every destination
+        # used here is defined above.
         - id: upload1
-          destination: gateway
+          destination: gateway_1x
         #- id: wig_to_bigWig
           #destination: wig_to_bigWig
         #- id: dexseq
