@@ -114,21 +114,19 @@ telegraf_plugins_extra:
     plugin: "exec"
     config:
       - commands = [
+          # A couple of usegalaxy.eu subdomains.
           "/usr/bin/simple-ssl-check usegalaxy.eu",
-          "/usr/bin/simple-ssl-check build.usegalaxy.eu",
-          "/usr/bin/simple-ssl-check stats.usegalaxy.eu",
-          "/usr/bin/simple-ssl-check influxdb.usegalaxy.eu",
-          "/usr/bin/simple-ssl-check influxdb.usegalaxy.eu 8086",
-          "/usr/bin/simple-ssl-check proxy.usegalaxy.eu",
           "/usr/bin/simple-ssl-check metagenomics.usegalaxy.eu",
-          "/usr/bin/simple-ssl-check hicexplorer.usegalaxy.eu",
-          "/usr/bin/simple-ssl-check ftp.usegalaxy.eu",
-          "/usr/bin/simple-ssl-check telescope.galaxyproject.org",
-          "/usr/bin/simple-ssl-check sentry.usegalaxy.eu",
-          "/usr/bin/simple-ssl-check mon01.bwcloud.uni-freiburg.de",
-          "/usr/bin/simple-ssl-check apollo.usegalaxy.eu",
-          "/usr/bin/simple-ssl-check vault.usegalaxy.eu",
+          # Proxy + Proxied services
+          "/usr/bin/simple-ssl-check proxy.galaxyproject.eu",
+          "/usr/bin/simple-ssl-check build.galaxyproject.eu",
+          "/usr/bin/simple-ssl-check influxdb.galaxyproject.eu 8086",
+          "/usr/bin/simple-ssl-check influxdb.galaxyproject.eu",
+          "/usr/bin/simple-ssl-check stats.galaxyproject.eu",
+          "/usr/bin/simple-ssl-check telescope.galaxyproject.eu",
+          # RZ
           "/usr/bin/simple-ssl-check cloud.denbi.uni-freiburg.de",
+          "/usr/bin/simple-ssl-check mon01.bwcloud.uni-freiburg.de",
         ]
       - timeout = "15s"
       - data_format = "influx"
@@ -184,25 +182,16 @@ galaxy_nagios_urls:
       url: "https://hicexplorer.usegalaxy.eu"
       code: 200
     - name: stats
-      url: "https://stats.usegalaxy.eu"
+      url: "https://stats.galaxyproject.eu"
       code: 200
     - name: apollo
       url: "https://apollo.usegalaxy.eu/apollo_api/annotator/index"
       code: 200
     - name: grt
-      url: "https://telescope.galaxyproject.org/"
-      code: 200
-    - name: grt_api
-      url: "https://telescope.galaxyproject.org/api/instance/top_all.json"
-      code: 200
-    - name: grt_upload
-      url: "https://telescope.galaxyproject.org/grt-admin/api/galaxies/"
-      code: 200
-    - name: grt_login
-      url: "https://telescope.galaxyproject.org/grt-admin/accounts/login/"
+      url: "https://telescope.galaxyproject.eu/"
       code: 200
     - name: build
-      url: "https://build.usegalaxy.eu"
+      url: "https://build.galaxyproject.eu"
       code: 200
     - name: ftp_docs
       url: "https://ftp.usegalaxy.eu"
@@ -210,9 +199,6 @@ galaxy_nagios_urls:
     - name: influx
       url: "{{ influxdb.url }}/ping"
       code: 204
-    - name: sentry
-      url: "https://sentry.usegalaxy.eu/auth/login/sentry/"
-      code: 200
     - name: phinch
       url: "https://usegalaxy.eu/phinch/index.html"
       code: 200
