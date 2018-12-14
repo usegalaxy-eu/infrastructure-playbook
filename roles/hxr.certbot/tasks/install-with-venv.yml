@@ -1,4 +1,9 @@
 ---
+- name: Ensure virtualenv is present
+  yum:
+    name: python-virtualenv
+    state: present
+
 - name: Install certbot into virtualenv
   pip:
     name:
