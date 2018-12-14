@@ -269,7 +269,7 @@ def _gateway(tool_id, user_roles, user_id, user_email, memory_scale=1.0):
     return env, params, runner, tool_spec
 
 
-def gateway(tool_id, user, memory_scale=1.0):
+def gateway(tool_id, user, memory_scale=1.0, next_dest=None):
     # And run it.
     if user:
         user_roles = [role.name for role in user.all_roles() if not role.deleted]
@@ -285,10 +285,27 @@ def gateway(tool_id, user, memory_scale=1.0):
     except Exception as e:
         return JobMappingException(str(e))
 
+    resubmit = []
+    if next_dest:
+        resubmit = [{
+            'condition': 'any_failure and attempt <= 3',
+            'destination': next_dest
+        }]
+
     name = name_it(spec)
     return JobDestination(
         id=name,
         runner=runner,
         params=params,
         env=env,
+        resubmit=resubmit,
     )
+
+def gateway_1x(tool_id, user):
+    return gateway(tool_id, user, memory_scale=1, next_dest='gateway_1_5x')
+
+def gateway_1_5x(tool_id, user):
+    return gateway(tool_id, user, memory_scale=1.5, next_dest='gateway_2x')
+
+def gateway_2x(tool_id, user):
+    return gateway(tool_id, user, memory_scale=2)

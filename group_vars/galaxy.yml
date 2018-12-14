@@ -437,6 +437,7 @@ galaxy_jobconf:
             amqp_consumer_timeout: 2.0
             amqp_publish_retry: True
             amqp_publish_retry_max_retries: 60
+    default_destination: gateway_1x
     destinations:
         - id: local
           runner: local
@@ -444,13 +445,23 @@ galaxy_jobconf:
           runner: condor
           params:
             tmp_dir: "True"
-        #- id: drmaa
-          #runner: drmaa
-        - id: gateway
+        # Gateways
+        - id: gateway_1x
           runner: dynamic
           params:
               type: python
-              function: gateway
+              function: gateway_1x
+        - id: gateway_1_5x
+          runner: dynamic
+          params:
+              type: python
+              function: gateway_1_5x
+        - id: gateway_2x
+          runner: dynamic
+          params:
+              type: python
+              function: gateway_2x
+        # Pulsar MQs
         - id: remote_cluster_mq_cz
           runner: pulsar_eu_cz
           params:

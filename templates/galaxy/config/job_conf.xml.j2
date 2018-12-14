@@ -16,7 +16,7 @@
 		<handler id="handler_{{ galaxy_instance_codename }}_{{ n }}" tags="handlers"/>
 		{% endfor %}
 	</handlers>
-	<destinations default="gateway">
+	<destinations default="{{ galaxy_jobconf['default_destination'] }}">
 		{% for destination in galaxy_jobconf['destinations'] %}
 		<destination id="{{ destination['id'] }}" runner="{{ destination['runner'] }}">
 			{% if 'params' in destination %}
