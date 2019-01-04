@@ -50,7 +50,8 @@ def per_host_tool_sections( context, section ):
         valid_sections += [ "rna_analysis" ]
         return section.id in valid_sections
     if "clipseq.usegalaxy.eu" in host:
-        valid_sections += [ "rna_analysis" ]
+        valid_sections += general_ngs_sections
+        valid_sections += [ "rna_analysis", "peak_calling", "motif_tools"]
         return section.id in valid_sections
 
     return True
