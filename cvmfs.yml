@@ -3,18 +3,18 @@
   become: true
   vars:
     hostname: cvmfs1-ufr0.galaxyproject.eu
-    cvmfs_srv_device: ""
+    galaxy_cvmfs_repos_enabled: true
     cvmfs_role: 'stratum1'
   vars_files:
     - "secret_group_vars/all.yml"
-  #pre_tasks:
-    #- file:
-        #src: /data/dnb01/cvmfs/
-        #dest: /srv
-        #owner: root
-        #group: root
-        #state: link
-        #force: true
+  pre_tasks:
+    - file:
+        src: /data/dnb01
+        dest: /srv
+        owner: root
+        group: root
+        state: link
+        force: true
   roles:
     - hostname
     - hxr.admin-tools
