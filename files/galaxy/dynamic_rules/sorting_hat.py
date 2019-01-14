@@ -96,7 +96,7 @@ def name_it(tool_spec):
     if 'cores' in tool_spec:
         name = '%scores_%sG' % (tool_spec.get('cores', 1), tool_spec.get('mem', 4))
     elif len(tool_spec.keys()) == 0 or (len(tool_spec.keys()) == 1 and 'runner' in tool_spec):
-        name = '%s_default' % tool_spec.get('runner', 'sge')
+        name = '%s_default' % tool_spec.get('runner', 'condor')
     else:
         name = '%sG_memory' % tool_spec.get('mem', 4)
 

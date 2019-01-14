@@ -1,9 +1,10 @@
 ---
 __default__: {}
 
+scpipe: {mem: 12, cores: 8}
 cardinal_combine: {mem: 12}
 cardinal_classification: {mem: 128}
-cardinal_filtering: {mem: 40}
+cardinal_filtering: {mem: 80}
 cardinal_mz_images: {mem: 128}
 cardinal_preprocessing: {mem: 110}
 cardinal_quality_report: {mem: 120}
@@ -15,11 +16,13 @@ heatmap: {mem: 12}
 Heatmap: {mem: 12}
 
 cuffmerge: {mem: 8}
-kraken: {mem: 128}
 
 bio3d_pca: {mem: 64}
 bio3d_rmsd: {mem: 64}
 bio3d_rmsf: {mem: 64}
+
+
+kraken: {mem: 128}
 
 viz_overlay_moving_and_fixed_image: {mem: 12}
 ip_projective_transformation: {mem: 24}
@@ -475,8 +478,8 @@ hicexplorer_hicplotviewpoint: {mem: 12}
 hicexplorer_hicaggregatecontacts: {mem: 12}
 hicup_mapper: {cores: 6, mem: 24}
 hisat: {cores: 12, mem: 20}
-#hisat2: {cores: 8, mem: 20_singularity}
-hisat2: {cores: 8, mem: 20}
+hisat2: {cores: 8, mem: 20, runner: condor_singularity_with_conda}
+#hisat2: {cores: 8, mem: 20}
 
 hisat2_index_builder_data_manager: {cores: 12, mem: 180}
 hmmer_hmmsearch: {mem: 10}
@@ -501,7 +504,7 @@ lastz_wrapper_2: {mem: 8}
 limma_voom: {mem: 4}
 macs2_bdgdiff: {mem: 10}
 macs2_callpeak: {mem: 15}
-maldi_quant_preprocessing: {mem: 180}
+maldi_quant_preprocessing: {mem: 400}
 maldi_quant_peak_detection: {mem: 180}
 mass_spectrometry_imaging_classification: {mem: 128}
 megablast_wrapper: {mem: 20}
@@ -651,7 +654,7 @@ show_3D_surface_plot:
   name: matlab
   nativeSpecExtra: -l lic_matlab=1
 signalp3: {mem: 10}
-sklearn_searchcv: {cores: 1, mem: 8}
+sklearn_searchcv: {cores: 4, mem: 16}
 smooth_running_window: {mem: 32}
 snippy: {mem: 12}
 snpEff: {mem: 12}
