@@ -24,8 +24,8 @@
 
 - set_fact:
     check_squid_telegraf:
-      - plugin: exec
-        disambiguation: check_squid
+      check_squid_telegraf:
+        plugin: "exec"
         config:
           - commands = ["/usr/bin/parse_squid"]
           - timeout = "10s"
@@ -33,4 +33,4 @@
           - interval = "5m"
 
 - set_fact:
-    telegraf_plugins_extra: "{{ telegraf_plugins_extra + check_squid_telegraf }}"
+    telegraf_plugins_extra: "{{ telegraf_plugins_extra | combine(check_squid_telegraf) }}"

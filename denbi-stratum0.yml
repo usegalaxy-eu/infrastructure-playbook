@@ -1,0 +1,32 @@
+---
+- hosts: denbistratum0
+  become: true
+  vars:
+    cvmfs_role: 'stratum0'
+    usegalaxy_eu_autofs_mounts:
+      - vdb
+  vars_files:
+    - "secret_group_vars/all.yml"
+  pre_tasks:
+    - file:
+        src: /data/vol/
+        dest: /srv
+        owner: root
+        group: root
+        state: link
+        force: true
+  roles:
+    - hxr.admin-tools
+    - influxdata.chrony
+    - geerlingguy.repo-epel
+    - hxr.monitor-email
+    - linuxhq.yum_cron
+    - hxr.autofs
+    # BEGIN custom
+    - cvmfs
+    - hxr.monitor-squid
+    - hxr.monitor-cvmfs
+    # END custom
+    - dj-wasabi.telegraf
+    #- dev-sec.os-hardening
+    #- dev-sec.ssh-hardening

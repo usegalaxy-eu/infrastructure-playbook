@@ -1,14 +1,14 @@
 LAUNCH_VM := 0
-DEBUG := 
+DEBUG :=
 ifdef CHECK
   CHECK_C := --check --diff
 else
-  CHECK_C := 
+  CHECK_C :=
 endif
 ifdef DIFF
   DIFF_C := --diff
 else
-  DIFF_C := 
+  DIFF_C :=
 endif
 
 
@@ -23,4 +23,4 @@ clean:
 	@rm -f *.retry
 
 %:
-	ansible-playbook -i hosts $@.yml $(CHECK_C) $(DIFF_C) $(DEBUG)
+	.venv/bin/ansible-playbook -i hosts $@.yml $(CHECK_C) $(DIFF_C) $(DEBUG)

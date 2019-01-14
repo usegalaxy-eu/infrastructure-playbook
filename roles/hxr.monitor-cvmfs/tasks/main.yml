@@ -15,8 +15,8 @@
 
 - set_fact:
     check_cvmfs_telegraf:
-      - plugin: exec
-        disambiguation: check_cvmfs_repo
+      check_cvmfs_telegraf:
+        plugin: exec
         config:
           - commands = ["/usr/bin/check_cvmfs_repos"]
           - timeout = "10s"
@@ -24,4 +24,4 @@
           - interval = "5m"
 
 - set_fact:
-    telegraf_plugins_extra: "{{ telegraf_plugins_extra + check_cvmfs_telegraf }}"
+    telegraf_plugins_extra: "{{ telegraf_plugins_extra | combine(check_cvmfs_telegraf) }}"

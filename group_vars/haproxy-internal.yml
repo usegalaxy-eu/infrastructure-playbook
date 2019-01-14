@@ -8,23 +8,21 @@ haproxy_frontends:
         - 'acl certbot_path      path_beg /.well-known/'
         # Add header if this was over HTTPS
         - 'reqadd X-Forwarded-Proto:\ https if { ssl_fc }'
-        # Unless this is going to certbot, redirect to HTTPS
-        - 'redirect scheme https code 301 if !{ ssl_fc } !certbot_path'
         # ACLs
-        - 'acl website_domain    hdr_dom(host) -i galaxyproject.eu'
-        - 'acl main_domain       hdr_dom(host) -i usegalaxy.eu'
-        - 'acl beta_domain       hdr_dom(host) -i beta.usegalaxy.eu'
-        - 'acl apollo_path       path_beg /apollo/'
-        - 'acl rabbit_path       path_beg /rabbit/'
-        - 'acl welcome           path_beg /static/welcome.html'
-        - 'acl basecss           path_beg /static/style/base.css'
-
+        - 'acl cvmfs_domain      hdr_dom(host) -i cvmfs1-ufr0.galaxyproject.eu'
+        - 'acl galaxy_domain     hdr_dom(host) -i test.usegalaxy.eu'
+        - 'use_backend cvmfs     if cvmfs_domain'
         # Beta/test galaxy.
         - 'use_backend galaxy'
       galaxy_hosts: []
 
 
 haproxy_backends:
+    - name: cvmfs
+      balance: roundrobin
+      mode: http
+      custom_config:
+        - 'server server1 cvmfs1-ufr0.internal.galaxyproject.eu:80 maxconn 32'
     - name: galaxy
       balance: roundrobin
       mode: http
