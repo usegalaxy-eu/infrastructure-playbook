@@ -19,6 +19,8 @@ def per_host_tool_labels( context, label ):
     if "hicexplorer.usegalaxy.eu" in host or "metagenomics.usegalaxy.eu" in host or "rna.usegalaxy.eu" in host or "clipseq.usegalaxy.eu" in host or "graphclust.usegalaxy.eu" in host:
         valid_labels += general_ngs_labels
         return label.id in valid_labels
+    if "cheminformatics.usegalaxy.eu" in host:
+        return label.id in valid_labels
     return True
 
 
@@ -57,5 +59,7 @@ def per_host_tool_sections( context, section ):
         valid_sections += general_ngs_sections
         valid_sections += [ "rna_analysis", "graphclust"]
         return section.id in valid_sections
-
+    if "cheminformatics.usegalaxy.eu" in host:
+        valid_sections += [ "chemicaltoolbox" ]
+        return section.id in valid_sections
     return True

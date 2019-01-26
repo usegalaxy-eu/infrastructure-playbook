@@ -1,10 +1,10 @@
 ---
 __default__: {}
 
-scpipe: {mem: 12, cores: 8}
+scpipe: {mem: 24, cores: 8}
 cardinal_combine: {mem: 12}
 cardinal_classification: {mem: 128}
-cardinal_filtering: {mem: 80}
+cardinal_filtering: {mem: 200}
 cardinal_mz_images: {mem: 128}
 cardinal_preprocessing: {mem: 110}
 cardinal_quality_report: {mem: 120}
@@ -15,8 +15,14 @@ kraken_database_builder: {mem: 200}
 heatmap: {mem: 12}
 Heatmap: {mem: 12}
 
-cuffmerge: {mem: 8}
+slamdunk: {cores: 12}
 
+pilon:
+  mem: 18
+  env:
+    _JAVA_OPTIONS: -Xmx18G -Xms1G
+
+cuffmerge: {mem: 8}
 bio3d_pca: {mem: 64}
 bio3d_rmsd: {mem: 64}
 bio3d_rmsf: {mem: 64}
@@ -494,7 +500,7 @@ je_demultiplex: {cores: 8, mem: 20}
 je_demultiplex_illu: {cores: 8}
 je_markdupes: {cores: 8}
 join1: {mem: 18}
-#bamFilter:  {runner: remote_cluster_mq_cz}
+bamFilter:  {runner: remote_cluster_mq_cz}
 
 #jq: {runner: remote_cluster_mq_cz}
 kallisto_quant: {cores: 8, mem: 20}
@@ -515,6 +521,7 @@ methtools_calling: {cores: 12, mem: 40}
 methtools_filter: {mem: 10}
 methtools_plot: {cores: 12, mem: 20}
 metilene: {cores: 12, mem: 20}
+mimodd_varcall: {cores: 6}
 minced: {mem: 10}
 migmap:
   env:
@@ -660,6 +667,7 @@ snippy: {mem: 12}
 snpEff: {mem: 12}
 snpEff_databases: {mem: 12}
 snpEff_download: {mem: 12}
+snpEff_get_chr_names: {mem: 12}
 snpEff_build_gb:
   mem: 48
   env:
