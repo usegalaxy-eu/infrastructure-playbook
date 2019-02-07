@@ -40,7 +40,7 @@
   service:
     name: grafana-server
     enabled: yes
-    state: running
+    state: started
 
 - name: Cron job
   command: "grafana-cli plugins install {{ item }}"
