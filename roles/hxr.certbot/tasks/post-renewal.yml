@@ -13,7 +13,7 @@
     content: |
         #!/bin/bash
         mkdir -p  /etc/ssl/private/
-        chmod 750 /etc/ssl/private/
+        chmod 755 /etc/ssl/private/
         chown root:ssl-cert /etc/ssl/private/
         # Chain
         cp /etc/letsencrypt/live/{{ certbot_hostname_override | default(certbot_domains[0]) }}/fullchain.pem /etc/ssl/certs/fullchain.pem
@@ -27,6 +27,11 @@
         cp /etc/letsencrypt/live/{{ certbot_hostname_override | default(certbot_domains[0]) }}/privkey.pem   /etc/ssl/private/privkey.pem
         chmod 640           /etc/ssl/private/privkey.pem
         chown root:ssl-cert /etc/ssl/private/privkey.pem
+        # For each user, create custom version
+        {% for user in certbot_share_key_users %}
+        cp /etc/ssl/private/privkey.pem /etc/ssl/private/privkey-{{ user }}.pem
+        chown {{ user }}: /etc/ssl/private/privkey-{{ user }}.pem
+        {% endfor %}
         # Other
         {{ certbot_post_renewal }}
 

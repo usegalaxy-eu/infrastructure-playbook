@@ -23,6 +23,7 @@
         -m {{ certbot_admin_email }}
         {{ certbot_agree_tos }}
         -d {{ ','.join(certbot_domains) }}
+        {{ certbot_auto_renew_extra }}
   register: request
   args:
     creates: "/etc/letsencrypt/renewal/{{ certbot_hostname_override | default(certbot_domains[0]) }}.conf"
