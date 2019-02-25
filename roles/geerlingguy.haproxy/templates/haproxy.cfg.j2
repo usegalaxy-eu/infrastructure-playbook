@@ -50,13 +50,13 @@ frontend {{ frontend.name }}
 {% endfor %}
 
 {% for gx_host in frontend.galaxy_hosts %}
-	acl {{ gx_host.id }}_host  hdr_dom(host) -i {{ gx_host.domain | default(gx_host.name + ".usegalaxy.eu") }}
+	acl {{ gx_host.name }}_host  hdr_dom(host) -i {{ gx_host.domain | default(gx_host.name + ".usegalaxy.eu") }}
 {% endfor %}
 
 {% for gx_host in frontend.galaxy_hosts %}
-	use_backend {{ gx_host.id }}_special   if {{ gx_host.id }}_host welcome
-	use_backend {{ gx_host.id }}_special   if {{ gx_host.id }}_host basecss
-	use_backend {{ gx_host.id }}_base      if {{ gx_host.id }}_host
+	use_backend {{ gx_host.name }}_special   if {{ gx_host.name }}_host welcome
+	use_backend {{ gx_host.name }}_special   if {{ gx_host.name }}_host basecss
+	use_backend {{ gx_host.name }}_base      if {{ gx_host.name }}_host
 {% endfor %}
 	use_backend galaxy
 
@@ -75,17 +75,17 @@ backend {{ backend.name }}
 {% for frontend in haproxy_frontends %}
 {% for gx_host in frontend.galaxy_hosts %}
 {% if 'disable_default_backend' not in gx_host %}
-backend {{ gx_host.id }}_special
+backend {{ gx_host.name }}_special
 	mode http
 	balance roundrobin
-	reqrep ^GET\ /static/style/base.css(.*)\ HTTP/1.1 GET\ /static/style/base-{{ gx_host.id }}.css\1\ HTTP/1.1
-	reqrep ^GET\ /static/welcome.html\ HTTP/1.1 GET\ /static/welcome-{{ gx_host.id }}.html\ HTTP/1.1
-	{{ haproxy_galaxy_backend }}
+	reqrep ^GET\ /static/style/base.css(.*)\ HTTP/1.1 GET\ /static/style/base-{{ gx_host.name }}.css\1\ HTTP/1.1
+	reqrep ^GET\ /static/welcome.html\ HTTP/1.1 GET\ /static/welcome-{{ gx_host.name }}.html\ HTTP/1.1
+	{{ gx_host.custom_backend | default(haproxy_galaxy_backend) }}
 
-backend {{ gx_host.id }}_base
+backend {{ gx_host.name }}_base
 	mode http
 	balance roundrobin
-	{{ haproxy_galaxy_backend }}
+	{{ gx_host.custom_backend | default(haproxy_galaxy_backend) }}
 
 {% endif %}
 {% endfor %}
