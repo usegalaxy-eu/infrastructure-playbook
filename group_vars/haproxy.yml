@@ -36,35 +36,7 @@ haproxy_frontends:
         - 'use_backend beta_special   if beta_domain basecss'
         - 'use_backend beta_base      if beta_domain'
 
-      galaxy_hosts:
-        - domain: usegalaxy.de
-          id: de
-        - domain: hicexplorer.usegalaxy.eu
-          id: hic
-        - domain: metagenomics.usegalaxy.eu
-          id: metagenomics
-        - domain: rna.usegalaxy.eu
-          id: rna
-        - domain: graphclust.usegalaxy.eu
-          id: graphclust
-        - domain: ecology.usegalaxy.eu
-          id: ecology
-        - domain: proteomics.usegalaxy.eu
-          id: proteomics
-        - domain: clipseq.usegalaxy.eu
-          id: clipseq
-        - domain: cheminformatics.usegalaxy.eu
-          id: cheminformatics
-        - domain: imaging.usegalaxy.eu
-          id: imaging
-        - domain: test.usegalaxy.eu
-          id: test
-          disable_default_backend: true
-        - domain: old.usegalaxy.eu
-          id: old
-          disable_default_backend: true
-        - domain: streetscience.usegalaxy.eu
-          id: streetscience
+      galaxy_hosts: "{{ galaxy_custom_sites }}"
 
 # Custom error pages. TODO: automate.
 #- 'errorfile 400 /etc/haproxy/errors/400.html'

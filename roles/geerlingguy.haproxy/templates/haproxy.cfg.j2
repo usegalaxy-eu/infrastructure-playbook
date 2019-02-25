@@ -50,7 +50,7 @@ frontend {{ frontend.name }}
 {% endfor %}
 
 {% for gx_host in frontend.galaxy_hosts %}
-	acl {{ gx_host.id }}_host  hdr_dom(host) -i {{ gx_host.domain }}
+	acl {{ gx_host.id }}_host  hdr_dom(host) -i {{ gx_host.domain | default(gx_host.name + ".usegalaxy.eu") }}
 {% endfor %}
 
 {% for gx_host in frontend.galaxy_hosts %}
