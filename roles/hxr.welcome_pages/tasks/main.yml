@@ -7,14 +7,14 @@
     path: "{{ multisite_dir }}"
     state: directory
 
-#- name: Template out main welcome page
-#  template:
-#    src: welcome.html
-#    dest: "{{ multisite_dir }}/base.html"
-#    mode: 0644
-#  with_items:
-#    - index: "/galaxy/"
-#
+- name: Template out main welcome page
+  template:
+    src: welcome.html
+    dest: "{{ multisite_dir }}/base.html"
+    mode: 0644
+  with_items:
+    - index: "/galaxy/"
+
 - name: "Template out welcome pages"
   template:
     src: welcome.html
