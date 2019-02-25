@@ -1,37 +1,36 @@
-- name: Template out main welcome page
-  template:
-    src: welcome.html
-    dest: "{{ galaxy_server_dir }}/static/welcome.html"
-    mode: 0644
-  with_items:
-    - index: "/galaxy/"
-
-- name: "Template out welcome pages"
-  template:
-    src: welcome.html
-    dest: "{{ galaxy_server_dir }}/static/welcome-{{ item.name }}.html"
-    mode: 0644
-  with_items: "{{ galaxy_custom_sites }}"
-
 - name: Set multisite dir to a subdirectory of mutable data dir
   set_fact:
     multisite_dir: "{{ galaxy_mutable_data_dir }}/multisite-css"
-
 
 - name: Create directory
   file:
     path: "{{ multisite_dir }}"
     state: directory
 
+#- name: Template out main welcome page
+#  template:
+#    src: welcome.html
+#    dest: "{{ multisite_dir }}/base.html"
+#    mode: 0644
+#  with_items:
+#    - index: "/galaxy/"
+#
+- name: "Template out welcome pages"
+  template:
+    src: welcome.html
+    dest: "{{ multisite_dir }}/{{ item.name }}.html"
+    mode: 0644
+  with_items: "{{ galaxy_custom_sites }}"
+
 - name: Template out CSS files
   template:
     src: multisite-base.css
-    dest: "{{ multisite_dir }}/{{ item.name }}.css"
+    dest: "{{ multisite_dir }}/{{ item.name }}-custom.css"
     mode: 0644
   with_items: "{{ galaxy_custom_sites }}"
   register: custom_css
 
 - name: Merge CSS files
-  shell: "cat {{ galaxy_server_dir }}/static/style/blue/base.css {{ multisite_dir }}/{{ item.name }}.css > {{ galaxy_server_dir }}/static/style/blue/base-{{ item.name }}.css"
+  shell: "cat {{ galaxy_server_dir }}/static/style/blue/base.css {{ multisite_dir }}/{{ item.name }}-custom.css > {{ multisite_dir }}/{{ item.name }}.css"
   with_items: "{{ galaxy_custom_sites }}"
   when: custom_css.changed
