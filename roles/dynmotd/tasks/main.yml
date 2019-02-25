@@ -36,7 +36,7 @@
   lineinfile:
     path: /etc/bashrc
     regexp: '^export PS1.*'
-    line: 'export PS1="\u@\033[38;5;${fg_color}m\033[48;5;${bg_color}m\h\033[0m:\w\$ "'
+    line: 'export PS1="\u@\[\033[38;5;${fg_color}m\033[48;5;${bg_color}m\]\h\[\033[0m\]:\w\$ "'
 
 - name: fix hist time format
   lineinfile:
