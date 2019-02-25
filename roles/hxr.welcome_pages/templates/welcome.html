@@ -20,7 +20,8 @@ iframe { width:100% ;
     <iframe id='center-iframe' src="" height="100%" onload="this.style.position='static'; this.style.visibility='visible';"></iframe>
 <script type="text/javascript">
 var pseudo_rand = parseInt(Date.now() / 1000 / 60 / 10);
-document.getElementById('center-iframe').src = 'https://galaxyproject.eu{{ item.index | default("/index-" + item.name + ".html") }}?nonce=' + pseudo_rand + '#';
+<!-- {{ item.index | default('no-index') }} {{ item.index | default('no-name') }} -->
+document.getElementById('center-iframe').src = 'https://galaxyproject.eu{{ item.index | default("/index-" + item.name + ".html") | default('/galaxy/') }}?nonce=' + pseudo_rand + '#';
 </script>
 </body>
 </html>
