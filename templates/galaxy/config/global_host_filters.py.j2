@@ -39,7 +39,7 @@ def per_host_tool_sections( context, section ):
     host = context.trans.request.host
     # Core tools used by all virtual hosts.
     valid_sections = [ "text_manipulation", "get_data", "collection_operations", "convert_formats", "filter_and_sort", "join,_subtract_and_group" ]
-    general_ngs_sections = [ "sam_bam_manipulation", "deeptools", "bed_tools", "operate_on_genomic_intervals", "fasta_fastq", "fastq_quality_control", "picard", "mapping" ]
+    general_ngs_sections = [ "deeptools", "bed_tools", "operate_on_genomic_intervals", "fasta/fastq_manipulation", "quality_control", "picard", "mapping"  ]
     # HiCtools mode: published in NAR 2018
     if "hicexplorer.usegalaxy.eu" in host:
         valid_sections += general_ngs_sections
