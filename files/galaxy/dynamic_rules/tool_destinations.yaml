@@ -1,11 +1,11 @@
 ---
 __default__: {}
 
-scpipe: {mem: 24, cores: 8}
-cardinal_combine: {mem: 12}
+scpipe: {mem: 64, cores: 8}
+cardinal_combine: {mem: 30}
 cardinal_classification: {mem: 128}
-cardinal_filtering: {mem: 200}
-cardinal_mz_images: {mem: 128}
+cardinal_filtering: {mem: 30}
+cardinal_mz_images: {mem: 20}
 cardinal_preprocessing: {mem: 110}
 cardinal_quality_report: {mem: 120}
 cardinal_segmentations: {mem: 92}
@@ -14,7 +14,8 @@ cardinal_data_exporter: {mem: 64}
 kraken_database_builder: {mem: 200}
 heatmap: {mem: 12}
 Heatmap: {mem: 12}
-
+msconvert: {runner: condor_docker}
+RNAlien: {cores: 12}
 slamdunk: {cores: 12}
 
 pilon:
@@ -500,7 +501,7 @@ je_demultiplex: {cores: 8, mem: 20}
 je_demultiplex_illu: {cores: 8}
 je_markdupes: {cores: 8}
 join1: {mem: 18}
-bamFilter:  {runner: remote_cluster_mq_cz}
+#bamFilter:  {runner: remote_cluster_mq_cz}
 
 #jq: {runner: remote_cluster_mq_cz}
 kallisto_quant: {cores: 8, mem: 20}
@@ -711,7 +712,7 @@ unicycler:
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
     TERM: vt100
-  mem: 180
+  mem: 80
   name: special
 varscan_somatic: {cores: 8, mem: 12}
 varscan_mpileup: {mem: 12}
