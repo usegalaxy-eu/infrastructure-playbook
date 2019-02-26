@@ -57,6 +57,8 @@ pip_install_dependencies:
     - watchdog
     # Needed for queue size
     - influxdb
+    # Needed gxadmin graphs
+    - data_hacks
 
 
 yum_exclude_repos:
@@ -382,9 +384,21 @@ gxadmin_commit: '427a33c333e9b149460390bb4ac4e1ec0174e68c'
 
 # GALAXY
 galaxy_user: galaxy
+galaxy_group: galaxy
 galaxy_system_group: galaxy
 galaxy_instance_codename: main
 galaxy_log_dir: '/var/log/galaxy/'
+galaxy_layout: root-dir
+galaxy_separate_privileges: true
+galaxy_manage_paths: true
+#galaxy_restart_handler_name: Restart Galaxy
+galaxy_create_user: true
+galaxy_user:
+    name: galaxy
+    create_home: true
+    home: /opt/galaxy
+    uid: 999
+
 
 galaxy_root: /opt/galaxy
 galaxy_handler_count: 12
