@@ -194,6 +194,14 @@ nginx_vhosts:
                 root /opt;
         }
 
+        location /static/welcome.html {
+               alias /opt/galaxy/mutable-data/multisite-css/base.html;
+        }
+
+        location ~ /static/welcome-(?<name>[^/]*).html {
+               alias /opt/galaxy/mutable-data/multisite-css/${name}.html;
+        }
+
         location /static {
                 alias {{ galaxy_server_dir }}/static;
                 expires 24h;
@@ -202,6 +210,11 @@ nginx_vhosts:
                         alias /data/dnb01/vgcn/;
                 }
         }
+
+        location ~ /static/style/base-(?<name>[^/]*).css {
+               alias /opt/galaxy/mutable-data/multisite-css/${name}.css;
+        }
+
         location /static/style {
                 alias {{ galaxy_server_dir }}/static/style/blue;
                 expires 24h;
