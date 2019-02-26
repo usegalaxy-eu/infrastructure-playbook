@@ -55,7 +55,9 @@
     ##- hxr.certbot
 
     ## GALAXY
-    - hxr.postgres-connection
+    - role: hxr.postgres-connection
+      become: yes
+      become_user: galaxy
     - gxadmin
     - hxr.galaxy-log-dir
     ## TODO(hxr): /var/log/galaxy doesn't exist

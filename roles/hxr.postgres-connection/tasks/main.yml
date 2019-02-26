@@ -1,7 +1,5 @@
 ---
 - name: Add env vars in bashrc
-  become: true
-  become_user: "{{ galaxy_user }}"
   lineinfile:
     path: "~/.bashrc"
     regexp: "^export {{ item.var }}"
@@ -13,8 +11,6 @@
       val: "{{ postgres_host }}"
 
 - name: Copy using the 'content' for inline data
-  become: true
-  become_user: "{{ galaxy_user }}"
   copy:
     content: |
       {{ postgres_host }}:{{ postgres_port }}:*:{{ postgres_user }}:{{ postgres_pass }}
