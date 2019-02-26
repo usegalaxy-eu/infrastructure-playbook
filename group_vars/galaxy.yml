@@ -492,13 +492,13 @@ galaxy_jobconf:
           runner: condor
           params:
               singularity_enabled: 'true'
-              singularity_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro'
+              singularity_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro'
               singularity_default_container_id: '/data/0/cvmfs/singularity/ubuntu:18.04'
         - id: condor_singularity2
           runner: condor
           params:
               singularity_enabled: 'true'
-              singularity_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro'
+              singularity_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro'
               singularity_default_container_id: '/data/0/cvmfs/singularity/ubuntu:18.04'
           raw: |
             <param id="container">
@@ -516,7 +516,7 @@ galaxy_jobconf:
           runner: condor
           params:
             docker_enabled: 'true'
-            docker_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro'
+            docker_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro'
             docker_default_container_id: 'ubuntu:18.04'
             docker_auto_rm: 'true'
             docker_sudo: 'false'
