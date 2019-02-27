@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 import yaml
+import os
 import sys
 
+D = os.path.dirname(os.path.realpath(__file__))
 
-jcaas_conf = yaml.load(open('files/galaxy/dynamic_rules/tool_destinations.yaml', 'r'))
+jcaas_conf = yaml.load(open(os.path.join(D, 'files/galaxy/dynamic_rules/tool_destinations.yaml'), 'r'))
 jcaas_conf2 = {}
 for (k, v) in jcaas_conf.items():
     jcaas_conf2[k.lower()] = v
