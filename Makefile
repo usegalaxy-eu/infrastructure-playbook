@@ -19,8 +19,8 @@ help:
 	@echo "  DIFF=1         show changes made"
 	@echo "  CHECK=1      run in --check mode (implies DIFF=1)"
 
-clean:
-	@rm -f *.retry
+deps:
+	.venv/bin/ansible-galaxy install -r requirements.yml
 
 %:
-	.venv/bin/ansible-playbook -i hosts $@.yml $(CHECK_C) $(DIFF_C) $(DEBUG)
+	.venv/bin/ansible-playbook $@.yml $(CHECK_C) $(DIFF_C) $(DEBUG)
