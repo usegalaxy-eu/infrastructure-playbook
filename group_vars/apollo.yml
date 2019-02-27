@@ -21,17 +21,11 @@ tomcat7_catalina_redirect_port: 8443
 tomcat7_ajp_port: 8009
 tomcat7_uriencoding: ""
 
-certbot_auto_renew: yes
-certbot_auto_renew_user: root
 certbot_auto_renew_hour: 23
 certbot_auto_renew_minute: 45
 certbot_auto_renew_extra: "--preferred-challenges http-01 --http-01-port 8118"
-
-certbot_environment: production #staging
 certbot_domains:
   - "{{ hostname }}"
-certbot_agree_tos: --agree-tos
-certbot_admin_email: security@usegalaxy.eu
 certbot_post_renewal: |
     systemctl restart nginx || true
 

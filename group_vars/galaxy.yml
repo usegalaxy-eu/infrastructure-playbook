@@ -115,17 +115,9 @@ tiaas_create_group: true
 tiaas_manage_user: "{{ galaxy_user }}"
 
 
-certbot_auto_renew: yes
-certbot_auto_renew_user: root
 certbot_auto_renew_hour: 3
 certbot_auto_renew_minute: 30
 certbot_auto_renew_extra: "--preferred-challenges http-01 --http-01-port 8118"
-
-certbot_environment: production #staging
-certbot_domains:
-  - "{{ hostname }}"
-certbot_agree_tos: --agree-tos
-certbot_admin_email: security@usegalaxy.eu
 certbot_post_renewal: |
     systemctl restart nginx || true
 

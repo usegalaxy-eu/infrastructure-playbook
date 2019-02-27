@@ -3,17 +3,9 @@ influxdb_base_data_dir: /data/vol/
 usegalaxy_eu_autofs_mounts:
  - vdb
 
-certbot_auto_renew: yes
-certbot_auto_renew_user: root
 certbot_auto_renew_hour: 4
 certbot_auto_renew_minute: 03
 certbot_auto_renew_extra: "--preferred-challenges http-01 --http-01-port 8118"
-
-certbot_environment: production #staging
-certbot_domains:
-  - "{{ hostname }}"
-certbot_agree_tos: --agree-tos
-certbot_admin_email: security@usegalaxy.eu
 certbot_post_renewal: |
     systemctl restart nginx || true
     systemctl restart influxdb || true

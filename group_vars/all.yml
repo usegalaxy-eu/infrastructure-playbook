@@ -1,17 +1,24 @@
 ---
+# Certbot defaults
+certbot_install_method: virtualenv
+certbot_auto_renew: yes
+certbot_auto_renew_user: root
+certbot_environment: production
+certbot_domains:
+ - "{{ hostname }}"
+certbot_agree_tos: --agree-tos
+certbot_admin_email: security@usegalaxy.eu
+
 usegalaxy_eu_autofs_mounts:
  - vdb
 
+# Allow root login on all machines
 ssh_allow_root_with_key: true
 
-#resolv_nameservers:
-  #- 128.118.250.8
-  #- 54.172.110.33
-  #- 54.172.173.123
-#resolv_domain: galaxyproject.org
-#resolv_search: galaxyproject.org
+# Chrony
 chrony_server: 'time.ruf.uni-freiburg.de iburst'
 
+# Telegraf var
 dc: ufr-rz
 
 # Telegraf
@@ -43,9 +50,11 @@ ssh_use_pam: true
 # Required if you want to run ansible more than once.
 sftp_enabled: true
 
+# ???
 galaxy_uid: 999
 galaxy_gid: 999
 
+# Automated yum updates
 yum_cron:
   base:
     debuglevel: -2
