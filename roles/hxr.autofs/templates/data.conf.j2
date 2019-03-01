@@ -1,6 +1,4 @@
-{% if "vdb" in usegalaxy_eu_autofs_mounts %}
-vol      -fstype=ext4    :/dev/vdb
-{% elif "data" in usegalaxy_eu_autofs_mounts %}
+{% if "data" in usegalaxy_eu_autofs_mounts %}
 0       -rw,hard,intr,nosuid,quota      sn01.bi.uni-freiburg.de:/export/data3/galaxy/net/data/&
 1       -rw,hard,intr,nosuid,quota      sn03.bi.uni-freiburg.de:/export/galaxy1/data/&
 2       -rw,hard,intr,nosuid,quota      sn01.bi.uni-freiburg.de:/export/data4/galaxy/net/data/&
