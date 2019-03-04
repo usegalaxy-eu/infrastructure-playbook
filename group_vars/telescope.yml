@@ -27,3 +27,14 @@ nginx_conf_http:
 nginx_ssl_role: usegalaxy-eu.certbot
 nginx_conf_ssl_certificate: /etc/ssl/certs/fullchain.pem
 nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
+
+# PostgreSQL
+postgresql_objects_users:
+  - name: "{{ grt_user }}"
+postgresql_objects_databases:
+  - name: "{{ grt_user }}"
+    owner: "{{ grt_user }}"
+
+# GRT
+grt_upload_dir: /vols/vdb/uploads/
+grt_queries_dir: /srv/nginx/grt-api/

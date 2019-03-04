@@ -5,6 +5,9 @@
     hostname: telescope.galaxyproject.eu
   vars_files:
     - "secret_group_vars/all.yml"
+  pre_tasks:
+    - package:
+        name: ['python-psycopg2']
   roles:
     #- hostname
     #- hxr.admin-tools
@@ -16,10 +19,11 @@
     #- galaxyproject.nginx
     #- hxr.autofs
     # BEGIN custom
-    - galaxyproject.postgresql
-    - role: natefoo.postgresql_objects
-      become: true
-      become_user: postgres
+    #- dynmotd
+    #- galaxyproject.postgresql
+    #- role: natefoo.postgresql_objects
+      #become: true
+      #become_user: postgres
     - usegalaxy-eu.galactic-radio-telescope
     # END custom
     #- dj-wasabi.telegraf
