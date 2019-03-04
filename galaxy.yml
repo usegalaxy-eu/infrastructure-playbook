@@ -8,9 +8,10 @@
   vars:
     hostname: sn04.bi.uni-freiburg.de
   vars_files:
-    - "group_vars/custom-sites.yml"
-    - "group_vars/gxconfig.yml"
-    - "secret_group_vars/all.yml"
+    - group_vars/tiaas.yml
+    - group_vars/custom-sites.yml
+    - group_vars/gxconfig.yml
+    - secret_group_vars/all.yml
   #handlers:
     #- name: Restart Galaxy
       #shell: source /opt/galaxy/.bashrc && /usr/bin/gxadmin handler restart && /usr/bin/gxadmin zerg swap
