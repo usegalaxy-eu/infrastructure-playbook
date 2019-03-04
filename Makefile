@@ -22,5 +22,9 @@ help:
 deps:
 	.venv/bin/ansible-galaxy install -r requirements.yml
 
+pull:
+	git fetch origin
+	git reset --hard origin/master
+
 %:
 	.venv/bin/ansible-playbook $@.yml $(CHECK_C) $(DIFF_C) $(DEBUG)
