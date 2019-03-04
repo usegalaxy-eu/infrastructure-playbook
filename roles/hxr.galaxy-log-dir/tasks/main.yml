@@ -3,5 +3,5 @@
     path: "{{ galaxy_log_dir }}"
     state: directory
     mode: '0755'
-    owner: "{{ galaxy_user }}"
+    owner: "{{ galaxy_user.name }}"
     group: "{{ galaxy_system_group }}"

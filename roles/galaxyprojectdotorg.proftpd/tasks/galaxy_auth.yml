@@ -8,7 +8,7 @@
     backrefs: yes
     line: '#\1 # commented by Ansible'
     backup: yes
-  with_flattened: 
+  with_flattened:
     - "{{ proftpd_galaxy_default_options }}"
     - "{{ proftpd_galaxy_options | default([]) }}"
   notify:
@@ -26,7 +26,7 @@
     - reload proftpd
 
 - name: Lookup Galaxy user UID
-  command: id -u {{ galaxy_user }}
+  command: id -u {{ galaxy_user.name }}
   register: galaxy_user_uid_out
   changed_when: no
   when: galaxy_user_uid is undefined
@@ -37,7 +37,7 @@
   when: galaxy_user_uid is undefined
 
 - name: Lookup Galaxy user GID
-  command: id -g {{ galaxy_user }}
+  command: id -g {{ galaxy_user.name }}
   register: galaxy_user_gid_out
   changed_when: no
   when: galaxy_user_gid is undefined

@@ -45,7 +45,7 @@ SQLBackend          postgres
 SQLAuthenticate     users
 
 # Database connection info
-SQLConnectInfo      {{ proftpd_sql_db }} {{ proftpd_sql_user | default(galaxy_user) }} {{ proftpd_sql_password | default('') }}
+SQLConnectInfo      {{ proftpd_sql_db }} {{ proftpd_sql_user | default(galaxy_user.name) }} {{ proftpd_sql_password | default('') }}
 
 # Authenticate with PBKDF2, fall back to SHA1
 SQLAuthTypes        PBKDF2 SHA1
@@ -59,7 +59,7 @@ SQLDefaultGID       {{ galaxy_user_gid }}
 # Define named queries for user/salt lookups
 SQLUserInfo         custom:/LookupGalaxyUser
 SQLPasswordUserSalt sql:/GetUserSalt
-SQLNamedQuery       LookupGalaxyUser  SELECT "email, (CASE WHEN substring(password from 1 for 6) = 'PBKDF2' THEN substring(password from 38) ELSE encode(decode(password, 'hex'), 'base64') END),'{{ galaxy_user }}','{{ galaxy_user }}','{{ galaxy_ftp_upload_dir }}/' || (select email from galaxy.galaxy_user WHERE(email='%U' or username='%U')) ,'/bin/bash' FROM {{ galaxy_db_schema + '.' }}galaxy_user WHERE (email='%U' or username='%U')"
+SQLNamedQuery       LookupGalaxyUser  SELECT "email, (CASE WHEN substring(password from 1 for 6) = 'PBKDF2' THEN substring(password from 38) ELSE encode(decode(password, 'hex'), 'base64') END),'{{ galaxy_user.name }}','{{ galaxy_user.name }}','{{ galaxy_ftp_upload_dir }}/' || (select email from galaxy.galaxy_user WHERE(email='%U' or username='%U')) ,'/bin/bash' FROM {{ galaxy_db_schema + '.' }}galaxy_user WHERE (email='%U' or username='%U')"
 SQLNamedQuery       GetUserSalt SELECT "(CASE WHEN SUBSTRING (password from 1 for 6) = 'PBKDF2' THEN SUBSTRING (password from 21 for 16) END) FROM {{ galaxy_db_schema + '.' }}galaxy_user WHERE (email='%U' or username='%U')"
 
 {% if proftpd_galaxy_auth_context == 'global' %}

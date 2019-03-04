@@ -3,7 +3,7 @@
   file:
     path: "{{ galaxy_tool_dir }}/nagios/"
     state: directory
-    owner: "{{ galaxy_user }}"
+    owner: "{{ galaxy_user.name }}"
     group: "{{ galaxy_group }}"
     mode: 0755
 
@@ -11,7 +11,7 @@
   template:
     src: echo.xml
     dest: "{{ galaxy_tool_dir }}/nagios/{{ item }}.xml"
-    owner: "{{ galaxy_user }}"
+    owner: "{{ galaxy_user.name }}"
     group: "{{ galaxy_group }}"
     mode: 0640
   with_items: "{{ galaxy_test_user.handlers }}"
@@ -20,6 +20,6 @@
   template:
     src: nagios_tool_conf.xml
     dest: "{{ galaxy_conf_dir }}/nagios_tool_conf.xml"
-    owner: "{{ galaxy_user }}"
+    owner: "{{ galaxy_user.name }}"
     group: "{{ galaxy_group }}"
     mode: 0640
