@@ -13,59 +13,19 @@
 #
 #TODO: does not seem to be working?
 
-- lineinfile:
-    path: /etc/passwd
-    state: absent
-    regexp: '^systemd-bus-proxy:x:999:997:systemd Bus Proxy:/:/sbin/nologin$'
-
-- lineinfile:
-    path: /etc/passwd
-    state: present
-    insertbefore: "^systemd-network"
-    line: 'systemd-bus-proxy:x:993:997:systemd Bus Proxy:/:/sbin/nologin'
-
-- lineinfile:
-    path: /etc/passwd-
-    state: absent
-    regexp: '^systemd-bus-proxy:x:999:997:systemd Bus Proxy:/:/sbin/nologin$'
-
-- lineinfile:
-    path: /etc/passwd-
-    state: present
-    insertbefore: "^systemd-network"
-    line: 'systemd-bus-proxy:x:993:997:systemd Bus Proxy:/:/sbin/nologin'
-
 # Unfortunately ssh_keys owns some files.
-#
-# [root@apollo /]# find bin boot dev etc home lib lib64 media mnt opt root run srv sys tmp usr var -type f -group ssh_keys
-# etc/ssh/ssh_host_rsa_key
-# etc/ssh/ssh_host_ecdsa_key
-# etc/ssh/ssh_host_ed25519_key
-# usr/libexec/openssh/ssh-keysign
-#
-# But this also isn't too bad.
-
-- command: "find bin boot dev etc home lib lib64 media mnt opt root run srv sys tmp usr var -type f -group ssh_keys -exec chgrp 990 '{}' +"
-  args:
-    chdir: '/'
-
-
 - lineinfile:
     path: /etc/group
-    state: absent
-    regexp: '^ssh_keys:x:999:'
+    regexp: 'input:x:999:'
+    line: 'input:x:500:'
+
+- command: "find / -gid 999 -exec chgrp 500 '{}' +"
+  ignore_errors: yes
 
 - lineinfile:
-    path: /etc/group
-    state: present
-    line: 'ssh_keys:x:990:'
+    path: /etc/passwd
+    regexp: 'polkitd:x:999:998:User for polkitd:/:/sbin/nologin'
+    line: 'polkitd:x:500:998:User for polkitd:/:/sbin/nologin'
 
-- lineinfile:
-    path: /etc/group-
-    state: absent
-    regexp: '^ssh_keys:x:999:'
-
-- lineinfile:
-    path: /etc/group-
-    state: present
-    line: 'ssh_keys:x:990:'
+- command: "find / -uid 999 -exec chown 500 '{}' +"
+  ignore_errors: yes

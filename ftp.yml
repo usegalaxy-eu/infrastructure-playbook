@@ -11,17 +11,18 @@
     - hxr.admin-tools
     - influxdata.chrony
     - geerlingguy.repo-epel
-    - hxr.certbot
     - hxr.monitor-email
     - linuxhq.yum_cron
-    - geerlingguy.nginx
+    - galaxyproject.nginx
     - hxr.autofs
+    - dynmotd
     # BEGIN custom
     # Remap 999:999 to other ids.
-    #- hxr.remap-user
-    ## Now add custom galaxy user with hardcoded ID. The user info is in group_vars/ftp.yml
-    #- hxr.replace-galaxy-user
-    #- galaxyprojectdotorg.proftpd
+    - hxr.remap-user
+    # Now add custom galaxy user with hardcoded ID. The user info is in group_vars/ftp.yml
+    - hxr.replace-galaxy-user
+    - galaxyprojectdotorg.proftpd
+    # END custom
     - dj-wasabi.telegraf
-    - dev-sec.os-hardening
-    - dev-sec.ssh-hardening
+    #- dev-sec.os-hardening
+    #- dev-sec.ssh-hardening
