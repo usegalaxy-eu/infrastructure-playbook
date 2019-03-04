@@ -13,7 +13,7 @@ endif
 
 
 help:
-	@echo "Run 'make [grafana|jenkins|haproxy|...]' to re-run ansible for that machine."
+	@echo "Run 'make [grafana|jenkins|haproxy|...].yml' to re-run ansible for that machine."
 	@echo ""
 	@echo "Make Variables: (make ... VAR=VALUE)"
 	@echo "  DIFF=1         show changes made"
@@ -26,5 +26,5 @@ pull:
 	git fetch origin
 	git reset --hard origin/master
 
-%: deps
-	.venv/bin/ansible-playbook $@.yml $(CHECK_C) $(DIFF_C) $(DEBUG)
+%.yml: deps
+	.venv/bin/ansible-playbook $@ $(CHECK_C) $(DIFF_C) $(DEBUG)
