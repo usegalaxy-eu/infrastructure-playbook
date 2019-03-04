@@ -19,8 +19,8 @@ help:
 	@echo "  DIFF=1         show changes made"
 	@echo "  CHECK=1      run in --check mode (implies DIFF=1)"
 
-deps: requirements.yml
-	.venv/bin/ansible-galaxy install -r requirements.yml
+deps: requirements.yaml
+	.venv/bin/ansible-galaxy install -r requirements.yaml
 
 pull:
 	git fetch origin
