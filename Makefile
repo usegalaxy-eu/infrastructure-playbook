@@ -19,12 +19,12 @@ help:
 	@echo "  DIFF=1         show changes made"
 	@echo "  CHECK=1      run in --check mode (implies DIFF=1)"
 
-deps:
+deps: requirements.yml
 	.venv/bin/ansible-galaxy install -r requirements.yml
 
 pull:
 	git fetch origin
 	git reset --hard origin/master
 
-%:
+%: deps
 	.venv/bin/ansible-playbook $@.yml $(CHECK_C) $(DIFF_C) $(DEBUG)
