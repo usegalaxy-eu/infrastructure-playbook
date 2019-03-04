@@ -382,8 +382,9 @@ galaxy_venv_dir: "{{ galaxy_root  }}/venv"
 galaxy_nonrepro_tools: "{{ galaxy_root }}/custom-tools"
 galaxy_nonrepro_commit: master
 
-galaxy_dynamic_rule_dir: "{{ galaxy_root }}/dynamic_rules"
-usegalaxy_dynamic_job_rules:
+galaxy_dynamic_job_rules_src_dir: files/galaxy/dynamic_rules
+galaxy_dynamic_job_rules_dir: "{{ galaxy_root }}/dynamic_rules"
+galaxy_dynamic_job_rules:
   - sorting_hat.py
   - destination_specifications.yaml
   - blast_destinations.py
