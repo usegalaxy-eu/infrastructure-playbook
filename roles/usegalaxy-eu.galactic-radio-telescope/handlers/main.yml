@@ -1,0 +1,12 @@
+---
+- name: reload grt
+  systemd:
+    state: restarted
+    name: galactic-radio-telescope
+
+- name: setup grt systemd
+  systemd:
+    state: started
+    enabled: true
+    name: galactic-radio-telescope
+    daemon_reload: yes

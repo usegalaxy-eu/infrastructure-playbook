@@ -1,0 +1,16 @@
+---
+- name: Process uploads
+  cron:
+    name: Process GRT Uploads
+    user: "{{ grt_user }}"
+    minute: 0
+    hour: 0
+    job: ". {{ grt_dir }}/config/env.sh && {{ grt_dir }}/venv/bin/python {{ grt_dir }}/code/manage.py import_data"
+
+- name: Export queries
+  cron:
+    name: Export queries
+    user: "{{ grt_user }}"
+    minute: 0
+    hour: 4
+    job: "cd {{ grt_queries_dir }}  && . {{ grt_dir }}/config/env.sh && {{ grt_dir }}/venv/bin/python {{ grt_dir }}/code/manage.py queries"

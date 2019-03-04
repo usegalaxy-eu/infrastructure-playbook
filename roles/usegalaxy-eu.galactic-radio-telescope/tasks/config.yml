@@ -1,0 +1,20 @@
+---
+- name: Ensure config directory is available
+  file:
+    path: "{{ grt_dir }}/config"
+    state: directory
+    owner: root
+    group: "{{ grt_group }}"
+    mode: 0750
+
+- name: Send templates
+  template:
+    src: "{{ item }}"
+    dest: "{{ grt_dir }}/config/{{ item }}"
+    owner: root
+    group: "{{ grt_group }}"
+    mode: 0640
+  with_items:
+    - uwsgi.yml
+    - env.sh
+  notify: 'reload grt'

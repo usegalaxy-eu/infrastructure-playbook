@@ -1,0 +1,15 @@
+---
+- name: Send runner script
+  template:
+    src: "run.sh"
+    dest: "{{ grt_dir }}/run.sh"
+    owner: root
+    group: "{{ grt_group }}"
+    mode: 0750
+  notify: 'reload grt'
+
+- name: Install systemd unit file
+  template:
+    src: grt.service
+    dest: /etc/systemd/system/galactic-radio-telescope.service
+  notify: setup grt systemd

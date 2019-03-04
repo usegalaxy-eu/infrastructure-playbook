@@ -1,0 +1,24 @@
+---
+#- include_tasks: account.yml
+  #when: grt_create_group or grt_create_user
+- include_tasks: dirs.yml
+
+- name: Clone repository
+  git:
+    repo: "https://github.com/erasche/galactic-radio-telescope"
+    dest: "{{ grt_dir }}/code/"
+    version: "{{ grt_version }}"
+    force: "{{ grt_force_checkout }}"
+  register: repo_cloned
+  notify: 'reload grt'
+
+- include_tasks: dependencies.yml
+
+- include_tasks: django.yml
+  when: repo_cloned.changed
+
+- include_tasks: config.yml
+
+- include_tasks: systemd.yml
+
+- include_tasks: cron.yml

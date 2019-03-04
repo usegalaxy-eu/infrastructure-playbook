@@ -1,0 +1,36 @@
+---
+- name: Ensure directory is available
+  file:
+    path: "{{ grt_dir }}"
+    state: directory
+    owner: "{{ grt_user }}"
+    group: "{{ grt_group }}"
+    mode: 0750
+
+- name: Ensure uploads directory is available
+  file:
+    path: "{{ grt_upload_dir }}"
+    state: directory
+    owner: "{{ grt_user }}"
+    group: "{{ grt_group }}"
+    mode: 0750
+
+- name: Ensure queries directory is available
+  file:
+    path: "{{ grt_queries_dir }}"
+    state: directory
+    owner: "{{ grt_user }}"
+    group: "{{ grt_group }}"
+    mode: 0755
+
+- name: "Allow httpd_sys_content_t to access the queries dir"
+  sefcontext:
+    target: '{{ grt_queries_dir }}(/.*)?'
+    setype: httpd_sys_content_t
+    state: present
+  register: update_fcontexts
+  when: ansible_selinux.mode == "enforcing"
+
+- name: Apply new SELinux file context to filesystem
+  command: "restorecon -irv {{ grt_queries_dir }}"
+  when: ansible_selinux.mode == "enforcing" and update_fcontexts.changed

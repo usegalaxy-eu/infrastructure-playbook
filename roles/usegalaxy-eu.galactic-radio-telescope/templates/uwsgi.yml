@@ -1,0 +1,17 @@
+uwsgi:
+  chdir: {{ grt_dir }}/code
+  socket: 127.0.0.1:8080
+  buffer-size: 16384
+  processes: 4
+  threads: 1
+  offload-threads: 2
+  static-map: /static=static
+  master: false
+  virtualenv: {{ grt_dir }}/venv
+  module: base.wsgi:application
+  thunder-lock: false
+  die-on-term: true
+  hook-master-start: unix_signal:2 gracefully_kill_them_all
+  hook-master-start: unix_signal:15 gracefully_kill_them_all
+  py-call-osafterfork: true
+  enable-threads: true

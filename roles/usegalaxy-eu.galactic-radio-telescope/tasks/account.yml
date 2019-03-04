@@ -1,0 +1,15 @@
+---
+
+- name: Create group
+  user:
+    name: "{{ grt_group }}"
+    state: present
+  when: grt_create_group
+
+- name: Create user account
+  user:
+    name: "{{ grt_user }}"
+    comment: GRT User
+    group: "{{ grt_group }}"
+    home: "{{ grt_dir }}"
+  when: grt_create_user

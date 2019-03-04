@@ -1,0 +1,6 @@
+---
+- name: Install all of the necessary dependencies
+  pip:
+    virtualenv: "{{ grt_dir }}/venv/"
+    requirements: "{{ grt_dir }}/code/requirements.txt"
+  notify: 'reload grt'
