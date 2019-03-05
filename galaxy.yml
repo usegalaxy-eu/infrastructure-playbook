@@ -67,9 +67,11 @@
     #- hxr.install-to-venv
     - geerlingguy.nginx
     - hxr.tiaas
-    #- role: galaxyproject.galaxy
-      #become: yes
-      #become_user: galaxy
+    # The real galayx role
+    - role: galaxyproject.galaxy
+      become: yes
+      become_user: galaxy
+    # The alternate setup for testing.
     - role: galaxyproject.galaxy
       become: yes
       become_user: galaxy
