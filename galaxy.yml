@@ -12,9 +12,9 @@
     - group_vars/custom-sites.yml
     - group_vars/gxconfig.yml
     - secret_group_vars/all.yml
-  #handlers:
-    #- name: Restart Galaxy
-      #shell: source /opt/galaxy/.bashrc && /usr/bin/gxadmin handler restart && /usr/bin/gxadmin zerg swap
+  handlers:
+    - name: Restart Galaxy
+      shell: source /opt/galaxy/.bashrc && /usr/bin/gxadmin handler restart && /usr/bin/gxadmin zerg swap
   pre_tasks:
     # TODO(hxr): fails due to nginx user not available yet.
     #- name: Install Dependencies
