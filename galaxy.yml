@@ -67,9 +67,31 @@
     #- hxr.install-to-venv
     - geerlingguy.nginx
     - hxr.tiaas
+    #- role: galaxyproject.galaxy
+      #become: yes
+      #become_user: galaxy
     - role: galaxyproject.galaxy
       become: yes
       become_user: galaxy
+      vars:
+        galaxy_server_dir: "{{ galaxy_root }}/server-19.01"
+        galaxy_create_user: false
+        galaxy_manage_paths: true
+        galaxy_manage_clone: true
+        galaxy_manage_static_setup: true
+        galaxy_manage_mutable_setup: false
+        galaxy_manage_database: false
+        galaxy_instance_codename: test
+        galaxy_host_codename: test
+        galaxy_fetch_dependencies: true
+        galaxy_build_client: false
+        galaxy_commit_id: release_19.01_europe
+        galaxy_force_checkout: true
+        galaxy_server_dir: "{{ galaxy_root }}/server-19.01"
+        galaxy_venv_dir: "{{ galaxy_root }}/venv-19.01"
+        galaxy_config_dir: "{{ galaxy_root }}/config-19.01"
+        galaxy_mutable_config_dir: "{{ galaxy_root }}/mutable_config-19.01"
+        galaxy_mutable_data_dir: "{{ galaxy_root }}/mutable_data-19.01"
     # TODO: cannot come before galaxy
     - role: hxr.welcome_pages
       become: yes
