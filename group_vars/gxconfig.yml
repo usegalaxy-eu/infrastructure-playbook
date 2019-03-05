@@ -91,11 +91,10 @@ base_app_main: &BASE_APP_MAIN
 
   # Enable / disable checking if any tools defined in the above non-shed
   # tool_config_files (i.e., tool_conf.xml) have been migrated from the
-  # Galaxy code distribution to the Tool Shed.  This setting should
-  # generally be set to False only for development Galaxy environments
-  # that are often rebuilt from scratch where migrated tools do not need
-  # to be available in the Galaxy tool panel.  If the following setting
-  # remains commented, the default setting will be True.
+  # Galaxy code distribution to the Tool Shed. This functionality is
+  # largely untested in modern Galaxy releases and has serious issues
+  # such as #7273 and the possibility of slowing down Galaxy startup, so
+  # the default and recommended value is False.
   #check_migrate_tools: true
 
   # Tool config maintained by tool migration scripts.  If you use the
@@ -151,6 +150,9 @@ base_app_main: &BASE_APP_MAIN
   # conda channels to enable by default (https://conda.io/docs/user-
   # guide/tasks/manage-channels.html)
   conda_ensure_channels: 'iuc,bioconda,conda-forge,defaults,bgruening'
+
+  # Use locally-built conda packages.
+  #conda_use_local: false
 
   # Set to True to instruct Galaxy to look for and install missing tool
   # dependencies before each job runs.
@@ -237,16 +239,22 @@ base_app_main: &BASE_APP_MAIN
   # by enable_beta_mulled_containers.
   #containers_resolvers_config_file: ''
 
-  # involucro is a tool used to build Docker containers for tools from
-  # Conda dependencies referenced in tools as `requirement`s. The
-  # following path is the location of involucro on the Galaxy host. This
-  # is ignored if the relevant container resolver isn't enabled, and
-  # will install on demand unless involucro_auto_init is set to False.
+  # involucro is a tool used to build Docker or Singularity containers
+  # for tools from Conda dependencies referenced in tools as
+  # `requirement`s. The following path is the location of involucro on
+  # the Galaxy host. This is ignored if the relevant container resolver
+  # isn't enabled, and will install on demand unless involucro_auto_init
+  # is set to False.
   #involucro_path: database/dependencies/involucro
 
-  # Install involucro as needed to build Docker containers for tools.
-  # Ignored if relevant container resolver is not used.
+  # Install involucro as needed to build Docker or Singularity
+  # containers for tools. Ignored if relevant container resolver is not
+  # used.
   #involucro_auto_init: true
+
+  # Conda channels to use when building Docker or Singularity containers
+  # using involucro.
+  #mulled_channels: 'conda-forge,bioconda'
 
   # Enable automatic polling of relative tool sheds to see if any
   # updates are available for installed repositories.  Ideally only one
@@ -559,7 +567,8 @@ base_app_main: &BASE_APP_MAIN
   # Show a message box under the masthead.
   message_box_content: "You are using the new UseGalaxy.eu backend server, let us know if you encounter any issues!"
 
-  # Show a message box under the masthead.
+  # Class of the message box under the masthead. Possible values are:
+  # 'info' (the default), 'warning', 'error', 'done'.
   #message_box_class: info
 
   # Append "/{brand}" to the "Galaxy" text in the masthead.
@@ -572,6 +581,10 @@ base_app_main: &BASE_APP_MAIN
   # (complete format string for the server locale), - $iso8601 (complete
   # format string as specified by ISO 8601 international   standard).
   #pretty_datetime_format: $locale (UTC)
+
+  # Location of the configuration file containing extra user
+  # preferences.
+  #user_preferences_extra_conf_path: config/user_preferences_extra_conf.yml
 
   # Default localization for Galaxy UI. Allowed values are listed at the
   # end of client/galaxy/scripts/nls/locale.js. With the default value
@@ -931,11 +944,13 @@ base_app_main: &BASE_APP_MAIN
 
   # When stopping Galaxy cleanly, how much time to give various
   # monitoring/polling threads to finish before giving up on joining
-  # them. Set to 0 to disable this and restore the pre-18.01 default
-  # behavior.
-  # Potentially fix the "could not recover job"
-  # xref https://github.com/galaxyproject/galaxy/pull/6924/
-  # Only in >18.09
+  # them. Set to 0 to disable this and terminate without waiting. Among
+  # others, these threads include the job handler workers, which are
+  # responsible for preparing/submitting and collecting/finishing jobs,
+  # and which can cause job errors if not shut down cleanly. If using
+  # supervisord, consider also increasing the value of `stopwaitsecs`.
+  # If using job handler mules, consider also setting the `mule-reload-
+  # mercy` uWSGI option. See the Galaxy Admin Documentation for more.
   monitor_thread_join_timeout: 30
 
   # Write thread status periodically to 'heartbeat.log',  (careful, uses
@@ -1273,6 +1288,9 @@ base_app_main: &BASE_APP_MAIN
   # of Galaxy's stable API.
   #enable_beta_workflow_modules: false
 
+  # Enable import and export of workflows as Galaxy Format 2 workflows.
+  enable_beta_workflow_format: true
+
   # Following options only apply to workflows scheduled using the legacy
   # workflow run API (running workflows via a POST to /api/workflows).
   # Force usage of Galaxy's beta workflow scheduler under certain
@@ -1467,9 +1485,8 @@ base_app_main: &BASE_APP_MAIN
   # failing jobs are just failed outright.
   #default_job_resubmission_condition: null
 
-  # In multiprocess configurations, notification between processes about
-  # new jobs must be done via the database.  In single process
-  # configurations, this can be done in memory, which is a bit quicker.
+  # This option is deprecated, use the `mem-self` handler assignment
+  # option in the job configuration instead.
   #track_jobs_in_database: true
 
   # This enables splitting of jobs into tasks, if specified by the
@@ -1678,6 +1695,13 @@ base_app_main: &BASE_APP_MAIN
   # persistent_communication_rooms is a comma-separated list of rooms
   # that should be always available.
   #persistent_communication_rooms: null
+
+  # Galaxy tool recommendation settings
+  #enable_tool_recommendation: false
+
+  # Trained model (HDF5 file) path for tool recommendation.
+  # It is required to be set if 'enable_tool_recommendation' property is enabled and set to true.
+  #model_path: 'database/trained_model.hdf5'
 
   # Allow disabling pbkdf2 hashing of passwords for legacy situations.
   # This should normally be left enabled unless there is a specific
