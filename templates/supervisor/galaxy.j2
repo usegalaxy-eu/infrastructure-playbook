@@ -29,7 +29,7 @@ autostart       = {{ "true" if i == 0 else "false" }}
 autorestart     = unexpected
 startsecs       = 10
 user            = {{ galaxy_user.name }}
-environment     = HOME={{ galaxy_home_dir }},VIRTUAL_ENV={{ galaxy_venv_dir }},PATH={{ galaxy_venv_dir }}/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin,PYTHONPATH={{ galaxy_dynamic_rule_dir }}
+environment     = HOME={{ galaxy_home_dir }},VIRTUAL_ENV={{ galaxy_venv_dir }},PATH={{ galaxy_venv_dir }}/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin,PYTHONPATH={{ galaxy_dynamic_job_rules_dir }}
 stopsignal      = INT
 # The value of `stopwaitsecs` should be at least as large as `monitor_thread_join_timeout * runner_plugin_count`
 stopwaitsecs    = {{ base_app_main.monitor_thread_join_timeout *  4 }}
@@ -48,7 +48,7 @@ autostart       = true
 autorestart     = true
 startsecs       = 30
 user            = {{ galaxy_user.name }}
-environment     = HOME={{ galaxy_home_dir }},VIRTUAL_ENV={{ galaxy_venv_dir }},PATH={{ galaxy_venv_dir }}/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin,PYTHONPATH={{ galaxy_dynamic_rule_dir }}
+environment     = HOME={{ galaxy_home_dir }},VIRTUAL_ENV={{ galaxy_venv_dir }},PATH={{ galaxy_venv_dir }}/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin,PYTHONPATH={{ galaxy_dynamic_job_rules_dir }}
 stdout_logfile  = {{ galaxy_log_dir }}/handler_{{ galaxy_instance_codename }}_%(process_num)s.log
 stdout_logfile_maxbytes = 128MB
 stdout_logfile_backups = 64
