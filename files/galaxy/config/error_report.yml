@@ -20,9 +20,6 @@
   verbose: true
   user_submission: true
 
-# - type: sentry
-#   user_submission: false
-#   custom_dsn: "{{ sentry_dsn_jobconf }}"
 # Example JSON bug reporter implementation. This just writes the bug
 # report as a JSON file to a specified directory and serves as an
 # example for others to extend.
@@ -50,7 +47,7 @@
 # errors InfluxDB allowing you to notice relationships between tool errors and
 # other infrastructure issues.
 # - type: influxdb
-#   # All arguments prefixed with `influxdb_` are per http://influxdb-python.readthedocs.io/en/latest/api-documentation.html#influxdbclient
+#   # All arguments prefixed with `influxdb_` are per https://influxdb-python.readthedocs.io/en/latest/api-documentation.html#influxdbclient
 #   influxdb_host: 127.0.0.1
 #   influxdb_port: 8086
 #   influxdb_database: galaxy

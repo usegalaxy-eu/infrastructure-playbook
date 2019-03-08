@@ -1,11 +1,12 @@
 - name: Set multisite dir to a subdirectory of mutable data dir
   set_fact:
-    multisite_dir: "{{ galaxy_mutable_data_dir }}/multisite-css"
+    multisite_dir: "/opt/multisite-css"
 
 - name: Create directory
   file:
     path: "{{ multisite_dir }}"
     state: directory
+    mode: 755
 
 - name: Template out main welcome page
   template:
