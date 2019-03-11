@@ -550,32 +550,6 @@ galaxy_jobconf:
 
 
 
-# IE insanity
-
-interactive_environments_install_method: copy
-interactive_environments_plugins_path: "{{ galaxy_root }}/interactive_environments/plugins"
-interactive_environments_proxy_path: "{{ galaxy_root }}/interactive_environments/proxy"
-
-interactive_environments_enabled:
-  - jupyter
-interactive_environments_config_files: []
-  #- ie_name: jupyter
-    #file: jupyter.ini
-    #contents:
-      #docker:
-        #command: "docker -H tcp://docker.example.org:2376 --tlsverify {docker_args}"
-        #galaxy_url: "https://example.galaxyproject.org"
-        #docker_hostname: "docker.example.org"
-  #- ie_name: jupyter
-    #file: allowed_images.yml
-    #contents:
-      #- image: "bgruening/docker-jupyter-notebook:16.01.1"
-        #description: >
-          #The Jupyter notebook is the next iteration of IPython, allowing
-          #analysis in many different languages. This image features the Python,
-          #R, Julia, Haskell, Bash kernels and many scientific analysis stacks for
-          #each.
-
 galaxy_config: "{{ galaxy_config_hash }}"
 
 galaxy_config_file_src_dir: files/galaxy
