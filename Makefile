@@ -11,6 +11,8 @@ else
   DIFF_C :=
 endif
 
+OTHER :=
+
 
 help:
 	@echo "Run 'make [grafana|jenkins|haproxy|...].yml' to re-run ansible for that machine."
@@ -28,4 +30,4 @@ pull:
 	git reset --hard origin/master
 
 %.yml: deps
-	.venv/bin/ansible-playbook $@ $(CHECK_C) $(DIFF_C) $(DEBUG)
+	.venv/bin/ansible-playbook $@ $(CHECK_C) $(DIFF_C) $(DEBUG) $(OTHER)
