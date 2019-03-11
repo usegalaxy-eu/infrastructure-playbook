@@ -1,0 +1,27 @@
+#!/bin/bash
+GALAXY=../galaxy
+
+compare() {
+	diff "$1" "$2" > /dev/null
+	if (( $? > 0 )); then
+		vimdiff "$1" "$2"
+	fi
+}
+
+
+compare files/galaxy/config/data_manager_conf.xml	$GALAXY/config/data_manager_conf.xml.sample
+compare files/galaxy/config/datatypes_conf.xml	$GALAXY/config/datatypes_conf.xml.sample
+compare files/galaxy/config/dependency_resolvers_conf.xml	$GALAXY/config/dependency_resolvers_conf.xml.sample
+#compare files/galaxy/config/disposable_email_blacklist.conf	$GALAXY/config/disposable_email_blacklist.conf.sample
+compare files/galaxy/config/error_report.yml	$GALAXY/config/error_report.yml.sample
+#compare files/galaxy/config/job_metrics_conf.xml	$GALAXY/config/job_metrics_conf.xml.sample
+compare files/galaxy/config/migrated_tools_conf.xml	$GALAXY/config/migrated_tools_conf.xml.sample
+#compare files/galaxy/config/object_store_conf.xml	$GALAXY/config/object_store_conf.xml.sample
+compare files/galaxy/config/oidc_backends_config.xml	$GALAXY/config/oidc_backends_config.xml.sample
+compare files/galaxy/config/oidc_config.xml	$GALAXY/config/oidc_config.xml.sample
+compare files/galaxy/config/tool_conf.xml	$GALAXY/config/tool_conf.xml.sample
+compare files/galaxy/config/tool_data_table_conf.xml	$GALAXY/config/tool_data_table_conf.xml.sample
+compare files/galaxy/config/tool_sheds_conf.xml	$GALAXY/config/tool_sheds_conf.xml.sample
+compare files/galaxy/config/ucsc_build_sites.txt	$GALAXY/config/ucsc_build_sites.txt.sample
+compare files/galaxy/config/user_preferences_extra_conf.yml	$GALAXY/config/user_preferences_extra_conf.yml.sample
+#compare templates/galaxy/config/build_sites.yml.j2	$GALAXY/config/build_sites.yml.sample.sample
