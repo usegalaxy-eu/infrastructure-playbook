@@ -72,32 +72,34 @@
       become: yes
       become_user: galaxy
     # The alternate setup for testing.
-    - role: galaxyproject.galaxy
-      become: yes
-      become_user: galaxy
-      vars:
-        galaxy_server_dir: "{{ galaxy_root }}/server-19.01"
-        galaxy_create_user: false
-        galaxy_manage_paths: true
-        galaxy_manage_clone: true
-        galaxy_manage_static_setup: true
-        galaxy_manage_mutable_setup: false
-        galaxy_manage_database: false
-        galaxy_instance_codename: test
-        galaxy_host_codename: test
-        galaxy_fetch_dependencies: true
-        galaxy_build_client: false
-        galaxy_commit_id: release_19.01_europe
-        galaxy_force_checkout: true
-        galaxy_config_file_src_dir: "files/galaxy-19.01"
-        galaxy_config_template_src_dir: "templates/galaxy-19.01"
-        galaxy_server_dir: "{{ galaxy_root }}/server-19.01"
-        galaxy_venv_dir: "{{ galaxy_root }}/venv-19.01"
-        galaxy_config_dir: "{{ galaxy_root }}/config-19.01"
-        galaxy_mutable_config_dir: "{{ galaxy_root }}/mutable-config-19.01"
-        galaxy_mutable_data_dir: "{{ galaxy_root }}/mutable-data-19.01"
     # These cannot come before galaxy
     - hxr.welcome_pages
     #- dj-wasabi.telegraf
     #- dev-sec.os-hardening
     #- dev-sec.ssh-hardening
+
+
+    #- role: galaxyproject.galaxy
+    #  become: yes
+    #  become_user: galaxy
+    #  vars:
+    #    galaxy_server_dir: "{{ galaxy_root }}/server-19.01"
+    #    galaxy_create_user: false
+    #    galaxy_manage_paths: true
+    #    galaxy_manage_clone: true
+    #    galaxy_manage_static_setup: true
+    #    galaxy_manage_mutable_setup: false
+    #    galaxy_manage_database: false
+    #    galaxy_instance_codename: test
+    #    galaxy_host_codename: test
+    #    galaxy_fetch_dependencies: true
+    #    galaxy_build_client: false
+    #    galaxy_commit_id: release_19.01_europe
+    #    galaxy_force_checkout: true
+    #    galaxy_config_file_src_dir: "files/galaxy-19.01"
+    #    galaxy_config_template_src_dir: "templates/galaxy-19.01"
+    #    galaxy_server_dir: "{{ galaxy_root }}/server-19.01"
+    #    galaxy_venv_dir: "{{ galaxy_root }}/venv-19.01"
+    #    galaxy_config_dir: "{{ galaxy_root }}/config-19.01"
+    #    galaxy_mutable_config_dir: "{{ galaxy_root }}/mutable-config-19.01"
+    #    galaxy_mutable_data_dir: "{{ galaxy_root }}/mutable-data-19.01"
