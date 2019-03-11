@@ -1,9 +1,9 @@
 <!-- Use the file tool_data_table_conf.xml.oldlocstyle if you don't want to update your loc files as changed in revision 4550:535d276c92bc-->
 <tables>
+    <!-- TODO(hxr): test if we can remove path since specified in galaxy.yml -->
     <!-- Locations of all fasta files under genome directory -->
     <table name="all_fasta" comment_char="#" allow_duplicate_entries="False">
         <columns>value, dbkey, name, path</columns>
-		<!-- TODO(hxr): test if we can remove path since specified in galaxy.yml -->
         <file path="/opt/galaxy/tool-data/all_fasta.loc" />
     </table>
     <!-- Locations of indexes in the BFAST mapper format -->
@@ -20,6 +20,11 @@
     <table name="blastdb_p" comment_char="#" allow_duplicate_entries="False">
         <columns>value, name, path</columns>
         <file path="/opt/galaxy/tool-data/blastdb_p.loc" />
+    </table>
+    <!-- Locations of protein domain BLAST databases -->
+    <table name="blastdb_d" comment_char="#" allow_duplicate_entries="False">
+        <columns>value, name, path</columns>
+        <file path="/opt/galaxy/tool-data/blastdb_d.loc" />
     </table>
     <!-- Locations of indexes in the Bowtie mapper format -->
     <table name="bowtie_indexes" comment_char="#">
@@ -120,15 +125,25 @@
         <columns>value, dbkey, name, path</columns>
         <file path="/opt/galaxy/tool-data/mosaik_index.loc" />
     </table>
+    <!-- Locations of indexes in the 2bit format -->
+    <table name="twobit" comment_char="#" allow_duplicate_entries="False">
+        <columns>value, path</columns>
+        <file path="/opt/galaxy/tool-data/twobit.loc" />
+    </table>
     <!-- Location genome fasta files for cufflinks bias correction -->
     <table name="fasta_indexes" comment_char="#">
         <columns>value, dbkey, name, path</columns>
         <file path="/opt/galaxy/tool-data/fasta_indexes.loc" />
     </table>
     <!-- Available IGV builds, loaded from URL -->
-    <table name="igv_broad_genomes" comment_char="#">
+    <table name="igv_broad_genomes" comment_char="#" allow_duplicate_entries="False">
         <columns>name, url, value</columns>
         <file url="http://igv.broadinstitute.org/genomes/genomes.txt" />
+    </table>
+    <!-- Available liftOver chain file -->
+    <table name="liftOver" comment_char="#" allow_duplicate_entries="False">
+        <columns>dbkey, name, value</columns>
+        <file path="/opt/galaxy/tool-data/liftOver.loc" />
     </table>
     <!-- Locations of indexes in the STAR mapper format -->
     <table name="rnastar_index" comment_char="#">
@@ -145,5 +160,25 @@
     <table name="featurecounts_anno" comment_char="#">
         <columns>value, dbkey</columns>
         <file path="/opt/galaxy/tool-data/featurecounts_anno.loc" />
+    </table>
+    <!-- iobio bam servers -->
+    <table name="bam_iobio" comment_char="#" allow_duplicate_entries="False">
+        <columns>value, name, url</columns>
+        <file path="/opt/galaxy/tool-data/bam_iobio.loc" />
+    </table>
+    <!-- iobio vcf servers -->
+    <table name="vcf_iobio" comment_char="#" allow_duplicate_entries="False">
+        <columns>value, name, url</columns>
+        <file path="/opt/galaxy/tool-data/vcf_iobio.loc" />
+    </table>
+    <!-- simple biom servers -->
+    <table name="biom_simple_display" comment_char="#" allow_duplicate_entries="False">
+        <columns>value, name, url</columns>
+        <file path="/opt/galaxy/tool-data/biom_simple_display.loc" />
+    </table>
+    <!-- simple intermine servers -->
+    <table name="intermine_simple_display" comment_char="#" allow_duplicate_entries="False">
+        <columns>value, name, url</columns>
+        <file path="/opt/galaxy/tool-data/intermine_simple_display.loc" />
     </table>
 </tables>
