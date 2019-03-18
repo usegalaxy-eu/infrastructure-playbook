@@ -1,20 +1,24 @@
 ---
-- name: Tasks for "jenkins" hosts
+- name: RZ Build Server
   hosts: build01
   become: true
   vars_files:
     - "secret_group_vars/all.yml"
+  vars:
+    hostname: build01.bwcloud.uni-freiburg.de
   roles:
-    #- geerlingguy.repo-epel
-    #- influxdata.chrony
-    - linuxhq.yum_cron
+    - hostname
+    - dynmotd
     - hxr.admin-tools
-    #- geerlingguy.nginx
+    - influxdata.chrony
+    - geerlingguy.repo-epel
+    - geerlingguy.nginx
+    - linuxhq.yum_cron
+    # Begin Custom
     #- role: geerlingguy.java
       #java_packages:
       #- java-1.8.0-openjdk
-
     #- geerlingguy.jenkins
-    #- dj-wasabi.telegraf
+    # End Custom
     #- dev-sec.os-hardening
     #- dev-sec.ssh-hardening

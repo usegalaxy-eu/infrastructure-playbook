@@ -123,11 +123,15 @@ rabbitmq_users:
   - user: galaxy_test
     password: "{{ rabbitmq_password_galaxy_test }}"
     vhost: /pulsar/galaxy_test
+  - user: vgcn_test
+    password: "{{ rabbitmq_password_galaxy_vgcn }}"
+    vhost: /pulsar/galaxy_vgcn
 
 rabbitmq_vhosts:
   - galaxy
   - /pulsar/galaxy_cz
   - /pulsar/galaxy_test
+  - /pulsar/galaxy_vgcn
 
 rabbitmq_plugins:
   - rabbitmq_management
