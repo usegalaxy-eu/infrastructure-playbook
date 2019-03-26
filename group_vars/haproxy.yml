@@ -49,6 +49,7 @@ haproxy_frontends:
         - 'redirect prefix https://stats.galaxyproject.eu  code 301 if { hdr(host) -i stats.usegalaxy.eu  }'
         - 'redirect prefix https://build.galaxyproject.eu  code 301 if { hdr(host) -i build.usegalaxy.eu  }'
         - 'redirect prefix https://sentry.galaxyproject.eu code 301 if { hdr(host) -i sentry.usegalaxy.eu  }'
+        - 'redirect prefix https://status.galaxyproject.org code 301 if { hdr(host) -i status.galaxyproject.eu  }'
         # Beta/test galaxy.
         - 'use_backend beta_special   if beta_domain welcome'
         - 'use_backend beta_special   if beta_domain basecss'

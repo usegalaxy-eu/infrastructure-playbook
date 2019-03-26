@@ -14,7 +14,8 @@
     - secret_group_vars/all.yml
   handlers:
     - name: Restart Galaxy
-      shell: source /opt/galaxy/.bashrc && /usr/bin/gxadmin handler restart && /usr/bin/gxadmin zerg swap
+      #shell: source /opt/galaxy/.bashrc && /usr/bin/gxadmin handler restart && /usr/bin/gxadmin zerg swap
+      shell: echo 'Manual restart required'
   pre_tasks:
     # TODO(hxr): fails due to nginx user not available yet.
     #- name: Install Dependencies
@@ -31,7 +32,6 @@
         #docker_account: galaxy
     #- geerlingguy.repo-epel
     #- hxr.exclude-repo # Exclude epel repos for condor, node, npm
-    #- geerlingguy.nodejs
     ## TODO(hxr): fix ordering of these
     - hxr.monitor-cluster
     - hxr.monitor-galaxy
@@ -64,7 +64,7 @@
     ## TODO(hxr): /var/log/galaxy doesn't exist
     - packages
     - supervisor
-    #- hxr.install-to-venv
+    - hxr.install-to-venv
     - geerlingguy.nginx
     - hxr.tiaas
     # The real galayx role

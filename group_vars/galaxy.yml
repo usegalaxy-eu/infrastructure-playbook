@@ -406,6 +406,9 @@ galaxy_admin_email_to: 'contact@usegalaxy.eu'
 
 galaxy_jobconf:
     plugin_workers: 4
+    handlers:
+        count: "{{ galaxy_handler_count }}"
+        assign_with: db-transaction-isolation
     plugins:
         #- id: drmaa
           #load: galaxy.jobs.runners.drmaa:DRMAAJobRunner

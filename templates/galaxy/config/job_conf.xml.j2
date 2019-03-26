@@ -11,9 +11,9 @@
 		</plugin>
 		{% endfor %}
 	</plugins>
-	<handlers assign_with="db-self" default="handlers">
+	<handlers{% if galaxy_jobconf.handlers.assign_with is defined %} assign_with="{{ galaxy_jobconf.handlers.assign_with }}"{% endif %}{% if galaxy_jobconf.handlers.default is defined %} default="{{ galaxy_jobconf.handlers.default }}"{% endif %}>
 		{% for n in range(galaxy_handler_count) %}
-		<handler id="handler_{{ galaxy_instance_codename }}_{{ n }}" tags="handlers"/>
+		<handler id="handler_{{ galaxy_instance_codename }}_{{ n }}"/>
 		{% endfor %}
 	</handlers>
 	<destinations default="{{ galaxy_jobconf['default_destination'] }}">
