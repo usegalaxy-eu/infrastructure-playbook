@@ -134,13 +134,13 @@ nginx_vhosts:
         }
 
         location / {
-            uwsgi_pass      127.0.0.1:5001;
+            uwsgi_pass      127.0.0.1:4001;
 
             include         uwsgi_params;
             proxy_hide_header x-frame-options;
             add_header X-Content-Type-Options nosniff;
             location ~ biom_simple {
-                uwsgi_pass      127.0.0.1:5001;
+                uwsgi_pass      127.0.0.1:4001;
                 include         uwsgi_params;
                 proxy_hide_header x-frame-options;
                 proxy_hide_header Content-Security-Policy-Report-Only;
@@ -161,11 +161,11 @@ nginx_vhosts:
         }
 
         location /static/welcome.html {
-               alias /opt/galaxy/mutable-data/multisite-css/base.html;
+               alias /opt/multisite-css/base.html;
         }
 
         location ~ /static/welcome-(?<name>[^/]*).html {
-               alias /opt/galaxy/mutable-data/multisite-css/${name}.html;
+               alias /opt/multisite-css/${name}.html;
         }
 
         location /static {
@@ -178,7 +178,7 @@ nginx_vhosts:
         }
 
         location ~ /static/style/base-(?<name>[^/]*).css {
-               alias /opt/galaxy/mutable-data/multisite-css/${name}.css;
+               alias /opt/multisite-css/${name}.css;
         }
 
         location /static/style {
