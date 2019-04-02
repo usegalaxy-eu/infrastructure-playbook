@@ -299,17 +299,10 @@ nginx_vhosts:
         uwsgi_read_timeout 2400;
 
 
-condor_host: "manager.vgcn.galaxyproject.eu"
-condor_allow_write: "10.5.68.0/24, 10.19.0.0/16, 132.230.68.0/24, *.bi.uni-freiburg.de"
-# TODO: replace with 'condor-role'?
-condor_daemons:
-    - MASTER
-    - SCHEDD
-condor_allow_negotiator: "132.230.68.5,132.230.68.85,$(CONDOR_HOST)"
-condor_allow_administrator: "$(ALLOW_NEGOTIATOR)"
-
-#condor_system_periodic_hold: "{{ 7 * 24 * 60 * 60}}"
-condor_network_interface: ens2
+# Dynmotd
+dynmotd_custom:
+  - name: Condor
+    command: "condor_q -totals | tail -n 1"
 
 # CVMFS
 cvmfs_role: client
@@ -340,6 +333,18 @@ galaxy_cvmfs_repositories:
     client_options: []
 
 # HTCondor
+# TODO(hxr): dedupe
+condor_host: "manager.vgcn.galaxyproject.eu"
+condor_allow_write: "10.5.68.0/24, 10.19.0.0/16, 132.230.68.0/24, *.bi.uni-freiburg.de"
+# TODO: replace with 'condor-role'?
+condor_daemons:
+    - MASTER
+    - SCHEDD
+condor_allow_negotiator: "132.230.68.5,132.230.68.85,$(CONDOR_HOST)"
+condor_allow_administrator: "$(ALLOW_NEGOTIATOR)"
+
+#condor_system_periodic_hold: "{{ 7 * 24 * 60 * 60}}"
+condor_network_interface: ens2
 
 htcondor:
     interface: 'ens2'
