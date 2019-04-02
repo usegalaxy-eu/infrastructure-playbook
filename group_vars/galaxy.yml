@@ -12,6 +12,12 @@ nodejs_npm_global_packages:
     - yarn
 
 telegraf_plugins_extra:
+  postgres:
+    plugin: "postgresql"
+    config:
+      - address = "{{ galaxy_db_connection }}"
+      - databases = ["galaxy"]
+
   listen_galaxy_routes:
     plugin: "statsd"
     config:
@@ -24,7 +30,8 @@ telegraf_plugins_extra:
   monitor_condor_queue_split:
     plugin: "exec"
     config:
-      - commands = ["/usr/bin/monitor-condor-queue-split"]
+       # TODO: sudoers rule?
+      - commands = ["sudo /usr/bin/monitor-condor-queue-split"]
       - timeout = "10s"
       - data_format = "influx"
       - interval = "15s"
@@ -32,18 +39,26 @@ telegraf_plugins_extra:
   monitor_condor_queue:
     plugin: "exec"
     config:
-      - commands = ["/usr/bin/monitor-condor-queue"]
+      - commands = ["sudo /usr/bin/monitor-condor-queue"]
       - timeout = "10s"
       - data_format = "influx"
-      - interval = "15s"
+      - interval = "1m"
 
   monitor_condor_util:
     plugin: "exec"
     config:
-      - commands = ["/usr/bin/monitor-condor-utilisation"]
+      - commands = ["sudo /usr/bin/monitor-condor-utilisation"]
       - timeout = "10s"
       - data_format = "influx"
       - interval = "1m"
+
+  monitor_nfsstat:
+    plugin: "exec"
+    config:
+      - commands = ["/usr/bin/nfsstat-influx"]
+      - timeout = "10s"
+      - data_format = "influx"
+      - interval = "15s"
 
 
 pip_venv_path: "{{ galaxy_venv_dir }}"
@@ -348,6 +363,9 @@ gxadmin_commit: master
 gxadmin_dir: /opt/gxadmin
 gxadmin_bin_dir: /usr/bin
 
+# Galaxy systemd
+galaxy_uwsgi_config_file_basename: uwsgi-z1.ini
+
 # GALAXY
 galaxy_group: galaxy
 galaxy_system_group: galaxy
@@ -408,7 +426,7 @@ galaxy_jobconf:
     plugin_workers: 4
     handlers:
         count: "{{ galaxy_handler_count }}"
-        assign_with: db-transaction-isolation
+        assign_with: db-skip-locked
     plugins:
         #- id: drmaa
           #load: galaxy.jobs.runners.drmaa:DRMAAJobRunner
