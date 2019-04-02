@@ -9,3 +9,9 @@
     name: firewalld
     state: stopped
     enabled: no
+
+- name: Start atop
+  service:
+    name: atop
+    state: started
+    enabled: yes

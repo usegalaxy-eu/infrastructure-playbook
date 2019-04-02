@@ -1,7 +1,5 @@
 ---
-# TODO:
-# - atop service not ednaled
-- name: galaxy
+- name: UseGalaxy.eu
   hosts: galaxy
   become: true
   become_user: root
@@ -14,8 +12,8 @@
     - secret_group_vars/all.yml
   handlers:
     - name: Restart Galaxy
-      #shell: source /opt/galaxy/.bashrc && /usr/bin/gxadmin handler restart && /usr/bin/gxadmin zerg swap
       shell: echo 'Manual restart required'
+      #shell: source /opt/galaxy/.bashrc && /usr/bin/gxadmin handler restart && /usr/bin/gxadmin zerg swap
   pre_tasks:
     # TODO(hxr): fails due to nginx user not available yet.
     #- name: Install Dependencies
@@ -25,7 +23,7 @@
   roles:
     - hxr.tiaas
     #- hxr.galaxy-user
-    #- geerlingguy.docker
+    - geerlingguy.docker
     ## TODO(hxr): fails whenever galaxy homedir is created without bashrc
     #- role: hxr.docker-ssl-client
       #vars:
@@ -67,11 +65,10 @@
     - hxr.install-to-venv
     - geerlingguy.nginx
     - hxr.tiaas
-    # The real galayx role
+    # The real galaxy role
     - role: galaxyproject.galaxy
       become: yes
       become_user: galaxy
-    # The alternate setup for testing.
     # These cannot come before galaxy
     - hxr.welcome_pages
     - dj-wasabi.telegraf
@@ -79,6 +76,7 @@
     #- dev-sec.ssh-hardening
 
 
+    # The alternate setup for testing.
     #- role: galaxyproject.galaxy
     #  become: yes
     #  become_user: galaxy
