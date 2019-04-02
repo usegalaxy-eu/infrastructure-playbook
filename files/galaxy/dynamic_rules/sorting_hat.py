@@ -205,7 +205,6 @@ def reroute_to_dedicated(tool_spec, user_roles):
         'requirements': '(GalaxyGroup == "compute") || (%s)' % training_expr,
         # We then rank based on what they *do* have the roles for
         'rank': training_expr,
-        'runner': 'condor',
     }
 
 
