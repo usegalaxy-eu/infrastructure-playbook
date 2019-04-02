@@ -19,15 +19,7 @@
     - ed25519
   when: not st.stat.exists
 
-#- lineinfile:
-    #path: /etc/ssh/sshd_config
-    #regexp: "^HostKey /etc/ssh/ssh_host_{{ item }}_key$"
-    #line: "HostKey /etc/ssh/ssh_host_{{ item }}_key\nHostCertificate /etc/ssh/ssh_host_{{ item }}_key-cert.pub"
-  #with_items:
-    #- rsa
-    #- ecdsa
-    #- ed25519
-  #when: not st.stat.exists
+# Requires dev-sec.ssh-hardening + patches
 - set_fact:
     ssh_host_key_cert_files:
       - /etc/ssh/ssh_host_rsa_key-cert.pub
@@ -40,12 +32,6 @@
     path: server_ca
     state: absent
   when: not st.stat.exists
-
-#- name: Reload SSH
-  #service:
-    #name: sshd
-    #state: reloaded
-  #when: not st.stat.exists
 
 - name: "Helper"
   debug:
