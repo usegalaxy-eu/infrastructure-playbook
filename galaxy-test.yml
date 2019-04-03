@@ -54,7 +54,6 @@
         pg_group: galaxy
     - usegalaxy-eu.gxadmin
     - packages
-    - usegalaxy-eu.galaxy-systemd
     - hxr.install-to-venv
     - geerlingguy.nginx
     # The real galaxy role
@@ -62,6 +61,7 @@
       become: yes
       become_user: galaxy
     - hxr.welcome_pages
+    - usegalaxy-eu.galaxy-systemd
     - dj-wasabi.telegraf
     #- dev-sec.os-hardening
     #- dev-sec.ssh-hardening

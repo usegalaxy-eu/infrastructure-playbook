@@ -21,7 +21,6 @@
         name: ['git', 'python-psycopg2', 'python-virtualenv', 'bc']
       become: yes
   roles:
-    #- hxr.tiaas
     #- geerlingguy.docker
     ### TODO(hxr): fails whenever galaxy homedir is created without bashrc
     ##- role: hxr.docker-ssl-client
@@ -62,8 +61,8 @@
         pg_group: galaxy
     #- usegalaxy-eu.gxadmin
     #- packages
-    #- usegalaxy-eu.galaxy-systemd
     #- hxr.install-to-venv
+    ## TODO(hxr): nginx role doesn't create nginx_proxy_cache_path
     #- geerlingguy.nginx
     #- hxr.tiaas
     ## The real galaxy role
@@ -71,6 +70,7 @@
       #become: yes
       #become_user: galaxy
     ## These cannot come before galaxy
+    #- usegalaxy-eu.galaxy-systemd
     #- hxr.welcome_pages
     #- dj-wasabi.telegraf
     ##- dev-sec.os-hardening
