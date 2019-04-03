@@ -105,7 +105,8 @@ telegraf_plugins_extra:
   ssl_expiry:
     plugin: "exec"
     config:
-      - commands = [
+      - |
+        commands = [
           # A couple of usegalaxy.eu subdomains.
           "/usr/bin/simple-ssl-check usegalaxy.eu",
           "/usr/bin/simple-ssl-check metagenomics.usegalaxy.eu",
