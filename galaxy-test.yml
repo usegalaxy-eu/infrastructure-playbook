@@ -6,7 +6,6 @@
   vars:
     hostname: test.internal.usegalaxy.eu
   vars_files:
-    - group_vars/tiaas.yml
     - group_vars/custom-sites.yml
     - group_vars/gxconfig.yml
     - secret_group_vars/all.yml
@@ -16,7 +15,6 @@
         name: ['git', 'python-psycopg2', 'python-virtualenv', 'bc']
       become: yes
   roles:
-    - hxr.tiaas
     - geerlingguy.docker
     ### TODO(hxr): fails whenever galaxy homedir is created without bashrc
     #- role: hxr.docker-ssl-client
@@ -54,7 +52,6 @@
     - usegalaxy-eu.galaxy-systemd
     - hxr.install-to-venv
     - geerlingguy.nginx
-    - hxr.tiaas
     # The real galaxy role
     - role: galaxyproject.galaxy
       become: yes
