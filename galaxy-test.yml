@@ -9,6 +9,10 @@
     - group_vars/custom-sites.yml
     - group_vars/gxconfig-test.yml
     - secret_group_vars/all.yml
+  handlers:
+    - name: Restart Galaxy
+      shell: echo 'Manual restart required'
+      #shell: source /opt/galaxy/.bashrc && /usr/bin/gxadmin handler restart && /usr/bin/gxadmin zerg swap
   pre_tasks:
     - name: Install Dependencies
       package:
