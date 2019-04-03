@@ -1,6 +1,18 @@
 ---
+- name: Install useful tool
+  yum:
+    name: "git"
+    state: latest
+    update_cache: yes
+
 - name: "ensure sentry user part of docker group"
-  command: usermod -a -G docker {{ hxr_sentry_user }}
+  user:
+    name: "{{ hxr_sentry_user }}"
+    groups: docker
+    append: yes
+
+- name: reset ssh connection to allow user changes to affect 'current login user'
+  meta: reset_connection
 
 - name: "Make data dir"
   file:
@@ -103,7 +115,7 @@
     chdir: "{{ hxr_sentry_repodir }}"
 
 - name: "Create admin user"
-  command: docker-compose exec web sentry createuser --email admin@local.host --password password --superuser --noinput
+  command: docker-compose exec -T web sentry createuser --email admin@local.host --password password --superuser
   become: true
   become_user: "{{ hxr_sentry_user }}"
   args:
