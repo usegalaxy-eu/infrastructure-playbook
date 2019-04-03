@@ -1,9 +1,33 @@
 ---
+- name: Obtain user info
+  user:
+    name: "{{ pg_owner }}"
+  register: user
+
+- name: Check for bashrc
+  stat:
+    path: "{{ user.home }}/.bashrc"
+  register: bashrc_stat_out
+  become: true
+  become_user: "{{ pg_owner }}"
+
+- name: Copy default bashrc when not existing
+  copy:
+    src: /etc/skel/.bashrc
+    dest: "{{ user.home }}/.bashrc"
+    owner: "{{ pg_owner }}"
+    group: "{{ pg_group }}"
+    remote_src: yes
+    mode: 0750
+  when: not bashrc_stat_out.stat.exists
+
 - name: Add env vars in bashrc
   lineinfile:
-    path: "~/.bashrc"
+    path: "{{ user.home }}/.bashrc"
     regexp: "^export {{ item.var }}"
     line: "export {{ item.var }}='{{ item.val }}'"
+    owner: "{{ pg_owner }}"
+    group: "{{ pg_group }}"
   with_items:
     - var: PGUSER
       val: "{{ postgres_user }}"
@@ -14,5 +38,7 @@
   copy:
     content: |
       {{ postgres_host }}:{{ postgres_port }}:*:{{ postgres_user }}:{{ postgres_pass }}
-    dest: "~/.pgpass"
-    mode: '0600'
+    dest: "{{ user.home }}/.pgpass"
+    owner: "{{ pg_owner }}"
+    group: "{{ pg_group }}"
+    mode: 0600

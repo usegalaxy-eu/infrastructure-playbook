@@ -21,79 +21,80 @@
         name: ['git', 'python-psycopg2', 'python-virtualenv', 'bc']
       become: yes
   roles:
-    - hxr.tiaas
-    - geerlingguy.docker
-    ## TODO(hxr): fails whenever galaxy homedir is created without bashrc
-    #- role: hxr.docker-ssl-client
-      #vars:
-        #docker_account: galaxy
-    - geerlingguy.repo-epel
-    - hxr.exclude-repo # Exclude epel repos for condor, node, npm
-    ## TODO(hxr): fix ordering of these
-    - hxr.monitor-cluster
-    ## TODO(hxr): missing gxmnt etc
-    - role: hxr.galaxy-cron
-      become: yes
-      become_user: galaxy
-    - role: hxr.galaxy-nonreproducible-tools
-      become: yes
-      become_user: galaxy
-    - hxr.galaxy-misc
-    - hxr.autofs
-    - cvmfs
-    - dynmotd
-    #- ssh-host-sign
-    - hxr.admin-tools
-    - hxr.monitor-email
-    - htcondor
-    - linuxhq.yum_cron
-    - influxdata.chrony
-    ## TODO(hxr): maybe don't run on temp testing VMs?
-    ##- hxr.certbot
+    #- hxr.tiaas
+    #- geerlingguy.docker
+    ### TODO(hxr): fails whenever galaxy homedir is created without bashrc
+    ##- role: hxr.docker-ssl-client
+      ##vars:
+        ##docker_account: galaxy
+    #- geerlingguy.repo-epel
+    #- hxr.exclude-repo # Exclude epel repos for condor, node, npm
+    ### TODO(hxr): fix ordering of these
+    #- hxr.monitor-cluster
+    ### TODO(hxr): missing gxmnt etc
+    #- role: hxr.galaxy-cron
+      #become: yes
+      #become_user: galaxy
+    #- role: hxr.galaxy-nonreproducible-tools
+      #become: yes
+      #become_user: galaxy
+    #- hxr.galaxy-misc
+    #- hxr.autofs
+    #- cvmfs
+    #- dynmotd
+    ##- ssh-host-sign
+    #- hxr.admin-tools
+    #- hxr.monitor-email
+    #- htcondor
+    #- linuxhq.yum_cron
+    #- influxdata.chrony
+    ### TODO(hxr): maybe don't run on temp testing VMs?
+    ###- hxr.certbot
 
-    ## GALAXY
+    ### GALAXY
     - role: hxr.postgres-connection
-      become: yes
-      become_user: galaxy
-    - usegalaxy-eu.gxadmin
-    - packages
-    - usegalaxy-eu.galaxy-systemd
-    - hxr.install-to-venv
-    - geerlingguy.nginx
-    - hxr.tiaas
-    # The real galaxy role
-    - role: galaxyproject.galaxy
-      become: yes
-      become_user: galaxy
-    # These cannot come before galaxy
-    - hxr.welcome_pages
-    - dj-wasabi.telegraf
-    #- dev-sec.os-hardening
-    #- dev-sec.ssh-hardening
-
-
-    # The alternate setup for testing.
+      vars:
+        pg_owner: telegraf
+        pg_group: telegraf
+    #- usegalaxy-eu.gxadmin
+    #- packages
+    #- usegalaxy-eu.galaxy-systemd
+    #- hxr.install-to-venv
+    #- geerlingguy.nginx
+    #- hxr.tiaas
+    ## The real galaxy role
     #- role: galaxyproject.galaxy
-    #  become: yes
-    #  become_user: galaxy
-    #  vars:
-    #    galaxy_server_dir: "{{ galaxy_root }}/server-19.01"
-    #    galaxy_create_user: false
-    #    galaxy_manage_paths: true
-    #    galaxy_manage_clone: true
-    #    galaxy_manage_static_setup: true
-    #    galaxy_manage_mutable_setup: false
-    #    galaxy_manage_database: false
-    #    galaxy_instance_codename: test
-    #    galaxy_host_codename: test
-    #    galaxy_fetch_dependencies: true
-    #    galaxy_build_client: false
-    #    galaxy_commit_id: release_19.01_europe
-    #    galaxy_force_checkout: true
-    #    galaxy_config_file_src_dir: "files/galaxy-19.01"
-    #    galaxy_config_template_src_dir: "templates/galaxy-19.01"
-    #    galaxy_server_dir: "{{ galaxy_root }}/server-19.01"
-    #    galaxy_venv_dir: "{{ galaxy_root }}/venv-19.01"
-    #    galaxy_config_dir: "{{ galaxy_root }}/config-19.01"
-    #    galaxy_mutable_config_dir: "{{ galaxy_root }}/mutable-config-19.01"
-    #    galaxy_mutable_data_dir: "{{ galaxy_root }}/mutable-data-19.01"
+      #become: yes
+      #become_user: galaxy
+    ## These cannot come before galaxy
+    #- hxr.welcome_pages
+    #- dj-wasabi.telegraf
+    ##- dev-sec.os-hardening
+    ##- dev-sec.ssh-hardening
+
+
+    ## The alternate setup for testing.
+    ##- role: galaxyproject.galaxy
+    ##  become: yes
+    ##  become_user: galaxy
+    ##  vars:
+    ##    galaxy_server_dir: "{{ galaxy_root }}/server-19.01"
+    ##    galaxy_create_user: false
+    ##    galaxy_manage_paths: true
+    ##    galaxy_manage_clone: true
+    ##    galaxy_manage_static_setup: true
+    ##    galaxy_manage_mutable_setup: false
+    ##    galaxy_manage_database: false
+    ##    galaxy_instance_codename: test
+    ##    galaxy_host_codename: test
+    ##    galaxy_fetch_dependencies: true
+    ##    galaxy_build_client: false
+    ##    galaxy_commit_id: release_19.01_europe
+    ##    galaxy_force_checkout: true
+    ##    galaxy_config_file_src_dir: "files/galaxy-19.01"
+    ##    galaxy_config_template_src_dir: "templates/galaxy-19.01"
+    ##    galaxy_server_dir: "{{ galaxy_root }}/server-19.01"
+    ##    galaxy_venv_dir: "{{ galaxy_root }}/venv-19.01"
+    ##    galaxy_config_dir: "{{ galaxy_root }}/config-19.01"
+    ##    galaxy_mutable_config_dir: "{{ galaxy_root }}/mutable-config-19.01"
+    ##    galaxy_mutable_data_dir: "{{ galaxy_root }}/mutable-data-19.01"
