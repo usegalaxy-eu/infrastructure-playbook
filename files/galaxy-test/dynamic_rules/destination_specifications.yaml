@@ -1,0 +1,95 @@
+---
+condor:
+  env: {}
+  params:
+    priority: -{PRIORITY}
+    request_cpus: '{PARALLELISATION}'
+    request_memory: '{MEMORY}'
+    tmp_dir: 'True'
+condor_singularity:
+  env: {}
+  params:
+    priority: -{PRIORITY}
+    request_cpus: '{PARALLELISATION}'
+    request_memory: '{MEMORY}'
+    singularity_enabled: true
+    # can and should be made stricter at some point
+    singularity_volumes: '/data/dnb01/galaxy_db/:rw,/data/dnb02/galaxy_db/:rw,/data/0/galaxy_import/galaxy_user_data/:ro,/data/1/galaxy_import/galaxy_user_data/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:rw,$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro'
+    singularity_default_container_id: '/data/0/cvmfs/singularity/ubuntu:18.04'
+    singularity_run_extra_arguments: '-H /usr/local/galaxy/'
+    tmp_dir: 'True'
+
+#condor_singularity_with_conda:
+#  env: {}
+#  params:
+#    priority: -{PRIORITY}
+#    request_cpus: '{PARALLELISATION}'
+#    request_memory: '{MEMORY}'
+#    singularity_enabled: true
+#    # can and should be made stricter at some point
+#    #singularity_volumes: '/data/dnb01/galaxy_db/:rw,/data/dnb02/galaxy_db/:rw,/data/0/galaxy_import/galaxy_user_data/:ro,/data/1/galaxy_import/galaxy_user_data/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/$
+#    #singularity_default_container_id: '/data/0/cvmfs/singularity/ubuntu:18.04'
+#    #singularity_run_extra_arguments: '-H /usr/local/galaxy/'
+#    tmp_dir: 'True'
+#    containers:
+#      container: &quot;/data/0/cvmfs/singularity/python:2.7.12--1&quot;
+#      type: singularity
+#      shell: /bin/bash/
+#      resolve_dependencies: true
+
+remote_cluster_mq_cz:
+  env: {}
+  params:
+    priority: -{PRIORITY}
+    request_cpus: '{PARALLELISATION}'
+    request_memory: '{MEMORY}'
+    jobs_directory: '/storage/brno11-elixir/home/galaxyeu/galaxy-staging/'
+    dependency_resolution: 'remote'
+    submit_user: 'galaxy'
+
+remote_cluster_mq_test:
+  env: {}
+  params:
+    priority: -{PRIORITY}
+    request_cpus: '{PARALLELISATION}'
+    request_memory: '{MEMORY}'
+    jobs_directory: '/data/share/stage/'
+    dependency_resolution: 'remote'
+
+condor_docker:
+  env:
+    # this can be removed, as soon as we don't expose this env on cn029 anymore
+    DOCKER_HOST: ''
+  params:
+    priority: -{PRIORITY}
+    request_cpus: '{PARALLELISATION}'
+    request_memory: '{MEMORY}'
+    docker_enabled: true
+    # can and should be made stricter at some point
+    docker_volumes: '/data/dnb01/galaxy_db/:rw,/data/dnb02/galaxy_db/:rw,/data/0/galaxy_import/galaxy_user_data/:ro,/data/1/galaxy_import/galaxy_user_data/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:rw,$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro'
+    docker_memory: '{MEMORY}'
+    docker_auto_rm: true
+    docker_default_container_id: busybox:ubuntu-14.04
+    docker_sudo: false
+    tmp_dir: 'True'
+sge:
+  env: {}
+  params:
+    nativeSpecification: |
+        -p -{PRIORITY}
+        -l galaxy1_slots=1
+        -l h_vmem={MEMORY}
+        {NATIVE_SPEC_EXTRA}
+        {PARALLELISATION}
+        -v _JAVA_OPTIONS
+        -v TEMP
+        -v TMPDIR
+        -v PATH
+        -v PYTHONPATH
+        -v LD_LIBRARY_PATH
+        -v XAPPLRESDIR
+        -v GDFONTPATH
+        -v GNUPLOT_DEFAULT_GDFONT
+        -v MPLCONFIGDIR
+        -soft
+        -l galaxy1_dedicated=1

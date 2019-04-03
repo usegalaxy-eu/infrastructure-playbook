@@ -1,11 +1,9 @@
 [uwsgi]
 ; basic settings
 master = true
-processes = 4
+processes = 8
 threads = 1
-{% if galaxy_zergpool %}
-zerg = /opt/galaxy/mutable-data/zergpool.sock
-{% endif %}
+socket = 127.0.0.1:5001
 
 ; uwsgi performance/robustness features
 single-interpreter = true
