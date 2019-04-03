@@ -16,13 +16,12 @@
       #shell: source /opt/galaxy/.bashrc && /usr/bin/gxadmin handler restart && /usr/bin/gxadmin zerg swap
   pre_tasks:
     # TODO(hxr): fails due to nginx user not available yet.
-    #- name: Install Dependencies
-      #package:
-        #name: ['git', 'python-psycopg2', 'python-virtualenv', 'bc']
-      #become: yes
+    - name: Install Dependencies
+      package:
+        name: ['git', 'python-psycopg2', 'python-virtualenv', 'bc']
+      become: yes
   roles:
     - hxr.tiaas
-    #- hxr.galaxy-user
     - geerlingguy.docker
     ## TODO(hxr): fails whenever galaxy homedir is created without bashrc
     #- role: hxr.docker-ssl-client
@@ -32,7 +31,6 @@
     - hxr.exclude-repo # Exclude epel repos for condor, node, npm
     ## TODO(hxr): fix ordering of these
     - hxr.monitor-cluster
-    - hxr.monitor-galaxy
     ## TODO(hxr): missing gxmnt etc
     - role: hxr.galaxy-cron
       become: yes
@@ -58,8 +56,6 @@
       become: yes
       become_user: galaxy
     - usegalaxy-eu.gxadmin
-    - hxr.galaxy-log-dir
-    ## TODO(hxr): /var/log/galaxy doesn't exist
     - packages
     - usegalaxy-eu.galaxy-systemd
     - hxr.install-to-venv

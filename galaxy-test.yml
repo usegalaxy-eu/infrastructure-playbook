@@ -1,76 +1,66 @@
 ---
-- name: galaxy-test
+- name: Test.UseGalaxy.eu
   hosts: galaxy-test
   become: true
   become_user: root
   vars:
     hostname: test.internal.usegalaxy.eu
   vars_files:
-    - "group_vars/gxconfig.yml"
-    - "secret_group_vars/all.yml"
+    - group_vars/tiaas.yml
+    - group_vars/custom-sites.yml
+    - group_vars/gxconfig.yml
+    - secret_group_vars/all.yml
   pre_tasks:
     - name: Install Dependencies
       package:
         name: ['git', 'python-psycopg2', 'python-virtualenv', 'bc']
       become: yes
   roles:
-    - hxr.galaxy-user
-    #- geerlingguy.docker
+    - hxr.tiaas
+    - geerlingguy.docker
     ### TODO(hxr): fails whenever galaxy homedir is created without bashrc
     #- role: hxr.docker-ssl-client
       #vars:
         #docker_account: galaxy
-    #- geerlingguy.repo-epel
-    #- hxr.exclude-repo # Exclude epel repos for condor, node, npm
-    #- geerlingguy.nodejs
+    - geerlingguy.repo-epel
+    - hxr.exclude-repo # Exclude epel repos for condor, node, npm
     ## TODO(hxr): fix ordering of these
-    #- hxr.monitor-cluster
-    #- hxr.monitor-galaxy
+    - hxr.monitor-cluster
     ## TODO(hxr): missing gxmnt etc
-    #- role: hxr.galaxy-cron
-      #become: yes
-      #become_user: galaxy
+    - role: hxr.galaxy-cron
+      become: yes
+      become_user: galaxy
     #- role: hxr.galaxy-nonreproducible-tools
       #become: yes
       #become_user: galaxy
-    #- hxr.galaxy-misc
+    - hxr.galaxy-misc
     #- hxr.autofs
-    ##- cvmfs
-    #- dynmotd
-    #- ssh-host-sign
-    #- hxr.admin-tools
-    #- hxr.monitor-email
-    #- htcondor
-    #- linuxhq.yum_cron
-    #- influxdata.chrony
+    - cvmfs
+    - dynmotd
+    - ssh-host-sign
+    - hxr.admin-tools
+    - hxr.monitor-email
+    - htcondor
+    - linuxhq.yum_cron
+    - influxdata.chrony
     ## TODO(hxr): maybe don't run on temp testing VMs?
     ##- hxr.certbot
 
     ## GALAXY
-    #- hxr.postgres-connection
-    #- gxadmin
-    #- hxr.galaxy-log-dir
-    ## TODO(hxr): /var/log/galaxy doesn't exist
-    #- packages
-    #- supervisor
-    #- role: hxr.install-to-venv
-      #become: yes
-      #become_user: galaxy
-    #- geerlingguy.nginx
-    ##- hxr.tiaas
-    #- role: usegalaxy_privileged
-      #become: yes
-      #become_user: galaxy
-    #- role: galaxyproject.galaxy
-      #become: yes
-      #become_user: galaxy
-    ## TODO: cannot come before galaxy
-    ##- role: hxr.welcome_pages
-      ##become: yes
-      ##become_user: galaxy
-    #- role: galaxyproject.interactive_environments
-      #become: yes
-      #become_user: galaxy
-    ##- dj-wasabi.telegraf
-    ##- dev-sec.os-hardening
-    ##- dev-sec.ssh-hardening
+    - role: hxr.postgres-connection
+      become: yes
+      become_user: galaxy
+    - usegalaxy-eu.gxadmin
+    - packages
+    - usegalaxy-eu.galaxy-systemd
+    - hxr.install-to-venv
+    - geerlingguy.nginx
+    - hxr.tiaas
+    # The real galaxy role
+    - role: galaxyproject.galaxy
+      become: yes
+      become_user: galaxy
+    - hxr.welcome_pages
+    - dj-wasabi.telegraf
+    #- dev-sec.os-hardening
+    #- dev-sec.ssh-hardening
