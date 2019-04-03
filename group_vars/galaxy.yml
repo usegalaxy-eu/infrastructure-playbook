@@ -324,6 +324,18 @@ galaxy_cvmfs_repositories:
     server_options: []
     client_options: []
 
+# SystemD
+galaxy_systemd_zerglings: 2
+galaxy_systemd_handlers: 12
+galaxy_systemd_memory_limit: 16
+galaxy_systemd_memory_limit_zp: 8
+galaxy_zergpool_listen_addr: "127.0.0.1:4001"
+galaxy_zergpool_socket_name: zergpool.sock
+galaxy_zergpool_listen_path: "{{ galaxy_mutable_data_dir }}/{{ galaxy_zergpool_socket_name }}"
+
+# TODO: support yml?
+galaxy_uwsgi_config_file_basename: uwsgi.ini
+
 # HTCondor
 # TODO(hxr): dedupe
 condor_host: "manager.vgcn.galaxyproject.eu"

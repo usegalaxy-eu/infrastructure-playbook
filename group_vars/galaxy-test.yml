@@ -96,17 +96,13 @@ nginx_conf_template: "{{ playbook_dir  }}/templates/nginx/main.j2"
 nginx_vhosts:
   - listen: "80"
     server_name: "{{ hostname }}"
-    return: "301 https://{{ hostname }}$request_uri"
+    #return: "301 https://{{ hostname }}$request_uri"
     filename: "{{ hostname }}.80.conf"
-
-  - listen: "443 ssl"
-    server_name: "{{ hostname }}"
-    root: "/var/www/{{ hostname }}"
     index: "index.html"
     access_log: "/var/log/nginx/access.log"
     error_log: "/var/log/nginx/error.log"
     state: "present"
-    filename: "{{ hostname }}.conf"
+    #filename: "{{ hostname }}.conf"
     extra_parameters: |
         error_page 404 /404.html;
         error_page 502 /502.html;
@@ -250,20 +246,6 @@ nginx_vhosts:
                 proxy_pass https://galaxyproject.eu/gdpr;
         }
 
-
-        ssl_certificate /etc/ssl/certs/cert.pem;
-        ssl_certificate_key /etc/ssl/private/privkey.pem;
-
-        ssl_protocols TLSv1.2;# Requires nginx >= 1.13.0 else use TLSv1.2
-        ssl_prefer_server_ciphers on;
-        ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384;
-        ssl_ecdh_curve secp384r1;
-        ssl_session_timeout  10m;
-        ssl_session_cache shared:SSL:10m;
-        ssl_session_tickets off;
-        #ssl_stapling on;
-        #ssl_stapling_verify on;
-
         resolver 8.8.8.8 8.8.4.4 valid=300s;
         resolver_timeout 5s;
         add_header X-Content-Type-Options nosniff;
@@ -306,7 +288,12 @@ galaxy_cvmfs_repositories:
     key_dir: /etc/cvmfs/keys/galaxyproject.org
     server_options: []
     client_options: []
-
+# SystemD
+galaxy_systemd_zerglings: 1
+galaxy_systemd_handlers: 1
+galaxy_systemd_memory_limit: 16
+galaxy_systemd_memory_limit_zp: 8
+galaxy_zergpool: false
 
 # gxadmin
 postgres_user: galaxy
