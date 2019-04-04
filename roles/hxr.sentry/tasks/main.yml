@@ -118,5 +118,6 @@
   command: docker-compose exec -T web sentry createuser --email admin@local.host --password password --superuser
   become: true
   become_user: "{{ hxr_sentry_user }}"
+  ignore_errors: yes
   args:
     chdir: "{{ hxr_sentry_repodir }}"
