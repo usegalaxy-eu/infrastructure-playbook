@@ -127,13 +127,13 @@ nginx_vhosts:
         }
 
         location / {
-            uwsgi_pass      127.0.0.1:4001;
+            uwsgi_pass      127.0.0.1:4000;
 
             include         uwsgi_params;
             proxy_hide_header x-frame-options;
             add_header X-Content-Type-Options nosniff;
             location ~ biom_simple {
-                uwsgi_pass      127.0.0.1:4001;
+                uwsgi_pass      127.0.0.1:4000;
                 include         uwsgi_params;
                 proxy_hide_header x-frame-options;
                 proxy_hide_header Content-Security-Policy-Report-Only;
