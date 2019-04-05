@@ -4,11 +4,18 @@
     name: "{{ admin_packages }}"
     state: installed
 
+- name: Check if firewalld is already installed
+  yum:
+    list: firewalld
+  # If not installed yum_list.results[*].yumstate != installed
+  register: yum_list
+
 - name: Stop firewalld
   service:
     name: firewalld
     state: stopped
     enabled: no
+  when: yum_list.results | selectattr("yumstate", "match", "installed") | list | length != 0
 
 - name: Start atop
   service:
