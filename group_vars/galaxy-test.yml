@@ -343,7 +343,7 @@ galaxy_venv_dir: "{{ galaxy_root  }}/venv"
 galaxy_nonrepro_tools: "{{ galaxy_root }}/custom-tools"
 galaxy_nonrepro_commit: master
 
-galaxy_dynamic_job_rules_src_dir: files/galaxy/dynamic_rules
+galaxy_dynamic_job_rules_src_dir: files/galaxy-test/dynamic_rules
 galaxy_dynamic_job_rules_dir: "{{ galaxy_root }}/dynamic_rules"
 galaxy_dynamic_job_rules:
   - usegalaxy/sorting_hat.py
@@ -352,6 +352,7 @@ galaxy_dynamic_job_rules:
   - usegalaxy/tool_destinations.yaml
   - usegalaxy/dexseq.py
   - usegalaxy/wig2bigwig.py
+  - readme.txt
 
 galaxy_instance_hostname: usegalaxy.eu
 galaxy_config_style: 'ini'
