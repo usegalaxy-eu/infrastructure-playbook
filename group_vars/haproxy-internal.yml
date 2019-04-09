@@ -30,7 +30,7 @@ haproxy_backends:
           # Retry requests up to 8 times. The default is 3
           # https://cbonte.github.io/haproxy-dconv/1.5/configuration.html#4.2-retries
           - "retries 8"
-          - "server server1 test.internal.usegalaxy.eu:443 maxconn 128 ssl verify none"
+          - "server server1 test.internal.usegalaxy.eu:80 maxconn 128"
 
 haproxy_stats: true
 
