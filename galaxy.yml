@@ -21,36 +21,36 @@
         name: ['git', 'python-psycopg2', 'python-virtualenv', 'bc']
       become: yes
   roles:
-    #- geerlingguy.docker
-    ### TODO(hxr): fails whenever galaxy homedir is created without bashrc
-    ##- role: hxr.docker-ssl-client
-      ##vars:
-        ##docker_account: galaxy
-    #- geerlingguy.repo-epel
-    #- hxr.exclude-repo # Exclude epel repos for condor, node, npm
-    ### TODO(hxr): fix ordering of these
-    #- hxr.monitor-cluster
-    ### TODO(hxr): missing gxmnt etc
-    #- role: hxr.galaxy-cron
-      #become: yes
-      #become_user: galaxy
-    #- role: hxr.galaxy-nonreproducible-tools
-      #become: yes
-      #become_user: galaxy
-    #- hxr.galaxy-misc
-    #- hxr.autofs
-    #- cvmfs
-    #- usegalaxy-eu.dynmotd
-    ##- ssh-host-sign
-    #- hxr.admin-tools
-    #- hxr.monitor-email
-    #- htcondor
-    #- linuxhq.yum_cron
-    #- influxdata.chrony
-    ### TODO(hxr): maybe don't run on temp testing VMs?
-    ###- usegalaxy-eu.certbot
+    - geerlingguy.docker
+    ## TODO(hxr): fails whenever galaxy homedir is created without bashrc
+    #- role: hxr.docker-ssl-client
+      #vars:
+        #docker_account: galaxy
+    - geerlingguy.repo-epel
+    - hxr.exclude-repo # Exclude epel repos for condor, node, npm
+    ## TODO(hxr): fix ordering of these
+    - hxr.monitor-cluster
+    ## TODO(hxr): missing gxmnt etc
+    - role: hxr.galaxy-cron
+      become: yes
+      become_user: galaxy
+    - role: hxr.galaxy-nonreproducible-tools
+      become: yes
+      become_user: galaxy
+    - hxr.galaxy-misc
+    - hxr.autofs
+    - cvmfs
+    - usegalaxy-eu.dynmotd
+    #- ssh-host-sign
+    - hxr.admin-tools
+    - hxr.monitor-email
+    - htcondor
+    - linuxhq.yum_cron
+    - influxdata.chrony
+    ## TODO(hxr): maybe don't run on temp testing VMs?
+    ##- usegalaxy-eu.certbot
 
-    ### GALAXY
+    ## GALAXY
     - role: hxr.postgres-connection
       vars:
         pg_owner: telegraf
@@ -59,22 +59,22 @@
       vars:
         pg_owner: galaxy
         pg_group: galaxy
-    #- usegalaxy-eu.gxadmin
-    #- packages
-    #- hxr.install-to-venv
-    ## TODO(hxr): nginx role doesn't create nginx_proxy_cache_path
-    #- geerlingguy.nginx
-    #- hxr.tiaas
-    ## The real galaxy role
-    #- role: galaxyproject.galaxy
-      #become: yes
-      #become_user: galaxy
-    ## These cannot come before galaxy
-    #- usegalaxy-eu.galaxy-systemd
-    #- hxr.welcome_pages
-    #- dj-wasabi.telegraf
-    ##- dev-sec.os-hardening
-    ##- dev-sec.ssh-hardening
+    - usegalaxy-eu.gxadmin
+    - packages
+    - hxr.install-to-venv
+    # TODO(hxr): nginx role doesn't create nginx_proxy_cache_path
+    - geerlingguy.nginx
+    - hxr.tiaas
+    # The real galaxy role
+    - role: galaxyproject.galaxy
+      become: yes
+      become_user: galaxy
+    # These cannot come before galaxy
+    - usegalaxy-eu.galaxy-systemd
+    - hxr.welcome_pages
+    - dj-wasabi.telegraf
+    #- dev-sec.os-hardening
+    #- dev-sec.ssh-hardening
 
 
     ## The alternate setup for testing.
