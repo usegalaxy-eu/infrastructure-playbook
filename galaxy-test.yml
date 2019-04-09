@@ -6,6 +6,7 @@
   vars:
     hostname: test.internal.usegalaxy.eu
   vars_files:
+    - group_vars/tiaas.yml
     - group_vars/custom-sites.yml
     - group_vars/gxconfig-test.yml
     - secret_group_vars/elixir_aai.yml
@@ -33,11 +34,11 @@
     - role: hxr.galaxy-cron
       become: yes
       become_user: galaxy
-    #- role: hxr.galaxy-nonreproducible-tools
-      #become: yes
-      #become_user: galaxy
+    - role: hxr.galaxy-nonreproducible-tools
+      become: yes
+      become_user: galaxy
     - hxr.galaxy-misc
-    #- hxr.autofs
+    - hxr.autofs
     - cvmfs
     - usegalaxy-eu.dynmotd
     - ssh-host-sign
@@ -60,13 +61,16 @@
     - usegalaxy-eu.gxadmin
     - packages
     - hxr.install-to-venv
+    # TODO(hxr): nginx role doesn't create nginx_proxy_cache_path
     - geerlingguy.nginx
+    - hxr.tiaas
     # The real galaxy role
     - role: galaxyproject.galaxy
       become: yes
       become_user: galaxy
-    - hxr.welcome_pages
+    # These cannot come before galaxy
     - usegalaxy-eu.galaxy-systemd
+    - hxr.welcome_pages
     - dj-wasabi.telegraf
     #- dev-sec.os-hardening
     #- dev-sec.ssh-hardening
