@@ -14,6 +14,15 @@ thunder-lock = true
 harakiri = 600
 buffer-size = 16384
 
+# Mapping to serve style content.
+static-map= /static/style=static/style/blue
+
+# Mapping to serve the remainder of the static content.
+static-map= /static=static
+
+# Mapping to serve the favicon.
+static-map= /favicon.ico=static/favicon.ico
+
 ; logging
 log-maxsize = 134217728
 log-master-bufsize = 15865856
