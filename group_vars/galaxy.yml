@@ -423,6 +423,18 @@ galaxy_dynamic_job_rules:
   - usegalaxy/wig2bigwig.py
   - readme.txt
 
+# Custom override
+# Our galaxy_tool_dependency_dir is on NFS, and permissions are set in such a
+# way that they cannot be changed by the ansible connected user.
+galaxy_dirs:
+  - "{{ galaxy_mutable_data_dir }}"
+  - "{{ galaxy_mutable_config_dir }}"
+  - "{{ galaxy_cache_dir }}"
+  - "{{ galaxy_shed_tools_dir }}"
+  #- "{{ galaxy_tool_dependency_dir }}"
+  - "{{ galaxy_file_path }}"
+  - "{{ galaxy_job_working_directory }}"
+
 galaxy_instance_hostname: usegalaxy.eu
 galaxy_config_style: 'ini'
 
