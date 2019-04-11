@@ -34,7 +34,7 @@ make cvmfs CHECK=1
 Server           | Status
 ---              | ---
 CVMFS            | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fcvmfs)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/cvmfs/)
-Galaxy/Test      | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fgalaxy)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/galaxy/)
+Galaxy           | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fgalaxy)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/galaxy/)
 Galaxy/Test      | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fgalaxy-test)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/galaxy-test/)
 Grafana          | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fstats)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/stats/)
 HAProxy          | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fhaproxy)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/haproxy/)
