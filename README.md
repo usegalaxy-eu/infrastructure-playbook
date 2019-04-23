@@ -31,6 +31,8 @@ make cvmfs CHECK=1
 
 ## Build Statuses
 
+The playbooks are being automatically and regularly run against the following machines:
+
 Server           | Status
 ---              | ---
 CVMFS            | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fcvmfs)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/cvmfs/)
