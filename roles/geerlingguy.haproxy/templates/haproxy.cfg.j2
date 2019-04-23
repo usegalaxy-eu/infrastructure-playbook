@@ -15,10 +15,6 @@ global
 {% endfor %}
 
 defaults
-	log global
-	mode  http
-	option  httplog
-	option  dontlognull
 {% if haproxy_version == '1.4' %}
 	contimeout 50000
 	clitimeout 50000
