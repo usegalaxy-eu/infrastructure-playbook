@@ -1,11 +1,13 @@
 server {
 
-    listen 443 ssl default_server;
-    listen [::]:443 ssl default_server;
+	listen 443 ssl default_server;
+	listen [::]:443 ssl default_server;
 
-    server_name {{ inventory_hostname }};
+	server_name {{ inventory_hostname }};
 
-    location / {
-   }
+	location / {
+		uwsgi_pass      127.0.0.1:8080;
+		include         uwsgi_params;
+	}
 
 }
