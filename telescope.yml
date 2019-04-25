@@ -16,15 +16,15 @@
     - influxdata.chrony
     - hxr.monitor-email
     - linuxhq.yum_cron
-    #- geerlingguy.nginx
+    - geerlingguy.nginx
     - galaxyproject.nginx
-    #- hxr.autofs
+    - hxr.autofs
     # BEGIN custom
-    #- galaxyproject.postgresql
-    #- role: natefoo.postgresql_objects
-      #become: true
-      #become_user: postgres
-    #- usegalaxy-eu.galactic-radio-telescope
+    - galaxyproject.postgresql
+    - role: natefoo.postgresql_objects
+      become: true
+      become_user: postgres
+    - usegalaxy-eu.galactic-radio-telescope
     # END custom
     - dj-wasabi.telegraf
     - dev-sec.os-hardening
