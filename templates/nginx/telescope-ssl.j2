@@ -5,6 +5,15 @@ server {
 
 	server_name {{ inventory_hostname }};
 
+	location /api/ {
+		alias /srv/nginx/grt-api/;
+		autoindex on;
+	}
+
+	location / {
+		alias /srv/nginx/grt/;
+	}
+
 	location / {
 		uwsgi_pass      127.0.0.1:8080;
 		include         uwsgi_params;
