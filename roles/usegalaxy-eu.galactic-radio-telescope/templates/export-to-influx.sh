@@ -8,7 +8,7 @@ export INFLUX_USER={{ influxdb.node.username }}
 export INFLUX_URL={{ influxdb.url }}
 
 # Export data into a file
-./gxadmin meta iquery-grt-export > main.iflx
+gxadmin meta iquery-grt-export > main.iflx
 
 # Split into reasonable sized chunks
 split --lines 10000 main.iflx SPLIT
@@ -18,5 +18,5 @@ gxadmin meta influx-query grt 'delete from "iquery-grt-export"'
 
 # Send chunks to influxdb
 for chunk in SPLIT*; do
-	./gxadmin meta influx-post grt $chunk
+	gxadmin meta influx-post grt $chunk
 done
