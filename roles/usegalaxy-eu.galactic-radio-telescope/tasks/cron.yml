@@ -14,3 +14,19 @@
     minute: 0
     hour: 4
     job: "cd {{ grt_queries_dir }}  && . {{ grt_dir }}/config/env.sh && {{ grt_dir }}/venv/bin/python {{ grt_dir }}/code/manage.py queries"
+
+- name: Send influx script
+  template:
+    src: "export-to-influx.sh"
+    dest: "/usr/bin/export-grt-to-influx"
+    owner: root
+    group: "{{ grt_group }}"
+    mode: 0750
+
+- name: Update influxdb
+  cron:
+    name: Export queries
+    user: "{{ grt_user }}"
+    minute: 0
+    hour: 2
+    job: "/usr/bin/export-grt-to-influx"
