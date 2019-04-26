@@ -366,11 +366,12 @@ htcondor:
     jobs:
         hold_older_than: '{{ 86400 * 7 }}'
 
-# gxadmin
 postgres_user: galaxy
 postgres_host: sn03.bi.uni-freiburg.de
 postgres_port: 5432
 # postgres_pass defined in secret_group_vars/all.yml
+#
+# gxadmin
 gxadmin_commit: master
 gxadmin_dir: /opt/gxadmin
 gxadmin_bin_dir: /usr/bin
