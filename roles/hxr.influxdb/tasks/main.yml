@@ -49,6 +49,7 @@
     - galaxy
     - grt
     - galaxy_stats
+    - notifications
 
 - name: create 1 week retention policy
   influxdb_retention_policy:
@@ -65,6 +66,7 @@
   with_items:
     - galaxy
     - grt
+    - notifications
 
 - name: Grant permissions to galaxy
   influxdb_query:
@@ -80,6 +82,7 @@
     - galaxy
     - galaxy_stats
     - grt
+    - notifications
 
 - name: Grant permissions to grafana
   influxdb_query:
@@ -96,3 +99,4 @@
     - galaxy
     - galaxy_stats
     - grt
+    - notifications
