@@ -376,6 +376,14 @@ galaxy_slurp_influx_pass: "{{ influxdb.node.pass }}"
 galaxy_slurp_influx_user: "{{ influxdb.node.user }}"
 galaxy_slurp_influx_url: "{{ influxdb.url }}"
 
+# GRT
+galaxy_grt_exporter: galaxy
+galaxy_grt_uploader: galaxy
+
+# Influx Notifier
+gxadmin_influx_task_notifier: true
+gxadmin_influx_task_notifier_db: notifications
+
 # postgres_pass defined in secret_group_vars/all.yml
 #
 # gxadmin

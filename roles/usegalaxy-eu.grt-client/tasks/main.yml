@@ -1,0 +1,30 @@
+---
+- name: Deploy export
+  template:
+    src: grt-export.sh
+    dest: /usr/bin/grt-export
+    owner: "{{ galaxy_grt_exporter }}"
+    mode: 0750
+
+- name: Deploy upload
+  template:
+    src: grt-eupload.sh
+    dest: /usr/bin/grt-upload
+    owner: "{{ galaxy_grt_uploader }}"
+    mode: 0750
+
+- name: Cron job for export
+  cron:
+    name: GRT export
+    job: /usr/bin/grt-export
+    minute: "{{ galaxy_grt_export_minute | default(45) }}"
+    hour: "{{ galaxy_grt_export_hour | default(0) }}"
+    user: "{{ galaxy_grt_exporter}}"
+
+- name: Cron job for upload
+  cron:
+    name: GRT upload
+    job: /usr/bin/grt-upload
+    minute: "{{ galaxy_grt_upload_minute | default(15) }}"
+    hour: "{{ galaxy_grt_upload_hour | default(5) }}"
+    user: "{{ galaxy_grt_uploader}}"
