@@ -68,6 +68,7 @@
     - galaxy
     - grt
     - notifications
+  when: not ansible_check_mode # This task is not safe if DB doesn't exist.
 
 - name: Grant permissions to galaxy
   influxdb_query:
@@ -84,6 +85,7 @@
     - galaxy_stats
     - grt
     - notifications
+  when: not ansible_check_mode # This task is not safe if DB doesn't exist.
 
 - name: Grant permissions to grafana
   influxdb_query:
@@ -101,3 +103,4 @@
     - galaxy_stats
     - grt
     - notifications
+  when: not ansible_check_mode # This task is not safe if DB doesn't exist.
