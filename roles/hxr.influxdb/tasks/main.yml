@@ -14,11 +14,12 @@
     influx -ssl -host influxdb.galaxyproject.eu -execute "show users"
   ignore_errors: true
   register: should_create_admin
+  when: not ansible_check_mode
 
 - name: Create initial admin user
   command: |
     influx -ssl -host influxdb.galaxyproject.eu -execute "CREATE USER {{ influxdb.admin.username }} WITH PASSWORD '{{ influxdb.admin.password }}' WITH ALL PRIVILEGES"
-  when: '"unable to parse authentication credentials" not in should_create_admin.stdout'
+  when: 'not ansible_check_mode and "unable to parse authentication credentials" not in should_create_admin.stdout'
 
 - name: Create users
   influxdb_user:
