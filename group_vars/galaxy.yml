@@ -369,6 +369,13 @@ htcondor:
 postgres_user: galaxy
 postgres_host: sn03.bi.uni-freiburg.de
 postgres_port: 5432
+
+# Slurp script
+galaxy_slurper: galaxy
+galaxy_slurp_influx_pass: "{{ influxdb.node.pass }}"
+galaxy_slurp_influx_user: "{{ influxdb.node.user }}"
+galaxy_slurp_influx_url: "{{ influxdb.url }}"
+
 # postgres_pass defined in secret_group_vars/all.yml
 #
 # gxadmin

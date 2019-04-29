@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+data=$(mktemp --suffix .gxadmin)
+export INFLUX_PASS={{ galaxy_slurp_influx_pass }}
+export INFLUX_USER={{ galaxy_slurp_influx_user }}
+export INFLUX_URL={{ galaxy_slurp_influx_url }}
+export PGUSER={{ postgres_user }}
+export PGHOST={{ postgres_host }}
+export GDPR_MODE={{ galaxy_slurp_gdpr | default("1") }}
+
+# Export
+gxadmin meta slurp-upto $(date --date="1 day ago" +%Y-%m-%d) --date > $data
+
+# Ship it
+gxadmin meta influx-post galaxy_stats $data
+
+# Cleanup
+rm $data

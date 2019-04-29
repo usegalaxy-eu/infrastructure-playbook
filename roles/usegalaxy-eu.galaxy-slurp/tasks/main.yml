@@ -1,0 +1,32 @@
+---
+- name: Deploy slurp script
+  template:
+    src: galaxy-slurp.j2
+    dest: /usr/bin/galaxy-slurp
+    owner: "{{ galaxy_slurper }}"
+    group: root
+    mode: 0750
+
+- name: Add cron job for pulling stats
+  cron:
+    name: Slurp galaxy stats into InfluxDB
+    job: /usr/bin/galaxy-slurp
+    minute: "{{ galaxy_slurp_minute | default(0) }}"
+    hour: "{{ galaxy_slurp_hour | default(0) }}"
+    user: "{{ galaxy_slurper }}"
+
+- name: Deploy slurp script (upto)
+  template:
+    src: galaxy-slurp-upto.j2
+    dest: /usr/bin/galaxy-slurp-upto
+    owner: "{{ galaxy_slurper }}"
+    group: root
+    mode: 0750
+
+- name: Add cron job for pulling stats (upto)
+  cron:
+    name: Slurp galaxy stats into InfluxDB upto version
+    job: /usr/bin/galaxy-slurp-upto
+    minute: "{{ galaxy_slurp_minute | default(0) }}"
+    hour: "{{ galaxy_slurp_hour | default(4) }}"
+    user: "{{ galaxy_slurper }}"
