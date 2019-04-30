@@ -1,6 +1,9 @@
 ---
 #- include_tasks: account.yml
   #when: grt_create_group or grt_create_user
+- include_tasks: user.yml
+  when: grt_create_user
+
 - include_tasks: dirs.yml
 
 - name: Clone repository

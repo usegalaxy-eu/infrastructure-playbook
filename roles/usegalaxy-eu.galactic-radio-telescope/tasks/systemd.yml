@@ -3,8 +3,8 @@
   template:
     src: "run.sh"
     dest: "{{ grt_dir }}/run.sh"
-    owner: root
-    group: "{{ grt_group }}"
+    owner: "{{ grt_user.name }}"
+    group: "{{ grt_group.name }}"
     mode: 0750
   notify: 'reload grt'
 

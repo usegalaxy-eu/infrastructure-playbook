@@ -3,24 +3,24 @@
   file:
     path: "{{ grt_dir }}"
     state: directory
-    owner: "{{ grt_user }}"
-    group: "{{ grt_group }}"
+    owner: "{{ grt_user.name }}"
+    group: "{{ grt_group.name }}"
     mode: 0750
 
 - name: Ensure uploads directory is available
   file:
     path: "{{ grt_upload_dir }}"
     state: directory
-    owner: "{{ grt_user }}"
-    group: "{{ grt_group }}"
+    owner: "{{ grt_user.name }}"
+    group: "{{ grt_group.name }}"
     mode: 0750
 
 - name: Ensure queries directory is available
   file:
     path: "{{ grt_queries_dir }}"
     state: directory
-    owner: "{{ grt_user }}"
-    group: "{{ grt_group }}"
+    owner: "{{ grt_user.name }}"
+    group: "{{ grt_group.name }}"
     mode: 0755
 
 - name: "Allow httpd_sys_content_t to access the queries dir"

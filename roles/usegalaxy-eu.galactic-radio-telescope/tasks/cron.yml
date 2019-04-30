@@ -2,7 +2,7 @@
 - name: Process uploads
   cron:
     name: Process GRT Uploads
-    user: "{{ grt_user }}"
+    user: "{{ grt_user.name }}"
     minute: 0
     hour: 0
     job: ". {{ grt_dir }}/config/env.sh && {{ grt_dir }}/venv/bin/python {{ grt_dir }}/code/manage.py import_data"
@@ -10,7 +10,7 @@
 - name: Export queries
   cron:
     name: Export queries
-    user: "{{ grt_user }}"
+    user: "{{ grt_user.name }}"
     minute: 0
     hour: 4
     job: "cd {{ grt_queries_dir }}  && . {{ grt_dir }}/config/env.sh && {{ grt_dir }}/venv/bin/python {{ grt_dir }}/code/manage.py queries"
@@ -20,13 +20,13 @@
     src: "export-to-influx.sh"
     dest: "/usr/bin/export-grt-to-influx"
     owner: root
-    group: "{{ grt_group }}"
+    group: "{{ grt_group.name }}"
     mode: 0750
 
 - name: Update influxdb
   cron:
     name: Export to influx
-    user: "{{ grt_user }}"
+    user: "{{ grt_user.name }}"
     minute: 0
     hour: 2
     job: "/usr/bin/export-grt-to-influx"
