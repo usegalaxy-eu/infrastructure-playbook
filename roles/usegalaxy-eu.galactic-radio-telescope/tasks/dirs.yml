@@ -34,3 +34,23 @@
 - name: Apply new SELinux file context to filesystem
   command: "restorecon -irv {{ grt_queries_dir }}"
   when: ansible_selinux.mode == "enforcing" and update_fcontexts.changed
+
+- name: Ensure web directory is available
+  file:
+    path: "{{ grt_web_dir }}"
+    state: directory
+    owner: "{{ grt_user.name }}"
+    group: "{{ grt_group.name }}"
+    mode: 0755
+
+- name: "Allow httpd_sys_content_t to access the web dir"
+  sefcontext:
+    target: '{{ grt_web_dir }}(/.*)?'
+    setype: httpd_sys_content_t
+    state: present
+  register: update_fcontexts2
+  when: ansible_selinux.mode == "enforcing"
+
+- name: Apply new SELinux file context to filesystem
+  command: "restorecon -irv {{ grt_web_dir }}"
+  when: ansible_selinux.mode == "enforcing" and update_fcontexts2.changed

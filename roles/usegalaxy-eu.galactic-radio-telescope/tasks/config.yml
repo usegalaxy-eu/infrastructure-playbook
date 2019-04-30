@@ -18,3 +18,14 @@
     - uwsgi.yml
     - env.sh
   notify: 'reload grt'
+
+- name: Send web data
+  copy:
+    src: "{{ item }}"
+    dest: "{{ grt_web_dir }}/{{ item }}"
+    owner: root
+    group: "{{ grt_group.name }}"
+    mode: 0644
+  with_items:
+    - tos.html
+    - index.html
