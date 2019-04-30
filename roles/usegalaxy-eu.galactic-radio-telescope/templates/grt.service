@@ -4,8 +4,8 @@ Documentation=https://github.com/erasche/galactic-radio-telescope
 After=network.target
 
 [Service]
-User={{ grt_user }}
-Group={{ grt_group }}
+User={{ grt_user.name }}
+Group={{ grt_group.name }}
 ExecStart={{ grt_dir }}/run.sh
 Restart=on-failure
 RestartForceExitStatus=SIGPIPE

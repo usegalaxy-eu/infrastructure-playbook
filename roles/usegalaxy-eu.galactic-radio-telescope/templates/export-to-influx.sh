@@ -2,7 +2,7 @@
 cd $(mktemp -d)
 
 # Env vars for sending data
-export PGHOST="/var/run/postgresql" PGUSER="{{ grt_user }}" PGNAME="{{ grt_user }}" PGPORT="" PGPASSWORD=""
+. {{ grt_dir }}/config/env.sh
 export INFLUX_PASS={{ influxdb.node.password }}
 export INFLUX_USER={{ influxdb.node.username }}
 export INFLUX_URL={{ influxdb.url }}
