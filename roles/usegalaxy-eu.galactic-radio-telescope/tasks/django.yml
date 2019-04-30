@@ -8,8 +8,8 @@
   command: "{{ grt_dir }}/venv/bin/python {{ grt_dir }}/code/manage.py migrate --no-input"
   environment:
     DJANGO_SETTINGS_MODULE: base.production
-    PGHOST: /var/run/postgresql
-    PGUSER: "{{ grt_user.name }}"
-    PGNAME: "{{ grt_user.name }}"
-    PGPORT: ''
-    PGPASSWORD: ''
+    PGHOST: "{{ grt_pghost }}"
+    PGUSER: "{{ grt_pguser }}"
+    PGNAME: "{{ grt_pgname }}"
+    PGPORT: "{{ grt_pgport }}"
+    PGPASSWORD: "{{ grt_pgpassword }}"
