@@ -1,0 +1,20 @@
+- name: Create grt group
+  group:
+    name: "{{ grt_group.name | default(grt_group) }}"
+    gid: "{{ grt_group.gid | default(omit) }}"
+    system: "{{ grt_group.system | default(grt_user.system) | default('true') }}"
+    local: "{{ grt_group.local | default(grt_user.local) | default(omit) }}"
+  when: grt_group is defined
+
+- name: Create grt user
+  user:
+    name: "{{ grt_user.name | default(grt_user) }}"
+    uid: "{{ grt_user.uid | default(omit) }}"
+    group: "{{ (grt_group | default({})).name | default(grt_group) | default(omit) }}"
+    comment: "{{ grt_user.comment | default('grt server') }}"
+    create_home: "{{ grt_user.create_home | default('true') }}"
+    home: "{{ grt_user.home | default(omit) }}"
+    shell: "{{ grt_user.shell | default(omit) }}"
+    system: "{{ grt_user.system | default('true') }}"
+    local: "{{ grt_user.local | default(omit) }}"
+  when: grt_create_user
