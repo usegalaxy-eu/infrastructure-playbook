@@ -28,13 +28,12 @@ nginx_conf_http:
 
 # PostgreSQL
 postgresql_objects_users:
-  - name: "{{ grt_user }}"
+  - name: "{{ grt_user.name }}"
 postgresql_objects_databases:
-  - name: "{{ grt_user }}"
-    owner: "{{ grt_user }}"
+  - name: "{{ grt_user.name }}"
+    owner: "{{ grt_user.name }}"
 
 # GRT
-grt_user: grt
 grt_upload_dir: /vols/vdb/uploads
 grt_queries_dir: /srv/nginx/grt-api
 
