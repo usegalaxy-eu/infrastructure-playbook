@@ -50,8 +50,8 @@ haproxy_frontends:
         - 'redirect prefix https://sentry.galaxyproject.eu code 301 if { hdr(host) -i sentry.usegalaxy.eu  }'
         - 'redirect prefix https://status.galaxyproject.org code 301 if { hdr(host) -i status.galaxyproject.eu  }'
         # Proxy our website
+        - 'use_backend telescope if telescope_domain' # needs to come before website domain
         - 'use_backend website   if website_domain'
-        - 'use_backend telescope if telescope_domain'
         # Beta/test galaxy.
         - 'use_backend beta_special   if beta_domain welcome'
         - 'use_backend beta_special   if beta_domain basecss'
