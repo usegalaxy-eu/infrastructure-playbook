@@ -8,4 +8,5 @@
 - name: Install postgres client on centos/rhel
   package:
     name: postgresql
-    when: ansible_distribution_file_variety == "RedHat"
+    state: present
+  when: ansible_distribution_file_variety == "RedHat"
