@@ -1,6 +1,4 @@
 ---
-
-
 haproxy_chroot: ''
 haproxy_frontends:
     - name: https-in
@@ -15,64 +13,22 @@ haproxy_frontends:
         # Unless this is going to certbot, redirect to HTTPS
         - 'redirect scheme https code 301 if !{ ssl_fc } !certbot_path'
         # ACLs
-        - 'acl website_domain    hdr_dom(host) -i galaxyproject.eu'
-        - 'acl main_domain       hdr_dom(host) -i usegalaxy.eu'
-        - 'acl beta_domain       hdr_dom(host) -i beta.usegalaxy.eu'
-        - 'acl telescope_domain  hdr_dom(host) -i telescope.galaxyproject.eu'
         - 'acl apollo_path       path_beg /apollo/'
         - 'acl rabbit_path       path_beg /rabbit/'
         - 'acl welcome           path_beg /static/welcome.html'
         - 'acl basecss           path_beg /static/style/base.css'
-        # Redirect some old stuff
-        - 'redirect prefix https://stats.galaxyproject.eu  code 301 if { hdr(host) -i stats.usegalaxy.eu  }'
-        - 'redirect prefix https://build.galaxyproject.eu  code 301 if { hdr(host) -i build.usegalaxy.eu  }'
-        - 'redirect prefix https://sentry.galaxyproject.eu code 301 if { hdr(host) -i sentry.usegalaxy.eu  }'
-        - 'redirect prefix https://status.galaxyproject.org code 301 if { hdr(host) -i status.galaxyproject.eu  }'
         # Proxy our website
         - 'use_backend telescope if telescope_domain' # needs to come before website domain
-        - 'use_backend website   if website_domain'
-        # Beta/test galaxy.
-        - 'use_backend beta_special   if beta_domain welcome'
-        - 'use_backend beta_special   if beta_domain basecss'
-        - 'use_backend beta_base      if beta_domain'
 
       galaxy_hosts: "{{ galaxy_custom_sites }}"
 
-# Custom error pages. TODO: automate.
-#- 'errorfile 400 /etc/haproxy/errors/400.html'
-#- 'errorfile 403 /etc/haproxy/errors/403.html'
-#- 'errorfile 408 /etc/haproxy/errors/408.html'
-#- 'errorfile 500 /etc/haproxy/errors/500.html'
-#- 'errorfile 502 /etc/haproxy/errors/502.html'
-#- 'errorfile 503 /etc/haproxy/errors/503.html'
-#- 'errorfile 504 /etc/haproxy/errors/504.html'
-
 haproxy_galaxy_backend: 'server server1 132.230.68.5:443 maxconn 128 ssl verify none'
 haproxy_backends:
-    - name: galaxy
-      balance: roundrobin
-      mode: http
-      custom_config:
-          # Retry requests up to 8 times. The default is 3
-          # https://cbonte.github.io/haproxy-dconv/1.5/configuration.html#4.2-retries
-          - "retries 8"
-          - "{{ haproxy_galaxy_backend }}"
     - name: telescope
       balance: roundrobin
       mode: http
       custom_config:
         - 'server server1 telescope.internal.galaxyproject.eu:80 maxconn 32'
-    #- name: apollo
-      #balance: roundrobin
-      #mode: http
-      #custom_config:
-        #- 'server server1 apollo.usegalaxy.eu:443 maxconn 32 ssl verify none'
-    - name: website
-      balance: roundrobin
-      mode: http
-      custom_config:
-        - 'http-request set-header Host usegalaxy-eu.github.io'
-        - 'server server1 usegalaxy-eu.github.io:443 maxconn 32 ssl verify none'
     - name: rabbit
       balance: roundrobin
       mode: http
