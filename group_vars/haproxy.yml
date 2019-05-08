@@ -1,26 +1,5 @@
 ---
-# Certbot
-certbot_auto_renew_hour: 10
-certbot_auto_renew_minute: 59
-certbot_auto_renew_extra: "--dns-route53"
-certbot_domains: "{{ server_names }}"
-certbot_share_key_users:
-    - haproxy
-    - rabbitmq-server
-certbot_post_renewal: |
-    # Haproxy is weird and needs the full chain + privkey in a single file.
-    cat /etc/ssl/certs/fullchain.pem   > /etc/pki/tls/private/full.pem
-    cat /etc/ssl/private/privkey.pem  >> /etc/pki/tls/private/full.pem
-    chown root:ssl-cert {{ certbot_share_key_dir }}/haproxy.pem
-    systemctl reload haproxy || true
-    systemctl restart rabbitmq-server || true
 
-# AWS Credentials for certbot-route53
-aws_cli_credentials:
-  - account: certbot@proxy
-    homedir: /root
-    owner: root
-    group: root
 
 haproxy_chroot: ''
 haproxy_frontends:

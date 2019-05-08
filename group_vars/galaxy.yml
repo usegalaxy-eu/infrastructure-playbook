@@ -98,10 +98,23 @@ monitor_condor_split_util: true
 # Certbot
 certbot_auto_renew_hour: 3
 certbot_auto_renew_minute: 30
-certbot_auto_renew_extra: "--preferred-challenges http-01 --http-01-port 8118"
+certbot_domains: "{{ server_names }}"
 certbot_post_renewal: |
     systemctl restart nginx || true
 
+certbot_dns_provider: route53
+
+certbot_share_key_users:
+    - nginx
+# AWS Credentials for certbot-route53
+aws_cli_credentials:
+  - account: certbot@proxy
+    homedir: /root
+    owner: root
+    group: root
+
+
+# Nginx
 nginx_remove_default_vhost: true
 nginx_proxy_cache_path: "/var/cache/nginx/static levels=1:2 keys_zone=STATIC:10m inactive=24h  max_size=1g"
 nginx_conf_template: "{{ playbook_dir  }}/templates/nginx/main.j2"
@@ -173,11 +186,7 @@ nginx_vhosts:
         }
 
         location /static/welcome.html {
-               alias /opt/multisite-css/base.html;
-        }
-
-        location ~ /static/welcome-(?<name>[^/]*).html {
-               alias /opt/multisite-css/${name}.html;
+               alias /opt/multisite-css/$host.html;
         }
 
         location /static {
@@ -189,8 +198,8 @@ nginx_vhosts:
                 }
         }
 
-        location ~ /static/style/base-(?<name>[^/]*).css {
-               alias /opt/multisite-css/${name}.css;
+        location ~ /static/style/base.css {
+               alias /opt/multisite-css/$host.css;
         }
 
         location /static/style {

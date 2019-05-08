@@ -11,7 +11,7 @@
 - name: Template out main welcome page
   template:
     src: welcome.html
-    dest: "{{ multisite_dir }}/base.html"
+    dest: "{{ multisite_dir }}/usegalaxy.eu.html"
     mode: 0644
   with_items:
     - index: "/galaxy/"
@@ -19,19 +19,22 @@
 - name: "Template out welcome pages"
   template:
     src: welcome.html
-    dest: "{{ multisite_dir }}/{{ item.name }}.html"
+    dest: "{{ multisite_dir }}/{{ item.domain | default([item.name, '.usegalaxy.eu'] | join) }}.html"
     mode: 0644
   with_items: "{{ galaxy_custom_sites }}"
 
 - name: Template out CSS files
   template:
     src: multisite-base.css
-    dest: "{{ multisite_dir }}/{{ item.name }}-custom.css"
+    dest: "{{ multisite_dir }}/{{ item.domain | default([item.name, '.usegalaxy.eu'] | join) }}-custom.css"
     mode: 0644
   with_items: "{{ galaxy_custom_sites }}"
   register: custom_css
 
+- name: Main CSS
+  shell: "cat {{ galaxy_server_dir }}/static/style/blue/base.css > {{ multisite_dir }}/usegalaxy.eu.css"
+
 - name: Merge CSS files
-  shell: "cat {{ galaxy_server_dir }}/static/style/blue/base.css {{ multisite_dir }}/{{ item.name }}-custom.css > {{ multisite_dir }}/{{ item.name }}.css"
+  shell: "cat {{ galaxy_server_dir }}/static/style/blue/base.css {{ multisite_dir }}/{{ item.domain | default([item.name, '.usegalaxy.eu'] | join) }}-custom.css > {{ multisite_dir }}/{{ item.domain | default([item.name, '.usegalaxy.eu'] | join) }}.css"
   with_items: "{{ galaxy_custom_sites }}"
   when: custom_css.changed
