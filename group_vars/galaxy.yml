@@ -120,6 +120,27 @@ nginx_proxy_cache_path: "/var/cache/nginx/static levels=1:2 keys_zone=STATIC:10m
 nginx_conf_template: "{{ playbook_dir  }}/templates/nginx/main.j2"
 nginx_vhosts:
   - listen: "80"
+    server_name: "galaxyproject.eu"
+    return: "301 https://galaxyproject.eu$request_uri"
+    filename: "galaxyproject.eu.80.conf"
+
+  - listen: "443 ssl"
+    server_name: "galaxyproject.eu"
+    root: "/var/www/galaxyproject.eu"
+    index: "index.html"
+    access_log: "/var/log/nginx/access.log"
+    error_log: "/var/log/nginx/error.log"
+    state: "present"
+    filename: "galaxyproject.eu.conf"
+    extra_parameters: |
+        location / {
+                proxy_pass https://usegalaxy-eu.github.io/;
+                proxy_cache           STATIC;
+                proxy_cache_valid     200  5m;
+                proxy_cache_use_stale error timeout invalid_header updating http_500 http_502 http_503 http_504;
+        }
+
+  - listen: "80"
     server_name: "{{ hostname }}"
     return: "301 https://{{ hostname }}$request_uri"
     filename: "{{ hostname }}.80.conf"
