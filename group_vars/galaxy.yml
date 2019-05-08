@@ -106,6 +106,7 @@ certbot_dns_provider: route53
 
 certbot_share_key_users:
     - nginx
+
 # AWS Credentials for certbot-route53
 aws_cli_credentials:
   - account: certbot@proxy
@@ -305,7 +306,7 @@ nginx_vhosts:
         }
 
 
-        ssl_certificate /etc/ssl/certs/cert.pem;
+        ssl_certificate /etc/ssl/certs/fullchain.pem;
         ssl_certificate_key /etc/ssl/private/privkey.pem;
 
         ssl_protocols TLSv1.2;# Requires nginx >= 1.13.0 else use TLSv1.2
