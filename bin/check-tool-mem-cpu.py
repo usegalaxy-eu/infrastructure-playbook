@@ -3,7 +3,7 @@ import yaml
 import os
 import sys
 
-D = os.path.dirname(os.path.realpath(__file__))
+D = os.path.dirname(os.path.pardir(os.path.realpath(__file__)))
 
 jcaas_conf = yaml.load(open(os.path.join(D, 'files/galaxy/dynamic_rules/tool_destinations.yaml'), 'r'))
 jcaas_conf2 = {}
