@@ -325,7 +325,7 @@ nginx_vhosts:
         add_header X-XSS-Protection "1; mode=block";
         add_header X-Robots-Tag none;
 
-        client_max_body_size 10G; # aka max upload size, defaults to 1M
+        client_max_body_size 1G; # aka max upload size, defaults to 1M
         uwsgi_read_timeout 2400;
 
 
