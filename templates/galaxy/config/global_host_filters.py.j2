@@ -23,6 +23,8 @@ def per_host_tool_labels( context, label ):
         return label.id in valid_labels
     if "imaging.usegalaxy.eu" in host:
         return label.id in valid_labels
+    if "climate.usegalaxy.eu" in host:
+        return label.id in valid_labels
     return True
 
 
@@ -44,6 +46,9 @@ def per_host_tool_sections( context, section ):
     if "hicexplorer.usegalaxy.eu" in host:
         valid_sections += general_ngs_sections
         valid_sections += [ "hicexplorer" ]
+        return section.id in valid_sections
+    if "climate.usegalaxy.eu" in host:
+        valid_sections += [ "climate_analysis" ]
         return section.id in valid_sections
     if "metagenomics.usegalaxy.eu" in host:
         valid_sections += [ "fasta_fastq_manipulation", "quality_control", "multiple_alignments", "assembly", "annotation", "display_data"]
