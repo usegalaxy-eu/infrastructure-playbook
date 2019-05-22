@@ -385,24 +385,10 @@ condor_daemons:
 condor_allow_negotiator: "132.230.68.5,132.230.68.85,$(CONDOR_HOST)"
 condor_allow_administrator: "$(ALLOW_NEGOTIATOR)"
 
-#condor_system_periodic_hold: "{{ 7 * 24 * 60 * 60}}"
+condor_system_periodic_hold: "{{ 30 * 24 * 60 * 60}}"
 condor_network_interface: ens2
 
-htcondor:
-    interface: 'ens2'
-    host: '10.5.68.16'
-    allow_write: '10.5.68.0/24, 10.19.0.0/16, 132.230.68.0/24, *.bi.uni-freiburg.de'
-    ### 09/15/17 09:22:07 (pid:568706) PERMISSION DENIED to unauthenticated@unmapped from host 132.230.68.63 for command 416 (NEGOTIATE), access level NEGOTIATOR: reason: NEGOTIATOR authorization policy contains no matching ALLOW entry for this request; identifiers used for this host: 132.230.68.63,cn030.bi.uni-freiburg.de, hostname size = 1, original ip address = 132.230.68.63
-    #ALLOW_NEGOTIATOR = 132.230.68.85
-    role: 'submit'
-    fs_domain: 'bi.uni-freiburg.de'
-    uid_domain: 'bi.uni-freiburg.de'
-    trust_uid_domain: true
-    # HXR: 2018-04-23 Per @bgruening's request, enlarged from 2d to
-    # Put jobs using resources excessively on hold
-    # http://pages.cs.wisc.edu/~adesmet/status.html#condor-jobstatus
-    jobs:
-        hold_older_than: '{{ 86400 * 7 }}'
+
 
 postgres_user: galaxy
 postgres_host: sn03.bi.uni-freiburg.de
