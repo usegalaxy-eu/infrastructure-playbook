@@ -49,7 +49,7 @@ def per_host_tool_sections( context, section ):
         return section.id in valid_sections
     if "nanopore.usegalaxy.eu" in host:
         valid_sections += general_ngs_sections
-        valid_sections += [ "hicexplorer", "nanopore", "metagenomic_analyses", "mothur", "qiime", "biom_manipulation"]
+        valid_sections += [ "hicexplorer", "nanopore", "metagenomic_analyses", "mothur", "qiime", "biom_manipulation", "ncbi_blast"]
         return section.id in valid_sections
     if "climate.usegalaxy.eu" in host:
         valid_sections += [ "climate_analysis" ]
