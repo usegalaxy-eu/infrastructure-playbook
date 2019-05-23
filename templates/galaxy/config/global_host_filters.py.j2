@@ -25,6 +25,8 @@ def per_host_tool_labels( context, label ):
         return label.id in valid_labels
     if "climate.usegalaxy.eu" in host:
         return label.id in valid_labels
+    if "metabolomics.usegalaxy.eu" in host:
+        return label.id in valid_labels
     return True
 
 
@@ -80,5 +82,8 @@ def per_host_tool_sections( context, section ):
         return section.id in valid_sections
     if "imaging.usegalaxy.eu" in host:
         valid_sections += [ "imaging", "proteomics" ]
+        return section.id in valid_sections
+    if "metabolomics.usegalaxy.eu" in host:
+        valid_sections += [ "metabolomics" ]
         return section.id in valid_sections
     return True
