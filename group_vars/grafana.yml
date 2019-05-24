@@ -55,6 +55,54 @@ grafana_auth:
         api_url: "https://api.github.com/user"
         allowed_organisations: "usegalaxy.eu galaxyproject"
 
+grafana_datasources:
+ - name: Galaxy
+   type: influxdb
+   access: proxy
+   url: "{{ influxdb.url }}"
+   isDefault: true
+   version: 1
+   editable: false
+   database: galaxy
+   username: "{{ influxdb.grafana.username }}"
+   password: "{{ influxdb.grafana.password }}"
+ - name: Galaxy Historical
+   type: influxdb
+   access: proxy
+   url: "{{ influxdb.url }}"
+   version: 1
+   editable: false
+   database: galaxy_stats
+   username: "{{ influxdb.grafana.username }}"
+   password: "{{ influxdb.grafana.password }}"
+ - name: GRT Tool Usage
+   type: influxdb
+   access: proxy
+   url: "{{ influxdb.url }}"
+   version: 1
+   editable: false
+   database: grt
+   username: "{{ influxdb.grafana.username }}"
+   password: "{{ influxdb.grafana.password }}"
+ - name: InfluxDB - internal
+   type: influxdb
+   access: proxy
+   url: "{{ influxdb.url }}"
+   version: 1
+   editable: false
+   database: _internal
+   username: "{{ influxdb.grafana.username }}"
+   password: "{{ influxdb.grafana.password }}"
+ - name: Notifications
+   type: influxdb
+   access: proxy
+   url: "{{ influxdb.url }}"
+   version: 1
+   editable: false
+   database: notifications
+   username: "{{ influxdb.grafana.username }}"
+   password: "{{ influxdb.grafana.password }}"
+
 
 #telegraf_plugins_extra:
   #simple_nagios:
