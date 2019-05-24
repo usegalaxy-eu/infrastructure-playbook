@@ -37,4 +37,3 @@
 - name: Merge CSS files
   shell: "cat {{ galaxy_server_dir }}/static/style/blue/base.css {{ multisite_dir }}/{{ item.domain | default([item.name, '.usegalaxy.eu'] | join) }}-custom.css > {{ multisite_dir }}/{{ item.domain | default([item.name, '.usegalaxy.eu'] | join) }}.css"
   with_items: "{{ galaxy_custom_sites }}"
-  when: custom_css.changed
