@@ -37,16 +37,6 @@ nginx_vhosts:
             proxy_pass_request_headers on;
         }
 
-        location /.well-known/ {
-            proxy_set_header           Host $host:$server_port;
-            proxy_set_header           X-Real-IP $remote_addr;
-            proxy_set_header           X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header           X-Forwarded-Proto $scheme;
-            proxy_pass                 http://127.0.0.1:8118;
-            proxy_pass_request_headers on;
-        }
-
-
         location / {
             proxy_set_header           Host $host:$server_port;
             proxy_set_header           X-Real-IP $remote_addr;
@@ -99,121 +89,121 @@ grafana_auth__github:
   allowed_organisations: "usegalaxy.eu galaxyproject"
 
 
-telegraf_plugins_extra:
-  simple_nagios:
-    plugin: "exec"
-    config:
-      - commands = ["/usr/bin/simple-nagios"]
-      - timeout = "120s"
-      - data_format = "influx"
-      - interval = "1m"
+#telegraf_plugins_extra:
+  #simple_nagios:
+    #plugin: "exec"
+    #config:
+      #- commands = ["/usr/bin/simple-nagios"]
+      #- timeout = "120s"
+      #- data_format = "influx"
+      #- interval = "1m"
 
-  galaxy_jobs:
-    plugin: "exec"
-    config:
-      - commands = ["/usr/local/bin/simple-galaxy"]
-      - timeout = "180s"
-      - data_format = "influx"
-      - interval = "15m"
+  #galaxy_jobs:
+    #plugin: "exec"
+    #config:
+      #- commands = ["/usr/local/bin/simple-galaxy"]
+      #- timeout = "180s"
+      #- data_format = "influx"
+      #- interval = "15m"
 
-  count_tools:
-    plugin: "exec"
-    config:
-      - commands = ["/opt/pgs/count-tools.sh"]
-      - timeout = "10m"
-      - data_format = "influx"
-      - interval = "24h"
+  #count_tools:
+    #plugin: "exec"
+    #config:
+      #- commands = ["/opt/pgs/count-tools.sh"]
+      #- timeout = "10m"
+      #- data_format = "influx"
+      #- interval = "24h"
 
-  ssl_expiry:
-    plugin: "exec"
-    config:
-      - |
-        commands = [
-          # A couple of usegalaxy.eu subdomains.
-          "/usr/bin/simple-ssl-check usegalaxy.eu",
-          "/usr/bin/simple-ssl-check metagenomics.usegalaxy.eu",
-          # Proxy + Proxied services
-          "/usr/bin/simple-ssl-check proxy.galaxyproject.eu",
-          "/usr/bin/simple-ssl-check build.galaxyproject.eu",
-          "/usr/bin/simple-ssl-check influxdb.galaxyproject.eu 8086",
-          "/usr/bin/simple-ssl-check influxdb.galaxyproject.eu",
-          "/usr/bin/simple-ssl-check stats.galaxyproject.eu",
-          "/usr/bin/simple-ssl-check telescope.galaxyproject.eu",
-          # RZ
-          "/usr/bin/simple-ssl-check cloud.denbi.uni-freiburg.de",
-          "/usr/bin/simple-ssl-check mon01.bwcloud.uni-freiburg.de",
-        ]
-      - timeout = "15s"
-      - data_format = "influx"
-      - interval = "15m"
+  #ssl_expiry:
+    #plugin: "exec"
+    #config:
+      #- |
+        #commands = [
+          ## A couple of usegalaxy.eu subdomains.
+          #"/usr/bin/simple-ssl-check usegalaxy.eu",
+          #"/usr/bin/simple-ssl-check metagenomics.usegalaxy.eu",
+          ## Proxy + Proxied services
+          #"/usr/bin/simple-ssl-check proxy.galaxyproject.eu",
+          #"/usr/bin/simple-ssl-check build.galaxyproject.eu",
+          #"/usr/bin/simple-ssl-check influxdb.galaxyproject.eu 8086",
+          #"/usr/bin/simple-ssl-check influxdb.galaxyproject.eu",
+          #"/usr/bin/simple-ssl-check stats.galaxyproject.eu",
+          #"/usr/bin/simple-ssl-check telescope.galaxyproject.eu",
+          ## RZ
+          #"/usr/bin/simple-ssl-check cloud.denbi.uni-freiburg.de",
+          #"/usr/bin/simple-ssl-check mon01.bwcloud.uni-freiburg.de",
+        #]
+      #- timeout = "15s"
+      #- data_format = "influx"
+      #- interval = "15m"
 
-  dns_query:
-    config:
-      #            cf         goog       quad9      opendns           BelWü
-      - servers = ["1.1.1.1", "8.8.8.8", "9.9.9.9", "208.67.222.222", "132.230.201.111", "132.230.200.200"]
-      - timeout = 15
-      - domains = ["google.com", "usegalaxy.eu", "registry.npmjs.org"]
-      - record_type = "A"
-      - interval = "5m"
+  #dns_query:
+    #config:
+      ##            cf         goog       quad9      opendns           BelWü
+      #- servers = ["1.1.1.1", "8.8.8.8", "9.9.9.9", "208.67.222.222", "132.230.201.111", "132.230.200.200"]
+      #- timeout = 15
+      #- domains = ["google.com", "usegalaxy.eu", "registry.npmjs.org"]
+      #- record_type = "A"
+      #- interval = "5m"
 
-galaxy_test_url: https://usegalaxy.eu
-galaxy_test_user:
-    api_key: "{{ galaxy_test_user__api_key }}"
-    username: bot@usegalaxy.eu
-    password: "{{ galaxy_test_user__password }}"
-    handlers:
-        - "handler0"
-        - "handler1"
-        - "handler2"
-        - "handler3"
-        - "handler4"
-        - "handler5"
-        - "handler6"
-        - "handler7"
-        - "handler8"
-        - "handler9"
-        - "handler10"
-        - "handler11"
-        - "drmaa"
-        - "condor"
+#galaxy_test_url: https://usegalaxy.eu
+#galaxy_test_user:
+    #api_key: "{{ galaxy_test_user__api_key }}"
+    #username: bot@usegalaxy.eu
+    #password: "{{ galaxy_test_user__password }}"
+    #handlers:
+        #- "handler0"
+        #- "handler1"
+        #- "handler2"
+        #- "handler3"
+        #- "handler4"
+        #- "handler5"
+        #- "handler6"
+        #- "handler7"
+        #- "handler8"
+        #- "handler9"
+        #- "handler10"
+        #- "handler11"
+        #- "drmaa"
+        #- "condor"
 
-galaxy_nagios_urls:
-  ftp_tests:
-    - name: ftp_ssl
-      url: ftp://ftp.usegalaxy.eu
+#galaxy_nagios_urls:
+  #ftp_tests:
+    #- name: ftp_ssl
+      #url: ftp://ftp.usegalaxy.eu
 
-  ftp_age_tests:
-    - name: ftp_age
-      url: https://usegalaxy.eu
+  #ftp_age_tests:
+    #- name: ftp_age
+      #url: https://usegalaxy.eu
 
-  http_tests:
-    - name: home_nossl
-      url: "http://usegalaxy.eu"
-      code: 301
-    - name: home
-      url: "https://usegalaxy.eu"
-      code: 200
-    - name: hicexplorer
-      url: "https://hicexplorer.usegalaxy.eu"
-      code: 200
-    - name: stats
-      url: "https://stats.galaxyproject.eu"
-      code: 200
-    - name: apollo
-      url: "https://apollo.usegalaxy.eu/apollo_api/annotator/index"
-      code: 200
-    - name: grt
-      url: "https://telescope.galaxyproject.eu/"
-      code: 200
-    - name: build
-      url: "https://build.galaxyproject.eu"
-      code: 200
-    - name: ftp_docs
-      url: "https://ftp.usegalaxy.eu"
-      code: 200
-    - name: influx
-      url: "{{ influxdb.url }}/ping"
-      code: 204
-    - name: phinch
-      url: "https://usegalaxy.eu/phinch/index.html"
-      code: 200
+  #http_tests:
+    #- name: home_nossl
+      #url: "http://usegalaxy.eu"
+      #code: 301
+    #- name: home
+      #url: "https://usegalaxy.eu"
+      #code: 200
+    #- name: hicexplorer
+      #url: "https://hicexplorer.usegalaxy.eu"
+      #code: 200
+    #- name: stats
+      #url: "https://stats.galaxyproject.eu"
+      #code: 200
+    #- name: apollo
+      #url: "https://apollo.usegalaxy.eu/apollo_api/annotator/index"
+      #code: 200
+    #- name: grt
+      #url: "https://telescope.galaxyproject.eu/"
+      #code: 200
+    #- name: build
+      #url: "https://build.galaxyproject.eu"
+      #code: 200
+    #- name: ftp_docs
+      #url: "https://ftp.usegalaxy.eu"
+      #code: 200
+    #- name: influx
+      #url: "{{ influxdb.url }}/ping"
+      #code: 204
+    #- name: phinch
+      #url: "https://usegalaxy.eu/phinch/index.html"
+      #code: 200
