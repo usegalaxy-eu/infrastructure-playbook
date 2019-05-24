@@ -22,7 +22,7 @@
       become: yes
   roles:
     - geerlingguy.docker
-    ### TODO(hxr): fails whenever galaxy homedir is created without bashrc
+    ## TODO(hxr): fails whenever galaxy homedir is created without bashrc
     #- role: hxr.docker-ssl-client
       #vars:
         #docker_account: galaxy
@@ -44,6 +44,7 @@
     - ssh-host-sign
     - hxr.admin-tools
     - hxr.monitor-email
+    - htcondor
     - linuxhq.yum_cron
     - influxdata.chrony
     ## TODO(hxr): maybe don't run on temp testing VMs?
@@ -59,6 +60,7 @@
         pg_owner: galaxy
         pg_group: galaxy
     - usegalaxy-eu.gxadmin
+    - usegalaxy-eu.galaxy-slurp
     - packages
     - hxr.install-to-venv
     # TODO(hxr): nginx role doesn't create nginx_proxy_cache_path
@@ -72,5 +74,6 @@
     - usegalaxy-eu.galaxy-systemd
     - hxr.welcome_pages
     - dj-wasabi.telegraf
+    - usegalaxy-eu.limits
     #- dev-sec.os-hardening
     #- dev-sec.ssh-hardening
