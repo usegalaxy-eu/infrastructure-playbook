@@ -23,26 +23,37 @@ nginx_ssl_role: usegalaxy-eu.certbot
 nginx_conf_ssl_certificate: /etc/ssl/certs/fullchain.pem
 nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
 
-grafana_server_domain: "{{ hostname }}"
-grafana_users_default_theme: "light"
-# Enable anonymous access
-grafana_auth__anonymous_enabled: "true"
-# Specify organization name that should be used for unauthenticated users
-grafana_auth__anonymous_org_name: UseGalaxy.eu
-# Specify role for unauthenticated users
-grafana_auth__anonymous_org_role: Viewer
-grafana_server_root_url: "https://%(domain)s/"
+# Grafana
+grafana_instance: "{{ hostname }}"
+grafana_address: "127.0.0.1"
+grafana_url: "https://stats.galaxyproject.eu"
+grafana_server:
+    domain: "{{ hostname }}"
+    root_url: "https://%(domain)s/"
 
-grafana_auth__github:
-  enabled: "true"
-  allow_sign_up: "true"
-  client_id: "{{ grafana_auth__github_client_id }}"
-  client_secret: "{{ grafana_auth__github_client_secret }}"
-  scopes: "user:email,read:org"
-  auth_url: "https://github.com/login/oauth/authorize"
-  token_url: "https://github.com/login/oauth/access_token"
-  api_url: "https://api.github.com/user"
-  allowed_organisations: "usegalaxy.eu galaxyproject"
+grafana_users:
+    default_theme: "light"
+
+grafana_security:
+    admin_user: admin
+    admin_password: "{{ grafana_auth_admin_password }}"
+
+grafana_auth:
+    anonymous:
+        enabled: "true"
+        org_name: "UseGalaxy.eu"
+        org_role: "Viewer"
+
+    github:
+        enabled: "true"
+        allow_sign_up: "true"
+        client_id: "{{ grafana_auth__github_client_id }}"
+        client_secret: "{{ grafana_auth__github_client_secret }}"
+        scopes: "user:email,read:org"
+        auth_url: "https://github.com/login/oauth/authorize"
+        token_url: "https://github.com/login/oauth/access_token"
+        api_url: "https://api.github.com/user"
+        allowed_organisations: "usegalaxy.eu galaxyproject"
 
 
 #telegraf_plugins_extra:
