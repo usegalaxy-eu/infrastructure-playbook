@@ -37,6 +37,8 @@ grafana_users:
 grafana_security:
     admin_user: admin
     admin_password: "{{ grafana_auth_admin_password }}"
+    allow_embedding: "true"
+    cookie_secure: "true"
 
 grafana_auth:
     anonymous:
