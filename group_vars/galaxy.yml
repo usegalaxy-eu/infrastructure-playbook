@@ -506,7 +506,7 @@ galaxy_jobconf:
     plugin_workers: 4
     handlers:
         count: "{{ galaxy_handler_count }}"
-        assign_with: db-preassign
+        assign_with: db-skip-locked
     plugins:
         #- id: drmaa
           #load: galaxy.jobs.runners.drmaa:DRMAAJobRunner
