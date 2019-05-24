@@ -4,7 +4,7 @@
   become: true
   become_user: root
   vars:
-    hostname: test.internal.usegalaxy.eu
+    hostname: test.usegalaxy.eu
   vars_files:
     - group_vars/tiaas.yml
     - group_vars/custom-sites.yml
@@ -13,8 +13,7 @@
     - secret_group_vars/all.yml
   handlers:
     - name: Restart Galaxy
-      shell: echo 'Manual restart required'
-      #shell: source /opt/galaxy/.bashrc && /usr/bin/gxadmin handler restart && /usr/bin/gxadmin zerg swap
+      shell: 'source /opt/galaxy/.bashrc && systemctl restart galaxy-zergling@* galaxy-handler@*'
   pre_tasks:
     - name: Install Dependencies
       package:
