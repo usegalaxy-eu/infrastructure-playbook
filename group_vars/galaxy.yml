@@ -92,8 +92,6 @@ monitor_condor_split_util: true
 
 
 # Certbot
-certbot_auto_renew_hour: 3
-certbot_auto_renew_minute: 30
 certbot_domains: "{{ server_names }}"
 certbot_post_renewal: |
     systemctl restart nginx || true
