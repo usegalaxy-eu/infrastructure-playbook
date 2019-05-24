@@ -7,9 +7,6 @@ usegalaxy_eu_autofs_mounts:
  - usrlocal
 
 nginx_package_name: nginx-galaxy
-nodejs_version: "8.x"
-nodejs_npm_global_packages:
-    - yarn
 
 telegraf_plugins_extra:
   postgres:
@@ -80,7 +77,6 @@ pip_install_dependencies:
 
 yum_exclude_repos:
     - condor*
-    - nodejs*
     - npm*
 
 all_yum_repositories:
