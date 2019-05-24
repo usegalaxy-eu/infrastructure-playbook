@@ -2,6 +2,10 @@
 docker_service_state: stopped
 docker_service_enabled: false
 
+usegalaxy_eu_autofs_mounts:
+ - data
+ - usrlocal
+
 nginx_package_name: nginx-galaxy
 nodejs_version: "8.x"
 nodejs_npm_global_packages:
@@ -17,14 +21,14 @@ telegraf_plugins_extra:
       - allowed_pending_messages = 10000
       - percentile_limit = 100
 
-  monitor_condor_queue_split:
-    plugin: "exec"
-    config:
-       # TODO: sudoers rule?
-      - commands = ["sudo /usr/bin/monitor-condor-queue-split"]
-      - timeout = "10s"
-      - data_format = "influx"
-      - interval = "15s"
+  #monitor_condor_queue_split:
+    #plugin: "exec"
+    #config:
+       ## TODO: sudoers rule?
+      #- commands = ["sudo /usr/bin/monitor-condor-queue-split"]
+      #- timeout = "10s"
+      #- data_format = "influx"
+      #- interval = "15s"
 
   monitor_condor_queue:
     plugin: "exec"
@@ -64,6 +68,8 @@ pip_install_dependencies:
     - influxdb
     # Needed gxadmin graphs
     - data_hacks
+    # for convenience
+    - uwsgitop
 
 
 yum_exclude_repos:
@@ -86,10 +92,10 @@ monitor_condor_split_util: true
 # Certbot
 certbot_auto_renew_hour: 3
 certbot_auto_renew_minute: 30
-certbot_auto_renew_extra: "--preferred-challenges http-01 --http-01-port 8118"
 certbot_post_renewal: |
     systemctl restart nginx || true
 
+# Nginx
 nginx_remove_default_vhost: true
 nginx_proxy_cache_path: "/var/cache/nginx/static levels=1:2 keys_zone=STATIC:10m inactive=24h  max_size=1g"
 nginx_conf_template: "{{ playbook_dir  }}/templates/nginx/main.j2"
@@ -154,11 +160,7 @@ nginx_vhosts:
         }
 
         location /static/welcome.html {
-               alias /opt/multisite-css/base.html;
-        }
-
-        location ~ /static/welcome-(?<name>[^/]*).html {
-               alias /opt/multisite-css/${name}.html;
+               alias /opt/multisite-css/$host.html;
         }
 
         location /static {
@@ -166,8 +168,8 @@ nginx_vhosts:
                 expires 24h;
         }
 
-        location ~ /static/style/base-(?<name>[^/]*).css {
-               alias /opt/multisite-css/${name}.css;
+        location ~ /static/style/base.css {
+               alias /opt/multisite-css/$host.css;
         }
 
         location /static/style {
@@ -252,7 +254,7 @@ nginx_vhosts:
         add_header X-XSS-Protection "1; mode=block";
         add_header X-Robots-Tag none;
 
-        client_max_body_size 10G; # aka max upload size, defaults to 1M
+        client_max_body_size 1G; # aka max upload size, defaults to 1M
         uwsgi_read_timeout 2400;
 
 
@@ -296,6 +298,26 @@ galaxy_systemd_memory_limit: 16
 galaxy_systemd_memory_limit_zp: 8
 galaxy_zergpool: false
 
+
+
+# TODO: support yml?
+galaxy_uwsgi_config_file_basename: uwsgi.ini
+
+# HTCondor
+condor_host: "localhost"
+condor_allow_write: "localhost"
+# single node host
+condor_daemons:
+    - MASTER
+    - SCHEDD
+    - COLLECTOR
+    - NEGOTIATOR
+    - STARTD
+condor_allow_negotiator: "132.230.68.5,132.230.68.85,$(CONDOR_HOST)"
+condor_allow_administrator: "$(ALLOW_NEGOTIATOR)"
+
+condor_system_periodic_hold: "{{ 30 * 24 * 60 * 60}}"
+
 # gxadmin
 postgres_user: galaxy
 postgres_host: sn03.bi.uni-freiburg.de
@@ -304,9 +326,7 @@ postgres_port: 5432
 gxadmin_commit: master
 gxadmin_dir: /opt/gxadmin
 gxadmin_bin_dir: /usr/bin
-
-# Galaxy systemd
-galaxy_uwsgi_config_file_basename: uwsgi.ini
+gxadmin_force: true
 
 # GALAXY
 galaxy_group: galaxy
@@ -358,7 +378,7 @@ galaxy_instance_hostname: usegalaxy.eu
 galaxy_config_style: 'ini'
 
 galaxy_repo: 'https://github.com/usegalaxy-eu/galaxy.git'
-galaxy_commit_id: 'dev_europe' # release_18.09_europe
+galaxy_commit_id: 'release_19.01_europe' # release_18.09_europe
 galaxy_force_checkout: true # discard any modified files
 galaxy_admin_email_to: 'contact@usegalaxy.eu'
 #galaxy_admin_email_from: 'noreply@usegalaxy.eu'

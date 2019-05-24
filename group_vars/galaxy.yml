@@ -375,10 +375,8 @@ galaxy_zergpool_listen_path: "{{ galaxy_mutable_data_dir }}/{{ galaxy_zergpool_s
 galaxy_uwsgi_config_file_basename: uwsgi.ini
 
 # HTCondor
-# TODO(hxr): dedupe
 condor_host: "manager.vgcn.galaxyproject.eu"
 condor_allow_write: "10.5.68.0/24, 10.19.0.0/16, 132.230.68.0/24, *.bi.uni-freiburg.de"
-# TODO: replace with 'condor-role'?
 condor_daemons:
     - MASTER
     - SCHEDD
@@ -415,8 +413,6 @@ gxadmin_commit: master
 gxadmin_dir: /opt/gxadmin
 gxadmin_bin_dir: /usr/bin
 gxadmin_force: true
-
-# Galaxy systemd
 
 # GALAXY
 galaxy_group: galaxy
