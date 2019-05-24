@@ -149,7 +149,7 @@ nginx_vhosts:
 
   - listen: "443 ssl"
     server_name: "test.usegalaxy.eu"
-    root: "/var/www/test-usegalaxy.eu"
+    root: "/var/www/test.usegalaxy.eu"
     index: "index.html"
     access_log: "/var/log/nginx/access.log"
     error_log: "/var/log/nginx/error.log"
@@ -157,7 +157,7 @@ nginx_vhosts:
     filename: "test.usegalaxy.conf"
     extra_parameters: |
         location / {
-                proxy_pass http://test.internal.usegalaxy.eu
+                proxy_pass http://test.internal.usegalaxy.eu/;
         }
         ssl_certificate /etc/ssl/certs/fullchain.pem;
         ssl_certificate_key /etc/ssl/private/privkey.pem;
