@@ -394,7 +394,7 @@ galaxy_jobconf:
     plugin_workers: 4
     handlers:
         count: "{{ galaxy_handler_count }}"
-        assign_with: db-skip-locked
+        assign_with: db-preassign
     plugins:
         # These live on the pythonpath
         - id: dynamic
