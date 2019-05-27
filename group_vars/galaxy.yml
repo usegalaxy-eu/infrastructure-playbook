@@ -1,10 +1,14 @@
 ---
+# Docker
+docker_users:
+  - galaxy
+
+# Autofs
 usegalaxy_eu_autofs_mounts:
  - data
  - usrlocal
 
-nginx_package_name: nginx-galaxy
-
+# Telegraf
 telegraf_plugins_extra:
   postgres:
     plugin: "postgresql"
@@ -55,6 +59,7 @@ telegraf_plugins_extra:
       - interval = "15s"
 
 
+# Custom pip installer
 pip_venv_path: "{{ galaxy_venv_dir }}"
 pip_install_dependencies:
     # phdcomics
@@ -107,6 +112,7 @@ aws_cli_credentials:
 
 
 # Nginx
+nginx_package_name: nginx-galaxy
 nginx_remove_default_vhost: true
 nginx_proxy_cache_path: "/var/cache/nginx/static levels=1:2 keys_zone=STATIC:10m inactive=24h  max_size=1g"
 nginx_conf_template: "{{ playbook_dir  }}/templates/nginx/main.j2"
