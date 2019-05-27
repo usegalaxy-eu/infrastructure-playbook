@@ -22,6 +22,7 @@ help:
 	@echo "  CHECK=1      run in --check mode (implies DIFF=1)"
 
 deps: requirements.yaml
+	bash bin/clean-deps.sh
 	.venv/bin/ansible-galaxy install -r requirements.yaml
 	@# make deps 2>&1 | grep force | awk '{print $3}'
 
