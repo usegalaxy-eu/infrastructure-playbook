@@ -603,7 +603,7 @@ galaxy_jobconf:
           runner: condor
           params:
             docker_enabled: 'true'
-            docker_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro'
+            docker_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:ro,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro'
             docker_default_container_id: 'ubuntu:18.04'
             docker_auto_rm: 'true'
             docker_sudo: 'false'
