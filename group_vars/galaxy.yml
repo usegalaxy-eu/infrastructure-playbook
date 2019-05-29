@@ -508,6 +508,7 @@ galaxy_jobconf:
     handlers:
         count: "{{ galaxy_handler_count }}"
         assign_with: db-skip-locked
+        max_grab: 4
     plugins:
         #- id: drmaa
           #load: galaxy.jobs.runners.drmaa:DRMAAJobRunner
