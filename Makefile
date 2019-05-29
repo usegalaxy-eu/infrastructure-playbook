@@ -23,7 +23,7 @@ help:
 
 deps: requirements.yaml
 	bash bin/clean-deps.sh
-	.venv/bin/ansible-galaxy install -r requirements.yaml
+	ansible-galaxy install -r requirements.yaml
 
 pull:
 	git fetch origin
