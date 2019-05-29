@@ -1,6 +1,5 @@
 #!/bin/bash
 
-error_code=0
 for repo__version in $(ansible-galaxy list | awk '{gsub(", ", "\t"); print $2"__"$3}'); do
 	vers="$(echo "$repo__version" | sed 's/.*__//g')"
 	repo="$(echo "$repo__version" | sed 's/__.*//g')"
@@ -23,5 +22,3 @@ for repo__version in $(ansible-galaxy list | awk '{gsub(", ", "\t"); print $2"__
 		fi
 	fi
 done
-
-exit $error_code
