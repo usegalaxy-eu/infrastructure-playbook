@@ -5,6 +5,7 @@
   become_user: root
   vars:
     hostname: test.usegalaxy.eu
+    postgres_pass: "{{ postgres_pass_test }}"
   vars_files:
     - group_vars/tiaas.yml
     - group_vars/custom-sites.yml
