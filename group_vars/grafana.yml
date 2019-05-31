@@ -104,13 +104,13 @@ grafana_datasources:
 
 
 telegraf_plugins_extra:
-  #simple_nagios:
-    #plugin: "exec"
-    #config:
-      #- commands = ["/usr/bin/simple-nagios"]
-      #- timeout = "120s"
-      #- data_format = "influx"
-      #- interval = "1m"
+  simple_nagios:
+    plugin: "exec"
+    config:
+      - commands = ["/usr/bin/simple-nagios"]
+      - timeout = "120s"
+      - data_format = "influx"
+      - interval = "1m"
 
   #galaxy_jobs:
     #plugin: "exec"
@@ -177,43 +177,29 @@ telegraf_plugins_extra:
         #- "drmaa"
         #- "condor"
 
-#galaxy_nagios_urls:
-  #ftp_tests:
-    #- name: ftp_ssl
-      #url: ftp://ftp.usegalaxy.eu
-
-  #ftp_age_tests:
-    #- name: ftp_age
-      #url: https://usegalaxy.eu
-
-  #http_tests:
-    #- name: home_nossl
-      #url: "http://usegalaxy.eu"
-      #code: 301
-    #- name: home
-      #url: "https://usegalaxy.eu"
-      #code: 200
-    #- name: hicexplorer
-      #url: "https://hicexplorer.usegalaxy.eu"
-      #code: 200
-    #- name: stats
-      #url: "https://stats.galaxyproject.eu"
-      #code: 200
-    #- name: apollo
-      #url: "https://apollo.usegalaxy.eu/apollo_api/annotator/index"
-      #code: 200
-    #- name: grt
-      #url: "https://telescope.galaxyproject.eu/"
-      #code: 200
-    #- name: build
-      #url: "https://build.galaxyproject.eu"
-      #code: 200
-    #- name: ftp_docs
-      #url: "https://ftp.usegalaxy.eu"
-      #code: 200
-    #- name: influx
-      #url: "{{ influxdb.url }}/ping"
-      #code: 204
-    #- name: phinch
-      #url: "https://usegalaxy.eu/phinch/index.html"
-      #code: 200
+galaxy_nagios_urls:
+  http_tests:
+    - name: home_nossl
+      url: "http://usegalaxy.eu"
+      code: 301
+    - name: home
+      url: "https://usegalaxy.eu"
+      code: 200
+    - name: hicexplorer
+      url: "https://hicexplorer.usegalaxy.eu"
+      code: 200
+    - name: stats
+      url: "https://stats.galaxyproject.eu"
+      code: 200
+    - name: grt
+      url: "https://telescope.galaxyproject.eu"
+      code: 200
+    - name: build
+      url: "https://build.galaxyproject.eu"
+      code: 200
+    - name: influx
+      url: "{{ influxdb.url }}/ping"
+      code: 204
+    - name: phinch
+      url: "https://usegalaxy.eu/phinch/index.html"
+      code: 200
