@@ -394,6 +394,8 @@ galaxy_jobconf:
         - id: dynamic
           params:
             rules_module: 'usegalaxy'
+        - id: condor
+          load: galaxy.jobs.runners.condor:CondorJobRunner
         - id: local
           load: galaxy.jobs.runners.local:LocalJobRunner
         - id: pulsar_embedded
