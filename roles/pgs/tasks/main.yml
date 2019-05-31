@@ -29,15 +29,7 @@
   become_user: centos
   template:
     src: script.sh.j2
-    dest: "{{ pgs_repo_dir }}.sh"
-    mode: 0755
-
-- name: "Template runner script"
-  become: true
-  become_user: centos
-  template:
-    src: count-tools.sh.j2
-    dest: "{{ pgs_dir }}/count-tools.sh"
+    dest: "{{ pgs_dir }}/run.sh"
     mode: 0755
 
 - name: "Install virtualenv"
@@ -73,4 +65,4 @@
     minute: "0"
     hour: "*"
     user: centos
-    job: "bash {{ pgs_repo_dir }}.sh"
+    job: "bash {{ pgs_dir }}/run.sh"
