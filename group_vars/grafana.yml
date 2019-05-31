@@ -103,7 +103,7 @@ grafana_datasources:
    password: "{{ influxdb.grafana.password }}"
 
 
-#telegraf_plugins_extra:
+telegraf_plugins_extra:
   #simple_nagios:
     #plugin: "exec"
     #config:
@@ -128,37 +128,33 @@ grafana_datasources:
       #- data_format = "influx"
       #- interval = "24h"
 
-  #ssl_expiry:
-    #plugin: "exec"
-    #config:
-      #- |
-        #commands = [
-          ## A couple of usegalaxy.eu subdomains.
-          #"/usr/bin/simple-ssl-check usegalaxy.eu",
-          #"/usr/bin/simple-ssl-check metagenomics.usegalaxy.eu",
-          ## Proxy + Proxied services
-          #"/usr/bin/simple-ssl-check proxy.galaxyproject.eu",
-          #"/usr/bin/simple-ssl-check build.galaxyproject.eu",
-          #"/usr/bin/simple-ssl-check influxdb.galaxyproject.eu 8086",
-          #"/usr/bin/simple-ssl-check influxdb.galaxyproject.eu",
-          #"/usr/bin/simple-ssl-check stats.galaxyproject.eu",
-          #"/usr/bin/simple-ssl-check telescope.galaxyproject.eu",
-          ## RZ
-          #"/usr/bin/simple-ssl-check cloud.denbi.uni-freiburg.de",
-          #"/usr/bin/simple-ssl-check mon01.bwcloud.uni-freiburg.de",
-        #]
-      #- timeout = "15s"
-      #- data_format = "influx"
-      #- interval = "15m"
+  ssl_expiry:
+    plugin: "exec"
+    config:
+      - |
+        commands = [
+          # A couple of usegalaxy.eu subdomains.
+          "/usr/bin/simple-ssl-check usegalaxy.eu",
+          "/usr/bin/simple-ssl-check metagenomics.usegalaxy.eu",
+          # Proxy + Proxied services
+          "/usr/bin/simple-ssl-check build.galaxyproject.eu",
+          "/usr/bin/simple-ssl-check influxdb.galaxyproject.eu 8086",
+          "/usr/bin/simple-ssl-check influxdb.galaxyproject.eu",
+          "/usr/bin/simple-ssl-check stats.galaxyproject.eu",
+          "/usr/bin/simple-ssl-check telescope.galaxyproject.eu",
+        ]
+      - timeout = "15s"
+      - data_format = "influx"
+      - interval = "15m"
 
-  #dns_query:
-    #config:
-      ##            cf         goog       quad9      opendns           BelWü
-      #- servers = ["1.1.1.1", "8.8.8.8", "9.9.9.9", "208.67.222.222", "132.230.201.111", "132.230.200.200"]
-      #- timeout = 15
-      #- domains = ["google.com", "usegalaxy.eu", "registry.npmjs.org"]
-      #- record_type = "A"
-      #- interval = "5m"
+  dns_query:
+    config:
+      #            cf         goog       quad9      opendns           BelWü
+      - servers = ["1.1.1.1", "8.8.8.8", "9.9.9.9", "208.67.222.222", "132.230.201.111", "132.230.200.200"]
+      - timeout = 15
+      - domains = ["google.com", "usegalaxy.eu", "registry.npmjs.org"]
+      - record_type = "A"
+      - interval = "5m"
 
 #galaxy_test_url: https://usegalaxy.eu
 #galaxy_test_user:
