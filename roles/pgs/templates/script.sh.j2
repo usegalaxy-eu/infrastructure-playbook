@@ -11,7 +11,7 @@ cd $MYTMP
 make -f {{ pgs_repo_dir }}/Makefile
 # Contact all servers
 python {{ pgs_repo_dir }}/process.py \
-	--json_dir {{ web_dir }} servers.csv
+	--json_dir {{ pgs_web_dir }} servers.csv
 
 # Send to influxdb
 python {{ pgs_repo_dir }}/send-to-influx.py \
@@ -20,9 +20,9 @@ python {{ pgs_repo_dir }}/send-to-influx.py \
 	--influx_host {{ influxdb.host }} \
 	--influx_user {{ influxdb.node.username }} \
 	--influx_pass {{ influxdb.node.password }} \
-	--json_dir {{ web_dir }}
+	--json_dir {{ pgs_web_dir }}
 
 # Build badges
-python {{ pgs_repo_dir }}/badges.py {{ web_dir }} {{ web_dir }}/badges/
+python {{ pgs_repo_dir }}/badges.py {{ pgs_web_dir }} {{ pgs_web_dir }}/badges/
 
 rm -rf $MYTMP

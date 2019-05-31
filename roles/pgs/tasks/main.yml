@@ -66,3 +66,15 @@
     hour: "*"
     user: centos
     job: "bash {{ pgs_dir }}/run.sh"
+
+- name: "Allow httpd_sys_content_t to access the queries dir"
+  sefcontext:
+    target: '{{ pgs_web_dir }}(/.*)?'
+    setype: httpd_sys_content_t
+    state: present
+  register: update_fcontexts
+  when: ansible_selinux.mode == "enforcing"
+
+- name: Apply new SELinux file context to filesystem
+  command: "restorecon -irv {{ pgs_web_dir }}"
+  when: ansible_selinux.mode == "enforcing" and update_fcontexts.changed
