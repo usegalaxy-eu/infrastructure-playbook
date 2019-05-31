@@ -123,7 +123,7 @@ base_app_main: &BASE_APP_MAIN
   # dependency handling. If this option is set to none or an invalid
   # path, installing tools with dependencies from the Tool Shed will
   # fail.
-  tool_dependency_dir: "{{ galaxy_mutable_data_dir }}/deps"
+  tool_dependency_dir: /data/dnb01/galaxy_db/test/tools
 
   # The dependency resolvers config file specifies an ordering and
   # options for how Galaxy resolves tool dependencies (requirement tags
@@ -138,7 +138,7 @@ base_app_main: &BASE_APP_MAIN
   # and environments are installed IMPORTANT: Due to a current
   # limitation in conda, the total length of the conda_prefix and the
   # job_working_directory path should be less than 50 characters!
-  conda_prefix: "{{ galaxy_mutable_data_dir }}/deps/_conda"
+  conda_prefix: "/data/dnb01/galaxy_db/test/_conda"
 
   # Override the Conda executable to use, it will default to the one on
   # the PATH (if available) and then to <conda_prefix>/bin/conda
@@ -237,7 +237,7 @@ base_app_main: &BASE_APP_MAIN
   # container resolvers to use when discovering containers for Galaxy.
   # If this is set to None, the default containers loaded is determined
   # by enable_beta_mulled_containers.
-  #containers_resolvers_config_file: ''
+  containers_resolvers_config_file: /opt/galaxy/mutable-config/container_resolvers_conf.xml
 
   # involucro is a tool used to build Docker or Singularity containers
   # for tools from Conda dependencies referenced in tools as
@@ -384,7 +384,7 @@ base_app_main: &BASE_APP_MAIN
   # Each job is given a unique empty directory as its current working
   # directory. This option defines in what parent directory those
   # directories will be created.
-  job_working_directory: "{{ galaxy_mutable_data_dir }}/job_working_dir"
+  job_working_directory: /data/dnb01/galaxy_db/job_working_directory-test
 
   # If using a cluster, Galaxy will write job scripts and stdout/stderr
   # to this directory.
@@ -443,7 +443,7 @@ base_app_main: &BASE_APP_MAIN
 
   # Configuration file for the object store If this is set and exists,
   # it overrides any other objectstore settings.
-  #object_store_config_file: "{{ galaxy_config_dir }}/object_store_conf.xml"
+  object_store_config_file: "{{ galaxy_config_dir }}/object_store_conf.xml"
 
   # Galaxy sends mail for various things: subscribing users to the
   # mailing list if they request it, password resets, reporting dataset
