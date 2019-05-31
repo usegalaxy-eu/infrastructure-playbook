@@ -398,10 +398,14 @@ galaxy_jobconf:
           load: galaxy.jobs.runners.local:LocalJobRunner
         - id: pulsar_embedded
           load: galaxy.jobs.runners.pulsar:PulsarEmbeddedJobRunner
-    default_destination: local
+    default_destination: gateway_1x
     destinations:
         - id: local
           runner: local
+        - id: condor
+          runner: condor
+          params:
+            tmp_dir: "True"
         # Gateways
         - id: gateway_1x
           runner: dynamic
@@ -418,6 +422,38 @@ galaxy_jobconf:
           params:
               type: python
               function: gateway_2x
+        - id: condor_singularity
+          runner: condor
+          params:
+              singularity_enabled: 'true'
+              singularity_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro'
+              singularity_default_container_id: '/data/0/cvmfs/singularity/ubuntu:18.04'
+        - id: condor_singularity2
+          runner: condor
+          params:
+              singularity_enabled: 'true'
+              singularity_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro'
+              singularity_default_container_id: '/data/0/cvmfs/singularity/ubuntu:18.04'
+          raw: |
+            <param id="container">
+                <container type="singularity" shell="/bin/sh" resolve_dependencies="true">/data/0/cvmfs/singularity/ubuntu:18.04</container>
+            </param>
+        - id: condor_singularity_with_conda
+          runner: condor
+          params:
+              singularity_enabled: 'true'
+          raw: |
+            <param id="container">
+                <container type="singularity" shell="/bin/bash" resolve_dependencies="true">/data/0/cvmfs/singularity/python:2.7.12--1</container>
+            </param>
+        - id: condor_docker
+          runner: condor
+          params:
+            docker_enabled: 'true'
+            docker_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro'
+            docker_default_container_id: 'ubuntu:18.04'
+            docker_auto_rm: 'true'
+            docker_sudo: 'false'
         # Embedded pulsar
         - id: secure_pulsar_singularity
           runner: pulsar_embedded
