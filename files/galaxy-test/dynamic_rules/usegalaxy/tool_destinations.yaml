@@ -745,13 +745,14 @@ echo_main_env:
                 - admin
 
 tp_awk_tool:
-    runner: condor_docker
+    runner: secure_pulsar_singularity
     permissions:
         allow:
             roles:
                 - admin
 
 tp_replace_in_column:
+    runner: secure_pulsar_singularity
     permissions:
         allow:
             roles:
