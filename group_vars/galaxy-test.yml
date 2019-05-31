@@ -347,7 +347,7 @@ galaxy_user:
 
 
 galaxy_root: /opt/galaxy
-galaxy_handler_count: 12
+galaxy_handler_count: 1
 galaxy_host_codename: test
 galaxy_home_dir: /opt/galaxy
 galaxy_mutable_config_dir: /opt/galaxy/mutable-config
@@ -388,7 +388,7 @@ galaxy_jobconf:
     plugin_workers: 4
     handlers:
         count: "{{ galaxy_handler_count }}"
-        assign_with: db-preassign
+        assign_with: db-skip-locked
     plugins:
         # These live on the pythonpath
         - id: dynamic
