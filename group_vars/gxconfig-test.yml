@@ -22,12 +22,12 @@ base_app_main: &BASE_APP_MAIN
   # If the server logs errors about not having enough database pool
   # connections, you will want to increase these values, or consider
   # running more Galaxy processes.
-  #database_engine_option_pool_size: 20
+  database_engine_option_pool_size: 20
 
   # If the server logs errors about not having enough database pool
   # connections, you will want to increase these values, or consider
   # running more Galaxy processes.
-  #database_engine_option_max_overflow: 20
+  database_engine_option_max_overflow: 20
 
   # If using MySQL and the server logs the error "MySQL server has gone
   # away", you will want to set this to some positive value (7200 should
@@ -38,7 +38,7 @@ base_app_main: &BASE_APP_MAIN
   # issues in the Galaxy process, leave the result on the server
   # instead.  This option is only available for PostgreSQL and is highly
   # recommended.
-  #database_engine_option_server_side_cursors: "True"
+  database_engine_option_server_side_cursors: "True"
 
   # Log all database transactions, can be useful for debugging and
   # performance profiling.  Logging is done via Python's 'logging'
@@ -70,7 +70,7 @@ base_app_main: &BASE_APP_MAIN
   # instances with pretested installs.  The following option can be used
   # to separate the tool shed install database (all other options listed
   # above but prefixed with install_ are also available).
-  install_database_connection: "sqlite:///{{ galaxy_mutable_config_dir }}/galaxy_main_install.sqlite?isolation_level=IMMEDIATE"
+  #install_database_connection: "sqlite:///{{ galaxy_mutable_config_dir }}/galaxy_main_install.sqlite?isolation_level=IMMEDIATE"
 
   # Setting the following option to true will cause Galaxy to
   # automatically migrate the database forward after updates. This is
@@ -562,14 +562,14 @@ base_app_main: &BASE_APP_MAIN
   enable_old_display_applications: 'false'
 
   # Show a message box under the masthead.
-  message_box_visible: true
+  #message_box_visible: false
 
   # Show a message box under the masthead.
-  message_box_content: "Test Server"
+  message_box_content: "You are using the new UseGalaxy.eu backend server, let us know if you encounter any issues!"
 
   # Class of the message box under the masthead. Possible values are:
   # 'info' (the default), 'warning', 'error', 'done'.
-  message_box_class: warning
+  #message_box_class: info
 
   # Append "/{brand}" to the "Galaxy" text in the masthead.
   brand: TEST
@@ -1362,10 +1362,10 @@ base_app_main: &BASE_APP_MAIN
   #enable_oidc: false
 
   # Sets the path to OIDC configuration file.
-  oidc_config_file: "{{ galaxy_config_dir }}/oidc_config.xml"
+  #oidc_config_file: "{{ galaxy_config_dir }}/oidc_config.xml"
 
   # Sets the path to OIDC backends configuration file.
-  oidc_backends_config_file: "{{ galaxy_config_dir }}/oidc_backends_config.xml"
+  #oidc_backends_config_file: "{{ galaxy_config_dir }}/oidc_backends_config.xml"
 
   # XML config file that allows the use of different authentication
   # providers (e.g. LDAP) instead or in addition to local authentication
@@ -1406,7 +1406,7 @@ base_app_main: &BASE_APP_MAIN
   # options. This should point to a directory containing subdirectories
   # matching users' identifier (defaults to e-mail), where Galaxy will
   # look for files.
-  ftp_upload_dir: "{{ galaxy_mutable_data_dir }}/ftp"
+  ftp_upload_dir: /data/0/incoming/
 
   # This should be the hostname of your FTP server, which will be
   # provided to users in the help text.
@@ -1455,7 +1455,7 @@ base_app_main: &BASE_APP_MAIN
 
   # Directory to store Data Manager based tool-data; defaults to
   # tool_data_path.
-  galaxy_data_manager_data_path: "{{ galaxy_mutable_data_dir }}/data-managers"
+  galaxy_data_manager_data_path: /data/db/data_managers
 
   # To increase performance of job execution and the web interface, you
   # can separate Galaxy into multiple processes.  There are more than
@@ -1528,7 +1528,7 @@ base_app_main: &BASE_APP_MAIN
   # not be created by the user running the jobs (e.g. if the filesystem
   # is mounted read-only or the jobs are run by a different user than
   # the galaxy user).
-  #outputs_to_working_directory: false
+  outputs_to_working_directory: true
 
   # If your network filesystem's caching prevents the Galaxy server from
   # seeing the job's stdout and stderr files when it completes, you can
@@ -1713,7 +1713,7 @@ base_app_main: &BASE_APP_MAIN
   job_metrics_config_file: "{{ galaxy_config_dir }}/job_metrics_conf.xml"
   ucsc_build_sites: "{{ galaxy_config_dir }}/ucsc_build_sites.txt"
   build_sites_config_file: "{{ galaxy_config_dir }}/build_sites.yml"
-  container_image_cache_path: "{{ galaxy_mutable_data_dir }}/singularity/"
+  container_image_cache_path: '/data/0/cvmfs/singularity/'
 
 
   # TODO(hxr): other
