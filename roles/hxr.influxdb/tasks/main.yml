@@ -52,12 +52,13 @@
     - galaxy_stats
     - notifications
 
-- name: create 1 week retention policy
+- name: create 2 week retention policy
   influxdb_retention_policy:
     database_name: "{{ item }}"
     policy_name: oneweek
-    duration: 1w
+    duration: 14d
     replication: 1
+    default: true
     # Auth
     username: "{{ influxdb.admin.username }}"
     password: "{{ influxdb.admin.password }}"
