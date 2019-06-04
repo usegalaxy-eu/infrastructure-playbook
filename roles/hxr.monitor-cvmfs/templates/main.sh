@@ -8,7 +8,7 @@ check_repo() {
 
 	if [ "$http_code" -eq "200" ]; then
 		size=$(echo "$header" | grep '^B' | cut -c2-)
-		gc=$(echo "$header" | grep '^G' | cut -c2-)
+		gc=$(echo "$header" | grep '^G' | cut -c2- | sed 's/yes/t;s/no/f;')
 		ts=$(echo "$header" | grep '^T' | cut -c2-)
 		rev=$(echo "$header" | grep '^S' | cut -c2-)
 
