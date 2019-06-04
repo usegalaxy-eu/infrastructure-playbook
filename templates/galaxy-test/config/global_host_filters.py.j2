@@ -16,14 +16,50 @@ def per_host_tool_labels( context, label ):
     valid_labels = [ "file_meta_label", "general_text_label"]
     general_ngs_labels = [ "genomics_label" ]
     # HiCtools mode: published in NAR 2018
-    if "hicexplorer.usegalaxy.eu" in host or "singlecell.usegalaxy.eu" in host or "metagenomics.usegalaxy.eu" in host or "rna.usegalaxy.eu" in host or "clipseq.usegalaxy.eu" in host or "graphclust.usegalaxy.eu" in host:
+    if "nanopore.usegalaxy.eu" in host or "hicexplorer.usegalaxy.eu" in host or "singlecell.usegalaxy.eu" in host or "metagenomics.usegalaxy.eu" in host or "rna.usegalaxy.eu" in host or "clipseq.usegalaxy.eu" in host or "graphclust.usegalaxy.eu" in host:
         valid_labels += general_ngs_labels
         return label.id in valid_labels
     if "cheminformatics.usegalaxy.eu" in host:
         return label.id in valid_labels
     if "imaging.usegalaxy.eu" in host:
         return label.id in valid_labels
+    if "climate.usegalaxy.eu" in host:
+        return label.id in valid_labels
+    if "metabolomics.usegalaxy.eu" in host:
+        return label.id in valid_labels
     return True
+
+
+BASE_SECTIONS = ["text_manipulation", "get_data", "collection_operations",
+        "convert_formats", "filter_and_sort", "join,_subtract_and_group"]
+
+GENERAL_NGS_SECTIONS = ["deeptools", "bed_tools",
+        "operate_on_genomic_intervals", "fasta_fastq_manipulation",
+        "fasta/fastq_manipulation", "fastq_quality_control", "quality_control",
+        "picard", "mapping"]
+
+DOMAIN_SECTIONS = {
+    'hicexplorer': GENERAL_NGS_SECTIONS + ["hicexplorer"],
+    'nanopore': GENERAL_NGS_SECTIONS + ["hicexplorer", "nanopore",
+        "metagenomic_analyses", "mothur", "qiime", "biom_manipulation",
+        "ncbi_blast"],
+    'climate': GENERAL_NGS_SECTIONS + ["climate_analysis"],
+    'metagenomics': GENERAL_NGS_SECTIONS + ["fasta_fastq_manipulation",
+        "quality_control", "multiple_alignments", "assembly", "annotation",
+        "display_data", "metagenomic_analyses", "mothur", "qiime",
+        "biom_manipulation"],
+    'rna': GENERAL_NGS_SECTIONS + ["rna_analysis", "annotation",
+        "graph/display_data"],
+    'singlecell': GENERAL_NGS_SECTIONS + ["rna_analysis", "annotation",
+        "graph/display_data", "single-cell"],
+    'clipseq': GENERAL_NGS_SECTIONS + ["rna_analysis", "peak_calling",
+        "motif_tools"],
+    'graphclust': GENERAL_NGS_SECTIONS + ["rna_analysis", "graphclust"],
+    'cheminformatics': ['chemicaltoolbox'],
+    'imaging': ['imaging', 'proteomics'],
+    'metabolomics': ['metabolomics'],
+
+}
 
 
 def per_host_tool_sections( context, section ):
@@ -38,37 +74,12 @@ def per_host_tool_sections( context, section ):
     """
     host = context.trans.request.host
     # Core tools used by all virtual hosts.
-    valid_sections = [ "text_manipulation", "get_data", "collection_operations", "convert_formats", "filter_and_sort", "join,_subtract_and_group" ]
-    general_ngs_sections = [ "deeptools", "bed_tools", "operate_on_genomic_intervals", "fasta/fastq_manipulation", "quality_control", "picard", "mapping"  ]
     # HiCtools mode: published in NAR 2018
-    if "hicexplorer.usegalaxy.eu" in host:
-        valid_sections += general_ngs_sections
-        valid_sections += [ "hicexplorer" ]
-        return section.id in valid_sections
-    if "metagenomics.usegalaxy.eu" in host:
-        valid_sections += [ "fasta_fastq_manipulation", "quality_control", "multiple_alignments", "assembly", "annotation", "display_data"]
-        valid_sections += [ "metagenomic_analyses", "mothur", "qiime", "biom_manipulation"]
-        return section.id in valid_sections
-    if "rna.usegalaxy.eu" in host:
-        valid_sections += general_ngs_sections
-        valid_sections += [ "rna_analysis", "annotation", "graph/display_data" ]
-        return section.id in valid_sections
-    if "singlecell.usegalaxy.eu" in host:
-        valid_sections += general_ngs_sections
-        valid_sections += [ "rna_analysis", "annotation", "graph/display_data" ]
-        valid_sections += [ "single-cell" ]
-    if "clipseq.usegalaxy.eu" in host:
-        valid_sections += general_ngs_sections
-        valid_sections += [ "rna_analysis", "peak_calling", "motif_tools"]
-        return section.id in valid_sections
-    if "graphclust.usegalaxy.eu" in host:
-        valid_sections += general_ngs_sections
-        valid_sections += [ "rna_analysis", "graphclust"]
-        return section.id in valid_sections
-    if "cheminformatics.usegalaxy.eu" in host:
-        valid_sections += [ "chemicaltoolbox" ]
-        return section.id in valid_sections
-    if "imaging.usegalaxy.eu" in host:
-        valid_sections += [ "imaging", "proteomics" ]
-        return section.id in valid_sections
-    return True
+    if host == "usegalaxy.eu":
+        return True
+
+    h = host.replace('.usegalaxy.eu', '')
+    if h in DOMAIN_SECTIONS:
+        return section.id in DOMAIN_SECTIONS[h] or section.id in BASE_SECTIONS
+    else:
+        return True
