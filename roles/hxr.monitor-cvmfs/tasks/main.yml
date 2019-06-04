@@ -5,7 +5,7 @@
     state: present
 
 - name: Deploy CVMFS data processor
-  copy:
+  template:
     src: main.sh
     dest: /usr/bin/check_cvmfs_repos
     owner: root
