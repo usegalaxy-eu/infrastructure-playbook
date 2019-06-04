@@ -78,10 +78,10 @@ base_app_main: &BASE_APP_MAIN
   #database_auto_migrate: false
 
   # Dataset files are stored in this directory.
-  file_path: "{{ galaxy_mutable_data_dir }}/files/"
+  #file_path: /data/dnb01/galaxy_db/files
 
   # Temporary files are stored in this directory.
-  new_file_path: "{{ galaxy_mutable_data_dir }}/tmp/"
+  new_file_path: /data/dnb01/galaxy_db/tmp
 
   # Tool config files, defines what tools are available in Galaxy. Tools
   # can be locally developed or installed from Galaxy tool sheds.
@@ -347,7 +347,7 @@ base_app_main: &BASE_APP_MAIN
   # security considerations, so proceed with caution. The path is
   # relative to the Galaxy root dir.  To use an absolute path begin the
   # path with '/'.  This is a comma separated list.
-  interactive_environment_plugins_directory: "{{ galaxy_root }}/interactive_environments/plugins"
+  #interactive_environment_plugins_directory: "{{ galaxy_root }}/interactive_environments/plugins"
 
   # To run interactive environment containers in Docker Swarm mode (on
   # an existing swarm), set this option to True and set
