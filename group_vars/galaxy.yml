@@ -1,4 +1,6 @@
 ---
+codename: main
+
 # Docker
 docker_users:
   - galaxy
@@ -432,8 +434,7 @@ condor_allow_administrator: "$(ALLOW_NEGOTIATOR)"
 condor_system_periodic_hold: "{{ 30 * 24 * 60 * 60}}"
 condor_network_interface: ens2
 
-
-
+# gxadmin
 postgres_user: galaxy
 postgres_host: sn03.bi.uni-freiburg.de
 postgres_port: 5432
@@ -453,8 +454,6 @@ gxadmin_influx_task_notifier: true
 gxadmin_influx_task_notifier_db: notifications
 
 # postgres_pass defined in secret_group_vars/all.yml
-#
-# gxadmin
 gxadmin_commit: master
 gxadmin_dir: /opt/gxadmin
 gxadmin_bin_dir: /usr/bin
@@ -463,7 +462,7 @@ gxadmin_force: true
 # GALAXY
 galaxy_group: galaxy
 galaxy_system_group: galaxy
-galaxy_instance_codename: main
+galaxy_instance_codename: "{{ codename }}"
 galaxy_log_dir: '/var/log/galaxy/'
 galaxy_layout: root-dir
 galaxy_separate_privileges: true
@@ -481,7 +480,7 @@ galaxy_user:
 
 galaxy_root: /opt/galaxy
 galaxy_handler_count: 12
-galaxy_host_codename: main
+galaxy_host_codename: "{{ codename }}"
 galaxy_home_dir: /opt/galaxy
 galaxy_mutable_config_dir: /opt/galaxy/mutable-config
 galaxy_mutable_data_dir: /opt/galaxy/mutable-data
@@ -741,8 +740,14 @@ galaxy_config_templates:
     dest: "{{ galaxy_config_dir }}/uwsgi.ini"
   - src: "{{ galaxy_config_template_src_dir }}/config/nagios_tool_conf.xml"
     dest: "{{ galaxy_config_dir }}/nagios_tool_conf.xml"
+  #- src: "{{ galaxy_config_template_src_dir }}/config/oidc_backends_config.xml"
+    #dest: "{{ galaxy_config['app:main']['oidc_backends_config_file'] }}"
+  #- src: "{{ galaxy_config_template_src_dir }}/config/oidc_config.xml"
+    #dest: "{{ galaxy_config['app:main']['oidc_config_file'] }}"
   - src: "{{ galaxy_config_template_src_dir }}/config/grt.yml.j2"
     dest: "{{ galaxy_config_dir }}/grt.yml"
+  #- src: "{{ galaxy_config_template_src_dir }}/config/pulsar_app.yml"
+    #dest: "{{ galaxy_config_dir }}/pulsar_app.yml"
 
 
 

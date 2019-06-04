@@ -1,15 +1,24 @@
 ---
-docker_service_state: stopped
-docker_service_enabled: false
+codename: test
 
+# Docker
+docker_users:
+  - galaxy
+
+# Autofs
 usegalaxy_eu_autofs_mounts:
  - data
  - usrlocal
 
-nginx_package_name: nginx-galaxy
-
+# Telegraf
 telegraf_agent_hostname: test.galaxyproject.eu
 telegraf_plugins_extra:
+  postgres:
+    plugin: "postgresql"
+    config:
+      - address = "{{ galaxy_db_connection_test }}"
+      - databases = ["galaxy"]
+
   listen_galaxy_routes:
     plugin: "statsd"
     config:
@@ -53,6 +62,7 @@ telegraf_plugins_extra:
       - interval = "15s"
 
 
+# Custom pip installer
 pip_venv_path: "{{ galaxy_venv_dir }}"
 pip_install_dependencies:
     # phdcomics
@@ -86,24 +96,20 @@ monitor_condor: true
 monitor_condor_split_util: true
 
 
-# Certbot
-certbot_post_renewal: |
-    systemctl restart nginx || true
-
 # Nginx
+nginx_package_name: nginx-galaxy
 nginx_remove_default_vhost: true
 nginx_proxy_cache_path: "/var/cache/nginx/static levels=1:2 keys_zone=STATIC:10m inactive=24h  max_size=1g"
 nginx_conf_template: "{{ playbook_dir  }}/templates/nginx/main.j2"
 nginx_vhosts:
   - listen: "80"
-    server_name: "{{ hostname }}"
-    #return: "301 https://{{ hostname }}$request_uri"
-    filename: "{{ hostname }}.80.conf"
+    server_name: "default_server"
+
     index: "index.html"
     access_log: "/var/log/nginx/access.log"
     error_log: "/var/log/nginx/error.log"
     state: "present"
-    #filename: "{{ hostname }}.conf"
+    filename: "galaxy.conf"
     extra_parameters: |
         error_page 404 /404.html;
         error_page 502 /502.html;
@@ -126,6 +132,9 @@ nginx_vhosts:
                 root /usr/share/nginx/html;
                 internal;
         }
+
+        # Move to remote storage, hopefully hammer local disk slightly less?
+        client_body_temp_path  /data/dnb01/nginx_upload_store/;
 
         location / {
             uwsgi_pass      127.0.0.1:4000;
@@ -161,6 +170,10 @@ nginx_vhosts:
         location /static {
                 alias {{ galaxy_server_dir }}/static;
                 expires 24h;
+                location /static/vgcn {
+                        autoindex on;
+                        alias /data/dnb01/vgcn/;
+                }
         }
 
         location ~ /static/style/base.css {
@@ -291,9 +304,9 @@ galaxy_systemd_zerglings: 1
 galaxy_systemd_handlers: 1
 galaxy_systemd_memory_limit: 16
 galaxy_systemd_memory_limit_zp: 8
-galaxy_zergpool: false
-
-
+galaxy_zergpool_listen_addr: "127.0.0.1:4001"
+galaxy_zergpool_socket_name: zergpool.sock
+galaxy_zergpool_listen_path: "{{ galaxy_mutable_data_dir }}/{{ galaxy_zergpool_socket_name }}"
 
 # TODO: support yml?
 galaxy_uwsgi_config_file_basename: uwsgi.ini
@@ -321,6 +334,14 @@ galaxy_slurp_influx_pass: "{{ influxdb.node.password }}"
 galaxy_slurp_influx_user: "{{ influxdb.node.username }}"
 galaxy_slurp_influx_url: "{{ influxdb.url }}"
 
+# GRT
+galaxy_grt_exporter: galaxy
+galaxy_grt_uploader: galaxy
+
+# Influx Notifier
+gxadmin_influx_task_notifier: true
+gxadmin_influx_task_notifier_db: notifications
+
 # postgres_pass defined in secret_group_vars/all.yml
 gxadmin_commit: master
 gxadmin_dir: /opt/gxadmin
@@ -330,7 +351,7 @@ gxadmin_force: true
 # GALAXY
 galaxy_group: galaxy
 galaxy_system_group: galaxy
-galaxy_instance_codename: test
+galaxy_instance_codename: "{{ codename }}"
 galaxy_log_dir: '/var/log/galaxy/'
 galaxy_layout: root-dir
 galaxy_separate_privileges: true
@@ -348,7 +369,7 @@ galaxy_user:
 
 galaxy_root: /opt/galaxy
 galaxy_handler_count: 1
-galaxy_host_codename: test
+galaxy_host_codename: "{{ codename }}"
 galaxy_home_dir: /opt/galaxy
 galaxy_mutable_config_dir: /opt/galaxy/mutable-config
 galaxy_mutable_data_dir: /opt/galaxy/mutable-data
@@ -373,6 +394,18 @@ galaxy_dynamic_job_rules:
   - usegalaxy/wig2bigwig.py
   - readme.txt
 
+# Custom override
+# Our galaxy_tool_dependency_dir is on NFS, and permissions are set in such a
+# way that they cannot be changed by the ansible connected user.
+galaxy_dirs:
+  - "{{ galaxy_mutable_data_dir }}"
+  - "{{ galaxy_mutable_config_dir }}"
+  - "{{ galaxy_cache_dir }}"
+  - "{{ galaxy_shed_tools_dir }}"
+  #- "{{ galaxy_tool_dependency_dir }}"
+  - "{{ galaxy_file_path }}"
+  - "{{ galaxy_job_working_directory }}"
+
 galaxy_instance_hostname: usegalaxy.eu
 galaxy_config_style: 'ini'
 
@@ -385,11 +418,15 @@ galaxy_admin_email_to: 'contact@usegalaxy.eu'
 # Job Conf
 
 galaxy_jobconf:
-    plugin_workers: 4
+    plugin_workers: 8
     handlers:
         count: "{{ galaxy_handler_count }}"
         assign_with: db-skip-locked
+        max_grab: 4
     plugins:
+        #- id: drmaa
+          #load: galaxy.jobs.runners.drmaa:DRMAAJobRunner
+          #workers: 3
         # These live on the pythonpath
         - id: dynamic
           params:
@@ -400,6 +437,28 @@ galaxy_jobconf:
           load: galaxy.jobs.runners.local:LocalJobRunner
         - id: pulsar_embedded
           load: galaxy.jobs.runners.pulsar:PulsarEmbeddedJobRunner
+        - id: pulsar_eu_cz
+          load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+          params:
+            amqp_url: "pyamqp://galaxy_cz:{{ rabbitmq_password_galaxy_cz }}@proxy.galaxyproject.eu:5671//pulsar/galaxy_cz?ssl=1"
+            galaxy_url: "https://usegalaxy.eu"
+            manager: _default_
+            amqp_acknowledge: True
+            amqp_ack_republish_time: 300
+            amqp_consumer_timeout: 2.0
+            amqp_publish_retry: True
+            amqp_publish_retry_max_retries: 60
+        - id: pulsar_eu_test
+          load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+          params:
+            amqp_url: "pyamqp://galaxy_test:{{ rabbitmq_password_galaxy_test }}@proxy.galaxyproject.eu:5671//pulsar/galaxy_test?ssl=1"
+            galaxy_url: https://usegalaxy.eu
+            manager: _default_
+            amqp_acknowledge: True
+            amqp_ack_republish_time: 300
+            amqp_consumer_timeout: 2.0
+            amqp_publish_retry: True
+            amqp_publish_retry_max_retries: 60
     default_destination: gateway_1x
     destinations:
         - id: local
@@ -424,6 +483,15 @@ galaxy_jobconf:
           params:
               type: python
               function: gateway_2x
+        # Pulsar MQs
+        - id: remote_cluster_mq_cz
+          runner: pulsar_eu_cz
+          params:
+              jobs_directory: /storage/brno11-elixir/home/galaxyeu/galaxy-staging/
+        - id: remote_cluster_mq_test
+          runner: pulsar_eu_test
+          params:
+              jobs_directory: /data/share
         - id: condor_singularity
           runner: condor
           params:
@@ -456,6 +524,22 @@ galaxy_jobconf:
             docker_default_container_id: 'ubuntu:18.04'
             docker_auto_rm: 'true'
             docker_sudo: 'false'
+        # TODO(hxr): check functionality
+        #- id: 24cores_15G_BLAST
+        #  runner: dynamic
+        #  params:
+        #      type: python
+        #      function: blast_destinations
+        #- id: wig_to_bigWig
+        #  runner: dynamic
+        #  params:
+        #      type: python
+        #      function: wig_to_bigwig
+        #- id: dexseq_dynamic
+        #  runner: dynamic
+        #  params:
+        #      type: python
+        #      function: dexseq
         # Embedded pulsar
         - id: secure_pulsar_singularity
           runner: pulsar_embedded
@@ -466,7 +550,23 @@ galaxy_jobconf:
         # TODO(hxr): implement validation that checks that every destination
         # used here is defined above.
         - id: upload1
-          destination: local
+          destination: gateway_1x
+        #- id: wig_to_bigWig
+          #destination: wig_to_bigWig
+        #- id: dexseq
+          #destination: dexseq_dynamic
+        #- id: ncbi_blastn_wrapper
+          #destination: 24cores_15G_BLAST
+        #- id: ncbi_blastx_wrapper
+          #destination: 24cores_15G_BLAST
+        #- id: ncbi_tblastn_wrapper
+          #destination: 24cores_15G_BLAST
+        #- id: ncbi_tblastx_wrapper
+          #destination: 24cores_15G_BLAST
+        #- id: ncbi_blastp_wrapper
+          #destination: 24cores_15G_BLAST
+        #- id: ncbi_rpsblast_wrapper
+          #destination: 24cores_15G_BLAST
     limits:
         walltime: '148:00:00'
         output_size: '300GB'
@@ -541,6 +641,8 @@ galaxy_config_templates:
     #dest: "{{ galaxy_config['app:main']['oidc_backends_config_file'] }}"
   #- src: "{{ galaxy_config_template_src_dir }}/config/oidc_config.xml"
     #dest: "{{ galaxy_config['app:main']['oidc_config_file'] }}"
+  - src: "{{ galaxy_config_template_src_dir }}/config/grt.yml.j2"
+    dest: "{{ galaxy_config_dir }}/grt.yml"
   - src: "{{ galaxy_config_template_src_dir }}/config/pulsar_app.yml"
     dest: "{{ galaxy_config_dir }}/pulsar_app.yml"
 
