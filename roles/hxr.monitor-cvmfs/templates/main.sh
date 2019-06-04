@@ -7,6 +7,7 @@ check_repo() {
 	header="$(curl http://$host/cvmfs/$repo/.cvmfspublished --silent | head -n 12)"
 
 	if [ "$http_code" -eq "200" ]; then
+		# https://cvmfs.readthedocs.io/en/stable/cpt-details.html#repository-manifest-cvmfspublished
 		size=$(echo "$header" | grep '^B' | cut -c2-)
 		gc=$(echo "$header" | grep '^G' | cut -c2- | sed 's/yes/t;s/no/f;')
 		ts=$(echo "$header" | grep '^T' | cut -c2-)
