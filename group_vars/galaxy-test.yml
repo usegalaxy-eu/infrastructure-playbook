@@ -142,9 +142,6 @@ nginx_vhosts:
                 internal;
         }
 
-        # Move to remote storage, hopefully hammer local disk slightly less?
-        client_body_temp_path  /data/dnb01/nginx_upload_store/;
-
         location / {
             uwsgi_pass      127.0.0.1:4001;
 
