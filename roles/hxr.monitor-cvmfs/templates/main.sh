@@ -9,13 +9,13 @@ check_repo() {
 	if [ "$http_code" -eq "200" ]; then
 		# https://cvmfs.readthedocs.io/en/stable/cpt-details.html#repository-manifest-cvmfspublished
 		size=$(echo "$header" | grep '^B' | cut -c2-)
-		gc=$(echo "$header" | grep '^G' | cut -c2- | sed 's/yes/t;s/no/f;')
+		gc=$(echo "$header" | grep '^G' | cut -c2- | sed 's/yes/t/;s/no/f/;')
 		ts=$(echo "$header" | grep '^T' | cut -c2-)
 		rev=$(echo "$header" | grep '^S' | cut -c2-)
 
-		echo "cvmfs.status,host=$host,repo=$repo value=1,size=$size,gc=$gc,ts=$ts,rev=$rev"
+		echo "cvmfs.status,server=$host,repo=$repo value=1,size=$size,gc=$gc,ts=$ts,rev=$rev"
 	else
-		echo "cvmfs.status,host=$host,repo=$repo value=0"
+		echo "cvmfs.status,server=$host,repo=$repo value=0"
 	fi
 }
 
