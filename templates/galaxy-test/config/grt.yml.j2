@@ -1,0 +1,16 @@
+---
+grt:
+  # Register at https://telescope.galaxyproject.org to obtain an Instance ID and API key
+  instance_id: "{{ grt_eu_test_instance_id }}"
+  api_key: "{{ grt_eu_test_api_key }}"
+
+  # Galaxy Project offers a public galactic-radio-telescope instance, however
+  # you are free to run your own if you need. We would love it if you were
+  # willing and able to contribute your data publicly.
+  url: https://telescope.galaxyproject.eu/grt/
+
+sanitization:
+  # Blacklist the entire tool from appearing
+  tools:
+    - __SET_METADATA__
+    - upload1

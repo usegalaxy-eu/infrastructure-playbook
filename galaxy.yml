@@ -21,12 +21,12 @@
       shell: echo 'Manual restart required'
       #shell: source /opt/galaxy/.bashrc && /usr/bin/gxadmin handler restart && /usr/bin/gxadmin zerg swap
   pre_tasks:
-    # TODO(hxr): fails due to nginx user not available yet.
     - name: Install Dependencies
       package:
         name: ['git', 'python-psycopg2', 'python-virtualenv', 'bc']
       become: yes
   roles:
+    - hostname
     - geerlingguy.docker
     ## TODO(hxr): fails whenever galaxy homedir is created without bashrc
     #- role: hxr.docker-ssl-client
