@@ -15,7 +15,7 @@ condor_singularity:
     request_memory: '{MEMORY}'
     singularity_enabled: true
     # can and should be made stricter at some point
-    singularity_volumes: '/data/dnb01/galaxy_db/:rw,/data/dnb02/galaxy_db/:rw,/data/0/galaxy_import/galaxy_user_data/:ro,/data/1/galaxy_import/galaxy_user_data/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:rw,$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro'
+    singularity_volumes: '/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/0/galaxy_import/galaxy_user_data/:ro,/data/1/galaxy_import/galaxy_user_data/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro'
     singularity_default_container_id: '/data/0/cvmfs/singularity/ubuntu:18.04'
     singularity_run_extra_arguments: '-H /usr/local/galaxy/'
     tmp_dir: 'True'
@@ -37,7 +37,7 @@ secure_pulsar_singularity:
 #    request_memory: '{MEMORY}'
 #    singularity_enabled: true
 #    # can and should be made stricter at some point
-#    #singularity_volumes: '/data/dnb01/galaxy_db/:rw,/data/dnb02/galaxy_db/:rw,/data/0/galaxy_import/galaxy_user_data/:ro,/data/1/galaxy_import/galaxy_user_data/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/$
+#    #singularity_volumes: '/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/0/galaxy_import/galaxy_user_data/:ro,/data/1/galaxy_import/galaxy_user_data/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/$
 #    #singularity_default_container_id: '/data/0/cvmfs/singularity/ubuntu:18.04'
 #    #singularity_run_extra_arguments: '-H /usr/local/galaxy/'
 #    tmp_dir: 'True'
@@ -76,7 +76,7 @@ condor_docker:
     request_memory: '{MEMORY}'
     docker_enabled: true
     # can and should be made stricter at some point
-    docker_volumes: '/data/dnb01/galaxy_db/:rw,/data/dnb02/galaxy_db/:rw,/data/0/galaxy_import/galaxy_user_data/:ro,/data/1/galaxy_import/galaxy_user_data/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:rw,$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro'
+    docker_volumes: '/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/0/galaxy_import/galaxy_user_data/:ro,/data/1/galaxy_import/galaxy_user_data/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro'
     docker_memory: '{MEMORY}'
     docker_auto_rm: true
     docker_default_container_id: busybox:ubuntu-14.04
