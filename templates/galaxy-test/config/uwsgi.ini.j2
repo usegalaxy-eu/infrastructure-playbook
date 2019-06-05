@@ -1,8 +1,11 @@
 [uwsgi]
 ; basic settings
 master = true
-processes = 8
+processes = 4
 threads = 1
+{% if galaxy_zergpool %}
+zerg = /opt/galaxy/mutable-data/zergpool.sock
+{% endif %}
 
 ; uwsgi performance/robustness features
 single-interpreter = true
@@ -10,6 +13,15 @@ post-buffering = 65536
 thunder-lock = true
 harakiri = 600
 buffer-size = 16384
+
+# Mapping to serve style content.
+static-map= /static/style=static/style/blue
+
+# Mapping to serve the remainder of the static content.
+static-map= /static=static
+
+# Mapping to serve the favicon.
+static-map= /favicon.ico=static/favicon.ico
 
 ; logging
 log-maxsize = 134217728
