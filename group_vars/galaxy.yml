@@ -160,7 +160,7 @@ nginx_vhosts:
     filename: "telescope.galaxyproject.conf"
     extra_parameters: |
         location / {
-                proxy_pass http://telescope.internal.galaxyproject.eu/
+                proxy_pass http://telescope.internal.galaxyproject.eu/;
                 proxy_cache           STATIC;
                 proxy_cache_valid     200  20m;
                 proxy_cache_use_stale error timeout invalid_header updating http_500 http_502 http_503 http_504;
