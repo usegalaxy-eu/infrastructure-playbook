@@ -26,7 +26,7 @@
         name: ['git', 'python-psycopg2', 'python-virtualenv', 'bc']
       become: yes
   roles:
-    - hostname
+    #- hostname # err=Could not get property: Failed to activate service 'org.freedesktop.hostname1': timed out
     - geerlingguy.docker
     ## TODO(hxr): fails whenever galaxy homedir is created without bashrc
     #- role: hxr.docker-ssl-client
