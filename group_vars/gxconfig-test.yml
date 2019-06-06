@@ -77,10 +77,24 @@ base_app_main: &BASE_APP_MAIN
   # not recommended for production use.
   #database_auto_migrate: false
 
-  # Dataset files are stored in this directory.
+  # Wait for database to become available instead of failing
+  # immediately.
+  #database_wait: false
+
+  # Number of attempts before failing if database_wait is enabled.
+  #database_wait_attempts: 60
+
+  # Time to sleep between attempts if database_wait is enabled (in
+  # seconds).
+  #database_wait_sleep: 1
+
+  # Where dataset files are stored. It must accessible at the same path
+  # on any cluster nodes that will run Galaxy jobs, unless using Pulsar.
   #file_path: /data/dnb01/galaxy_db/files
 
-  # Temporary files are stored in this directory.
+  # Where temporary files are stored. It must accessible at the same
+  # path on any cluster nodes that will run Galaxy jobs, unless using
+  # Pulsar.
   new_file_path: /data/dnb01/galaxy_db/tmp
 
   # Tool config files, defines what tools are available in Galaxy. Tools
@@ -95,7 +109,7 @@ base_app_main: &BASE_APP_MAIN
   # largely untested in modern Galaxy releases and has serious issues
   # such as #7273 and the possibility of slowing down Galaxy startup, so
   # the default and recommended value is False.
-  #check_migrate_tools: true
+  #check_migrate_tools: false
 
   # Tool config maintained by tool migration scripts.  If you use the
   # migration scripts to install tools that have been migrated to the
@@ -433,17 +447,14 @@ base_app_main: &BASE_APP_MAIN
   # store this information.
   #citation_cache_lock_dir: database/citations/lock
 
-  # Tools with a number of outputs not known until runtime can write
-  # these outputs to a directory for collection by Galaxy when the job
-  # is done. Previously, this directory was new_file_path, but using one
-  # global directory can cause performance problems, so using
-  # job_working_directory ('.' or cwd when a job is run) is encouraged.
-  # By default, both are checked to avoid breaking existing tools.
-  #collect_outputs_from: 'new_file_path,job_working_directory'
-
   # Configuration file for the object store If this is set and exists,
   # it overrides any other objectstore settings.
   object_store_config_file: "{{ galaxy_config_dir }}/object_store_conf.xml"
+
+  # What Dataset attribute is used to reference files in an ObjectStore
+  # implementation, default is 'id' but can also be set to 'uuid' for
+  # more de-centralized usage.
+  #object_store_store_by: id
 
   # Galaxy sends mail for various things: subscribing users to the
   # mailing list if they request it, password resets, reporting dataset
@@ -511,8 +522,7 @@ base_app_main: &BASE_APP_MAIN
 
   # Activation grace period (in hours).  Activation is not forced (login
   # is not disabled) until grace period has passed.  Users under grace
-  # period can't run jobs. Enter 0 to disable grace period. Users with
-  # OpenID logins have grace period forever.
+  # period can't run jobs. Enter 0 to disable grace period.
   activation_grace_period: 48
 
   # Shown in warning box to users that were not activated yet. In use
@@ -536,7 +546,7 @@ base_app_main: &BASE_APP_MAIN
 
   # Galaxy can display data at various external browsers.  These options
   # specify which browsers should be available.  URLs and builds
-  # available at these browsers are defined in the specifield files.  If
+  # available at these browsers are defined in the specified files.  If
   # use_remote_user = True, display application servers will be denied
   # access to Galaxy and so displaying datasets in these sites will
   # fail. display_servers contains a list of hostnames which should be
@@ -597,11 +607,10 @@ base_app_main: &BASE_APP_MAIN
   # URL (with schema http/https) of the Galaxy instance as accessible
   # within your local network - if specified used as a default by pulsar
   # file staging and Jupyter Docker container for communicating back
-  # with Galaxy via the API.  If you are attempting to setup GIEs on Mac
-  # OS X with Docker for Mac - this should likely be the IP address of
-  # your machine on the virtualbox network (vboxnet0) setup for the
-  # Docker host VM. This can found by running ifconfig and using the IP
-  # address of the network vboxnet0.
+  # with Galaxy via the API.  If you are attempting to set up GIEs on
+  # Mac OS X with Docker Desktop for Mac and your Galaxy instance runs
+  # on port 8080 this should be 'http://host.docker.internal:8080'.  For
+  # more details see https://docs.docker.com/docker-for-mac/networking/
   galaxy_infrastructure_url: 'https://test.usegalaxy.eu'
 
   # If the above URL cannot be determined ahead of time in dynamic
@@ -628,21 +637,6 @@ base_app_main: &BASE_APP_MAIN
 
   # The URL linked by the "Support" link in the "Help" menu.
   #support_url: 'https://galaxyproject.org/support/'
-
-  # Enable integration with a custom Biostar instance.
-  #biostar_url: ''
-
-  # Enable integration with a custom Biostar instance.
-  #biostar_key_name: ''
-
-  # Enable integration with a custom Biostar instance.
-  #biostar_key: ''
-
-  # Enable integration with a custom Biostar instance.
-  #biostar_enable_bug_reports: true
-
-  # Enable integration with a custom Biostar instance.
-  #biostar_never_authenticate: false
 
   # The URL linked by the "How to Cite Galaxy" link in the "Help" menu.
   #citation_url: 'https://galaxyproject.org/citing-galaxy'
@@ -939,8 +933,8 @@ base_app_main: &BASE_APP_MAIN
   #use_printdebug: true
 
   # Enable live debugging in your browser.  This should NEVER be enabled
-  # on a public site.  Enabled in the sample config for development.
-  #use_interactive: true
+  # on a public site.
+  #use_interactive: false
 
   # When stopping Galaxy cleanly, how much time to give various
   # monitoring/polling threads to finish before giving up on joining
@@ -1271,25 +1265,13 @@ base_app_main: &BASE_APP_MAIN
   # Enable the new container interface for Interactive Environments
   #enable_beta_containers_interface: false
 
-  # Set the following to a number of threads greater than 1 to spawn a
-  # Python task queue for dealing with large tool submissions (either
-  # through the tool form or as part of an individual workflow step
-  # across large collection). This affects workflow scheduling and web
-  # processes, not job handlers. This is a beta option and should not be
-  # used in production.
-  #tool_submission_burst_threads: 1
-
-  # If tool_submission_burst_threads is set to a number greater than 1,
-  # this is the number of jobs to schedule at which the task queue will
-  # be created.
-  #tool_submission_burst_at: 10
-
   # Enable beta workflow modules that should not yet be considered part
   # of Galaxy's stable API.
   #enable_beta_workflow_modules: false
 
-  # Enable import and export of workflows as Galaxy Format 2 workflows.
-  enable_beta_workflow_format: true
+  # Default format for the export of workflows. Possible values are 'ga'
+  # or 'format2'.
+  #default_workflow_export_format: ga
 
   # Following options only apply to workflows scheduled using the legacy
   # workflow run API (running workflows via a POST to /api/workflows).
@@ -1346,18 +1328,6 @@ base_app_main: &BASE_APP_MAIN
   # particular history
   #history_local_serial_workflow_scheduling: false
 
-  # Enable authentication via OpenID.  Allows users to log in to their
-  # Galaxy account by authenticating with an OpenID provider.
-  #enable_openid: false
-
-  # If OpenID is enabled, this configuration file specifies providers to
-  # use. Falls back to the .sample variant in config if default does not
-  # exist.
-  #openid_config_file: config/openid_conf.xml
-
-  # If OpenID is enabled, consumer cache directory to use.
-  #openid_consumer_cache_path: database/openid_consumer_cache
-
   # Enables and disables OpenID Connect (OIDC) support.
   enable_oidc: true
 
@@ -1382,6 +1352,12 @@ base_app_main: &BASE_APP_MAIN
   # to set this on public servers.
   #master_api_key: changethis
 
+  # Enable access to post-authentication options via OpenID.
+  #enable_openid: false
+
+  # If OpenID is enabled, consumer cache directory to use.
+  #openid_consumer_cache_path: database/openid_consumer_cache
+
   # Enable tool tags (associating tools with tags).  This has its own
   # option since its implementation has a few performance implications
   # on startup for large servers.
@@ -1398,7 +1374,7 @@ base_app_main: &BASE_APP_MAIN
 
   # The URL to the myExperiment instance being used (omit scheme but
   # include port)
-  #myexperiment_url: 'www.myexperiment.org:80'
+  #myexperiment_url: www.myexperiment.org:80
 
   # Enable Galaxy's "Upload via FTP" interface.  You'll need to install
   # and configure an FTP server (we've used ProFTPd since it can use
@@ -1420,7 +1396,7 @@ base_app_main: &BASE_APP_MAIN
 
   # Python string template used to determine an FTP upload directory for
   # a particular user.
-  #ftp_upload_dir_template: '${ftp_upload_dir}/${ftp_upload_dir_identifier}'
+  #ftp_upload_dir_template: ${ftp_upload_dir}/${ftp_upload_dir_identifier
 
   # This should be set to False to prevent Galaxy from deleting uploaded
   # FTP files as it imports them.
@@ -1634,7 +1610,7 @@ base_app_main: &BASE_APP_MAIN
   # performance due to reduced queries, the trade-off is a greater
   # possibility that jobs will be dispatched past the configured limits
   # if running many handlers.
-  cache_user_job_count: false
+  #cache_user_job_count: false
 
   # Define toolbox filters (https://galaxyproject.org/user-defined-
   # toolbox-filters/) that admins may use to restrict the tools to
@@ -1695,13 +1671,6 @@ base_app_main: &BASE_APP_MAIN
   # persistent_communication_rooms is a comma-separated list of rooms
   # that should be always available.
   #persistent_communication_rooms: null
-
-  # Galaxy tool recommendation settings
-  #enable_tool_recommendation: false
-
-  # Trained model (HDF5 file) path for tool recommendation.
-  # It is required to be set if 'enable_tool_recommendation' property is enabled and set to true.
-  #model_path: 'database/trained_model.hdf5'
 
   # Allow disabling pbkdf2 hashing of passwords for legacy situations.
   # This should normally be left enabled unless there is a specific
