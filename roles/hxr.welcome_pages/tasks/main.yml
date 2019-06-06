@@ -31,8 +31,15 @@
   with_items: "{{ galaxy_custom_sites }}"
   register: custom_css
 
+- name: Template out CSS files
+  copy:
+    dest: "{{ multisite_dir }}/usegalaxy.eu-custom.css"
+    content: "{{ galaxy_custom_site_base_css }}"
+    mode: 0644
+  when: galaxy_custom_site_base_css is defined
+
 - name: Main CSS
-  shell: "cat {{ galaxy_server_dir }}/static/style/blue/base.css > {{ multisite_dir }}/usegalaxy.eu.css"
+  shell: "cat {{ galaxy_server_dir }}/static/style/blue/base.css {% if galaxy_custom_site_base_css is defined %}{{ multisite_dir }}/usegalaxy.eu-custom.css {% endif %} > {{ multisite_dir }}/usegalaxy.eu.css"
 
 - name: Merge CSS files
   shell: "cat {{ galaxy_server_dir }}/static/style/blue/base.css {{ multisite_dir }}/{{ item.domain | default([item.name, '.usegalaxy.eu'] | join) }}-custom.css > {{ multisite_dir }}/{{ item.domain | default([item.name, '.usegalaxy.eu'] | join) }}.css"
