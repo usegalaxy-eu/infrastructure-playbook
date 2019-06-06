@@ -236,6 +236,11 @@ nginx_vhosts:
         location / {
             uwsgi_pass      127.0.0.1:4001;
 
+            # For testing, send data to the private zergling.
+            # if ( $remote_addr ~* 95.208.248.14  ) {
+            #     uwsgi_pass      127.0.0.1:4020;
+            # }
+
             include         uwsgi_params;
             proxy_hide_header x-frame-options;
             add_header X-Content-Type-Options nosniff;
