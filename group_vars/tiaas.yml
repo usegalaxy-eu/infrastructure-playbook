@@ -3,12 +3,6 @@ tiaas_galaxy_db_url: "{{ galaxy_db_connection }}"
 tiaas_galaxy_idsecret: "{{ id_secret }}"
 tiaas_galaxy_url: "https://usegalaxy.eu"
 tiaas_galaxy_key: "{{ admin_api_key_erasche }}"
-tiaas_trainings:
- - sbc-2019-05-30
- - chipseq2019
- - sigu2019
- - genomics_phd_1
- - bioinformatics-ukraine
 
 
 # TIaaS Deployment
@@ -22,3 +16,11 @@ tiaas_create_group: true
 
 # galaxy_user since we access .name in role
 tiaas_manage_user: "{{ galaxy_user }}"
+
+# Trainings
+tiaas_trainings:
+ - sbc-2019-05-30
+ - chipseq2019
+ - sigu2019
+ - genomics_phd_1
+ - bioinformatics-ukraine
