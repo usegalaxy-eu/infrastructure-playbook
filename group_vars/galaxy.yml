@@ -12,6 +12,18 @@ usegalaxy_eu_autofs_mounts:
 
 # Telegraf
 telegraf_plugins_extra:
+  procstat:
+    config:
+      - cgroup = "systemd/system.slice/nginx.service"
+  procstat:
+    config:
+      - cgroup = "systemd/system.slice/galaxy-handler@.service"
+  procstat:
+    config:
+      - cgroup = "systemd/system.slice/galaxy-zergling@.service"
+  procstat:
+    config:
+      - cgroup = "systemd/system.slice/galaxy-zergpool@.service"
   postgres:
     plugin: "postgresql"
     config:
