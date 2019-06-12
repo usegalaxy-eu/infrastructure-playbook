@@ -246,6 +246,7 @@ nginx_vhosts:
         client_body_temp_path  /data/dnb01/nginx_upload_store/;
 
         # Throttle downloads. First 100Mb are free, after that 5Mb/s.
+        # users can move to FTP if they need / we can sort that out.
         limit_rate_after 100m;
         limit_rate 5m;
 
