@@ -245,6 +245,10 @@ nginx_vhosts:
         # Move to remote storage, hopefully hammer local disk slightly less?
         client_body_temp_path  /data/dnb01/nginx_upload_store/;
 
+        # Throttle downloads. First 100Mb are free, after that 5Mb/s.
+        limit_rate_after 100m;
+        limit_rate 5m;
+
         location / {
             uwsgi_pass      127.0.0.1:4001;
 
