@@ -8,14 +8,9 @@
     repo_gpgcheck: false
     enabled: true
 
-- name: add bintray erlang repo
-  yum_repository:
-    name: bintray-erlang
-    description: 'asdf'
-    baseurl: "https://dl.bintray.com/rabbitmq/rpm/erlang/21/el/$releasever/"
-    gpgcheck: false
-    repo_gpgcheck: false
-    enabled: true
+- name: install erlang
+  yum:
+    name: https://github.com/rabbitmq/erlang-rpm/releases/download/v21.3.8.3/erlang-21.3.8.3-1.el7.x86_64.rpm
 
 - name: install rabbitmq
   yum:
