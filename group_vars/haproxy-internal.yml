@@ -52,10 +52,22 @@ rabbitmq_users:
   - user: vgcn_test
     password: "{{ rabbitmq_password_galaxy_vgcn }}"
     vhost: /pulsar/galaxy_vgcn
+  - user: galaxy_belgium
+    password: "{{ rabbitmq_password_galaxy_belgium }}"
+    vhost: /pulsar/galaxy_belgium
+  - user: galaxy_bale
+    password: "{{ rabbitmq_password_galaxy_bale }}"
+    vhost: /pulsar/galaxy_bale
+  - user: galaxy_freiburg
+    password: "{{ rabbitmq_password_galaxy_freiburg }}"
+    vhost: /pulsar/galaxy_freiburg
 
 rabbitmq_vhosts:
   - galaxy
+  - /pulsar/galaxy_bale
+  - /pulsar/galaxy_belgium
   - /pulsar/galaxy_cz
+  - /pulsar/galaxy_freiburg
   - /pulsar/galaxy_test
   - /pulsar/galaxy_vgcn
 
