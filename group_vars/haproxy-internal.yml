@@ -7,7 +7,6 @@ haproxy_frontends:
       mode: http
       custom_config:
         - 'use_backend cvmfs'
-      galaxy_hosts: []
 
 
 haproxy_backends:
@@ -24,7 +23,7 @@ telegraf_plugins_extra:
     plugin: haproxy
     config:
       - servers = ["http://127.0.0.1:8080/haproxy?stats"]
-  rabbitmq
+  rabbitmq:
     plugin: rabbitmq
     config:
       - url = "http://localhost:15672"
