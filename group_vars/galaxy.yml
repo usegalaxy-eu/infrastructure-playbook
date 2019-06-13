@@ -578,7 +578,7 @@ galaxy_jobconf:
         - id: pulsar_eu_cz
           load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
           params:
-            amqp_url: "pyamqp://galaxy_cz:{{ rabbitmq_password_galaxy_cz }}@proxy.galaxyproject.eu:5671//pulsar/galaxy_cz?ssl=1"
+            amqp_url: "pyamqp://galaxy_cz:{{ rabbitmq_password_galaxy_cz }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_cz?ssl=1"
             galaxy_url: "https://usegalaxy.eu"
             manager: _default_
             amqp_acknowledge: True
@@ -589,7 +589,7 @@ galaxy_jobconf:
         - id: pulsar_eu_bale
           load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
           params:
-            amqp_url: "pyamqp://galaxy_bale:{{ rabbitmq_password_galaxy_bale }}@proxy.galaxyproject.eu:5671//pulsar/galaxy_bale?ssl=1"
+            amqp_url: "pyamqp://galaxy_bale:{{ rabbitmq_password_galaxy_bale }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_bale?ssl=1"
             galaxy_url: "https://usegalaxy.eu"
             manager: _default_
             amqp_acknowledge: True
@@ -600,7 +600,7 @@ galaxy_jobconf:
         - id: pulsar_eu_freiburg
           load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
           params:
-            amqp_url: "pyamqp://galaxy_freiburg:{{ rabbitmq_password_galaxy_freiburg }}@proxy.galaxyproject.eu:5671//pulsar/galaxy_freiburg?ssl=1"
+            amqp_url: "pyamqp://galaxy_freiburg:{{ rabbitmq_password_galaxy_freiburg }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_freiburg?ssl=1"
             galaxy_url: "https://usegalaxy.eu"
             manager: _default_
             amqp_acknowledge: True
@@ -611,7 +611,7 @@ galaxy_jobconf:
         - id: pulsar_eu_belgium
           load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
           params:
-            amqp_url: "pyamqp://galaxy_belgium:{{ rabbitmq_password_galaxy_belgium }}@proxy.galaxyproject.eu:5671//pulsar/galaxy_belgium?ssl=1"
+            amqp_url: "pyamqp://galaxy_belgium:{{ rabbitmq_password_galaxy_belgium }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_belgium?ssl=1"
             galaxy_url: "https://usegalaxy.eu"
             manager: _default_
             amqp_acknowledge: True
@@ -622,7 +622,7 @@ galaxy_jobconf:
         - id: pulsar_eu_test
           load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
           params:
-            amqp_url: "pyamqp://galaxy_test:{{ rabbitmq_password_galaxy_test }}@proxy.galaxyproject.eu:5671//pulsar/galaxy_test?ssl=1"
+            amqp_url: "pyamqp://galaxy_test:{{ rabbitmq_password_galaxy_test }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_test?ssl=1"
             galaxy_url: https://usegalaxy.eu
             manager: _default_
             amqp_acknowledge: True
