@@ -1,3 +1,4 @@
+---
 haproxy_chroot: ''
 haproxy_frontends:
     - name: https-in
@@ -5,15 +6,7 @@ haproxy_frontends:
         - '*:80'
       mode: http
       custom_config:
-        - 'acl certbot_path      path_beg /.well-known/'
-        # Add header if this was over HTTPS
-        - 'reqadd X-Forwarded-Proto:\ https if { ssl_fc }'
-        # ACLs
-        - 'acl cvmfs_domain      hdr_dom(host) -i cvmfs1-ufr0.galaxyproject.eu'
-        - 'acl galaxy_domain     hdr_dom(host) -i test.usegalaxy.eu'
-        - 'use_backend cvmfs     if cvmfs_domain'
-        # Beta/test galaxy.
-        - 'use_backend galaxy'
+        - 'use_backend cvmfs'
       galaxy_hosts: []
 
 
@@ -23,14 +16,6 @@ haproxy_backends:
       mode: http
       custom_config:
         - 'server server1 cvmfs1-ufr0.internal.galaxyproject.eu:80 maxconn 32'
-    - name: galaxy
-      balance: roundrobin
-      mode: http
-      custom_config:
-          # Retry requests up to 8 times. The default is 3
-          # https://cbonte.github.io/haproxy-dconv/1.5/configuration.html#4.2-retries
-          - "retries 8"
-          - "server server1 test.internal.usegalaxy.eu:80 maxconn 128"
 
 haproxy_stats: true
 
@@ -39,3 +24,55 @@ telegraf_plugins_extra:
     plugin: haproxy
     config:
       - servers = ["http://127.0.0.1:8080/haproxy?stats"]
+  rabbitmq
+    plugin: rabbitmq
+    config:
+      - url = "http://localhost:15672"
+      - username = "telegraf"
+      - password = "{{ rabbitmq_password_telegraf }}"
+
+rabbitmq_version: 3.6.15-1
+rabbitmq_users:
+  - user: admin
+    password: "{{ rabbitmq_password_admin }}"
+    tags: administrator
+    vhost: /
+  - user: telegraf
+    password: "{{ rabbitmq_password_telegraf }}"
+    tags: administrator
+    vhost: /
+  - user: galaxy
+    password: "{{ rabbitmq_password_galaxy }}"
+    vhost: galaxy
+  - user: galaxy_cz
+    password: "{{ rabbitmq_password_galaxy_cz }}"
+    vhost: /pulsar/galaxy_cz
+  - user: galaxy_test
+    password: "{{ rabbitmq_password_galaxy_test }}"
+    vhost: /pulsar/galaxy_test
+  - user: vgcn_test
+    password: "{{ rabbitmq_password_galaxy_vgcn }}"
+    vhost: /pulsar/galaxy_vgcn
+
+rabbitmq_vhosts:
+  - galaxy
+  - /pulsar/galaxy_cz
+  - /pulsar/galaxy_test
+  - /pulsar/galaxy_vgcn
+
+rabbitmq_plugins:
+  - rabbitmq_management
+
+
+rabbitmq_config:
+- rabbit:
+  #- tcp_listeners:
+    #- "'0.0.0.0'": 5671
+  - ssl_listeners:
+    - "'0.0.0.0'": 5671
+  - ssl_options:
+    - cacertfile: /etc/ssl/certs/fullchain.pem
+    - certfile: /etc/ssl/certs/cert.pem
+    - keyfile: /etc/ssl/private/privkey.pem
+    - fail_if_no_peer_cert: 'false'
+
