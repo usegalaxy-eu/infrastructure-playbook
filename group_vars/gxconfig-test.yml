@@ -749,7 +749,7 @@ base_app_main: &BASE_APP_MAIN
   # temporary directory in which files uploaded by the upload module
   # will be placed.
   # TODO(hxr): main does this
-  #nginx_upload_store: ''
+  nginx_upload_store: '/data/dnb01/nginx-galaxy/uploads'
 
   # This value overrides the action set on the file upload form, e.g.
   # the web path where the nginx_upload_module has been configured to
@@ -761,7 +761,7 @@ base_app_main: &BASE_APP_MAIN
   # initiate staging operations on the remote end.  See the Galaxy nginx
   # documentation for the corresponding nginx configuration.
   # TODO(hxr): main does this
-  #nginx_upload_job_files_store: ''
+  nginx_upload_job_files_store: '/data/dnb01/nginx-galaxy/jobfiles'
 
   # Galaxy can also use nginx_upload_module to receive files staged out
   # upon job completion by remote job runners (i.e. Pulsar) that
