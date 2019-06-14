@@ -264,7 +264,6 @@ nginx_vhosts:
             limit_rate_after 100m;
             limit_rate 5m;
 
-
             include         uwsgi_params;
             proxy_hide_header x-frame-options;
             add_header X-Content-Type-Options nosniff;
@@ -283,6 +282,43 @@ nginx_vhosts:
               alias /;
               add_header X-Frame-Options SAMEORIGIN;
               add_header X-Content-Type-Options nosniff;
+        }
+
+        location /_upload {
+                upload_store /data/dnb01/nginx-galaxy/uploads;
+                upload_store_access user:rw; # group:rw all:rw;
+                upload_pass_form_field "";
+                upload_set_form_field "__${upload_field_name}__is_composite" "true";
+                upload_set_form_field "__${upload_field_name}__keys" "name path";
+                upload_set_form_field "${upload_field_name}_name" "$upload_file_name";
+                upload_set_form_field "${upload_field_name}_path" "$upload_tmp_path";
+                upload_pass_args on;
+                upload_pass /_upload_done;
+        }
+
+        location /_upload_done {
+                set $dst /api/tools;
+                if ($args ~ nginx_redir=([^&]+)) {
+                        set $dst $1;
+                }
+                rewrite "" $dst;
+        }
+
+        location /_job_files {
+                if ($request_method != POST) {
+                        rewrite "" /api/jobs/$arg_job_id/files last;
+                }
+                upload_store /data/dnb01/nginx-galaxy/jobfiles;
+                upload_store_access user:rw;
+                upload_pass_form_field "";
+                upload_set_form_field "__${upload_field_name}_path" "$upload_tmp_path";
+                upload_pass_args on;
+                upload_pass /_upload_job_files_done;
+        }
+
+        location /_upload_job_files_done {
+                internal;
+                rewrite "" /api/jobs/$arg_job_id/files;
         }
 
         location /phinch {
