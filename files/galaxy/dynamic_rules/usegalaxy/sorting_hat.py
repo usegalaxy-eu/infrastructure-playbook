@@ -171,12 +171,8 @@ def build_spec(tool_spec, runner_hint=None):
         runner = 'drmaa'
     elif 'condor' in destination:
         runner = 'condor'
-    elif destination == 'remote_cluster_mq':
-        runner = 'pulsar_eu_cz'
-    elif destination == 'remote_cluster_mq_cz':
-        runner = 'pulsar_eu_cz'
-    elif destination == 'remote_cluster_mq_test':
-        runner = 'pulsar_eu_test'
+    elif 'remote_cluster_mq' in destination:
+        runner = destination.replace('remote_cluster_mq', 'pulsar_eu')
     else:
         runner = 'local'
 
@@ -255,8 +251,10 @@ def _gateway(tool_id, user_roles, user_id, user_email, memory_scale=1.0):
     # Now build the full spec
     runner_hint = None
 
-    if tool_id != 'upload1' and 'destination-pulsar-cz' in user_roles:
-        runner_hint = 'remote_cluster_mq_cz'
+    if tool_id != 'upload1':
+        hints = [x for x in user_roles if x.startswith('destination-')]
+        if len(hints) > 0:
+            runner_hint = hints[0].replace('destination-pulsar-', 'remote_cluster_mq_')
 
     # Ensure that this tool is permitted to run, otherwise, throw an exception.
     assert_permissions(tool_spec, user_email, user_roles)
