@@ -1,28 +1,31 @@
 ---
-haproxy_chroot: ''
-haproxy_frontends:
-    - name: https-in
-      bind:
-        - '*:80'
-      mode: http
-      custom_config:
-        - 'use_backend cvmfs'
+# Certbot
+certbot_auth_method: --webroot
+certbot_well_known_root: /srv/nginx/_well-known_root
+certbot_share_key_users:
+  - nginx
+  - rabbitmq
 
+certbot_post_renewal: |
+    systemctl restart nginx || true
 
-haproxy_backends:
-    - name: cvmfs
-      balance: roundrobin
-      mode: http
-      custom_config:
-        - 'server server1 cvmfs1-ufr0.internal.galaxyproject.eu:80 maxconn 32'
+# NGINX
+nginx_enable_default_server: false
+nginx_servers:
+  - proxy-internal
+nginx_ssl_servers:
+  - proxy-internal-ssl
+nginx_conf_http:
+  client_max_body_size: 1g
+nginx_remove_default_vhost: true
 
-haproxy_stats: true
+# Nginx Letsencrypt bindings
+nginx_ssl_role: usegalaxy-eu.certbot
+nginx_conf_ssl_certificate: /etc/ssl/certs/fullchain.pem
+nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
+
 
 telegraf_plugins_extra:
-  haproxy:
-    plugin: haproxy
-    config:
-      - servers = ["http://127.0.0.1:8080/haproxy?stats"]
   rabbitmq:
     plugin: rabbitmq
     config:
@@ -84,6 +87,5 @@ rabbitmq_config:
   - ssl_options:
     - cacertfile: /etc/ssl/certs/fullchain.pem
     - certfile: /etc/ssl/certs/cert.pem
-    - keyfile: /etc/ssl/private/privkey.pem
+    - keyfile: /etc/ssl/user/privkey-nginx.pem
     - fail_if_no_peer_cert: 'false'
-
