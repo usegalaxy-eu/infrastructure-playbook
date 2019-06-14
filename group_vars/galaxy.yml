@@ -663,6 +663,18 @@ galaxy_jobconf:
           runner: pulsar_eu_test
           params:
               jobs_directory: /data/share
+        - id: remote_cluster_mq_bale
+          runner: pulsar_eu_bale
+          params:
+              jobs_directory: /data/share
+        - id: remote_cluster_mq_freiburg
+          runner: pulsar_eu_freiburg
+          params:
+              jobs_directory: /data/share
+        - id: remote_cluster_mq_belgium
+          runner: pulsar_eu_belgium
+          params:
+              jobs_directory: /data/share
         - id: condor_singularity
           runner: condor
           params:
