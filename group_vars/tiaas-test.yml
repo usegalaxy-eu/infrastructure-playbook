@@ -1,0 +1,29 @@
+# TIaaS Configuration
+tiaas_galaxy_db_url: "{{ galaxy_db_connection_test }}"
+tiaas_galaxy_idsecret: "{{ id_secret }}"
+tiaas_galaxy_url: "https://test.usegalaxy.eu"
+
+
+# TIaaS Deployment
+tiaas_dir: /opt/tiaas
+tiaas_user: tiaas
+tiaas_group: tiaas
+tiaas_version: master
+tiaas_force_checkout: true
+tiaas_create_user: true
+tiaas_create_group: true
+
+# Allow galaxy to manage tiaas
+tiaas_manage_user: "{{ galaxy_user }}"
+
+# Trainings
+tiaas_trainings:
+ - sbc-2019-05-30
+ - chipseq2019
+ - sigu2019
+ - genomics_phd_1
+ - bioinformatics-ukraine
+ - imbb
+ - sbc-rnaseq-2019-06-10
+ - gallantries
+
