@@ -287,7 +287,7 @@ nginx_vhosts:
 
         location /_upload {
                 upload_store /data/dnb01/nginx-galaxy/uploads;
-                upload_store_access user:rw; # group:rw all:rw;
+                upload_store_access user:rw group:rw all:rw;
                 upload_pass_form_field "";
                 upload_set_form_field "__${upload_field_name}__is_composite" "true";
                 upload_set_form_field "__${upload_field_name}__keys" "name path";
@@ -310,7 +310,7 @@ nginx_vhosts:
                         rewrite "" /api/jobs/$arg_job_id/files last;
                 }
                 upload_store /data/dnb01/nginx-galaxy/jobfiles;
-                upload_store_access user:rw;
+                upload_store_access user:rw group:rw all:rw;
                 upload_pass_form_field "";
                 upload_set_form_field "__${upload_field_name}_path" "$upload_tmp_path";
                 upload_pass_args on;
