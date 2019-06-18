@@ -187,6 +187,8 @@ def reroute_to_dedicated(tool_spec, user_roles):
     """
     # Collect their possible training roles identifiers.
     training_roles = [role for role in user_roles if role.startswith('training-')]
+    if any([role.startswith('training-gcc-') for role in training_roles]):
+        training_roles.append('training-gcc')
 
     # No changes to specification.
     if len(training_roles) == 0:
