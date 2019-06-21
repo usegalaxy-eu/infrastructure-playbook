@@ -13,52 +13,8 @@ cvmfs_stratum1_cache_dir:
 usegalaxy_eu_autofs_mounts:
  - data
 
-galaxy_cvmfs_repositories:
-  - repository: test.galaxyproject.org
-    stratum0: cvmfs0-tacc0.galaxyproject.org
-    owner: root
-    key_dir: /etc/cvmfs/keys/galaxyproject.org
-    server_options:
-      - CVMFS_AUTO_GC=false
-    client_options: []
-  - repository: main.galaxyproject.org
-    stratum0: cvmfs0-tacc0.galaxyproject.org
-    owner: root
-    key_dir: /etc/cvmfs/keys/galaxyproject.org
-    server_options:
-      - CVMFS_AUTO_GC=false
-    client_options: []
-  - repository: data.galaxyproject.org
-    stratum0: cvmfs0-psu0.galaxyproject.org
-    owner: root
-    key_dir: /etc/cvmfs/keys/galaxyproject.org
-    server_options:
-      - CVMFS_AUTO_GC=false
-    client_options: []
-  - repository: sandbox.galaxyproject.org
-    stratum0: cvmfs0-psu0.galaxyproject.org
-    owner: root
-    key_dir: /etc/cvmfs/keys/galaxyproject.org
-    server_options: []
-    client_options: []
-  - repository: singularity.galaxyproject.org
-    stratum0: cvmfs0-psu0.galaxyproject.org
-    owner: root
-    key_dir: /etc/cvmfs/keys/galaxyproject.org
-    server_options: []
-    client_options: []
-  - repository: usegalaxy.galaxyproject.org
-    stratum0: cvmfs0-psu0.galaxyproject.org
-    owner: root
-    key_dir: /etc/cvmfs/keys/galaxyproject.org
-    server_options: []
-    client_options: []
-  - repository: cvmfs-config.galaxyproject.org
-    stratum0: cvmfs0-psu0.galaxyproject.org
-    owner: root
-    key_dir: /etc/cvmfs/keys/galaxyproject.org
-    server_options: []
-    client_options: []
+cvmfs_role: stratum1
+galaxy_cvmfs_repos_enabled: config-repo
 
 cvmfs_check_servers:
     repos:
