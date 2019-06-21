@@ -335,36 +335,12 @@ dynmotd_custom:
 
 # CVMFS
 cvmfs_role: client
-galaxy_cvmfs_repos_enabled: true
+galaxy_cvmfs_repos_enabled: config-repo
 
 galaxy_cvmfs_server_urls:
   - domain: galaxyproject.org
     urls:
       - "http://cvmfs1-ufr0.galaxyproject.eu/cvmfs/@fqrn@"
-
-galaxy_cvmfs_repositories:
-  - repository: main.galaxyproject.org
-    stratum0: cvmfs0-tacc0.galaxyproject.org
-    key_dir: /etc/cvmfs/keys/galaxyproject.org
-    server_options:
-      - CVMFS_AUTO_GC=false
-    client_options: []
-  - repository: data.galaxyproject.org
-    stratum0: cvmfs0-psu0.galaxyproject.org
-    key_dir: /etc/cvmfs/keys/galaxyproject.org
-    server_options:
-      - CVMFS_AUTO_GC=false
-    client_options: []
-  - repository: singularity.galaxyproject.org
-    stratum0: cvmfs0-psu0.galaxyproject.org
-    key_dir: /etc/cvmfs/keys/galaxyproject.org
-    server_options: []
-    client_options: []
-  - repository: usegalaxy.galaxyproject.org
-    stratum0: cvmfs0-psu0.galaxyproject.org
-    key_dir: /etc/cvmfs/keys/galaxyproject.org
-    server_options: []
-    client_options: []
 
 # SystemD
 galaxy_systemd_zerglings: 1
