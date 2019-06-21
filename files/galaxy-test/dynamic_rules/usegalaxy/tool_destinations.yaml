@@ -1,6 +1,7 @@
 ---
 __default__: {}
 
+maxquant: {mem: 20, cores: 8}
 scpipe: {mem: 64, cores: 8}
 cardinal_combine: {mem: 92}
 cardinal_classification: {mem: 128}
@@ -28,6 +29,9 @@ bio3d_pca: {mem: 64}
 bio3d_rmsd: {mem: 64}
 bio3d_rmsf: {mem: 64}
 
+cds_essential_variability:
+  env:
+    COPERNICUS_CDSAPIRC_KEY_FILE: /data/db/data_managers/COPERNICUS_CDSAPIRC_KEY_FILE
 
 kraken: {mem: 128}
 
@@ -494,6 +498,7 @@ hmmer_hmmsearch: {mem: 10}
 htseq_count: {mem: 32}
 humann2: {mem: 16}
 infernal_cmbuild: {cores: 10, mem: 20}
+infernal_cmsearch: {cores: 10, mem: 20}
 interproscan: {cores: 12, mem: 40}
 iqtree: {cores: 12}
 iterative_map_pipeline: {mem: 60}
@@ -663,7 +668,7 @@ show_3D_surface_plot:
   name: matlab
   nativeSpecExtra: -l lic_matlab=1
 signalp3: {mem: 10}
-sklearn_searchcv: {cores: 4, mem: 16}
+sklearn_searchcv: {cores: 12, mem: 16}
 smooth_running_window: {mem: 32}
 snippy: {mem: 12}
 snpEff: {mem: 12}

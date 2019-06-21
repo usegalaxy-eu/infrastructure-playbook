@@ -103,3 +103,30 @@ sge:
         -v MPLCONFIGDIR
         -soft
         -l galaxy1_dedicated=1
+
+remote_cluster_mq_bari:
+  env: {}
+  params:
+    priority: -{PRIORITY}
+    request_cpus: '{PARALLELISATION}'
+    request_memory: '{MEMORY}'
+    jobs_directory: '/data/share/staging/'
+    dependency_resolution: 'remote'
+
+remote_cluster_mq_belgium:
+  env: {}
+  params:
+    priority: -{PRIORITY}
+    request_cpus: '{PARALLELISATION}'
+    request_memory: '{MEMORY}'
+    jobs_directory: '/data/share/staging/'
+    dependency_resolution: 'remote'
+
+remote_cluster_mq_freiburg:
+  env: {}
+  params:
+    priority: -{PRIORITY}
+    request_cpus: '{PARALLELISATION}'
+    request_memory: '{MEMORY}'
+    jobs_directory: '/data/share/staging/'
+    dependency_resolution: 'remote'
