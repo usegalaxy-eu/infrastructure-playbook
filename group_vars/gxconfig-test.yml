@@ -101,7 +101,7 @@ base_app_main: &BASE_APP_MAIN
   # can be locally developed or installed from Galaxy tool sheds.
   # (config/tool_conf.xml.sample will be used if left unset and
   # config/tool_conf.xml does not exist).
-  tool_config_file: "{{ galaxy_config_dir }}/tool_conf.xml,{{ galaxy_shed_tool_conf_file }},{{ galaxy_config_dir }}/nagios_tool_conf.xml"
+  tool_config_file: "{{ galaxy_config_dir }}/tool_conf.xml,{{ galaxy_shed_tool_conf_file }},{{ galaxy_config_dir }}/nagios_tool_conf.xml,/cvmfs/sandbox.galaxyproject.org/config/shed_tool_conf.xml"
 
   # Enable / disable checking if any tools defined in the above non-shed
   # tool_config_files (i.e., tool_conf.xml) have been migrated from the
