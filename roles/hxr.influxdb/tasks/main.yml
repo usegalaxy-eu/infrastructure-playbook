@@ -67,7 +67,6 @@
     validate_certs: yes
   with_items:
     - galaxy
-    - grt
     - notifications
   when: not ansible_check_mode # This task is not safe if DB doesn't exist.
 
