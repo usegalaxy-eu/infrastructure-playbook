@@ -748,7 +748,7 @@ base_app_main: &BASE_APP_MAIN
   # in detail in the documentation linked above.  The upload store is a
   # temporary directory in which files uploaded by the upload module
   # will be placed.
-  nginx_upload_store: '/data/dnb01/nginx-galaxy/uploads-test'
+  nginx_upload_store: '/data/dnb01/nginx-galaxy-test/uploads-test'
 
   # This value overrides the action set on the file upload form, e.g.
   # the web path where the nginx_upload_module has been configured to
@@ -759,7 +759,7 @@ base_app_main: &BASE_APP_MAIN
   # upon job completion by remote job runners (i.e. Pulsar) that
   # initiate staging operations on the remote end.  See the Galaxy nginx
   # documentation for the corresponding nginx configuration.
-  nginx_upload_job_files_store: '/data/dnb01/nginx-galaxy/jobfiles-test'
+  nginx_upload_job_files_store: '/data/dnb01/nginx-galaxy-test/jobfiles-test'
 
   # Galaxy can also use nginx_upload_module to receive files staged out
   # upon job completion by remote job runners (i.e. Pulsar) that
