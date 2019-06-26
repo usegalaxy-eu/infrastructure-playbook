@@ -340,7 +340,8 @@ nginx_vhosts:
         }
 
         location ~ /static/style/base.css {
-               alias /opt/multisite-css/$host.css;
+            root /opt/multisite-css/;
+            try_files /test.$host.css /usegalaxy.eu.css =404;
         }
 
         location /static/style {

@@ -239,7 +239,8 @@ nginx_vhosts:
         }
 
         location ~ /static/style/base.css {
-               try_files /opt/multisite-css/$host.css /opt/multisite-css/usegalaxy.eu.css;
+            root /opt/multisite-css/;
+            try_files /test.$host.css /usegalaxy.eu.css =404;
         }
 
         location /static/style {
