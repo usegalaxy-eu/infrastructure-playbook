@@ -16,7 +16,7 @@ def per_host_tool_labels( context, label ):
     valid_labels = [ "file_meta_label", "general_text_label"]
     general_ngs_labels = [ "genomics_label" ]
     # HiCtools mode: published in NAR 2018
-    if "nanopore.usegalaxy.eu" in host or "hicexplorer.usegalaxy.eu" in host or "singlecell.usegalaxy.eu" in host or "metagenomics.usegalaxy.eu" in host or "rna.usegalaxy.eu" in host or "clipseq.usegalaxy.eu" in host or "graphclust.usegalaxy.eu" in host:
+    if "humancellatlas.usegalaxy.eu" in host or "nanopore.usegalaxy.eu" in host or "hicexplorer.usegalaxy.eu" in host or "singlecell.usegalaxy.eu" in host or "metagenomics.usegalaxy.eu" in host or "rna.usegalaxy.eu" in host or "clipseq.usegalaxy.eu" in host or "graphclust.usegalaxy.eu" in host:
         valid_labels += general_ngs_labels
         return label.id in valid_labels
     if "cheminformatics.usegalaxy.eu" in host:
