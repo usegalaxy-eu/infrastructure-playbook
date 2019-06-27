@@ -1666,6 +1666,14 @@ base_app_main: &BASE_APP_MAIN
   # Galaxy real time communication server settings
   #communication_server_port: 7070
 
+  # Galaxy tool recommendation settings
+  enable_tool_recommendation: true
+
+  # Trained model (HDF5 file) path for tool recommendation.
+  # It is required to be set if 'enable_tool_recommendation' property is enabled and set to true.
+  model_path: /opt/galaxy/server/database/trained_model.hdf5
+
+
   # persistent_communication_rooms is a comma-separated list of rooms
   # that should be always available.
   #persistent_communication_rooms: null
