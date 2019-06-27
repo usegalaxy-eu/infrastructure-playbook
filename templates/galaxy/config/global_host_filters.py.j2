@@ -78,8 +78,11 @@ def per_host_tool_sections( context, section ):
     subdomain = host.replace('.usegalaxy.eu', '')
 
     # hide HCA tools from other subdomains than humancellatlas, do not confuse users by duplicated tools
-    if host != "humancellatlas.usegalaxy.eu" and section.id == 'hca-single_cell':
-        return False
+    if section.id == 'hca-single_cell':
+        if host == "humancellatlas.usegalaxy.eu":
+            return True
+        else:
+            return False
 
     # Core tools used by all virtual hosts.
     # HiCtools mode: published in NAR 2018
