@@ -53,7 +53,7 @@ DOMAIN_SECTIONS = {
     'singlecell': GENERAL_NGS_SECTIONS + ["rna_analysis", "annotation",
         "graph/display_data", "single-cell"],
     'humancellatlas': GENERAL_NGS_SECTIONS + ["rna_analysis", "annotation",
-        "graph/display_data", "single-cell", "HCA-Single Cell"],
+        "graph/display_data", "single-cell", "hca-single_cell"],
     'clipseq': GENERAL_NGS_SECTIONS + ["rna_analysis", "peak_calling",
         "motif_tools"],
     'graphclust': GENERAL_NGS_SECTIONS + ["rna_analysis", "graphclust"],
@@ -78,7 +78,7 @@ def per_host_tool_sections( context, section ):
     subdomain = host.replace('.usegalaxy.eu', '')
 
     # hide HCA tools from other subdomains than humancellatlas, do not confuse users by duplicated tools
-    if host != "humancellatlas.usegalaxy.eu" and section.id == 'HCA-Single Cell':
+    if host != "humancellatlas.usegalaxy.eu" and section.id == 'hca-single_cell':
         return False
 
     # Core tools used by all virtual hosts.
