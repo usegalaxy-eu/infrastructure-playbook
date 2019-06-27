@@ -78,7 +78,7 @@ def per_host_tool_sections( context, section ):
     subdomain = host.replace('.usegalaxy.eu', '')
 
     # hide HCA tools from other subdomains than humancellatlas, do not confuse users by duplicated tools
-    if section.id == 'hca-single_cell':
+    if section.id in ['hca-single_cell']:
         if 'humancellatlas' in host:
             return True
         else:
