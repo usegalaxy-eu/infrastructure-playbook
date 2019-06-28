@@ -1,23 +1,25 @@
 ---
 - hosts: apollo
   become: true
-  vars:
-    hostname: apollo.usegalaxy.eu
   vars_files:
     - "secret_group_vars/all.yml"
     - "secret_group_vars/apollo.yml"
+  vars:
+    hostname: apollo.usegalaxy.eu
   roles:
+    - hostname
+    - usegalaxy-eu.dynmotd
     - geerlingguy.repo-epel
-    - usegalaxy-eu.certbot
     - hxr.admin-tools
+    - influxdata.chrony
+    - hxr.monitor-email
     - linuxhq.yum_cron
-    - multinic
+    - galaxyproject.nginx
     - hxr.autofs
-    - geerlingguy.nginx
+    # BEGIN custom
     - hxr.remap-user
     # Now add custom tomcat user with hardcoded ID. The user info is in group_vars/apollo.yml
     - hxr.replace-galaxy-user
-    # BEGIN custom
     - devops.tomcat7
     - hxr.apollo
     # END custom
