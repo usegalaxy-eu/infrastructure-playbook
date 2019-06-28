@@ -53,7 +53,7 @@ DOMAIN_SECTIONS = {
     'singlecell': GENERAL_NGS_SECTIONS + ["rna_analysis", "annotation",
         "graph/display_data", "single-cell"],
     'humancellatlas': GENERAL_NGS_SECTIONS + ["rna_analysis", "annotation",
-        "graph/display_data", "single-cell"],
+        "graph/display_data", "single-cell", "hca-single_cell"],
     'clipseq': GENERAL_NGS_SECTIONS + ["rna_analysis", "peak_calling",
         "motif_tools"],
     'graphclust': GENERAL_NGS_SECTIONS + ["rna_analysis", "graphclust"],
@@ -75,13 +75,21 @@ def per_host_tool_sections( context, section ):
         tool_section_filters = examples:per_host_tool_sections
     """
     host = context.trans.request.host
+    subdomain = host.replace('.usegalaxy.eu', '')
+
+    # hide HCA tools from other subdomains than humancellatlas, do not confuse users by duplicated tools
+    if section.id in ['hca-single_cell']:
+        if 'humancellatlas' in host:
+            return True
+        else:
+            return False
+
     # Core tools used by all virtual hosts.
     # HiCtools mode: published in NAR 2018
     if host == "usegalaxy.eu":
         return True
 
-    h = host.replace('.usegalaxy.eu', '')
-    if h in DOMAIN_SECTIONS:
-        return section.id in DOMAIN_SECTIONS[h] or section.id in BASE_SECTIONS
+    if subdomain in DOMAIN_SECTIONS:
+        return section.id in DOMAIN_SECTIONS[subdomain] or section.id in BASE_SECTIONS
     else:
         return True
