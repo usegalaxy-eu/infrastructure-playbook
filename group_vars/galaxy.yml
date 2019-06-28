@@ -382,6 +382,10 @@ nginx_vhosts:
             proxy_pass    http://127.0.0.1:5000/join-training/;
         }
 
+        location /apollo/ {
+            proxy_pass http://apollo.internal.galaxyproject.eu/apollo/;
+        }
+
         location /external/phdcomics/ {
                 proxy_pass http://phdcomics.com/;
                 # The comics are extremely cacheable. No sense waiting for a server from USA to respond.
