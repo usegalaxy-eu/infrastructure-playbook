@@ -386,6 +386,10 @@ nginx_vhosts:
             proxy_pass http://apollo.internal.galaxyproject.eu/apollo/;
         }
 
+        location /apollo_api/ {
+            proxy_pass http://apollo.internal.galaxyproject.eu/apollo_api/;
+        }
+
         location /external/phdcomics/ {
                 proxy_pass http://phdcomics.com/;
                 # The comics are extremely cacheable. No sense waiting for a server from USA to respond.
@@ -467,7 +471,7 @@ galaxy_systemd_zerglings: 2
 galaxy_systemd_handlers: 12
 galaxy_systemd_memory_limit: 16
 galaxy_systemd_memory_limit_zp: 8
-galaxy_systemd_zergling_env: "TMP=/data/dnb01/galaxy_db/tmp-uwsgi TEMP=/data/dnb01/galaxy_db/tmp-uwsgi TMPDIR=/data/dnb01/galaxy_db/tmp-uwsgi"
+galaxy_systemd_zergling_env: "TMP=/data/dnb01/galaxy_db/tmp-uwsgi TEMP=/data/dnb01/galaxy_db/tmp-uwsgi TMPDIR=/data/dnb01/galaxy_db/tmp-uwsgi GALAXY_WEBAPOLLO_URL={{ GALAXY_WEBAPOLLO_URL }} GALAXY_WEBAPOLLO_USER={{ GALAXY_WEBAPOLLO_USER }} GALAXY_WEBAPOLLO_PASSWORD={{ GALAXY_WEBAPOLLO_PASSWORD }} GALAXY_WEBAPOLLO_EXT_URL={{ GALAXY_WEBAPOLLO_EXT_URL }}"
 galaxy_zergpool_listen_addr: "127.0.0.1:4001"
 galaxy_zergpool_socket_name: zergpool.sock
 galaxy_zergpool_listen_path: "{{ galaxy_mutable_data_dir }}/{{ galaxy_zergpool_socket_name }}"
