@@ -24,6 +24,24 @@ galaxy_custom_sites:
         }
   - name: hicexplorer
     brand: HiCExplorer
+    custom_css: |
+        #masthead {
+            background-image: url("/static/style/hicexplorer.png");
+            background-size: 340px;
+        }
+        #masthead .navbar-brand {
+          background: #3337;
+          border: 1px solid #3337;
+        }
+        #masthead .navbar-nav > li .nav-link {
+            color: white;
+        }
+        #masthead .navbar-nav > li {
+            background: #3337;
+        }
+        #masthead .navbar-nav > li.active {
+            background: #333e;
+        }
   - name: metabolomics
     brand: Metabolomics
   - name: metagenomics
