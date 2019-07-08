@@ -1,10 +1,11 @@
 ---
-- hosts: grafana
+- name: Grafana
+  hosts: grafana
   become: true
-  vars_files:
-    - "secret_group_vars/all.yml"
   vars:
     hostname: stats.galaxyproject.eu
+  vars_files:
+    - "secret_group_vars/all.yml"
   roles:
     - hostname
     - usegalaxy-eu.dynmotd

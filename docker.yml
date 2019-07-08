@@ -7,14 +7,18 @@
   vars_files:
     - "secret_group_vars/all.yml"
   roles:
-    #- geerlingguy.repo-epel
-    #- hxr.admin-tools
-    #- hxr.monitor-email
-    #- linuxhq.yum_cron
-    #- influxdata.chrony
+    - hostname
+    - usegalaxy-eu.dynmotd
+    - geerlingguy.repo-epel
+    - hxr.admin-tools
+    - influxdata.chrony
+    - hxr.monitor-email
+    - linuxhq.yum_cron
+    # Custom
     #- geerlingguy.pip
     #- geerlingguy.docker
     - hxr.docker-ssl
+    # End Custom
     - dj-wasabi.telegraf
     - dev-sec.os-hardening
     - dev-sec.ssh-hardening
