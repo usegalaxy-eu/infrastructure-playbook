@@ -4,6 +4,8 @@ codename: test
 # Docker
 docker_users:
   - galaxy
+docker_service_state: stopped
+docker_service_enabled: false
 
 # Autofs
 usegalaxy_eu_autofs_mounts:
@@ -161,8 +163,21 @@ nginx_vhosts:
                 internal;
         }
 
+        # Move to remote storage, hopefully hammer local disk slightly less?
+        #client_body_temp_path  /data/dnb01/nginx_upload_store/;
+        client_body_buffer_size 1024m;
+
         location / {
             uwsgi_pass      127.0.0.1:4001;
+
+            # For testing, send data to the private zergling.
+            # if ( $remote_addr ~* 95.208.248.14  ) {
+            #     uwsgi_pass      127.0.0.1:4020;
+            # }
+            # Throttle downloads. First 100Mb are free, after that 5Mb/s.
+            # users can move to FTP if they need / we can sort that out.
+            limit_rate_after 100m;
+            limit_rate 5m;
 
             include         uwsgi_params;
             proxy_hide_header x-frame-options;
@@ -186,7 +201,7 @@ nginx_vhosts:
 
         location /_upload {
                 upload_store /data/dnb01/nginx-galaxy-test/uploads-test;
-                upload_store_access user:rw; # group:rw all:rw;
+                upload_store_access user:rw group:rw all:rw;
                 upload_pass_form_field "";
                 upload_set_form_field "__${upload_field_name}__is_composite" "true";
                 upload_set_form_field "__${upload_field_name}__keys" "name path";
@@ -209,7 +224,7 @@ nginx_vhosts:
                         rewrite "" /api/jobs/$arg_job_id/files last;
                 }
                 upload_store /data/dnb01/nginx-galaxy-test/jobfiles-test;
-                upload_store_access user:rw;
+                upload_store_access user:rw group:rw all:rw;
                 upload_pass_form_field "";
                 upload_set_form_field "__${upload_field_name}_path" "$upload_tmp_path";
                 upload_pass_args on;
@@ -279,6 +294,15 @@ nginx_vhosts:
 
         location /join-training/ {
             proxy_pass    http://127.0.0.1:5000/join-training/;
+            proxy_set_header           Host $host;
+        }
+
+        location /apollo/ {
+            proxy_pass http://apollo.internal.galaxyproject.eu/apollo/;
+        }
+
+        location /apollo_api/ {
+            proxy_pass http://apollo.internal.galaxyproject.eu/apollo_api/;
         }
 
         location /external/phdcomics/ {
@@ -348,6 +372,8 @@ galaxy_systemd_zerglings: 1
 galaxy_systemd_handlers: 1
 galaxy_systemd_memory_limit: 16
 galaxy_systemd_memory_limit_zp: 8
+galaxy_systemd_zergling_env: "TMP=/data/dnb01/galaxy_db/tmp-uwsgi TEMP=/data/dnb01/galaxy_db/tmp-uwsgi TMPDIR=/data/dnb01/galaxy_db/tmp-uwsgi GALAXY_WEBAPOLLO_URL={{ GALAXY_WEBAPOLLO_URL }} GALAXY_WEBAPOLLO_USER={{ GALAXY_WEBAPOLLO_USER }} GALAXY_WEBAPOLLO_PASSWORD={{ GALAXY_WEBAPOLLO_PASSWORD }} GALAXY_WEBAPOLLO_EXT_URL={{ GALAXY_WEBAPOLLO_EXT_URL }} GALAXY_SHARED_DIR={{ GALAXY_SHARED_DIR }}"
+galaxy_systemd_handler_env: "GALAXY_WEBAPOLLO_URL={{ GALAXY_WEBAPOLLO_URL }} GALAXY_WEBAPOLLO_USER={{ GALAXY_WEBAPOLLO_USER }} GALAXY_WEBAPOLLO_PASSWORD={{ GALAXY_WEBAPOLLO_PASSWORD }} GALAXY_WEBAPOLLO_EXT_URL={{ GALAXY_WEBAPOLLO_EXT_URL }} GALAXY_SHARED_DIR={{ GALAXY_SHARED_DIR }}"
 galaxy_zergpool_listen_addr: "127.0.0.1:4001"
 galaxy_zergpool_socket_name: zergpool.sock
 galaxy_zergpool_listen_path: "{{ galaxy_mutable_data_dir }}/{{ galaxy_zergpool_socket_name }}"

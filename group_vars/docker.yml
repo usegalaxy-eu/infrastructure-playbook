@@ -2,3 +2,20 @@
 # Docker
 docker_users:
   - centos
+
+# Certbot
+certbot_auth_method: --webroot
+certbot_well_known_root: /srv/nginx/_well-known_root
+certbot_share_key_users:
+  - nginx
+  - docker
+certbot_post_renewal: |
+  systemctl restart nginx || true
+  systemctl restart docker || true
+
+# NGINX
+nginx_enable_default_server: false
+nginx_servers:
+  - docker
+nginx_conf_http:
+  client_max_body_size: 1g
