@@ -344,10 +344,15 @@ nginx_vhosts:
             try_files /$host.css /usegalaxy.eu.css =404;
         }
 
+        location ~ /static/style/hicexplorer.png {
+            alias /opt/multisite-css/hicexplorer.png;
+        }
+
         location /static/style {
                 alias {{ galaxy_server_dir }}/static/style/blue;
                 expires 24h;
         }
+
         location /static/scripts {
                 alias {{ galaxy_server_dir }}/static/scripts;
                 expires 24h;
@@ -356,7 +361,6 @@ nginx_vhosts:
         location /robots.txt {
                 alias {{ galaxy_server_dir }}/static/robots.txt;
         }
-
 
         location ~ ^/plugins/(?<plug_type>[^/]+?)/((?<vis_d>[^/_]*)_?)?(?<vis_name>[^/]*?)/static/(?<static_file>.*?)$ {
             alias /opt/galaxy/config/plugins/$plug_type/;
