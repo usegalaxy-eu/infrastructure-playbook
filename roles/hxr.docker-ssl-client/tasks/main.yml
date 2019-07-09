@@ -1,16 +1,12 @@
 ---
 # Certs
 - name: mkdir
-  become: true
-  become_user: "{{ docker_account }}"
   file:
     path: "~/.docker"
     state: directory
     mode: '0750'
 
 - name: Setup docker for user
-  become: true
-  become_user: "{{ docker_account }}"
   copy:
     src: "{{ item }}"
     dest: "~/.docker/{{ item }}"
@@ -21,8 +17,6 @@
     - key.pem
 
 - name: Add env vars
-  become: true
-  become_user: "{{ docker_account }}"
   lineinfile:
     path: "~/.bashrc"
     regexp: "^export {{ item.var }}"

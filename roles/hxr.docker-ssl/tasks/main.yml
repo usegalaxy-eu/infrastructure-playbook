@@ -1,4 +1,27 @@
 ---
+# Certs
+- name: Deploy stuff
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  with_items:
+    - src: ca-key.pem
+      dest: /etc/pki/tls/private/ca-key.pem
+      mode: '0640'
+    - src: ca.pem
+      dest: /etc/pki/tls/certs/ca.pem
+      mode: '0644'
+    - src: cert.pem
+      dest: /etc/pki/tls/certs/cert.pem
+      mode: '0644'
+    - src: key.pem
+      dest: /etc/pki/tls/private/key.pem
+      mode: '0640'
+  notify: restart docker
+
 - file:
     path: /etc/systemd/system/docker.service.d
     state: directory
@@ -13,11 +36,4 @@
     owner: root
     group: root
     mode: 0644
-  register: docker_override
-
-- name: restart docker
-  systemd:
-    state: restarted
-    daemon_reload: yes
-    name: docker
-  when: docker_override.changed
+  notify: restart docker

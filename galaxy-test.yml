@@ -23,10 +23,12 @@
   roles:
     - hostname
     - geerlingguy.docker
-    ## TODO(hxr): fails whenever galaxy homedir is created without bashrc
-    #- role: hxr.docker-ssl-client
-      #vars:
-        #docker_account: galaxy
+    # TODO(hxr): fails whenever galaxy homedir is created without bashrc
+    - role: hxr.docker-ssl-client
+      become: yes
+      become_user: galaxy
+      vars:
+        docker_account: galaxy
     - geerlingguy.repo-epel
     - hxr.exclude-repo # Exclude epel repos for condor, node, npm
     ## TODO(hxr): fix ordering of these
