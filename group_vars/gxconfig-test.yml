@@ -361,7 +361,7 @@ base_app_main: &BASE_APP_MAIN
   # security considerations, so proceed with caution. The path is
   # relative to the Galaxy root dir.  To use an absolute path begin the
   # path with '/'.  This is a comma separated list.
-  #interactive_environment_plugins_directory: "{{ galaxy_root }}/interactive_environments/plugins"
+  interactive_environment_plugins_directory: "{{ galaxy_config_dir }}/plugins/"
 
   # To run interactive environment containers in Docker Swarm mode (on
   # an existing swarm), set this option to True and set
@@ -810,7 +810,7 @@ base_app_main: &BASE_APP_MAIN
   # proxy reside under the same path that your cookies are under. This
   # will result in a url like https://FQDN/galaxy-prefix/gie_proxy for
   # proxying
-  #dynamic_proxy_prefix: gie_proxy
+  dynamic_proxy_prefix: gie_proxy
 
   # This attribute governs the minimum length of time between
   # consecutive HTTP/WS requests through the proxy, before the proxy
