@@ -1,0 +1,63 @@
+---
+# create a directory if it doesn't exist
+- name: Create GIE directory
+  file:
+    path: "{{ galaxy_interactive_environment_dir }}"
+    state: directory
+    mode: 0755
+
+- name: Symlink in important things
+  file:
+    src: "{{ item.src }}"
+    dest: "{{ item.dst }}"
+    state: link
+  with_items:
+    - src: "{{ galaxy_server_dir }}/config/plugins/interactive_environments/interactive_environments.dtd"
+      dst: "{{ galaxy_interactive_environment_dir }}/interactive_environments.dtd"
+    - src: "{{ galaxy_server_dir }}/config/plugins/interactive_environments/common"
+      dst: "{{ galaxy_interactive_environment_dir }}/common"
+
+
+# Deploying GIEs
+#
+- name: Create GIE config directory
+  file:
+    path: "{{ galaxy_interactive_environment_dir }}/{{ item.name }}/config"
+    state: directory
+    mode: 0755
+  with_items: "{{ galaxy_interactive_environments }}"
+
+- name: Create GIE static dir symlink
+  file:
+    src: "{{ galaxy_server_dir }}/config/plugins/interactive_environments/{{ item.name }}/static"
+    dest: "{{ galaxy_interactive_environment_dir }}/{{ item.name }}/static"
+    state: link
+  with_items: "{{ galaxy_interactive_environments }}"
+
+- name: Create GIE template dir symlink
+  file:
+    src: "{{ galaxy_server_dir }}/config/plugins/interactive_environments/{{ item.name }}/templates"
+    dest: "{{ galaxy_interactive_environment_dir }}/{{ item.name }}/templates"
+    state: link
+  with_items: "{{ galaxy_interactive_environments }}"
+
+- name: Create GIE allowed_images.yml
+  copy:
+    content: "{{ item.allowed_images | to_nice_yaml(explicit_start=True) }}"
+    dest: "{{ galaxy_interactive_environment_dir }}/{{ item.name }}/config/allowed_images.yml"
+    mode: 0644
+  with_items: "{{ galaxy_interactive_environments }}"
+
+- name: Create GIE config file
+  copy:
+    content: "{{ item.config }}"
+    dest: "{{ galaxy_interactive_environment_dir }}/{{ item.name }}/config/{{ item.name }}.ini"
+    mode: 0644
+  with_items: "{{ galaxy_interactive_environments }}"
+
+- name: Create GIE filetype detection thingetje
+  file:
+    src: "{{ galaxy_server_dir }}/config/plugins/interactive_environments/{{ item.name }}/config/{{ item.name }}.xml"
+    dest: "{{ galaxy_interactive_environment_dir }}/{{ item.name }}/config/{{ item.name }}.xml"
+    state: link
+  with_items: "{{ galaxy_interactive_environments }}"
