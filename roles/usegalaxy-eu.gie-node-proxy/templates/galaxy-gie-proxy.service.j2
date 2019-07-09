@@ -1,0 +1,22 @@
+[Unit]
+Description=Galaxy GIE NodeJS Proxy
+After=network.target
+After=time-sync.target
+
+[Service]
+UMask=022
+Type=simple
+User=galaxy
+Group=galaxy
+WorkingDirectory={{ galaxy_root }}/node-proxy
+TimeoutStartSec=5
+ExecStart=/bin/node lib/main.js --ip 127.0.0.1 --port 8800 --sessions {{ galaxy_mutable_data_dir }}/gie_proxy_session_map.sqlite --cookie galaxysession --verbose
+MemoryLimit=4G
+Restart=always
+
+MemoryAccounting=yes
+CPUAccounting=yes
+BlockIOAccounting=yes
+
+[Install]
+WantedBy=multi-user.target

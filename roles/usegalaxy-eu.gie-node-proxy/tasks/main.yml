@@ -1,0 +1,24 @@
+---
+- name: Clone nodejs stuff
+  git:
+    repo: https://github.com/usegalaxy-eu/gie-nodejs-proxy
+    dest: "{{ galaxy_root }}/node-proxy"
+  notify:
+    - gie systemd restart
+
+- name: Install deps
+  npm:
+    path: "{{ galaxy_root }}/node-proxy"
+  notify:
+    - gie systemd restart
+
+- name: Copy main systemd file
+  template:
+    src: galaxy-gie-proxy.service.j2
+    dest: "/etc/systemd/system/galaxy-gie-proxy.service"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - gie systemd reload
+    - gie systemd restart

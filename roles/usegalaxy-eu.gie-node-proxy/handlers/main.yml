@@ -1,0 +1,9 @@
+---
+- name: gie systemd reload
+  systemd:
+    daemon_reload: yes
+
+- name: gie systemd restart
+  systemd:
+    name: galaxy-gie-proxy
+    state: restarted
