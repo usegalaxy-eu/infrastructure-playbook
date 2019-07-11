@@ -12,20 +12,33 @@
 # [root@apollo /]#
 #
 #TODO: does not seem to be working?
+- name: Check for input group
+  command: grep -Fxq "input:x:999" /etc/group
+  register: check_input
+  changed_when: no
 
 # Unfortunately ssh_keys owns some files.
 - lineinfile:
     path: /etc/group
     regexp: 'input:x:999:'
     line: 'input:x:500:'
+  when: check_input.rc == 0
 
 - command: "find / -gid 999 -exec chgrp 500 '{}' +"
   ignore_errors: yes
+  when: check_input.rc == 0
+
+- name: Check for polkitd
+  command: grep -Fxq "polkitd:x:999" /etc/passwd
+  register: check_polkitd
+  changed_when: no
 
 - lineinfile:
     path: /etc/passwd
     regexp: 'polkitd:x:999:998:User for polkitd:/:/sbin/nologin'
     line: 'polkitd:x:500:998:User for polkitd:/:/sbin/nologin'
+  when: check_polkitd.rc == 0
 
 - command: "find / -uid 999 -exec chown 500 '{}' +"
   ignore_errors: yes
+  when: check_polkitd.rc == 0
