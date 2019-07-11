@@ -1,16 +1,9 @@
 ---
-- name: Obtain user info
-  user:
-    name: "{{ pg_owner }}"
-  register: user
-
 - name: Add env vars in bashrc
   lineinfile:
-    path: "{{ user.home }}/.bashrc"
+    path: "~/.bashrc"
     regexp: "^export {{ item.var }}"
     line: "export {{ item.var }}='{{ item.val }}'"
-    owner: "{{ pg_owner }}"
-    group: "{{ pg_group }}"
   with_items:
     - var: PGUSER
       val: "{{ postgres_user }}"
@@ -21,7 +14,5 @@
   copy:
     content: |
       {{ postgres_host }}:{{ postgres_port }}:*:{{ postgres_user }}:{{ postgres_pass }}
-    dest: "{{ user.home }}/.pgpass"
-    owner: "{{ pg_owner }}"
-    group: "{{ pg_group }}"
+    dest: "~/.pgpass"
     mode: 0600

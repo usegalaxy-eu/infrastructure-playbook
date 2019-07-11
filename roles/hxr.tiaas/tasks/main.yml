@@ -38,15 +38,25 @@
     force: "{{ tiaas_force_checkout }}"
   notify: 'reload tiaas'
 
+
+- name: Build TIaaS Configuration object
+  set_fact:
+    _tiaas_config:
+      DEBUG: false
+      db: "{{ tiaas_galaxy_db_url }}"
+      redirect_location: "{{ tiaas_redirect_url }}"
+      galaxy:
+        cookiename: galaxysession
+        idsecret: "{{ tiaas_galaxy_idsecret }}"
+      trainings: "{{ tiaas_trainings }}"
+
 - name: Send templates
-  template:
-    src: "{{ item }}"
-    dest: "{{ tiaas_dir }}/config/{{ item }}"
+  copy:
+    conents: "{{ _tiaas_config | to_nice_yaml(explicit_start=True) }}"
+    dest: "{{ tiaas_dir }}/config/config.yaml"
     owner: "{{ tiaas_user }}"
     group: "{{ tiaas_group }}"
     mode: 0640
-  with_items:
-    - config.yaml
   notify: 'reload tiaas'
 
 - name: Send runner script

@@ -1,0 +1,11 @@
+---
+- name: Copy script
+  copy:
+    src: formatter.sh
+    dest: /usr/bin/format-n-mount
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Run script
+  command: /usr/bin/format-n-mount

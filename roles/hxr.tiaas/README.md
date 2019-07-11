@@ -17,11 +17,9 @@ Role Variables
 tiaas_galaxy_db_url: postgres
 tiaas_redirect_url: "https://usegalaxy.eu"
 tiaas_galaxy_idsecret: "DEFAULT IS INSECURE!"
-tiaas_galaxy_url: "https://usegalaxy.eu"
-tiaas_galaxy_key: "deadbeefcafe"
 tiaas_trainings:
   - test
-tiaas_dir: /opt/tiaas-group-join
+tiaas_dir: /opt/tiaas
 tiaas_user: root
 tiaas_group: root
 tiaas_version: master
