@@ -65,13 +65,14 @@
     # Setup Galaxy user
     - role: galaxyproject.galaxy
       vars:
-        galaxy_create_user: yes
-        galaxy_manage_clone: no
-        galaxy_manage_static_setup: no
-        galaxy_manage_mutable_setup: no
-        galaxy_manage_database: no
-        galaxy_fetch_dependencies: no
-        galaxy_build_client: no
+        galaxy_create_user: true
+        galaxy_manage_clone: false
+        galaxy_manage_paths: false
+        galaxy_manage_static_setup: false
+        galaxy_manage_mutable_setup: false
+        galaxy_manage_database: false
+        galaxy_fetch_dependencies: false
+        galaxy_build_client: false
     # The bashrc needs to be created for several later features.
     - role: usegalaxy-eu.bashrc
       vars:
