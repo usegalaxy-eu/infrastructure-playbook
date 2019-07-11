@@ -4,23 +4,6 @@
     name: "{{ pg_owner }}"
   register: user
 
-- name: Check for bashrc
-  stat:
-    path: "{{ user.home }}/.bashrc"
-  register: bashrc_stat_out
-  become: true
-  become_user: "{{ pg_owner }}"
-
-- name: Copy default bashrc when not existing
-  copy:
-    src: /etc/skel/.bashrc
-    dest: "{{ user.home }}/.bashrc"
-    owner: "{{ pg_owner }}"
-    group: "{{ pg_group }}"
-    remote_src: yes
-    mode: 0750
-  when: not bashrc_stat_out.stat.exists
-
 - name: Add env vars in bashrc
   lineinfile:
     path: "{{ user.home }}/.bashrc"
