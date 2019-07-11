@@ -70,7 +70,7 @@ def assert_permissions(tool_spec, user_email, user_roles):
     raise Exception(exception_text)
 
 
-def get_tool_id(tool_id, version=False):
+def get_tool_id(tool_id):
     """
     Convert ``toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/1.1.0``
     to ``Add_a_column``
@@ -87,8 +87,6 @@ def get_tool_id(tool_id, version=False):
     # what about odd ones.
     if tool_id.count('/') == 5:
         (server, _, owner, repo, name, version) = tool_id.split('/')
-        if version:
-            return '/'.join((name, version))
         return name
 
     return tool_id
@@ -211,14 +209,8 @@ def reroute_to_dedicated(tool_spec, user_roles):
 def _finalize_tool_spec(tool_id, user_roles, memory_scale=1.0):
     # Find the 'short' tool ID which is what is used in the .yaml file.
     tool = get_tool_id(tool_id)
-    # and full one with version
-    tool_version = get_tool_id(tool_id, version=True)
     # Pull the tool specification (i.e. job destination configuration for this tool)
     tool_spec = copy.deepcopy(TOOL_DESTINATIONS.get(tool, {}))
-    # One for the version
-    tool_spec_version = copy.deepcopy(TOOL_DESTINATIONS.get(tool_version, {}))
-    # Merge them
-    tool_spec = tool_spec.update(tool_spec_version)
     # Update the tool specification with any training resources that are available
     tool_spec.update(reroute_to_dedicated(tool_spec, user_roles))
 
