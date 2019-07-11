@@ -266,10 +266,15 @@ nginx_vhosts:
             try_files /$host.css /usegalaxy.eu.css =404;
         }
 
+        location ~ /static/style/hicexplorer.png {
+            alias /opt/multisite-css/hicexplorer.png;
+        }
+
         location /static/style {
                 alias {{ galaxy_server_dir }}/static/style/blue;
                 expires 24h;
         }
+
         location /static/scripts {
                 alias {{ galaxy_server_dir }}/static/scripts;
                 expires 24h;
@@ -278,7 +283,6 @@ nginx_vhosts:
         location /robots.txt {
                 alias {{ galaxy_server_dir }}/static/robots.txt;
         }
-
 
         location ~ ^/plugins/(?<plug_type>[^/]+?)/((?<vis_d>[^/_]*)_?)?(?<vis_name>[^/]*?)/static/(?<static_file>.*?)$ {
             alias /opt/galaxy/config/plugins/$plug_type/;
@@ -395,8 +399,8 @@ galaxy_systemd_zerglings: 1
 galaxy_systemd_handlers: 1
 galaxy_systemd_memory_limit: 16
 galaxy_systemd_memory_limit_zp: 8
-galaxy_systemd_zergling_env: "TMP=/data/dnb01/galaxy_db/tmp-uwsgi TEMP=/data/dnb01/galaxy_db/tmp-uwsgi TMPDIR=/data/dnb01/galaxy_db/tmp-uwsgi GALAXY_WEBAPOLLO_URL={{ GALAXY_WEBAPOLLO_URL }} GALAXY_WEBAPOLLO_USER={{ GALAXY_WEBAPOLLO_USER }} GALAXY_WEBAPOLLO_PASSWORD={{ GALAXY_WEBAPOLLO_PASSWORD }} GALAXY_WEBAPOLLO_EXT_URL={{ GALAXY_WEBAPOLLO_EXT_URL }} GALAXY_SHARED_DIR={{ GALAXY_SHARED_DIR }}"
-galaxy_systemd_handler_env: "GALAXY_WEBAPOLLO_URL={{ GALAXY_WEBAPOLLO_URL }} GALAXY_WEBAPOLLO_USER={{ GALAXY_WEBAPOLLO_USER }} GALAXY_WEBAPOLLO_PASSWORD={{ GALAXY_WEBAPOLLO_PASSWORD }} GALAXY_WEBAPOLLO_EXT_URL={{ GALAXY_WEBAPOLLO_EXT_URL }} GALAXY_SHARED_DIR={{ GALAXY_SHARED_DIR }}"
+galaxy_systemd_zergling_env: "TMP=/data/dnb01/galaxy_db/tmp-uwsgi TEMP=/data/dnb01/galaxy_db/tmp-uwsgi TMPDIR=/data/dnb01/galaxy_db/tmp-uwsgi GALAXY_WEBAPOLLO_URL={{ GALAXY_WEBAPOLLO_URL }} GALAXY_WEBAPOLLO_USER={{ GALAXY_WEBAPOLLO_USER }} GALAXY_WEBAPOLLO_PASSWORD={{ GALAXY_WEBAPOLLO_PASSWORD }} GALAXY_WEBAPOLLO_EXT_URL={{ GALAXY_WEBAPOLLO_EXT_URL }} GALAXY_SHARED_DIR={{ GALAXY_SHARED_DIR }} DOCKER_HOST=tcp://docker.galaxyproject.eu:8443 DOCKER_TLS_VERIFY=1 DOCKER_CERT_PATH=/opt/galaxy/.docker"
+galaxy_systemd_handler_env: "GALAXY_WEBAPOLLO_URL={{ GALAXY_WEBAPOLLO_URL }} GALAXY_WEBAPOLLO_USER={{ GALAXY_WEBAPOLLO_USER }} GALAXY_WEBAPOLLO_PASSWORD={{ GALAXY_WEBAPOLLO_PASSWORD }} GALAXY_WEBAPOLLO_EXT_URL={{ GALAXY_WEBAPOLLO_EXT_URL }} GALAXY_SHARED_DIR={{ GALAXY_SHARED_DIR }} DOCKER_HOST=tcp://docker.galaxyproject.eu:8443 DOCKER_TLS_VERIFY=1 DOCKER_CERT_PATH=/opt/galaxy/.docker"
 galaxy_zergpool_listen_addr: "127.0.0.1:4001"
 galaxy_zergpool_socket_name: zergpool.sock
 galaxy_zergpool_listen_path: "{{ galaxy_mutable_data_dir }}/{{ galaxy_zergpool_socket_name }}"
@@ -593,6 +597,11 @@ galaxy_jobconf:
           params:
             tmp_dir: "True"
         # Gateways
+        - id: gateway_singlerun
+          runner: dynamic
+          params:
+              type: python
+              function: gateway
         - id: gateway_1x
           runner: dynamic
           params:
