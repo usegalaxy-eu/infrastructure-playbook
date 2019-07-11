@@ -182,6 +182,14 @@ nginx_vhosts:
             include         uwsgi_params;
             proxy_hide_header x-frame-options;
             add_header X-Content-Type-Options nosniff;
+
+            # test is behind a proxy + under a different external hostname.
+            # These probably do not need to be set on main.eu
+            uwsgi_param HTTPS on;
+            uwsgi_param REQUEST_SCHEME https;
+            uwsgi_param SERVER_NAME test.usegalaxy.eu;
+            uwsgi_param HTTP_HOST test.usegalaxy.eu;
+
             location ~ biom_simple {
                 uwsgi_pass      127.0.0.1:4001;
                 include         uwsgi_params;
