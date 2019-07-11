@@ -14,6 +14,7 @@
 #TODO: does not seem to be working?
 - name: Check for input group
   command: grep -Fxq "input:x:999" /etc/group
+  ignore_errors: yes
   register: check_input
   changed_when: no
 
@@ -30,6 +31,7 @@
 
 - name: Check for polkitd
   command: grep -Fxq "polkitd:x:999" /etc/passwd
+  ignore_errors: yes
   register: check_polkitd
   changed_when: no
 
