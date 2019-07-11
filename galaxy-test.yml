@@ -9,6 +9,8 @@
     - group_vars/tiaas-test.yml
     - group_vars/custom-sites.yml
     - group_vars/gxconfig-test.yml
+    - group_vars/toolbox.yml
+    - group_vars/toolbox.yml
     - secret_group_vars/elixir_aai.yml
     - secret_group_vars/test-db.yml
     - secret_group_vars/all.yml
@@ -25,18 +27,21 @@
     #     err=Could not get property: Failed to activate service 'org.freedesktop.hostname1': timed out
     #- hostname
     - usegalaxy-eu.dynmotd
-    # Install EPEL
-    - geerlingguy.repo-epel
+
+    ## Dependencies
+    - geerlingguy.repo-epel # Install EPEL
     # We want to exclude a couple of packages as we will fetch those
     # dependencies from other repos: condor, node/npm
     - hxr.exclude-repo
-    - linuxhq.yum_cron
-    - hxr.admin-tools
-    - influxdata.chrony
-    # Setup the mount points which will be needed later
-    - hxr.autofs
-    - galaxyproject.cvmfs
-    # Monitoring
+    - linuxhq.yum_cron # keep all of our packages up to date
+    - hxr.admin-tools # Some extra admin tools (*top, vim, etc)
+    - influxdata.chrony # Keep our time in sync.
+
+    ## Filesystems
+    - hxr.autofs # Setup the mount points which will be needed later
+    - galaxyproject.cvmfs # Galaxy datasets
+
+    ## Monitoring
     - hxr.monitor-cluster
     - hxr.monitor-email
     - dj-wasabi.telegraf
@@ -89,11 +94,10 @@
     # TODO(hxr): nginx role doesn't create nginx_proxy_cache_path
     - geerlingguy.nginx
     - hxr.tiaas
-    # The real galaxy role
+    # The REAL galaxy role
     - galaxyproject.galaxy
-    - hxr.install-to-venv
-    # Manage the Galaxy processes with SystemD
-    - usegalaxy-eu.galaxy-systemd
+    - hxr.install-to-venv # Some extra packages our site needs.
+    - usegalaxy-eu.galaxy-systemd # Manage the Galaxy processes with SystemD
     # Setup the NodeJS proxy (depends on NodeJS being already available)
     - usegalaxy-eu.gie-node-proxy
     # Deploy the GIE configuration

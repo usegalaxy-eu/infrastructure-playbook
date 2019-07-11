@@ -18,18 +18,13 @@
       - 'galaxyproject.eu'
       - '*.galaxyproject.eu'
   vars_files:
-    # All of the training infrastructure
-    - group_vars/tiaas.yml
-    # Subdomains are listed here
-    - group_vars/custom-sites.yml
-    # The base galaxy configuration
-    - group_vars/gxconfig.yml
-    # Elixir AAI private key
-    - secret_group_vars/elixir_aai.yml
-    # DB URL + some postgres stuff
-    - secret_group_vars/main-db.yml
-    # All of the other assorted secrets...
-    - secret_group_vars/all.yml
+    - group_vars/tiaas.yml             # All of the training infrastructure
+    - group_vars/custom-sites.yml      # Subdomains are listed here
+    - group_vars/gxconfig.yml          # The base galaxy configuration
+    - group_vars/toolbox.yml           # User controlled toolbox
+    - secret_group_vars/elixir_aai.yml # Elixir AAI private key
+    - secret_group_vars/main-db.yml    # DB URL + some postgres stuff
+    - secret_group_vars/all.yml        # All of the other assorted secrets...
   handlers:
     # Currently unimplementeed. It would be nice in the future if we trust it to work nicely?
     - name: Restart Galaxy
