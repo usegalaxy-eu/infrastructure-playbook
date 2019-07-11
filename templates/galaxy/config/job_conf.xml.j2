@@ -28,7 +28,7 @@
 		<destination id="{{ destination['id'] }}" runner="{{ destination['runner'] }}">
 {% if 'env' in destination %}
 {% for k in destination['env'] | sort %}
-			<env id="{{ k }}">{{ destination['env'][k] }}</param>
+			<env id="{{ k }}">{{ destination['env'][k] }}</env>
 {% endfor %}
 {% endif %}
 {% if 'params' in destination %}

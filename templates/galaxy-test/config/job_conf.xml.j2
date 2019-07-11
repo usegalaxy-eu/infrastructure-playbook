@@ -26,6 +26,11 @@
 	<destinations default="{{ galaxy_jobconf['default_destination'] }}">
 {% for destination in galaxy_jobconf['destinations'] %}
 		<destination id="{{ destination['id'] }}" runner="{{ destination['runner'] }}">
+{% if 'env' in destination %}
+{% for k in destination['env'] | sort %}
+			<env id="{{ k }}">{{ destination['env'][k] }}</env>
+{% endfor %}
+{% endif %}
 {% if 'params' in destination %}
 {% for k in destination['params'] | sort %}
 			<param id="{{ k }}">{{ destination['params'][k] }}</param>
