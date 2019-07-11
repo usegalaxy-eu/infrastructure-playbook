@@ -52,7 +52,7 @@
 
 - name: Send templates
   copy:
-    conents: "{{ _tiaas_config | to_nice_yaml(explicit_start=True) }}"
+    content: "{{ _tiaas_config | to_nice_yaml(explicit_start=True) }}"
     dest: "{{ tiaas_dir }}/config/config.yaml"
     owner: "{{ tiaas_user }}"
     group: "{{ tiaas_group }}"

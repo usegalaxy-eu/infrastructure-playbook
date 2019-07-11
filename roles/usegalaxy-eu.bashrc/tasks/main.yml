@@ -1,22 +1,13 @@
 ---
-- name: Obtain user info
-  user:
-    name: "{{ user }}"
-  register: bashrc_user_info
-
 - name: Check for bashrc
   stat:
-    path: "{{ bashrc_user_info.home }}/.bashrc"
+    path: "~/.bashrc"
   register: bashrc_stat_out
-  become: true
-  become_user: "{{ user.name }}"
 
 - name: Copy default bashrc when not existing
   copy:
     src: /etc/skel/.bashrc
-    dest: "{{ bashrc_user_info.home }}/.bashrc"
-    owner: "{{ bashrc_user_info.name }}"
-    group: "{{ bashrc_user_info.group }}"
+    dest: "~/.bashrc"
     remote_src: yes
     mode: 0750
   when: not bashrc_stat_out.stat.exists
