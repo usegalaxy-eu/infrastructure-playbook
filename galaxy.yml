@@ -30,10 +30,10 @@
   roles:
     #- hostname # err=Could not get property: Failed to activate service 'org.freedesktop.hostname1': timed out
     - geerlingguy.docker
-    ## TODO(hxr): fails whenever galaxy homedir is created without bashrc
+    # TODO(hxr): fails whenever galaxy homedir is created without bashrc
     #- role: hxr.docker-ssl-client
-      #vars:
-        #docker_account: galaxy
+      #become: yes
+      #become_user: galaxy
     - geerlingguy.repo-epel
     - hxr.exclude-repo # Exclude epel repos for condor, node, npm
     ## TODO(hxr): fix ordering of these
@@ -80,6 +80,8 @@
       become_user: galaxy
     # These cannot come before galaxy
     - usegalaxy-eu.galaxy-systemd
+    - usegalaxy-eu.gie-node-proxy
+    - usegalaxy-eu.gie-deployer
     - hxr.welcome_pages
     - dj-wasabi.telegraf
     - usegalaxy-eu.limits
