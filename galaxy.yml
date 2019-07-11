@@ -4,41 +4,89 @@
   become: true
   become_user: root
   vars:
+    # The full internal name.
     hostname: sn04.bi.uni-freiburg.de
+    # This server has multiple CNAMEs that are important. Additionally it
+    # provides proxying for many of the other services run by Galaxy Europe.
+    # These server_names are passed to certbot. They generally should not need
+    # to be updated unless you add a new domain. They *only* work with the
+    # route53 provider, so if we want to do usegalaxy.xy, it may require
+    # refactoring / multiple certbot runs.
     server_names:
       - 'usegalaxy.eu'
       - '*.usegalaxy.eu'
       - 'galaxyproject.eu'
       - '*.galaxyproject.eu'
   vars_files:
+    # All of the training infrastructure
     - group_vars/tiaas.yml
+    # Subdomains are listed here
     - group_vars/custom-sites.yml
+    # The base galaxy configuration
     - group_vars/gxconfig.yml
+    # Elixir AAI private key
     - secret_group_vars/elixir_aai.yml
+    # DB URL + some postgres stuff
     - secret_group_vars/main-db.yml
+    # All of the other assorted secrets...
     - secret_group_vars/all.yml
   handlers:
+    # Currently unimplementeed. It would be nice in the future if we trust it to work nicely?
     - name: Restart Galaxy
       shell: |
         echo 'Manual restart required' && cd /opt/galaxy/ && source /opt/galaxy/.bashrc  && bash sync.sh
-      #shell: source /opt/galaxy/.bashrc && /usr/bin/gxadmin handler restart && /usr/bin/gxadmin zerg swap
   pre_tasks:
+    # Dependencies for various parts of galaxy/etc.
     - name: Install Dependencies
       package:
         name: ['git', 'python-psycopg2', 'python-virtualenv', 'bc']
       become: yes
   roles:
-    #- hostname # err=Could not get property: Failed to activate service 'org.freedesktop.hostname1': timed out
-    - geerlingguy.docker
-    # TODO(hxr): fails whenever galaxy homedir is created without bashrc
-    #- role: hxr.docker-ssl-client
-      #become: yes
-      #become_user: galaxy
+    # Normally we set hostname here, but we get an error so it is commented out:
+    #     err=Could not get property: Failed to activate service 'org.freedesktop.hostname1': timed out
+    #- hostname
+    - usegalaxy-eu.dynmotd
+    # Install EPEL
     - geerlingguy.repo-epel
-    - hxr.exclude-repo # Exclude epel repos for condor, node, npm
-    ## TODO(hxr): fix ordering of these
+    # We want to exclude a couple of packages as we will fetch those
+    # dependencies from other repos: condor, node/npm
+    - hxr.exclude-repo
+    - linuxhq.yum_cron
+    - hxr.admin-tools
+    - influxdata.chrony
+    # Setup the mount points which will be needed later
+    - hxr.autofs
+    - galaxyproject.cvmfs
+    # Monitoring
     - hxr.monitor-cluster
-    ## TODO(hxr): missing gxmnt etc
+    - hxr.monitor-email
+    - dj-wasabi.telegraf
+
+    # Setup Galaxy user
+    - role: galaxyproject.galaxy
+      vars:
+        galaxy_create_user: yes
+        galaxy_manage_clone: no
+        galaxy_manage_static_setup: no
+        galaxy_manage_mutable_setup: no
+        galaxy_manage_database: no
+        galaxy_fetch_dependencies: no
+        galaxy_build_client: no
+    # The bashrc needs to be created for several later features.
+    - role: usegalaxy-eu.bashrc
+      vars:
+        user: galaxy
+
+    ## Setup docker
+    - geerlingguy.docker
+    ## Disabled until working on test fully.
+    #- role: hxr.docker-ssl-client
+      #become_user: galaxy
+
+    # HTCondor Cluster setup
+    - htcondor
+
+    # Misc.
     - role: hxr.galaxy-cron
       become: yes
       become_user: galaxy
@@ -46,44 +94,36 @@
       become: yes
       become_user: galaxy
     - hxr.galaxy-misc
-    - hxr.autofs
-    - galaxyproject.cvmfs
     - usegalaxy-eu.dynmotd
+
+    ## SSL / Security
+    # Sign the server host key to prevent TOFU for SSH
     - ssh-host-sign
-    - hxr.admin-tools
-    - hxr.monitor-email
-    - htcondor
-    - linuxhq.yum_cron
-    - influxdata.chrony
+    # Setup the AWS client that will be needed for route53 authentication of certbot
     - hxr.aws-cli
     - usegalaxy-eu.certbot
 
     ## GALAXY
     - role: hxr.postgres-connection
-      vars:
-        pg_owner: telegraf
-        pg_group: telegraf
-    - role: hxr.postgres-connection
-      vars:
-        pg_owner: galaxy
-        pg_group: galaxy
+      become_user: galaxy
     - usegalaxy-eu.gxadmin
+    # TODO move under monitoring + telegraf.
     - usegalaxy-eu.galaxy-slurp
-    - packages
-    - hxr.install-to-venv
+
     # TODO(hxr): nginx role doesn't create nginx_proxy_cache_path
     - geerlingguy.nginx
     - hxr.tiaas
     # The real galaxy role
-    - role: galaxyproject.galaxy
-      become: yes
-      become_user: galaxy
-    # These cannot come before galaxy
+    - galaxyproject.galaxy
+    - hxr.install-to-venv
+    # Manage the Galaxy processes with SystemD
     - usegalaxy-eu.galaxy-systemd
+    # Setup the NodeJS proxy (depends on NodeJS being already available)
     - usegalaxy-eu.gie-node-proxy
+    # Deploy the GIE configuration
     - usegalaxy-eu.gie-deployer
-    - hxr.welcome_pages
-    - dj-wasabi.telegraf
+    - usegalaxy-eu.subdomain-themes
     - usegalaxy-eu.limits
+
     #- dev-sec.os-hardening
     #- dev-sec.ssh-hardening
