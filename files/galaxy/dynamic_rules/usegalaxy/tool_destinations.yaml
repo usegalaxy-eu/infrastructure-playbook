@@ -499,7 +499,11 @@ htseq_count: {mem: 32}
 humann2: {mem: 16}
 infernal_cmbuild: {cores: 10, mem: 20}
 infernal_cmsearch: {cores: 10, mem: 20}
-interproscan: {cores: 12, mem: 40}
+interproscan:
+  env:
+    PATH: $PATH:/data/0/interproscan/interproscan-5.36-75.0/
+  mem: 40
+  cores: 12
 iqtree: {cores: 12}
 iterative_map_pipeline: {mem: 60}
 je_clip: {cores: 8}
