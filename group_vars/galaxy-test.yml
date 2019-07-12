@@ -134,7 +134,7 @@ nginx_servers:
 nginx_ssl_servers: []
 nginx_conf_http:
   client_max_body_size: 1g
-  proxy_cache_path: "/var/cache/nginx/static levels=1:2 keys_zone=STATIC:10m inactive=24h  max_size=1g"
+  proxy_cache_path: "/tmp/nginx-cache levels=1:2 keys_zone=STATIC:10m inactive=24h  max_size=1g"
 
 # Dynmotd
 dynmotd_custom:
