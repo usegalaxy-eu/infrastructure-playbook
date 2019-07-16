@@ -74,6 +74,7 @@
   pip:
     virtualenv: "{{ tiaas_dir }}/venv/"
     requirements: "{{ tiaas_dir }}/code/requirements.txt"
+    virtualenv_python: python3.6
   notify: 'reload tiaas'
 
 - name: Install systemd unit file
