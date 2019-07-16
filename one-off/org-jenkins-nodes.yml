@@ -1,0 +1,48 @@
+---
+
+- name: Bootstrap python on .org Jenkins nodes
+  hosts: jenkins-org
+  gather_facts: false
+  pre_tasks:
+    - name: Bootsrap Python2 for Ansible
+      raw: bash -c "test -e /usr/bin/python || (apt -qqy update && apt install -qqy python2.7 python)"
+      register: output
+      changed_when: output.stdout != ""
+
+- name: UseGalaxy.org Jenkins Compute Node
+  hosts: jenkins-org
+  become: true
+  become_user: root
+  vars_files:
+    - group_vars/jenkins-org
+  pre_tasks:
+    - name: Update repos
+      apt:
+        update_cache: yes
+        cache_valid_time: 900
+
+    - name: Upgrade packages
+      apt:
+        upgrade: yes
+        autoremove: yes
+
+    - name: Upgrade packages
+      apt:
+        packages:
+        - git
+        - docker-engine
+        - openjdk-8-jre-headless
+        - build-essential
+        - curl
+        - pandoc
+
+  roles:
+    - hxr.autofs-format-n-mount
+    - galaxyproject.cvmfs
+    - usegalaxy-eu.dynmotd
+    - ssh-host-sign
+    - hxr.admin-tools
+    - hxr.monitor-email
+    - influxdata.chrony
+    - dev-sec.os-hardening
+    - dev-sec.ssh-hardening

@@ -1,0 +1,154 @@
+---
+- hosts: localhost
+  vars:
+    galaxy_handler_count: 4
+    galaxy_instance_codename: main
+    galaxy_jobconf:
+        plugin_workers: 4
+        handlers:
+            count: "{{ galaxy_handler_count }}"
+            assign_with: db-skip-locked
+        plugins:
+            - id: drmaa
+              load: galaxy.jobs.runners.drmaa:DRMAAJobRunner
+              workers: 3
+            # These live on the pythonpath
+            - id: dynamic
+              params:
+                rules_module: 'usegalaxy'
+            - id: condor
+              load: galaxy.jobs.runners.condor:CondorJobRunner
+            - id: local
+              load: galaxy.jobs.runners.local:LocalJobRunner
+            - id: pulsar_eu_cz
+              load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+              params:
+                amqp_url: "pyamqp://galaxy_cz:@proxy.galaxyproject.eu:5671//pulsar/galaxy_cz?ssl=1"
+                galaxy_url: "https://usegalaxy.eu"
+                manager: _default_
+                amqp_acknowledge: True
+                amqp_ack_republish_time: 300
+                amqp_consumer_timeout: 2.0
+                amqp_publish_retry: True
+                amqp_publish_retry_max_retries: 60
+            - id: pulsar_eu_test
+              load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+              params:
+                amqp_url: "pyamqp://galaxy_test:@proxy.galaxyproject.eu:5671//pulsar/galaxy_test?ssl=1"
+                galaxy_url: https://usegalaxy.eu
+                manager: _default_
+                amqp_acknowledge: True
+                amqp_ack_republish_time: 300
+                amqp_consumer_timeout: 2.0
+                amqp_publish_retry: True
+                amqp_publish_retry_max_retries: 60
+        default_destination: gateway_1x
+        destinations:
+            - id: local
+              runner: local
+            - id: condor
+              runner: condor
+              params:
+                tmp_dir: "True"
+            # Gateways
+            - id: gateway_1x
+              runner: dynamic
+              params:
+                  type: python
+                  function: gateway_1x
+            - id: gateway_1_5x
+              runner: dynamic
+              params:
+                  type: python
+                  function: gateway_1_5x
+            - id: gateway_2x
+              runner: dynamic
+              params:
+                  type: python
+                  function: gateway_2x
+            # Pulsar MQs
+            - id: remote_cluster_mq_cz
+              runner: pulsar_eu_cz
+              params:
+                  jobs_directory: /storage/brno11-elixir/home/galaxyeu/galaxy-staging/
+            - id: remote_cluster_mq_test
+              runner: pulsar_eu_test
+              params:
+                  jobs_directory: /data/share
+            - id: condor_singularity
+              runner: condor
+              params:
+                  singularity_enabled: 'true'
+                  singularity_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro'
+                  singularity_default_container_id: '/data/0/cvmfs/singularity/ubuntu:18.04'
+            - id: condor_singularity2
+              runner: condor
+              params:
+                  singularity_enabled: 'true'
+                  singularity_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro'
+                  singularity_default_container_id: '/data/0/cvmfs/singularity/ubuntu:18.04'
+              raw: |
+                <param id="container">
+                    <container type="singularity" shell="/bin/sh" resolve_dependencies="true">/data/0/cvmfs/singularity/ubuntu:18.04</container>
+                </param>
+            - id: condor_singularity_with_conda
+              runner: condor
+              params:
+                  singularity_enabled: 'true'
+              raw: |
+                <param id="container">
+                    <container type="singularity" shell="/bin/bash" resolve_dependencies="true">/data/0/cvmfs/singularity/python:2.7.12--1</container>
+                </param>
+            - id: condor_docker
+              runner: condor
+              params:
+                docker_enabled: 'true'
+                docker_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro'
+                docker_default_container_id: 'ubuntu:18.04'
+                docker_auto_rm: 'true'
+                docker_sudo: 'false'
+            # TODO(hxr): check functionality
+            - id: 24cores_15G_BLAST
+              runner: dynamic
+              params:
+                  type: python
+                  function: blast_destinations
+            - id: wig_to_bigWig
+              runner: dynamic
+              params:
+                  type: python
+                  function: wig_to_bigwig
+            - id: dexseq_dynamic
+              runner: dynamic
+              params:
+                  type: python
+                  function: dexseq
+        tools:
+            # TODO(hxr): implement validation that checks that every destination
+            # used here is defined above.
+            - id: upload1
+              destination: gateway_1x
+            - id: wig_to_bigWig
+              destination: wig_to_bigWig
+            - id: dexseq
+              destination: dexseq_dynamic
+            - id: ncbi_blastn_wrapper
+              destination: 24cores_15G_BLAST
+            - id: ncbi_blastx_wrapper
+              destination: 24cores_15G_BLAST
+            - id: ncbi_tblastn_wrapper
+              destination: 24cores_15G_BLAST
+            - id: ncbi_tblastx_wrapper
+              destination: 24cores_15G_BLAST
+            - id: ncbi_blastp_wrapper
+              destination: 24cores_15G_BLAST
+            - id: ncbi_rpsblast_wrapper
+              destination: 24cores_15G_BLAST
+        limits:
+            walltime: '148:00:00'
+            output_size: '300GB'
+            registered_user_concurrent_jobs: '30'
+            anonymous_user_concurrent_jobs: '10'
+
+  roles:
+    - test
