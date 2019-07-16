@@ -1,8 +1,5 @@
-certbot_auto_renew_extra: "--preferred-challenges http-01 --http-01-port 8118"
-certbot_post_renewal: |
-    systemctl restart nginx || true
-
-
+# Jenkins
+jenkins_home: /vdb/jenkins
 java_packages:
   - java-1.8.0-openjdk
 
