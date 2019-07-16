@@ -1,12 +1,12 @@
 - file:
-    path: /var/lib/jenkins/.ssh
+    path: "{{ jenkins_home }}/.ssh"
     state: directory
     mode: 0750
     owner: jenkins
     group: jenkins
 
 - copy:
-    dest: /var/lib/jenkins/.ssh/id_rsa
+    dest: "{{ jenkins_home }}/.ssh/id_rsa"
     mode: 0400
     owner: jenkins
     group: jenkins
