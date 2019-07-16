@@ -8,9 +8,6 @@ jenkins_admin_token: "{{ jenkins_admin_token_secret }}"
 # Add the CSP so we can embed galaxy on WF testing pages / display HTML
 jenkins_java_options: "-Djenkins.install.runSetupWizard=false -Dhudson.model.DirectoryBrowserSupport.CSP=\"default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'unsafe-inline'; frame-src *;\""
 
-# Temporarily set as workaround to https://issues.jenkins-ci.org/browse/JENKINS-58483
-jenkins_version: "2.184"
-
 # Certbot
 certbot_auth_method: --webroot
 certbot_well_known_root: /srv/nginx/_well-known_root
