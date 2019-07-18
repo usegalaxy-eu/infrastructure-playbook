@@ -29,15 +29,12 @@
     mode: 0750
 
 - name: Clone repository
-  become: true
-  become_user: "{{ tiaas_user }}"
   git:
     repo: "https://github.com/usegalaxy-eu/tiaas-group-join"
     dest: "{{ tiaas_dir }}/code/"
     version: "{{ tiaas_version }}"
     force: "{{ tiaas_force_checkout }}"
   notify: 'reload tiaas'
-
 
 - name: Build TIaaS Configuration object
   set_fact:
