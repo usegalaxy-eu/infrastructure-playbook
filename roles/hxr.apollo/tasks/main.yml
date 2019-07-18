@@ -1,36 +1,50 @@
 ---
-- name: Configure apollo env vars
-  template:
-    src: webapollo.conf
-    dest: /etc/tomcat/conf.d/webapollo.conf
-    owner: tomcat
-    group: tomcat
-    mode: 0640
-
-- name: "Fix weird tomcat bug"
-  command: "yum reinstall -y tomcat-lib"
+#- name: "Fix weird tomcat bug"
+  #command: "yum reinstall -y tomcat-lib"
 
 - name: Download apollo
   get_url:
-    url: "https://build.usegalaxy.eu/job/usegalaxy.eu/job/apollo-builder/lastSuccessfulBuild/artifact/apollo-2.0.8.war"
-    dest: "/tmp/apollo.war"
+    url: "https://build.usegalaxy.eu/job/usegalaxy.eu/job/apollo-builder/lastSuccessfulBuild/artifact/apollo-{{ apollo_version }}.war"
+    dest: "{{ apollo_tmp_file }}"
     checksum: md5:02c39dab97ab1e0fe9a4b838046debda
 
+
 - name: Wipe out old apollo
-  command: "rm -rf /usr/share/tomcat/webapps/apollo/"
+  file:
+    path: "{{ tomcat_apollo_webapp_dir }}"
+    state: absent
+  when: download.changed
+  notify: 'restart tomcat'
 
 - name: Make new root webapp
-  command: "mkdir /usr/share/tomcat/webapps/apollo/"
+  file:
+    path: "{{ tomcat_apollo_webapp_dir }}"
+    state: directory
+    owner: tomcat
+    group: tomcat
+  when: download.changed
+  notify: 'restart tomcat'
 
 - name: Extract new apollo into root webapp.
-  command: "unzip -q /tmp/apollo.war"
-  args:
-    chdir: /usr/share/tomcat/webapps/apollo/
+  unarchive:
+    src: "{{ apollo_tmp_file }}"
+    dest: "{{ tomcat_apollo_webapp_dir }}"
+  when: download.changed
+  notify: 'restart tomcat'
 
 - name: Fix perms
   command: "chown tomcat:tomcat -R /usr/share/tomcat/webapps/apollo/"
+  when: download.changed
+  notify: 'restart tomcat'
 
-- name: Restart tomcat
-  service:
-    name: tomcat
-    state: restarted
+- name: Deploy config file
+  template:
+    src: webapollo.conf
+    dest: "{{ tomcat_apollo_webapp_dir }}/{{ item }}"
+    owner: tomcat
+    group: tomcat
+    mode: 0640
+  with_items:
+    - WEB-INF/classes/java/apollo-config.groovy
+    - WEB-INF/classes/apollo-config.groovy
+  notify: 'restart tomcat'
