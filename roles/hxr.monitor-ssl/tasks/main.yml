@@ -12,7 +12,7 @@
       ssl_expiry:
         plugin: "exec"
         config:
-          - commands = ["/usr/bin/simple-ssl-check {{ hxr_monitor_ssl_expiry | join(',') }}"]
+          - commands = ["/usr/bin/simple-ssl-check {{ hxr_monitor_ssl_expiry | join(' ') }}"]
           - timeout = "15s"
           - data_format = "influx"
           - interval = "15m"
