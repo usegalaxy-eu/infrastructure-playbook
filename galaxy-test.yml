@@ -94,7 +94,15 @@
     - galaxyproject.nginx
     #- hxr.tiaas
     # The REAL galaxy role
-    - galaxyproject.galaxy
+    - role: galaxyproject.galaxy
+      vars:
+        galaxy_create_user: yes
+        galaxy_manage_clone: yes
+        galaxy_manage_static_setup: yes
+        galaxy_manage_mutable_setup: yes
+        galaxy_manage_database: yes
+        galaxy_fetch_dependencies: yes
+        galaxy_build_client: no
     - hxr.install-to-venv # Some extra packages our site needs.
     - usegalaxy-eu.galaxy-systemd # Manage the Galaxy processes with SystemD
     # Setup the NodeJS proxy (depends on NodeJS being already available)
