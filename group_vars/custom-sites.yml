@@ -24,10 +24,32 @@ galaxy_custom_sites:
         }
   - name: hicexplorer
     brand: HiCExplorer
+    wallpaper: true
     custom_css: |
         #masthead {
             background-image: url("/static/style/hicexplorer.png");
             background-size: 340px;
+        }
+        #masthead .navbar-brand {
+          background: #3337;
+          border: 1px solid #3337;
+        }
+        #masthead .navbar-nav > li .nav-link {
+            color: white;
+        }
+        #masthead .navbar-nav > li {
+            background: #3337;
+        }
+        #masthead .navbar-nav > li.active {
+            background: #333e;
+        }
+  - name: annotation
+    brand: Genome Annotation
+    wallpaper: true
+    custom_css: |
+        #masthead {
+            background-image: url("/static/style/annotation.png");
+            background-size: 23%;
         }
         #masthead .navbar-brand {
           background: #3337;

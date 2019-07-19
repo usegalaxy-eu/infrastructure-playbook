@@ -349,6 +349,10 @@ nginx_vhosts:
             alias /opt/multisite-css/hicexplorer.png;
         }
 
+        location ~ /static/style/annotation.png {
+            alias /opt/multisite-css/annotation.png;
+        }
+
         location /static/style {
                 alias {{ galaxy_server_dir }}/static/style/blue;
                 expires 24h;
