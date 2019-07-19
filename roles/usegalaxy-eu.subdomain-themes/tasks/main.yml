@@ -40,8 +40,8 @@
 
 - name: Copy custom background images
   copy:
+    src: "files/welcome-sites/{{ item.name }}.png"
     dest: "{{ multisite_dir }}/{{ item.name }}.png"
-    content: "files/welcome-sites/{{ item.name }}.png"
     mode: 0644
   with_items: "{{ galaxy_custom_sites }}"
   when: item.wallpaper | default(False)
