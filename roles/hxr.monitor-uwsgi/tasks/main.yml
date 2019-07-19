@@ -1,0 +1,21 @@
+---
+- name: "Install uwsgi check script"
+  template:
+    src: telegraf-uwsgi.sh
+    dest: /usr/bin/telegraf-uwsgi.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- set_fact:
+    plugin_config_monitor_uwsgi:
+      ssl_expiry:
+        plugin: "exec"
+        config:
+          - commands = ["/usr/bin/telegraf-uwsgi.sh"]
+          - timeout = "15s"
+          - data_format = "influx"
+          - interval = "15s"
+
+- set_fact:
+    telegraf_plugins_extra: "{{ telegraf_plugins_extra | combine(plugin_config_monitor_uwsgi) }}"
