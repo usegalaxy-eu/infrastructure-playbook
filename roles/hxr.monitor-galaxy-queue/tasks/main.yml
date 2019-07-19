@@ -1,0 +1,21 @@
+---
+- name: "Install galaxy-queue-size"
+  template:
+    src: galaxy-queue-size.sh
+    dest: /usr/bin/galaxy-queue-size
+    owner: root
+    group: root
+    mode: 0755
+
+- set_fact:
+    plugin_config_monitor_galaxy_queue:
+      galaxy_monitor_queue:
+        plugin: "exec"
+        config:
+          - commands = ["/usr/bin/galaxy-queue-size"]
+          - timeout = "10s"
+          - data_format = "influx"
+          - interval = "1m"
+
+- set_fact:
+        telegraf_plugins_extra: "{{ telegraf_plugins_extra | combine(plugin_config_monitor_galaxy_queue) }}"
