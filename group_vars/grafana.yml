@@ -103,6 +103,17 @@ grafana_datasources:
    username: "{{ influxdb.grafana.username }}"
    password: "{{ influxdb.grafana.password }}"
 
+hxr_monitor_ssl_expiry:
+  # A couple of usegalaxy.eu subdomains.
+  - usegalaxy.eu:443
+  - metagenomics.usegalaxy.eu:443
+  # Proxy + Proxied services
+  - build.galaxyproject.eu:443
+  - influxdb.galaxyproject.eu:8086
+  - influxdb.galaxyproject.eu:443
+  - stats.galaxyproject.eu:443
+  - telescope.galaxyproject.eu:443
+
 
 telegraf_plugins_extra:
   simple_nagios:
@@ -128,25 +139,6 @@ telegraf_plugins_extra:
       #- timeout = "10m"
       #- data_format = "influx"
       #- interval = "24h"
-
-  ssl_expiry:
-    plugin: "exec"
-    config:
-      - |
-        commands = [
-          # A couple of usegalaxy.eu subdomains.
-          "/usr/bin/simple-ssl-check usegalaxy.eu",
-          "/usr/bin/simple-ssl-check metagenomics.usegalaxy.eu",
-          # Proxy + Proxied services
-          "/usr/bin/simple-ssl-check build.galaxyproject.eu",
-          "/usr/bin/simple-ssl-check influxdb.galaxyproject.eu 8086",
-          "/usr/bin/simple-ssl-check influxdb.galaxyproject.eu",
-          "/usr/bin/simple-ssl-check stats.galaxyproject.eu",
-          "/usr/bin/simple-ssl-check telescope.galaxyproject.eu",
-        ]
-      - timeout = "15s"
-      - data_format = "influx"
-      - interval = "15m"
 
   dns_query:
     config:
