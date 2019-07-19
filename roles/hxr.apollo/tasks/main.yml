@@ -4,10 +4,9 @@
 
 - name: Download apollo
   get_url:
-    url: "https://build.usegalaxy.eu/job/usegalaxy.eu/job/apollo-builder/lastSuccessfulBuild/artifact/apollo-{{ apollo_version }}.war"
+    url: "https://usegalaxy.eu/static/vgcn/apollo-{{ apollo_version }}.war"
     dest: "{{ apollo_tmp_file }}"
-    checksum: md5:02c39dab97ab1e0fe9a4b838046debda
-
+  register: download
 
 - name: Wipe out old apollo
   file:
@@ -29,6 +28,7 @@
   unarchive:
     src: "{{ apollo_tmp_file }}"
     dest: "{{ tomcat_apollo_webapp_dir }}"
+    remote_src: true
   when: download.changed
   notify: 'restart tomcat'
 
@@ -39,7 +39,7 @@
 
 - name: Deploy config file
   template:
-    src: webapollo.conf
+    src: apollo-config.groovy
     dest: "{{ tomcat_apollo_webapp_dir }}/{{ item }}"
     owner: tomcat
     group: tomcat
