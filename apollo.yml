@@ -6,6 +6,25 @@
     - "secret_group_vars/apollo.yml"
   vars:
     hostname: apollo.internal.galaxyproject.eu
+  pre_tasks:
+    # Apollo / tomcat need several exceptions currently.
+    # setsebool -P tomcat_can_network_connect_db 1
+    #
+    # type=AVC msg=audit(1563522605.167:5385): avc:  denied  { getattr } for  pid=10356 comm="java" path="/data/dnb01/apollo" dev="0:43" ino=6481704053 scontext=system_u:system_r:tomcat_t:s0 tcontext=system_u:object_r:nfs_t:s0 tclass=dir permissive=1
+    #
+    # type=AVC msg=audit(1563522604.751:5384): avc:  denied  { connectto } for  pid=10356 comm="java" path="/tmp/.java_pid10356" scontext=system_u:system_r:tomcat_t:s0 tcontext=system_u:system_r:tomcat_t:s0 tclass=unix_stream_socket permissive=1
+    #
+    #         Was caused by:
+    #         The boolean daemons_enable_cluster_mode was set incorrectly.
+    #         Description:
+    #         Allow daemons to enable cluster mode
+    #
+    #         Allow access by executing:
+    #         # setsebool -P daemons_enable_cluster_mode 1
+    - name: Put SELinux in permissive mode, logging actions that would be blocked.
+      selinux:
+        policy: targeted
+        state: permissive
   roles:
     - hostname
     - usegalaxy-eu.dynmotd
