@@ -4,16 +4,16 @@
   become: true
   become_user: root
   vars:
+    # The full internal name.
     hostname: test.internal.usegalaxy.eu
   vars_files:
-    - group_vars/tiaas-test.yml
-    - group_vars/custom-sites.yml
-    - group_vars/gxconfig-test.yml
-    - group_vars/toolbox.yml
-    - group_vars/toolbox.yml
-    - secret_group_vars/elixir_aai.yml
-    - secret_group_vars/test-db.yml
-    - secret_group_vars/all.yml
+    - group_vars/tiaas-test.yml        # All of the training infrastructure
+    - group_vars/custom-sites.yml      # Subdomains are listed here
+    - group_vars/gxconfig-test.yml     # The base galaxy configuration
+    - group_vars/toolbox.yml           # User controlled toolbox
+    - secret_group_vars/elixir_aai.yml # Elixir AAI private key
+    - secret_group_vars/test-db.yml    # DB URL + some postgres stuff
+    - secret_group_vars/all.yml        # All of the other assorted secrets...
   handlers:
     - name: Restart Galaxy
       shell: 'source /opt/galaxy/.bashrc && systemctl restart galaxy-zergling@* galaxy-handler@*'
@@ -51,6 +51,7 @@
       vars:
         galaxy_create_user: yes
         galaxy_manage_clone: no
+        galaxy_manage_paths: yes
         galaxy_manage_static_setup: no
         galaxy_manage_mutable_setup: no
         galaxy_manage_database: no
@@ -92,7 +93,7 @@
     - usegalaxy-eu.galaxy-slurp
 
     - galaxyproject.nginx
-    #- hxr.tiaas
+    - hxr.tiaas
     # The REAL galaxy role
     - role: galaxyproject.galaxy
       vars:
