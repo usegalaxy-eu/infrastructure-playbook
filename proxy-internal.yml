@@ -5,7 +5,8 @@
   vars:
     hostname: proxy.internal.galaxyproject.eu
   vars_files:
-    - "secret_group_vars/all.yml"
+    - secret_group_vars/pulsar.yml     # Pulsar + MQ Connections
+    - secret_group_vars/all.yml
   roles:
     - hostname
     - usegalaxy-eu.dynmotd
