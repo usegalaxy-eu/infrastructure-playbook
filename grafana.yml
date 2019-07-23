@@ -5,7 +5,8 @@
   vars:
     hostname: stats.galaxyproject.eu
   vars_files:
-    - "secret_group_vars/all.yml"
+    - group_vars/grafana-gitter-bridge.yml
+    - secret_group_vars/all.yml
   roles:
     - hostname
     - usegalaxy-eu.dynmotd
