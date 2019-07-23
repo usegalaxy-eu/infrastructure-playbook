@@ -1,0 +1,12 @@
+---
+- name: reload ggb
+  systemd:
+    state: restarted
+    name: ggb
+
+- name: setup ggb systemd
+  systemd:
+    state: started
+    enabled: true
+    name: ggb
+    daemon_reload: yes

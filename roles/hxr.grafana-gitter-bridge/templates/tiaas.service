@@ -1,0 +1,15 @@
+[Unit]
+Description=Grafana gitter bridge
+Documentation=https://github.com/usegalaxy-eu/grafana-gitter-bridge
+After=network.target
+
+[Service]
+User={{ ggb_user }}
+Group={{ ggb_group }}
+ExecStart={{ ggb_dir }}/run.sh
+Restart=on-failure
+RestartForceExitStatus=SIGPIPE
+KillMode=control-group
+
+[Install]
+WantedBy=multi-user.target

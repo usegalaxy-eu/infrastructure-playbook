@@ -1,0 +1,77 @@
+- name: Create group
+  user:
+    name: "{{ ggb_group }}"
+    state: present
+  when: ggb_create_group
+
+- name: Create user account
+  user:
+    name: "{{ ggb_user }}"
+    comment: Training Infrastructure as a Service User
+    group: "{{ ggb_group }}"
+    home: "{{ ggb_dir }}"
+  when: ggb_create_user
+
+- name: Ensure directory is available
+  file:
+    path: "{{ ggb_dir }}"
+    state: directory
+    owner: "{{ ggb_user }}"
+    group: "{{ ggb_group }}"
+    mode: 0750
+
+- name: Ensure config directory is available
+  file:
+    path: "{{ ggb_dir }}/config"
+    state: directory
+    owner: "{{ ggb_user }}"
+    group: "{{ ggb_group }}"
+    mode: 0750
+
+- name: Clone repository
+  git:
+    repo: "https://github.com/usegalaxy-eu/grafana-gitter-bridge"
+    dest: "{{ ggb_dir }}/code/"
+    version: "{{ ggb_version }}"
+    force: "{{ ggb_force_checkout }}"
+  notify: 'reload ggb'
+
+- name: Build ggb Configuration object
+  set_fact:
+    _ggb_config:
+      token: "{{ bridge_token }}"
+      gitter_token: "{{ gitter_auth_token }}"
+      room_id: "{{ gitter_room_id }}"
+
+- name: Send templates
+  copy:
+    content: "{{ _ggb_config | to_nice_yaml(explicit_start=True) }}"
+    dest: "{{ ggb_dir }}/config/config.yaml"
+    owner: "{{ ggb_user }}"
+    group: "{{ ggb_group }}"
+    mode: 0640
+  notify: 'reload ggb'
+
+- name: Send runner script
+  template:
+    src: "run.sh"
+    dest: "{{ ggb_dir }}/run.sh"
+    owner: "{{ ggb_user }}"
+    group: "{{ ggb_group }}"
+    mode: 0750
+  notify: 'reload ggb'
+
+- name: Install all of the necessary dependencies
+  become: true
+  become_user: "{{ ggb_user }}"
+  pip:
+    virtualenv: "{{ ggb_dir }}/venv/"
+    requirements: "{{ ggb_dir }}/code/requirements.txt"
+    #virtualenv_python: python3.6
+  notify: 'reload ggb'
+
+- name: Install systemd unit file
+  template:
+    src: ggb.service
+    dest: /etc/systemd/system/ggb.service
+  notify: setup ggb systemd
