@@ -315,8 +315,8 @@ galaxy_jobconf:
           load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
           params:
             amqp_url: "pyamqp://galaxy_de01:{{ rabbitmq_password_galaxy_de01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_de01?ssl=1"
-            galaxy_url: "https://usegalaxy.eu"
-            manager: _default_
+            galaxy_url: "https://test.usegalaxy.eu"
+            manager: test
             amqp_acknowledge: True
             amqp_ack_republish_time: 300
             amqp_consumer_timeout: 2.0
@@ -406,7 +406,7 @@ galaxy_jobconf:
           runner: pulsar_eu_de01
           env:
               LC_ALL: C
-              SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
+#              SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
           params:
               jobs_directory: /data/share/staging
               transport: curl
@@ -415,8 +415,8 @@ galaxy_jobconf:
               dependency_resolution: remote
               rewrite_parameters: "true"
               persistence_directory: /data/share/persisted_data
-              singularity_enabled: "true"
-              singularity_volumes: $defaults
+#              singularity_enabled: "true"
+#              singularity_volumes: $defaults
         - id: remote_cluster_mq_be01
           runner: pulsar_eu_be01
           env:
