@@ -17,14 +17,14 @@
   <core />
 
   <!-- Uncomment to dump processor count for each job - linux only. -->
-  <!-- <cpuinfo /> -->
+   <cpuinfo />
   <!-- Uncomment to dump information about all processors for for each
        job - this is likely too much data. Linux only. -->
   <!-- <cpuinfo verbose="true" /> -->
 
   <!-- Uncomment to dump system memory information for each job - linux
        only. -->
-  <!-- <meminfo /> -->
+   <meminfo />
 
   <!-- Uncomment to record operating system each job is executed on - linux
        only. -->
@@ -40,8 +40,8 @@
 
   <!-- If galaxy jobs are run in cgroups, like slurm does if memory limits
        are enforced, we can try to grep some information from this. -->
-  <cgroup />
-  <!--<cgroup verbose="true" />-->
+<!--  <cgroup />-->
+  <cgroup verbose="true" />
   <!-- All params from the `cpuacct,cpu` and `memory` controllers can be
        recorded.  -->
   <!-- <cgroup verbose="true" /> -->
