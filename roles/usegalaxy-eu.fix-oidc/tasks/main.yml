@@ -3,6 +3,7 @@
   copy:
     content: |
         #!/bin/bash
+        . /opt/galaxy/.bashrc
         for user in $(gxadmin mutate oidc-role-find-affected); do
             gxadmin mutate oidc-role-fix $user;
         done;
