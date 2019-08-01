@@ -1,0 +1,22 @@
+---
+- name: "Deploy fixer upper script"
+  copy:
+    content: |
+        #!/bin/bash
+        . /opt/galaxy/.bashrc
+        journalctl -u galaxy-handler@* --since '20 minutes ago' | \
+            grep 'failure running job' | \
+            awk '{print $13}' | \
+            sort -u | \
+            xargs -I{} -n1 --no-run-if-empty -P1 gxadmin mutate fail-job {} --commit;
+        gxadmin mutate fail-terminal-datasets --commit;
+    dest: /usr/bin/galaxy-fix-unscheduled-jobs
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Add to cron
+  cron:
+    name: "Fix unscheduled jobs"
+    minute: "*/20"
+    job: /usr/bin/galaxy-fix-unscheduled-jobs
