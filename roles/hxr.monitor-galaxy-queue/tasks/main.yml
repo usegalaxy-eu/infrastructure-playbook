@@ -1,19 +1,11 @@
 ---
-- name: "Install galaxy-queue-size"
-  template:
-    src: galaxy-queue-size.sh
-    dest: /usr/bin/galaxy-queue-size
-    owner: root
-    group: root
-    mode: 0755
-
 - set_fact:
     plugin_config_monitor_galaxy_queue:
       galaxy_monitor_queue:
         plugin: "exec"
         config:
-          - commands = ["/usr/bin/galaxy-queue-size"]
-          - timeout = "10s"
+          - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery queue-overview --short-tool-id"]
+          - timeout = "15s"
           - data_format = "influx"
           - interval = "1m"
 
