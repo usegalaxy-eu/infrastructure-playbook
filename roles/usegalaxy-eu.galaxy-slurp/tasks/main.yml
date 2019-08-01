@@ -9,7 +9,7 @@
 
 - name: Add cron job for pulling stats
   cron:
-    name: Slurp galaxy stats into InfluxDB
+    name: Slurp daily Galaxy stats into InfluxDB
     job: /usr/bin/galaxy-slurp
     minute: "{{ galaxy_slurp_minute | default(0) }}"
     hour: "{{ galaxy_slurp_hour | default(0) }}"
@@ -25,7 +25,7 @@
 
 - name: Add cron job for pulling stats (upto)
   cron:
-    name: Slurp galaxy stats into InfluxDB upto version
+    name: Slurp up-to-today galaxy stats into InfluxDB upto version
     job: /usr/bin/galaxy-slurp-upto
     minute: "{{ galaxy_slurp_minute | default(0) }}"
     hour: "{{ galaxy_slurp_hour | default(4) }}"
