@@ -1,0 +1,22 @@
+---
+- name: Central Manager
+  hosts: central-manager
+  become: true
+  vars:
+    hostname: manager.vgcn.galaxyproject.eu
+  roles:
+    - hostname
+    - usegalaxy-eu.dynmotd
+    - geerlingguy.repo-epel
+    - hxr.admin-tools
+    - influxdata.chrony
+    - hxr.monitor-email
+    - hxr.monitor-ssl
+    - linuxhq.yum_cron
+    - hxr.autofs
+    # Custom
+    - htcondor
+    # End Custom
+    - dj-wasabi.telegraf
+    - dev-sec.os-hardening
+    - dev-sec.ssh-hardening
