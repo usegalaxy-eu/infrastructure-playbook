@@ -1,0 +1,31 @@
+---
+- copy:
+    content: |
+        #!/bin/bash
+        failures=$(journalctl -u 'galaxy-handler@*' --since '5 minute ago' | \
+            grep 'failure running job' | \
+            awk '{print $13}' | sort | uniq  | wc -l)
+        echo "journalctl,query=failure-running-job count=${failures:-0}"
+
+        failures=$(journalctl -u 'galaxy-handler@*' --since '5 minute ago' | \
+            grep 'removed from tool config, unable to run job' | \
+            awk '{print $13}' | sort | uniq  | wc -l)
+        echo "journalctl,query=removed-tool-config count=${failures:-0}"
+
+    dest: /usr/bin/galaxy-journalctl-monitor
+    owner: root
+    group: root
+    mode: 0755
+
+- set_fact:
+    plugin_config_monitor_galaxy_journalctl:
+      galaxy_monitor_queue:
+        plugin: "exec"
+        config:
+          - commands = ["/usr/bin/galaxy-journalctl-monitor"]
+          - timeout = "15s"
+          - data_format = "influx"
+          - interval = "1m"
+
+- set_fact:
+        telegraf_plugins_extra: "{{ telegraf_plugins_extra | combine(plugin_config_monitor_galaxy_journalctl) }}"
