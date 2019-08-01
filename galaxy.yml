@@ -124,19 +124,20 @@
         galaxy_manage_database: yes
         galaxy_fetch_dependencies: yes
         galaxy_build_client: no
-    - hxr.install-to-venv # Some extra packages our site needs.
-    - usegalaxy-eu.galaxy-systemd # Manage the Galaxy processes with SystemD
-    # Setup the NodeJS proxy (depends on NodeJS being already available)
-    - usegalaxy-eu.gie-node-proxy
-    # Deploy the GIE configuration
-    - usegalaxy-eu.gie-deployer
-    - usegalaxy-eu.subdomain-themes
-    - usegalaxy-eu.limits
+
+    # Extras!
+    - hxr.install-to-venv           # Some extra packages our site needs.
+    - usegalaxy-eu.galaxy-systemd   # Manage the Galaxy processes with SystemD
+    - usegalaxy-eu.gie-node-proxy   # Setup the NodeJS proxy (depends on NodeJS being already available)
+    - usegalaxy-eu.gie-deployer     # Deploy the GIE configuration
+    - usegalaxy-eu.subdomain-themes # Custom subdomain themes
+    - usegalaxy-eu.limits           # Prevent out of control processes
     # Various ugly fixes
-    - usegalaxy-eu.fix-unscheduled-jobs
-    - usegalaxy-eu.fix-oidc
-    - usegalaxy-eu.fix-unscheduled-workflows
-    - usegalaxy-eu.fix-stuck-handlers
+    - usegalaxy-eu.fix-unscheduled-jobs      # Workaround for ???
+    - usegalaxy-eu.fix-oidc                  # Workaround for https://github.com/galaxyproject/galaxy/issues/8244
+    - usegalaxy-eu.fix-unscheduled-workflows # Workaround for https://github.com/galaxyproject/galaxy/issues/8209
+    - usegalaxy-eu.fix-stuck-handlers        # Restart handlers to prevent several classes of issues
+    - usegalaxy-eu.log-cleaner               # do not retain logs, they are unnecessary/risky under GDPR
 
     #- dev-sec.os-hardening
     #- dev-sec.ssh-hardening
