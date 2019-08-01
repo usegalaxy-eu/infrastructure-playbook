@@ -8,6 +8,7 @@ certbot_share_key_users:
 
 certbot_post_renewal: |
     systemctl restart nginx || true
+    systemctl restart rabbitmq-server || true
 
 # NGINX
 nginx_enable_default_server: false
