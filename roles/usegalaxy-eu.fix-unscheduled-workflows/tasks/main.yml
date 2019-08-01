@@ -19,3 +19,4 @@
     name: "Fix unscheduled workflows galaxyproject/galaxy#8209"
     minute: "*/20"
     job: pgrep /usr/bin/galaxy-fix-unscheduled-workflows > /dev/null || /usr/bin/galaxy-fix-unscheduled-workflows
+    user: galaxy

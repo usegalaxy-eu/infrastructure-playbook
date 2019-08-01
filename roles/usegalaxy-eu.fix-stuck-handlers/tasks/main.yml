@@ -8,6 +8,7 @@
     minute: 0
     hour: 3
     job: systemctl restart galaxy-handler@0 galaxy-handler@1 galaxy-handler@2 galaxy-handler@3 galaxy-handler@4 galaxy-handler@5
+    user: root
 
 - name: Restart handlers 2
   cron:
@@ -15,6 +16,7 @@
     minute: 0
     hour: 3
     job: systemctl restart galaxy-handler@6 galaxy-handler@7 galaxy-handler@8 galaxy-handler@9 galaxy-handler@10 galaxy-handler@11
+    user: root
 
 - name: Restart zergling 0
   cron:
@@ -22,6 +24,7 @@
     minute: 0
     hour: 3
     job: systemctl restart galaxy-zergling@0
+    user: root
 
 - name: Restart zergling 1
   cron:
@@ -29,3 +32,4 @@
     minute: 0
     hour: 5
     job: systemctl restart galaxy-zergling@1
+    user: root

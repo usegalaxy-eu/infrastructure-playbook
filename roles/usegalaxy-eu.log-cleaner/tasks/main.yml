@@ -1,0 +1,7 @@
+---
+- name: Clean up old logs
+  cron:
+    name: Clean up old logs
+    minute: 0
+    hour: 0
+    job: journalctl --vacuum-time=1d -u galaxy-zergling@* galaxy-handler@* 2>/dev/null
