@@ -4,6 +4,8 @@
   become: true
   vars:
     hostname: manager.vgcn.galaxyproject.eu
+  var_files:
+    - secret_group_vars/all.yml
   roles:
     - hostname
     - usegalaxy-eu.dynmotd
