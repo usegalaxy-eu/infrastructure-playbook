@@ -153,12 +153,11 @@ monitor_condor_split_util: true
 
 
 # Certbot
+certbot_dns_provider: route53
+certbot_auth_method: --standalone
 certbot_domains: "{{ server_names }}"
 certbot_post_renewal: |
     systemctl restart nginx || true
-
-certbot_dns_provider: route53
-
 certbot_share_key_users:
     - nginx
 
@@ -209,6 +208,11 @@ nginx_conf_http:
   gzip_min_length: 128
 nginx_enable_default_server: false
 nginx_flavor: "galaxy"
+
+# Nginx Letsencrypt bindings
+nginx_ssl_role: usegalaxy-eu.certbot
+nginx_conf_ssl_certificate: /etc/ssl/certs/fullchain.pem
+nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
 
 # Dynmotd
 dynmotd_custom:
