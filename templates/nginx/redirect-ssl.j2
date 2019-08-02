@@ -4,9 +4,11 @@ server {
 
     server_name {{ inventory_hostname }};
 
+    {% if certbot_well_known_root is defined %}
     location /.well-known/ {
         root {{ certbot_well_known_root }};
     }
+    {% endif %}
 
     location / {
         return 302 https://$host$request_uri;
