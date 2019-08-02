@@ -30,7 +30,7 @@
     # Currently unimplementeed. It would be nice in the future if we trust it to work nicely?
     - name: Restart Galaxy
       shell: |
-        echo 'Manual restart required' && cd /opt/galaxy/ && source /opt/galaxy/.bashrc  && bash sync.sh
+        echo 'Manual zergling restart required' && cd /opt/galaxy/ && source /opt/galaxy/.bashrc  && bash sync.sh && systemctl restart galaxy-handler@*
   pre_tasks:
     # Dependencies for various parts of galaxy/etc.
     - name: Install Dependencies
