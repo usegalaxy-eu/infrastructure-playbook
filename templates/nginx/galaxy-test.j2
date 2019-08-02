@@ -63,10 +63,10 @@ server {
 	}
 
 	location /_x_accel_redirect {
-		  internal;
-		  alias /;
-		  add_header X-Frame-Options SAMEORIGIN;
-		  add_header X-Content-Type-Options nosniff;
+		internal;
+		alias /;
+		add_header X-Frame-Options SAMEORIGIN;
+		add_header X-Content-Type-Options nosniff;
 	}
 
 	location /_upload {
@@ -111,7 +111,7 @@ server {
 	}
 
 	location /static/welcome.html {
-		   alias /opt/multisite-css/$host.html;
+		alias /opt/multisite-css/$host.html;
 	}
 
 	location /static {
@@ -130,6 +130,10 @@ server {
 
 	location ~ /static/style/hicexplorer.png {
 		alias /opt/multisite-css/hicexplorer.png;
+	}
+
+	location ~ /static/style/annotation.png {
+		alias /opt/multisite-css/annotation.png;
 	}
 
 	location /static/style {
