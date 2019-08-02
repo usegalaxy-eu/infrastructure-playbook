@@ -7,6 +7,11 @@
   vars_files:
     - "secret_group_vars/jenkins.yml"
     - "secret_group_vars/all.yml"
+  pre_tasks:
+    - name: Install Dependencies
+      package:
+        name: ['policycoreutils-python']
+      become: yes
   roles:
     - hostname
     - usegalaxy-eu.dynmotd
