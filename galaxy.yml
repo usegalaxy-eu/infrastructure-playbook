@@ -98,11 +98,8 @@
     - usegalaxy-eu.dynmotd
 
     ## SSL / Security
-    # Sign the server host key to prevent TOFU for SSH
-    - ssh-host-sign
-    # Setup the AWS client that will be needed for route53 authentication of certbot
-    - hxr.aws-cli
-    - usegalaxy-eu.certbot
+    - ssh-host-sign # Sign the server host key to prevent TOFU for SSH
+    - hxr.aws-cli   # Setup the AWS client that will be needed for route53 authentication of certbot. MUST come before nginx role
 
     ## GALAXY
     - role: hxr.postgres-connection
