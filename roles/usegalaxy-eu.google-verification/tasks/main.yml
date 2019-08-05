@@ -1,13 +1,9 @@
 ---
-- name: Export name
-  set_fact:
-    google_site_verification_id: googlefb9521f583b7c8fe.html
-
 - name: "Deploy file"
   copy:
     content: |
         google-site-verification: {{ google_site_verification_id }}
-    dest: /usr/share/nginx/html/{{ google_site_verification_id }};
+    dest: /usr/share/nginx/html/{{ google_site_verification_id }}
     owner: nginx
     group: nginx
     mode: 0755
