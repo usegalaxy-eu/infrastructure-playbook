@@ -12,6 +12,11 @@
             awk '{print $13}' | sort | uniq  | wc -l)
         echo "journalctl,query=removed-tool-config count=${failures:-0}"
 
+        failures=$(journalctl -u 'galaxy-handler@*' --since '5 minute ago' | \
+            grep "Caught exception while attempting to fail job"| \
+            egrep -o '\([0-9]+\) Caught' | sort -u | wc -l)
+        echo "journalctl,query=failing-to-fail count=${failures:-0}"
+
     dest: /usr/bin/galaxy-journalctl-monitor
     owner: root
     group: root
