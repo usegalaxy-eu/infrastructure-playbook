@@ -5,6 +5,7 @@
         #!/bin/bash
         # Workflows are currently being assigned to _default_ which is wrong
         # https://github.com/galaxyproject/galaxy/issues/8209
+        . /opt/galaxy/.bashrc
         while true; do
                 psql -c "COPY (update workflow_invocation set handler = 'handler_main_' || (random() * 12)::integer where (state = 'new' and handler = '_default_') or (state = 'new' and create_time < (now() - '1 minute'::interval)) returning workflow_invocation.id) to STDOUT with CSV DELIMITER ',';" | ts | grep -v 'UPDATE 0'
                 sleep 1;
