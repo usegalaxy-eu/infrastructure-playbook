@@ -1,0 +1,24 @@
+---
+- name: "Deploy fixer upper script"
+  copy:
+    content: |
+        #!/bin/bash
+        . /opt/galaxy/.bashrc
+        journalctl -u galaxy-handler@* --since '20 hour ago' | \
+            grep "Caught exception while attempting to fail job" | \
+            egrep -o '\([0-9]+\) Caught' | \
+            sed 's/ Caught//g;s/(//g;s/)//g' | \
+            sort -u | \
+            xargs -I{} -n1 --no-run-if-empty -P1 gxadmin mutate fail-job {} --commit > /dev/null;
+        gxadmin mutate fail-terminal-datasets --commit > /dev/null;
+    dest: /usr/bin/galaxy-fix-failing-to-fail-jobs
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Add to cron
+  cron:
+    name: "Fix failing to fail jobs"
+    minute: "*/20"
+    job: /usr/bin/galaxy-fix-failing-to-fail-jobs
+    user: galaxy
