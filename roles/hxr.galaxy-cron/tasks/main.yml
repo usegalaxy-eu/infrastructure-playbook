@@ -1,7 +1,7 @@
 ---
 - cron:
     name: Docker cleanup
-    job: ". /opt/galaxy/.bashrc && docker system prune -f"
+    job: ". /opt/galaxy/.bashrc && docker system prune -f > /dev/null"
     minute: 30
     hour: 2
 
