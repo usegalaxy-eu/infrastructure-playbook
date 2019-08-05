@@ -9,7 +9,7 @@
             awk '{print $13}' | \
             sort -u | \
             xargs -I{} -n1 --no-run-if-empty -P1 gxadmin mutate fail-job {} --commit;
-        gxadmin mutate fail-terminal-datasets --commit;
+        gxadmin mutate fail-terminal-datasets --commit > /dev/null;
     dest: /usr/bin/galaxy-fix-unscheduled-jobs
     owner: root
     group: root
