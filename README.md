@@ -29,7 +29,11 @@ And then you can run playbooks. No venv activation is required for this step.
 make cvmfs CHECK=1
 ```
 
-## Build Statuses
+### Role naming convention
+
+There is none. `hxr.` used to mean Helena's custom code that isn't reusable but the division is not a good one. It could all be renamed `usegalaxy-eu.`
+
+# Build Statuses
 
 The playbooks are being automatically and regularly run against the following machines:
 
