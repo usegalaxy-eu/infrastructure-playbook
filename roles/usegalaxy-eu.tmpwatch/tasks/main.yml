@@ -1,0 +1,8 @@
+---
+- name: Add to cron
+  cron:
+    name: "Tmpwatch for Galaxy tmp dir"
+    minute: 0
+    hour: 0
+    job: tmpwatch 30d /data/1/galaxy_db/tmp /data/2/galaxy_db/tmp  /data/7/galaxy_db/tmp /data/dnb01/galaxy_db/tmp /data/dnb02/galaxy_db/tmp
+    user: galaxy
