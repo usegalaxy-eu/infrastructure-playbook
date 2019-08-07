@@ -59,7 +59,6 @@
     - hxr.monitor-email
     - hxr.monitor-uwsgi
     - hxr.monitor-galaxy-journalctl
-    - dj-wasabi.telegraf
 
     # Setup Galaxy user
     - role: galaxyproject.galaxy
@@ -138,5 +137,7 @@
     - usegalaxy-eu.log-cleaner               # do not retain logs, they are unnecessary/risky under GDPR
     - usegalaxy-eu.fix-ancient-ftp-data      # Remove FTP data older than 3 months
 
+    # Some of our 'cleanups' also generate telegraf format so this goes at end.
+    - dj-wasabi.telegraf
     #- dev-sec.os-hardening
     #- dev-sec.ssh-hardening
