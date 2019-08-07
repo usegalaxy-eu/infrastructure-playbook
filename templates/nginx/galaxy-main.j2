@@ -28,6 +28,8 @@ server {
 	#client_body_temp_path  /data/dnb01/nginx_upload_store/;
 	client_body_buffer_size 1024m;
 
+        {{ google_site_verification }}
+
 	location / {
 		uwsgi_pass      127.0.0.1:4001;
 
