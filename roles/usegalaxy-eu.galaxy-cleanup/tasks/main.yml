@@ -5,9 +5,9 @@
         plugin: "exec"
         config:
           - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin galaxy cleanup 60"]
-          - timeout = "6h"
+          - timeout = "1h"
           - data_format = "influx"
-          - interval = "48h"
+          - interval = "6h"
 
 - set_fact:
         telegraf_plugins_extra: "{{ telegraf_plugins_extra | combine(plugin_config_galaxy_cleanup) }}"
