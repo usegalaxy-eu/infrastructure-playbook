@@ -17,7 +17,8 @@
     - secret_group_vars/all.yml        # All of the other assorted secrets...
   handlers:
     - name: Restart Galaxy
-      shell: 'source /opt/galaxy/.bashrc && systemctl restart galaxy-zergling@* galaxy-handler@*'
+      shell: |
+        echo 'Manual zergling restart required' && cd /opt/galaxy/ && source /opt/galaxy/.bashrc  && systemctl restart galaxy-handler@* && systemctl restart galaxy-zergling@*
   pre_tasks:
     - name: Install Dependencies
       package:
@@ -46,7 +47,7 @@
     - hxr.monitor-cluster
     - hxr.monitor-email
     - hxr.monitor-uwsgi
-    - hxr.monitor-galaxy-queue
+    - hxr.monitor-galaxy-journalctl
     - dj-wasabi.telegraf
 
     # Setup Galaxy user
@@ -83,10 +84,8 @@
     - usegalaxy-eu.dynmotd
 
     ## SSL / Security
-    # Sign the server host key to prevent TOFU for SSH
-    - ssh-host-sign
-    # Setup the AWS client that will be needed for route53 authentication of certbot
-    - hxr.aws-cli
+    - ssh-host-sign # Sign the server host key to prevent TOFU for SSH
+    - hxr.aws-cli   # Setup the AWS client that will be needed for route53 authentication of certbot. MUST come before nginx role
 
     ## GALAXY
     - role: hxr.postgres-connection
@@ -108,14 +107,22 @@
         galaxy_manage_database: yes
         galaxy_fetch_dependencies: yes
         galaxy_build_client: no
-    - hxr.install-to-venv # Some extra packages our site needs.
-    - usegalaxy-eu.galaxy-systemd # Manage the Galaxy processes with SystemD
-    # Setup the NodeJS proxy (depends on NodeJS being already available)
-    - usegalaxy-eu.gie-node-proxy
-    # Deploy the GIE configuration
-    - usegalaxy-eu.gie-deployer
-    - usegalaxy-eu.subdomain-themes
-    - usegalaxy-eu.limits
+
+    # Extras!
+    - hxr.install-to-venv           # Some extra packages our site needs.
+    - usegalaxy-eu.galaxy-systemd   # Manage the Galaxy processes with SystemD
+    - usegalaxy-eu.gie-node-proxy   # Setup the NodeJS proxy (depends on NodeJS being already available)
+    - usegalaxy-eu.gie-deployer     # Deploy the GIE configuration
+    - usegalaxy-eu.subdomain-themes # Custom subdomain themes
+    - usegalaxy-eu.limits           # Prevent out of control processes
+    - usegalaxy-eu.galaxy-cleanup   # Cleanup purged datasets/histories/etc >60 days old
+    # Various ugly fixes
+    - usegalaxy-eu.fix-unscheduled-jobs      # Workaround for ???
+    - usegalaxy-eu.fix-oidc                  # Workaround for https://github.com/galaxyproject/galaxy/issues/8244
+    - usegalaxy-eu.fix-unscheduled-workflows # Workaround for https://github.com/galaxyproject/galaxy/issues/8209
+    - usegalaxy-eu.fix-failing-to-fail-jobs  # Workaround for https://github.com/galaxyproject/galaxy/issues/8171, maybe can be removed in 19.09?
+    - usegalaxy-eu.fix-stuck-handlers        # Restart handlers to prevent several classes of issues
+    - usegalaxy-eu.log-cleaner               # do not retain logs, they are unnecessary/risky under GDPR
 
     #- dev-sec.os-hardening
     #- dev-sec.ssh-hardening
