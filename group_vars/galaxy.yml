@@ -117,6 +117,23 @@ telegraf_plugins_extra:
       - data_format = "influx"
       - interval = "1m"
 
+  postgres_extra:
+    plugin: "exec"
+    config:
+      - commands = [
+          "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-cache-hit",
+          "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-index-size",
+          "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-index-usage",
+          "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-table-bloat",
+          "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-table-size",
+          "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-unused-indexes",
+          "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-vacuum-stats",
+          "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-stat-bgwriter",
+          "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-stat-user-tables",
+        ]
+      - timeout = "15s"
+      - data_format = "influx"
+      - interval = "1m"
 
 # Custom pip installer
 pip_venv_path: "{{ galaxy_venv_dir }}"
