@@ -36,7 +36,7 @@ telegraf_plugins_extra:
     plugin: "postgresql"
     config:
       - address = "{{ galaxy_db_connection }}"
-      - databases = ["galaxy"]
+      - databases = ["galaxy", "galaxy-test", "apollo", "chado"]
 
   listen_galaxy_routes:
     plugin: "statsd"
