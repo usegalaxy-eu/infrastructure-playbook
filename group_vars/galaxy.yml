@@ -11,7 +11,7 @@ usegalaxy_eu_autofs_mounts:
  - usrlocal
 
 # Telegraf
-custom_telegraf_env: "/usr/bin/env GDPR_MODE=1 PGUSER=galaxy PGHOST=sn03.bi.uni-freiburg.de"
+custom_telegraf_env: "/usr/bin/env GDPR_MODE=1 PGUSER=galaxy PGHOST=sn03.bi.uni-freiburg.de GALAXY_ROOT=/opt/galaxy/ GALAXY_CONFIG_FILE=/opt/galaxy/config/galaxy.ini GALAXY_LOG_DIR=/var/log/galaxy/"
 telegraf_plugins_extra:
   procstat_nginx:
     plugin: procstat
