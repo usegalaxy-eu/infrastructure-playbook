@@ -37,6 +37,7 @@
     content: "{{ galaxy_custom_site_base_css }}"
     mode: 0644
   when: galaxy_custom_site_base_css is defined
+  register: base_css
 
 - name: Copy custom background images
   copy:
@@ -48,7 +49,9 @@
 
 - name: Main CSS
   shell: "cat {{ galaxy_server_dir }}/static/style/blue/base.css {% if galaxy_custom_site_base_css is defined %}{{ multisite_dir }}/usegalaxy.eu-custom.css {% endif %} > {{ multisite_dir }}/usegalaxy.eu.css"
+  when: __galaxy_git_update_result is changed or (galaxy_custom_site_base_css is defined and base_css is changed)
 
 - name: Merge CSS files
   shell: "cat {{ galaxy_server_dir }}/static/style/blue/base.css {{ multisite_dir }}/{{ item.domain | default([item.name, '.usegalaxy.eu'] | join) }}-custom.css > {{ multisite_dir }}/{{ item.domain | default([item.name, '.usegalaxy.eu'] | join) }}.css"
   with_items: "{{ galaxy_custom_sites }}"
+  when: __galaxy_git_update_result is changed or custom_css is changed
