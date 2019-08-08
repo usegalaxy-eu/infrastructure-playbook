@@ -1,0 +1,16 @@
+### MANAGED BY usegalaxy-eu.galaxy-procstat ANSIBLE ROLE ###
+
+[[inputs.procstat]]
+	cgroup = "systemd/system.slice/galaxy-zergpool.service"
+
+{% for zerg in range(2 * galaxy_systemd_zergling) %}
+[[inputs.procstat]]
+	cgroup = "systemd/system.slice/system-galaxy\\x2dzergling.slice/galaxy-zergling@{{ zerg }}.service"
+	process_name = "galaxy-zerg@{{ zerg }}"
+{% endfor %}
+
+{% for handler in range(galaxy_systemd_handler) %}
+[[inputs.procstat]]
+	cgroup = "systemd/system.slice/system-galaxy\\x2dhandler.slice/galaxy-handler@{{ handler }}.service"
+	process_name = "galaxy-handler@{{ handler }}"
+{% endfor %}
