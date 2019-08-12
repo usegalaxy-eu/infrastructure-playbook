@@ -58,6 +58,9 @@ grafana_auth:
 grafana_image_storage:
   provider: local
 
+grafana_environment:
+  GF_PANELS_DISABLE_SANITIZE_HTML: 'true'
+
 grafana_datasources:
  - name: Galaxy
    type: influxdb
