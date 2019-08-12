@@ -4,7 +4,7 @@ master = true
 processes = 4
 threads = 1
 {% if galaxy_zergpool %}
-zerg = /opt/galaxy/mutable-data/zergpool.sock
+zerg = {{ galaxy_mutable_data_dir }}/zergpool.sock
 {% endif %}
 
 ; uwsgi performance/robustness features
