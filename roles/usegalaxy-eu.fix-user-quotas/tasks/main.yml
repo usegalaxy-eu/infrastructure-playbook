@@ -1,0 +1,20 @@
+---
+- name: "Deploy fixer upper script"
+  copy:
+    content: |
+        #!/bin/bash
+        cd /opt/galaxy/
+        . /opt/galaxy/.bashrc
+        python server/scripts/set_user_disk_usage.py -c {{ galaxy_config_dir }}/{{ galaxy_config_file_basename }} --dry-run
+    dest: /usr/bin/galaxy-fix-user-quotas
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Add to cron
+  cron:
+    name: "Fix user quotas"
+    minute: 15
+    hour: 22
+    job: /usr/bin/galaxy-fix-user-quotas
+    user: galaxy
