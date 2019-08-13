@@ -13,29 +13,6 @@ usegalaxy_eu_autofs_mounts:
 # Telegraf
 custom_telegraf_env: "/usr/bin/env GDPR_MODE=1 PGUSER=galaxy PGHOST=sn03.bi.uni-freiburg.de GALAXY_ROOT=/opt/galaxy/ GALAXY_CONFIG_FILE=/opt/galaxy/config/galaxy.ini GALAXY_LOG_DIR=/var/log/galaxy/"
 telegraf_plugins_extra:
-  procstat_nginx:
-    present: absent
-    plugin: procstat
-    config:
-      - pattern = ".*nginx.*"
-      - cmdline_tag = true
-  procstat_handler:
-    present: absent
-    plugin: procstat
-    config:
-      - cgroup = "systemd/system.slice/system-galaxy\\x2dhandler.slice/galaxy-handler@0.service"
-      - cmdline_tag = true
-  procstat_zergling:
-    present: absent
-    plugin: procstat
-    config:
-      - pattern = ".*uwsgi.*--socket.*"
-      - cmdline_tag = true
-  procstat_zergpool:
-    present: absent
-    plugin: procstat
-    config:
-      - pattern = ".*zergpool.*"
   postgres:
     plugin: "postgresql"
     config:
