@@ -1655,7 +1655,7 @@ base_app_main: &BASE_APP_MAIN
   # not specified either, Galaxy will automatically create and use a
   # separate sqlite database located in your <galaxy>/database folder
   # (indicated in the commented out line below).
-  #amqp_internal_connection: "pyamqp://galaxy:{{ rabbitmq_password_galaxy }}@proxy.galaxyproject.eu:5671/galaxy?ssl=1"
+  amqp_internal_connection: "pyamqp://galaxy:{{ rabbitmq_password_galaxy }}@proxy.galaxyproject.eu:5671/galaxy?ssl=1"
 
   # Galaxy real time communication server settings
   #enable_communication_server: false
