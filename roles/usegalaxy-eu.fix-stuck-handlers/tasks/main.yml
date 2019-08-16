@@ -33,3 +33,11 @@
     hour: 5
     job: systemctl restart galaxy-zergling@1
     user: root
+
+- name: Restart workflow handlers
+  cron:
+    name: "Restart workflow handlers"
+    minute: 0
+    hour: 4
+    job: systemctl restart galaxy-workflow-handler@*
+    user: root
