@@ -48,6 +48,7 @@ nanopolish_eventalign: {cores: 20, mem: 12}
 AccurateMassSearch: {cores: 4, mem: 8}
 AdditiveSeries: {cores: 20, mem: 12}
 AdditiveSeries: {cores: 4, mem: 8}
+augustus: {runner: remote_cluster_mq_be01}
 BaselineFilter: {cores: 4, mem: 8}
 CONVERTER_bedgraph_to_bigwig: {mem: 8}
 CVInspector: {cores: 4, mem: 8}
@@ -413,7 +414,7 @@ demo2D00:
   mem: 20
   name: matlab
   nativeSpecExtra: -l lic_matlab=1
-deseq2: {mem: 8}
+deseq2: {mem: 8, runner: remote_cluster_mq_de02}
 dexseq_count: {mem: 25}
 diamond_database_builder: {cores: 12, mem: 90}
 dt_profiler: {mem: 10}
@@ -476,7 +477,7 @@ hammock_1.0:
   name: java_temp
 heatmapper: {mem: 25}
 heatmapper_deepTools: {mem: 25}
-hicexplorer_hicbuildmatrix: {cores: 10, mem: 90}
+hicexplorer_hicbuildmatrix: {cores: 10, mem: 120}
 hicexplorer_hiccorrectmatrix: {mem: 64}
 hicexplorer_hiccorrelate: {mem: 20}
 hicexplorer_hicfindtads: {mem: 20}
@@ -511,9 +512,9 @@ je_demultiplex: {cores: 8, mem: 20}
 je_demultiplex_illu: {cores: 8}
 je_markdupes: {cores: 8}
 join1: {mem: 18}
-#bamFilter:  {runner: remote_cluster_mq_cz}
+bamFilter:  {runner: remote_cluster_mq_it01}
 
-#jq: {runner: remote_cluster_mq_cz}
+jq: {runner: remote_cluster_mq_de01}
 kallisto_quant: {cores: 8, mem: 20}
 ## uha,	with the reference.fa file from	the history it is not working?
 ## kallisto_quant: {cores: 8, mem: 20_singularity}
@@ -639,6 +640,7 @@ sam_merge2:
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
   mem: 32
+samtools_stats: {runner: remote_cluster_mq_de01}
 search_gui:
   cores: 12
   env:
