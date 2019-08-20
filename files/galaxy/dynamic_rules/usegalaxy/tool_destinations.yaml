@@ -29,6 +29,10 @@ bio3d_pca: {mem: 64}
 bio3d_rmsd: {mem: 64}
 bio3d_rmsf: {mem: 64}
 
+autodock_vina: {runner: remote_cluster_mq_it01}
+autodock_vina_prepare_ligand: {runner: remote_cluster_mq_it01}
+autodock_vina_prepare_box: {runner: remote_cluster_mq_it01}
+
 cds_essential_variability:
   env:
     COPERNICUS_CDSAPIRC_KEY_FILE: /data/db/data_managers/COPERNICUS_CDSAPIRC_KEY_FILE
