@@ -217,7 +217,7 @@ def _finalize_tool_spec(tool_id, user_roles, memory_scale=1.0):
     tool_spec['mem'] = tool_spec.get('mem', 4) * memory_scale
 
     # Only two tools are truly special.
-    if tool_id == 'upload1':
+    if tool_id in ('upload1', '__DATA_FETCH__'):
         tool_spec = {
             'mem': 0.3,
             'runner': 'condor',
