@@ -29,6 +29,10 @@ bio3d_pca: {mem: 64}
 bio3d_rmsd: {mem: 64}
 bio3d_rmsf: {mem: 64}
 
+docking: {runner: remote_cluster_mq_it01}
+# prepare_ligands_for_docking: {runner: remote_cluster_mq_it01}
+prepare_box: {runner: remote_cluster_mq_it01}
+
 cds_essential_variability:
   env:
     COPERNICUS_CDSAPIRC_KEY_FILE: /data/db/data_managers/COPERNICUS_CDSAPIRC_KEY_FILE
@@ -98,7 +102,7 @@ InclusionExclusionListCreator: {cores: 4, mem: 8}
 InternalCalibration: {cores: 4, mem: 8}
 IsobaricAnalyzer: {cores: 4, mem: 8}
 LabeledEval: {cores: 4, mem: 8}
-maker: {cores: 8, mem: 8}
+maker: {cores: 8, mem: 8, runner: remote_cluster_mq_de02}
 MRMMapper: {cores: 4, mem: 8}
 MRMPairFinder: {cores: 4, mem: 8}
 msgfplus:
@@ -497,7 +501,7 @@ hisat2: {cores: 8, mem: 20, runner: condor_singularity_with_conda}
 hisat2_index_builder_data_manager: {cores: 12, mem: 180}
 hmmer_hmmsearch: {mem: 10}
 htseq_count: {mem: 32}
-humann2: {mem: 32}
+humann2: {cores: 6, mem: 90}
 infernal_cmbuild: {cores: 10, mem: 20}
 infernal_cmsearch: {cores: 10, mem: 20}
 interproscan:
