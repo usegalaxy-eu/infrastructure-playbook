@@ -6,6 +6,7 @@ sklearn_train_test_eval:
    runner: remote_cluster_mq_de03
    env:
       CUDA_VISIBLE_DEVICES: 0
+
 maxquant: {mem: 20, cores: 8}
 scpipe: {mem: 64, cores: 8}
 cardinal_combine: {mem: 92}
@@ -107,7 +108,15 @@ InclusionExclusionListCreator: {cores: 4, mem: 8}
 InternalCalibration: {cores: 4, mem: 8}
 IsobaricAnalyzer: {cores: 4, mem: 8}
 LabeledEval: {cores: 4, mem: 8}
-maker: {cores: 8, mem: 8, runner: remote_cluster_mq_de02}
+maker: {cores: 8, mem: 8, runner: remote_cluster_mq_be01}
+gmx_md: {runner: remote_cluster_mq_de02}
+gmx_merge_topology_files: {runner: remote_cluster_mq_de02}
+gmx_em: {runner: remote_cluster_mq_de02}
+gmx_nvt: {runner: remote_cluster_mq_de02}
+gmx_npt: {runner: remote_cluster_mq_de02}
+gmx_setup: {runner: remote_cluster_mq_de02}
+gmx_solvate: {runner: remote_cluster_mq_de02}
+mdanalysis_hbonds: {runner: remote_cluster_mq_de02}
 MRMMapper: {cores: 4, mem: 8}
 MRMPairFinder: {cores: 4, mem: 8}
 msgfplus:
@@ -479,6 +488,8 @@ gemini_load: {cores: 12, mem: 40}
 
 ggplot2_heatmap2: {mem: 24}
 graphprot_predict_profile: {mem: 8}
+# this tool was developed by IGC Bioinformatics Unit and Daniel Sobral from ELIXIR-PT
+goenrichment: {runner: remote_cluster_mq_pt01}
 hammock_1.0:
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
@@ -522,8 +533,7 @@ je_demultiplex_illu: {cores: 8}
 je_markdupes: {cores: 8}
 join1: {mem: 18}
 bamFilter:  {runner: remote_cluster_mq_de01}
-
-jq: {runner: remote_cluster_mq_de01}
+jq: {runner: remote_cluster_mq_pt01}
 kallisto_quant: {cores: 8, mem: 20}
 ## uha,	with the reference.fa file from	the history it is not working?
 ## kallisto_quant: {cores: 8, mem: 20_singularity}
