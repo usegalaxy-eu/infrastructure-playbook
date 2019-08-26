@@ -29,6 +29,43 @@ tomcat7_uriencoding: ""
 
 apollo_version: eu-2.4.1
 
+apollo_config_apollo: |
+    extraTabs = [
+        ['title': 'GGA', 'url': 'https://gitter.im/galaxy-genome-annotation/Lobby']
+    ]
+
+apollo_config_jbrowse: |
+    jbrowse {
+        git {
+            url= "https://github.com/GMOD/jbrowse"
+            tag = "1.16.6-release"
+            alwaysPull = true
+            alwaysRecheck = true
+        }
+
+        plugins {
+            NeatHTMLFeatures{
+                included = true
+            }
+            NeatCanvasFeatures{
+                included = true
+            }
+            RegexSequenceSearch{
+                included = true
+            }
+            HideTrackLabels{
+                included = true
+            }
+            SashimiPlot {
+                included = true
+            }
+            MAFViewer {
+                included = true
+            }
+        }
+    }
+
+
 #telegraf_plugins_extra:
   #- plugin: statsd
     #config:

@@ -82,4 +82,9 @@ apollo {
          "active":true,
         ]
     ]
+
+    {{ apollo_config_apollo }}
 }
+
+
+{{ apollo_config_jbrowse }}
