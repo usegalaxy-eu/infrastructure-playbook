@@ -12,6 +12,9 @@ sklearn_train_test_eval:
    env:
       CUDA_VISIBLE_DEVICES: 0
 
+# roary	needs many many cpus if	the number of input files increase
+# a more specific function would ne neat
+roary: {cores: 24}
 maxquant: {mem: 20, cores: 8}
 scpipe: {mem: 64, cores: 8}
 cardinal_combine: {mem: 92}
