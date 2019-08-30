@@ -123,13 +123,18 @@ remote_cluster_mq_de01:
     dependency_resolution: 'remote'
 
 remote_cluster_mq_de02:
+  ## our singularity test bed
   env: {}
   params:
     priority: -{PRIORITY}
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
     jobs_directory: '/data/share/staging'
-    dependency_resolution: 'remote'
+    # dependency_resolution: 'remote'  --> we should enable it and test the difference, I don't think it has an effect
+    singularity_enabled: true
+    singularity_default_container_id: '/data/0/singularity/ubuntu:18.04'
+    tmp_dir: 'True'
+
 
 remote_cluster_mq_de03:
   env: {}
