@@ -10,3 +10,11 @@ tiaas_dir: /opt/tiaas
 tiaas_user: root
 tiaas_group: root
 tiaas_version: master
+tiaas_listen_url: "127.0.0.1:5000"
+
+
+tiaas_nginx_config: |
+	location /join-training/ {
+		proxy_pass    http://{{ tiaas_listen_url }}/join-training/;
+		proxy_set_header           Host $host;
+	}
