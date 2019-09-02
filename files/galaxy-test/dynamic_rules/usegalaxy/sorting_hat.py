@@ -128,17 +128,19 @@ def build_spec(tool_spec, runner_hint=None):
     tool_memory = tool_spec.get('mem', 4)
     tool_cores = tool_spec.get('cores', 1)
     tool_gpus = tool_spec.get('gpus', 0)
+
     # We apply some constraints to these values, to ensure that we do not
     # produce unschedulable jobs, requesting more ram/cpu than is available in a
     # given location. Currently we clamp those values rather than intelligently
     # re-scheduling to a different location due to TaaS constraints.
+    limits = _get_limits(destination)
     if 'condor' in destination:
-        limits = _get_limits(destination)
         tool_memory = min(tool_memory, limits.get('mem'))
         tool_cores = min(tool_cores, limits.get('cores'))
 
     if 'remote_cluster_mq' in destination:
-        limits = _get_limits(destination)
+        tool_memory = min(tool_memory, limits.get('mem'))
+        tool_cores = min(tool_cores, limits.get('cores'))
         tool_gpus = min(tool_gpus, limits.get('gpus'))
 
     kwargs = {
@@ -178,8 +180,6 @@ def build_spec(tool_spec, runner_hint=None):
 
         if 'gpus' in tool_spec and tool_gpus > 0:
             kwargs['GPUS'] = tool_gpus
-        else:
-            del params['submit_submit_request_gpus']
 
     # Update env and params from kwargs.
     env.update(tool_spec.get('env', {}))
