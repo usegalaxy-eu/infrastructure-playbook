@@ -1,6 +1,17 @@
 ---
 __default__: {}
 
+keras_batch_models:
+   runner: remote_cluster_mq_de03
+   gpus: 1
+   env:
+      CUDA_VISIBLE_DEVICES: 0
+sklearn_train_test_eval:
+   runner: remote_cluster_mq_de03
+   gpus: 1
+   env:
+      CUDA_VISIBLE_DEVICES: 0
+
 maxquant: {mem: 20, cores: 8}
 scpipe: {mem: 64, cores: 8}
 cardinal_combine: {mem: 92}
@@ -509,7 +520,7 @@ je_markdupes: {cores: 8}
 join1: {mem: 18}
 #bamFilter:  {runner: remote_cluster_mq_cz}
 
-#jq: {runner: remote_cluster_mq_cz}
+jq: {runner: remote_cluster_mq_de01}
 kallisto_quant: {cores: 8, mem: 20}
 ## uha,	with the reference.fa file from	the history it is not working?
 ## kallisto_quant: {cores: 8, mem: 20_singularity}

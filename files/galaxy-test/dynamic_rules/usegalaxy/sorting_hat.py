@@ -8,10 +8,6 @@ import math
 import os
 import yaml
 
-# Maximum resources
-CONDOR_MAX_CORES = 40
-CONDOR_MAX_MEM = 1000
-
 # The default / base specification for the different environments.
 SPECIFICATION_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'destination_specifications.yaml')
 with open(SPECIFICATION_PATH, 'r') as handle:
@@ -109,6 +105,12 @@ def name_it(tool_spec):
     return name
 
 
+def _get_limits(destination, default_cores=1, default_mem=4, default_gpus=0):
+    limits = {'cores': default_cores, 'mem': default_mem, 'gpus': default_gpus}
+    limits.update(SPECIFICATIONS.get(destination).get('limits', {}))
+    return limits
+
+
 def build_spec(tool_spec, runner_hint=None):
     destination = tool_spec.get('runner', 'condor')
 
@@ -125,13 +127,19 @@ def build_spec(tool_spec, runner_hint=None):
     # semi-internal, and may not be properly propagated to the end tool
     tool_memory = tool_spec.get('mem', 4)
     tool_cores = tool_spec.get('cores', 1)
+    tool_gpus = tool_spec.get('cores', 0)
     # We apply some constraints to these values, to ensure that we do not
     # produce unschedulable jobs, requesting more ram/cpu than is available in a
     # given location. Currently we clamp those values rather than intelligently
     # re-scheduling to a different location due to TaaS constraints.
     if 'condor' in destination:
-        tool_memory = min(tool_memory, CONDOR_MAX_MEM)
-        tool_cores = min(tool_cores, CONDOR_MAX_CORES)
+        limits = _get_limits(destination)
+        tool_memory = min(tool_memory, limits.get('mem'))
+        tool_cores = min(tool_cores, limits.get('cores'))
+
+    if 'remote_condor_cluster_mq' in destination:
+        limits = _get_limits(destination)
+        tool_gpus = min(tool_gpus, limits.get('gpus'))
 
     kwargs = {
         # Higher numbers are lower priority, like `nice`.
@@ -139,6 +147,7 @@ def build_spec(tool_spec, runner_hint=None):
         'MEMORY': str(tool_memory) + 'G',
         'PARALLELISATION': "",
         'NATIVE_SPEC_EXTRA': "",
+        'GPUS': "",
     }
     # Allow more human-friendly specification
     if 'nativeSpecification' in params:
@@ -161,6 +170,17 @@ def build_spec(tool_spec, runner_hint=None):
         if 'rank' in tool_spec:
             params['rank'] = tool_spec['rank']
 
+    if 'remote_condor_cluster_mq' in destination:
+        if 'cores' in tool_spec:
+            kwargs['PARALLELISATION'] = tool_cores
+        else:
+            del params['submit_submit_request_cpus']
+
+        if 'gpus' in tool_spec and tool_gpus > 0:
+            kwargs['GPUS'] = tool_gpus
+        else:
+            del params['submit_submit_request_gpus']
+
     # Update env and params from kwargs.
     env.update(tool_spec.get('env', {}))
     env = {k: str(v).format(**kwargs) for (k, v) in env.items()}
@@ -171,8 +191,8 @@ def build_spec(tool_spec, runner_hint=None):
         runner = 'drmaa'
     elif 'condor' in destination:
         runner = 'condor'
-    elif 'remote_cluster_mq' in destination:
-        runner = destination.replace('remote_cluster_mq', 'pulsar_eu')
+    elif 'remote_condor_cluster_mq' in destination:
+        runner = destination.replace('remote_condor_cluster_mq', 'pulsar_eu')
     else:
         runner = 'local'
 
@@ -256,7 +276,7 @@ def _gateway(tool_id, user_roles, user_id, user_email, memory_scale=1.0):
     if tool_id != 'upload1':
         hints = [x for x in user_roles if x.startswith('destination-')]
         if len(hints) > 0:
-            runner_hint = hints[0].replace('destination-pulsar-', 'remote_cluster_mq_')
+            runner_hint = hints[0].replace('destination-pulsar-', 'remote_condor_cluster_mq_')
 
     # Ensure that this tool is permitted to run, otherwise, throw an exception.
     assert_permissions(tool_spec, user_email, user_roles)
