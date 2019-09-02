@@ -53,7 +53,7 @@ secure_pulsar_singularity:
 #      shell: /bin/bash/
 #      resolve_dependencies: true
 
-remote_condor_cluster_mq_cz:
+remote_cluster_mq_cz:
   env: {}
   params:
     priority: -{PRIORITY}
@@ -63,7 +63,7 @@ remote_condor_cluster_mq_cz:
     dependency_resolution: 'remote'
     submit_user: 'galaxy'
 
-remote_condor_cluster_mq_test:
+remote_cluster_mq_test:
   env: {}
   params:
     priority: -{PRIORITY}
@@ -110,7 +110,7 @@ sge:
         -soft
         -l galaxy1_dedicated=1
 
-remote_condor_cluster_mq_it01:
+remote_cluster_mq_it01:
   limits:
     cores: 16
     mem: 31
@@ -122,7 +122,7 @@ remote_condor_cluster_mq_it01:
     jobs_directory: '/data/share/staging'
     dependency_resolution: 'remote'
 
-remote_condor_cluster_mq_be01:
+remote_cluster_mq_be01:
   limits:
     cores: 8
     mem: 15
@@ -134,7 +134,7 @@ remote_condor_cluster_mq_be01:
     jobs_directory: '/data/share/staging'
     dependency_resolution: 'remote'
 
-remote_condor_cluster_mq_de01:
+remote_cluster_mq_de01:
   limits:
     cores: 16
     mem: 31
@@ -146,7 +146,7 @@ remote_condor_cluster_mq_de01:
     jobs_directory: '/data/share/staging'
     dependency_resolution: 'remote'
 
-remote_condor_cluster_mq_de02:
+remote_cluster_mq_de02:
   ## our singularity test bed
   limits:
     cores: 16
@@ -162,7 +162,7 @@ remote_condor_cluster_mq_de02:
     singularity_default_container_id: '/data/0/singularity/ubuntu:18.04'
     tmp_dir: 'True'
 
-remote_condor_cluster_mq_de03:
+remote_cluster_mq_de03:
   limits:
     cores: 8
     mem: 19
@@ -176,7 +176,7 @@ remote_condor_cluster_mq_de03:
     jobs_directory: '/data/share/staging'
     dependency_resolution: 'remote'
 
-remote_condor_cluster_mq_pt01:
+remote_cluster_mq_pt01:
   limits:
     cores: 4
     mem: 15

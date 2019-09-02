@@ -137,7 +137,7 @@ def build_spec(tool_spec, runner_hint=None):
         tool_memory = min(tool_memory, limits.get('mem'))
         tool_cores = min(tool_cores, limits.get('cores'))
 
-    if 'remote_condor_cluster_mq' in destination:
+    if 'remote_cluster_mq' in destination:
         limits = _get_limits(destination)
         tool_gpus = min(tool_gpus, limits.get('gpus'))
 
@@ -170,7 +170,7 @@ def build_spec(tool_spec, runner_hint=None):
         if 'rank' in tool_spec:
             params['rank'] = tool_spec['rank']
 
-    if 'remote_condor_cluster_mq' in destination:
+    if 'remote_cluster_mq' in destination:
         if 'cores' in tool_spec:
             kwargs['PARALLELISATION'] = tool_cores
         else:
@@ -191,8 +191,8 @@ def build_spec(tool_spec, runner_hint=None):
         runner = 'drmaa'
     elif 'condor' in destination:
         runner = 'condor'
-    elif 'remote_condor_cluster_mq' in destination:
-        runner = destination.replace('remote_condor_cluster_mq', 'pulsar_eu')
+    elif 'remote_cluster_mq' in destination:
+        runner = destination.replace('remote_cluster_mq', 'pulsar_eu')
     else:
         runner = 'local'
 
@@ -276,7 +276,7 @@ def _gateway(tool_id, user_roles, user_id, user_email, memory_scale=1.0):
     if tool_id != 'upload1':
         hints = [x for x in user_roles if x.startswith('destination-')]
         if len(hints) > 0:
-            runner_hint = hints[0].replace('destination-pulsar-', 'remote_condor_cluster_mq_')
+            runner_hint = hints[0].replace('destination-pulsar-', 'remote_cluster_mq_')
 
     # Ensure that this tool is permitted to run, otherwise, throw an exception.
     assert_permissions(tool_spec, user_email, user_roles)
