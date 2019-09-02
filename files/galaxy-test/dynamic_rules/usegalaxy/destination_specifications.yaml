@@ -1,5 +1,8 @@
 ---
 condor:
+  limits:
+    cores: 40
+    mem: 1000
   env: {}
   params:
     priority: -{PRIORITY}
@@ -8,6 +11,9 @@ condor:
     tmp_dir: 'True'
 
 condor_singularity:
+  limits:
+    cores: 40
+    mem: 1000
   env: {}
   params:
     priority: -{PRIORITY}
@@ -47,7 +53,7 @@ secure_pulsar_singularity:
 #      shell: /bin/bash/
 #      resolve_dependencies: true
 
-remote_cluster_mq_cz:
+remote_condor_cluster_mq_cz:
   env: {}
   params:
     priority: -{PRIORITY}
@@ -57,7 +63,7 @@ remote_cluster_mq_cz:
     dependency_resolution: 'remote'
     submit_user: 'galaxy'
 
-remote_cluster_mq_test:
+remote_condor_cluster_mq_test:
   env: {}
   params:
     priority: -{PRIORITY}
@@ -104,31 +110,7 @@ sge:
         -soft
         -l galaxy1_dedicated=1
 
-remote_cluster_mq_it01:
-  limits:
-    cores: 16
-    mem: 31
-  env: {}
-  params:
-    priority: -{PRIORITY}
-    request_cpus: '{PARALLELISATION}'
-    request_memory: '{MEMORY}'
-    jobs_directory: '/data/share/staging'
-    dependency_resolution: 'remote'
-
-remote_cluster_mq_be01:
-  limits:
-    cores: 8
-    mem: 15
-  env: {}
-  params:
-    priority: -{PRIORITY}
-    request_cpus: '{PARALLELISATION}'
-    request_memory: '{MEMORY}'
-    jobs_directory: '/data/share/staging'
-    dependency_resolution: 'remote'
-
-remote_cluster_mq_de01:
+remote_condor_cluster_mq_it01:
   limits:
     cores: 16
     mem: 31
@@ -140,7 +122,31 @@ remote_cluster_mq_de01:
     jobs_directory: '/data/share/staging'
     dependency_resolution: 'remote'
 
-remote_cluster_mq_de02:
+remote_condor_cluster_mq_be01:
+  limits:
+    cores: 8
+    mem: 15
+  env: {}
+  params:
+    priority: -{PRIORITY}
+    submit_submit_request_cpus: '{PARALLELISATION}'
+    submit_submit_request_memory: '{MEMORY}'
+    jobs_directory: '/data/share/staging'
+    dependency_resolution: 'remote'
+
+remote_condor_cluster_mq_de01:
+  limits:
+    cores: 16
+    mem: 31
+  env: {}
+  params:
+    priority: -{PRIORITY}
+    submit_submit_request_cpus: '{PARALLELISATION}'
+    submit_submit_request_memory: '{MEMORY}'
+    jobs_directory: '/data/share/staging'
+    dependency_resolution: 'remote'
+
+remote_condor_cluster_mq_de02:
   ## our singularity test bed
   limits:
     cores: 16
@@ -148,15 +154,15 @@ remote_cluster_mq_de02:
   env: {}
   params:
     priority: -{PRIORITY}
-    request_cpus: '{PARALLELISATION}'
-    request_memory: '{MEMORY}'
+    submit_submit_request_cpus: '{PARALLELISATION}'
+    submit_submit_request_memory: '{MEMORY}'
     jobs_directory: '/data/share/staging'
     # dependency_resolution: 'remote'  --> we should enable it and test the difference, I don't think it has an effect
     singularity_enabled: true
     singularity_default_container_id: '/data/0/singularity/ubuntu:18.04'
     tmp_dir: 'True'
 
-remote_cluster_mq_de03:
+remote_condor_cluster_mq_de03:
   limits:
     cores: 8
     mem: 19
@@ -164,19 +170,20 @@ remote_cluster_mq_de03:
   env: {}
   params:
     priority: -{PRIORITY}
-    request_cpus: '{PARALLELISATION}'
-    request_memory: '{MEMORY}'
+    submit_submit_request_cpus: '{PARALLELISATION}'
+    submit_submit_request_memory: '{MEMORY}'
+    submit_submit_request_gpus: '{GPUS}'
     jobs_directory: '/data/share/staging'
     dependency_resolution: 'remote'
 
-remote_cluster_mq_pt01:
+remote_condor_cluster_mq_pt01:
   limits:
     cores: 4
     mem: 15
   env: {}
   params:
     priority: -{PRIORITY}
-    request_cpus: '{PARALLELISATION}'
-    request_memory: '{MEMORY}'
+    submit_submit_request_cpus: '{PARALLELISATION}'
+    submit_submit_request_memory: '{MEMORY}'
     jobs_directory: '/data/share/staging'
     dependency_resolution: 'remote'

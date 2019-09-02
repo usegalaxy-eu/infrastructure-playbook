@@ -474,11 +474,11 @@ galaxy_jobconf:
               type: python
               function: gateway_2x
         # Pulsar MQs
-        - id: remote_cluster_mq_cz
+        - id: remote_condor_cluster_mq_cz
           runner: pulsar_eu_cz
           params:
               jobs_directory: /storage/brno11-elixir/home/galaxyeu/galaxy-staging/
-        - id: remote_cluster_mq_test
+        - id: remote_condor_cluster_mq_test
           runner: pulsar_eu_test
           env:
               LC_ALL: C
@@ -490,7 +490,7 @@ galaxy_jobconf:
               dependency_resolution: remote
               rewrite_parameters: "true"
               persistence_directory: /data/share/persisted_data
-        - id: remote_cluster_mq_it01
+        - id: remote_condor_cluster_mq_it01
           runner: pulsar_eu_it01
           env:
               LC_ALL: C
@@ -502,7 +502,7 @@ galaxy_jobconf:
               dependency_resolution: remote
               rewrite_parameters: "true"
               persistence_directory: /data/share/persisted_data
-        - id: remote_cluster_mq_de01
+        - id: remote_condor_cluster_mq_de01
           runner: pulsar_eu_de01
           env:
               LC_ALL: C
@@ -517,7 +517,7 @@ galaxy_jobconf:
               persistence_directory: /data/share/persisted_data
 #              singularity_enabled: "true"
 #              singularity_volumes: $defaults
-        - id: remote_cluster_mq_de02
+        - id: remote_condor_cluster_mq_de02
           runner: pulsar_eu_de02
           env:
               LC_ALL: C
@@ -529,7 +529,7 @@ galaxy_jobconf:
               dependency_resolution: remote
               rewrite_parameters: "true"
               persistence_directory: /data/share/persisted_data
-        - id: remote_cluster_mq_de03
+        - id: remote_condor_cluster_mq_de03
           runner: pulsar_eu_de03
           env:
               LC_ALL: C
@@ -541,7 +541,7 @@ galaxy_jobconf:
               dependency_resolution: remote
               rewrite_parameters: "true"
               persistence_directory: /data/share/persisted_data
-        - id: remote_cluster_mq_pt01
+        - id: remote_condor_cluster_mq_pt01
           runner: pulsar_eu_pt01
           env:
               LC_ALL: C
@@ -553,7 +553,7 @@ galaxy_jobconf:
               dependency_resolution: remote
               rewrite_parameters: "true"
               persistence_directory: /data/share/persisted_data
-        - id: remote_cluster_mq_be01
+        - id: remote_condor_cluster_mq_be01
           runner: pulsar_eu_be01
           env:
               LC_ALL: C
