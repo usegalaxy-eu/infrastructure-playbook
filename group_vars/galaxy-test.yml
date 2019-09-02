@@ -400,6 +400,28 @@ galaxy_jobconf:
             amqp_consumer_timeout: 2.0
             amqp_publish_retry: True
             amqp_publish_retry_max_retries: 60
+        - id: pulsar_eu_de03
+          load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+          params:
+            amqp_url: "pyamqp://galaxy_de03:{{ rabbitmq_password_galaxy_de03 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_de03?ssl=1"
+            galaxy_url: "https://test.usegalaxy.eu"
+            manager: test
+            amqp_acknowledge: True
+            amqp_ack_republish_time: 300
+            amqp_consumer_timeout: 2.0
+            amqp_publish_retry: True
+            amqp_publish_retry_max_retries: 60
+        - id: pulsar_eu_pt01
+          load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+          params:
+            amqp_url: "pyamqp://galaxy_pt01:{{ rabbitmq_password_galaxy_pt01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_pt01?ssl=1"
+            galaxy_url: "https://test.usegalaxy.eu"
+            manager: test
+            amqp_acknowledge: True
+            amqp_ack_republish_time: 300
+            amqp_consumer_timeout: 2.0
+            amqp_publish_retry: True
+            amqp_publish_retry_max_retries: 60
         - id: pulsar_eu_be01
           load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
           params:
@@ -495,6 +517,42 @@ galaxy_jobconf:
               persistence_directory: /data/share/persisted_data
 #              singularity_enabled: "true"
 #              singularity_volumes: $defaults
+        - id: remote_cluster_mq_de02
+          runner: pulsar_eu_de02
+          env:
+              LC_ALL: C
+          params:
+              jobs_directory: /data/share/staging
+              transport: curl
+              remote_metadata: "false"
+              default_file_action: remote_transfer
+              dependency_resolution: remote
+              rewrite_parameters: "true"
+              persistence_directory: /data/share/persisted_data
+        - id: remote_cluster_mq_de03
+          runner: pulsar_eu_de03
+          env:
+              LC_ALL: C
+          params:
+              jobs_directory: /data/share/staging
+              transport: curl
+              remote_metadata: "false"
+              default_file_action: remote_transfer
+              dependency_resolution: remote
+              rewrite_parameters: "true"
+              persistence_directory: /data/share/persisted_data
+        - id: remote_cluster_mq_pt01
+          runner: pulsar_eu_pt01
+          env:
+              LC_ALL: C
+          params:
+              jobs_directory: /data/share/staging
+              transport: curl
+              remote_metadata: "false"
+              default_file_action: remote_transfer
+              dependency_resolution: remote
+              rewrite_parameters: "true"
+              persistence_directory: /data/share/persisted_data
         - id: remote_cluster_mq_be01
           runner: pulsar_eu_be01
           env:
