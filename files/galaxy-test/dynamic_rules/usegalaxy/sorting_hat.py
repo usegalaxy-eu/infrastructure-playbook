@@ -127,7 +127,7 @@ def build_spec(tool_spec, runner_hint=None):
     # semi-internal, and may not be properly propagated to the end tool
     tool_memory = tool_spec.get('mem', 4)
     tool_cores = tool_spec.get('cores', 1)
-    tool_gpus = tool_spec.get('cores', 0)
+    tool_gpus = tool_spec.get('gpus', 0)
     # We apply some constraints to these values, to ensure that we do not
     # produce unschedulable jobs, requesting more ram/cpu than is available in a
     # given location. Currently we clamp those values rather than intelligently
