@@ -178,6 +178,8 @@ server {
 
 	{{ tiaas_nginx_config }}
 
+	{{ gapars_nginx_config }}
+
 	location /apollo/ {
 		proxy_pass http://apollo.internal.galaxyproject.eu/apollo/;
 	}

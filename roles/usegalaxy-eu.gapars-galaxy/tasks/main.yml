@@ -1,0 +1,76 @@
+- name: Create group
+  user:
+    name: "{{ gapars_group }}"
+    state: present
+  when: gapars_create_group
+
+- name: Create user account
+  user:
+    name: "{{ gapars_user }}"
+    comment: GAPARS Service User
+    group: "{{ gapars_group }}"
+    home: "{{ gapars_dir }}"
+  when: gapars_create_user
+
+- name: Ensure directory is available
+  file:
+    path: "{{ gapars_dir }}"
+    state: directory
+    owner: "{{ gapars_user }}"
+    group: "{{ gapars_group }}"
+    mode: 0750
+
+- name: Ensure config directory is available
+  file:
+    path: "{{ gapars_dir }}/config"
+    state: directory
+    owner: "{{ gapars_user }}"
+    group: "{{ gapars_group }}"
+    mode: 0750
+
+- name: Clone repository
+  git:
+      repo: "https://github.com/yvanlebras/GAPARS_Galaxy"
+    dest: "{{ gapars_dir }}/code/"
+    version: "{{ gapars_version }}"
+    force: "{{ gapars_force_checkout }}"
+  notify: 'reload gapars'
+
+- name: Build gapars Configuration object
+  set_fact:
+    _gapars_config:
+        MMOS_API_KEY: "{{ mmos_api_key }}"
+        MMOS_API_SECRET: "{{ mmos_api_secret }}"
+
+- name: Send templates
+  copy:
+    content: "{{ _gapars_config | to_nice_yaml(explicit_start=True) }}"
+    dest: "{{ gapars_dir }}/config/config.yaml"
+    owner: "{{ gapars_user }}"
+    group: "{{ gapars_group }}"
+    mode: 0640
+  notify: 'reload gapars'
+
+- name: Send runner script
+  template:
+    src: "run.sh"
+    dest: "{{ gapars_dir }}/run.sh"
+    owner: "{{ gapars_user }}"
+    group: "{{ gapars_group }}"
+    mode: 0750
+  notify: 'reload gapars'
+
+- name: Install all of the necessary dependencies
+  become: true
+  become_user: "{{ gapars_user }}"
+  pip:
+    virtualenv: "{{ gapars_dir }}/venv/"
+    requirements: "{{ gapars_dir }}/code/requirements.txt"
+    #virtualenv_python: python3.6
+  notify: 'reload gapars'
+
+- name: Install systemd unit file
+  template:
+    src: gapars.service
+    dest: /etc/systemd/system/gapars.service
+  notify: setup gapars systemd
