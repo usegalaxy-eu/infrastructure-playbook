@@ -7,7 +7,7 @@ gapars_version: python
 gapars_listen_url: "127.0.0.1:5000"
 
 gapars_nginx_config: |
-       location /gapars-experiment/ {
-               proxy_pass    http://{{ gapars_listen_url }}/;
-               proxy_set_header           Host $host;
-       }
+    location /gapars-experiment/ {
+        proxy_pass    http://{{ gapars_listen_url }}/;
+        proxy_set_header           Host $host;
+    }
