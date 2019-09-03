@@ -1,0 +1,14 @@
+[Unit]
+Description=Galaxy GAPARS group joining service
+After=network.target
+
+[Service]
+User={{ gapars_user }}
+Group={{ gapars_group }}
+ExecStart={{ gapars_dir }}/run.sh
+Restart=on-failure
+RestartForceExitStatus=SIGPIPE
+KillMode=control-group
+
+[Install]
+WantedBy=multi-user.target

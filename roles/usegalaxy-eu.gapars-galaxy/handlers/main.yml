@@ -1,0 +1,12 @@
+---
+- name: reload gapars
+  systemd:
+    state: restarted
+    name: gapars
+
+- name: setup gapars systemd
+  systemd:
+    state: started
+    enabled: true
+    name: gapars
+    daemon_reload: yes
