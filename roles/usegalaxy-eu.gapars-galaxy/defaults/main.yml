@@ -14,3 +14,7 @@ gapars_nginx_config: |
         proxy_pass    http://{{ gapars_listen_url }}/;
         proxy_set_header           Host $host;
     }
+
+    location /gapars-experiment/img/ {
+        alias {{ gapars_dir }}/code/img/;
+    }

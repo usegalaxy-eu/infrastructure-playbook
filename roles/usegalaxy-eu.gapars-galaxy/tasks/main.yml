@@ -18,7 +18,7 @@
     state: directory
     owner: "{{ gapars_user }}"
     group: "{{ gapars_group }}"
-    mode: 0750
+    mode: 0755 # Allow nginx to read, code is already 755
 
 - name: Ensure config directory is available
   file:
