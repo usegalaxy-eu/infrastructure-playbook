@@ -265,6 +265,10 @@ def _gateway(tool_id, user_roles, user_id, user_email, memory_scale=1.0):
     params['accounting_group_user'] = str(user_id)
     params['description'] = get_tool_id(tool_id)
 
+    # This is a special case, we're requiring it for faster feedback / turnaround times.
+    if 'training-hard-limits' in user_roles:
+        params['requirements'] = 'GalaxyGroup  ==  "training-hard-limits"'
+
     return env, params, runner, tool_spec
 
 
