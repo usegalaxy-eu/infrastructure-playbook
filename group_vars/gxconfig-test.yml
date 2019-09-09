@@ -636,7 +636,7 @@ base_app_main: &BASE_APP_MAIN
   wiki_url: 'https://galaxyproject.org/'
 
   # The URL linked by the "Support" link in the "Help" menu.
-  #support_url: 'https://galaxyproject.org/support/'
+  support_url: 'https://help.galaxyproject.org/c/usegalaxy-eu-support'
 
   # The URL linked by the "How to Cite Galaxy" link in the "Help" menu.
   #citation_url: 'https://galaxyproject.org/citing-galaxy'
@@ -824,7 +824,7 @@ base_app_main: &BASE_APP_MAIN
 
   # The golang proxy needs to know how to talk to your docker daemon.
   # Currently TLS is not supported, that will come in an update.
-  #dynamic_proxy_golang_docker_address: 'unix:///var/run/docker.sock'
+  #dynamic_proxy_golang_docker_address: unix:///var/run/docker.sock
 
   # The golang proxy uses a RESTful HTTP API for communication with
   # Galaxy instead of a JSON or SQLite file for IPC. If you do not
@@ -948,17 +948,17 @@ base_app_main: &BASE_APP_MAIN
   # Write thread status periodically to 'heartbeat.log',  (careful, uses
   # disk space rapidly!).  Useful to determine why your processes may be
   # consuming a lot of CPU.
-  use_heartbeat: true
+  #use_heartbeat: false
 
   # Control the period (in seconds) between dumps. Use -1 to disable.
   # Regardless of this setting, if use_heartbeat is enabled, you can
   # send a Galaxy process (unless running with uWSGI) SIGUSR1 (`kill
   # -USR1`) to force a dump.
-  heartbeat_interval: -1
+  #heartbeat_interval: 20
 
   # Heartbeat log filename. Can accept the template variables
   # {server_name} and {pid}
-  heartbeat_log: "{{ galaxy_log_dir }}/heartbeat_{server_name}_{pid}.log"
+  #heartbeat_log: heartbeat_{server_name}.log
 
   # Log to Sentry Sentry is an open source logging and error aggregation
   # platform.  Setting sentry_dsn will enable the Sentry middleware and
@@ -1502,7 +1502,7 @@ base_app_main: &BASE_APP_MAIN
   # not be created by the user running the jobs (e.g. if the filesystem
   # is mounted read-only or the jobs are run by a different user than
   # the galaxy user).
-  outputs_to_working_directory: false
+  #outputs_to_working_directory: false
 
   # If your network filesystem's caching prevents the Galaxy server from
   # seeing the job's stdout and stderr files when it completes, you can
@@ -1661,7 +1661,7 @@ base_app_main: &BASE_APP_MAIN
   #enable_communication_server: false
 
   # Galaxy real time communication server settings
-  #communication_server_host: 'http://localhost'
+  #communication_server_host: http://localhost
 
   # Galaxy real time communication server settings
   #communication_server_port: 7070
