@@ -14,6 +14,8 @@ galaxy_custom_sites:
         #masthead .navbar-brand {
           background: #3337;
           border: 1px solid #3337;
+          height: 100%;
+          padding-right: 0.5em;
         }
         #masthead .navbar-nav > li .nav-link {
             color: white;
@@ -35,6 +37,8 @@ galaxy_custom_sites:
         #masthead .navbar-brand {
           background: #3337;
           border: 1px solid #3337;
+          height: 100%;
+          padding-right: 0.5em;
         }
         #masthead .navbar-nav > li .nav-link {
             color: white;
@@ -56,6 +60,8 @@ galaxy_custom_sites:
         #masthead .navbar-brand {
           background: #3337;
           border: 1px solid #3337;
+          height: 100%;
+          padding-right: 0.5em;
         }
         #masthead .navbar-nav > li .nav-link {
             color: white;
@@ -83,6 +89,8 @@ galaxy_custom_sites:
         #masthead .navbar-brand {
           background: #3337;
           border: 1px solid #3337;
+          height: 100%;
+          padding-right: 0.5em;
         }
         #masthead .navbar-nav > li .nav-link {
             color: white;
@@ -104,9 +112,25 @@ galaxy_custom_sites:
   - name: test
     brand: Testing
     domain: test.usegalaxy.eu
-    #custom_css: "#masthead { background-color: #{{ 10 | random }}{{ 10 | random }}{{ 10 | random }}{{ 10 | random }}{{ 10 | random }}{{ 10 | random }}; }"
-    #custom_css: "#masthead { background: linear-gradient(to bottom,#5cacf2 0,#5cacf2 20%,pink 20%,pink 40%,white 40%,white 60%,pink 60%,pink 80%,#5cacf2 80%,#5cacf2 100%) no-repeat; }  .navbar-dark .navbar-nav .nav-link, #masthead .navbar-brand, .quota-meter-text, .text-light { color: black !important;  } #masthead .navbar-nav > li.active { background: #fff; }"
-    custom_css: "#masthead { background: linear-gradient(to bottom,#e2453c 0,#e2453c 16%,#e07e39 16%,#e07e39 32%,#e5d667 32%,#e5d667 48%,#51b95b 48%,#51b95b 66%,#1e72b7 66%,#1e72b7 86%,#6f5ba7 86%) no-repeat; }  .navbar-dark .navbar-nav .nav-link, #masthead .navbar-brand, .quota-meter-text, .text-light { color: black !important; } #masthead .navbar-nav > li.active { background: #fff; }"
+    custom_css: |
+        #masthead {
+            background: linear-gradient(to bottom,#e2453c 0,#e2453c 16%,#e07e39 16%,#e07e39 32%,#e5d667 32%,#e5d667 48%,#51b95b 48%,#51b95b 66%,#1e72b7 66%,#1e72b7 86%,#6f5ba7 86%) no-repeat;
+        }
+        #masthead .navbar-brand {
+          background: #3337;
+          border: 1px solid #3337;
+          height: 100%;
+          padding-right: 0.5em;
+        }
+        #masthead .navbar-nav > li .nav-link {
+            color: white;
+        }
+        #masthead .navbar-nav > li {
+            background: #3337;
+        }
+        #masthead .navbar-nav > li.active {
+            background: #333e;
+        }
   - name: beta
     brand: Europe
   - name: streetscience
