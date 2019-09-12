@@ -36,3 +36,12 @@ set = galaxy_root={{ galaxy_server_dir }}
 die-on-term = true
 hook-master-start = unix_signal:2 gracefully_kill_them_all
 hook-master-start = unix_signal:15 gracefully_kill_them_all
+
+python-raw = scripts/interactivetools/key_type_token_mapping.py
+route-host = ^([A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)-([A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)\.([A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)\.(interactivetool\.test.internal.usegalaxy.eu)$ goto:interactivetool
+route-run = goto:endendend
+route-label = interactivetool
+route-host = ^([A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)-([A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)\.([A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)\.(interactivetool\.test.internal.usegalaxy.eu)$ rpcvar:TARGET_HOST rtt_key_type_token_mapper_cached $1 $3 $2 $4 $0 5
+route-if-not = empty:${TARGET_HOST} httpdumb:${TARGET_HOST}
+route = .* break:404 Not Found
+route-label = endendend
