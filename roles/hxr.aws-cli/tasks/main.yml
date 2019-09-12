@@ -10,7 +10,10 @@
 
 - name: "Deploy credentials to an account"
   copy:
-    src: "{{ item.account }}"
+    content: |
+      [default]
+      aws_access_key_id={{ item.access_key }}
+      aws_secret_access_key={{ item.secret_key }}
     dest: "{{ item.homedir | default('/root') }}/.aws/config"
     owner: "{{ item.owner | default('root') }}"
     group: "{{ item.group | default('root') }}"

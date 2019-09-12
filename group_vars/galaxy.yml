@@ -159,7 +159,8 @@ certbot_share_key_users:
 
 # AWS Credentials for certbot-route53
 aws_cli_credentials:
-  - account: certbot@proxy
+  - access_key: "{{ aws_credentials.certbot.AWS_ACCESS_KEY }}"
+    secret_key: "{{ aws_credentials.certbot.AWS_SECRET_KEY }}"
     homedir: /root
     owner: root
     group: root
