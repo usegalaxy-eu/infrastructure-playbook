@@ -16,15 +16,3 @@
     - cert.pem
     - key.pem
 
-- name: Add env vars
-  lineinfile:
-    path: "~/.bashrc"
-    regexp: "^export {{ item.var }}"
-    line: "export {{ item.var }}='{{ item.val }}'"
-  with_items:
-    - var: DOCKER_HOST
-      val: 'tcp://docker.galaxyproject.eu:8443'
-    - var: DOCKER_TLS_VERIFY
-      val: 1
-    - var: DOCKER_CERT_PATH
-      val: "{{ galaxy_root }}/.docker"
