@@ -200,7 +200,7 @@ base_app_main: &BASE_APP_MAIN
 
   # By default, when using a cached dependency manager, the dependencies
   # are cached when installing new tools and when using tools for the
-  # first time. Set this to False if you prefer dependencies to be
+  # first time. Set this to false if you prefer dependencies to be
   # cached only when installing new tools.
   #precache_dependencies: true
 
@@ -209,9 +209,9 @@ base_app_main: &BASE_APP_MAIN
   # not exist).
   tool_sheds_config_file: "{{ galaxy_config_dir }}/tool_sheds_conf.xml"
 
-  # Set to True to enable monitoring of tools and tool directories
-  # listed in any tool config file specified in tool_config_file option.
-  # If changes are found, tools are automatically reloaded.  Watchdog (
+  # Monitor the tools and tool directories listed in any tool config
+  # file specified in tool_config_file option.  If changes are found,
+  # tools are automatically reloaded. Watchdog (
   # https://pypi.org/project/watchdog/ ) must be installed and available
   # to Galaxy to use this option. Other options include 'auto' which
   # will attempt to watch tools if the watchdog library is available but
@@ -220,10 +220,16 @@ base_app_main: &BASE_APP_MAIN
   # scenarios than the watchdog default.
   #watch_tools: 'false'
 
-  # Set to True to enable monitoring of dynamic job rules. If changes
-  # are found, rules are automatically reloaded. Takes the same values
-  # as the 'watch_tools' option.
+  # Monitor dynamic job rules. If changes are found, rules are
+  # automatically reloaded. Takes the same values as the 'watch_tools'
+  # option.
   watch_job_rules: 'auto'
+
+  # Monitor a subset of options in the core configuration file (See
+  # RELOADABLE_CONFIG_OPTIONS in lib/galaxy/config/__init__.py).  If
+  # changes are found, modified options are automatically reloaded.
+  # Takes the same values as the 'watch_tools' option.
+  watch_core_config: 'auto'
 
   # As of 18.09, Galaxy defaults to setting up the object store
   # configuration for output datasets during the job queue step in job
@@ -237,20 +243,20 @@ base_app_main: &BASE_APP_MAIN
   # deprecated and this option will likely be removed in future versions
   # of Galaxy. For more information see
   # https://github.com/galaxyproject/galaxy/issues/6513.
-  legacy_eager_objectstore_initialization: "True"
+  legacy_eager_objectstore_initialization: true
 
-  # Enable Galaxy to fetch Docker containers registered with quay.io
-  # generated from tool requirements resolved through conda. These
-  # containers (when available) have been generated using mulled -
-  # https://github.com/mulled . These containers are highly beta and
-  # availability will vary by tool. This option will additionally only
-  # be used for job destinations with Docker enabled.
-  enable_beta_mulled_containers: 'True'
+  # Enable Galaxy to fetch containers registered with quay.io generated
+  # from tool requirements resolved through Conda. These containers
+  # (when available) have been generated using mulled -
+  # https://github.com/mulled. Container availability will vary by tool,
+  # this option will only be used for job destinations with Docker or
+  # Singularity enabled.
+  #enable_mulled_containers: true
 
-  # Container resolvers configuration (beta). Setup a file describing
+  # Container resolvers configuration (beta). Set up a file describing
   # container resolvers to use when discovering containers for Galaxy.
   # If this is set to None, the default containers loaded is determined
-  # by enable_beta_mulled_containers.
+  # by enable_mulled_containers.
   containers_resolvers_config_file: /opt/galaxy/config/container_resolvers_conf.xml
 
   # involucro is a tool used to build Docker or Singularity containers
@@ -258,7 +264,7 @@ base_app_main: &BASE_APP_MAIN
   # `requirement`s. The following path is the location of involucro on
   # the Galaxy host. This is ignored if the relevant container resolver
   # isn't enabled, and will install on demand unless involucro_auto_init
-  # is set to False.
+  # is set to false.
   #involucro_path: database/dependencies/involucro
 
   # Install involucro as needed to build Docker or Singularity
@@ -268,7 +274,7 @@ base_app_main: &BASE_APP_MAIN
 
   # Conda channels to use when building Docker or Singularity containers
   # using involucro.
-  #mulled_channels: 'conda-forge,bioconda'
+  #mulled_channels: conda-forge,bioconda
 
   # Enable automatic polling of relative tool sheds to see if any
   # updates are available for installed repositories.  Ideally only one
@@ -313,10 +319,9 @@ base_app_main: &BASE_APP_MAIN
   # installed from a ToolShed. Defaults to tool_data_path.
   shed_tool_data_path: "{{ galaxy_root }}/tool-data/"
 
-  # Set to True to enable monitoring of the tool_data and
-  # shed_tool_data_path directories. If changes in tool data table files
-  # are found, the tool data tables for that data manager are
-  # automatically reloaded. Watchdog (
+  # Monitor the tool_data and shed_tool_data_path directories. If
+  # changes in tool data table files are found, the tool data tables for
+  # that data manager are automatically reloaded. Watchdog (
   # https://pypi.org/project/watchdog/ ) must be installed and available
   # to Galaxy to use this option. Other options include 'auto' which
   # will attempt to use the watchdog library if it is available but
@@ -341,7 +346,7 @@ base_app_main: &BASE_APP_MAIN
 
   # Enable sniffing of compressed datatypes. This can be
   # configured/overridden on a per-datatype basis in the
-  # datatypes_conf.xml file. With this option set to False the
+  # datatypes_conf.xml file. With this option set to false the
   # compressed datatypes will be unpacked before sniffing.
   #sniff_compressed_dynamic_datatypes_default: true
 
@@ -364,7 +369,7 @@ base_app_main: &BASE_APP_MAIN
   interactive_environment_plugins_directory: "{{ galaxy_config_dir }}/plugins/"
 
   # To run interactive environment containers in Docker Swarm mode (on
-  # an existing swarm), set this option to True and set
+  # an existing swarm), set this option to true and set
   # `docker_connect_port` in the IE plugin config (ini) file(s) of any
   # IE plugins you have enabled and ensure that you are not using any
   # `docker run`-specific options in your plugins' `command_inject`
@@ -513,7 +518,7 @@ base_app_main: &BASE_APP_MAIN
   # instance. If no message specified the warning box will not be shown.
   registration_warning_message: "Please register only one account. The {{ galaxy_instance_hostname }} service is provided free of charge and has limited computational and data storage resources. <strong>Registration and usage of multiple accounts is tracked and such accounts are subject to termination and data deletion.</strong>"
 
-  # User account activation feature global flag.  If set to "False", the
+  # User account activation feature global flag.  If set to false, the
   # rest of the Account activation configuration is ignored and user
   # activation is disabled (i.e. accounts are active since
   # registration). The activation is also not working in case the SMTP
@@ -547,10 +552,10 @@ base_app_main: &BASE_APP_MAIN
   # Galaxy can display data at various external browsers.  These options
   # specify which browsers should be available.  URLs and builds
   # available at these browsers are defined in the specified files.  If
-  # use_remote_user = True, display application servers will be denied
-  # access to Galaxy and so displaying datasets in these sites will
-  # fail. display_servers contains a list of hostnames which should be
-  # allowed to bypass security to display datasets.  Please be aware
+  # use_remote_user is set to true, display application servers will be
+  # denied access to Galaxy and so displaying datasets in these sites
+  # will fail. display_servers contains a list of hostnames which should
+  # be allowed to bypass security to display datasets.  Please be aware
   # that there are security implications if this is allowed.  More
   # details (including required changes to the proxy server config) are
   # available in the Apache proxy documentation on the Galaxy Community
@@ -560,22 +565,27 @@ base_app_main: &BASE_APP_MAIN
   # uncomment the line below to allow them).
   #display_servers: 'hgw1.cse.ucsc.edu,hgw2.cse.ucsc.edu,hgw3.cse.ucsc.edu,hgw4.cse.ucsc.edu,hgw5.cse.ucsc.edu,hgw6.cse.ucsc.edu,hgw7.cse.ucsc.edu,hgw8.cse.ucsc.edu,lowepub.cse.ucsc.edu'
 
-  # To disable the old-style display applications that are hardcoded
-  # into datatype classes, set enable_old_display_applications = False.
-  # This may be desirable due to using the new-style, XML-defined,
-  # display applications that have been defined for many of the
-  # datatypes that have the old-style. There is also a potential
-  # security concern with the old-style applications, where a malicious
-  # party could provide a link that appears to reference the Galaxy
-  # server, but contains a redirect to a third-party server, tricking a
-  # Galaxy user to access said site.
+  # Set this to false to disable the old-style display applications that
+  # are hardcoded into datatype classes. This may be desirable due to
+  # using the new-style, XML-defined, display applications that have
+  # been defined for many of the datatypes that have the old-style.
+  # There is also a potential security concern with the old-style
+  # applications, where a malicious party could provide a link that
+  # appears to reference the Galaxy server, but contains a redirect to a
+  # third-party server, tricking a Galaxy user to access said site.
   enable_old_display_applications: 'false'
+
+  # Enable InteractiveTools.
+  interactivetools_enable: true
+
+  # Show visualization tab and list in masthead.
+  #visualizations_visible: true
 
   # Show a message box under the masthead.
   #message_box_visible: false
 
   # Show a message box under the masthead.
-  message_box_content: "You are using the new UseGalaxy.eu backend server, let us know if you encounter any issues!"
+  #message_box_content: ''
 
   # Class of the message box under the masthead. Possible values are:
   # 'info' (the default), 'warning', 'error', 'done'.
@@ -639,20 +649,20 @@ base_app_main: &BASE_APP_MAIN
   support_url: 'https://help.galaxyproject.org/c/usegalaxy-eu-support'
 
   # The URL linked by the "How to Cite Galaxy" link in the "Help" menu.
-  #citation_url: 'https://galaxyproject.org/citing-galaxy'
+  #citation_url: https://galaxyproject.org/citing-galaxy
 
   # The URL linked by the "Search" link in the "Help" menu.
-  search_url: 'https://galaxyproject.org/search/'
+  #search_url: https://galaxyproject.org/search/
 
   # The URL linked by the "Mailing Lists" link in the "Help" menu.
-  #mailing_lists_url: 'https://galaxyproject.org/mailing-lists'
+  #mailing_lists_url: https://galaxyproject.org/mailing-lists
 
   # The URL linked by the "Videos" link in the "Help" menu.
-  #screencasts_url: 'https://vimeo.com/galaxyproject'
+  #screencasts_url: https://vimeo.com/galaxyproject
 
   # Points to the GenomeSpace UI service which will be used by the
   # GenomeSpace importer and exporter tools
-  #genomespace_ui_url: 'https://gsui.genomespace.org/jsui/'
+  #genomespace_ui_url: https://gsui.genomespace.org/jsui/
 
   # The URL linked by the "Terms and Conditions" link in the "Help"
   # menu, as well as on the user registration and login forms and in the
@@ -718,7 +728,7 @@ base_app_main: &BASE_APP_MAIN
   # For help on configuring the Advanced proxy features, see:
   # https://docs.galaxyproject.org/en/master/admin/production.html
   # Apache can handle file downloads (Galaxy-to-user) via mod_xsendfile.
-  # Set this to True to inform Galaxy that mod_xsendfile is enabled
+  # Set this to true to inform Galaxy that mod_xsendfile is enabled
   # upstream.
   #apache_xsendfile: false
 
@@ -776,9 +786,9 @@ base_app_main: &BASE_APP_MAIN
   # other services based on Galaxy's session cookie.  It will attempt to
   # do this by default though you do need to install node+npm and do an
   # npm install from `lib/galaxy/web/proxy/js`.  It is generally more
-  # robust to configure this externally, managing it however Galaxy is
-  # managed.  If True, Galaxy will only launch the proxy if it is
-  # actually going to be used (e.g. for Jupyter).
+  # robust to configure this externally, managing it in the same way
+  # Galaxy itself is managed.  If true, Galaxy will only launch the
+  # proxy if it is actually going to be used (e.g. for Jupyter).
   dynamic_proxy_manage: "False"
 
   # As of 16.04 Galaxy supports multiple proxy types. The original
@@ -790,12 +800,14 @@ base_app_main: &BASE_APP_MAIN
   # for IPC, set that here.
   dynamic_proxy_session_map: "{{ galaxy_mutable_data_dir }}/gie_proxy_session_map.sqlite"
 
-  # Set the port and IP for the the dynamic proxy to bind to, this must
-  # match the external configuration if dynamic_proxy_manage is False.
+  # Set the port and IP for the dynamic proxy to bind to, this must
+  # match the external configuration if dynamic_proxy_manage is set to
+  # false.
   #dynamic_proxy_bind_port: 8800
 
-  # Set the port and IP for the the dynamic proxy to bind to, this must
-  # match the external configuration if dynamic_proxy_manage is False.
+  # Set the port and IP for the dynamic proxy to bind to, this must
+  # match the external configuration if dynamic_proxy_manage is set to
+  # false.
   #dynamic_proxy_bind_ip: 0.0.0.0
 
   # Enable verbose debugging of Galaxy-managed dynamic proxy.
@@ -810,7 +822,7 @@ base_app_main: &BASE_APP_MAIN
   # proxy reside under the same path that your cookies are under. This
   # will result in a url like https://FQDN/galaxy-prefix/gie_proxy for
   # proxying
-  dynamic_proxy_prefix: gie_proxy
+  #dynamic_proxy_prefix: gie_proxy
 
   # This attribute governs the minimum length of time between
   # consecutive HTTP/WS requests through the proxy, before the proxy
@@ -832,7 +844,7 @@ base_app_main: &BASE_APP_MAIN
   # if you are managing the proxy manually.
   #dynamic_proxy_golang_api_key: ''
 
-  # If True, Galaxy will attempt to configure a simple root logger if a
+  # If true, Galaxy will attempt to configure a simple root logger if a
   # "loggers" section does not appear in this configuration file.
   #auto_configure_logging: true
 
@@ -894,8 +906,7 @@ base_app_main: &BASE_APP_MAIN
   # By default Galaxy will serve non-HTML tool output that may
   # potentially contain browser executable JavaScript content as plain
   # text.  This will for instance cause SVG datasets to not render
-  # properly and so may be disabled by setting the following option to
-  # True.
+  # properly and so may be disabled by setting this option to true.
   serve_xss_vulnerable_mimetypes: true
 
   # Return a Access-Control-Allow-Origin response header that matches
@@ -907,11 +918,11 @@ base_app_main: &BASE_APP_MAIN
   # https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
   #allowed_origin_hostnames: ''
 
-  # Set the following to True to use Jupyter nbconvert to build HTML
-  # from Jupyter notebooks in Galaxy histories.  This process may allow
-  # users to execute arbitrary code or serve arbitrary HTML.  If
-  # enabled, Jupyter must be available and on Galaxy's PATH, to do this
-  # run `pip install jinja2 pygments jupyter` in Galaxy's virtualenv.
+  # Set to true to use Jupyter nbconvert to build HTML from Jupyter
+  # notebooks in Galaxy histories.  This process may allow users to
+  # execute arbitrary code or serve arbitrary HTML.  If enabled, Jupyter
+  # must be available and on Galaxy's PATH, to do this run `pip install
+  # jinja2 pygments jupyter` in Galaxy's virtualenv.
   trust_jupyter_notebook_conversion: true
 
   # Debug enables access to various config options useful for
@@ -1041,7 +1052,7 @@ base_app_main: &BASE_APP_MAIN
   # to paste filesystem paths to files and directories in a box, and
   # these paths will be added to a library.  For history uploads, this
   # allows pasting in paths as URIs. (i.e. prefixed with file://). Set
-  # to True to enable.  Please note the security implication that this
+  # to true to enable.  Please note the security implication that this
   # will give Galaxy Admins access to anything your Galaxy user has
   # access to.
   allow_path_paste: true
@@ -1164,8 +1175,8 @@ base_app_main: &BASE_APP_MAIN
   #remote_user_logout_href: ''
 
   # If your proxy and/or authentication source does not normalize e-mail
-  # addresses or user names being passed to Galaxy - set the following
-  # option to True to force these to lower case.
+  # addresses or user names being passed to Galaxy - set this option to
+  # true to force these to lower case.
   #normalize_remote_user_email: false
 
   # If an e-mail address is specified here, it will hijack remote user
@@ -1186,7 +1197,7 @@ base_app_main: &BASE_APP_MAIN
   #require_login: false
 
   # Show the site's welcome page (see welcome_url) alongside the login
-  # page (even if require_login is True)
+  # page (even if require_login is true).
   show_welcome_with_login: true
 
   # Allow unregistered users to create new accounts (otherwise, they
@@ -1196,7 +1207,8 @@ base_app_main: &BASE_APP_MAIN
   # Allow administrators to delete accounts.
   allow_user_deletion: true
 
-  # Allow administrators to log in as other users (useful for debugging)
+  # Allow administrators to log in as other users (useful for
+  # debugging).
   allow_user_impersonation: true
 
   # When using LDAP for authentication, allow administrators to pre-
@@ -1208,30 +1220,30 @@ base_app_main: &BASE_APP_MAIN
   # by an administrator in the cleanup scripts run via cron)
   #allow_user_dataset_purge: true
 
-  # By default, users' data will be public, but setting this to True
+  # By default, users' data will be public, but setting this to true
   # will cause it to be private.  Does not affect existing users and
   # data, only ones created after this option is set.  Users may still
   # change their default back to public.
   new_user_dataset_access_role_default_private: true
 
-  # Expose user list.  Setting this to True will expose the user list to
+  # Expose user list.  Setting this to true will expose the user list to
   # authenticated users.  This makes sharing datasets in smaller galaxy
   # instances much easier as they can type a name/email and have the
   # correct user show up. This makes less sense on large public Galaxy
   # instances where that data shouldn't be exposed.  For semi-public
   # Galaxies, it may make sense to expose just the username and not
-  # email, or vice versa.  If enable_beta_gdpr is set to True, then this
-  # option will be overridden and set to False.
-  #expose_user_name: false
+  # email, or vice versa.  If enable_beta_gdpr is set to true, then this
+  # option will be overridden and set to false.
+  expose_user_name: true
 
-  # Expose user list.  Setting this to True will expose the user list to
+  # Expose user list.  Setting this to true will expose the user list to
   # authenticated users.  This makes sharing datasets in smaller galaxy
   # instances much easier as they can type a name/email and have the
   # correct user show up. This makes less sense on large public Galaxy
   # instances where that data shouldn't be exposed.  For semi-public
   # Galaxies, it may make sense to expose just the username and not
-  # email, or vice versa.  If enable_beta_gdpr is set to True, then this
-  # option will be overridden and set to False.
+  # email, or vice versa.  If enable_beta_gdpr is set to true, then this
+  # option will be overridden and set to false.
   #expose_user_email: false
 
   # Whitelist for local network addresses for "Upload from URL" dialog.
@@ -1364,14 +1376,14 @@ base_app_main: &BASE_APP_MAIN
   # Enable a feature when running workflows.  When enabled, default
   # datasets are selected for "Set at Runtime" inputs from the history
   # such that the same input will not be selected twice, unless there
-  # are more inputs than compatible datasets in the history. When False,
+  # are more inputs than compatible datasets in the history. When false,
   # the most recently added compatible item in the history will be used
   # for each "Set at Runtime" input, independent of others in the
-  # Workflow
+  # workflow.
   #enable_unique_workflow_defaults: false
 
   # The URL to the myExperiment instance being used (omit scheme but
-  # include port)
+  # include port).
   #myexperiment_url: www.myexperiment.org:80
 
   # Enable Galaxy's "Upload via FTP" interface.  You'll need to install
@@ -1396,8 +1408,8 @@ base_app_main: &BASE_APP_MAIN
   # a particular user.
   #ftp_upload_dir_template: ${ftp_upload_dir}/${ftp_upload_dir_identifier
 
-  # This should be set to False to prevent Galaxy from deleting uploaded
-  # FTP files as it imports them.
+  # Set to false to prevent Galaxy from deleting uploaded FTP files as
+  # it imports them.
   #ftp_upload_purge: true
 
   # Enable enforcement of quotas.  Quotas can be set from the Admin
@@ -1443,6 +1455,24 @@ base_app_main: &BASE_APP_MAIN
   # configuration file.
   job_config_file: "{{ galaxy_config_dir }}/job_conf.xml"
 
+  # Description of job running configuration, can be embedded into
+  # Galaxy configuration or loaded from an additional file with the
+  # job_config_file option.
+  #job_config: null
+
+  # Rather than specifying a dependency_resolvers_config_file, the
+  # definition of the resolvers to enable can be embedded into Galaxy's
+  # config with this option. This has no effect if a
+  # dependency_resolvers_config_file is used.
+  #dependency_resolvers: null
+
+  # Alternative representation of various dependency resolution
+  # parameters. Takes the dictified version of a DependencyManager
+  # object - so this is ideal for automating the configuration of
+  # dependency resolution from one application that uses a
+  # DependencyManager to another.
+  #dependency_resolution: null
+
   # When jobs fail due to job runner problems, Galaxy can be configured
   # to retry these or reroute the jobs to new destinations. Very fine
   # control of this is available with resubmit declarations in
@@ -1483,7 +1513,7 @@ base_app_main: &BASE_APP_MAIN
   # fail.  In these instances, you can choose to retry setting it
   # internally or leave it in a failed state (since retrying internally
   # may cause the Galaxy process to be unresponsive).  If this option is
-  # set to False, the user will be given the option to retry externally,
+  # set to false, the user will be given the option to retry externally,
   # or set metadata manually (when possible).
   #retry_metadata_internally: true
 
@@ -1599,11 +1629,15 @@ base_app_main: &BASE_APP_MAIN
   # tags to do the mapping).
   #workflow_resource_params_mapper: config/workflow_resource_mapper_conf.yml
 
+  # Optional configuration file similar to `job_config_file` to specify
+  # which Galaxy processes should schedule workflows.
+  #workflow_schedulers_config_file: config/workflow_schedulers_conf.xml
+
   # If using job concurrency limits (configured in job_config_file),
   # several extra database queries must be performed to determine the
   # number of jobs a user has dispatched to a given destination.  By
   # default, these queries will happen for every job that is waiting to
-  # run, but if cache_user_job_count is set to True, it will only happen
+  # run, but if cache_user_job_count is set to true, it will only happen
   # once per iteration of the handler queue. Although better for
   # performance due to reduced queries, the trade-off is a greater
   # possibility that jobs will be dispatched past the configured limits
@@ -1628,7 +1662,7 @@ base_app_main: &BASE_APP_MAIN
   # Define toolbox filters (https://galaxyproject.org/user-defined-
   # toolbox-filters/) that users may use to restrict the tools to
   # display.
-  #user_tool_filters: 'examples:restrict_upload_to_admins, examples:restrict_encode'
+  #user_tool_filters: examples:restrict_upload_to_admins, examples:restrict_encode
 
   # Define toolbox filters (https://galaxyproject.org/user-defined-
   # toolbox-filters/) that users may use to restrict the tool sections
@@ -1638,12 +1672,12 @@ base_app_main: &BASE_APP_MAIN
   # Define toolbox filters (https://galaxyproject.org/user-defined-
   # toolbox-filters/) that users may use to restrict the tool labels to
   # display.
-  #user_tool_label_filters: 'examples:restrict_upload_to_admins, examples:restrict_encode'
+  #user_tool_label_filters: examples:restrict_upload_to_admins, examples:restrict_encode
 
   # The base module(s) that are searched for modules for toolbox
   # filtering (https://galaxyproject.org/user-defined-toolbox-filters/)
   # functions.
-  #toolbox_filter_base_modules: 'galaxy.tools.toolbox.filters,galaxy.tools.filters'
+  #toolbox_filter_base_modules: galaxy.tools.toolbox.filters,galaxy.tools.filters
 
   # Galaxy uses AMQP internally for communicating between processes.
   # For example, when reloading the toolbox or locking job execution,
