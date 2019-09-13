@@ -234,6 +234,8 @@ condor_allow_administrator: "$(ALLOW_NEGOTIATOR)"
 
 condor_system_periodic_hold: "{{ 30 * 24 * 60 * 60}}"
 condor_network_interface: eth0
+condor_extra: |
+    SSH_TO_JOB_SSH_CMD = "ssh -oUser=galaxy -oIdentityFile=%i -oStrictHostKeyChecking=yes -oUserKnownHostsFile=%k -oGlobalKnownHostsFile=%k -oProxyCommand=%x %h"
 
 # gxadmin
 postgres_user: galaxy-test
