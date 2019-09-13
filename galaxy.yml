@@ -26,6 +26,7 @@
     - secret_group_vars/elixir_aai.yml # Elixir AAI private key
     - secret_group_vars/db-main.yml    # DB URL + some postgres stuff
     - secret_group_vars/all.yml        # All of the other assorted secrets...
+    - secret_group_vars/aws.yml        # AWS credentials
   handlers:
     - name: Restart Galaxy
       shell: |
