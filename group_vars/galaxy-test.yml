@@ -131,8 +131,6 @@ pip_install_dependencies:
     - bcbio-gff
     # Needed for tool watching
     - watchdog
-    # Needed for queue size
-    - influxdb
     # Needed gxadmin graphs
     - data_hacks
     # for convenience
@@ -153,6 +151,9 @@ all_yum_repositories:
 # Galaxy monitoring
 monitor_condor: true
 monitor_condor_split_util: true
+
+# rsync to nfs
+galaxy_nfs_location: /usr/bin/galaxy-sync-to-nfs
 
 # Nginx
 nginx_servers:

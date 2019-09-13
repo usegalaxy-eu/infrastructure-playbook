@@ -27,11 +27,10 @@
     - secret_group_vars/elixir_aai.yml # Elixir AAI private key
     - secret_group_vars/db-main.yml    # DB URL + some postgres stuff
     - secret_group_vars/all.yml        # All of the other assorted secrets...
-    - secret_group_vars/aws.yml        # AWS credentials
   handlers:
     - name: Restart Galaxy
       shell: |
-        echo 'Manual zergling restart required' && cd /opt/galaxy/ && source /opt/galaxy/.bashrc  && bash sync.sh && systemctl restart galaxy-handler@*
+        echo 'Manual zergling restart required' && cd /opt/galaxy/ && source /opt/galaxy/.bashrc  && /usr/bin/galaxy-sync-to-nfs && systemctl restart galaxy-handler@*
   pre_tasks:
     - name: Install Dependencies
       package:
@@ -80,9 +79,6 @@
 
     ## Setup docker
     - geerlingguy.docker
-    ## Disabled until working on test fully.
-    #- role: hxr.docker-ssl-client
-      #become_user: galaxy
 
     # HTCondor Cluster setup
     - htcondor
@@ -95,7 +91,8 @@
       become: yes
       become_user: galaxy
     - hxr.galaxy-misc
-    - usegalaxy-eu.dynmotd
+    - usegalaxy-eu.dynmotd      # nicer MOTD/welcome message
+    - usegalaxy-eu.rsync-to-nfs # sync codebase to NFS
 
     ## SSL / Security
     - ssh-host-sign # Sign the server host key to prevent TOFU for SSH

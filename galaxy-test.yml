@@ -11,6 +11,7 @@
     - group_vars/custom-sites.yml      # Subdomains are listed here
     - group_vars/gxconfig-test.yml     # The base galaxy configuration
     - group_vars/toolbox.yml           # User controlled toolbox
+    - secret_group_vars/aws.yml        # AWS creds
     - secret_group_vars/pulsar.yml     # Pulsar + MQ Connections
     - secret_group_vars/elixir_aai.yml # Elixir AAI private key
     - secret_group_vars/db-test.yml    # DB URL + some postgres stuff
@@ -18,7 +19,7 @@
   handlers:
     - name: Restart Galaxy
       shell: |
-        echo 'Manual zergling restart required' && cd /opt/galaxy/ && source /opt/galaxy/.bashrc  && systemctl restart galaxy-handler@* && systemctl restart galaxy-zergling@*
+        echo 'Manual zergling restart required' && cd /opt/galaxy/ && source /opt/galaxy/.bashrc  && /usr/bin/galaxy-sync-to-nfs && systemctl restart galaxy-handler@* && systemctl restart galaxy-zergling@*
   pre_tasks:
     - name: Install Dependencies
       package:
@@ -67,8 +68,6 @@
 
     ## Setup docker
     - geerlingguy.docker
-    - role: hxr.docker-ssl-client
-      become_user: galaxy
 
     # HTCondor Cluster setup
     - htcondor
@@ -81,7 +80,8 @@
       become: yes
       become_user: galaxy
     - hxr.galaxy-misc
-    - usegalaxy-eu.dynmotd
+    - usegalaxy-eu.dynmotd      # nicer MOTD/welcome message
+    - usegalaxy-eu.rsync-to-nfs # sync codebase to NFS
 
     ## SSL / Security
     - ssh-host-sign # Sign the server host key to prevent TOFU for SSH
