@@ -235,8 +235,8 @@ def _finalize_tool_spec(tool_id, user_roles, memory_scale=1.0):
             'requirements': 'GalaxyTraining == false',
         }
     # These we're running on a specific subset
-    elif 'interactive_tool_' in tool_id:
-        tool_spec.update('requirements', 'GalaxyCluster == "backofen"')
+    #elif 'interactive_tool_' in tool_id:
+    #    tool_spec.update('requirements', 'GalaxyCluster == "backofen"')
 
     return tool_spec
 
