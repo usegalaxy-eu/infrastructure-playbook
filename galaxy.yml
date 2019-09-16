@@ -12,6 +12,21 @@
     # to be updated unless you add a new domain. They *only* work with the
     # route53 provider, so if we want to do usegalaxy.xy, it may require
     # refactoring / multiple certbot runs.
+    #
+    #
+    # The best way to expand them is to run the playbook, it will leave a message with the command it would have run (look for `skipped, since /etc/letsencrypt/renewal/usegalaxy.eu.conf exists`)
+    #
+    # Then take this command to the command line (root@sn04) and run it with `--expand`. E.g. (DO NOT COPY PASTE (in case the config changes))
+    #
+    # $ /opt/certbot/bin/certbot certonly --non-interactive --dns-route53 \
+    #     -m security@usegalaxy.eu --agree-tos -d 'usegalaxy.eu,*.usegalaxy.eu,galaxyproject.eu,*.galaxyproject.eu,*.interactivetoolentrypoint.interactivetool.usegalaxy.eu,*.interactivetoolentrypoint.interactivetool.live.usegalaxy.eu,*.interactivetoolentrypoint.interactivetool.test.usegalaxy.eu' --expand
+    # Saving debug log to /var/log/letsencrypt/letsencrypt.log
+    # Credentials found in config file: ~/.aws/config
+    # ....
+    # IMPORTANT NOTES:
+    #  - Congratulations! Your certificate and chain have been saved at:
+    #
+    # And you're done expanding the certs.
     server_names:
       - 'usegalaxy.eu'
       - '*.usegalaxy.eu'
