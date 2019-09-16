@@ -236,7 +236,7 @@ def _finalize_tool_spec(tool_id, user_roles, memory_scale=1.0):
         }
     # These we're running on a specific subset
     #elif 'interactive_tool_' in tool_id:
-    #    tool_spec.update('requirements', 'GalaxyCluster == "backofen"')
+    #    tool_spec['requirements'] = 'GalaxyCluster == "backofen"'
 
     return tool_spec
 
