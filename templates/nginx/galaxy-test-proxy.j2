@@ -8,3 +8,19 @@ server {
 		proxy_pass http://test.internal.usegalaxy.eu/;
 	}
 }
+
+
+server {
+	listen 443 ssl;
+	listen [::]:443 ssl;
+
+	server_name ~^(?<key>[0-9a-f-]*)\.interactivetoolentrypoint\.interactivetool\.test\.usegalaxy\.eu$;
+
+	location / {
+		proxy_pass http://$key.interactivetoolentrypoint.interactivetool.test.internal.usegalaxy.eu/;
+	}
+
+	# belwü is slow.
+	resolver 8.8.8.8 8.8.4.4 valid=300s;
+	resolver_timeout 5s;
+}
