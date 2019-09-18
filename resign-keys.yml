@@ -1,0 +1,7 @@
+---
+- name: resign all ssh keys
+  hosts: all
+  become: true
+  roles:
+    - ssh-host-resign
+    - dev-sec.ssh-hardening
