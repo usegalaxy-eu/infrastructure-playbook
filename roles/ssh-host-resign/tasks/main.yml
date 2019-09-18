@@ -1,7 +1,4 @@
 ---
-- stat: path=/etc/ssh/ssh_host_rsa_key-cert.pub
-  register: st
-
 - name: Copy server key into VM temporarily
   copy:
     src: server_ca
@@ -9,7 +6,6 @@
     owner: root
     group: root
     mode: 0600
-  when: not st.stat.exists
 
 - name: Sign Keys
   command: ssh-keygen -s /tmp/server_ca -I key_for_test1 -h -V +520w /etc/ssh/ssh_host_{{ item }}_key.pub
@@ -17,7 +13,6 @@
     - rsa
     - ecdsa
     - ed25519
-  when: not st.stat.exists
 
 # Requires dev-sec.ssh-hardening + patches
 - set_fact:
@@ -31,7 +26,6 @@
   file:
     path: /tmp/server_ca
     state: absent
-  when: not st.stat.exists
 
 - name: "Helper"
   debug:
