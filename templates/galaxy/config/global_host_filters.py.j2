@@ -27,6 +27,8 @@ def per_host_tool_labels( context, label ):
         return label.id in valid_labels
     if "metabolomics.usegalaxy.eu" in host:
         return label.id in valid_labels
+    if "ecology.usegalaxy.eu" in host:
+        return label.id in valid_labels
     return True
 
 
@@ -43,6 +45,7 @@ DOMAIN_SECTIONS = {
     'nanopore': GENERAL_NGS_SECTIONS + ["hicexplorer", "nanopore",
         "metagenomic_analyses", "mothur", "qiime", "biom_manipulation",
         "ncbi_blast", "fasta_fastq", "assembly", "graph_display_data"],
+    'ecology': ["join_substract_and_group", "statistics", "display_data", "graph_diplay_data", "fasta_fastq_manipulation", "ncbi_blast", "fasta_fastq", "quality_control", "multiple_alignments", "assembly", "metagenomic_analyses", "mothur", "qiime", "biom_manipulation", "rad-seq", "species_abundance", "animal_detection_on_acoustic_recordings", "climate_analysis", "gis_data_handling"],
     'climate': ["climate_analysis", "gis_data_handling"],
     'metagenomics': GENERAL_NGS_SECTIONS + ["fasta_fastq_manipulation",
         "quality_control", "multiple_alignments", "assembly", "annotation",
