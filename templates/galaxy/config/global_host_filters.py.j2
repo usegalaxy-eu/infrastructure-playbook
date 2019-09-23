@@ -31,7 +31,6 @@ def per_host_tool_labels( context, label ):
         return label.id in valid_labels
     return True
 
-
 BASE_SECTIONS = ["text_manipulation", "get_data", "collection_operations",
         "convert_formats", "filter_and_sort", "join_subtract_and_group"]
 
@@ -44,22 +43,22 @@ DOMAIN_SECTIONS = {
     'hicexplorer': GENERAL_NGS_SECTIONS + ["hicexplorer"],
     'nanopore': GENERAL_NGS_SECTIONS + ["hicexplorer", "nanopore",
         "metagenomic_analyses", "mothur", "qiime", "biom_manipulation",
-        "ncbi_blast", "fasta_fastq", "assembly", "graph/display_data"],
-    'ecology': ["join_subtract_and_group", "statistics", "graph/diplay_data",
+        "ncbi_blast", "fasta_fastq", "assembly", "graph_display_data"],
+    'ecology': ["join_subtract_and_group", "statistics", "graph_display_data",
         "ncbi_blast", "fasta_fastq", "fastq_quality_control", "assembly", "metagenomic_analyses",
         "mothur", "qiime", "rad-seq", "animal_detection_on_acoustic_recordings","species_abundance",
         "gis_data_handling"],
     'climate': ["climate_analysis", "gis_data_handling"],
     'metagenomics': GENERAL_NGS_SECTIONS + ["fasta_fastq_manipulation",
         "quality_control", "multiple_alignments", "assembly", "annotation",
-        "display_data", "metagenomic_analyses", "mothur", "qiime",
+        "graph_display_data", "metagenomic_analyses", "mothur", "qiime",
         "biom_manipulation"],
     'rna': GENERAL_NGS_SECTIONS + ["rna_analysis", "annotation",
-        "graph/display_data"],
+        "graph_display_data"],
     'singlecell': GENERAL_NGS_SECTIONS + ["rna_analysis", "annotation",
-        "graph/display_data", "single-cell"],
+        "graph_display_data", "single-cell"],
     'humancellatlas': GENERAL_NGS_SECTIONS + ["rna_analysis", "annotation",
-        "graph/display_data", "single-cell", "hca-single_cell"],
+        "graph_display_data", "single-cell", "hca-single_cell"],
     'clipseq': GENERAL_NGS_SECTIONS + ["rna_analysis", "peak_calling",
         "motif_tools"],
     'graphclust': GENERAL_NGS_SECTIONS + ["rna_analysis", "graphclust"],
