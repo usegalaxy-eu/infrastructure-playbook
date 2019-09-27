@@ -5,6 +5,11 @@
     hostname: influxdb.galaxyproject.eu
   vars_files:
     - "secret_group_vars/all.yml"
+  pre_tasks:
+    - name: Install Dependencies
+      package:
+        name: ['python-requests']
+      become: yes
   roles:
     - hostname
     - usegalaxy-eu.dynmotd
