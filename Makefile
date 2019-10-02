@@ -42,4 +42,4 @@ main.eu:
 %.yml: deps
 	.venv/bin/ansible-playbook $@ $(CHECK_C) $(DIFF_C) $(DEBUG) $(OTHER)
 
-.PHONY: eu.test eu.main known_hosts deps pull help
+.PHONY: test.eu main.eu known_hosts deps pull help
