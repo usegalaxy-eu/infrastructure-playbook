@@ -1,35 +1,3 @@
-# This server is specifically for IEs. With the 'default_server' we needed to ensure special parameters were sent or not sent. This may not be necessary on main.eu?
-server {
-
-	listen 80;
-	server_name ~^(?<key>[0-9a-f-]*)\.interactivetoolentrypoint\.interactivetool\.test\.internal\.usegalaxy\.eu$;
-
-	error_log /var/log/nginx/interactive.err;
-	access_log /var/log/nginx/interactive.log;
-
-	location / {
-		uwsgi_pass      127.0.0.1:4001;
-
-		proxy_hide_header x-frame-options;
-		add_header X-Content-Type-Options nosniff;
-
-		include uwsgi_params;
-		# test is behind a proxy + under a different external hostname.
-		# These probably do not need to be set on main.eu
-		uwsgi_param HTTPS on;
-		uwsgi_param REQUEST_SCHEME https;
-	}
-
-	resolver 8.8.8.8 8.8.4.4 valid=300s;
-	resolver_timeout 5s;
-	add_header X-Content-Type-Options nosniff;
-	add_header X-XSS-Protection "1; mode=block";
-	add_header X-Robots-Tag none;
-
-	client_max_body_size 1G; # aka max upload size, defaults to 1M
-	uwsgi_read_timeout 2400;
-}
-
 server {
 
 	listen 80 default_server;
