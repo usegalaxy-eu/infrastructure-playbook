@@ -14,10 +14,14 @@ server {
 	listen 443 ssl;
 	listen [::]:443 ssl;
 
+	error_log /var/log/nginx/interactive-err.log;
+	access_log /var/log/nginx/interactive-out.log;
+
 	server_name ~^(?<key>[0-9a-f-]*)\.interactivetoolentrypoint\.interactivetool\.test\.usegalaxy\.eu$;
 
-	location / {
-		proxy_pass http://$key.interactivetoolentrypoint.interactivetool.test.internal.usegalaxy.eu/;
+	# No clue why this doesn't work with "location /" unlike every other instance of that???
+	location ~ ^(/.*) {
+		proxy_pass http://$key.interactivetoolentrypoint.interactivetool.test.internal.usegalaxy.eu$1;
 	}
 
 	# belwü is slow.
