@@ -33,10 +33,10 @@ pull:
 	git fetch origin
 	git reset --hard origin/master
 
-eu.test:
+test.eu:
 	ansible-playbook galaxy-test.yml $(CHECK_C) $(DIFF_C) $(DEBUG) $(OTHER) --extra-vars "__galaxy_dir_perms='0755'"
 
-eu.main:
+main.eu:
 	ansible-playbook galaxy.yml      $(CHECK_C) $(DIFF_C) $(DEBUG) $(OTHER) --extra-vars "__galaxy_dir_perms='0755'"
 
 %.yml: deps

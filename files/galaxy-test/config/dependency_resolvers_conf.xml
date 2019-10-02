@@ -7,9 +7,14 @@
        in Galaxy's config/galaxy.ini -->
   <galaxy_packages />
   <!-- check whether the correct version has been installed via conda -->
+  <!-- This is defined for usegalaxy shared tools -->
+  <conda prefix="/cvmfs/sandbox.galaxyproject.org/dependencies/conda" auto_install="False" auto_init="False" />
+  <!-- our default one -->
   <conda />
+
   <!-- look for any version of the dependency installed via conda -->
   <conda versionless="true" />
+
   <!-- look for a "default" symlink pointing to a directory containing an
        env.sh file for the package in the "galaxy packages" schema -->
   <galaxy_packages versionless="true" />
