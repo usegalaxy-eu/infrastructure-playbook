@@ -7,6 +7,16 @@
   vars_files:
     - group_vars/grafana-gitter-bridge.yml
     - secret_group_vars/all.yml
+  # This shouldn't be necessary? but if certs fail, then do this. This is
+  # *supposed* to be properly handled by the nginx role, but the permission
+  # change is likely only applied if a change is detected since it can't figure
+  # out if the rule is there or not.
+  # TODO: make the nginx task check if the rule is in place, rather than a change in path.
+  #pre_tasks:
+    #- name: Put SELinux in permissive mode, logging actions that would be blocked.
+      #selinux:
+        #policy: targeted
+        #state: permissive
   roles:
     - hostname
     - usegalaxy-eu.dynmotd
