@@ -21,7 +21,9 @@ interactive_tool_cellxgene: {mem: 4, runner: condor_docker}
 interactive_tool_bam_iobio: {mem: 4, runner: condor_docker}
 interactive_tool_askomics: {mem: 4, runner: condor_docker}
 
-
+# roary	needs many many cpus if	the number of input files increase
+# a more specific function would ne neat
+roary: {cores: 24}
 maxquant: {mem: 20, cores: 8}
 scpipe: {mem: 64, cores: 8}
 cardinal_combine: {mem: 92}
@@ -50,6 +52,10 @@ bio3d_pca: {mem: 64}
 bio3d_rmsd: {mem: 64}
 bio3d_rmsf: {mem: 64}
 
+docking: {runner: remote_cluster_mq_it01}
+# prepare_ligands_for_docking: {runner: remote_cluster_mq_it01}
+prepare_box: {runner: remote_cluster_mq_it01}
+
 cds_essential_variability:
   env:
     COPERNICUS_CDSAPIRC_KEY_FILE: /data/db/data_managers/COPERNICUS_CDSAPIRC_KEY_FILE
@@ -69,6 +75,7 @@ nanopolish_eventalign: {cores: 20, mem: 12}
 AccurateMassSearch: {cores: 4, mem: 8}
 AdditiveSeries: {cores: 20, mem: 12}
 AdditiveSeries: {cores: 4, mem: 8}
+augustus: {runner: remote_cluster_mq_be01}
 BaselineFilter: {cores: 4, mem: 8}
 CONVERTER_bedgraph_to_bigwig: {mem: 8}
 CVInspector: {cores: 4, mem: 8}
@@ -119,6 +126,14 @@ InternalCalibration: {cores: 4, mem: 8}
 IsobaricAnalyzer: {cores: 4, mem: 8}
 LabeledEval: {cores: 4, mem: 8}
 maker: {cores: 8, mem: 8, runner: remote_cluster_mq_be01}
+gmx_md: {runner: remote_cluster_mq_de02}
+gmx_merge_topology_files: {runner: remote_cluster_mq_de02}
+gmx_em: {runner: remote_cluster_mq_de02}
+gmx_nvt: {runner: remote_cluster_mq_de02}
+gmx_npt: {runner: remote_cluster_mq_de02}
+gmx_setup: {runner: remote_cluster_mq_de02}
+gmx_solvate: {runner: remote_cluster_mq_de02}
+mdanalysis_hbonds: {runner: remote_cluster_mq_de02}
 MRMMapper: {cores: 4, mem: 8}
 MRMPairFinder: {cores: 4, mem: 8}
 msgfplus:
@@ -151,8 +166,8 @@ MassTraceExtractor: {cores: 4, mem: 8}
 MyriMatchAdapter: {cores: 4, mem: 8}
 MzTabExporter: {cores: 4, mem: 8}
 QCCalculator: {mem: 8}
+OpenSwathWorkflow: {mem: 156}
 mira_assembler: {mem: 24}
-
 mothur_align_check: {cores: 8, env: {TERM: vt100}}
 mothur_align_seqs: {cores: 8, env: {TERM: vt100}}
 mothur_amova: {cores: 8, env: {TERM: vt100}}
@@ -385,6 +400,7 @@ circgraph: {mem: 10}
 computeMatrix: {mem: 80}
 correctGCBias: {mem: 10}
 cshl_fastx_collapser: {mem: 16}
+create_tool_recommendation_model: {mem: 160}
 crispr_recognition_tool: {mem: 10}
 ctb_np-likeness-calculator: {mem: 12}
 ctb_online_data_fetch: {mem: 10}
@@ -490,6 +506,8 @@ gemini_load: {cores: 12, mem: 40}
 
 ggplot2_heatmap2: {mem: 24}
 graphprot_predict_profile: {mem: 8}
+# this tool was developed by IGC Bioinformatics Unit and Daniel Sobral from ELIXIR-PT
+goenrichment: {runner: remote_cluster_mq_pt01}
 hammock_1.0:
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
@@ -497,13 +515,13 @@ hammock_1.0:
   name: java_temp
 heatmapper: {mem: 25}
 heatmapper_deepTools: {mem: 25}
-hicexplorer_hicbuildmatrix: {cores: 10, mem: 90}
+hicexplorer_hicbuildmatrix: {cores: 10, mem: 120}
 hicexplorer_hiccorrectmatrix: {mem: 64}
 hicexplorer_hiccorrelate: {mem: 20}
 hicexplorer_hicfindtads: {mem: 20}
 hicexplorer_hicplotmatrix: {mem: 210}
 hicexplorer_hicplottads: {mem: 20}
-hicexplorer_hicsummatrices: {mem: 48}
+hicexplorer_hicsummatrices: {mem: 65}
 hicexplorer_hicpca: {cores: 12, mem: 60}
 hicexplorer_hicmergematrixbins: {mem: 80}
 hicexplorer_hictransform: {cores: 12, mem: 60}
@@ -517,10 +535,14 @@ hisat2: {cores: 8, mem: 20, runner: condor_singularity_with_conda}
 hisat2_index_builder_data_manager: {cores: 12, mem: 180}
 hmmer_hmmsearch: {mem: 10}
 htseq_count: {mem: 32}
-humann2: {mem: 16}
+humann2: {cores: 6, mem: 90}
 infernal_cmbuild: {cores: 10, mem: 20}
 infernal_cmsearch: {cores: 10, mem: 20}
-interproscan: {cores: 12, mem: 40}
+interproscan:
+  env:
+    PATH: $PATH:/data/0/interproscan/interproscan-5.36-75.0/
+  mem: 40
+  cores: 6
 iqtree: {cores: 12}
 iterative_map_pipeline: {mem: 60}
 je_clip: {cores: 8}
@@ -528,9 +550,8 @@ je_demultiplex: {cores: 8, mem: 20}
 je_demultiplex_illu: {cores: 8}
 je_markdupes: {cores: 8}
 join1: {mem: 18}
-#bamFilter:  {runner: remote_cluster_mq_cz}
-
-jq: {runner: remote_cluster_mq_de01}
+bamFilter:  {runner: remote_cluster_mq_de01}
+jq: {runner: remote_cluster_mq_pt01}
 kallisto_quant: {cores: 8, mem: 20}
 ## uha,	with the reference.fa file from	the history it is not working?
 ## kallisto_quant: {cores: 8, mem: 20_singularity}
@@ -641,7 +662,8 @@ rgEstLibComp: {mem: 12}
 rgPicFixMate: {mem: 12}
 rgPicardMarkDups: {mem: 12}
 rm_spurious_events.py: {mem: 4}
-rna_star: {cores: 12, mem: 100}
+rna_star: {cores: 12, mem: 140}
+rna_starsolo: {cores: 4, mem: 40}
 rna_star_index_builder_data_manager:
   cores: 12
   mem: 100
@@ -656,6 +678,7 @@ sam_merge2:
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
   mem: 32
+samtools_stats: {runner: remote_cluster_mq_de01}
 search_gui:
   cores: 12
   env:
@@ -770,19 +793,18 @@ echo_main_env:
             roles:
                 - admin
 
-tp_awk_tool:
-    runner: secure_pulsar_singularity
-    permissions:
-        allow:
-            roles:
-                - admin
+#tp_awk_tool:
+#    runner: condor_docker
+#    permissions:
+#        allow:
+#            roles:
+#                - admin
 
-tp_replace_in_column:
-    runner: secure_pulsar_singularity
-    permissions:
-        allow:
-            roles:
-                - admin
+#tp_replace_in_column:
+#    permissions:
+#        allow:
+#            roles:
+#                - admin
 
 # permissions testing.
 _test_permissions_0: {}

@@ -109,6 +109,12 @@ def name_it(tool_spec):
     return name
 
 
+def _get_limits(destination, default_cores=1, default_mem=4, default_gpus=0):
+    limits = {'cores': default_cores, 'mem': default_mem, 'gpus': default_gpus}
+    limits.update(SPECIFICATIONS.get(destination).get('limits', {}))
+    return limits
+
+
 def build_spec(tool_spec, runner_hint=None):
     destination = tool_spec.get('runner', 'condor')
 
@@ -125,13 +131,21 @@ def build_spec(tool_spec, runner_hint=None):
     # semi-internal, and may not be properly propagated to the end tool
     tool_memory = tool_spec.get('mem', 4)
     tool_cores = tool_spec.get('cores', 1)
+    tool_gpus = tool_spec.get('gpus', 0)
+
     # We apply some constraints to these values, to ensure that we do not
     # produce unschedulable jobs, requesting more ram/cpu than is available in a
     # given location. Currently we clamp those values rather than intelligently
     # re-scheduling to a different location due to TaaS constraints.
+    limits = _get_limits(destination)
     if 'condor' in destination:
-        tool_memory = min(tool_memory, CONDOR_MAX_MEM)
-        tool_cores = min(tool_cores, CONDOR_MAX_CORES)
+        tool_memory = min(tool_memory, limits.get('mem'))
+        tool_cores = min(tool_cores, limits.get('cores'))
+
+    if 'remote_cluster_mq' in destination:
+        tool_memory = min(tool_memory, limits.get('mem'))
+        tool_cores = min(tool_cores, limits.get('cores'))
+        tool_gpus = min(tool_gpus, limits.get('gpus'))
 
     kwargs = {
         # Higher numbers are lower priority, like `nice`.
@@ -139,6 +153,7 @@ def build_spec(tool_spec, runner_hint=None):
         'MEMORY': str(tool_memory) + 'G',
         'PARALLELISATION': "",
         'NATIVE_SPEC_EXTRA': "",
+        'GPUS': "",
     }
     # Allow more human-friendly specification
     if 'nativeSpecification' in params:
@@ -160,6 +175,15 @@ def build_spec(tool_spec, runner_hint=None):
 
         if 'rank' in tool_spec:
             params['rank'] = tool_spec['rank']
+
+    if 'remote_cluster_mq' in destination:
+        if 'cores' in tool_spec:
+            kwargs['PARALLELISATION'] = tool_cores
+        else:
+            del params['submit_submit_request_cpus']
+
+        if 'gpus' in tool_spec and tool_gpus > 0:
+            kwargs['GPUS'] = tool_gpus
 
     # Update env and params from kwargs.
     env.update(tool_spec.get('env', {}))
@@ -235,8 +259,8 @@ def _finalize_tool_spec(tool_id, user_roles, memory_scale=1.0):
             'requirements': 'GalaxyTraining == false',
         }
     # These we're running on a specific subset
-    #elif 'interactive_tool_' in tool_id:
-    #    tool_spec['requirements'] = 'GalaxyCluster == "backofen"'
+    elif 'interactive_tool_' in tool_id:
+        tool_spec['requirements'] = 'GalaxyCluster == "backofen"'
 
     return tool_spec
 

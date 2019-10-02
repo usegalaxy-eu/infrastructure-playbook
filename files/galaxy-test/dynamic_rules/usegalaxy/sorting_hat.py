@@ -8,6 +8,10 @@ import math
 import os
 import yaml
 
+# Maximum resources
+CONDOR_MAX_CORES = 40
+CONDOR_MAX_MEM = 1000
+
 # The default / base specification for the different environments.
 SPECIFICATION_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'destination_specifications.yaml')
 with open(SPECIFICATION_PATH, 'r') as handle:

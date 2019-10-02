@@ -1,5 +1,8 @@
 ---
 condor:
+  limits:
+    cores: 40
+    mem: 1000
   env: {}
   params:
     priority: -{PRIORITY}
@@ -8,6 +11,9 @@ condor:
     tmp_dir: 'True'
 
 condor_singularity:
+  limits:
+    cores: 40
+    mem: 1000
   env: {}
   params:
     priority: -{PRIORITY}
@@ -70,8 +76,9 @@ condor_docker:
     docker_volumes: '/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:rw,/data/0/galaxy_import/galaxy_user_data/:ro,/data/1/galaxy_import/galaxy_user_data/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro'
     docker_memory: '{MEMORY}'
     docker_auto_rm: true
-    docker_default_container_id: ubuntu:18.04
+    docker_default_container_id: busybox:ubuntu-14.04
     docker_sudo: false
+    docker_set_user: ''
     tmp_dir: 'True'
 sge:
   env: {}
@@ -96,6 +103,9 @@ sge:
         -l galaxy1_dedicated=1
 
 remote_cluster_mq_it01:
+  limits:
+    cores: 16
+    mem: 31
   env: {}
   params:
     priority: -{PRIORITY}
@@ -105,6 +115,9 @@ remote_cluster_mq_it01:
     dependency_resolution: 'remote'
 
 remote_cluster_mq_be01:
+  limits:
+    cores: 8
+    mem: 15
   env: {}
   params:
     priority: -{PRIORITY}
@@ -114,6 +127,9 @@ remote_cluster_mq_be01:
     dependency_resolution: 'remote'
 
 remote_cluster_mq_de01:
+  limits:
+    cores: 16
+    mem: 31
   env: {}
   params:
     priority: -{PRIORITY}
@@ -124,6 +140,9 @@ remote_cluster_mq_de01:
 
 remote_cluster_mq_de02:
   ## our singularity test bed
+  limits:
+    cores: 16
+    mem: 31
   env: {}
   params:
     priority: -{PRIORITY}
@@ -135,8 +154,11 @@ remote_cluster_mq_de02:
     singularity_default_container_id: '/data/0/singularity/ubuntu:18.04'
     tmp_dir: 'True'
 
-
 remote_cluster_mq_de03:
+  limits:
+    cores: 8
+    mem: 19
+    gpu: 1
   env: {}
   params:
     priority: -{PRIORITY}
@@ -146,6 +168,9 @@ remote_cluster_mq_de03:
     dependency_resolution: 'remote'
 
 remote_cluster_mq_pt01:
+  limits:
+    cores: 4
+    mem: 15
   env: {}
   params:
     priority: -{PRIORITY}
