@@ -16,30 +16,6 @@ usegalaxy_eu_autofs_mounts:
 custom_telegraf_env: "/usr/bin/env GDPR_MODE=1 PGUSER=galaxy PGHOST=sn03.bi.uni-freiburg.de"
 telegraf_agent_hostname: test.galaxyproject.eu
 telegraf_plugins_extra:
-  procstat_nginx:
-    plugin: procstat
-    config:
-      - pattern = ".*nginx.*"
-      - cmdline_tag = true
-  procstat_handler:
-    plugin: procstat
-    config:
-      - pattern = ".*server-name=handler_main.*"
-      - cmdline_tag = true
-  procstat_zergling:
-    plugin: procstat
-    config:
-      - pattern = ".*uwsgi.*--socket.*"
-      - cmdline_tag = true
-  procstat_zergpool:
-    plugin: procstat
-    config:
-      - pattern = ".*zergpool.*"
-  postgres:
-    plugin: "postgresql"
-    config:
-      - address = "{{ galaxy_db_connection }}"
-      - databases = ["galaxy"]
 
   listen_galaxy_routes:
     plugin: "statsd"
