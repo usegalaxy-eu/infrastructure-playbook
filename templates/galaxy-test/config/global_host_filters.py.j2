@@ -16,7 +16,7 @@ def per_host_tool_labels( context, label ):
     valid_labels = [ "file_meta_label", "general_text_label"]
     general_ngs_labels = [ "genomics_label" ]
     # HiCtools mode: published in NAR 2018
-    if "nanopore.usegalaxy.eu" in host or "hicexplorer.usegalaxy.eu" in host or "singlecell.usegalaxy.eu" in host or "metagenomics.usegalaxy.eu" in host or "rna.usegalaxy.eu" in host or "clipseq.usegalaxy.eu" in host or "graphclust.usegalaxy.eu" in host:
+    if "humancellatlas.usegalaxy.eu" in host or "nanopore.usegalaxy.eu" in host or "hicexplorer.usegalaxy.eu" in host or "singlecell.usegalaxy.eu" in host or "metagenomics.usegalaxy.eu" in host or "rna.usegalaxy.eu" in host or "clipseq.usegalaxy.eu" in host or "graphclust.usegalaxy.eu" in host or "annotation.usegalaxy.eu" in host:
         valid_labels += general_ngs_labels
         return label.id in valid_labels
     if "cheminformatics.usegalaxy.eu" in host:
@@ -27,11 +27,13 @@ def per_host_tool_labels( context, label ):
         return label.id in valid_labels
     if "metabolomics.usegalaxy.eu" in host:
         return label.id in valid_labels
+    if "ecology.usegalaxy.eu" in host:
+        return label.id in valid_labels
     return True
 
 
 BASE_SECTIONS = ["text_manipulation", "get_data", "collection_operations",
-        "convert_formats", "filter_and_sort", "join,_subtract_and_group"]
+        "convert_formats", "filter_and_sort", "join_subtract_and_group"]
 
 GENERAL_NGS_SECTIONS = ["deeptools", "bed_tools",
         "operate_on_genomic_intervals", "fasta_fastq_manipulation",
@@ -39,25 +41,32 @@ GENERAL_NGS_SECTIONS = ["deeptools", "bed_tools",
         "picard", "mapping"]
 
 DOMAIN_SECTIONS = {
-    'hicexplorer': GENERAL_NGS_SECTIONS + ["hicexplorer"],
+    'hicexplorer': GENERAL_NGS_SECTIONS + ["hicexplorer", "graph_display_data"],
     'nanopore': GENERAL_NGS_SECTIONS + ["hicexplorer", "nanopore",
         "metagenomic_analyses", "mothur", "qiime", "biom_manipulation",
-        "ncbi_blast"],
-    'climate': GENERAL_NGS_SECTIONS + ["climate_analysis"],
+        "ncbi_blast", "fasta_fastq", "assembly", "graph_display_data"],
+    'ecology': ["join_subtract_and_group", "statistics", "graph_display_data",
+        "ncbi_blast", "fasta_fastq", "fastq_quality_control", "assembly", "metagenomic_analyses",
+        "mothur", "qiime", "rad-seq", "animal_detection_on_acoustic_recordings","species_abundance",
+        "gis_data_handling"],
+    'climate': ["climate_analysis", "gis_data_handling"],
     'metagenomics': GENERAL_NGS_SECTIONS + ["fasta_fastq_manipulation",
         "quality_control", "multiple_alignments", "assembly", "annotation",
-        "display_data", "metagenomic_analyses", "mothur", "qiime",
+        "graph_display_data", "metagenomic_analyses", "mothur", "qiime",
         "biom_manipulation"],
     'rna': GENERAL_NGS_SECTIONS + ["rna_analysis", "annotation",
-        "graph/display_data"],
+        "graph_display_data"],
     'singlecell': GENERAL_NGS_SECTIONS + ["rna_analysis", "annotation",
-        "graph/display_data", "single-cell"],
+        "graph_display_data", "single-cell"],
+    'humancellatlas': GENERAL_NGS_SECTIONS + ["rna_analysis", "annotation",
+        "graph_display_data", "single-cell", "hca-single_cell"],
     'clipseq': GENERAL_NGS_SECTIONS + ["rna_analysis", "peak_calling",
         "motif_tools"],
     'graphclust': GENERAL_NGS_SECTIONS + ["rna_analysis", "graphclust"],
     'cheminformatics': ['chemicaltoolbox'],
     'imaging': ['imaging', 'proteomics'],
     'metabolomics': ['metabolomics'],
+    'annotation': GENERAL_NGS_SECTIONS + ['annotation', 'apollo', 'ncbi_blast', 'assembly', 'variant_calling', 'fetch_sequences_alignments', 'ontology', 'emboss', 'evolution', 'genome_diversity', 'multiple_alignments', 'display_data'],
 
 }
 
@@ -73,13 +82,21 @@ def per_host_tool_sections( context, section ):
         tool_section_filters = examples:per_host_tool_sections
     """
     host = context.trans.request.host
+    subdomain = host.replace('.usegalaxy.eu', '')
+
+    # hide HCA tools from other subdomains than humancellatlas, do not confuse users by duplicated tools
+    if section.id in ['hca-single_cell']:
+        if 'humancellatlas' in host:
+            return True
+        else:
+            return False
+
     # Core tools used by all virtual hosts.
     # HiCtools mode: published in NAR 2018
     if host == "usegalaxy.eu":
         return True
 
-    h = host.replace('.usegalaxy.eu', '')
-    if h in DOMAIN_SECTIONS:
-        return section.id in DOMAIN_SECTIONS[h] or section.id in BASE_SECTIONS
+    if subdomain in DOMAIN_SECTIONS:
+        return section.id in DOMAIN_SECTIONS[subdomain] or section.id in BASE_SECTIONS
     else:
         return True
