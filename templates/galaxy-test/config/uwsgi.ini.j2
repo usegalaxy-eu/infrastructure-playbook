@@ -37,6 +37,7 @@ die-on-term = true
 hook-master-start = unix_signal:2 gracefully_kill_them_all
 hook-master-start = unix_signal:15 gracefully_kill_them_all
 
+set = interactivetools_map={{ galaxy_mutable_config_dir }}/interactivetools_map.sqlite
 python-raw = scripts/interactivetools/key_type_token_mapping.py
 route-host = ^([a-f0-9]+)-([a-f0-9]+)\.(interactivetoolentrypoint)\.(interactivetool\..*usegalaxy\.eu)$ goto:interactivetool
 route-run = goto:endendend
@@ -45,4 +46,3 @@ route-host = ^([a-f0-9]+)-([a-f0-9]+)\.(interactivetoolentrypoint)\.(interactive
 ; If the TARGET_HOST variable isn't empty, then route the request to that server
 route-if-not = empty:${TARGET_HOST} httpdumb:${TARGET_HOST}
 route-label = endendend
-;route = .* break:418 Teakanne
