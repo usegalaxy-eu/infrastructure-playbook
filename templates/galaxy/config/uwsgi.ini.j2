@@ -38,12 +38,12 @@ hook-master-start = unix_signal:2 gracefully_kill_them_all
 hook-master-start = unix_signal:15 gracefully_kill_them_all
 
 ; ENABLE DURING 19.09 UPGRADE
-; python-raw = scripts/interactivetools/key_type_token_mapping.py
-; route-host = ^([a-f0-9]+)-([a-f0-9]+)\.(interactivetoolentrypoint)\.(interactivetool\..*usegalaxy\.eu)$ goto:interactivetool
-; route-run = goto:endendend
-; route-label = interactivetool
-; route-host = ^([a-f0-9]+)-([a-f0-9]+)\.(interactivetoolentrypoint)\.(interactivetool\..*usegalaxy\.eu)$ rpcvar:TARGET_HOST rtt_key_type_token_mapper_cached $1 $3 $2 $4 $0 5
-; ; If the TARGET_HOST variable isn't empty, then route the request to that server
-; route-if-not = empty:${TARGET_HOST} httpdumb:${TARGET_HOST}
-; route-label = endendend
-; ;route = .* break:418 Teakanne
+python-raw = scripts/interactivetools/key_type_token_mapping.py
+route-host = ^([a-f0-9]+)-([a-f0-9]+)\.(interactivetoolentrypoint)\.(interactivetool\..*usegalaxy\.eu)$ goto:interactivetool
+route-run = goto:endendend
+route-label = interactivetool
+route-host = ^([a-f0-9]+)-([a-f0-9]+)\.(interactivetoolentrypoint)\.(interactivetool\..*usegalaxy\.eu)$ rpcvar:TARGET_HOST rtt_key_type_token_mapper_cached $1 $3 $2 $4 $0 5
+; If the TARGET_HOST variable isn't empty, then route the request to that server
+route-if-not = empty:${TARGET_HOST} httpdumb:${TARGET_HOST}
+route-label = endendend
+; route = .* break:418 Teakanne
