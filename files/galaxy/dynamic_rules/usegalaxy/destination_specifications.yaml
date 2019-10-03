@@ -80,6 +80,26 @@ condor_docker:
     docker_sudo: false
     docker_set_user: ''
     tmp_dir: 'True'
+
+
+condor_docker_interactive:
+  env:
+    # this can be removed, as soon as we don't expose this env on cn029 anymore
+    DOCKER_HOST: ''
+  params:
+    priority: -{PRIORITY}
+    request_cpus: '{PARALLELISATION}'
+    request_memory: '{MEMORY}'
+    docker_enabled: true
+    # can and should be made stricter at some point
+    docker_volumes: '$working_directory:rw'
+    docker_memory: '{MEMORY}'
+    docker_auto_rm: true
+    docker_default_container_id: busybox:ubuntu-14.04
+    docker_sudo: false
+    docker_set_user: ''
+    tmp_dir: 'True'
+
 sge:
   env: {}
   params:

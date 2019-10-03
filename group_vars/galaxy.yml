@@ -601,6 +601,15 @@ galaxy_jobconf:
             docker_auto_rm: 'true'
             docker_sudo: 'false'
             docker_set_user: ''
+        - id: condor_docker_interactive
+          runner: condor
+          params:
+            docker_enabled: 'true'
+            docker_volumes: '$working_directory:rw'
+            docker_default_container_id: 'ubuntu:18.04'
+            docker_auto_rm: 'true'
+            docker_sudo: 'false'
+            docker_set_user: ''
         # TODO(hxr): check functionality
         #- id: 24cores_15G_BLAST
         #  runner: dynamic

@@ -12,14 +12,15 @@ sklearn_train_test_eval:
    env:
       CUDA_VISIBLE_DEVICES: 0
 
-interactive_tool_jupyter_notebook: {mem: 4, runner: condor_docker}
-interactive_tool_ethercalc: {mem: 4, runner: condor_docker}
-interactive_tool_pinch: {mem: 4, runner: condor_docker}
-interactive_tool_neo4j: {mem: 4, runner: condor_docker}
-interactive_tool_hicbrowser: {mem: 4, runner: condor_docker}
-interactive_tool_cellxgene: {mem: 4, runner: condor_docker}
-interactive_tool_bam_iobio: {mem: 4, runner: condor_docker}
-interactive_tool_askomics: {mem: 4, runner: condor_docker}
+interactive_tool_jupyter_notebook: {mem: 4, runner: condor_docker_interactive}
+interactive_tool_ethercalc: {mem: 4, runner: condor_docker_interactive}
+interactive_tool_pinch: {mem: 4, runner: condor_docker_interactive}
+interactive_tool_neo4j: {mem: 4, runner: condor_docker_interactive}
+interactive_tool_hicbrowser: {mem: 4, runner: condor_docker_interactive}
+interactive_tool_cellxgene: {mem: 4, runner: condor_docker_interactive}
+interactive_tool_bam_iobio: {mem: 4, runner: condor_docker_interactive}
+interactive_tool_askomics: {mem: 4, runner: condor_docker_interactive}
+interactive_tool_rstudio: {mem: 4, runner: condor_docker_interactive}
 
 # roary	needs many many cpus if	the number of input files increase
 # a more specific function would ne neat
