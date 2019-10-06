@@ -716,7 +716,8 @@ show_3D_surface_plot:
 signalp3: {mem: 10}
 sklearn_searchcv: {cores: 12, mem: 16}
 smooth_running_window: {mem: 32}
-snippy: {mem: 12}
+snippy: {cores: 4, mem: 12, runner: remote_cluster_mq_au01}
+#snippy: {mem: 12}
 snpEff: {mem: 12}
 snpEff_databases: {mem: 12}
 snpEff_download: {mem: 12}

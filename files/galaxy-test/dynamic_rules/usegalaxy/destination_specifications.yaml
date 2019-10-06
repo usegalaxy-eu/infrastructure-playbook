@@ -188,3 +188,14 @@ remote_cluster_mq_pt01:
     submit_submit_request_memory: '{MEMORY}'
     jobs_directory: '/data/share/staging'
     dependency_resolution: 'remote'
+
+remote_cluster_mq_au01:
+  env: {}
+  params:
+    nativeSpecification: |
+        --ntasks={PARALLELISATION}
+        --nodes=1
+        --ntasks-per-node={PARALLELISATION}
+        --mem={MEMORY}
+    dependency_resolution: 'remote'
+    jobs_directory: '/mnt/pulsar/files/staging'
