@@ -3,6 +3,10 @@
 master = true
 processes = 4
 threads = 1
+
+; needed for IEs
+http-raw-body = true
+
 {% if galaxy_zergpool %}
 zerg = {{ galaxy_mutable_data_dir }}/zergpool.sock
 {% endif %}
