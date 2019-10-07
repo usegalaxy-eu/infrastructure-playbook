@@ -51,6 +51,14 @@ server {
 			add_header X-Content-Type-Options nosniff;
 			add_header Access-Control-Allow-Origin "https://www.bx.psu.edu";
 		}
+
+		# Temporarily break downloading :(
+		location /api/libraries/datasets/download/ {
+			return 302 https://usegalaxy.eu;
+		}
+		location /history/export_archive {
+			return 302 https://usegalaxy.eu;
+		}
 	}
 
 	location /_x_accel_redirect {
