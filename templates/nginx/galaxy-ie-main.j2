@@ -1,6 +1,13 @@
 # This server is specifically for IEs. With the 'default_server' we needed to ensure special parameters were sent or not sent. This may not be necessary on main.eu?
-server {
 
+# Websocket upgrading
+map $http_upgrade $connection_upgrade {
+	default upgrade;
+	''      close;
+}
+
+# Regular routing
+server {
 	listen 443;
 	listen [::]:443;
 	server_name ~^(?<key>[0-9a-f-]*)\.interactivetoolentrypoint\.interactivetool\.(?<domain>[a-f0-9.-]*)usegalaxy\.eu$;
@@ -9,7 +16,8 @@ server {
 	access_log /var/log/nginx/interactive.log;
 
 	location / {
-		# UWSGI does NOT work for us.
+		# UWSGI DOES NOT WORK FOR US.
+		# UWSGI DOES NOT WORK FOR US.
 		#uwsgi_pass      127.0.0.1:4001;
 
 		#proxy_hide_header x-frame-options;
