@@ -52,6 +52,10 @@ server {
 			add_header Access-Control-Allow-Origin "https://www.bx.psu.edu";
 		}
 
+		include uwsgi_params;
+		uwsgi_param HTTPS on;
+		uwsgi_param REQUEST_SCHEME https;
+
 		# Temporarily break downloading :(
 		location /api/libraries/datasets/download/ {
 			return 302 https://usegalaxy.eu;
