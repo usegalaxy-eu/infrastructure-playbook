@@ -10,7 +10,7 @@ map $http_upgrade $connection_upgrade {
 server {
 	listen 443;
 	listen [::]:443;
-	server_name ~^(?<key>[0-9a-f-]*)\.interactivetoolentrypoint\.interactivetool\.(?<domain>[a-f0-9.-]*)usegalaxy\.eu$;
+	server_name ~^(?<key>[0-9a-f-]*)\.interactivetoolentrypoint\.interactivetool\.(?<domain>[a-z0-9.-]*)usegalaxy\.eu$;
 
 	error_log /var/log/nginx/interactive.err;
 	access_log /var/log/nginx/interactive.log;

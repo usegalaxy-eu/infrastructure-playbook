@@ -10,7 +10,7 @@ User=galaxy
 Group=galaxy
 WorkingDirectory={{ galaxy_root }}/node-proxy
 TimeoutStartSec=5
-ExecStart={{ galaxy_root }}/venv/bin/node lib/main.js --ip 127.0.0.1 --port 8800 --sessions {{ galaxy_mutable_data_dir }}/gie_proxy_session_map.sqlite --cookie galaxysession --verbose
+ExecStart={{ galaxy_root }}/venv/bin/node lib/main.js --ip 127.0.0.1 --port 8800 --sessions {{ galaxy_mutable_config_dir }}/interactivetools_map.sqlite --cookie galaxysession --verbose
 MemoryLimit=4G
 Restart=always
 
