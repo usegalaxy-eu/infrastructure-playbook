@@ -3,12 +3,14 @@
   git:
     repo: https://github.com/usegalaxy-eu/gie-nodejs-proxy
     dest: "{{ galaxy_root }}/node-proxy"
+    version: ie2
   notify:
     - gie systemd restart
 
 - name: Install deps
   npm:
     path: "{{ galaxy_root }}/node-proxy"
+    executable: "{{ galaxy_root }}/venv/bin/npm"
   notify:
     - gie systemd restart
 
