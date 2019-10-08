@@ -9,16 +9,25 @@ server {
 	access_log /var/log/nginx/interactive.log;
 
 	location / {
-		uwsgi_pass      127.0.0.1:4001;
+		# UWSGI does NOT work for us.
+		#uwsgi_pass      127.0.0.1:4001;
 
-		proxy_hide_header x-frame-options;
-		add_header X-Content-Type-Options nosniff;
+		#proxy_hide_header x-frame-options;
+		#add_header X-Content-Type-Options nosniff;
 
-		include uwsgi_params;
-		# test is behind a proxy + under a different external hostname.
-		# These probably do not need to be set on main.eu
-		uwsgi_param HTTPS on;
-		uwsgi_param REQUEST_SCHEME https;
+		#include uwsgi_params;
+		## test is behind a proxy + under a different external hostname.
+		## These probably do not need to be set on main.eu
+		#uwsgi_param HTTPS on;
+		#uwsgi_param REQUEST_SCHEME https;
+
+		# So we're going to use the OLD one that actually works.
+		proxy_pass http://127.0.0.1:8800;
+		proxy_redirect off;
+		proxy_http_version 1.1;
+		proxy_set_header Host $host;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection $connection_upgrade;
 	}
 
 	resolver 8.8.8.8 8.8.4.4 valid=300s;
