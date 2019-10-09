@@ -199,3 +199,15 @@ remote_cluster_mq_pt01:
     submit_submit_request_memory: '{MEMORY}'
     jobs_directory: '/data/share/staging'
     dependency_resolution: 'remote'
+
+remote_cluster_mq_uk01:
+  limits:
+    cores: 60
+    mem: 300
+  env: {}
+  params:
+    priority: -{PRIORITY}
+    submit_submit_request_cpus: '{PARALLELISATION}'
+    submit_submit_request_memory: '{MEMORY}'
+    jobs_directory: '/data/share/staging'
+    dependency_resolution: 'remote'
