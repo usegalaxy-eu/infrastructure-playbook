@@ -1,6 +1,7 @@
 import logging
 log = logging.getLogger( __name__ )
 
+
 def per_host_tool_labels( context, label ):
     """
     This tool section filter results in different labels being displayed based on
@@ -33,40 +34,40 @@ def per_host_tool_labels( context, label ):
 
 
 BASE_SECTIONS = ["text_manipulation", "get_data", "collection_operations",
-        "convert_formats", "filter_and_sort", "join_subtract_and_group"]
+        "convert_formats", "filter_and_sort", "join__subtract_and_group"]
 
-GENERAL_NGS_SECTIONS = ["deeptools", "bed_tools",
+GENERAL_NGS_SECTIONS = ["deeptools", "bed",
         "operate_on_genomic_intervals", "fasta_fastq_manipulation",
-        "fasta/fastq_manipulation", "fastq_quality_control", "quality_control",
+        "fasta_fastq_manipulation", "fastq_quality_control",
         "picard", "mapping"]
 
 DOMAIN_SECTIONS = {
     'hicexplorer': GENERAL_NGS_SECTIONS + ["hicexplorer", "graph_display_data"],
     'nanopore': GENERAL_NGS_SECTIONS + ["hicexplorer", "nanopore",
-        "metagenomic_analyses", "mothur", "qiime", "biom_manipulation",
+        "metagenomic_analysis", "mothur", "qiime", "biom_manipulation",
         "ncbi_blast", "fasta_fastq", "assembly", "graph_display_data"],
-    'ecology': ["join_subtract_and_group", "statistics", "graph_display_data",
-        "ncbi_blast", "fasta_fastq", "fastq_quality_control", "assembly", "metagenomic_analyses",
-        "mothur", "qiime", "rad-seq", "animal_detection_on_acoustic_recordings","species_abundance",
+    'ecology': ["join__subtract_and_group", "statistics", "graph_display_data",
+        "ncbi_blast", "fasta_fastq", "fastq_quality_control", "assembly", "metagenomic_analysis",
+        "mothur", "qiime", "rad_seq", "animal_detection_on_acoustic_recordings","species_abundance",
         "gis_data_handling"],
     'climate': ["climate_analysis", "gis_data_handling"],
     'metagenomics': GENERAL_NGS_SECTIONS + ["fasta_fastq_manipulation",
-        "quality_control", "multiple_alignments", "assembly", "annotation",
-        "graph_display_data", "metagenomic_analyses", "mothur", "qiime",
+        "multiple_alignments", "assembly", "annotation",
+        "graph_display_data", "metagenomic_analysis", "mothur", "qiime",
         "biom_manipulation"],
-    'rna': GENERAL_NGS_SECTIONS + ["rna_analysis", "annotation",
+    'rna': GENERAL_NGS_SECTIONS + ["rna_seq", "annotation",
         "graph_display_data"],
-    'singlecell': GENERAL_NGS_SECTIONS + ["rna_analysis", "annotation",
-        "graph_display_data", "single-cell"],
-    'humancellatlas': GENERAL_NGS_SECTIONS + ["rna_analysis", "annotation",
-        "graph_display_data", "single-cell", "hca-single_cell"],
-    'clipseq': GENERAL_NGS_SECTIONS + ["rna_analysis", "peak_calling",
+    'singlecell': GENERAL_NGS_SECTIONS + ["rna_seq", "annotation",
+        "graph_display_data", "single_cell"],
+    'humancellatlas': GENERAL_NGS_SECTIONS + ["rna_seq", "annotation",
+        "graph_display_data", "single_cell", "hca_single_cell"],
+    'clipseq': GENERAL_NGS_SECTIONS + ["rna_seq", "peak_calling",
         "motif_tools"],
-    'graphclust': GENERAL_NGS_SECTIONS + ["rna_analysis", "graphclust"],
+    'graphclust': GENERAL_NGS_SECTIONS + ["rna_seq", "graphclust"],
     'cheminformatics': ['chemicaltoolbox'],
     'imaging': ['imaging', 'proteomics'],
     'metabolomics': ['metabolomics'],
-    'annotation': GENERAL_NGS_SECTIONS + ['annotation', 'apollo', 'ncbi_blast', 'assembly', 'variant_calling', 'fetch_sequences_alignments', 'ontology', 'emboss', 'evolution', 'genome_diversity', 'multiple_alignments', 'display_data'],
+    'annotation': GENERAL_NGS_SECTIONS + ['annotation', 'apollo', 'ncbi_blast', 'assembly', 'variant_calling', 'fetch_sequences___alignments', 'ontology', 'emboss', 'evolution', 'genome_diversity', 'multiple_alignments', 'graph_display_data'],
 
 }
 
@@ -85,7 +86,7 @@ def per_host_tool_sections( context, section ):
     subdomain = host.replace('.usegalaxy.eu', '')
 
     # hide HCA tools from other subdomains than humancellatlas, do not confuse users by duplicated tools
-    if section.id in ['hca-single_cell']:
+    if section.id in ['hca_single_cell']:
         if 'humancellatlas' in host:
             return True
         else:
