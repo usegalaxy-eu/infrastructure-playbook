@@ -60,7 +60,9 @@ DOMAIN_SECTIONS = {
     'singlecell': GENERAL_NGS_SECTIONS + ["rna_seq", "annotation",
         "graph_display_data", "single_cell"],
     'humancellatlas': GENERAL_NGS_SECTIONS + ["rna_seq", "annotation",
-        "graph_display_data", "single_cell", "hca_single_cell"],
+        "graph_display_data", "single_cell", 'hca_sc_seurat_tools', 'hca_sc_sc3_tools', 
+                      'hca_sc_scanpy_tools', 'hca_sc_monocle3_tools', 
+                      'hca_sc_scmap_tools', 'hca_sc_sccaf_tools', 'hca_sc_utils_viz'],
     'clipseq': GENERAL_NGS_SECTIONS + ["rna_seq", "peak_calling",
         "motif_tools"],
     'graphclust': GENERAL_NGS_SECTIONS + ["rna_seq", "graphclust"],
@@ -86,7 +88,9 @@ def per_host_tool_sections( context, section ):
     subdomain = host.replace('.usegalaxy.eu', '')
 
     # hide HCA tools from other subdomains than humancellatlas, do not confuse users by duplicated tools
-    if section.id in ['hca_single_cell']:
+    if section.id in ['hca_sc_seurat_tools', 'hca_sc_sc3_tools', 
+                      'hca_sc_scanpy_tools', 'hca_sc_monocle3_tools', 
+                      'hca_sc_scmap_tools', 'hca_sc_sccaf_tools', 'hca_sc_utils_viz']:
         if 'humancellatlas' in host:
             return True
         else:
