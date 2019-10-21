@@ -111,76 +111,118 @@ sge:
         -soft
         -l galaxy1_dedicated=1
 
-remote_cluster_mq_it01:
-  limits:
-    cores: 16
-    mem: 31
-  env: {}
-  params:
-    priority: -{PRIORITY}
-    submit_submit_request_cpus: '{PARALLELISATION}'
-    submit_submit_request_memory: '{MEMORY}'
-    jobs_directory: '/data/share/staging'
-    dependency_resolution: 'remote'
-
 remote_cluster_mq_be01:
   limits:
     cores: 8
     mem: 15
-  env: {}
+  env:
+      LC_ALL: C
   params:
     priority: -{PRIORITY}
     submit_submit_request_cpus: '{PARALLELISATION}'
     submit_submit_request_memory: '{MEMORY}'
     jobs_directory: '/data/share/staging'
+    default_file_action: 'remote_transfer'
     dependency_resolution: 'remote'
+    outputs_to_working_directory: False
+    rewrite_parameters: True
+    transport: 'curl'
 
 remote_cluster_mq_de01:
   limits:
     cores: 16
     mem: 31
-  env: {}
+  env:
+      LC_ALL: C
   params:
     priority: -{PRIORITY}
     submit_submit_request_cpus: '{PARALLELISATION}'
     submit_submit_request_memory: '{MEMORY}'
     jobs_directory: '/data/share/staging'
+    default_file_action: 'remote_transfer'
     dependency_resolution: 'remote'
+    outputs_to_working_directory: False
+    rewrite_parameters: True
+    transport: 'curl'
 
 remote_cluster_mq_de02:
   ## our singularity test bed
   limits:
     cores: 16
     mem: 31
-  env: {}
+  env:
+      LC_ALL: C
   params:
     priority: -{PRIORITY}
     submit_submit_request_cpus: '{PARALLELISATION}'
     submit_submit_request_memory: '{MEMORY}'
     jobs_directory: '/data/share/staging'
+    default_file_action: 'remote_transfer'
     # dependency_resolution: 'remote'  --> we should enable it and test the difference, I don't think it has an effect
     singularity_enabled: true
     singularity_default_container_id: '/data/0/singularity/ubuntu:18.04'
     tmp_dir: 'True'
+    outputs_to_working_directory: False
+    rewrite_parameters: True
+    transport: 'curl'
 
 remote_cluster_mq_de03:
   limits:
     cores: 8
     mem: 19
     gpu: 1
-  env: {}
+  env:
+      LC_ALL: C
   params:
     priority: -{PRIORITY}
     submit_submit_request_cpus: '{PARALLELISATION}'
     submit_submit_request_memory: '{MEMORY}'
     submit_submit_request_gpus: '{GPUS}'
     jobs_directory: '/data/share/staging'
+    default_file_action: 'remote_transfer'
     dependency_resolution: 'remote'
+    outputs_to_working_directory: False
+    rewrite_parameters: True
+    transport: 'curl'
+
+remote_cluster_mq_it01:
+  limits:
+    cores: 16
+    mem: 31
+  env:
+      LC_ALL: C
+  params:
+    priority: -{PRIORITY}
+    submit_submit_request_cpus: '{PARALLELISATION}'
+    submit_submit_request_memory: '{MEMORY}'
+    jobs_directory: '/data/share/staging'
+    default_file_action: 'remote_transfer'
+    dependency_resolution: 'remote'
+    outputs_to_working_directory: False
+    rewrite_parameters: True
+    transport: 'curl'
 
 remote_cluster_mq_pt01:
   limits:
     cores: 4
     mem: 15
+  env:
+      LC_ALL: C
+  params:
+    priority: -{PRIORITY}
+    submit_submit_request_cpus: '{PARALLELISATION}'
+    submit_submit_request_memory: '{MEMORY}'
+    jobs_directory: '/data/share/staging'
+    default_file_action: 'remote_transfer'
+    dependency_resolution: 'remote'
+    outputs_to_working_directory: False
+    rewrite_parameters: True
+    transport: 'curl'
+
+remote_cluster_mq_uk01:
+  limits:
+    cores: 60
+    mem: 300
   env: {}
   params:
     priority: -{PRIORITY}
@@ -188,3 +230,6 @@ remote_cluster_mq_pt01:
     submit_submit_request_memory: '{MEMORY}'
     jobs_directory: '/data/share/staging'
     dependency_resolution: 'remote'
+    outputs_to_working_directory: False
+    rewrite_parameters: True
+    transport: 'curl'
