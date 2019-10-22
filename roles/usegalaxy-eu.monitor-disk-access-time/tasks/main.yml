@@ -3,8 +3,13 @@
     content: |
         #!/bin/bash
         TIMES=$(mktemp)
+
         timeout 3m pdsh -g cloud -l centos 'time timeout 1m  ls /data/dnb02/galaxy_db/' 1>/dev/null 2> $TIMES
         cat $TIMES | grep real | sed 's/\([0-9]*\)m\([0-9.]*\)s/\1\t\2/g' | awk '{print $1"\t"$3 * 60 + $4}' | sed 's/://g' | awk '{print "disk-access-time,server="$1",disk=dnb02 seconds="$2}'
+
+        timeout 3m pdsh -g cloud -l centos 'time timeout 1m  ls /usr/local/tools/_conda/lib/python3.7/json/decoder.py' 1>/dev/null 2> $TIMES
+        cat $TIMES | grep real | sed 's/\([0-9]*\)m\([0-9.]*\)s/\1\t\2/g' | awk '{print $1"\t"$3 * 60 + $4}' | sed 's/://g' | awk '{print "disk-access-time,server="$1",disk=sn03tools seconds="$2}'
+
         rm -f $TIMES
     dest: /usr/bin/monitor-cluster-disk-access-time
     owner: root
