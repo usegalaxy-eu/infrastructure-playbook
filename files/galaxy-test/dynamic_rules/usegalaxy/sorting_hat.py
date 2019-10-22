@@ -146,6 +146,7 @@ def build_spec(tool_spec, runner_hint=None):
         # Higher numbers are lower priority, like `nice`.
         'PRIORITY': tool_spec.get('priority', 128),
         'MEMORY': str(tool_memory) + 'G',
+        'MEMORY_MB': int(tool_memory * 1024),
         'PARALLELISATION': "",
         'NATIVE_SPEC_EXTRA': "",
         'GPUS': "",
