@@ -186,7 +186,7 @@ def build_spec(tool_spec, runner_hint=None):
     elif destination.startswith('condor'):
         runner = 'condor'
     elif destination.startswith('remote_cluster_mq_au'):
-        runner = destination.replace('remote_cluster_mq_au', 'pulsar_au')
+        runner = destination.replace('remote_cluster_mq_au', 'pulsar_au_au')
     elif destination.startswith('remote_cluster_mq'):
         runner = destination.replace('remote_cluster_mq', 'pulsar_eu')
     else:
