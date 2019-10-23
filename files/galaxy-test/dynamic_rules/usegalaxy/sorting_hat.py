@@ -147,12 +147,10 @@ def build_spec(tool_spec, runner_hint=None):
         'PRIORITY': tool_spec.get('priority', 128),
         'MEMORY': str(tool_memory) + 'G',
         'MEMORY_MB': int(tool_memory * 1024),
-        'PARALLELISATION': "",
+        'PARALLELISATION': tool_cores,
         'NATIVE_SPEC_EXTRA': "",
-        'GPUS': "",
+        'GPUS': tool_gpus,
     }
-
-    remote_slurm_destinations = ['remote_cluster_mq_au01']
 
     # Allow more human-friendly specification
     if 'nativeSpecification' in params:
@@ -176,12 +174,6 @@ def build_spec(tool_spec, runner_hint=None):
 
         if 'rank' in tool_spec:
             params['rank'] = tool_spec['rank']
-
-    if destination.startswith('remote_cluster_mq') and destination not in remote_slurm_destinations:
-        kwargs['PARALLELISATION'] = tool_cores
-
-        if 'gpus' in tool_spec and tool_gpus > 0:
-            kwargs['GPUS'] = tool_gpus
 
     # Update env and params from kwargs.
     env.update(tool_spec.get('env', {}))
