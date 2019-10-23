@@ -459,17 +459,6 @@ galaxy_jobconf:
             amqp_consumer_timeout: 2.0
             amqp_publish_retry: True
             amqp_publish_retry_max_retries: 60
-        - id: pulsar_au_au01
-          load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
-          params:
-            amqp_url: "pyamqp://galaxy_au01:{{ rabbitmq_password_galaxy_au01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_au01?ssl=1"
-            galaxy_url: "https://usegalaxy.eu"
-            manager: production
-            amqp_acknowledge: True
-            amqp_ack_republish_time: 300
-            amqp_consumer_timeout: 2.0
-            amqp_publish_retry: True
-            amqp_publish_retry_max_retries: 60
     default_destination: gateway_singlerun
     destinations:
         - id: local
@@ -579,18 +568,6 @@ galaxy_jobconf:
               dependency_resolution: remote
               rewrite_parameters: "true"
               persistence_directory: /data/share/persisted_data
-        - id: remote_cluster_mq_au01:
-          runner: pulsar_au_au01
-          env:
-              LC_ALL: C
-          params:
-              jobs_directory: '/mnt/pulsar/files/staging'
-              transport: curl
-              remote_metadata: "false"
-              default_file_action: remote_transfer
-              dependency_resolution: remote
-              rewrite_parameters: "true"
-              persistence_directory: /mnt/pulsar/files/persisted_data
         - id: condor_singularity
           runner: condor
           params:
