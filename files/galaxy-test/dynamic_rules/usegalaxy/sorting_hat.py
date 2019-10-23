@@ -178,12 +178,7 @@ def build_spec(tool_spec, runner_hint=None):
             params['rank'] = tool_spec['rank']
 
     if destination.startswith('remote_cluster_mq') and destination not in remote_slurm_destinations:
-        if 'cores' in tool_spec:
-            kwargs['PARALLELISATION'] = tool_cores
-        else:
-            key = 'submit_submit_request_cpus'
-            if key in params:
-                del params[key]
+        kwargs['PARALLELISATION'] = tool_cores
 
         if 'gpus' in tool_spec and tool_gpus > 0:
             kwargs['GPUS'] = tool_gpus
