@@ -1533,7 +1533,7 @@ base_app_main: &BASE_APP_MAIN
   # not be created by the user running the jobs (e.g. if the filesystem
   # is mounted read-only or the jobs are run by a different user than
   # the galaxy user).
-  #outputs_to_working_directory: false
+  outputs_to_working_directory: true
 
   # If your network filesystem's caching prevents the Galaxy server from
   # seeing the job's stdout and stderr files when it completes, you can

@@ -155,5 +155,26 @@ galaxy_custom_sites:
             left: 0px !important;
         }
         #masthead {
-            background: linear-gradient(33deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%);
+            background: linear-gradient(33deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 25%, rgba(252,176,69,1) 50%, rgba(253,29,29,1) 75%, rgba(131,58,180,1) 100%);
+            -webkit-animation: SuperLively 20s ease infinite;
+            -moz-animation: SuperLively 20s ease infinite;
+            animation: SuperLively 20s ease infinite;
+            background-size: 600% 600%;
         }
+        @-webkit-keyframes SuperLively {
+            0%{background-position:0% 51%}
+            50%{background-position:100% 50%}
+            100%{background-position:0% 51%}
+        }
+        @-moz-keyframes SuperLively {
+            0%{background-position:0% 51%}
+            50%{background-position:100% 50%}
+            100%{background-position:0% 51%}
+        }
+        @keyframes SuperLively {
+            0%{background-position:0% 51%}
+            50%{background-position:100% 50%}
+            100%{background-position:0% 51%}
+        }
+  - name: plants
+    brand: Plants

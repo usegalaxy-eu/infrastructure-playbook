@@ -32,7 +32,7 @@
     <tool file="genomespace/genomespace_importer.xml" />
     <tool file="genomespace/genomespace_push.xml" />
   </section>
-  <section id="send" name="Send Data">
+  <section id="send_data" name="Send Data">
     <tool file="cloud/send.xml" />
     <tool file="genomespace/genomespace_exporter.xml" />
     <tool file="/opt/galaxy/custom-tools/test/seek/send.xml" labels="beta" />
@@ -92,7 +92,7 @@
     <tool file="/opt/galaxy/custom-tools/unix_tools/word_list_grep.xml" hidden="True" />
     <tool file="/opt/galaxy/custom-tools/unix_tools/uniq_tool.xml" hidden="True" />
   </section>
-  <section id="join_subtract_and_group" name="Join, Subtract and Group" version="">
+  <section id="join__subtract_and_group" name="Join, Subtract and Group" version="">
     <tool file="filters/joiner.xml" />
     <tool file="filters/compare.xml" />
     <tool file="stats/grouping.xml" />
@@ -124,13 +124,13 @@
   </section>
   <section id="fastq_quality_control" name="FASTQ Quality Control" version="">
   </section>
-  <section id="sam_bam_manipulation" name="SAM/BAM">
+  <section id="sam_bam" name="SAM/BAM">
     <label id="bamtools_label" text="bamtools" />
     <label id="samtools_label" text="samtools" />
   </section>
-  <section id="bed_tools" name="BED">
+  <section id="bed" name="BED">
   </section>
-  <section id="vcf_tools" name="VCF/BCF">
+  <section id="vcf_bcf" name="VCF/BCF">
     <label id="vcflib_label" text="vcflib" />
   </section>
   <section id="nanopore" name="Nanopore">
@@ -141,7 +141,7 @@
   <section id="operate_on_genomic_intervals" name="Operate on Genomic Intervals">
     <tool file="stats/aggregate_binned_scores_in_intervals.xml" />
   </section>
-  <section id="fetch_sequences" name="Fetch Sequences / Alignments">
+  <section id="fetch_sequences___alignments" name="Fetch Sequences / Alignments">
     <tool file="filters/ucsc_gene_bed_to_exon_bed.xml" />
     <tool file="maf/interval2maf_pairwise.xml" />
     <tool file="maf/interval2maf.xml" />
@@ -163,7 +163,7 @@
     <tool file="/opt/galaxy/custom-tools/test/dexseq/dexseq_annotate.xml"/>
     <tool file="/opt/galaxy/custom-tools/test/dexseq/mapDEXSeqBinsToExons.xml"/>
   </section>
-  <section id="ONTO-ToolKit" name="Ontology">
+  <section id="ontology" name="Ontology">
     <label id="onto_toolkit_label" text="ONTO-ToolKit" />
     <tool file="/opt/galaxy/custom-tools/test/onto-perl-toolkit/get_ancestor_terms.xml" hidden="True" />
     <tool file="/opt/galaxy/custom-tools/test/onto-perl-toolkit/get_child_terms.xml" hidden="True" />
@@ -203,7 +203,7 @@
   </section>
   <section id="genome_editing" name="Genome editing" >
   </section>
-  <section id="rna_analysis" name="RNA-Seq">
+  <section id="rna_seq" name="RNA-Seq">
     <!--label id="rna_seq" text="RNA-seq" /-->
     <tool file="/opt/galaxy/custom-tools/test/deseq2/deseq2_matrix.xml" hidden="True" />
     <tool file="/opt/galaxy/custom-tools/test/deseq2/deseq2_single.xml" hidden="True" />
@@ -258,9 +258,9 @@
     <tool file="phenotype_association/lps.xml" />
     <tool file="phenotype_association/master2pg.xml" />
     </section>
-  <section id="single-cell" name="Single-cell" >
+  <section id="single_cell" name="Single-cell">
   </section>
-  <section id="hca-single_cell" name="HCA-Single Cell" >
+  <section id="hca_single_cell" name="HCA-Single Cell">
   </section>
 
   <label id="genomics_toolkits_label" text="Genomics Toolkits"/>
@@ -268,17 +268,17 @@
   </section>
   <section id="deeptools" name="deepTools">
   </section>
-  <section id="gemini_tools" name="Gemini" >
+  <section id="gemini" name="Gemini">
   </section>
   <section id="emboss" name="EMBOSS">
   </section>
-  <section id="gatk" name="GATK Tools" >
+  <section id="gatk_tools" name="GATK Tools">
   </section>
   <section id="ncbi_blast" name="NCBI Blast">
   </section>
   <section id="hicexplorer" name="HiCExplorer">
   </section>
-  <section id="rad-seq" name="RAD-seq" >
+  <section id="rad_seq" name="RAD-seq">
   </section>
   <section id="graphclust" name="GraphClust" >
   </section>
@@ -287,7 +287,7 @@
 
 
   <label id="metagenomics_label" text="Metagenomics" />
-  <section id="metagenomic_analyses" name="Metagenomic Analysis" >
+  <section id="metagenomic_analysis" name="Metagenomic Analysis">
   </section>
   <section id="qiime" name="Qiime" >
   </section>
@@ -359,7 +359,7 @@
     <tool file="meme/meme.xml" hidden="True" />
     <tool file="meme/fimo.xml" hidden="True" />
     </section>
-  <section id="bg-test-tools" name="Test Tools">
+  <section id="test_tools" name="Test Tools">
     <tool file="/opt/galaxy/custom-tools/pyiron/pyiron.xml" labels="alpha" />
 
     <!--tool file="/opt/galaxy/custom-tools/test/Galaxy-ML-master/galaxy_ml/estimator_attributes.xml" labels="alpha" />
@@ -480,9 +480,9 @@
 	<tool file="interactive/interactivetool_paraview.xml"  hidden="True"/>
 	<tool file="interactive/interactivetool_askomics.xml"  hidden="True"/>
 	<tool file="interactive/interactivetool_wilson.xml"  hidden="True"/>
+	<tool file="interactive/interactivetool_wallace.xml"  hidden="True"/>
 	<tool file="interactive/codingSnps.xml"  hidden="True"/>
-	<!--currently non-functional-->
-	<!--<tool file="interactive/interactivetool_ethercalc.xml" hidden="True" />-->
+	<tool file="interactive/interactivetool_ethercalc.xml" hidden="True" />
 </section>
 
 </toolbox>

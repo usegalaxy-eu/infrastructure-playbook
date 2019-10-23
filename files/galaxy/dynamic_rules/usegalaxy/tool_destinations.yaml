@@ -1,20 +1,20 @@
 ---
 __default__: {}
 
-keras_batch_models:
-   runner: remote_cluster_mq_de03
-   cores: 8
-   env:
-      CUDA_VISIBLE_DEVICES: 0
-sklearn_train_test_eval:
-   runner: remote_cluster_mq_de03
-   cores: 8
-   env:
-      CUDA_VISIBLE_DEVICES: 0
+#keras_batch_models:
+#   runner: remote_cluster_mq_de03
+#   cores: 8
+#   env:
+#      CUDA_VISIBLE_DEVICES: 0
+#sklearn_train_test_eval:
+#   runner: remote_cluster_mq_de03
+#   cores: 8
+#   env:
+#      CUDA_VISIBLE_DEVICES: 0
 
 # These are interactive and get restricted volumes
 interactive_tool_jupyter_notebook: {mem: 4, runner: condor_docker_interactive}
-interactive_tool_rstudio: {mem: 4, runner: condor_docker_interactive}
+interactive_tool_rstudio: {mem: 8, cpu: 1, runner: condor_docker_interactive}
 # These are not
 interactive_tool_ethercalc: {mem: 4, runner: condor_docker}
 interactive_tool_phinch: {mem: 4, runner: condor_docker}
@@ -24,6 +24,8 @@ interactive_tool_cellxgene: {mem: 4, runner: condor_docker}
 interactive_tool_bam_iobio: {mem: 4, runner: condor_docker}
 interactive_tool_askomics: {mem: 4, runner: condor_docker}
 interactive_tool_wilson: {mem: 4, runner: condor_docker}
+interactive_tool_wallace: {mem: 4, runner: condor_docker}
+interactive_tool_paraview: {mem: 4, runner: condor_docker}
 
 # roary	needs many many cpus if	the number of input files increase
 # a more specific function would ne neat
@@ -56,9 +58,9 @@ bio3d_pca: {mem: 64}
 bio3d_rmsd: {mem: 64}
 bio3d_rmsf: {mem: 64}
 
-docking: {runner: remote_cluster_mq_it01}
+# docking: {runner: remote_cluster_mq_uk01}
 # prepare_ligands_for_docking: {runner: remote_cluster_mq_it01}
-prepare_box: {runner: remote_cluster_mq_it01}
+# prepare_box: {runner: remote_cluster_mq_uk01}
 
 cds_essential_variability:
   env:
@@ -79,7 +81,7 @@ nanopolish_eventalign: {cores: 20, mem: 12}
 AccurateMassSearch: {cores: 4, mem: 8}
 AdditiveSeries: {cores: 20, mem: 12}
 AdditiveSeries: {cores: 4, mem: 8}
-augustus: {runner: remote_cluster_mq_be01}
+# augustus: {runner: remote_cluster_mq_be01}
 BaselineFilter: {cores: 4, mem: 8}
 CONVERTER_bedgraph_to_bigwig: {mem: 8}
 CVInspector: {cores: 4, mem: 8}
@@ -129,15 +131,15 @@ InclusionExclusionListCreator: {cores: 4, mem: 8}
 InternalCalibration: {cores: 4, mem: 8}
 IsobaricAnalyzer: {cores: 4, mem: 8}
 LabeledEval: {cores: 4, mem: 8}
-maker: {cores: 8, mem: 8, runner: remote_cluster_mq_be01}
-gmx_md: {runner: remote_cluster_mq_de02}
-gmx_merge_topology_files: {runner: remote_cluster_mq_de02}
-gmx_em: {runner: remote_cluster_mq_de02}
-gmx_nvt: {runner: remote_cluster_mq_de02}
-gmx_npt: {runner: remote_cluster_mq_de02}
-gmx_setup: {runner: remote_cluster_mq_de02}
-gmx_solvate: {runner: remote_cluster_mq_de02}
-mdanalysis_hbonds: {runner: remote_cluster_mq_de02}
+# maker: {cores: 8, mem: 8, runner: remote_cluster_mq_be01}
+# gmx_md: {runner: remote_cluster_mq_de02}
+# gmx_merge_topology_files: {runner: remote_cluster_mq_de02}
+# gmx_em: {runner: remote_cluster_mq_de02}
+# gmx_nvt: {runner: remote_cluster_mq_de02}
+# gmx_npt: {runner: remote_cluster_mq_de02}
+# gmx_setup: {runner: remote_cluster_mq_de02}
+# gmx_solvate: {runner: remote_cluster_mq_de02}
+# mdanalysis_hbonds: {runner: remote_cluster_mq_de02}
 MRMMapper: {cores: 4, mem: 8}
 MRMPairFinder: {cores: 4, mem: 8}
 msgfplus:
@@ -404,7 +406,7 @@ circgraph: {mem: 10}
 computeMatrix: {mem: 80}
 correctGCBias: {mem: 10}
 cshl_fastx_collapser: {mem: 16}
-create_tool_recommendation_model: {mem: 160}
+create_tool_recommendation_model: {cores: 16, mem: 160}
 crispr_recognition_tool: {mem: 10}
 ctb_np-likeness-calculator: {mem: 12}
 ctb_online_data_fetch: {mem: 10}
@@ -471,7 +473,7 @@ flexbar: {cores: 12, mem: 12}
 flexbar_no_split: {cores: 12, mem: 12}
 flexbar_split_RR_bcs: {cores: 12, mem: 12}
 flexbar_split_RYYR_bcs: {cores: 12, mem: 12}
-freebayes: {cores: 12, mem: 12}
+freebayes: {cores: 12, mem: 120}
 gatk2_base_recalibrator:
   cores: 12
   env:
@@ -509,9 +511,10 @@ gemini_load: {cores: 12, mem: 40}
 #                - admin
 
 ggplot2_heatmap2: {mem: 24}
+glassgo: {mem: 4, runner: condor_docker}
 graphprot_predict_profile: {mem: 8}
 # this tool was developed by IGC Bioinformatics Unit and Daniel Sobral from ELIXIR-PT
-goenrichment: {runner: remote_cluster_mq_pt01}
+# goenrichment: {runner: remote_cluster_mq_pt01}
 hammock_1.0:
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
@@ -554,7 +557,6 @@ je_demultiplex: {cores: 8, mem: 20}
 je_demultiplex_illu: {cores: 8}
 je_markdupes: {cores: 8}
 join1: {mem: 18}
-bamFilter:  {runner: remote_cluster_mq_de01}
 jq: {runner: remote_cluster_mq_pt01}
 kallisto_quant: {cores: 8, mem: 20}
 ## uha,	with the reference.fa file from	the history it is not working?
@@ -682,7 +684,7 @@ sam_merge2:
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
   mem: 32
-samtools_stats: {runner: remote_cluster_mq_de01}
+# samtools_stats: {runner: remote_cluster_mq_de01}
 search_gui:
   cores: 12
   env:

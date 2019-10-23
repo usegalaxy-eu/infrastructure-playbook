@@ -489,14 +489,14 @@ base_app_main: &BASE_APP_MAIN
   # disabled if no address is set.  Also this email is shown as a
   # contact to user in case of Galaxy misconfiguration and other events
   # user may encounter.
-  error_email_to: contact@usegalaxy.eu
+  error_email_to: galaxy@informatik.uni-freiburg.de
 
   # Email address to use in the 'From' field when sending emails for
   # account activations, workflow step notifications and password
   # resets. We recommend using string in the following format: Galaxy
   # Project <galaxy-no-reply@example.com> If not configured, '<galaxy-
   # no-reply@HOSTNAME>' will be used.
-  email_from: 'European Galaxy Team <contact@usegalaxy.eu>'
+  email_from: 'European Galaxy Team <galaxy@informatik.uni-freiburg.de>'
 
   # URL of the support resource for the galaxy instance.  Used in
   # activation emails.
@@ -1509,7 +1509,7 @@ base_app_main: &BASE_APP_MAIN
   # not be created by the user running the jobs (e.g. if the filesystem
   # is mounted read-only or the jobs are run by a different user than
   # the galaxy user).
-  outputs_to_working_directory: false
+  outputs_to_working_directory: true
 
   # If your network filesystem's caching prevents the Galaxy server from
   # seeing the job's stdout and stderr files when it completes, you can
