@@ -190,7 +190,13 @@ remote_cluster_mq_pt01:
     dependency_resolution: 'remote'
 
 remote_cluster_mq_au01:
-  env: {}
+ limits:
+    cores: 16
+    mem: 64
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
   params:
     nativeSpecification: |
         --ntasks={PARALLELISATION}
@@ -199,3 +205,7 @@ remote_cluster_mq_au01:
         --mem={MEMORY}
     dependency_resolution: 'remote'
     jobs_directory: '/mnt/pulsar/files/staging'
+    default_file_action: 'remote_transfer'
+    outputs_to_working_directory: False
+    rewrite_parameters: True
+    transport: 'curl'
