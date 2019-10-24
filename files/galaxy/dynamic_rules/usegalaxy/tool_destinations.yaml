@@ -680,6 +680,24 @@ rsem_calculate_expression: {mem: 16}
 rseqc_bam2wig: {cores: 8, mem: 16}
 sailfish: {cores: 6, mem: 70}
 salmon: {cores: 6, mem: 70}
+scanpy_cluster_reduce_dimension:
+  env:
+    NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+scanpy_filter:
+  env:
+    NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+scanpy_inspect:
+  env:
+    NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+scanpy_normalize:
+  env:
+    NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+scanpy_remove_confounders:
+  env:
+    NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+scanpy_plot:
+  env:
+    NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
 sam_merge2:
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
