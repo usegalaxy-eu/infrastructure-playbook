@@ -1,0 +1,26 @@
+cron_tasks:
+  - name: "Restart handlers part 1"
+    minute: 0
+    hour: 3
+    job: systemctl restart galaxy-handler@0 galaxy-handler@1 galaxy-handler@2 galaxy-handler@3
+    user: root
+  - name: "Restart handlers part 2"
+    minute: 0
+    hour: 3
+    job: systemctl restart galaxy-handler@4 galaxy-handler@5 galaxy-handler@6 galaxy-handler@7
+    user: root
+  - name: "Restart zergling 0"
+    minute: 0
+    hour: 3
+    job: systemctl restart galaxy-zergling@0
+    user: root
+  - name: "Restart zergling 1"
+    minute: 0
+    hour: 5
+    job: systemctl restart galaxy-zergling@1
+    user: root
+  - name: "Restart workflow schedulers"
+    minute: 0
+    hour: 4
+    job: systemctl restart galaxy-workflow-scheduler@*
+    user: root
