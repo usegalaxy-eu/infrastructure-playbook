@@ -635,6 +635,24 @@ galaxy_jobconf:
             docker_auto_rm: 'true'
             docker_sudo: 'false'
             docker_set_user: ''
+        - id: condor_docker_ie
+          runner: condor
+          params:
+            docker_enabled: 'true'
+            docker_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro'
+            docker_default_container_id: 'ubuntu:18.04'
+            docker_auto_rm: 'true'
+            docker_sudo: 'false'
+            docker_set_user: ''
+        - id: condor_docker_ie_interactive
+          runner: condor
+          params:
+            docker_enabled: 'true'
+            docker_volumes: '$working_directory:rw,$job_directory:rw'
+            docker_default_container_id: 'ubuntu:18.04'
+            docker_auto_rm: 'true'
+            docker_sudo: 'false'
+            docker_set_user: ''
         # TODO(hxr): check functionality
         #- id: 24cores_15G_BLAST
         #  runner: dynamic
@@ -673,10 +691,20 @@ galaxy_jobconf:
         #- id: ncbi_rpsblast_wrapper
           #destination: 24cores_15G_BLAST
     limits:
-        walltime: '148:00:00'
-        output_size: '300GB'
-        registered_user_concurrent_jobs: '10'
-        anonymous_user_concurrent_jobs: '10'
+      - type: 'walltime'
+        value: '148:00:00'
+      - type: 'output_size'
+        value: '300GB'
+      - type: 'registered_user_concurrent_jobs'
+        value: '10'
+      - type: 'anonymous_user_concurrent_jobs'
+        value: '10'
+      - type: 'destination_user_concurrent_jobs'
+        id: 'condor_docker_ie'
+        value: '5'
+      - type: 'destination_user_concurrent_jobs'
+        id: 'condor_docker_ie_interactive'
+        value: '5'
 
 
 
