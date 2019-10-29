@@ -52,9 +52,6 @@
 {% endfor %}
 	</tools>
 	<limits>
-{% for k in galaxy_jobconf['limits'] | sort %}
-		<limit type="{{ k }}">{{ galaxy_jobconf['limits'][k] }}</limit>
-{% endfor %}
 {% for limit in galaxy_jobconf['limits'] | sort %}
 {% if 'id' in destination %}
 		<limit type="{{ limit['type'] }}" id="{{ limit['id'] }}">{{ limit['value'] }}</limit>
