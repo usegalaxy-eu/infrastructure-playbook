@@ -53,13 +53,13 @@
 	</tools>
 	<limits>
 {% for limit in galaxy_jobconf['limits'] | sort %}
-{% if 'id' in destination %}
+{% if 'id' in limit %}
 		<limit type="{{ limit['type'] }}" id="{{ limit['id'] }}">{{ limit['value'] }}</limit>
 {% endif %}
-{% if 'tag' in destination %}
+{% if 'tag' in limit %}
 		<limit type="{{ limit['type'] }}" tag="{{ limit['tag'] }}">{{ limit['value'] }}</limit>
 {% endif %}
-{% if 'window' in destination %}
+{% if 'window' in limit %}
 		<limit type="{{ limit['type'] }}" window="{{ limit['window'] }}">{{ limit['value'] }}</limit>
 {% endif %}
         <limit type="{{ limit['type'] }}">{{ limit['value'] }}</limit>
