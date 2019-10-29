@@ -548,10 +548,20 @@ galaxy_jobconf:
         #- id: ncbi_rpsblast_wrapper
           #destination: 24cores_15G_BLAST
     limits:
-        walltime: '148:00:00'
-        output_size: '300GB'
-        registered_user_concurrent_jobs: '30'
-        anonymous_user_concurrent_jobs: '10'
+        - type: 'walltime'
+          value: '148:00:00'
+        - type: 'output_size'
+          value: '300GB'
+        - type: 'registered_user_concurrent_jobs'
+          value: '30'
+        - type: 'anonymous_user_concurrent_jobs'
+          value: '10'
+        - type: 'destination_user_concurrent_jobs'
+          id: 'condor_test'
+          value: '5'
+        - type: 'destination_total_concurrent_jobs'
+          id: 'condor_test'
+          value: '100'
 
 
 

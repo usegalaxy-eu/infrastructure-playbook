@@ -55,5 +55,17 @@
 {% for k in galaxy_jobconf['limits'] | sort %}
 		<limit type="{{ k }}">{{ galaxy_jobconf['limits'][k] }}</limit>
 {% endfor %}
+{% for limit in galaxy_jobconf['limits'] | sort %}
+{% if 'id' in destination %}
+		<limit type="{{ limit['type'] }}" id="{{ limit['id'] }}">{{ limit['value'] }}</limit>
+{% endif %}
+{% if 'tag' in destination %}
+		<limit type="{{ limit['type'] }}" tag="{{ limit['tag'] }}">{{ limit['value'] }}</limit>
+{% endif %}
+{% if 'window' in destination %}
+		<limit type="{{ limit['type'] }}" window="{{ limit['window'] }}">{{ limit['value'] }}</limit>
+{% endif %}
+        <limit type="{{ limit['type'] }}">{{ limit['value'] }}</limit>
+{% endfor %}
 	</limits>
 </job_conf>
