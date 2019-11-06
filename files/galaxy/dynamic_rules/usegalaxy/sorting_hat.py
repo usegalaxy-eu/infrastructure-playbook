@@ -15,11 +15,18 @@ CONDOR_MAX_MEM = 1000
 # The default / base specification for the different environments.
 SPECIFICATION_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'destination_specifications.yaml')
 with open(SPECIFICATION_PATH, 'r') as handle:
-    SPECIFICATIONS = yaml.load(handle)
+    SPECIFICATIONS = yaml.load(handle, Loader=yaml.SafeLoader)
 
 TOOL_DESTINATION_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'tool_destinations.yaml')
 with open(TOOL_DESTINATION_PATH, 'r') as handle:
-    TOOL_DESTINATIONS = yaml.load(handle)
+    TOOL_DESTINATIONS = yaml.load(handle, Loader=yaml.SafeLoader)
+
+DEFAULT_DESTINATION = 'condor'
+
+TOOL_DESTINATION_ALLOWED_KEYS = ['cores', 'env', 'gpus', 'mem', 'name', 'nativeSpecExtra',
+                                 'params', 'permissions', 'runner', 'tags', 'tmp']
+
+SPECIFICATION_ALLOWED_KEYS = ['env', 'limits', 'params', 'tags']
 
 
 def assert_permissions(tool_spec, user_email, user_roles):
@@ -109,21 +116,25 @@ def name_it(tool_spec):
     return name
 
 
-def _get_limits(destination, default_cores=1, default_mem=4, default_gpus=0):
+def _get_limits(destination, dest_spec=SPECIFICATIONS, default_cores=1, default_mem=4, default_gpus=0):
     limits = {'cores': default_cores, 'mem': default_mem, 'gpus': default_gpus}
-    limits.update(SPECIFICATIONS.get(destination).get('limits', {}))
+    limits.update(dest_spec.get(destination).get('limits', {}))
     return limits
 
 
-def build_spec(tool_spec, runner_hint=None):
-    destination = tool_spec.get('runner', 'condor')
+def build_spec(tool_spec, dest_spec=SPECIFICATIONS, runner_hint=None):
+    destination = tool_spec.get('runner')
+    if destination not in dest_spec:
+        destination = DEFAULT_DESTINATION
 
     # TODO: REMOVE. Temporary hack, should be safe to remove now
     if runner_hint is not None:
         destination = runner_hint
 
-    env = dict(SPECIFICATIONS.get(destination, {'env': {}})['env'])
-    params = dict(SPECIFICATIONS.get(destination, {'params': {}})['params'])
+    env = dict(dest_spec.get(destination, {'env': {}})['env'])
+    params = dict(dest_spec.get(destination, {'params': {}})['params'])
+    tags = {dest_spec.get(destination).get('tags', None)}
+
     # A dictionary that stores the "raw" details that went into the template.
     raw_allocation_details = {}
 
@@ -137,23 +148,18 @@ def build_spec(tool_spec, runner_hint=None):
     # produce unschedulable jobs, requesting more ram/cpu than is available in a
     # given location. Currently we clamp those values rather than intelligently
     # re-scheduling to a different location due to TaaS constraints.
-    limits = _get_limits(destination)
-    if 'condor' in destination:
-        tool_memory = min(tool_memory, limits.get('mem'))
-        tool_cores = min(tool_cores, limits.get('cores'))
-
-    if 'remote_cluster_mq' in destination:
-        tool_memory = min(tool_memory, limits.get('mem'))
-        tool_cores = min(tool_cores, limits.get('cores'))
-        tool_gpus = min(tool_gpus, limits.get('gpus'))
+    limits = _get_limits(destination, dest_spec=dest_spec)
+    tool_memory = min(tool_memory, limits.get('mem'))
+    tool_cores = min(tool_cores, limits.get('cores'))
+    tool_gpus = min(tool_gpus, limits.get('gpus'))
 
     kwargs = {
         # Higher numbers are lower priority, like `nice`.
         'PRIORITY': tool_spec.get('priority', 128),
         'MEMORY': str(tool_memory) + 'G',
-        'PARALLELISATION': "",
+        'PARALLELISATION': tool_cores,
         'NATIVE_SPEC_EXTRA': "",
-        'GPUS': "",
+        'GPUS': tool_gpus,
     }
     # Allow more human-friendly specification
     if 'nativeSpecification' in params:
@@ -191,6 +197,10 @@ def build_spec(tool_spec, runner_hint=None):
     params.update(tool_spec.get('params', {}))
     params = {k: str(v).format(**kwargs) for (k, v) in params.items()}
 
+    tags.add(tool_spec.get('tags', None))
+    tags.discard(None)
+    tags = ','.join([x for x in tags if x is not None]) if len(tags) > 0 else None
+
     if destination == 'sge':
         runner = 'drmaa'
     elif 'condor' in destination:
@@ -201,7 +211,7 @@ def build_spec(tool_spec, runner_hint=None):
         runner = 'local'
 
     env = [dict(name=k, value=v) for (k, v) in env.items()]
-    return env, params, runner, raw_allocation_details
+    return env, params, runner, raw_allocation_details, tags
 
 
 def reroute_to_dedicated(tool_spec, user_roles):
@@ -230,11 +240,11 @@ def reroute_to_dedicated(tool_spec, user_roles):
     }
 
 
-def _finalize_tool_spec(tool_id, user_roles, memory_scale=1.0):
+def _finalize_tool_spec(tool_id, user_roles, tools_spec=TOOL_DESTINATIONS, memory_scale=1.0):
     # Find the 'short' tool ID which is what is used in the .yaml file.
     tool = get_tool_id(tool_id)
     # Pull the tool specification (i.e. job destination configuration for this tool)
-    tool_spec = copy.deepcopy(TOOL_DESTINATIONS.get(tool, {}))
+    tool_spec = copy.deepcopy(tools_spec.get(tool, {}))
     # Update the tool specification with any training resources that are available
     tool_spec.update(reroute_to_dedicated(tool_spec, user_roles))
 
@@ -289,7 +299,7 @@ def _gateway(tool_id, user_roles, user_id, user_email, memory_scale=1.0):
     # Ensure that this tool is permitted to run, otherwise, throw an exception.
     assert_permissions(tool_spec, user_email, user_roles)
 
-    env, params, runner, _ = build_spec(tool_spec, runner_hint=runner_hint)
+    env, params, runner, _, tags = build_spec(tool_spec, runner_hint=runner_hint)
     params['accounting_group_user'] = str(user_id)
     params['description'] = get_tool_id(tool_id)
 
@@ -297,7 +307,7 @@ def _gateway(tool_id, user_roles, user_id, user_email, memory_scale=1.0):
     if 'training-hard-limits' in user_roles:
         params['requirements'] = 'GalaxyGroup  ==  "training-hard-limits"'
 
-    return env, params, runner, tool_spec
+    return env, params, runner, tool_spec, tags
 
 
 def gateway(tool_id, user, memory_scale=1.0, next_dest=None):
@@ -312,7 +322,7 @@ def gateway(tool_id, user, memory_scale=1.0, next_dest=None):
         user_id = -1
 
     try:
-        env, params, runner, spec = _gateway(tool_id, user_roles, user_id, email, memory_scale=memory_scale)
+        env, params, runner, spec, tags = _gateway(tool_id, user_roles, user_id, email, memory_scale=memory_scale)
     except Exception as e:
         return JobMappingException(str(e))
 
@@ -326,6 +336,7 @@ def gateway(tool_id, user, memory_scale=1.0, next_dest=None):
     name = name_it(spec)
     return JobDestination(
         id=name,
+        tags=tags,
         runner=runner,
         params=params,
         env=env,
