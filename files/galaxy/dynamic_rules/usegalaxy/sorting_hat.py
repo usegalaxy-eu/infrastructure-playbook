@@ -22,11 +22,20 @@ with open(TOOL_DESTINATION_PATH, 'r') as handle:
     TOOL_DESTINATIONS = yaml.load(handle, Loader=yaml.SafeLoader)
 
 DEFAULT_DESTINATION = 'condor'
+DEFAULT_TOOL_SPEC = {
+    'cores': 1,
+    'mem': 4.0,
+    'gpus': 0,
+    'force_destination_id': False,
+    'runner': DEFAULT_DESTINATION
+}
 
 TOOL_DESTINATION_ALLOWED_KEYS = ['cores', 'env', 'gpus', 'mem', 'name', 'nativeSpecExtra',
-                                 'params', 'permissions', 'runner', 'tags', 'tmp']
+                                 'params', 'permissions', 'runner', 'tags', 'tmp', 'force_destination_id']
 
 SPECIFICATION_ALLOWED_KEYS = ['env', 'limits', 'params', 'tags']
+
+FDID_PREFIX = 'sh_fdid_'
 
 
 def assert_permissions(tool_spec, user_email, user_roles):
@@ -99,11 +108,11 @@ def get_tool_id(tool_id):
     return tool_id
 
 
-def name_it(tool_spec):
+def name_it(tool_spec, prefix=FDID_PREFIX):
     if 'cores' in tool_spec:
         name = '%scores_%sG' % (tool_spec.get('cores', 1), tool_spec.get('mem', 4))
     elif len(tool_spec.keys()) == 0 or (len(tool_spec.keys()) == 1 and 'runner' in tool_spec):
-        name = '%s_default' % tool_spec.get('runner', 'condor')
+        name = '%s_default' % tool_spec.get('runner')
     else:
         name = '%sG_memory' % tool_spec.get('mem', 4)
 
@@ -112,6 +121,10 @@ def name_it(tool_spec):
 
     if 'name' in tool_spec:
         name += '_' + tool_spec['name']
+
+    # Force a replacement of the destination's id
+    if tool_spec.get('force_destination_id', False):
+        name = prefix + tool_spec.get('runner')
 
     return name
 
@@ -123,13 +136,10 @@ def _get_limits(destination, dest_spec=SPECIFICATIONS, default_cores=1, default_
 
 
 def build_spec(tool_spec, dest_spec=SPECIFICATIONS, runner_hint=None):
-    destination = tool_spec.get('runner')
+    destination = runner_hint if runner_hint else tool_spec.get('runner')
+
     if destination not in dest_spec:
         destination = DEFAULT_DESTINATION
-
-    # TODO: REMOVE. Temporary hack, should be safe to remove now
-    if runner_hint is not None:
-        destination = runner_hint
 
     env = dict(dest_spec.get(destination, {'env': {}})['env'])
     params = dict(dest_spec.get(destination, {'params': {}})['params'])
@@ -157,6 +167,7 @@ def build_spec(tool_spec, dest_spec=SPECIFICATIONS, runner_hint=None):
         # Higher numbers are lower priority, like `nice`.
         'PRIORITY': tool_spec.get('priority', 128),
         'MEMORY': str(tool_memory) + 'G',
+        'MEMORY_MB': int(tool_memory * 1024),
         'PARALLELISATION': tool_cores,
         'NATIVE_SPEC_EXTRA': "",
         'GPUS': tool_gpus,
@@ -248,7 +259,11 @@ def _finalize_tool_spec(tool_id, user_roles, tools_spec=TOOL_DESTINATIONS, memor
     # Update the tool specification with any training resources that are available
     tool_spec.update(reroute_to_dedicated(tool_spec, user_roles))
 
-    tool_spec['mem'] = tool_spec.get('mem', 4) * memory_scale
+    # Update the tool specification with default values if not specified
+    for s in DEFAULT_TOOL_SPEC:
+        tool_spec[s] = tool_spec.get(s, DEFAULT_TOOL_SPEC[s])
+
+    tool_spec['mem'] = tool_spec['mem'] * memory_scale
 
     # Only two tools are truly special.
     if tool_id in ('upload1', '__DATA_FETCH__'):
