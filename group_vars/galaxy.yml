@@ -184,8 +184,8 @@ nginx_conf_http:
   gzip_proxied: any
   # The ngx_http_gzip_static_module module allows sending precompressed files with the “.gz” filename extension instead of regular files.
   gzip_static: "on"
-  gzip_http_version: "1.0"
-  gzip_disable: "MSIE [1-6]\\."
+  gzip_http_version: "1.1"
+  gzip_disable: '"MSIE [1-6]\."'
   gzip_vary: "on"
   gzip_comp_level: 6
   gzip_types: |
