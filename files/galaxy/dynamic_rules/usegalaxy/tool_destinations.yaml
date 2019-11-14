@@ -1,16 +1,16 @@
 ---
 __default__: {}
 
-#keras_batch_models:
-#   runner: remote_cluster_mq_de03
-#   cores: 8
-#   env:
-#      CUDA_VISIBLE_DEVICES: 0
-#sklearn_train_test_eval:
-#   runner: remote_cluster_mq_de03
-#   cores: 8
-#   env:
-#      CUDA_VISIBLE_DEVICES: 0
+keras_batch_models:
+   runner: remote_cluster_mq_de03
+   gpus: 1
+   env:
+      CUDA_VISIBLE_DEVICES: 0
+sklearn_train_test_eval:
+   runner: remote_cluster_mq_de03
+   gpus: 1
+   env:
+      CUDA_VISIBLE_DEVICES: 0
 
 # These are interactive and get restricted volumes
 interactive_tool_jupyter_notebook: {mem: 4, runner: condor_docker_ie_interactive, force_destination_id: True}
@@ -29,6 +29,10 @@ interactive_tool_askomics: {mem: 4, runner: condor_docker_ie, force_destination_
 interactive_tool_wilson: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
 interactive_tool_wallace: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
 interactive_tool_paraview: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
+
+transdecoder: {runner: remote_cluster_mq_it01}
+zerone: {runner: remote_cluster_mq_it01}
+basil: {runner: remote_cluster_mq_it01}
 
 # roary	needs many many cpus if	the number of input files increase
 # a more specific function would ne neat
