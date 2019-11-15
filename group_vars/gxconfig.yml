@@ -101,7 +101,20 @@ base_app_main: &BASE_APP_MAIN
   # can be locally developed or installed from Galaxy tool sheds.
   # (config/tool_conf.xml.sample will be used if left unset and
   # config/tool_conf.xml does not exist).
-  tool_config_file: "{{ galaxy_config_dir }}/tool_conf.xml,{{ galaxy_shed_tool_conf_file }},{{ galaxy_config_dir }}/nagios_tool_conf.xml"
+  tool_config_file: "{{ galaxy_config_dir }}/tool_conf.xml,{{ galaxy_config_dir }}/nagios_tool_conf.xml"
+
+  # Tool config file for tools installed from the Galaxy Tool Shed. Must
+  # be writable by Galaxy and generally should not be edited by hand. In
+  # older Galaxy releases, this file was part of the tool_config_file
+  # option. It is still possible to specify this file (and other shed-
+  # enabled tool config files) in tool_config_file, but in the standard
+  # case of a single shed-enabled tool config, this option is
+  # preferable. This file will be created automatically upon tool
+  # installation, whereas Galaxy will fail to start if any files in
+  # tool_config_file cannot be read.
+  # The value of this option will be resolved with respect to
+  # <mutable_config_dir>.
+  shed_tool_config_file: {{ galaxy_shed_tool_conf_file }}
 
   # Enable / disable checking if any tools defined in the above non-shed
   # tool_config_files (i.e., tool_conf.xml) have been migrated from the
