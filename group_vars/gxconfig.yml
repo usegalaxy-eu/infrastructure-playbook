@@ -114,7 +114,7 @@ base_app_main: &BASE_APP_MAIN
   # tool_config_file cannot be read.
   # The value of this option will be resolved with respect to
   # <mutable_config_dir>.
-  shed_tool_config_file: {{ galaxy_shed_tool_conf_file }}
+  shed_tool_config_file: "{{ galaxy_shed_tool_conf_file }}"
 
   # Enable / disable checking if any tools defined in the above non-shed
   # tool_config_files (i.e., tool_conf.xml) have been migrated from the
