@@ -1,31 +1,39 @@
 ---
 __default__: {}
 
-#keras_batch_models:
-#   runner: remote_cluster_mq_de03
-#   cores: 8
-#   env:
-#      CUDA_VISIBLE_DEVICES: 0
-#sklearn_train_test_eval:
-#   runner: remote_cluster_mq_de03
-#   cores: 8
-#   env:
-#      CUDA_VISIBLE_DEVICES: 0
+keras_batch_models:
+   runner: remote_cluster_mq_de03
+   gpus: 1
+   env:
+      CUDA_VISIBLE_DEVICES: 0
+sklearn_train_test_eval:
+   runner: remote_cluster_mq_de03
+   gpus: 1
+   env:
+      CUDA_VISIBLE_DEVICES: 0
 
 # These are interactive and get restricted volumes
-interactive_tool_jupyter_notebook: {mem: 4, runner: condor_docker_ie_interactive, tags: interactive}
-interactive_tool_rstudio: {mem: 8, cores: 1, runner: condor_docker_ie_interactive, tags: interactive}
+interactive_tool_jupyter_notebook: {mem: 4, runner: condor_docker_ie_interactive, force_destination_id: True}
+interactive_tool_rstudio: {mem: 8, cores: 1, runner: condor_docker_ie_interactive, force_destination_id: True}
+interactive_tool_pyiron: {mem: 8, cores: 1, runner: condor_docker_ie_interactive, force_destination_id: True}
+interactive_tool_guacamole_desktop: {mem: 8, cores: 2, runner: condor_docker_ie_interactive, force_destination_id: True}
+
 # These are not
-interactive_tool_ethercalc: {mem: 4, runner: condor_docker_ie, tags: interactive}
-interactive_tool_phinch: {mem: 4, runner: condor_docker_ie, tags: interactive}
-interactive_tool_neo4j: {mem: 4, runner: condor_docker_ie, tags: interactive}
-interactive_tool_hicbrowser: {mem: 4, runner: condor_docker_ie, tags: interactive}
-interactive_tool_cellxgene: {mem: 4, runner: condor_docker_ie, tags: interactive}
-interactive_tool_bam_iobio: {mem: 4, runner: condor_docker_ie, tags: interactive}
-interactive_tool_askomics: {mem: 4, runner: condor_docker_ie, tags: interactive}
-interactive_tool_wilson: {mem: 4, runner: condor_docker_ie, tags: interactive}
-interactive_tool_wallace: {mem: 4, runner: condor_docker_ie, tags: interactive}
-interactive_tool_paraview: {mem: 4, runner: condor_docker_ie, tags: interactive}
+interactive_tool_ethercalc: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
+interactive_tool_phinch: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
+interactive_tool_neo4j: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
+interactive_tool_hicbrowser: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
+interactive_tool_cellxgene: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
+interactive_tool_bam_iobio: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
+interactive_tool_askomics: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
+interactive_tool_wilson: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
+interactive_tool_wallace: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
+interactive_tool_paraview: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
+
+transdecoder: {runner: remote_cluster_mq_it01}
+zerone: {runner: remote_cluster_mq_it01}
+basil: {runner: remote_cluster_mq_it01}
+goenrichment: {runner: remote_cluster_mq_it01}
 
 # roary	needs many many cpus if	the number of input files increase
 # a more specific function would ne neat
@@ -404,6 +412,7 @@ metaspades: {cores: 10, mem: 250}
 megahit: {cores: 10, mem: 48}
 charts: {mem: 10}
 circgraph: {mem: 10}
+circos: {mem: 10, runner: remote_cluster_mq_de02}
 computeMatrix: {mem: 80}
 correctGCBias: {mem: 10}
 cshl_fastx_collapser: {mem: 16}
