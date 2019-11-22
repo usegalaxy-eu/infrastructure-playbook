@@ -9,5 +9,5 @@
     name: "Fix ftp"
     job: /usr/bin/fix-ftp
     minute: "*/15"
+    user: "{{ galaxy_user.name }}"
   become: true
-  user: "{{ galaxy_user.name }}"
