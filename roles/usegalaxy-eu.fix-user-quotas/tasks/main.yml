@@ -4,7 +4,7 @@
     content: |
         #!/bin/bash
         cd {{ galaxy_server_dir }}
-        . /opt/galaxy/.bashrc
+        . {{ galaxy_root }}/.bashrc
         python scripts/set_user_disk_usage.py -c {{ galaxy_config_file }}
     dest: /usr/bin/galaxy-fix-user-quotas
     owner: root
