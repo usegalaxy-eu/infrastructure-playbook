@@ -3,9 +3,9 @@
   copy:
     content: |
         #!/bin/bash
-        cd /opt/galaxy/
+        cd {{ galaxy_server_dir }}
         . /opt/galaxy/.bashrc
-        python server/scripts/set_user_disk_usage.py -c {{ galaxy_config_dir }}/{{ galaxy_config_file_basename }} --dry-run
+        python scripts/set_user_disk_usage.py -c {{ galaxy_config_file }}
     dest: /usr/bin/galaxy-fix-user-quotas
     owner: root
     group: root
