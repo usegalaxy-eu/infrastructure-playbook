@@ -3,7 +3,7 @@
   copy:
     content: |
         #!/bin/bash
-        . /opt/galaxy/.bashrc
+        . {{ galaxy_root }}/.bashrc
         journalctl -u galaxy-handler@* --since '20 minutes ago' | \
             grep 'failure running job' | \
             awk '{print $13}' | \
@@ -20,4 +20,4 @@
     name: "Fix unscheduled jobs"
     minute: "*/20"
     job: /usr/bin/galaxy-fix-unscheduled-jobs
-    user: galaxy
+    user: "{{ galaxy_user.name }}"

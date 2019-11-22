@@ -3,7 +3,7 @@
   copy:
     content: |
         #!/bin/bash
-        . /opt/galaxy/.bashrc
+        . {{ galaxy_root }}/.bashrc
         . {{ galaxy_venv_dir }}/bin/activate
         python {{ galaxy_server_dir }}/scripts/grt/export.py -g {{ galaxy_config_dir }}/grt.yml -r {{ galaxy_mutable_data_dir }}/reports/ -b 10000 -c {{ galaxy_config_dir }}/galaxy.ini
     dest: /usr/bin/galaxy-grt-export
@@ -18,4 +18,4 @@
     hour: 0
     weekday: 2
     job: /usr/bin/galaxy-grt-export
-    user: galaxy
+    user: "{{ galaxy_user.name }}"

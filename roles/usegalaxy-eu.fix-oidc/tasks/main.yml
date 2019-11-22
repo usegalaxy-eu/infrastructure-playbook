@@ -3,7 +3,7 @@
   copy:
     content: |
         #!/bin/bash
-        . /opt/galaxy/.bashrc
+        . {{ galaxy_root }}/.bashrc
         for user in $(gxadmin mutate oidc-role-find-affected); do
             gxadmin mutate oidc-role-fix $user;
         done;
@@ -16,5 +16,5 @@
   cron:
     name: "Fix OIDC for galaxyproject/galaxy#8244"
     minute: "*/5"
-    user: galaxy
+    user: "{{ galaxy_user.name }}"
     job: /usr/bin/galaxy-fix-oidc

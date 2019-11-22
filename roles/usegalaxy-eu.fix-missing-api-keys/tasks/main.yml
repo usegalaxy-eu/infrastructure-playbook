@@ -3,7 +3,7 @@
   copy:
     content: |
         #!/bin/bash
-        . /opt/galaxy/.bashrc
+        . {{ galaxy_root }}/.bashrc
         gxadmin mutate generate-unset-api-keys --commit
     dest: /usr/bin/galaxy-fix-missing-api-keys
     owner: root
@@ -14,5 +14,5 @@
   cron:
     name: "Fix Missing API keys for IE users"
     minute: "*/5"
-    user: galaxy
+    user: "{{ galaxy_user.name }}"
     job: /usr/bin/galaxy-fix-missing-api-keys

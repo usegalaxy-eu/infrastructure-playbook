@@ -10,4 +10,4 @@
     job: /usr/bin/fix-ftp
     minute: "*/15"
   become: true
-  become_user: galaxy
+  user: "{{ galaxy_user.name }}"

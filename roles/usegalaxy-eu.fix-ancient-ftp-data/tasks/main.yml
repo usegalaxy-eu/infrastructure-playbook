@@ -4,6 +4,6 @@
     name: Remove old FTP data
     minute: 0
     hour: 1
-    user: galaxy
+    user: "{{ galaxy_user.name }}"
     job: |
       cd /data/0/incoming/ && find . -type f -not -newermt "3 months ago" -exec rm '{}' +
