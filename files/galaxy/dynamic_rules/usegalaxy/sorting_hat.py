@@ -337,7 +337,7 @@ def gateway(tool_id, user, memory_scale=1.0, next_dest=None):
         user_id = -1
 
     if get_tool_id(tool_id).startswith('interactive_tool_') and user_id == -1:
-        return JobMappingException("This tool is restricted to registered users, "
+        raise JobMappingException("This tool is restricted to registered users, "
                                   "please contact a site administrator")
 
     try:
