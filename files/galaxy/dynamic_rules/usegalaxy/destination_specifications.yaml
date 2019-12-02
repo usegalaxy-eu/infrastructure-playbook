@@ -277,7 +277,10 @@ remote_cluster_mq_uk01:
   limits:
     cores: 60
     mem: 300
-  env: {}
+  env:
+      GALAXY_MEMORY_MB: '{MEMORY_MB}'
+      GALAXY_SLOTS: '{PARALLELISATION}'
+      LC_ALL: C
   params:
     priority: -{PRIORITY}
     submit_submit_request_cpus: '{PARALLELISATION}'
