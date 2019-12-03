@@ -85,6 +85,9 @@ rabbitmq_users:
   - user: galaxy_it02
     password: "{{ rabbitmq_password_galaxy_it02 }}"
     vhost: /pulsar/galaxy_it02
+  - user: galaxy_fr01
+    password: "{{ rabbitmq_password_galaxy_fr01 }}"
+    vhost: /pulsar/galaxy_fr01
 
 rabbitmq_vhosts:
   - galaxy
@@ -101,7 +104,8 @@ rabbitmq_vhosts:
   - /pulsar/galaxy_au01
   - /pulsar/galaxy_no01
   - /pulsar/galaxy_it02
-  
+  - /pulsar/galaxy_fr01
+
 rabbitmq_plugins:
   - rabbitmq_management
 
