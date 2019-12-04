@@ -283,10 +283,14 @@ remote_cluster_mq_uk01:
       LC_ALL: C
   params:
     priority: -{PRIORITY}
-    submit_submit_request_cpus: '{PARALLELISATION}'
-    submit_submit_request_memory: '{MEMORY}'
+    submit_request_cpus: '{PARALLELISATION}'
+    submit_request_memory: '{MEMORY}'
     jobs_directory: '/data/share/staging'
+    default_file_action: 'remote_transfer'
     dependency_resolution: 'remote'
+    outputs_to_working_directory: False
+    rewrite_parameters: True
+    transport: 'curl'
 
 remote_cluster_mq_it02:
   limits:
