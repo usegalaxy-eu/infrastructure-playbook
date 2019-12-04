@@ -3,7 +3,7 @@ condor:
   limits:
     cores: 40
     mem: 1000
-  env: 
+  env:
     NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
   params:
     priority: -{PRIORITY}
@@ -296,6 +296,28 @@ remote_cluster_mq_it02:
   limits:
     cores: 4
     mem: 7
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
+    SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
+  params:
+    priority: -{PRIORITY}
+    submit_request_cpus: '{PARALLELISATION}'
+    submit_request_memory: '{MEMORY}'
+    jobs_directory: '/data/share/staging'
+    default_file_action: 'remote_transfer'
+    dependency_resolution: 'none'
+    outputs_to_working_directory: False
+    rewrite_parameters: True
+    transport: 'curl'
+    singularity_enabled: true
+    singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
+
+remote_cluster_mq_fr01:
+  limits:
+    cores: 8
+    mem: 31
   env:
     GALAXY_MEMORY_MB: '{MEMORY_MB}'
     GALAXY_SLOTS: '{PARALLELISATION}'
