@@ -1,0 +1,13 @@
+---
+- name: "Deploy error pages"
+  copy:
+    src: "{{ item }}"
+    dest: "/usr/share/nginx/html/{{ item }}"
+    owner: nginx
+    group: nginx
+    mode: 0755
+  loop:
+    - 404.html
+    - 502.html
+    - 503.html
+    - 504.html
