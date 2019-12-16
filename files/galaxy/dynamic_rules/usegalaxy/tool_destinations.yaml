@@ -36,7 +36,8 @@ interactive_tool_paraview: {mem: 4, runner: condor_docker_ie, force_destination_
 transdecoder: {runner: remote_cluster_mq_it01}
 zerone: {runner: remote_cluster_mq_it01}
 basil: {runner: remote_cluster_mq_it01}
-goenrichment: {runner: remote_cluster_mq_pt01}
+goenrichment: {runner: remote_cluster_mq_be01}
+circos: {mem: 10, runner: remote_cluster_mq_pt01}
 
 docking: {runner: remote_cluster_mq_uk01}
 # prepare_ligands_for_docking: {runner: remote_cluster_mq_it01}
@@ -420,7 +421,6 @@ metaspades: {cores: 10, mem: 250}
 megahit: {cores: 10, mem: 48}
 charts: {mem: 10}
 circgraph: {mem: 10}
-circos: {mem: 10} #, runner: remote_cluster_mq_de02
 computeMatrix: {mem: 80}
 correctGCBias: {mem: 10}
 cshl_fastx_collapser: {mem: 16}

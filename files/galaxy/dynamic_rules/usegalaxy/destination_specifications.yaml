@@ -261,7 +261,6 @@ remote_cluster_mq_pt01:
     GALAXY_MEMORY_MB: '{MEMORY_MB}'
     GALAXY_SLOTS: '{PARALLELISATION}'
     LC_ALL: C
-    SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
   params:
     priority: -{PRIORITY}
     submit_request_cpus: '{PARALLELISATION}'
@@ -269,7 +268,7 @@ remote_cluster_mq_pt01:
     jobs_directory: '/data/share/staging'
     default_file_action: 'remote_transfer'
     dependency_resolution: 'remote'
-    outputs_to_working_directory: False
+    outputs_to_working_directory: True
     rewrite_parameters: True
     transport: 'curl'
 
