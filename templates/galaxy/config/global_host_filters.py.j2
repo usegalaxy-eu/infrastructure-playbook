@@ -22,6 +22,8 @@ def per_host_tool_labels( context, label ):
         return label.id in valid_labels
     if "cheminformatics.usegalaxy.eu" in host:
         return label.id in valid_labels
+    if "ml.usegalaxy.eu" in host:
+        return label.id in valid_labels
     if "imaging.usegalaxy.eu" in host:
         return label.id in valid_labels
     if "climate.usegalaxy.eu" in host:
@@ -69,6 +71,7 @@ DOMAIN_SECTIONS = {
     'cheminformatics': ['chemicaltoolbox'],
     'imaging': ['imaging', 'proteomics'],
     'metabolomics': ['metabolomics'],
+    'ml': ['machine_learning'],
     'annotation': GENERAL_NGS_SECTIONS + ['annotation', 'apollo', 'ncbi_blast', 'assembly', 'variant_calling', 'fetch_sequences___alignments', 'ontology', 'emboss', 'evolution', 'genome_diversity', 'multiple_alignments', 'graph_display_data'],
 
 }
