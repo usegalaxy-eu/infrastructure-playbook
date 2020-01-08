@@ -244,7 +244,7 @@ remote_cluster_mq_de03:
   limits:
     cores: 8
     mem: 19
-    gpu: 1
+    gpus: 1
   env:
     GALAXY_MEMORY_MB: '{MEMORY_MB}'
     GALAXY_SLOTS: '{PARALLELISATION}'
@@ -254,6 +254,7 @@ remote_cluster_mq_de03:
     priority: -{PRIORITY}
     submit_request_cpus: '{PARALLELISATION}'
     submit_request_memory: '{MEMORY}'
+    submit_request_gpus: '{GPUS}'
     jobs_directory: '/data/share/staging'
     default_file_action: 'remote_transfer'
     dependency_resolution: 'remote'

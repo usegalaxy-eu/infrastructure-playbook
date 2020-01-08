@@ -6,19 +6,14 @@ keras_batch_models:
    gpus: 1
    env:
       CUDA_VISIBLE_DEVICES: 0
-      LD_LIBRARY_PATH: /usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64
 sklearn_train_test_eval:
    runner: remote_cluster_mq_de03
    gpus: 1
    env:
       CUDA_VISIBLE_DEVICES: 0
-      LD_LIBRARY_PATH: /usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64
 sklearn_searchcv:
    runner: remote_cluster_mq_de03
    gpus: 1
-   env:
-      CUDA_VISIBLE_DEVICES: 0
-      LD_LIBRARY_PATH: /usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64
 
 # These are interactive and get restricted volumes
 interactive_tool_jupyter_notebook: {mem: 4, runner: condor_docker_ie_interactive, force_destination_id: True}
