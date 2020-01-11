@@ -4,11 +4,15 @@ __default__: {}
 keras_train_and_eval:
    runner: remote_cluster_mq_de03
    gpus: 1
+   cores: 10
    env:
       CUDA_VISIBLE_DEVICES: 0
 sklearn_searchcv:
    runner: remote_cluster_mq_de03
    gpus: 1
+   cores: 10
+
+sklearn_model_validation: {mem: 12, cores: 10}
 
 # These are interactive and get restricted volumes
 interactive_tool_jupyter_notebook: {mem: 4, runner: condor_docker_ie_interactive, force_destination_id: True}
