@@ -38,7 +38,7 @@ interactive_tool_wilson: {mem: 4, runner: condor_docker_ie, force_destination_id
 interactive_tool_wallace: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
 interactive_tool_paraview: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
 
-transdecoder: {runner: remote_cluster_mq_it01}
+transdecoder: {cores: 8, mem: 8, runner: remote_cluster_mq_it01}
 zerone: {runner: remote_cluster_mq_it01}
 basil: {runner: remote_cluster_mq_it01}
 goenrichment: {runner: remote_cluster_mq_be01}
