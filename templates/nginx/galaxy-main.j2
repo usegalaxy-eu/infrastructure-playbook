@@ -216,26 +216,26 @@ server {
 		return 301 https://docs.google.com/forms/d/e/1FAIpQLSdoPRDhpYwNFuZSlGRNQj3dDWwfsdemP5yntAdcqhN3YHbqLA/viewform;
 	}
 
-	location /freiburg/ {
-		proxy_pass https://galaxyproject.eu/freiburg/;
+	location /freiburg {
+		return 301 https://galaxyproject.eu/freiburg/;
 	}
-	location /erasmusmc/ {
-		proxy_pass https://galaxyproject.eu/erasmusmc/;
+	location /erasmusmc {
+		return 301 https://galaxyproject.eu/erasmusmc/;
 	}
-	location /pasteur/ {
-		proxy_pass https://galaxyproject.eu/pasteur/;
+	location /pasteur {
+		return 301 https://galaxyproject.eu/pasteur/;
 	}
-	location /belgium/ {
-		proxy_pass https://galaxyproject.eu/belgium/;
+	location /belgium {
+		return 301 https://galaxyproject.eu/belgium/;
 	}
-	location /about/ {
-		proxy_pass https://galaxyproject.eu/about;
+	location /about {
+		return 301 https://galaxyproject.eu/about;
 	}
-	location /people/ {
-		proxy_pass https://galaxyproject.eu/people;
+	location /people {
+		return 301 https://galaxyproject.eu/people;
 	}
 	location /terms {
-		proxy_pass https://galaxyproject.eu/gdpr;
+		return 301 https://galaxyproject.eu/gdpr;
 	}
 
 	resolver 8.8.8.8 8.8.4.4 valid=300s;
