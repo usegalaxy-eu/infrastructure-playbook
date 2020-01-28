@@ -1,6 +1,6 @@
 ---
 - name: "Deploy pbs directory maintenance script"
-  copy:
+  template:
     src: pbs.sh.j2
     dest: "{{ maintenance_dir }}/pbs.sh"
     owner: galaxy
@@ -8,7 +8,7 @@
     mode: 0755
 
 - name: "Deploy pbs directory maintenance job file"
-  copy:
+  template:
     src: pbs.job.j2
     dest: "{{ maintenance_dir }}/pbs.job"
     owner: galaxy
