@@ -1,0 +1,12 @@
+universe = vanilla
+executable = {{ maintenance_dir }}/pbs.sh
+log = maintenance_pbs.log
+output = maintenance_pbs.out
+error = maintenance_pbs.err
+request_cpus = 1
+requirements = (GalaxyGroup =?= "maintenance")
+on_exit_remove = false
+cron_minute = 11
+cron_hour = 23
+cron_day_of_week = 6
+queue
