@@ -1,0 +1,2 @@
+#!/bin/bash
+/usr/bin/find {{ pbs_dir }} -type f -mtime +40 -print0 -exec sleep 0.2 \; -exec echo \; -delete
