@@ -1,0 +1,12 @@
+universe = vanilla
+executable = {{ maintenance_dir }}/job_working_dir.sh
+log = maintenance_job_working_dir.log
+output = maintenance_job_working_dir.out
+error = maintenance_job_working_dir.err
+request_cpus = 1
+requirements = (GalaxyGroup =?= "maintenance")
+on_exit_remove = false
+cron_minute = 11
+cron_hour = 20
+cron_day_of_week = 5
+queue

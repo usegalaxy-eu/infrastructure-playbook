@@ -1,16 +1,24 @@
 ---
-- name: "Deploy pbs directory maintenance script"
+- name: "Deploy maintenance scripts"
   template:
-    src: pbs.sh.j2
-    dest: "{{ maintenance_dir }}/pbs.sh"
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     owner: galaxy
     group: galaxy
     mode: 0755
+  loop:
+    - { src: 'pbs.sh.j2', dest: "{{ maintenance_dir }}/pbs.sh" }
+    - { src: 'uploads.sh.j2', dest: "{{ maintenance_dir }}/uploads.sh" }
+    - { src: 'job_working_dir.sh.j2', dest: "{{ maintenance_dir }}/job_working_dir.sh" }
 
-- name: "Deploy pbs directory maintenance job file"
+- name: "Deploy maintenance job files"
   template:
-    src: pbs.job.j2
-    dest: "{{ maintenance_dir }}/pbs.job"
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     owner: galaxy
     group: galaxy
     mode: 0655
+  loop:
+    - { src: 'pbs.job.j2', dest: "{{ maintenance_dir }}/pbs.job" }
+    - { src: 'uploads.job.j2', dest: "{{ maintenance_dir }}/uploads.job" }
+    - { src: 'job_working_dir.job.j2', dest: "{{ maintenance_dir }}/job_working_dir.job" }
