@@ -8,7 +8,7 @@ export PGHOST={{ postgres_host }}
 export GDPR_MODE={{ galaxy_slurp_gdpr | default("1") }}
 
 # Export
-gxadmin meta slurp-upto $(date --date="1 day ago" +%Y-%m-%d) --date > $data
+gxadmin meta slurp-upto $(date --date="1 day ago" +%Y-%m-%d) > $data
 
 # Ship it
 gxadmin meta influx-post galaxy_stats $data
