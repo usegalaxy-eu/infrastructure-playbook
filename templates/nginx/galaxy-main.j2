@@ -228,7 +228,10 @@ server {
 	# }
 
 	# TIaaS 1, TODO: migrate
-	{{ tiaas_nginx_config }}
+    location /join-training/ {
+        proxy_pass    http://127.0.0.1:5000/join-training/;
+        proxy_set_header           Host $host;
+    }
 
 	location /request-tiaas {
 		return 301 https://docs.google.com/forms/d/e/1FAIpQLSdoPRDhpYwNFuZSlGRNQj3dDWwfsdemP5yntAdcqhN3YHbqLA/viewform;
