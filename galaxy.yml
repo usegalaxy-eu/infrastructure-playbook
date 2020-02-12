@@ -130,35 +130,29 @@
     - hxr.tiaas
     - role: usegalaxy_eu.tiaas2
       vars:
-        # TIaaS 2
         tiaas_dir: /opt/tiaas2
-        tiaas_user: tiaas
-        tiaas_group: tiaas
+        tiaas_user: tiaas2
+        tiaas_group: tiaas2
         tiaas_version: master
         tiaas_admin_user: admin
         tiaas_admin_pass: "{{ __tiaas_admin_pass }}"
         tiaas_galaxy_db_name: galaxy
-
         tiaas_galaxy_db_name: "{{ _galaxy_db_name }}"
         tiaas_galaxy_db_user: "{{ _galaxy_db_user }}"
         tiaas_galaxy_db_pass: "{{ _galaxy_db_pass }}"
         tiaas_galaxy_db_host: "{{ _galaxy_db_port }}"
         tiaas_galaxy_db_port: ""
         tiaas_listen_url: 127.0.0.1:5001
-
         tiaas_other_config: |
             EMAIL_HOST="smtp.informatik.uni-freiburg.de"
             EMAIL_HOST_USER="{{ smtp_username }}"
             EMAIL_HOST_PASSWORD="{{ smtp_password }}"
-
         tiaas_info:
           owner: UseGalaxy.eu
           owner_email: galaxy@informatik.uni-freiburg.de
           owner_site: https://galaxyproject.eu
           domain: "https://usegalaxy.eu"
-
         tiaas_secret_key: "{{ __tiaas_secret_key }}"
-
     - usegalaxy-eu.gapars-galaxy
     # The REAL galaxy role
     - role: galaxyproject.galaxy
