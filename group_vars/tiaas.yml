@@ -61,12 +61,19 @@ tiaas_group: tiaas2
 tiaas_version: master
 tiaas_admin_user: admin
 tiaas_admin_pass: "{{ __tiaas_admin_pass }}"
-tiaas_galaxy_db_name: galaxy
+
 tiaas_galaxy_db_name: "{{ _galaxy_db_name }}"
 tiaas_galaxy_db_user: "{{ _galaxy_db_user }}"
 tiaas_galaxy_db_pass: "{{ _galaxy_db_pass }}"
 tiaas_galaxy_db_host: "{{ _galaxy_db_host }}"
 tiaas_galaxy_db_port: "{{ _galaxy_db_port }}"
+
+tiaas_tiaas_db_name: "{{ _tiaas_db_name }}"
+tiaas_tiaas_db_user: "{{ _tiaas_db_user }}"
+tiaas_tiaas_db_pass: "{{ _tiaas_db_pass }}"
+tiaas_tiaas_db_host: "{{ _tiaas_db_host }}"
+tiaas_tiaas_db_port: "{{ _tiaas_db_port }}"
+
 tiaas_listen_url: 127.0.0.1:5002
 tiaas_virtualenv_command: /usr/bin/python3 -m virtualenv
 tiaas_other_config: |
