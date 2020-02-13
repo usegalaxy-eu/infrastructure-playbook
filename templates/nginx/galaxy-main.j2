@@ -212,7 +212,7 @@ server {
 
 	# TIaaS 2
 	location /tiaas {
-		uwsgi_pass 127.0.0.1:5001;
+		uwsgi_pass 127.0.0.1:5002
 		uwsgi_param UWSGI_SCHEME $scheme;
 		include uwsgi_params;
 	}
@@ -222,7 +222,7 @@ server {
 	}
 
 	# location /join-training {
-	# 	uwsgi_pass 127.0.0.1:5001;
+	# 	uwsgi_pass 127.0.0.1:5002;
 	# 	uwsgi_param UWSGI_SCHEME $scheme;
 	# 	include uwsgi_params;
 	# }
