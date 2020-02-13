@@ -1,29 +1,35 @@
-# TIaaS Configuration
-tiaas_galaxy_db_url: "{{ galaxy_db_connection }}"
-tiaas_galaxy_idsecret: "{{ id_secret }}"
-tiaas_galaxy_url: "https://test.usegalaxy.eu"
-
-
-# TIaaS Deployment
-tiaas_dir: /opt/tiaas
-tiaas_user: tiaas
-tiaas_group: tiaas
+tiaas_dir: /opt/tiaas2
+tiaas_user: tiaas2
+tiaas_group: tiaas2
 tiaas_version: master
-tiaas_force_checkout: true
-tiaas_create_user: true
-tiaas_create_group: true
+tiaas_admin_user: admin
+tiaas_admin_pass: "{{ __tiaas_admin_pass }}"
 
-# Allow galaxy to manage tiaas
-tiaas_manage_user: "{{ galaxy_user }}"
+tiaas_galaxy_db_name: "{{ _galaxy_db_name }}"
+tiaas_galaxy_db_user: "{{ _galaxy_db_user }}"
+tiaas_galaxy_db_pass: "{{ _galaxy_db_pass }}"
+tiaas_galaxy_db_host: "{{ _galaxy_db_host }}"
+tiaas_galaxy_db_port: "{{ _galaxy_db_port }}"
 
-# Trainings
-tiaas_trainings:
- - sbc-2019-05-30
- - chipseq2019
- - sigu2019
- - genomics_phd_1
- - bioinformatics-ukraine
- - imbb
- - sbc-rnaseq-2019-06-10
- - gallantries
+tiaas_tiaas_use_sqlite: false
+tiaas_tiaas_db_name: "{{ _tiaas_db_name }}"
+tiaas_tiaas_db_user: "{{ _tiaas_db_user }}"
+tiaas_tiaas_db_pass: "{{ _tiaas_db_pass }}"
+tiaas_tiaas_db_host: "{{ _tiaas_db_host }}"
+tiaas_tiaas_db_port: "{{ _tiaas_db_port }}"
 
+tiaas_listen_url: 127.0.0.1:5002
+tiaas_virtualenv_command: /usr/bin/python3 -m virtualenv
+tiaas_other_config: |
+    EMAIL_HOST="smtp.informatik.uni-freiburg.de"
+    EMAIL_HOST_USER="{{ smtp_username }}"
+    EMAIL_HOST_PASSWORD="{{ smtp_password }}"
+    TIAAS_SEND_EMAIL_TO = "galaxy@informatik.uni-freiburg.de"
+    TIAAS_SEND_EMAIL_FROM = "TIaaS @ EU <galaxy@informatik.uni-freiburg.de>"
+
+tiaas_info:
+  owner: UseGalaxy.eu
+  owner_email: galaxy@informatik.uni-freiburg.de
+  owner_site: https://galaxyproject.eu
+  domain: "https://usegalaxy.eu"
+tiaas_secret_key: "{{ __tiaas_secret_key }}"
