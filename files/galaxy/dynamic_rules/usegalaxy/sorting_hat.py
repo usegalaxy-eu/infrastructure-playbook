@@ -321,6 +321,8 @@ def _gateway(tool_id, user_roles, user_id, user_email, memory_scale=1.0):
     # This is a special case, we're requiring it for faster feedback / turnaround times.
     if 'training-hard-limits' in user_roles:
         params['requirements'] = 'GalaxyGroup  ==  "training-hard-limits"'
+    if 'training-ft_hts_02_2020' in user_roles:
+        params['requirements'] = 'GalaxyGroup  ==  "training-ft_hts_02_2020"'
 
     return env, params, runner, tool_spec, tags
 
