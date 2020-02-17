@@ -339,11 +339,26 @@ PeakPickerHiRes: {cores: 4, mem: 8}
 PeakPickerWavelet: {cores: 4, mem: 8}
 PepNovoAdapter: {cores: 4, mem: 8}
 PeptideIndexer: {cores: 4, mem: 8}
-PicardASMetrics: {mem: 12}
-PicardGCBiasMetrics: {mem: 12}
-PicardHsMetrics: {mem: 12}
-PicardInsertSize: {mem: 12}
-picard_CleanSam: {mem: 12}
+PicardASMetrics:
+  mem: 12
+  env:
+    _JAVA_OPTIONS: -Xmx12G -Xms1G
+PicardGCBiasMetrics:
+  mem: 12
+  env:
+    _JAVA_OPTIONS: -Xmx12G -Xms1G
+PicardHsMetrics:
+  mem: 12
+  env:
+    _JAVA_OPTIONS: -Xmx12G -Xms1G
+PicardInsertSize:
+  mem: 12
+  env:
+    _JAVA_OPTIONS: -Xmx12G -Xms1G
+picard_CleanSam:
+  mem: 12
+  env:
+    _JAVA_OPTIONS: -Xmx12G -Xms1G
 PrecursorIonSelector: {cores: 4, mem: 8}
 PrecursorMassCorrector: {cores: 4, mem: 8}
 ProteinInference: {cores: 4, mem: 8}
@@ -688,7 +703,11 @@ picard_FilterSamReads:
   tmp: large
 picard_FixMateInformation: {mem: 12}
 picard_FastqToSam: {mem: 12}
-picard_MarkDuplicates: {mem: 12}
+picard_MarkDuplicates:
+  env:
+    _JAVA_OPTIONS: -Xmx12G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+  mem: 12
+  name: java_temp
 picard_MergeSamFiles: {mem: 12}
 picard_QualityScoreDistribution: {mem: 12}
 picard_ReorderSam: {mem: 12}
@@ -721,7 +740,10 @@ reactome_pathwaymatcher:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx17G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
 rgEstLibComp: {mem: 12}
 rgPicFixMate: {mem: 12}
-rgPicardMarkDups: {mem: 12}
+rgPicardMarkDups:
+  mem: 12
+  env:
+    _JAVA_OPTIONS: -Xmx12G -Xms1G
 rm_spurious_events.py: {mem: 4}
 rna_star: {cores: 10, mem: 140}
 rna_starsolo: {cores: 4, mem: 40}
