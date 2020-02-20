@@ -17,7 +17,7 @@ def per_host_tool_labels( context, label ):
     valid_labels = [ "file_meta_label", "general_text_label"]
     general_ngs_labels = [ "genomics_label" ]
     # HiCtools mode: published in NAR 2018
-    if "humancellatlas.usegalaxy.eu" in host or "nanopore.usegalaxy.eu" in host or "hicexplorer.usegalaxy.eu" in host or "singlecell.usegalaxy.eu" in host or "metagenomics.usegalaxy.eu" in host or "rna.usegalaxy.eu" in host or "clipseq.usegalaxy.eu" in host or "graphclust.usegalaxy.eu" in host or "annotation.usegalaxy.eu" in host:
+    if "humancellatlas.usegalaxy.eu" in host or "nanopore.usegalaxy.eu" in host or "hicexplorer.usegalaxy.eu" in host or "singlecell.usegalaxy.eu" in host or "metagenomics.usegalaxy.eu" in host or "rna.usegalaxy.eu" in host or "clipseq.usegalaxy.eu" in host or "graphclust.usegalaxy.eu" in host or "annotation.usegalaxy.eu" in host or "virology.usegalaxy.eu" in host:
         valid_labels += general_ngs_labels
         return label.id in valid_labels
     if "cheminformatics.usegalaxy.eu" in host:
@@ -45,6 +45,7 @@ GENERAL_NGS_SECTIONS = ["deeptools", "bed",
 
 DOMAIN_SECTIONS = {
     'hicexplorer': GENERAL_NGS_SECTIONS + ["hicexplorer", "graph_display_data"],
+    'virology': GENERAL_NGS_SECTIONS + ["assembly", "annotation"],
     'nanopore': GENERAL_NGS_SECTIONS + ["hicexplorer", "nanopore",
         "metagenomic_analysis", "mothur", "qiime", "biom_manipulation",
         "ncbi_blast", "fasta_fastq", "assembly", "graph_display_data"],
