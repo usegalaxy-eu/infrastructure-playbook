@@ -212,7 +212,7 @@ server {
 
 	# TIaaS 2
 	location /tiaas {
-		uwsgi_pass 127.0.0.1:5002
+		uwsgi_pass 127.0.0.1:5002;
 		uwsgi_param UWSGI_SCHEME $scheme;
 		include uwsgi_params;
 	}
@@ -221,20 +221,14 @@ server {
 		alias /opt/tiaas2/static;
 	}
 
-	# location /join-training {
-	# 	uwsgi_pass 127.0.0.1:5002;
-	# 	uwsgi_param UWSGI_SCHEME $scheme;
-	# 	include uwsgi_params;
-	# }
-
-	# TIaaS 1, TODO: migrate
-	location /join-training/ {
-		proxy_pass    http://127.0.0.1:5000/join-training/;
-		proxy_set_header           Host $host;
+	location /join-training {
+		uwsgi_pass 127.0.0.1:5002;
+		uwsgi_param UWSGI_SCHEME $scheme;
+		include uwsgi_params;
 	}
 
 	location /request-tiaas {
-		return 301 https://docs.google.com/forms/d/e/1FAIpQLSdoPRDhpYwNFuZSlGRNQj3dDWwfsdemP5yntAdcqhN3YHbqLA/viewform;
+		return 301 https://usegalaxy.eu/tiaas/new/;
 	}
 
 	location /freiburg {
