@@ -8,6 +8,13 @@ keras_train_and_eval:
    env:
       CUDA_VISIBLE_DEVICES: 0
 
+xchem_pose_scoring:
+   runner: remote_cluster_mq_de03
+   gpus: 1
+   cores: 1
+   env:
+      CUDA_VISIBLE_DEVICES: 0
+
 sklearn_searchcv: {mem: 12, cores: 10}
 
 sklearn_model_validation: {mem: 12, cores: 10}
