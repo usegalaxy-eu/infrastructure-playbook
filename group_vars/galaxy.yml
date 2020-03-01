@@ -593,6 +593,19 @@ galaxy_jobconf:
               dependency_resolution: remote
               rewrite_parameters: "true"
               persistence_directory: /data/share/persisted_data
+        - id: remote_cluster_mq_de03_docker
+          runner: pulsar_eu_de03
+          env:
+              LC_ALL: C
+          params:
+              jobs_directory: /data/share/staging
+              transport: curl
+              remote_metadata: "false"
+              default_file_action: remote_transfer
+              dependency_resolution: remote
+              docker_enabled: "true"
+              rewrite_parameters: "true"
+              persistence_directory: /data/share/persisted_data
         - id: remote_cluster_mq_be01
           runner: pulsar_eu_be01
           env:
