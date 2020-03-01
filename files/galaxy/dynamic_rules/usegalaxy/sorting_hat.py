@@ -219,7 +219,7 @@ def build_spec(tool_spec, dest_spec=SPECIFICATIONS, runner_hint=None):
     elif 'remote_cluster_mq' in destination:
         # destination label has to follow this convention:
         # remote_cluster_mq_feature1_feature2_feature3_pulsarid
-        runner = "_".join('pulsar_eu', destination.split('_').pop())
+        runner = "_".join(['pulsar_eu', destination.split('_').pop()])
     else:
         runner = 'local'
 
