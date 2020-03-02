@@ -603,9 +603,14 @@ galaxy_jobconf:
               remote_metadata: "false"
               default_file_action: remote_transfer
               dependency_resolution: remote
-              docker_enabled: "true"
               rewrite_parameters: "true"
               persistence_directory: /data/share/persisted_data
+              docker_enabled: 'true'
+              docker_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/share/staging/:ro'
+              docker_default_container_id: 'ubuntu:18.04'
+              docker_auto_rm: 'true'
+              docker_sudo: 'false'
+              docker_set_user: ''
         - id: remote_cluster_mq_be01
           runner: pulsar_eu_be01
           env:
