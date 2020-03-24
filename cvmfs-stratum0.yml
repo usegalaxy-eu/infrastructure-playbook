@@ -1,0 +1,35 @@
+---
+- hosts: cvmfs-stratum0
+  become: true
+  vars:
+    data_conf:
+      - stratum0   -rw,hard,intr,nosuid,quota      ufr.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
+    usegalaxy_eu_autofs_mounts:
+      - vdb
+      - data
+
+  vars_files:
+    - "secret_group_vars/all.yml"
+  pre_tasks:
+    - file:
+        src: /data/vol/
+        dest: /srv
+        owner: root
+        group: root
+        state: link
+        force: true
+  roles:
+    - geerlingguy.repo-epel
+    - hxr.admin-tools
+    - influxdata.chrony
+    - hxr.monitor-email
+    - linuxhq.yum_cron
+    - hxr.autofs
+    # BEGIN custom
+#    - galaxyproject.cvmfs
+#    - hxr.monitor-squid
+#    - hxr.monitor-cvmfs
+    # END custom
+    - dj-wasabi.telegraf
+#    - dev-sec.os-hardening
+#    - dev-sec.ssh-hardening
