@@ -7,17 +7,13 @@
     usegalaxy_eu_autofs_mounts:
       - vdb
       - data
-
   vars_files:
     - "secret_group_vars/all.yml"
   pre_tasks:
-    - file:
-        src: /data/vol/
-        dest: /srv
-        owner: root
-        group: root
-        state: link
-        force: true
+    - authorized_key:
+        user: centos
+        state: present
+        key: https://github.com/natefoo.keys
   roles:
     - geerlingguy.repo-epel
     - hxr.admin-tools
