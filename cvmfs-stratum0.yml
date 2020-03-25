@@ -5,7 +5,7 @@
     chrony_port: #123
     chrony_acquisitionport: #1123
     data_conf:
-      - stratum0   -rw,hard,intr,nosuid,quota      ufr.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
+      - stratum0   -rw,hard,intr,nosuid,quota,context="system_u:object_r:httpd_sys_content_t:s0"      ufr.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
     usegalaxy_eu_autofs_mounts:
       - vdb
       - data
