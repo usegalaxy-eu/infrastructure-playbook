@@ -194,6 +194,14 @@ server {
 		proxy_pass http://apollo.internal.galaxyproject.eu/apollo/;
 	}
 
+	location /apollo/stomp/ {
+		proxy_pass http://apollo.internal.galaxyproject.eu/apollo/;
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "Upgrade";
+		proxy_set_header Host $host;
+	}
+
 	location /apollo_api/ {
 		proxy_pass http://apollo.internal.galaxyproject.eu/apollo_api/;
 	}
