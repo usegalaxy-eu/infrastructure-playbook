@@ -16,11 +16,12 @@ server {
 
 	# Not sure if needed.
 	location /apollo/stomp/ {
-		proxy_pass http://127.0.0.1:5000/apollo/stomp/;
+		proxy_pass http://127.0.0.1:8080/apollo/stomp/;
 		proxy_http_version 1.1;
 		proxy_set_header Upgrade $http_upgrade;
 		proxy_set_header Connection "Upgrade";
-		proxy_set_header Host $host;
+		proxy_set_header Host 'localhost:8080';
+		proxy_set_header Origin 'http://localhost:8080';
 	}
 
 	location /apollo_api {
