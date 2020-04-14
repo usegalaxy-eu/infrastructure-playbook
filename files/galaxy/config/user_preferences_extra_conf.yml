@@ -26,12 +26,13 @@ preferences:
     distributed_compute:
         description: Use distributed compute resources
         inputs:
-            - name: distributed_compute
-              label: Use distributed compute resources
+            - name: remote_resources
+              label: Remote resources id
               type: select
               required: False
               options:
-                  - ["default - Galaxy will decide where to put your job", auto]
+                  - ["Select the remote resources", None]
+                  - ["default - Galaxy will decide where to put your job", None]
                   - ["Freiburg (Germany) - de.NBI cloud", remote_cluster_mq_de01]
                   - ["Tübingen (Germany) - de.NBI cloud", remote_cluster_mq_de02]
                   - ["Freiburg (Germany) - de.NBI cloud GPU", remote_cluster_mq_de03]
@@ -41,3 +42,5 @@ preferences:
                   - ["Lisbon (Portugal) - Tecnico ULisboa", remote_cluster_mq_pt01]
                   - ["Oxfordshire (UK) - Diamond Light Source", remote_cluster_mq_uk01]
                   - ["Brussel (Belgium) - VIB", remote_cluster_mq_be01]
+                  - ["Espoo (Finland) - CSC", remote_cluster_mq_fi01]
+                  - ["Bergen (Norway) - UIB", remote_cluster_mq_no01]

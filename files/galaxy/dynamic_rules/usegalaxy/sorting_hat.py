@@ -302,16 +302,19 @@ def convert_to(tool_spec, runner):
     return tool_spec
 
 
-def _gateway(tool_id, user_roles, user_id, user_email, memory_scale=1.0):
+def _gateway(tool_id, user_preferences, user_roles, user_id, user_email, memory_scale=1.0):
     tool_spec = _finalize_tool_spec(tool_id, user_roles, memory_scale=memory_scale)
 
     # Now build the full spec
     runner_hint = None
 
-    if tool_id != 'upload1':
-        hints = [x for x in user_roles if x.startswith('destination-')]
-        if len(hints) > 0:
-            runner_hint = hints[0].replace('destination-pulsar-', 'remote_cluster_mq_')
+    if tool_id not in ('upload1', '__DATA_FETCH__', '__SET_METADATA__'):
+        # hints = [x for x in user_roles if x.startswith('destination-')]
+        # if len(hints) > 0:
+        #     runner_hint = hints[0].replace('destination-pulsar-', 'remote_cluster_mq_')
+        for data_item in user_preferences:
+            if "distributed_compute|remote_resources" in data_item:
+                runner_hint = user_preferences[data_item]
 
     # Ensure that this tool is permitted to run, otherwise, throw an exception.
     assert_permissions(tool_spec, user_email, user_roles)
@@ -331,10 +334,12 @@ def gateway(tool_id, user, memory_scale=1.0, next_dest=None):
     # And run it.
     if user:
         user_roles = [role.name for role in user.all_roles() if not role.deleted]
+        user_preferences = user.extra_preferences
         email = user.email
         user_id = user.id
     else:
         user_roles = []
+        user_preferences = []
         email = ''
         user_id = -1
 
@@ -343,7 +348,8 @@ def gateway(tool_id, user, memory_scale=1.0, next_dest=None):
                                   "please contact a site administrator")
 
     try:
-        env, params, runner, spec, tags = _gateway(tool_id, user_roles, user_id, email, memory_scale=memory_scale)
+        env, params, runner, spec, tags = _gateway(tool_id, user_preferences, user_roles, user_id, email,
+                                                   memory_scale=memory_scale)
     except Exception as e:
         return JobMappingException(str(e))
 
