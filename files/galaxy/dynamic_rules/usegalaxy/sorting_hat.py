@@ -314,7 +314,8 @@ def _gateway(tool_id, user_preferences, user_roles, user_id, user_email, memory_
         #     runner_hint = hints[0].replace('destination-pulsar-', 'remote_cluster_mq_')
         for data_item in user_preferences:
             if "distributed_compute|remote_resources" in data_item:
-                runner_hint = user_preferences[data_item]
+                if user_preferences[data_item] != "None":
+                    runner_hint = user_preferences[data_item]
 
     # Ensure that this tool is permitted to run, otherwise, throw an exception.
     assert_permissions(tool_spec, user_email, user_roles)
