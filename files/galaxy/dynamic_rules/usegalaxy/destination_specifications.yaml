@@ -348,6 +348,7 @@ remote_cluster_mq_uk01:
   limits:
     cores: 60
     mem: 300
+    gpus: 1
   env:
       GALAXY_MEMORY_MB: '{MEMORY_MB}'
       GALAXY_SLOTS: '{PARALLELISATION}'
@@ -357,6 +358,7 @@ remote_cluster_mq_uk01:
     priority: -{PRIORITY}
     submit_request_cpus: '{PARALLELISATION}'
     submit_request_memory: '{MEMORY}'
+    submit_request_gpus: '{GPUS}'
     jobs_directory: '/data/share/staging'
     default_file_action: 'remote_transfer'
     dependency_resolution: 'none'
@@ -365,6 +367,36 @@ remote_cluster_mq_uk01:
     transport: 'curl'
     singularity_enabled: true
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
+
+remote_cluster_mq_docker_uk01:
+  limits:
+    cores: 60
+    mem: 300
+    gpus: 1
+  env:
+      GALAXY_MEMORY_MB: '{MEMORY_MB}'
+      GALAXY_SLOTS: '{PARALLELISATION}'
+      LC_ALL: C
+  params:
+    priority: -{PRIORITY}
+    submit_request_cpus: '{PARALLELISATION}'
+    submit_request_memory: '{MEMORY}'
+    submit_request_gpus: '{GPUS}'
+    jobs_directory: '/data/share/staging'
+    default_file_action: 'remote_transfer'
+    dependency_resolution: 'none'
+    outputs_to_working_directory: True
+    rewrite_parameters: True
+    transport: 'curl'
+ # can and should be made stricter at some point
+    docker_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/share/staging/:ro'
+    docker_memory: '{MEMORY}'
+    docker_auto_rm: true
+    docker_default_container_id: busybox:glibc
+    docker_sudo: false
+    docker_set_user: ''
+    docker_run_extra_arguments: '--gpus all'
+    tmp_dir: 'True'
 
 remote_cluster_mq_it02:
   limits:
