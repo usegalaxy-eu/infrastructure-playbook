@@ -22,6 +22,14 @@ xchem_pose_scoring:
    env:
       CUDA_VISIBLE_DEVICES: 0
 
+openduck_run_smd:
+   runner: remote_cluster_mq_docker_de03
+   gpus: 1
+   cores: 1
+   env:
+      CUDA_VISIBLE_DEVICES: 0
+      OPENDUCK_GPU_PARAM: "--gpu-id 1"
+
 sklearn_searchcv: {mem: 12, cores: 10}
 
 sklearn_model_validation: {mem: 12, cores: 10}
@@ -209,7 +217,6 @@ MyriMatchAdapter: {cores: 4, mem: 8}
 MzTabExporter: {cores: 4, mem: 8}
 QCCalculator: {mem: 8}
 OpenSwathWorkflow: {mem: 156}
-openduck_run_smd: {env: {OPENDUCK_GPU_PARAM: "--gpu-id 1"}}
 mira_assembler: {mem: 24}
 mothur_align_check: {cores: 8, env: {TERM: vt100}}
 mothur_align_seqs: {cores: 8, env: {TERM: vt100}}
