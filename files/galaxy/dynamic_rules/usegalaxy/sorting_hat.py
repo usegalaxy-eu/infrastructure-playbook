@@ -194,13 +194,8 @@ def build_spec(tool_spec, dest_spec=SPECIFICATIONS, runner_hint=None):
             params['rank'] = tool_spec['rank']
 
     if 'remote_cluster_mq' in destination:
-        if 'cores' in tool_spec:
-            kwargs['PARALLELISATION'] = tool_cores
-        else:
-            del params['submit_submit_request_cpus']
-
-        if 'gpus' in tool_spec and tool_gpus > 0:
-            kwargs['GPUS'] = tool_gpus
+        if tool_gpus == 0 and 'submit_request_gpus' in params:
+            del params['submit_request_gpus']
 
     # Update env and params from kwargs.
     env.update(tool_spec.get('env', {}))
