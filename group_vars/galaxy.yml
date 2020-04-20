@@ -632,9 +632,9 @@ galaxy_jobconf:
               docker_default_container_id: 'ubuntu:18.04'
               docker_auto_rm: 'true'
               docker_sudo: 'false'
-              docker_run_extra_arguments: '--gpus all'
+              docker_run_extra_arguments: '-e "OPENDUCK_GPU_PARAM=$OPENDUCK_GPU_PARAM" --gpus all'
               docker_set_user: ''
-        - id: remote_cluster_mq_docker_de03_user
+        - id: remote_cluster_mq_docker_user_de03
           runner: pulsar_eu_de03
           env:
               LC_ALL: C

@@ -323,7 +323,7 @@ remote_cluster_mq_docker_de03:
     docker_run_extra_arguments: '--gpus all'
     tmp_dir: 'True'
 
-remote_cluster_mq_docker_de03_user:
+remote_cluster_mq_docker_user_de03:
   limits:
     cores: 8
     mem: 19
@@ -352,10 +352,9 @@ remote_cluster_mq_docker_de03_user:
     docker_default_container_id: busybox:ubuntu-14.04
     docker_sudo: false
     docker_set_user: ''
-    docker_run_extra_arguments: '--gpus all'
+    docker_run_extra_arguments: '-e "OPENDUCK_GPU_PARAM=$OPENDUCK_GPU_PARAM" --gpus all'
     tmp_dir: 'True'
     docker_set_user: '1000'
-    docker_run_extra_arguments: '-e "OPENDUCK_GPU_PARAM=$OPENDUCK_GPU_PARAM"'
 
 remote_cluster_mq_pt01:
   limits:
