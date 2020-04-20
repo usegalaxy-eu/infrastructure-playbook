@@ -355,6 +355,7 @@ remote_cluster_mq_docker_de03_user:
     docker_run_extra_arguments: '--gpus all'
     tmp_dir: 'True'
     docker_set_user: '1000'
+    docker_run_extra_arguments: '-e "OPENDUCK_GPU_PARAM=$OPENDUCK_GPU_PARAM"'
 
 remote_cluster_mq_pt01:
   limits:
