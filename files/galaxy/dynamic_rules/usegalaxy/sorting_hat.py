@@ -31,7 +31,10 @@ DEFAULT_TOOL_SPEC = {
 }
 
 TOOL_DESTINATION_ALLOWED_KEYS = ['cores', 'env', 'gpus', 'mem', 'name', 'nativeSpecExtra',
-                                 'params', 'permissions', 'runner', 'tags', 'tmp', 'force_destination_id']
+                                 'params', 'permissions', 'runner', 'tags', 'tmp', 'force_destination_id',
+                                 'docker_auto_rm', 'docker_default_container_id', 'docker_set_user',
+                                 'docker_memory', 'docker_run_extra_arguments', 'docker_set_user',
+                                 'docker_sudo', 'docker_volumes' ]
 
 SPECIFICATION_ALLOWED_KEYS = ['env', 'limits', 'params', 'tags']
 
@@ -172,6 +175,12 @@ def build_spec(tool_spec, dest_spec=SPECIFICATIONS, runner_hint=None):
         'NATIVE_SPEC_EXTRA': "",
         'GPUS': tool_gpus,
     }
+
+    if 'docker_enabled' in params and params['docker_enabled']:
+        for k in tool_spec:
+            if k.startswith('docker'):
+                params[k] = tool_spec.get(k, '')
+
     # Allow more human-friendly specification
     if 'nativeSpecification' in params:
         params['nativeSpecification'] = params['nativeSpecification'].replace('\n', ' ').strip()
@@ -194,6 +203,7 @@ def build_spec(tool_spec, dest_spec=SPECIFICATIONS, runner_hint=None):
             params['rank'] = tool_spec['rank']
 
     if 'remote_cluster_mq' in destination:
+        # specif for condor cluster
         if tool_gpus == 0 and 'submit_request_gpus' in params:
             del params['submit_request_gpus']
 
@@ -260,7 +270,7 @@ def _finalize_tool_spec(tool_id, user_roles, tools_spec=TOOL_DESTINATIONS, memor
     for s in DEFAULT_TOOL_SPEC:
         tool_spec[s] = tool_spec.get(s, DEFAULT_TOOL_SPEC[s])
 
-    tool_spec['mem'] = tool_spec['mem'] * memory_scale
+    tool_spec['mem'] *= memory_scale
 
     # Only two tools are truly special.
     if tool_id in ('upload1', '__DATA_FETCH__'):

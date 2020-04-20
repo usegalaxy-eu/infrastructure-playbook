@@ -29,6 +29,8 @@ openduck_run_smd:
    env:
       CUDA_VISIBLE_DEVICES: 0
       OPENDUCK_GPU_PARAM: "--gpu-id 1"
+   docker_set_user: 1000
+   docker_run_extra_arguments: '-e "OPENDUCK_GPU_PARAM=$OPENDUCK_GPU_PARAM" --gpus all'
 
 sklearn_searchcv: {mem: 12, cores: 10}
 
