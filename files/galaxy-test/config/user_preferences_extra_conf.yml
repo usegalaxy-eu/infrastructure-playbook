@@ -22,3 +22,27 @@ preferences:
                   - [English, en]
                   - [French, fr]
                   - [Japanese, ja]
+
+    distributed_compute:
+        description: Use distributed compute resources
+        inputs:
+            - name: remote_resources
+              label: Remote resources id
+              type: select
+              required: False
+              options:
+                  - ["Select the remote resources", None]
+                  - ["default - Galaxy will decide where to put your job", None]
+                  - ["Freiburg (Germany) - de.NBI cloud", remote_cluster_mq_de01]
+                  - ["Tübingen (Germany) - de.NBI cloud", remote_cluster_mq_de02]
+                  - ["Freiburg (Germany) - de.NBI cloud GPU", remote_cluster_mq_de03]
+                  - ["Freiburg (Germany) - de.NBI cloud GPU - docker", remote_cluster_mq_docker_de03]
+                  - ["Rennes (France) - GenOuest bioinformatics", remote_cluster_mq_fr01]
+                  - ["Bari (Italy) - RECAS", remote_cluster_mq_it01]
+                  - ["Bari (Italy) - RECAS 2", remote_cluster_mq_it02]
+                  - ["Lisbon (Portugal) - Tecnico ULisboa", remote_cluster_mq_pt01]
+                  - ["Oxfordshire (UK) - Diamond Light Source", remote_cluster_mq_uk01]
+                  - ["Oxfordshire (UK) - Diamond Light Source - GPUs on docker", remote_cluster_mq_docker_uk01]
+                  - ["Brussel (Belgium) - VIB", remote_cluster_mq_be01]
+                  - ["Espoo (Finland) - CSC", remote_cluster_mq_fi01]
+                  - ["Bergen (Norway) - UIB", remote_cluster_mq_no01]
