@@ -2,6 +2,7 @@
 # usegalaxy.eu sorting hat
 from galaxy.jobs import JobDestination
 from galaxy.jobs.mapper import JobMappingException
+from random import *
 
 import copy
 import math
@@ -39,6 +40,10 @@ TOOL_DESTINATION_ALLOWED_KEYS = ['cores', 'env', 'gpus', 'mem', 'name', 'nativeS
 SPECIFICATION_ALLOWED_KEYS = ['env', 'limits', 'params', 'tags']
 
 FDID_PREFIX = 'sh_fdid_'
+
+JOINT_DESTINATIONS_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'joint_destinations.yaml')
+with open(JOINT_DESTINATIONS_PATH, 'r') as handle:
+    JOINT_DESTINATIONS = yaml.load(handle, Loader=yaml.SafeLoader)
 
 
 def assert_permissions(tool_spec, user_email, user_roles):
@@ -144,6 +149,9 @@ def build_spec(tool_spec, dest_spec=SPECIFICATIONS, runner_hint=None):
     if destination not in dest_spec:
         destination = DEFAULT_DESTINATION
 
+    if destination == 'remote_condor_cluster_gpu_docker':
+        destination = sample(JOINT_DESTINATIONS['remote_condor_cluster_gpu_docker'], 1)[0]
+    
     env = dict(dest_spec.get(destination, {'env': {}})['env'])
     params = dict(dest_spec.get(destination, {'params': {}})['params'])
     tags = {dest_spec.get(destination).get('tags', None)}
@@ -188,7 +196,7 @@ def build_spec(tool_spec, dest_spec=SPECIFICATIONS, runner_hint=None):
     # We have some destination specific kwargs. `nativeSpecExtra` and `tmp` are only defined for SGE
     if 'condor' in destination:
         if 'cores' in tool_spec:
-            kwargs['PARALLELISATION'] = tool_cores
+            # kwargs['PARALLELISATION'] = tool_cores
             raw_allocation_details['cpu'] = tool_cores
         else:
             del params['request_cpus']
