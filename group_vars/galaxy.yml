@@ -791,7 +791,7 @@ galaxy_config_files:
   - src: "{{ galaxy_config_file_src_dir }}/config/disposable_email_blacklist.conf"
     dest: "{{ galaxy_config['app:main']['blacklist_file'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/user_preferences_extra_conf.yml"
-    dest: "{{ galaxy_config['galaxy']['user_preferences_extra_conf_path'] }}"
+    dest: "{{ galaxy_config['app:main']['user_preferences_extra_conf_path'] }}"
   # test? Unknown if this works.
   - src: "{{ galaxy_config_file_src_dir }}/config/error_report.yml"
     dest: "{{ galaxy_config_dir }}/error_report.yml"
