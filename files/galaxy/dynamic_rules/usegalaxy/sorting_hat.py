@@ -2,7 +2,7 @@
 # usegalaxy.eu sorting hat
 from galaxy.jobs import JobDestination
 from galaxy.jobs.mapper import JobMappingException
-from random import *
+from random import sample
 
 import copy
 import math
@@ -37,7 +37,7 @@ TOOL_DESTINATION_ALLOWED_KEYS = ['cores', 'env', 'gpus', 'mem', 'name', 'nativeS
                                  'docker_memory', 'docker_run_extra_arguments', 'docker_set_user',
                                  'docker_sudo', 'docker_volumes' ]
 
-SPECIFICATION_ALLOWED_KEYS = ['env', 'limits', 'params', 'tags']
+SPECIFICATION_ALLOWED_KEYS = ['env', 'limits', 'params', 'tags', 'nodes']
 
 FDID_PREFIX = 'sh_fdid_'
 
@@ -142,13 +142,21 @@ def _get_limits(destination, dest_spec=SPECIFICATIONS, default_cores=1, default_
     limits.update(dest_spec.get(destination).get('limits', {}))
     return limits
 
+def _weighted_random_sampling(destinations, dest_spec=SPECIFICATIONS):
+    bunch = []
+    for d in destinations:
+        weight = SPECIFICATIONS[d].get('nodes', 1)
+        bunch += [d]*weight
+    destination = sample(bunch, 1)[0]
+    return destination
+
 
 def build_spec(tool_spec, dest_spec=SPECIFICATIONS, runner_hint=None):
     destination = runner_hint if runner_hint else tool_spec.get('runner')
 
     if destination not in dest_spec:
         if destination in JOINT_DESTINATIONS:
-            destination = sample(JOINT_DESTINATIONS[destination], 1)[0]
+            destination = _weighted_random_sampling(JOINT_DESTINATIONS[destination])
         else:
             destination = DEFAULT_DESTINATION
 
