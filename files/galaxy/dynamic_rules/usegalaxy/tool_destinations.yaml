@@ -719,8 +719,9 @@ morpheus:
   mem: 64
 msaboot: {mem: 6}
 naive_variant_caller: {mem: 20}
-ncbi_blastp_wrapper: {cores: 8, mem: 40, runner: condor_intensive_jobs, force_destination_id: True}
-ncbi_blastn_wrapper: {cores: 8, mem: 20}
+ncbi_blastp_wrapper: {cores: 10, mem: 40, runner: condor_intensive_jobs, force_destination_id: True}
+ncbi_blastn_wrapper: {cores: 10, mem: 40}
+ncbi_blastx_wrapper: {cores: 10, mem: 40}
 ncbi_makeblastdb: {mem: 20}
 nspdk_sparse: {mem: 16}
 numeric_clustering: {mem: 12}
