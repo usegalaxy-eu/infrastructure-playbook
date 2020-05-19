@@ -42,6 +42,11 @@ GENERAL_NGS_SECTIONS = ["deeptools", "bed",
         "operate_on_genomic_intervals", "fasta_fastq_manipulation",
         "fasta_fastq", "fastq_quality_control",
         "picard", "mapping"]
+        
+human_cell_atlas_sections = ['hca_sc_get-scrna', 'hca_sc_seurat_tools', 'hca_sc_sc3_tools', 
+                      'hca_sc_scanpy_tools', 'hca_sc_monocle3_tools',
+                      'hca_sc_scpred_tools', 'hca_sc_garnett_tools', 'hca_sc_label_analysis_tools',
+                      'hca_sc_scmap_tools', 'hca_sc_sccaf_tools', 'hca_sc_utils_viz']
 
 DOMAIN_SECTIONS = {
     'hicexplorer': GENERAL_NGS_SECTIONS + ["hicexplorer", "graph_display_data", "peak_calling"],
@@ -61,10 +66,7 @@ DOMAIN_SECTIONS = {
     'singlecell': GENERAL_NGS_SECTIONS + ["rna_seq", "annotation",
         "graph_display_data", "single-cell"],
     'humancellatlas': GENERAL_NGS_SECTIONS + ["rna_seq", "annotation",
-        "graph_display_data", "single-cell", 'hca_sc_seurat_tools', 'hca_sc_sc3_tools', 
-                      'hca_sc_scanpy_tools', 'hca_sc_monocle3_tools', 'hca_sc_get-scrna',
-                      'hca_sc_scpred_tools', 'hca_sc_garnett_tools', 'hca_sc_label_analysis_tools',
-                      'hca_sc_scmap_tools', 'hca_sc_sccaf_tools', 'hca_sc_utils_viz'],
+        "graph_display_data", "single-cell"] + human_cell_atlas_sections,
     'clipseq': GENERAL_NGS_SECTIONS + ["rna_seq", "peak_calling",
         "motif_tools"],
     'graphclust': GENERAL_NGS_SECTIONS + ["rna_seq", "graphclust"],
@@ -91,9 +93,7 @@ def per_host_tool_sections( context, section ):
     subdomain = host.replace('.usegalaxy.eu', '')
 
     # hide HCA tools from other subdomains than humancellatlas, do not confuse users by duplicated tools
-    if section.id in ['hca_sc_seurat_tools', 'hca_sc_sc3_tools', 
-                      'hca_sc_scanpy_tools', 'hca_sc_monocle3_tools', 
-                      'hca_sc_scmap_tools', 'hca_sc_sccaf_tools', 'hca_sc_utils_viz']:
+    if section.id in human_cell_atlas_sections:
         if 'humancellatlas' in host:
             return True
         else:
