@@ -15,9 +15,9 @@
     group: root
     mode: 0755
 
-- name: Add to cron
-  cron:
-    name: "Fix unscheduled workflows galaxyproject/galaxy#8209"
-    minute: "*/20"
-    job: pgrep -f /usr/bin/galaxy-fix-unscheduled-workflows > /dev/null || /usr/bin/galaxy-fix-unscheduled-workflows &
-    user: "{{ galaxy_user.name }}"
+#- name: Add to cron
+#  cron:
+#    name: "Fix unscheduled workflows galaxyproject/galaxy#8209"
+#    minute: "*/20"
+#    job: pgrep -f /usr/bin/galaxy-fix-unscheduled-workflows > /dev/null || /usr/bin/galaxy-fix-unscheduled-workflows &
+#    user: "{{ galaxy_user.name }}"
