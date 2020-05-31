@@ -1341,7 +1341,7 @@ base_app_main: &BASE_APP_MAIN
   # because model objects are expunged from the SQL alchemy session
   # between workflow invocation scheduling iterations. Set to -1 to
   # disable any such maximum (the default).
-  #maximum_workflow_jobs_per_scheduling_iteration: -1
+  maximum_workflow_jobs_per_scheduling_iteration: 200
 
   # Force serial scheduling of workflows within the context of a
   # particular history
