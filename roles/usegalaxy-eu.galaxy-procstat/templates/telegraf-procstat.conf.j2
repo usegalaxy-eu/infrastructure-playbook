@@ -17,3 +17,10 @@
 	process_name = "galaxy-handler@{{ handler }}"
 	cmdline_tag = true
 {% endfor %}
+
+{% for handler in range(galaxy_systemd_workflow_schedulers) %}
+[[inputs.procstat]]
+	cgroup = "systemd/system.slice/system-galaxy\\x2dworkflow\\x2dscheduler.slice/galaxy-workflow-scheduler@{{ handler }}.service"
+	process_name = "galaxy-workflow-scheduler@{{ handler }}"
+	cmdline_tag = true
+{% endfor %}
