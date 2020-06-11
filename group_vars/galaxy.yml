@@ -97,6 +97,13 @@ telegraf_plugins_extra:
       - timeout = "15s"
       - data_format = "influx"
       - interval = "1m"
+  galaxy_workflow:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery workflow-invocation-status"]
+      - timeout = "15s"
+      - data_format = "influx"
+      - interval = "1m"
 
   postgres_extra:
     plugin: "exec"
