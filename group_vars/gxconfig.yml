@@ -427,7 +427,8 @@ base_app_main: &BASE_APP_MAIN
 
   # Number of checks to execute if check_job_script_integrity is
   # enabled.
-  #check_job_script_integrity_count: 35
+  # retry harder, can be hopefully reverted with 20.05 and the new job_script location
+  check_job_script_integrity_count: 70
 
   # Time to sleep between checks if check_job_script_integrity is
   # enabled (in seconds).
