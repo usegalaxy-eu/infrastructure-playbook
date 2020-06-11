@@ -1,5 +1,46 @@
 #!/usr/bin/env python
 # usegalaxy.eu sorting hat
+"""
+
+                                   .'lddc,.
+                                'cxOOOOOOOOOxoc;,...
+                            .:dOOOOOOOOOOOOOOOOOOOOOOOl
+                        .;dOOOOOOOOOOOOOOxcdOOOOOOOkl.
+                       oOOOOOOOOOOOOOOOx,    ......
+                     .xOOkkkOOOOOOOOOk'
+                    .xOOkkkOOOOOOOOO00.
+                    dOOkkkOOOOOOOOOOOOd
+                   cOOkkkOOOOOOOOOOOOOO'
+                  .OOOkkOOOOOOOOOOOOOOOd
+                  dOOkkOOOOOOOOOOOOOOOOO,
+                 .OOOOOOOOOOOOOOOOOOOOOOx
+                 cOOOOOOOOOOOOOOOOOOOOOOO;
+                 kOOOOOOOxddddddddxOOOOOOk.
+        ..,:cldxdlodxxkkO;'''''''';Okkxxdookxdlc:,..
+   .;lxO00000000d;;;;;;;;,'';;;;'',;;;;;;;:k00000000Oxl;.
+  d0000000000000xl::;;;;;,'''''''',;;;;;::lk0000000000000d
+ .d00000000000000000OkxxxdoooooooodxxxkO00000000000000000d.
+   .;lxO00000000000000000000000000000000000000000000Oxl;.
+        ..,;cloxkOO0000000000000000000000OOkxdlc;,..
+                     ..................
+
+"Oh, you may not think I'm pretty,
+But don't judge on what you see,"
+
+"For I'm the [Galaxy] Sorting Hat
+And I can cap them all."
+
+You might belong in Condor,
+Where dwell the slow to compute,
+
+You might belong in Pulsar,
+Far flung and remote,
+
+Or yet in wise old Singularity,
+If you're evil and insecure
+
+--hexylena
+"""
 from galaxy.jobs import JobDestination
 from galaxy.jobs.mapper import JobMappingException
 
