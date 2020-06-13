@@ -183,6 +183,7 @@ def _get_limits(destination, dest_spec=SPECIFICATIONS, default_cores=1, default_
     limits.update(dest_spec.get(destination).get('limits', {}))
     return limits
 
+
 def _weighted_random_sampling(destinations, dest_spec=SPECIFICATIONS):
     bunch = []
     for d in destinations:

@@ -325,7 +325,6 @@ remote_cluster_mq_docker_de03:
     tmp_dir: 'True'
 
 
-
 remote_cluster_mq_pt01:
   limits:
     cores: 4
@@ -346,6 +345,28 @@ remote_cluster_mq_pt01:
     transport: 'curl'
 
 remote_cluster_mq_uk01:
+  nodes: 40
+  limits:
+    cores: 60
+    mem: 300
+    gpus: 1
+  env:
+      GALAXY_MEMORY_MB: '{MEMORY_MB}'
+      GALAXY_SLOTS: '{PARALLELISATION}'
+      LC_ALL: C
+  params:
+    priority: -{PRIORITY}
+    submit_request_cpus: '{PARALLELISATION}'
+    submit_request_memory: '{MEMORY}'
+    submit_request_gpus: '{GPUS}'
+    jobs_directory: '/data/share/staging'
+    default_file_action: 'remote_transfer'
+    dependency_resolution: 'remote'
+    outputs_to_working_directory: False
+    rewrite_parameters: True
+    transport: 'curl'
+
+remote_cluster_mq_singularity_uk01:
   limits:
     cores: 60
     mem: 300
