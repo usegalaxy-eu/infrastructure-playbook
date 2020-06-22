@@ -11,7 +11,7 @@
 {% for plugin in galaxy_jobconf['plugins'] %}
 		<plugin id="{{ plugin['id'] }}" type="runner" {% if 'load' in plugin %}load="{{ plugin['load'] }}"{% endif %}>
 {% if 'params' in plugin %}
-{% for k in plugin['params'].items | sort %}
+{% for k in plugin['params'] | dict2items | sort(attribute='key') %}
 			<param id="{{ k }}">{{ plugin['params'][k] }}</param>
 {% endfor %}
 {% endif %}
@@ -27,12 +27,12 @@
 {% for destination in galaxy_jobconf['destinations'] %}
 		<destination id="{{ destination['id'] }}" runner="{{ destination['runner'] }}">
 {% if 'env' in destination %}
-{% for k in destination['env'].items | sort %}
+{% for k in destination['env'] | dict2items | sort(attribute='key') %}
 			<env id="{{ k }}">{{ destination['env'][k] }}</env>
 {% endfor %}
 {% endif %}
 {% if 'params' in destination %}
-{% for k in destination['params'].items | sort %}
+{% for k in destination['params'] | dict2items | sort(attribute='key') %}
 			<param id="{{ k }}">{{ destination['params'][k] }}</param>
 {% endfor %}
 {% endif %}
@@ -52,7 +52,7 @@
 {% endfor %}
 	</tools>
 	<limits>
-{% for limit in galaxy_jobconf['limits'].items | sort %}
+{% for limit in galaxy_jobconf['limits'] | sort(attribute='type' %}
 {% if 'id' in limit %}
 		<limit type="{{ limit['type'] }}" id="{{ limit['id'] }}">{{ limit['value'] }}</limit>
 {% elif 'tag' in limit %}
