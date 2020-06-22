@@ -52,7 +52,7 @@
 {% endfor %}
 	</tools>
 	<limits>
-{% for limit in galaxy_jobconf['limits'] | sort(attribute='type' %}
+{% for limit in galaxy_jobconf['limits'] | sort(attribute='type') %}
 {% if 'id' in limit %}
 		<limit type="{{ limit['type'] }}" id="{{ limit['id'] }}">{{ limit['value'] }}</limit>
 {% elif 'tag' in limit %}
