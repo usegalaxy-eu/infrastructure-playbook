@@ -32,7 +32,7 @@
 {% endfor %}
 {% endif %}
 {% if 'params' in destination %}
-{% for k in destination['params'] | dict2items | sort %}
+{% for k in destination['params']|dict2items|sort(attribute='key')|list|items2dict %}
 			<param id="{{ k }}">{{ destination['params'][k] }}</param>
 {% endfor %}
 {% endif %}
