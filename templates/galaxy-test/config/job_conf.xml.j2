@@ -27,7 +27,7 @@
 {% for destination in galaxy_jobconf['destinations'] %}
 		<destination id="{{ destination['id'] }}" runner="{{ destination['runner'] }}">
 {% if 'env' in destination %}
-{% for k in destination['env'] | dict2items | sort %}
+{% for k in destination['env']|dict2items|sort(attribute='key')|list|items2dict %}
 			<env id="{{ k }}">{{ destination['env'][k] }}</env>
 {% endfor %}
 {% endif %}
