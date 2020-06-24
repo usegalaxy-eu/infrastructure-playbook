@@ -311,7 +311,7 @@ base_app_main: &BASE_APP_MAIN
   # container resolvers to use when discovering containers for Galaxy.
   # If this is set to None, the default containers loaded is determined
   # by enable_mulled_containers.
-  containers_resolvers_config_file: /opt/galaxy/config/container_resolvers_conf.xml
+  containers_resolvers_config_file: {{ galaxy_config_dir }}/container_resolvers_conf.xml
 
   # involucro is a tool used to build Docker or Singularity containers
   # for tools from Conda dependencies referenced in tools as
@@ -1531,7 +1531,7 @@ base_app_main: &BASE_APP_MAIN
   # configuration.
   # The value of this option will be resolved with respect to
   # <config_dir>.
-  #job_metrics_config_file: job_metrics_conf.xml
+  job_metrics_config_file: job_metrics_conf.xml
 
   # This option allows users to see the job metrics (except for
   # environment variables).
@@ -1921,7 +1921,7 @@ base_app_main: &BASE_APP_MAIN
   #overwrite_model_recommendations: false
 
   # TODO(hxr): UNDOCUMENTED
-  job_metrics_config_file: "{{ galaxy_config_dir }}/job_metrics_conf.xml"
+  #job_metrics_config_file: "{{ galaxy_config_dir }}/job_metrics_conf.xml"
   ucsc_build_sites: "{{ galaxy_config_dir }}/ucsc_build_sites.txt"
   build_sites_config_file: "{{ galaxy_config_dir }}/build_sites.yml"
   container_image_cache_path: '/cvmfs/singularity.galaxyproject.org/all/'
