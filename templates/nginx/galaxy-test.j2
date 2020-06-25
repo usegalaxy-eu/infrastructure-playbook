@@ -125,6 +125,12 @@ server {
 		}
 	}
 
+    	# FIXME: this is a hack while working around bugs in 20.05, and should be removed
+    	location /static/scripts/bundled {
+        	alias {{ galaxy_server_dir }}/static/dist;
+        	expires 24h;
+    	}
+
 	location ~ /static/style/base.css {
 		root /opt/multisite-css/;
 		try_files /$host.css /usegalaxy.eu.css =404;
@@ -136,16 +142,6 @@ server {
 
 	location ~ /static/style/annotation.png {
 		alias /opt/multisite-css/annotation.png;
-	}
-
-	location /static/style {
-		alias {{ galaxy_server_dir }}/static/style/blue;
-		expires 24h;
-	}
-
-	location /static/scripts {
-		alias {{ galaxy_server_dir }}/static/scripts;
-		expires 24h;
 	}
 
 	location /robots.txt {
