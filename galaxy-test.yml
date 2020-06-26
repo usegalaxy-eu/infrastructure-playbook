@@ -26,6 +26,16 @@
       package:
         name: ['git', 'python-psycopg2', 'python-virtualenv', 'bc', 'python36']
       become: yes
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+      become: yes
+  post_tasks:
+    - name: Enable SELinux
+      selinux:
+        policy: targeted
+        state: enforcing
+      become: yes
   roles:
     # Normally we set hostname here, but we get an error so it is commented out:
     #     err=Could not get property: Failed to activate service 'org.freedesktop.hostname1': timed out
