@@ -600,6 +600,14 @@ base_app_main: &BASE_APP_MAIN
   # the registration.
   blacklist_file: "{{ galaxy_config_dir }}/disposable_email_blacklist.conf"
 
+  # E-mail domains whitelist is used to specify allowed email address
+  # domains. If the list is non-empty and a user attempts registration
+  # using an email address belonging to a domain that is not on the
+  # list, registration will be enied. This is a more restrictive option
+  # than <blacklist_file>, and therefore, in case <whitelist_file> is
+  # defined, <blacklist_file> will be ignored.
+  whitelist_file: null
+
   # Registration warning message is used to discourage people from
   # registering multiple accounts.  Applies mostly for the main Galaxy
   # instance. If no message specified the warning box will not be shown.
