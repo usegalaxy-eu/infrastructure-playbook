@@ -391,6 +391,10 @@ def _gateway(tool_id, user_preferences, user_roles, user_id, user_email, memory_
     if 'training-hard-limits' in user_roles:
         params['requirements'] = 'GalaxyGroup  ==  "training-hard-limits"'
 
+    # Shortcut to run jobs only on Py3 enables nodes
+    if 'py3' in user_roles:
+        params['requirements'] = 'GalaxyGroup  ==  "py3"'
+
     return env, params, runner, tool_spec, tags
 
 
