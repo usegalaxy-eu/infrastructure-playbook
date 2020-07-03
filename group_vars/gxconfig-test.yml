@@ -545,7 +545,7 @@ base_app_main: &BASE_APP_MAIN
   # will try to default to 'uuid' if it can be sure this is a new Galaxy
   # instance - but the default will be 'id' in many cases.
   # Not strictly needed since 20.05, but be better explicit here.
-  object_store_store_by: uuid
+  # object_store_store_by: id
 
   # Galaxy sends mail for various things: subscribing users to the
   # mailing list if they request it, password resets, reporting dataset
@@ -1631,6 +1631,8 @@ base_app_main: &BASE_APP_MAIN
   # use if you are running more than one Galaxy server using the same
   # database.
   #enable_job_recovery: true
+
+    metadata_strategy: extended
 
   # Although it is fairly reliable, setting metadata can occasionally
   # fail.  In these instances, you can choose to retry setting it
