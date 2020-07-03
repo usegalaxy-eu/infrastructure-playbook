@@ -544,7 +544,8 @@ base_app_main: &BASE_APP_MAIN
   # on how the object store is configured, starting with 20.05 Galaxy
   # will try to default to 'uuid' if it can be sure this is a new Galaxy
   # instance - but the default will be 'id' in many cases.
-  #object_store_store_by: null
+  # Not strictly needed since 20.05, but be better explicit here.
+  object_store_store_by: uuid
 
   # Galaxy sends mail for various things: subscribing users to the
   # mailing list if they request it, password resets, reporting dataset
