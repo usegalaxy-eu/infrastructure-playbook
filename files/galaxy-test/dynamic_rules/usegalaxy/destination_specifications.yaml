@@ -62,6 +62,8 @@ remote_cluster_mq_cz:
     jobs_directory: '/storage/brno11-elixir/home/galaxyeu/galaxy-staging/'
     dependency_resolution: 'remote'
     submit_user: 'galaxy'
+    # pulsar does not support "metadata_strategy: extended", nor does it make much sense without a shared object store
+    metadata_strategy: directory
 
 remote_cluster_mq_test:
   env: {}
@@ -71,6 +73,8 @@ remote_cluster_mq_test:
     request_memory: '{MEMORY}'
     jobs_directory: '/data/share/stage/'
     dependency_resolution: 'remote'
+    # pulsar does not support "metadata_strategy: extended", nor does it make much sense without a shared object store
+    metadata_strategy: directory
 
 condor_docker:
   env:
@@ -129,6 +133,8 @@ remote_cluster_mq_be01:
     outputs_to_working_directory: False
     rewrite_parameters: True
     transport: 'curl'
+    # pulsar does not support "metadata_strategy: extended", nor does it make much sense without a shared object store
+    metadata_strategy: directory
 
 remote_cluster_mq_de01:
   limits:
@@ -151,6 +157,8 @@ remote_cluster_mq_de01:
     transport: 'curl'
     singularity_enabled: true
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
+    # pulsar does not support "metadata_strategy: extended", nor does it make much sense without a shared object store
+    metadata_strategy: directory
 
 remote_cluster_mq_de02:
   ## our singularity test bed
@@ -174,6 +182,8 @@ remote_cluster_mq_de02:
     outputs_to_working_directory: False
     rewrite_parameters: True
     transport: 'curl'
+    # pulsar does not support "metadata_strategy: extended", nor does it make much sense without a shared object store
+    metadata_strategy: directory
 
 remote_cluster_mq_de03:
   limits:
@@ -195,6 +205,8 @@ remote_cluster_mq_de03:
     outputs_to_working_directory: False
     rewrite_parameters: True
     transport: 'curl'
+    # pulsar does not support "metadata_strategy: extended", nor does it make much sense without a shared object store
+    metadata_strategy: directory
 
 remote_cluster_mq_it01:
   limits:
@@ -214,6 +226,8 @@ remote_cluster_mq_it01:
     outputs_to_working_directory: False
     rewrite_parameters: True
     transport: 'curl'
+    # pulsar does not support "metadata_strategy: extended", nor does it make much sense without a shared object store
+    metadata_strategy: directory
 
 remote_cluster_mq_pt01:
   limits:
@@ -233,6 +247,8 @@ remote_cluster_mq_pt01:
     outputs_to_working_directory: False
     rewrite_parameters: True
     transport: 'curl'
+    # pulsar does not support "metadata_strategy: extended", nor does it make much sense without a shared object store
+    metadata_strategy: directory
 
 remote_cluster_mq_uk01:
   limits:
@@ -255,6 +271,8 @@ remote_cluster_mq_uk01:
     transport: 'curl'
     singularity_enabled: true
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
+    # pulsar does not support "metadata_strategy: extended", nor does it make much sense without a shared object store
+    metadata_strategy: directory
 
 remote_cluster_mq_au01:
   limits:
@@ -273,3 +291,5 @@ remote_cluster_mq_au01:
     dependency_resolution: 'remote'
     jobs_directory: '/mnt/pulsar/files/staging'
     default_file_action: 'remote_transfer'
+    # pulsar does not support "metadata_strategy: extended", nor does it make much sense without a shared object store
+    metadata_strategy: directory
