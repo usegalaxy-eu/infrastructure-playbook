@@ -263,7 +263,8 @@ galaxy_user:
     shell: /bin/bash
 
 galaxy_root: /opt/galaxy
-galaxy_handler_count: 1
+galaxy_handler_count: "{{ galaxy_systemd_handlers }}"
+galaxy_workflow_scheduler_count: "{{ galaxy_systemd_workflow_schedulers }}"
 galaxy_host_codename: "{{ codename }}"
 galaxy_home_dir: /opt/galaxy
 galaxy_mutable_config_dir: /opt/galaxy/mutable-config
