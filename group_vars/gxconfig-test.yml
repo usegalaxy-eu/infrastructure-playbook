@@ -1540,7 +1540,7 @@ base_app_main: &BASE_APP_MAIN
   # configuration.
   # The value of this option will be resolved with respect to
   # <config_dir>.
-  job_metrics_config_file: job_metrics_conf.xml
+  job_metrics_config_file: "{{ galaxy_config_dir }}/job_metrics_conf.xml"
 
   # This option allows users to see the job metrics (except for
   # environment variables).
