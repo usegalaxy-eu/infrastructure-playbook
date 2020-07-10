@@ -1810,7 +1810,7 @@ base_app_main: &BASE_APP_MAIN
   # which Galaxy processes should schedule workflows.
   # The value of this option will be resolved with respect to
   # <config_dir>.
-  workflow_schedulers_config_file: workflow_schedulers_conf.xml
+  workflow_schedulers_config_file: "{{ galaxy_config_dir }}/workflow_schedulers_conf.xml"
 
   # If using job concurrency limits (configured in job_config_file),
   # several extra database queries must be performed to determine the
