@@ -450,7 +450,7 @@ base_app_main: &BASE_APP_MAIN
   # an absolute path begin the path with '/'.  This is a comma-separated
   # list. Add test/functional/webhooks to this list to include the demo
   # webhooks used to test the webhook framework.
-  webhooks_dir: 'config/plugins/webhooks,config/plugins/webhooks/demo'
+  webhooks_dir: "config/plugins/webhooks,config/plugins/webhooks/demo,{{ galaxy_config_dir }}/plugins/webhooks"
 
   # Each job is given a unique empty directory as its current working
   # directory. This option defines in what parent directory those
