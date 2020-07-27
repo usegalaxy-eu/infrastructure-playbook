@@ -1,0 +1,6 @@
+- name: Clone webhook repository
+  git:
+    repo: "{{ galaxy_webhook_url }}"
+    dest: "{{ galaxy_webhook_dir }}"
+    version: master
+    force: "yes"

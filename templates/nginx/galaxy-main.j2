@@ -236,6 +236,10 @@ server {
 		include uwsgi_params;
 	}
 
+	location /training-material/ {
+		proxy_pass https://training.galaxyproject.org/training-material/;
+	}
+
 	location /request-tiaas {
 		return 301 https://usegalaxy.eu/tiaas/new/;
 	}
