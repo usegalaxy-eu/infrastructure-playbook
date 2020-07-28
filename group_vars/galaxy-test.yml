@@ -627,18 +627,6 @@ galaxy_config_files:
     dest: "{{ galaxy_config['galaxy']['ucsc_build_sites'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/echo_main_env.xml"
     dest: "{{ galaxy_config_dir }}/echo_main_env.xml"
-  # tours
-  - src: "{{ galaxy_config_file_src_dir }}/config/tours/differential_abundance_testing_sRNAs.yaml"
-    dest: "{{ galaxy_config_dir }}/plugins/tours/"
-  # webhook iframe
-  - src: "{{ galaxy_config_file_src_dir }}/config/webhooks/iframe/config.yml"
-    dest: "{{ galaxy_config_dir }}/plugins/webhooks/iframe/"
-  - src: "{{ galaxy_config_file_src_dir }}/config/webhooks/iframe/__init__.py"
-    dest: "{{ galaxy_config_dir }}/plugins/webhooks/iframe/"
-  - src: "{{ galaxy_config_file_src_dir }}/config/webhooks/iframe/script.js"
-    dest: "{{ galaxy_config_dir }}/plugins/webhooks/iframe/"
-  - src: "{{ galaxy_config_file_src_dir }}/config/webhooks/iframe/styles.css"
-    dest: "{{ galaxy_config_dir }}/plugins/webhooks/iframe/"
 
   #- src: files/galaxy/config/job_resource_params_conf.xml
     #dest: "{{ galaxy_config['galaxy']['job_resource_params_file'] }}"
