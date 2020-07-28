@@ -236,6 +236,7 @@ server {
 		include uwsgi_params;
 	}
 
+	# For GTN in Galaxy Webhook
 	location /training-material/ {
 		proxy_pass https://training.galaxyproject.org/training-material/;
 	}
