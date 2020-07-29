@@ -10,7 +10,8 @@
 - name: Install deps
   npm:
     path: "{{ galaxy_root }}/node-proxy"
-    executable: "{{ galaxy_root }}/venv/bin/npm"
+  environment:
+    PATH: "{{ galaxy_root }}/venv/bin:{{ ansible_env.PATH }}"
   notify:
     - gie systemd restart
 

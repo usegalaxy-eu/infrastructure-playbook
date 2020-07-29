@@ -1,0 +1,6 @@
+- name: Clone tour repository
+  git:
+    repo: "{{ galaxy_tour_url }}"
+    dest: "{{ galaxy_tour_dir }}"
+    version: master
+    force: "yes"

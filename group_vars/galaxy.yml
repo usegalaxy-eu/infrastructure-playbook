@@ -332,7 +332,9 @@ galaxy_backup_configfiles: false
 
 galaxy_server_dir: "{{ galaxy_root }}/server"
 galaxy_config_dir: "{{ galaxy_root }}/config"
-galaxy_venv_dir: "{{ galaxy_root  }}/venv"
+galaxy_venv_dir: "{{ galaxy_root  }}/venv3"
+galaxy_virtualenv_command: "pyvenv"
+galaxy_virtualenv_python: "python3.6"
 galaxy_nonrepro_tools: "{{ galaxy_root }}/custom-tools"
 galaxy_nonrepro_commit: master
 
@@ -364,7 +366,7 @@ galaxy_instance_hostname: usegalaxy.eu
 galaxy_config_style: ini
 
 galaxy_repo: 'https://github.com/usegalaxy-eu/galaxy.git'
-galaxy_commit_id: 'release_19.09_europe'
+galaxy_commit_id: 'release_20.05_europe'
 galaxy_force_checkout: true # discard any modified files
 #galaxy_admin_email_from: 'noreply@usegalaxy.eu'
 

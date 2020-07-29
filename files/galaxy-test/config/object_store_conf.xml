@@ -1,10 +1,14 @@
 <?xml version="1.0"?>
 <object_store type="distributed" id="primary" order="0">
     <backends>
-        <backend id="testserver" type="disk" weight="1">
+        <backend id="testserver" type="disk" weight="0" store_by="id">
             <files_dir path="/data/dnb01/galaxy_db/files-test"/>
             <extra_dir type="temp" path="/data/dnb01/galaxy_db/tmp-test"/>
             <extra_dir type="job_work" path="/data/dnb01/galaxy_db/job_working_directory-test"/>
+        </backend>
+        <backend id="dnb03" type="disk" weight="1" store_by="uuid">
+            <files_dir path="/data/dnb03/galaxy_db/test/files"/>
+            <extra_dir type="temp" path="/data/dnb03/galaxy_db/test/tmp"/>
         </backend>
     </backends>
 </object_store>

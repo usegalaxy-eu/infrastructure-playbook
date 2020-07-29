@@ -3,6 +3,9 @@
 master = true
 processes = 4
 threads = 1
+listen = 200
+umask = 027
+
 {% if galaxy_zergpool %}
 zerg = {{ galaxy_mutable_data_dir }}/zergpool.sock
 {% endif %}
@@ -15,13 +18,16 @@ harakiri = 600
 buffer-size = 16384
 
 # Mapping to serve style content.
-static-map= /static/style=static/style/blue
+#static-map= /static/style=static/style/blue
 
 # Mapping to serve the remainder of the static content.
 static-map= /static=static
 
 # Mapping to serve the favicon.
 static-map= /favicon.ico=static/favicon.ico
+
+# Allow serving images out of `client`.
+static-safe: client/galaxy/images
 
 ; logging
 ; log-maxsize = 134217728

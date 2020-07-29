@@ -26,6 +26,16 @@
       package:
         name: ['git', 'python-psycopg2', 'python-virtualenv', 'bc', 'python36']
       become: yes
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+      become: yes
+  post_tasks:
+    - name: Enable SELinux
+      selinux:
+        policy: targeted
+        state: enforcing
+      become: yes
   roles:
     # Normally we set hostname here, but we get an error so it is commented out:
     #     err=Could not get property: Failed to activate service 'org.freedesktop.hostname1': timed out
@@ -51,6 +61,9 @@
     - hxr.monitor-uwsgi
     - hxr.monitor-galaxy-journalctl
     - dj-wasabi.telegraf
+
+    ## remap user
+    - hxr.remap-user
 
     # Setup Galaxy user
     - role: galaxyproject.galaxy
@@ -83,6 +96,8 @@
     - hxr.galaxy-misc
     - usegalaxy-eu.dynmotd      # nicer MOTD/welcome message
     - usegalaxy-eu.rsync-to-nfs # sync codebase to NFS
+    - usegalaxy-eu.webhooks     # Clone webhook repository
+    - usegalaxy-eu.tours        # Clone tour repository
 
     ## SSL / Security
     - ssh-host-sign # Sign the server host key to prevent TOFU for SSH
@@ -105,7 +120,7 @@
         galaxy_manage_mutable_setup: yes
         galaxy_manage_database: yes
         galaxy_fetch_dependencies: yes
-        galaxy_build_client: no
+        galaxy_build_client: yes
 
     # Extras!
     - hxr.install-to-venv           # Some extra packages our site needs.
