@@ -144,16 +144,6 @@ server {
 		alias /opt/multisite-css/annotation.png;
 	}
 
-	location /static/style {
-		alias {{ galaxy_server_dir }}/static/style/blue;
-		expires 24h;
-	}
-
-	location /static/scripts {
-		alias {{ galaxy_server_dir }}/static/scripts;
-		expires 24h;
-	}
-
 	location /robots.txt {
 		alias {{ galaxy_server_dir }}/static/robots.txt;
 	}
