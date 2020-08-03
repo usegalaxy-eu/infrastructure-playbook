@@ -23,9 +23,6 @@
     group: root
     mode: 0755
 
-#- name: Add to cron
-  #cron:
-    #name: "Fix unscheduled jobs"
-    #minute: "*/20"
-    #job: /usr/bin/galaxy-fix-unscheduled-jobs
-    #user: "{{ galaxy_user.name }}"
+- name: "Execute the script. Syncing in progress."
+  command: /usr/bin/galaxy-sync-to-nfs
+  when: execute_galaxy_sync_to_nfs
