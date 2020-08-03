@@ -131,27 +131,17 @@ server {
 		}
 	}
 
-	location ~ /static/style/base.css {
+	location ~ /static/dist/base.css {
 		root /opt/multisite-css/;
 		try_files /$host.css /usegalaxy.eu.css =404;
 	}
 
-	location ~ /static/style/hicexplorer.png {
+	location ~ /static/dist/hicexplorer.png {
 		alias /opt/multisite-css/hicexplorer.png;
 	}
 
-	location ~ /static/style/annotation.png {
+	location ~ /static/dist/annotation.png {
 		alias /opt/multisite-css/annotation.png;
-	}
-
-	location /static/style {
-		alias {{ galaxy_server_dir }}/static/style/blue;
-		expires 24h;
-	}
-
-	location /static/scripts {
-		alias {{ galaxy_server_dir }}/static/scripts;
-		expires 24h;
 	}
 
 	location /robots.txt {
