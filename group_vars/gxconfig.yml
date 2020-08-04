@@ -1841,7 +1841,7 @@ base_app_main: &BASE_APP_MAIN
   # Define toolbox filters
   # (https://galaxyproject.org/user-defined-toolbox-filters/) that
   # admins may use to restrict the tool labels to display.
-  #tool_label_filters: null
+  tool_label_filters: 'global_host_filters:per_host_tool_labels'
 
   # Define toolbox filters
   # (https://galaxyproject.org/user-defined-toolbox-filters/) that
@@ -1856,7 +1856,7 @@ base_app_main: &BASE_APP_MAIN
   # Define toolbox filters
   # (https://galaxyproject.org/user-defined-toolbox-filters/) that users
   # may use to restrict the tool sections to display.
-  #user_tool_section_filters: examples:restrict_text
+  user_tool_section_filters: "{% for section in toolbox.toolbox_sections %}user_filters:section_{{ section.name | regex_replace('[^A-Za-z0-9_]*', '') }}{% if not loop.last %}, {% endif %}{% endfor %}"
 
   # Define toolbox filters
   # (https://galaxyproject.org/user-defined-toolbox-filters/) that users
