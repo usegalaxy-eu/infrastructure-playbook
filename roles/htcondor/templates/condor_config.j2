@@ -35,11 +35,11 @@ NETWORK_INTERFACE = {{ condor_network_interface }}
 # Keep classads for only 5 minutes which should mean dead cloud nodes are expired much faster.
 CLASSAD_LIFETIME = 300
 # Try and consider new negotations a little bit sooner?
-NEGOTIATOR_INTERVAL = 30
+NEGOTIATOR_INTERVAL = 15
 
 # How many jobs are started in one interval.
 # The default and minimum values for this integer configuration variable are both 1.
-JOB_START_COUNT = 50
+JOB_START_COUNT = 250
 # This integer-valued macro works together with the JOB_START_COUNT macro to throttle job starts. The condor_schedd daemon starts $(JOB_START_COUNT) jobs at a time, then delays for $(JOB_START_DELAY) seconds before starting the next set of jobs.
 # default is 0
 JOB_START_DELAY = 0
