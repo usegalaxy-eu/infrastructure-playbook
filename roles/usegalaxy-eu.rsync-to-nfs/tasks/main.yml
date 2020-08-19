@@ -4,7 +4,7 @@
     content: |
         #!/bin/bash
         cd {{ galaxy_root }};
-        for dir in {custom-tools,dynamic_rules,interactive_environments,mutable-config,mutable-data,server,venv,venv3,tool-data}; do
+        for dir in {custom-tools,dynamic_rules,interactive_environments,mutable-config,mutable-data,server,venv,tool-data}; do
             if [ -d $dir ]; then
                 echo "Syncing $dir"
                 rsync -avr --delete --exclude client/node_modules $dir/ {{ galaxy_nfs_location }}/$dir/
