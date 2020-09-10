@@ -168,7 +168,7 @@ nginx_conf_http:
   gzip_buffers: "16 8k"
   gzip_min_length: 128
 nginx_enable_default_server: false
-nginx_flavor: "galaxy"
+nginx_flavor: ""
 
 # Google Site Verification
 google_site_verification_id: googlefb9521f583b7c8fe.html
@@ -180,14 +180,14 @@ dynmotd_custom:
 
 # CVMFS
 cvmfs_role: client
-galaxy_cvmfs_repos_enabled: true
+galaxy_cvmfs_repos_enabled: config-repo
 
-galaxy_cvmfs_server_urls:
-  - domain: galaxyproject.org
-    use_geoapi: true
-    urls:
-      - "http://cvmfs1-ufr0.galaxyproject.eu/cvmfs/@fqrn@"
-      - "http://galaxy.jrc.ec.europa.eu:8008/@fqrn@"
+#galaxy_cvmfs_server_urls:
+#  - domain: galaxyproject.org
+#    use_geoapi: true
+#    urls:
+#      - "http://cvmfs1-ufr0.galaxyproject.eu/cvmfs/@fqrn@"
+#      - "http://galaxy.jrc.ec.europa.eu:8008/@fqrn@"
 
 # SystemD
 galaxy_systemd_zerglings: 1
@@ -277,8 +277,8 @@ galaxy_backup_configfiles: false
 galaxy_server_dir: "{{ galaxy_root }}/server"
 galaxy_config_dir: "{{ galaxy_root }}/config"
 galaxy_venv_dir: "{{ galaxy_root  }}/venv"
-galaxy_virtualenv_command: "pyvenv"
-galaxy_virtualenv_python: "python3.6"
+galaxy_virtualenv_command: "/usr/bin/python3 -m venv"
+# galaxy_virtualenv_python: "python3.6"
 
 galaxy_nonrepro_tools: /data/dnb01/galaxy_db/test/custom-tools
 galaxy_nonrepro_commit: master
@@ -286,6 +286,7 @@ galaxy_nonrepro_commit: master
 galaxy_dynamic_job_rules_src_dir: files/galaxy-test/dynamic_rules
 galaxy_dynamic_job_rules_dir: "{{ galaxy_root }}/dynamic_rules"
 galaxy_dynamic_job_rules:
+  - usegalaxy/joint_destinations.yaml
   - usegalaxy/sorting_hat.py
   - usegalaxy/destination_specifications.yaml
   - usegalaxy/blast_destinations.py
