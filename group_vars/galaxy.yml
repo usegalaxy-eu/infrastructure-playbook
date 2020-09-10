@@ -297,13 +297,15 @@ gxadmin_influx_task_notifier: true
 gxadmin_influx_task_notifier_db: notifications
 
 # postgres_pass defined in secret_group_vars/all.yml
-gxadmin_commit: dev
+gxadmin_commit: master
 gxadmin_dir: /opt/gxadmin
 gxadmin_bin_dir: /usr/bin
 gxadmin_force: true
 
 # GALAXY
-galaxy_group: galaxy
+galaxy_group:
+  name: galaxy
+  gid: 999
 galaxy_system_group: galaxy
 galaxy_instance_codename: "{{ codename }}"
 galaxy_log_dir: '/var/log/galaxy/'
@@ -362,6 +364,9 @@ galaxy_dirs:
   #- "{{ galaxy_tool_dependency_dir }}"
   - "{{ galaxy_file_path }}"
   - "{{ galaxy_job_working_directory }}"
+  - "{{ galaxy_nonrepro_tools }}"
+  - "{{ galaxy_webhook_dir }}"
+  - "{{ galaxy_tour_dir }}"
 
 galaxy_instance_hostname: usegalaxy.eu
 galaxy_config_style: ini
