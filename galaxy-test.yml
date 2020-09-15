@@ -30,6 +30,10 @@
       alternatives:
         name: python
         path: /usr/bin/python3
+    - name: Put SELinux in permissive mode, logging actions that would be blocked.
+      selinux:
+        policy: targeted
+        state: permissive
   roles:
     - hostname
 
