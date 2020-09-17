@@ -109,6 +109,11 @@ vardict_java:
   env:
     _JAVA_OPTIONS: -Xmx512G -Xms1G
 
+paralyzer:
+  mem: 8
+  env:
+    _JAVA_OPTIONS: -Xmx8G -Xms1G
+
 cuffmerge: {mem: 8}
 bio3d_pca: {mem: 64}
 bio3d_rmsd: {mem: 64}
@@ -792,7 +797,7 @@ prokka:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
   mem: 20
 proteomics_search_msgfplus_1: {mem: 10}
-pyprophet_score: {mem: 800, cores: 1}
+pyprophet_score: {mem: 400, cores: 1}
 pureclip: {mem: 32, cores: 2}
 qualimap_bamqc: {mem: 24}
 quality_metrics: {mem: 12}
