@@ -259,6 +259,10 @@ def build_spec(tool_spec, dest_spec=SPECIFICATIONS, runner_hint=None):
 
         if 'rank' in tool_spec:
             params['rank'] = tool_spec['rank']
+            
+        if '+Group' in tool_spec:
+            params['+Group'] = tool_spec['+Group']
+          
 
     if 'remote_cluster_mq' in destination:
         # specif for condor cluster
