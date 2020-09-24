@@ -312,7 +312,7 @@ def reroute_to_dedicated(tool_spec, user_roles):
     # Otherwise, the user does have one or more training roles.
     # So we must construct a requirement / ranking expression.
     training_expr = " || ".join(['(GalaxyGroup == "%s")' % role for role in training_roles])
-    training_labels = ", ".join(['%s' % role for role in training_roles])
+    training_labels = '"'+", ".join(['%s' % role for role in training_roles])+'"'
     return {
         # We require that it does not run on machines that the user is not in the role for.
         'requirements': '(GalaxyGroup == "compute") || (%s)' % training_expr,
