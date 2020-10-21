@@ -3,22 +3,35 @@
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
-    owner: galaxy
-    group: galaxy
+    owner: "{{ galaxy_user.name }}"
+    group: "{{ galaxy_group.name }}"
     mode: 0755
   loop:
-    - { src: 'pbs.sh.j2', dest: "{{ maintenance_dir }}/pbs.sh" }
+    - { src: 'tmpwatch.sh.j2', dest: "{{ maintenance_dir }}/tmpwatch.sh" }
     - { src: 'uploads.sh.j2', dest: "{{ maintenance_dir }}/uploads.sh" }
     - { src: 'job_working_dir.sh.j2', dest: "{{ maintenance_dir }}/job_working_dir.sh" }
 
-- name: "Deploy maintenance job files"
+- name: "Deploy maintenance condor job files"
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
-    owner: galaxy
-    group: galaxy
+    owner: "{{ galaxy_user.name }}"
+    group: "{{ galaxy_group.name }}"
     mode: 0655
   loop:
-    - { src: 'pbs.job.j2', dest: "{{ maintenance_dir }}/pbs.job" }
+    - { src: 'tmpwatch.job.j2', dest: "{{ maintenance_dir }}/tmpwatch.job" }
     - { src: 'uploads.job.j2', dest: "{{ maintenance_dir }}/uploads.job" }
     - { src: 'job_working_dir.job.j2', dest: "{{ maintenance_dir }}/job_working_dir.job" }
+
+- name: Add maintenance tasks to cron
+  cron:
+    name: "{{ item.name }}"
+    minute: "{{ item.m }}"
+    hour: "{{ item.h }}"
+    dow: "{{ item.d }}"
+    job: "{{ item.job }}"
+    user: "{{ galaxy_user.name }}"
+  loop:
+    - { name: "Tmpwatch for Galaxy tmp dir", m: 0, h: 0, d: "*", job: "condor_submit {{ maintenance_dir }}/tmpwatch.job" }
+    - { name: "Cleaning uploads", m: 11, h: 19, d: 5, job: "condor_submit {{ maintenance_dir }}/uploads.job"}
+    - { name: "Cleaning working_dir", m: 11, h: 20, d: 5, job: "condor_submit {{ maintenance_dir }}/job_working_dir.job"}

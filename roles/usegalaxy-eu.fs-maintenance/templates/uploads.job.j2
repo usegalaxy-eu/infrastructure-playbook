@@ -1,12 +1,8 @@
-universe = vanilla
-executable = {{ maintenance_dir }}/uploads.sh
-log = maintenance_uploads.log
-output = maintenance_uploads.out
-error = maintenance_uploads.err
-request_cpus = 1
-requirements = (GalaxyGroup =?= "maintenance")
-on_exit_remove = false
-cron_minute = 11
-cron_hour = 19
-cron_day_of_week = 5
-queue
+Universe = vanilla
+Executable = {{ maintenance_dir }}/uploads.sh
+Log = {{ maintenance_dir }}/maintenance_uploads.log
+Output = {{ maintenance_dir }}/maintenance_uploads.out
+Error = {{ maintenance_dir }}/maintenance_uploads.err
+Request_cpus = 1
+Requirements = GalaxyGroup == "maintenance"
+Queue

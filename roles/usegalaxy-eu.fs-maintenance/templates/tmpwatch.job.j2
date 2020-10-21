@@ -1,0 +1,8 @@
+Universe = vanilla
+Executable = {{ maintenance_dir }}/tmpwatch.sh
+Log = {{ maintenance_dir }}/maintenance_tmpwatch.$(process).log
+Output = {{ maintenance_dir }}/maintenance_tmpwatch.$(process).out
+Error = {{ maintenance_dir }}/maintenance_tmpwatch.$(process).err
+request_cpus = 1
+Requirements = GalaxyGroup == "maintenance"
+Queue
