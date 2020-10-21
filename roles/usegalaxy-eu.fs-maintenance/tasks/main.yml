@@ -4,7 +4,7 @@
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     owner: "{{ galaxy_user.name }}"
-    group: "{{ galaxy_group.name }}"
+    group: "{{ galaxy_group.name | default(galaxy_group) }}"
     mode: 0755
   loop:
     - { src: 'tmpwatch.sh.j2', dest: "{{ maintenance_dir }}/tmpwatch.sh" }
@@ -16,7 +16,7 @@
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     owner: "{{ galaxy_user.name }}"
-    group: "{{ galaxy_group.name }}"
+    group: "{{ galaxy_group.name | default(galaxy_group) }}"
     mode: 0655
   loop:
     - { src: 'tmpwatch.job.j2', dest: "{{ maintenance_dir }}/tmpwatch.job" }
