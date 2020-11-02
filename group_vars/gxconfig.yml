@@ -225,6 +225,16 @@ base_app_main: &BASE_APP_MAIN
   # and extra time spent copying packages.
   conda_copy_dependencies: 'True'
 
+  # Path to a file that provides a mapping from abstract packages to
+  # concrete conda packages. See `config/local_conda_mapping.yml.sample`
+  # for examples.
+  #local_conda_mapping_file: local_conda_mapping.yml
+
+  # Path to a file that provides a mapping from abstract packages to
+  # locally installed modules. See
+  # `config/environment_modules_mapping.yml.sample` for examples.
+  #modules_mapping_files: environment_modules_mapping.yml
+
   # Certain dependency resolvers (namely Conda) take a considerable
   # amount of time to build an isolated job environment in the
   # job_working_directory if the job working directory is on a network
@@ -713,6 +723,14 @@ base_app_main: &BASE_APP_MAIN
   # (complete format string for the server locale), - $iso8601 (complete
   # format string as specified by ISO 8601 international   standard).
   #pretty_datetime_format: $locale (UTC)
+
+  # Allow import of workflows from the TRS servers configured in the
+  # specified YAML or JSON file. The file should be a list with 'id',
+  # 'label', and 'api_url' for each entry. Optionally, 'link_url' and
+  # 'doc' may be be specified as well for each entry.
+  # If this is null (the default), a simple configuration containing
+  # just Dockstore will be used.
+  #trs_servers_config_file: trs_servers_conf.yml
 
   # Location of the configuration file containing extra user
   # preferences.
@@ -1326,6 +1344,15 @@ base_app_main: &BASE_APP_MAIN
   # pre-populate users using an additional form on 'Create new user'
   #show_user_prepopulate_form: false
 
+  # If 'always-on', add another button to tool form data inputs that
+  # allow uploading data from the tool form in fewer clicks (at the
+  # expense of making the form more complicated). This applies to
+  # workflows as well.
+  # Avoiding making this a boolean because we may add options such as
+  # 'in-single-form-view' or 'in-simplified-workflow-views'.
+  # https://github.com/galaxyproject/galaxy/pull/9809/files#r461889109
+  upload_from_form_button: always-on
+
   # Allow users to remove their datasets from disk immediately
   # (otherwise, datasets will be removed after a time period specified
   # by an administrator in the cleanup scripts run via cron)
@@ -1498,6 +1525,26 @@ base_app_main: &BASE_APP_MAIN
   # for each "Set at Runtime" input, independent of others in the
   # workflow.
   #enable_unique_workflow_defaults: false
+
+  # If set to 'off' by default, always use the traditional workflow form
+  # that renders all steps in the GUI and serializes the tool state of
+  # all steps during invocation. Set to 'prefer' to default to a
+  # simplified workflow UI that only renders the inputs if possible (the
+  # workflow must have no disconnected runtime inputs and not
+  # replacement parameters within tool steps). In the future 'force' may
+  # be added an option for Galaskio-style servers that should only
+  # render simplified workflows.
+  #simplified_workflow_run_ui: prefer
+
+  # When the simplified workflow run form is rendered, should the
+  # invocation outputs be sent to the 'current' history or a 'new'
+  # history.
+  #simplified_workflow_run_ui_target_history: current
+
+  # When the simplified workflow run form is rendered, should the
+  # invocation use job caching. This isn't a boolean so an option for
+  # 'show-selection' can be added later.
+  #simplified_workflow_run_ui_job_cache: 'off'
 
   # The URL to the myExperiment instance being used (omit scheme but
   # include port).
