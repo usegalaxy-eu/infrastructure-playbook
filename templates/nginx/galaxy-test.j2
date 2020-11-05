@@ -80,6 +80,7 @@ server {
 
 	location /_upload {
 		upload_store /data/dnb01/nginx-galaxy-test/uploads-test;
+		upload_limit_rate 32k;
 		upload_store_access user:rw group:rw all:rw;
 		upload_pass_form_field "";
 		upload_set_form_field "__${upload_field_name}__is_composite" "true";
@@ -103,6 +104,7 @@ server {
 				rewrite "" /api/jobs/$arg_job_id/files last;
 		}
 		upload_store /data/dnb01/nginx-galaxy-test/jobfiles-test;
+		upload_limit_rate 32k;
 		upload_store_access user:rw group:rw all:rw;
 		upload_pass_form_field "";
 		upload_set_form_field "__${upload_field_name}_path" "$upload_tmp_path";
