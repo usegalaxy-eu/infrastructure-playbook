@@ -1,7 +1,7 @@
 maintenance_dir: /data/dnb01/maintenance
-pbs_dir: "{{ cluster_files_directory }}"
-uploads_dir: "{{ nginx_upload_store }}"
-job_working_dir: "{{ job_working_directory }}"
+pbs_dir: "{{ galaxy_config['app:main']['cluster_files_directory'] }}"
+uploads_dir: "{{ galaxy_config['app:main']['nginx_upload_store'] }}"
+job_working_dir: "{{ galaxy_config['app:main']['job_working_directory'] }}"
 watched_folders:
   - /data/1/galaxy_db/tmp
   - /data/2/galaxy_db/tmp
