@@ -48,14 +48,6 @@ server {
 		include         uwsgi_params;
 		proxy_hide_header x-frame-options;
 		add_header X-Content-Type-Options nosniff;
-		location ~ biom_simple {
-			uwsgi_pass      127.0.0.1:4001;
-			include         uwsgi_params;
-			proxy_hide_header x-frame-options;
-			proxy_hide_header Content-Security-Policy-Report-Only;
-			add_header X-Content-Type-Options nosniff;
-			add_header Access-Control-Allow-Origin "https://www.bx.psu.edu";
-		}
 
 		include uwsgi_params;
 		uwsgi_param HTTPS on;
@@ -82,6 +74,14 @@ server {
 		alias /;
 		add_header X-Frame-Options SAMEORIGIN;
 		add_header X-Content-Type-Options nosniff;
+
+		# CORS
+		if ($http_origin ~ "^https?://(covid19map\.elixir-luxembourg\.org|www\.bx\.psu\.edu)$") {
+			add_header Access-Control-Allow-Origin $http_origin;
+			add_header Access-Control-Allow-Methods 'GET';
+			add_header Access-Control-Expose-Headers 'Content-Length,Content-Range';
+			add_header Access-Control-Allow-Headers 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
+		}
 	}
 
 	location /_upload {
