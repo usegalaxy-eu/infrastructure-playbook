@@ -225,6 +225,7 @@ remote_cluster_mq_de01:
     transport: 'curl'
     singularity_enabled: true
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
+    singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw'
 
 remote_cluster_mq_docker_de01:
   limits:
