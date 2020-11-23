@@ -2,4 +2,5 @@
   id: dropbox
   label: Your Dropbox Files
   doc: Your Dropbox files - configure an access token via the user preferences
-  accessToken: ${user.preferences.get('dropbox|access_token') if $user.preferences else ''}
+  accessToken: ${user.preferences['dropbox|access_token']}
+
