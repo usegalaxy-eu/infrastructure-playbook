@@ -1,0 +1,8 @@
+Universe = vanilla
+Executable = {{ maintenance_dir }}/new_file_path.sh
+Log = {{ maintenance_dir }}/maintenance_new_file_path.$(process).log
+Output = {{ maintenance_dir }}/maintenance_new_file_path.$(process).out
+Error = {{ maintenance_dir }}/maintenance_new_file_path.$(process).err
+request_cpus = 1
+Requirements = GalaxyGroup == "maintenance"
+Queue

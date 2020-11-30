@@ -10,6 +10,7 @@
     - { src: 'tmpwatch.sh.j2', dest: "{{ maintenance_dir }}/tmpwatch.sh" }
     - { src: 'uploads.sh.j2', dest: "{{ maintenance_dir }}/uploads.sh" }
     - { src: 'job_working_dir.sh.j2', dest: "{{ maintenance_dir }}/job_working_dir.sh" }
+    - { src: 'new_file_path.sh.j2', dest: "{{ maintenance_dir }}/new_file_path.sh" }
 
 - name: "Deploy maintenance condor job files"
   template:
@@ -22,6 +23,7 @@
     - { src: 'tmpwatch.job.j2', dest: "{{ maintenance_dir }}/tmpwatch.job" }
     - { src: 'uploads.job.j2', dest: "{{ maintenance_dir }}/uploads.job" }
     - { src: 'job_working_dir.job.j2', dest: "{{ maintenance_dir }}/job_working_dir.job" }
+    - { src: 'new_file_path.job.j2', dest: "{{ maintenance_dir }}/new_file_path.job" }
 
 - name: Add maintenance tasks to cron
   cron:
@@ -35,3 +37,4 @@
     - { name: "Tmpwatch for Galaxy tmp dir", m: 0, h: 0, d: "*", job: "condor_submit {{ maintenance_dir }}/tmpwatch.job" }
     - { name: "Cleaning uploads", m: 11, h: 19, d: 5, job: "condor_submit {{ maintenance_dir }}/uploads.job"}
     - { name: "Cleaning working_dir", m: 11, h: 20, d: 5, job: "condor_submit {{ maintenance_dir }}/job_working_dir.job"}
+    - { name: "Cleaning new_file_path", m: 10, h: 20, d: 5, job: "condor_submit {{ maintenance_dir }}/new_file_path.job"}
