@@ -1,2 +1,2 @@
 #!/bin/bash
-/usr/bin/find {{ uploads_dir }} -type f -ctime +10 -print0 -exec sleep 0.2 \; -exec echo \; -delete
+tmpwatch -v -a --mtime --dirmtime 7d {{ uploads_dir }}

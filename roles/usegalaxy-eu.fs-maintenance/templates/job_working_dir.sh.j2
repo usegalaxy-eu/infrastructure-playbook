@@ -1,2 +1,3 @@
 #!/bin/bash
-/usr/bin/find {{ job_working_dir }} -mtime +90 -print0 -exec sleep 0.05 \; -exec echo \; -delete
+tmpwatch -v -a --mtime --dirmtime 31d {{ job_working_dir }}
+

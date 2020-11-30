@@ -1,0 +1,23 @@
+#!/bin/bash
+# Few flags to know if jobs are running or not
+job_working_dir_flag=`condor_q -autoformat Cmd |grep job_working_dir.sh |wc -l`
+uploads_flag=`condor_q -autoformat Cmd |grep uploads.sh |wc -l`
+new_file_path_flag=`condor_q -autoformat Cmd |grep new_file_path.sh |wc -l`
+temporary_dirs_flag=`condor_q -autoformat Cmd |grep temporary_dirs.sh |wc -l`
+
+
+if [ "$job_working_dir_flag" -eq "0" ]; then
+   condor_submit {{ maintenance_dir }}/job_working_dir.job
+fi
+
+if [ "$uploads_flag" -eq "0" ]; then
+   condor_submit {{ maintenance_dir }}/uploads.job
+fi
+
+if [ "$new_file_path_flag" -eq "0" ]; then
+   condor_submit {{ maintenance_dir }}/new_file_path.job
+fi
+
+if [ "$temporary_dirs_flag" -eq "0" ]; then
+   condor_submit {{ maintenance_dir }}/temporary_dirs.job
+fi

@@ -5,4 +5,8 @@ Output = {{ maintenance_dir }}/maintenance_job_working_dir.out
 Error = {{ maintenance_dir }}/maintenance_job_working_dir.err
 Request_cpus = 1
 Requirements = GalaxyGroup == "maintenance"
+on_exit_remove = false
+cron_minute = 11
+cron_hour = 40
+cron_day_of_week = 5
 Queue

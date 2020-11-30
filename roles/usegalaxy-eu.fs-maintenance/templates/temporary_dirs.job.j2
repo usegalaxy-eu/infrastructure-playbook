@@ -5,4 +5,8 @@ Output = {{ maintenance_dir }}/maintenance_tmpwatch.$(process).out
 Error = {{ maintenance_dir }}/maintenance_tmpwatch.$(process).err
 request_cpus = 1
 Requirements = GalaxyGroup == "maintenance"
+on_exit_remove = false
+cron_minute = 23
+cron_hour = 20
+cron_day_of_week = *
 Queue
