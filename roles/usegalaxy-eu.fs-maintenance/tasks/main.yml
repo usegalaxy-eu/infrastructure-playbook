@@ -7,7 +7,7 @@
     group: "{{ galaxy_group.name | default(galaxy_group) }}"
     mode: 0755
   loop:
-    - { src: 'tmpwatch.sh.j2', dest: "{{ maintenance_dir }}/tmpwatch.sh" }
+    - { src: 'temporary_dirs.sh.j2', dest: "{{ maintenance_dir }}/temporary_dirs.sh" }
     - { src: 'uploads.sh.j2', dest: "{{ maintenance_dir }}/uploads.sh" }
     - { src: 'job_working_dir.sh.j2', dest: "{{ maintenance_dir }}/job_working_dir.sh" }
     - { src: 'new_file_path.sh.j2', dest: "{{ maintenance_dir }}/new_file_path.sh" }
