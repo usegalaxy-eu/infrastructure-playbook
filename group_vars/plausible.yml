@@ -1,0 +1,37 @@
+# Docker
+#docker_users:
+  #- centos
+docker_service_state: started
+docker_service_enabled: true
+
+# Certbot
+certbot_auth_method: --webroot
+certbot_well_known_root: /srv/nginx/_well-known_root
+certbot_share_key_users:
+  - nginx
+
+certbot_post_renewal: |
+    systemctl restart nginx || true
+
+# NGINX
+nginx_enable_default_server: false
+nginx_ssl_servers:
+  - plausible-ssl
+
+nginx_conf_http:
+  gzip: "on"
+  gzip_vary: "on"
+  gzip_min_length: 256
+  gzip_proxied: any
+  gzip_comp_level: 6
+  gzip_http_version: "1.1"
+  gzip_types: text/plain text/css text/xml text/javascript application/javascript application/x-javascript application/xml image/png image/jpg
+  gzip_disable: '"MSIE [1-6]\."'
+  client_max_body_size: 1g
+
+nginx_remove_default_vhost: true
+
+# Nginx Letsencrypt bindings
+nginx_ssl_role: usegalaxy-eu.certbot
+nginx_conf_ssl_certificate: /etc/ssl/certs/fullchain.pem
+nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
