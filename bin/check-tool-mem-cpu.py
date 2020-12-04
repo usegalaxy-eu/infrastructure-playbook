@@ -5,7 +5,7 @@ import sys
 
 D = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 
-jcaas_conf = yaml.load(
+jcaas_conf = yaml.safe_load(
     open(
         os.path.join(D, "files/galaxy/dynamic_rules/usegalaxy/tool_destinations.yaml"),
         "r",
