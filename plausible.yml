@@ -1,0 +1,23 @@
+---
+- name: Plausible
+  hosts: plausible
+  become: true
+  vars:
+    hostname: plausible.galaxyproject.eu
+  vars_files:
+    - secret_group_vars/plausible.yml
+  roles:
+    - hostname
+    - usegalaxy-eu.dynmotd
+    - geerlingguy.repo-epel
+    - hxr.admin-tools
+    - influxdata.chrony
+    - linuxhq.yum_cron
+    - galaxyproject.nginx
+    - geerlingguy.docker
+    # Custom
+    - usegalaxy-eu.plausible
+    # End Custom
+    - dj-wasabi.telegraf
+    - dev-sec.os-hardening
+    - dev-sec.ssh-hardening
