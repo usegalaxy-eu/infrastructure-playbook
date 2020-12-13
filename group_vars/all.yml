@@ -131,10 +131,7 @@ ssh_host_key_cert_files:
 # dev-sec.ssh-hardening role
 # Allow root login on all machines
 ssh_permit_root_login: "without-password"
-sshd_custom_options:
-  - "HostCertificate /etc/ssh/ssh_host_rsa_key-cert.pub"
-  - "HostCertificate /etc/ssh/ssh_host_ecdsa_key-cert.pub"
-  - "HostCertificate /etc/ssh/ssh_host_ed25519_key-cert.pub"
+
 # Anything else prevents more login
 ssh_use_pam: true
 # Required if you want to run ansible more than once.
