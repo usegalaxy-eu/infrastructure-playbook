@@ -11,7 +11,7 @@ usegalaxy_eu_autofs_mounts:
  - usrlocal
 
 # Telegraf
-custom_telegraf_env: "/usr/bin/env GDPR_MODE=1 PGUSER=galaxy PGHOST=sn03.bi.uni-freiburg.de GALAXY_ROOT=/opt/galaxy/ GALAXY_CONFIG_FILE=/opt/galaxy/config/galaxy.ini GALAXY_LOG_DIR=/var/log/galaxy/"
+custom_telegraf_env: "/usr/bin/env GDPR_MODE=1 PGUSER=galaxy PGHOST=sn03.bi.uni-freiburg.de GALAXY_ROOT=/opt/galaxy/server GALAXY_CONFIG_FILE=/opt/galaxy/config/galaxy.ini GALAXY_LOG_DIR=/var/log/galaxy/ GXADMIN_PYTHON=/opt/galaxy/venv/bin/python"
 telegraf_plugins_extra:
   postgres:
     plugin: "postgresql"
@@ -66,7 +66,7 @@ telegraf_plugins_extra:
     plugin: "exec"
     config:
       - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery upload-gb-in-past-hour"]
-      - timeout = "15s"
+      - timeout = "60s"
       - data_format = "influx"
       - interval = "1h"
   galaxy_lastlog:
@@ -108,6 +108,13 @@ telegraf_plugins_extra:
     plugin: "exec"
     config:
       - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery workflow-invocation-totals"]
+      - timeout = "15s"
+      - data_format = "influx"
+      - interval = "1m"
+  galaxy_active_users:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin uwsgi active-users"]
       - timeout = "15s"
       - data_format = "influx"
       - interval = "1m"
@@ -182,7 +189,7 @@ aws_cli_credentials:
     group: root
 
 # rsync to nfs
-galaxy_nfs_location: /data/gxkey
+galaxy_nfs_location: /data/gxnew
 
 # Nginx
 nginx_servers:
@@ -246,12 +253,12 @@ galaxy_cvmfs_server_urls:
 
 # SystemD
 galaxy_systemd_zerglings: 2
-galaxy_systemd_handlers: 7
-galaxy_systemd_workflow_schedulers: 4
+galaxy_systemd_handlers: 5
+galaxy_systemd_workflow_schedulers: 3
 
 galaxy_systemd_memory_limit: 20
 galaxy_systemd_memory_limit_zp: 8
-galaxy_systemd_memory_limit_handler: 10
+galaxy_systemd_memory_limit_handler: 12
 galaxy_systemd_memory_limit_workflow: 15
 galaxy_systemd_zergling_env: "TMP=/data/dnb01/galaxy_db/tmp-uwsgi TEMP=/data/dnb01/galaxy_db/tmp-uwsgi TMPDIR=/data/dnb01/galaxy_db/tmp-uwsgi GALAXY_WEBAPOLLO_URL={{ GALAXY_WEBAPOLLO_URL }} GALAXY_WEBAPOLLO_USER={{ GALAXY_WEBAPOLLO_USER }} GALAXY_WEBAPOLLO_PASSWORD={{ GALAXY_WEBAPOLLO_PASSWORD }} GALAXY_WEBAPOLLO_EXT_URL={{ GALAXY_WEBAPOLLO_EXT_URL }} GALAXY_SHARED_DIR={{ GALAXY_SHARED_DIR }}"
 galaxy_systemd_handler_env: "GALAXY_WEBAPOLLO_URL={{ GALAXY_WEBAPOLLO_URL }} GALAXY_WEBAPOLLO_USER={{ GALAXY_WEBAPOLLO_USER }} GALAXY_WEBAPOLLO_PASSWORD={{ GALAXY_WEBAPOLLO_PASSWORD }} GALAXY_WEBAPOLLO_EXT_URL={{ GALAXY_WEBAPOLLO_EXT_URL }} GALAXY_SHARED_DIR={{ GALAXY_SHARED_DIR }}"
@@ -303,9 +310,7 @@ gxadmin_bin_dir: /usr/bin
 gxadmin_force: true
 
 # GALAXY
-galaxy_group:
-  name: galaxy
-  gid: 999
+galaxy_group: galaxy
 galaxy_system_group: galaxy
 galaxy_instance_codename: "{{ codename }}"
 galaxy_log_dir: '/var/log/galaxy/'
@@ -364,15 +369,12 @@ galaxy_dirs:
   #- "{{ galaxy_tool_dependency_dir }}"
   - "{{ galaxy_file_path }}"
   - "{{ galaxy_job_working_directory }}"
-  - "{{ galaxy_nonrepro_tools }}"
-  - "{{ galaxy_webhook_dir }}"
-  - "{{ galaxy_tour_dir }}"
 
 galaxy_instance_hostname: usegalaxy.eu
 galaxy_config_style: ini
 
 galaxy_repo: 'https://github.com/usegalaxy-eu/galaxy.git'
-galaxy_commit_id: 'release_20.05_europe'
+galaxy_commit_id: 'release_20.09_europe'
 galaxy_force_checkout: true # discard any modified files
 #galaxy_admin_email_from: 'noreply@usegalaxy.eu'
 
@@ -536,6 +538,17 @@ galaxy_jobconf:
           load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
           params:
             amqp_url: "pyamqp://galaxy_no01:{{ rabbitmq_password_galaxy_no01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_no01?ssl=1"
+            galaxy_url: "https://usegalaxy.eu"
+            manager: production
+            amqp_acknowledge: True
+            amqp_ack_republish_time: 300
+            amqp_consumer_timeout: 2.0
+            amqp_publish_retry: True
+            amqp_publish_retry_max_retries: 60
+        - id: pulsar_eu_es01
+          load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+          params:
+            amqp_url: "pyamqp://galaxy_es01:{{ rabbitmq_password_galaxy_es01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_es01?ssl=1"
             galaxy_url: "https://usegalaxy.eu"
             manager: production
             amqp_acknowledge: True
@@ -818,6 +831,8 @@ galaxy_config_files:
   - src: "{{ galaxy_config_file_src_dir }}/config/user_preferences_extra_conf.yml"
     dest: "{{ galaxy_config['app:main']['user_preferences_extra_conf_path'] }}"
   # test? Unknown if this works.
+  - src: "{{ galaxy_config_file_src_dir }}/config/file_sources_conf.yml"
+    dest: "{{ galaxy_config_dir }}/__file_sources_conf.yml"
   - src: "{{ galaxy_config_file_src_dir }}/config/error_report.yml"
     dest: "{{ galaxy_config_dir }}/error_report.yml"
   - src: "{{ galaxy_config_file_src_dir }}/config/job_metrics_conf.xml"
