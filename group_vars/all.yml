@@ -121,6 +121,8 @@ au_random_sleep: 360
 sysctl_config:
   net.ipv6.conf.all.disable_ipv6: 0
 
+# SSH
+
 # ALL hosts should have signed SSH keys.
 # ssh-host-(re)sign role
 ssh_host_key_cert_files:
@@ -131,7 +133,10 @@ ssh_host_key_cert_files:
 # dev-sec.ssh-hardening role
 # Allow root login on all machines
 ssh_permit_root_login: "without-password"
-
+sshd_custom_options:
+  - "HostCertificate {{ ssh_host_key_cert_files[0] }}"
+  - "HostCertificate {{ ssh_host_key_cert_files[1] }}"
+  - "HostCertificate {{ ssh_host_key_cert_files[2] }}"
 # Anything else prevents more login
 ssh_use_pam: true
 # Required if you want to run ansible more than once.
