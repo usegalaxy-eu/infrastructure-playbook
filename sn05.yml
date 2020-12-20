@@ -1,0 +1,34 @@
+---
+- name: HTCondor 8.8 Central Manager
+  hosts: sn05
+  become: true
+  vars:
+    hostname: sn05.galaxyproject.eu
+  vars_files:
+    - secret_group_vars/all.yml
+  pre_tasks:
+    - name: Install Dependencies
+      package:
+        name: [ 'python36' ]
+      become: yes
+    - name: Set default version of Python
+      alternatives:
+        name: python
+        path: /usr/bin/python3
+  roles:
+    - hostname
+    - usegalaxy-eu.dynmotd
+    - geerlingguy.repo-epel
+    - usegalaxy-eu.powertools # geerlingguy.repo-epel role doesn't enable (yet) PowerTools repository
+    - hxr.admin-tools
+    - influxdata.chrony
+    - hxr.monitor-email
+    - usegalaxy-eu.autoupdates # keep all of our packages up to date
+    - hxr.autofs
+    - ssh-host-sign
+    # Applications
+    - usegalaxy-eu.htcondor
+    # End Applications
+    - dj-wasabi.telegraf
+#    - dev-sec.os-hardening
+    - dev-sec.ssh-hardening

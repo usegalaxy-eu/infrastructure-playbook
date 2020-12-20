@@ -17,10 +17,10 @@ usegalaxy_eu_autofs_mounts:
 
 # galaxyproject.nginx
 nginx_selinux_allow_local_connections: true
-nginx_servers:
-  - redirect-ssl
+#nginx_servers:
+#  - redirect-ssl
 
-# Allow root login on all machines
+# Allow root login on all machines - TBD
 ssh_allow_root_with_key: true
 
 # Chrony
@@ -58,11 +58,6 @@ telegraf_plugins_default:
   - plugin: chrony
 
 telegraf_plugins_extra: {}
-
-# Anything else prevents more login
-ssh_use_pam: true
-# Required if you want to run ansible more than once.
-sftp_enabled: true
 
 # ???
 galaxy_uid: 999
@@ -116,12 +111,34 @@ yum_cron_hourly:
       - mandatory
       - default
 
+# Automated dnf updates
+# usegalaxy-eu.autoupdates role
+au_hostname: "{{ hostname }}"
+au_apply_updates: yes
+au_random_sleep: 360
+
 # Do NOT disable ipv6
 sysctl_config:
   net.ipv6.conf.all.disable_ipv6: 0
 
+# SSH
+
 # ALL hosts should have signed SSH keys.
+# ssh-host-(re)sign role
 ssh_host_key_cert_files:
 - /etc/ssh/ssh_host_rsa_key-cert.pub
 - /etc/ssh/ssh_host_ecdsa_key-cert.pub
 - /etc/ssh/ssh_host_ed25519_key-cert.pub
+
+# dev-sec.ssh-hardening role
+# Allow root login on all machines
+ssh_permit_root_login: "without-password"
+sshd_custom_options:
+  - "HostCertificate {{ ssh_host_key_cert_files[0] }}"
+  - "HostCertificate {{ ssh_host_key_cert_files[1] }}"
+  - "HostCertificate {{ ssh_host_key_cert_files[2] }}"
+# Anything else prevents more login
+ssh_use_pam: true
+# Required if you want to run ansible more than once.
+sftp_enabled: true
+ssh_client_alive_interval: 600

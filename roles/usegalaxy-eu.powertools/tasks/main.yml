@@ -1,0 +1,10 @@
+---
+# geerlingguy.repo-epel role doesn't enable (yet) PowerTools repository
+# but EPEL packages may depend on packages from it
+- name: Enable PowerTools repository
+  ini_file:
+    path: /etc/yum.repos.d/CentOS-PowerTools.repo
+    section: PowerTools
+    option: enabled
+    value: "1"
+    no_extra_spaces: yes

@@ -1,0 +1,37 @@
+---
+# Centos8 uses systemd-coredump:input for (999:999) which we need to map to
+# the galaxy user/group.
+#
+
+- name: Check for input group
+  command: grep -Fxq "input:x:999:" /etc/group
+  ignore_errors: yes
+  register: check_input
+  changed_when: no
+
+# Unfortunately ssh_keys owns some files.
+- lineinfile:
+    path: /etc/group
+    regexp: 'input:x:999:'
+    line: 'input:x:500:'
+  when: 'not ansible_check_mode and check_input.rc == 0'
+
+- command: "find / -gid 999 -exec chgrp 500 '{}' +"
+  ignore_errors: yes
+  when: check_input.rc == 0
+
+- name: Check for coredump
+  command: grep -Fxq "systemd-coredump:x:999:997:systemd Core Dumper:/:/sbin/nologin" /etc/passwd
+  ignore_errors: yes
+  register: check_coredump
+  changed_when: no
+
+- lineinfile:
+    path: /etc/passwd
+    regexp: 'systemd-coredump:x:999:997:systemd Core Dumper:/:/sbin/nologin'
+    line: 'systemd-coredump:x:500:997:systemd Core Dumper:/:/sbin/nologin'
+  when: 'not ansible_check_mode and check_coredump.rc == 0'
+
+- command: "find / -uid 999 -exec chown 500 '{}' +"
+  ignore_errors: yes
+  when: check_coredump.rc == 0

@@ -1,0 +1,26 @@
+---
+- name: Check that the dependencies directory exists
+  stat:
+    path: "{{ galaxy_server_dir }}/dependencies"
+  register: dependencies_stat_result
+
+- name: Symlink dependencies
+  file:
+    src: /usr/local/tools/
+    dest: "{{ galaxy_server_dir }}/dependencies"
+    owner: galaxy
+    group: galaxy
+    state: link
+  when: not dependencies_stat_result.stat.exists
+
+# see https://docs.galaxyproject.org/en/master/admin/special_topics/gdpr_compliance.html
+- name: Check that the compliance.log exists
+  stat:
+    path: "{{ galaxy_server_dir }}/compliance.log"
+  register: compliance_log_stat_result
+
+- name: Create the compliance.log file, if it doesnt exist already
+  file:
+    path: "{{ galaxy_server_dir }}/compliance.log"
+    state: touch
+  when: not compliance_log_stat_result.stat.exists

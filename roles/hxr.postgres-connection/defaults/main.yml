@@ -1,0 +1,4 @@
+pgc_user:
+    name: "{{ galaxy_user.name }}"
+    home: "{{ galaxy_user.home }}"
+    group_name: "{{ galaxy_group.name | default(galaxy_group) }}"
