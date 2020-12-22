@@ -17,6 +17,11 @@
       #selinux:
         #policy: targeted
         #state: permissive
+  pre_tasks:
+  - name: Install Dependencies
+    package:
+      name: [ 'python3-virtualenv', 'python36' ]
+    become: yes
   roles:
     - hostname
     - usegalaxy-eu.dynmotd

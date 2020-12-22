@@ -3,7 +3,7 @@ certbot_auth_method: --webroot
 certbot_well_known_root: /srv/nginx/_well-known_root
 certbot_share_key_users:
   - nginx
-
+certbot_virtualenv_command: virtualenv-3.6
 certbot_post_renewal: |
     systemctl restart nginx || true
 
