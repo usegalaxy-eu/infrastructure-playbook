@@ -10,12 +10,15 @@ certbot_well_known_root: /srv/nginx/_well-known_root
 certbot_share_key_users:
   - nginx
   - influxdb
+certbot_virtualenv_command: virtualenv-3.6
 certbot_post_renewal: |
     systemctl restart nginx || true
     systemctl restart influxdb || true
 
 # NGINX
 nginx_enable_default_server: false
+nginx_servers:
+  - influxdb
 nginx_ssl_servers:
   - influxdb-ssl
 nginx_conf_http:
