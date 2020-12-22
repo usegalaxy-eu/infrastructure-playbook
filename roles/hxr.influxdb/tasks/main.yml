@@ -31,6 +31,8 @@
     hostname: influxdb.galaxyproject.eu
     ssl: yes
     validate_certs: yes
+    use_udp: no
+    udp_port: 4444
   with_items:
     - u: "{{ influxdb.node.username }}"
       p: "{{ influxdb.node.password }}"
