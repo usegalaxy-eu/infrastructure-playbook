@@ -74,6 +74,11 @@ grafana_image_storage:
 grafana_environment:
   GF_PANELS_DISABLE_SANITIZE_HTML: 'true'
 
+grafana_plugins:
+  - grafana-worldmap-panel
+  - grafana-piechart-panel
+  - natel-discrete-panel
+
 grafana_datasources:
  - name: Galaxy
    type: influxdb
