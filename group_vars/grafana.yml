@@ -83,7 +83,7 @@ grafana_datasources:
    version: 1
    editable: false
    database: galaxy
-   username: "{{ influxdb.grafana.username }}"
+   user: "{{ influxdb.grafana.username }}"
    password: "{{ influxdb.grafana.password }}"
  - name: Galaxy Historical
    type: influxdb
@@ -92,7 +92,7 @@ grafana_datasources:
    version: 1
    editable: false
    database: galaxy_stats
-   username: "{{ influxdb.grafana.username }}"
+   user: "{{ influxdb.grafana.username }}"
    password: "{{ influxdb.grafana.password }}"
  - name: GRT Tool Usage
    type: influxdb
@@ -101,7 +101,7 @@ grafana_datasources:
    version: 1
    editable: false
    database: grt
-   username: "{{ influxdb.grafana.username }}"
+   user: "{{ influxdb.grafana.username }}"
    password: "{{ influxdb.grafana.password }}"
  - name: InfluxDB - internal
    type: influxdb
@@ -110,7 +110,7 @@ grafana_datasources:
    version: 1
    editable: false
    database: _internal
-   username: "{{ influxdb.grafana.username }}"
+   user: "{{ influxdb.grafana.username }}"
    password: "{{ influxdb.grafana.password }}"
  - name: Notifications
    type: influxdb
@@ -119,7 +119,7 @@ grafana_datasources:
    version: 1
    editable: false
    database: notifications
-   username: "{{ influxdb.grafana.username }}"
+   user: "{{ influxdb.grafana.username }}"
    password: "{{ influxdb.grafana.password }}"
 
 hxr_monitor_ssl_expiry:
