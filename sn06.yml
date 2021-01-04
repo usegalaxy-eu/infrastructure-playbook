@@ -137,7 +137,15 @@
     - usegalaxy-eu.gxadmin
 
     - usegalaxy-eu.update-hosts              # Update hosts list
+    # Various ugly fixes
+    - usegalaxy-eu.fix-oidc                  # Workaround for https://github.com/galaxyproject/galaxy/issues/8244
+    - usegalaxy-eu.fix-unscheduled-jobs      # Workaround for ???
+    - usegalaxy-eu.fix-unscheduled-workflows # Workaround for https://github.com/galaxyproject/galaxy/issues/8209
     - usegalaxy-eu.fix-stuck-handlers        # Restart handlers to prevent several classes of issues
+    - usegalaxy-eu.log-cleaner               # do not retain logs, they are unnecessary/risky under GDPR
+    - usegalaxy-eu.fix-ancient-ftp-data      # Remove FTP data older than 3 months
+    - usegalaxy-eu.galaxy-procstat           # Some custom telegraf monitoring that's templated
+    - usegalaxy-eu.fix-missing-api-keys      # Workaround for IE users not have a key set.
     - usegalaxy-eu.fix-user-quotas           # Automatically recalculate user quotas and attribute ELIXIR quota to ELIXIR AAI user on a regular basis
 
     # Some of our 'cleanups' also generate telegraf format so this goes at end.

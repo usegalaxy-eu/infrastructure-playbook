@@ -153,16 +153,10 @@
     - usegalaxy-eu.error-pages      # Copy the NGINX error pages
     - usegalaxy-eu.fs-maintenance   # Filesystems maintenance
     # Various ugly fixes
-    - usegalaxy-eu.fix-unscheduled-jobs      # Workaround for ???
-    - usegalaxy-eu.fix-oidc                  # Workaround for https://github.com/galaxyproject/galaxy/issues/8244
-    - usegalaxy-eu.fix-unscheduled-workflows # Workaround for https://github.com/galaxyproject/galaxy/issues/8209
     - usegalaxy-eu.fix-failing-to-fail-jobs  # Workaround for https://github.com/galaxyproject/galaxy/issues/8171, maybe can be removed in 19.09?
     - usegalaxy-eu.fix-stuck-handlers        # Restart handlers to prevent several classes of issues
     - usegalaxy-eu.log-cleaner               # do not retain logs, they are unnecessary/risky under GDPR
-    - usegalaxy-eu.fix-ancient-ftp-data      # Remove FTP data older than 3 months
     - usegalaxy-eu.galaxy-procstat           # Some custom telegraf monitoring that's templated
-    - usegalaxy-eu.fix-missing-api-keys      # Workaround for IE users not have a key set.
-
     # Some of our 'cleanups' also generate telegraf format so this goes at end.
     - dj-wasabi.telegraf
     #- dev-sec.os-hardening
