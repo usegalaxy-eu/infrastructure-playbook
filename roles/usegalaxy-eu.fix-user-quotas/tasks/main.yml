@@ -1,5 +1,5 @@
 ---
-- name: "Deploy fixer upper script"
+- name: "Deploy script to recalculate user quotas "
   copy:
     content: |
         #!/bin/bash
@@ -11,10 +11,29 @@
     group: root
     mode: 0755
 
-- name: Add to cron
+- name: "Add it to cron"
   cron:
-    name: "Fix user quotas"
+    name: "Recalculate user quotas"
     minute: 15
     hour: 22
     job: /usr/bin/galaxy-fix-user-quotas
+    user: "{{ galaxy_user.name }}"
+
+- name: "Deploy script to attribute ELIXIR quota to ELIXIR AAI users "
+  copy:
+    content: |
+        #!/bin/bash
+        . {{ galaxy_root }}/.bashrc
+        gxadmin mutate set_quota_for_oidc_user elixir ELIXIR --commit
+    dest: /usr/bin/galaxy-fix-elixir-user-quotas
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Add it to cron"
+  cron:
+    name: "Attribute ELIXIR quota to ELIXIR AAI users"
+    minute: 14
+    hour: 22
+    job: /usr/bin/galaxy-fix-elixir-user-quotas
     user: "{{ galaxy_user.name }}"
