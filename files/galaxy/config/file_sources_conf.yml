@@ -4,3 +4,9 @@
   doc: Your Dropbox files - configure an access token via the user preferences
   accessToken: ${user.preferences['dropbox|access_token']}
 
+- type: webdav
+  id: b2drop
+  doc: B2Drop WebDAV server
+  url: https://b2drop.eudat.eu/remote.php/dav
+  login: ${user.preferences['b2drop|username']} 
+  password: ${user.preferences['b2drop|password']}
