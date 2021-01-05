@@ -315,7 +315,10 @@
     <datatype extension="hardklor" type="galaxy.datatypes.tabular:Tabular" subclass="true"/>
     <datatype extension="kronik" type="galaxy.datatypes.tabular:Tabular" subclass="true"/>
     <datatype extension="imzml" type="galaxy.datatypes.proteomics:ImzML" mimetype="application/xml" display_in_upload="true"/>
-    <datatype extension="analyze75" type="galaxy.datatypes.proteomics:Analyze75" mimetype="application/xml" display_in_upload="true"/>
+    <datatype extension="analyze75" type="galaxy.datatypes.images:Analyze75" mimetype="application/xml" display_in_upload="true"/>
+    <datatype extension="nii1" auto_compressed_types="gz" type="galaxy.datatypes.images:Nifti1" mimetype="application/octet-stream" display_in_upload="true" />
+    <datatype extension="nii2" auto_compressed_types="gz" type="galaxy.datatypes.images:Nifti2" mimetype="application/octet-stream" display_in_upload="true" />
+    <datatype extension="gii" auto_compressed_types="gz" type="galaxy.datatypes.images:Gifti" mimetype="application/octet-stream" display_in_upload="true" />
     <datatype extension="peff" type="galaxy.datatypes.proteomics:PEFF" display_in_upload="true"/>
     <!-- End Proteomics Datatypes -->
     <datatype extension="deeptools_compute_matrix_archive" type="galaxy.datatypes.binary:CompressedArchive" subclass="true" display_in_upload="true"/>
@@ -889,6 +892,7 @@
     <sniffer type="galaxy.datatypes.annotation:Augustus"/>
     <sniffer type="galaxy.datatypes.triples:Rdf"/>
     <sniffer type="galaxy.datatypes.blast:BlastXml"/>
+    <sniffer type="galaxy.datatypes.images:Gifti" />
     <sniffer type="galaxy.datatypes.xml:Phyloxml"/>
     <sniffer type="galaxy.datatypes.xml:Owl"/>
     <sniffer type="galaxy.datatypes.xml:Sbml"/>
@@ -1012,7 +1016,8 @@
     <sniffer type="galaxy.datatypes.images:Xpm"/>
     <sniffer type="galaxy.datatypes.images:Eps"/>
     <sniffer type="galaxy.datatypes.images:Rast"/>
-
+    <sniffer type="galaxy.datatypes.images:Nifti1" />
+    <sniffer type="galaxy.datatypes.images:Nifti2" />
     <!--
     Keep this commented until the sniff method in the assembly.py
     module is fixed to not read the entire file.
