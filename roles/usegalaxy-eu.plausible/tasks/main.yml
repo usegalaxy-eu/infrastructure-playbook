@@ -1,0 +1,21 @@
+---
+- name: Clone repository
+  git:
+    repo: "https://github.com/usegalaxy-eu/hosting"
+    dest: "{{ plausible_dir }}"
+    version: "master"
+    force: "true"
+  register: repo_cloned
+
+- name: Template config
+  template:
+    src: plausible.j2
+    dest: "{{ plausible_dir }}/plausible-conf.env"
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: Create and start services
+  docker_compose:
+    project_src: "{{ plausible_dir }}"
+  #when: repo_cloned.changed
