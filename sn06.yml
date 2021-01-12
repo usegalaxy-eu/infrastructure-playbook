@@ -40,7 +40,6 @@
       - '*.interactivetoolentrypoint.interactivetool.live.usegalaxy.eu'
       - '*.interactivetoolentrypoint.interactivetool.test.usegalaxy.eu'
   vars_files:
-#    - group_vars/galaxy.yml
     - group_vars/tiaas.yml             # All of the training infrastructure
     - group_vars/custom-sites.yml      # Subdomains are listed here
     - group_vars/gxconfig.yml          # The base galaxy configuration
@@ -50,7 +49,7 @@
     - secret_group_vars/elixir_aai.yml # Elixir AAI private key
     - secret_group_vars/db-main.yml    # DB URL + some postgres stuff
     - secret_group_vars/all.yml        # All of the other assorted secrets...
- handlers:
+  handlers:
     - name: Restart Galaxy
       shell: |
         echo 'Manual zergling restart required' && cd /opt/galaxy/ && source /opt/galaxy/.bashrc  && sudo -u galaxy /usr/bin/galaxy-sync-to-nfs && systemctl restart galaxy-handler@* && systemctl restart galaxy-workflow-scheduler@*
