@@ -1,11 +1,10 @@
 ---
 - name: Sync to NFS
-  hosts: galaxy
+  hosts: galaxyservers
   become: true
   become_user: galaxy
   vars:
     execute_galaxy_sync_to_nfs: true
-  vars_files:
-    - group_vars/galaxy.yml
+
   roles:
     - usegalaxy-eu.rsync-to-nfs
