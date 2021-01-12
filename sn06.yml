@@ -135,10 +135,19 @@
     ## GALAXY
     - hxr.postgres-connection
     - usegalaxy-eu.gxadmin
+    # TODO move under monitoring + telegraf.
+    - usegalaxy-eu.galaxy-slurp
     - usegalaxy_eu.tiaas2
+    - usegalaxy-eu.gapars-galaxy
 
     ## Extras!
-    - usegalaxy-eu.update-hosts              # Update hosts list
+    - hxr.install-to-venv           # Some extra packages our site needs.
+    - usegalaxy-eu.update-hosts     # Update hosts list
+    - usegalaxy-eu.gie-node-proxy   # Setup the NodeJS proxy (depends on NodeJS being already available)
+    - usegalaxy-eu.gie-deployer     # Deploy the GIE configuration
+    - usegalaxy-eu.subdomain-themes # Custom subdomain themes
+    - usegalaxy-eu.limits           # Prevent out of control processes
+    - usegalaxy-eu.fs-maintenance   # Filesystems maintenance
     # Various ugly fixes
     - usegalaxy-eu.fix-oidc                  # Workaround for https://github.com/galaxyproject/galaxy/issues/8244
     - usegalaxy-eu.fix-unscheduled-jobs      # Workaround for ???

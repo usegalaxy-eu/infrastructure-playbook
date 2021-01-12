@@ -123,8 +123,6 @@
     - role: hxr.postgres-connection
       become_user: galaxy
     - usegalaxy-eu.gxadmin
-    # TODO move under monitoring + telegraf.
-    - usegalaxy-eu.galaxy-slurp
     # TODO(hxr): nginx role doesn't create nginx_proxy_cache_path
     - galaxyproject.nginx
     - usegalaxy_eu.tiaas2
@@ -150,7 +148,6 @@
     - usegalaxy-eu.grt-export       # Export data for GRT
     - usegalaxy-eu.galaxy-cleanup   # Cleanup purged datasets/histories/etc >60 days old
     - usegalaxy-eu.error-pages      # Copy the NGINX error pages
-    - usegalaxy-eu.fs-maintenance   # Filesystems maintenance
     # Various ugly fixes
     - usegalaxy-eu.fix-failing-to-fail-jobs  # Workaround for https://github.com/galaxyproject/galaxy/issues/8171, maybe can be removed in 19.09?
     - usegalaxy-eu.fix-stuck-handlers        # Restart handlers to prevent several classes of issues
