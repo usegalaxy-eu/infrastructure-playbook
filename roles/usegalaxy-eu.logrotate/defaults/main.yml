@@ -1,0 +1,11 @@
+lp_logrotate_confd:
+  - path: galaxy
+    conf: |
+      /var/log/galaxy/*.log {
+        compress
+      	copytruncate
+      	daily
+      	notifempty
+      	missingok
+      	rotate 1
+      }

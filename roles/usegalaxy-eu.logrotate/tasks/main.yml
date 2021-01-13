@@ -1,0 +1,7 @@
+---
+- name: Create logrotate files
+  blockinfile:
+    path: "/etc/logrotate.d/{{ item.path }}"
+    block: "{{ item.conf }}"
+    create: true
+  loop: "{{ lp_logrotate_confd }}"
