@@ -28,7 +28,7 @@ data_conf:
   - gxkey   -rw,hard,intr,nosuid,quota      sn03.bi.uni-freiburg.de:/export/galaxy1/system/galaxy-i3
 
 # Telegraf
-custom_telegraf_env: "/usr/bin/env GDPR_MODE=1 PGUSER=galaxy PGHOST=sn03.bi.uni-freiburg.de GALAXY_ROOT=/opt/galaxy/ GALAXY_CONFIG_FILE=/opt/galaxy/config/galaxy.ini GALAXY_LOG_DIR=/var/log/galaxy/"
+custom_telegraf_env: "/usr/bin/env GDPR_MODE=1 PGUSER={{ galaxy_user.name }} PGHOST={{ postgres_host }} GALAXY_ROOT={{ galaxy_server_dir }} GALAXY_CONFIG_FILE={{ galaxy_config_dir }}/galaxy.ini GALAXY_LOG_DIR={{ galaxy_log_dir }} GXADMIN_PYTHON={{ galaxy_venv_dir }}/bin/python"
 telegraf_plugins_extra:
   postgres:
     plugin: "postgresql"
@@ -352,7 +352,7 @@ galaxy_backup_configfiles: false
 
 galaxy_server_dir: "{{ galaxy_root }}/server"
 galaxy_config_dir: "{{ galaxy_root }}/config"
-galaxy_venv_dir: "{{ galaxy_root  }}/venv"
+galaxy_venv_dir: "{{ galaxy_root }}/venv"
 galaxy_virtualenv_command: "pyvenv"
 #galaxy_virtualenv_python: "python3.6"
 galaxy_nonrepro_tools: "{{ galaxy_root }}/custom-tools"
