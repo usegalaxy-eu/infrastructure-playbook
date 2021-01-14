@@ -52,7 +52,9 @@
   handlers:
     - name: Restart Galaxy
       shell: |
-        echo 'Manual zergling restart required' && cd /opt/galaxy/ && source /opt/galaxy/.bashrc  && sudo -u galaxy /usr/bin/galaxy-sync-to-nfs && systemctl restart galaxy-handler@* && systemctl restart galaxy-workflow-scheduler@*
+        echo 'Manual zergling restart required' && cd /opt/galaxy/ && source /opt/galaxy/.bashrc  && sudo -u galaxy /usr/bin/galaxy-sync-to-nfs
+
+#    echo 'Manual zergling restart required' && cd /opt/galaxy/ && source /opt/galaxy/.bashrc  && sudo -u galaxy /usr/bin/galaxy-sync-to-nfs && systemctl restart galaxy-handler@* && systemctl restart galaxy-workflow-scheduler@*
 
   pre_tasks:
     - name: Install Dependencies
@@ -143,6 +145,16 @@
     - usegalaxy-eu.galaxy-slurp
     - usegalaxy_eu.tiaas2
     - usegalaxy-eu.gapars-galaxy
+    # The REAL galaxy role
+    - role: galaxyproject.galaxy
+      vars:
+        galaxy_create_user: yes
+        galaxy_manage_clone: yes
+        galaxy_manage_static_setup: yes
+        galaxy_manage_mutable_setup: yes
+        galaxy_manage_database: yes
+        galaxy_fetch_dependencies: yes
+        galaxy_build_client: yes
 
     ## Extras!
     - hxr.install-to-venv           # Some extra packages our site needs.
