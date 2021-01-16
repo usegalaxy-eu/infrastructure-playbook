@@ -14,7 +14,7 @@
         done;
         if [ -d shed_tools-local ]; then
             echo "Syncing shed_tools-local"
-            rsync -avr --delete shed_tools-local/ {{ galaxy_nfs_location }}/shed_tools/
+            rsync -avr --delete --exclude .hg shed_tools-local/ {{ galaxy_nfs_location }}/shed_tools/
         else
             echo "Skipping shed_tools-local"
         fi
