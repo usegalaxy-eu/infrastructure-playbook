@@ -69,6 +69,12 @@
       selinux:
         policy: targeted
         state: permissive
+  post_tasks:
+    - name: Append systemd-journal group to galaxy user
+      user:
+        name: "{{ galaxy_user.name }}"
+        groups: systemd-journal
+        append: yes
   roles:
     - hostname
 
