@@ -75,6 +75,10 @@
         name: "{{ galaxy_user.name }}"
         groups: systemd-journal
         append: yes
+    - name: Install utilities
+      package:
+        name: [ 'mosh' ]
+      become: yes
   roles:
     - hostname
 
