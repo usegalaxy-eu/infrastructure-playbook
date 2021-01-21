@@ -45,3 +45,14 @@
       alias glz='journalctl -f -u galaxy-zergpool -u galaxy-zergling@* | grep -v "/api/histories"'
       alias glw='journalctl -f -u galaxy-workflow-scheduler@*'
       alias cu="sudo awk '{print $1}' /var/log/nginx/access.log | sort | uniq -c | sort -nr"
+
+- name: Check for bash_history
+  stat:
+    path: "{{ galaxy_user.home }}/.bash_history"
+  register: bashhistory_stat_out
+
+- name: Create bash_history
+  file:
+    path: "{{ galaxy_user.home }}/.bash_history"
+    state: touch
+  when: not bashhistory_stat_out.stat.exists
