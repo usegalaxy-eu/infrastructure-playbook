@@ -37,4 +37,4 @@
   loop:
     - { name: "Maintenance tasks submitter", m: 0, h: 23, d: "*", job: "{{ maintenance_dir }}/htcondor_crontab_scheduling_submitter.sh" }
     - { name: "Gxadmin Galaxy cleanup", m: 0, h: "*/6", d: "*", job: "{{ custom_telegraf_env }} /usr/bin/gxadmin galaxy cleanup 60" }
-
+    - { name: "Docker cleanup", m: 30, h: 2, d: "*", job: ". {{ galaxy_root }}/.bashrc && docker system prune -f > /dev/null"}
