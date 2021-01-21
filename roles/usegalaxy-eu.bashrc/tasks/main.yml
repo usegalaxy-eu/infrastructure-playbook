@@ -55,4 +55,7 @@
   file:
     path: "{{ galaxy_user.home }}/.bash_history"
     state: touch
+    mode: 0640
+    owner: "{{ galaxy_user.name }}"
+    group: "{{ galaxy_group.name | default(galaxy_group) }}"
   when: not bashhistory_stat_out.stat.exists
