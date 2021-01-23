@@ -93,7 +93,7 @@ kc-align: {cores: 3}
 maxquant: {mem: 60, cores: 8}
 scpipe: {mem: 64, cores: 8}
 cardinal_combine: {mem: 92}
-cardinal_classification: {mem: 128}
+cardinal_classification: {mem: 100}
 cardinal_filtering: {mem: 60}
 cardinal_mz_images: {mem: 20}
 cardinal_preprocessing: {cores: 4, mem: 110}
@@ -140,7 +140,7 @@ cds_essential_variability:
     COPERNICUS_CDSAPIRC_KEY_FILE: /data/db/data_managers/COPERNICUS_CDSAPIRC_KEY_FILE
 
 idr_download_by_ids: {mem: 24}
-kraken: {mem: 128}
+kraken: {mem: 100}
 kraken2: {mem: 64}
 ont_fast5_api_compress_fast5: {cores: 8}
 viz_overlay_moving_and_fixed_image: {mem: 12}
@@ -465,12 +465,12 @@ anndata_inspect: {cores: 4}
 anndata_manipulate: {cores: 4}
 antismash:
   cores: 10
-  mem: 120
+  mem: 100
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx96G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
 bam-to-wig: {mem: 20}
 bamCompare_deepTools: {mem: 10}
-bamCorrelate_deepTools: {cores: 10, mem: 120}
+bamCorrelate_deepTools: {cores: 10, mem: 100}
 bamCoverage_deepTools: {mem: 10}
 bamFingerprint: {mem: 10}
 bedtools_intersectbed: {mem: 20}
@@ -584,7 +584,7 @@ flexbar: {cores: 10, mem: 12}
 flexbar_no_split: {cores: 10, mem: 12}
 flexbar_split_RR_bcs: {cores: 10, mem: 12}
 flexbar_split_RYYR_bcs: {cores: 10, mem: 12}
-freebayes: {cores: 10, mem: 120}
+freebayes: {cores: 10, mem: 100}
 gatk2_base_recalibrator:
   cores: 10
   env:
@@ -719,7 +719,7 @@ macs2_bdgdiff: {mem: 10}
 macs2_callpeak: {mem: 15}
 maldi_quant_preprocessing: {mem: 400}
 maldi_quant_peak_detection: {mem: 180}
-mass_spectrometry_imaging_classification: {mem: 128}
+mass_spectrometry_imaging_classification: {mem: 100}
 megablast_wrapper: {mem: 20}
 meme_dreme: {mem: 16}
 meme_fimo: {mem: 4}
@@ -773,7 +773,7 @@ peptide_shaker:
   cores: 10
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=4G -Xmx120G -Xms4G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
-  mem: 128
+  mem: 100
   name: _special
 picard_ARRG: {mem: 12}
 picard_AddOrReplaceReadGroups: {mem: 12}
@@ -1000,7 +1000,7 @@ trinity:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx170G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
   name: special
 umi_tools_group: {mem: 12}
-umi_tools_dedup: {mem: 128}
+umi_tools_dedup: {mem: 100}
 umi_tools_extract: {mem: 4}
 unicycler:
   cores: 10
