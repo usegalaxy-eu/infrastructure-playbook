@@ -79,6 +79,10 @@
       package:
         name: [ 'mosh', 'cairo' ]
       become: yes
+    - name: Install pdf export dependencies
+      package:
+        name: [ 'cairo', 'cairo-devel', 'pango-devel' ]
+      become: yes
   roles:
     - hostname
 
