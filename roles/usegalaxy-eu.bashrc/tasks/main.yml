@@ -40,11 +40,29 @@
     marker: "# {mark} ANSIBLE MANAGED BLOCK"
     content: |
       # User specific aliases and functions
+      function change_to_wd() {
+      USAGE="Please provide a Galaxy job ID or a Condor job ID"
+      if (( $# == 0 )); then
+              echo $USAGE
+              return 0;
+      fi
+      for i in "$@"; do
+                      if [[ "$i" = --help || "$i" = -h ]]; then
+                              echo $USAGE
+                              return 0;
+                      fi
+      done
+      JID=$1
+      WD=$(dirname `condor_q -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '`)
+      cd $WD
+      }
+
       alias gl='journalctl  -f -u galaxy-*'
       alias glh='journalctl -f -u galaxy-handler@*'
       alias glz='journalctl -f -u galaxy-zergpool -u galaxy-zergling@* | grep -v "/api/histories"'
       alias glw='journalctl -f -u galaxy-workflow-scheduler@*'
       alias cu="sudo awk '{print $1}' /var/log/nginx/access.log | sort | uniq -c | sort -nr"
+      alias chg2wd='change_to_wd'
 
 - name: Check for bash_history
   stat:
