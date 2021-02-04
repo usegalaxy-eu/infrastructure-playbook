@@ -296,7 +296,11 @@ condor_allow_administrator: "$(ALLOW_NEGOTIATOR)"
 
 condor_system_periodic_hold: "{{ 30 * 24 * 60 * 60}}"
 condor_network_interface: ens802f0.223
-condor_extra: ''
+condor_extra: |
+  MASTER_UPDATE_INTERVAL = 150
+  SCHEDD_INTERVAL = 100
+  JOB_START_COUNT = 250
+  JOB_START_DELAY = 0
 
 # gie_proxy
 gie_proxy_dir: "{{ galaxy_root }}/gie-proxy/proxy"

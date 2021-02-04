@@ -14,3 +14,11 @@ condor_daemons:
 condor_allow_negotiator: $(ALLOW_WRITE)
 condor_allow_administrator: "$(ALLOW_NEGOTIATOR)"
 condor_network_interface: ens802f0.2368
+condor_extra: |
+  MASTER_UPDATE_INTERVAL = 150
+  CLASSAD_LIFETIME = 300
+  NEGOTIATOR_INTERVAL = 15
+  NEGOTIATOR_UPDATE_INTERVAL = 100
+  SCHEDD_INTERVAL = 100
+  JOB_START_COUNT = 250
+  JOB_START_DELAY = 0
