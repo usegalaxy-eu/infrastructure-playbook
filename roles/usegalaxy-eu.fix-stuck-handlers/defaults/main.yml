@@ -1,5 +1,10 @@
 sleep_duration: 240
 cron_tasks:
+  - name: "Call sync-to-nfs"
+    minute: 30
+    hour: 2
+    job: "/usr/bin/galaxy-sync-to-nfs"
+    user: galaxy
   - name: "Restart handlers"
     minute: 0
     hour: 3
