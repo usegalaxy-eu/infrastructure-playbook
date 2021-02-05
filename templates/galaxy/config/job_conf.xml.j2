@@ -57,7 +57,7 @@
 	</tools>
 	<resources>
 {% for resource in galaxy_jobconf['resources'] %}
-    <group id="{{ resource['id'] }}">{{ resource['names'] }}</group>
+		<group id="{{ resource['id'] }}">{{ resource['names'] }}</group>
 {% endfor %}
 	</resources>
 	<limits>
