@@ -1840,7 +1840,7 @@ base_app_main: &BASE_APP_MAIN
   # processors, memory and walltime.
   # The value of this option will be resolved with respect to
   # <config_dir>.
-  #job_resource_params_file: job_resource_params_conf.xml
+  job_resource_params_file: "{{ galaxy_config_dir }}/job_resource_params_conf.xml"
 
   # Similar to the above parameter, workflows can describe parameters
   # used to influence scheduling of jobs within the workflow. This

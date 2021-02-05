@@ -44,13 +44,22 @@
 	</destinations>
 	<tools>
 {% for tool in galaxy_jobconf['tools'] %}
+{% if 'resources' in tool %}
+		<tool id="{{ tool['id'] }}" destination="{{ tool['destination'] }}" resources="{{ tool['resources'] }}" />
+{% else %}
 		<tool id="{{ tool['id'] }}" destination="{{ tool['destination'] }}" />
+{% endif %}
 {% endfor %}
 		<!-- Per handler echos-->
 {% for n in range(galaxy_handler_count) %}
 		<tool id="echo_main_handler{{ n }}" destination="local" handler="handler{{ n }}"/>
 {% endfor %}
 	</tools>
+	<resources>
+{% for resource in galaxy_jobconf['resources'] %}
+    <group id="{{ resource['id'] }}">{{ resource['names'] }}</group>
+{% endfor %}
+	</resources>
 	<limits>
 {% for limit in galaxy_jobconf['limits'] | sort(attribute='type') %}
 {% if 'id' in limit %}
