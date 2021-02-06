@@ -185,6 +185,7 @@ monitor_condor_split_util: true
 
 
 # Certbot
+certbot_virtualenv_package_name: python3-virtualenv
 certbot_dns_provider: route53
 certbot_auth_method: --standalone
 certbot_domains: "{{ server_names }}"
@@ -243,7 +244,7 @@ nginx_conf_http:
   gzip_buffers: "16 8k"
   gzip_min_length: 128
 nginx_enable_default_server: false
-nginx_flavor: "galaxy"
+nginx_flavor: ""
 
 # Nginx Letsencrypt bindings
 nginx_ssl_role: usegalaxy-eu.certbot
