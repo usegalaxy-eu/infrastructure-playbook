@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<workflow_schedulers default="core">
+    <core id="core" />
+    <handlers assign_with="db-preassign" default="schedulers">
+{% for n in range(galaxy_workflow_scheduler_count) %}
+        <handler id="workflow_scheduler_{{ galaxy_instance_codename }}_{{ n }}" tags="schedulers"/>
+{% endfor %}
+    </handlers>
+</workflow_schedulers>
