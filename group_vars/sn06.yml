@@ -129,6 +129,13 @@ telegraf_plugins_extra:
       - timeout = "15s"
       - data_format = "influx"
       - interval = "1m"
+  galaxy_active_users:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin uwsgi active-users"]
+      - timeout = "15s"
+      - data_format = "influx"
+      - interval = "1m"
 
   postgres_extra:
     plugin: "exec"
