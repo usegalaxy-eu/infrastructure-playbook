@@ -82,6 +82,7 @@
       <display file="igv/bigwig.xml"/>
     </datatype>
     <datatype extension="cxb" type="galaxy.datatypes.binary:Binary" mimetype="application/octet-stream" subclass="true" display_in_upload="true" description="Cuffquant output format"/>
+    <datatype extension="idat" type="galaxy.datatypes.binary:Binary" mimetype="application/octet-stream" subclass="True" display_in_upload="true" description="RnBeads binary file" />
     <datatype extension="chrint" type="galaxy.datatypes.interval:ChromatinInteractions" display_in_upload="true">
       <converter file="interval_to_bgzip_converter.xml" target_datatype="bgzip"/>
       <converter file="interval_to_tabix_converter.xml" target_datatype="tabix" depends_on="bgzip"/>
@@ -121,7 +122,7 @@
     <datatype extension="fastq" auto_compressed_types="gz,bz2" type="galaxy.datatypes.sequence:Fastq" display_in_upload="true" description="FASTQ format is a text-based format for storing both a biological sequence (usually nucleotide sequence) and its corresponding quality scores." description_url="https://wiki.galaxyproject.org/Learn/Datatypes#Fastq">
       <converter file="fastq_to_fqtoc.xml" target_datatype="fqtoc"/>
     </datatype>
-    <datatype extension="fastqsanger" auto_compressed_types="gz,bz2" type="galaxy.datatypes.sequence:FastqSanger" display_in_upload="true">
+    <datatype extension="fastqsanger" auto_compressed_types="gz,bz2" type="galaxy.datatypes.sequence:FastqSanger" display_in_upload="true" mimetype="application/gzip">
       <converter file="fastq_to_fqtoc.xml" target_datatype="fqtoc"/>
     </datatype>
     <datatype extension="fastqsolexa" auto_compressed_types="gz,bz2" type="galaxy.datatypes.sequence:FastqSolexa" display_in_upload="true" description="FastqSolexa is the Illumina (Solexa) variant of the Fastq format, which stores sequences and quality scores in a single file." description_url="https://wiki.galaxyproject.org/Learn/Datatypes#FastqSolexa">
@@ -149,7 +150,9 @@
       <display file="igv/gff.xml" inherit="true"/>
       <!-- <display file="gbrowse/gbrowse_gff.xml" inherit="true" /> -->
     </datatype>
-    <datatype extension="gff3" auto_compressed_types="gz,bz2" type="galaxy.datatypes.interval:Gff3" display_in_upload="true" description="The GFF3 format addresses the most common extensions to GFF, while preserving backward compatibility with previous formats." description_url="https://wiki.galaxyproject.org/Learn/Datatypes#GFF3"/>
+    <datatype extension="gff3" auto_compressed_types="gz,bz2" type="galaxy.datatypes.interval:Gff3" display_in_upload="true" description="The GFF3 format addresses the most common extensions to GFF, while preserving backward compatibility with previous formats." description_url="https://wiki.galaxyproject.org/Learn/Datatypes#GFF3">
+        <display file="igv/gff.xml"/>
+    </datatype>
     <datatype extension="gif" type="galaxy.datatypes.images:Gif" mimetype="image/gif"/>
     <datatype extension="gmaj.zip" type="galaxy.datatypes.images:Gmaj" mimetype="application/zip"/>
     <datatype extension="graph_dot" type="galaxy.datatypes.data:Text" subclass="true"/>
@@ -198,7 +201,7 @@
     <datatype extension="gatk_dbsnp" type="galaxy.datatypes.tabular:Tabular" subclass="true" display_in_upload="true"/>
     <datatype extension="gatk_tranche" type="galaxy.datatypes.tabular:Tabular" subclass="true" display_in_upload="true"/>
     <datatype extension="gatk_recal" type="galaxy.datatypes.tabular:Tabular" subclass="true" display_in_upload="true"/>
-    <datatype extension="jpg" type="galaxy.datatypes.images:Jpg" mimetype="image/jpeg" display_in_upload="true"/>c
+    <datatype extension="jpg" type="galaxy.datatypes.images:Jpg" mimetype="image/jpeg" display_in_upload="true"/>
     <datatype extension="tiff" type="galaxy.datatypes.images:Tiff" mimetype="image/tiff" display_in_upload="true"/>
     <datatype extension="tf2" type="galaxy.datatypes.images:Tiff" subclass="true" display_in_upload="false"/>
     <datatype extension="tf8" type="galaxy.datatypes.images:Tiff" subclass="true" display_in_upload="false"/>
@@ -277,6 +280,7 @@
     <datatype extension="mzq" type="galaxy.datatypes.proteomics:MzQuantML" mimetype="application/xml" display_in_upload="true"/>
     <datatype extension="sqlite" type="galaxy.datatypes.binary:SQlite" mimetype="application/octet-stream" display_in_upload="true"/>
     <datatype extension="mz.sqlite" type="galaxy.datatypes.binary:MzSQlite" mimetype="application/octet-stream" display_in_upload="true"/>
+    <datatype extension="gafa.sqlite" type="galaxy.datatypes.gafa_datatypes:GAFASQLite" mimetype="application/octet-stream" display_in_upload="True"/>
     <datatype extension="osw" type="galaxy.datatypes.binary:OSW" mimetype="application/octet-stream" display_in_upload="true"/>
     <datatype extension="pqp" type="galaxy.datatypes.binary:PQP" mimetype="application/octet-stream" display_in_upload="true"/>
     <datatype extension="traml" type="galaxy.datatypes.proteomics:TraML" mimetype="application/xml" display_in_upload="true"/>
@@ -1030,5 +1034,6 @@
     <sniffer type="galaxy.datatypes.binary:OxliSubset"/>
     <sniffer type="galaxy.datatypes.binary:OxliGraphLabels"/>
     <sniffer type="galaxy.datatypes.neo4j:Neo4jDBzip"/>
+    <sniffer type="galaxy.datatypes.binary:Cool"/>
   </sniffers>
 </datatypes>
