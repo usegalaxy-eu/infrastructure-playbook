@@ -43,7 +43,10 @@ condor_singularity_with_conda:
     #singularity_run_extra_arguments: '-H /usr/local/galaxy/'
     tmp_dir: 'True'
     ## we need to convert the following into yaml:
-    ## <container type="docker" shell="/bin/sh" resolve_dependencies="true">busybox:ubuntu-14.04</container>
+    ## <param id="container_override">
+    ##    <container type="singularity" shell="/bin/sh" resolve_dependencies="false">/data/0/cvmfs/singularity/ubuntu:18.04</container>
+    ##    <container type="singularity" shell="/bin/sh" resolve_dependencies="true">/data/0/cvmfs/singularity/ubuntu:18.04</container>
+    ## </param>
     container:
       container: '/data/0/cvmfs/singularity/ubuntu:18.04'
       type: singularity
