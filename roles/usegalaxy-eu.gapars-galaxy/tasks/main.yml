@@ -74,3 +74,9 @@
     src: service
     dest: /etc/systemd/system/gapars.service
   notify: setup gapars systemd
+
+- name: Enable service
+  systemd:
+    name: "gapars.service"
+    enabled: yes
+    state: started
