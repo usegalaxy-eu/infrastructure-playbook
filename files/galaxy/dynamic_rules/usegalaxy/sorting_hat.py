@@ -355,7 +355,7 @@ def _finalize_tool_spec(tool_id, user_roles, tools_spec=TOOL_DESTINATIONS, memor
         }
     # These we're running on a specific subset
     elif 'interactive_tool_' in tool_id:
-        tool_spec['requirements'] = 'GalaxyDockerHack == True'
+        tool_spec['requirements'] = 'GalaxyDockerHack == True && GalaxyGroup == "compute"'
 
     return tool_spec
 
