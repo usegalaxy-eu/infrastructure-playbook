@@ -12,6 +12,7 @@ usegalaxy_eu_autofs_mounts:
 
 # Telegraf
 custom_telegraf_env: "/usr/bin/env GDPR_MODE=1 PGUSER=galaxy PGHOST=sn03.bi.uni-freiburg.de GALAXY_ROOT=/opt/galaxy/server GALAXY_CONFIG_FILE=/opt/galaxy/config/galaxy.ini GALAXY_LOG_DIR=/var/log/galaxy/ GXADMIN_PYTHON=/opt/galaxy/venv/bin/python"
+telegraf_agent_hostname: "sn06.galaxyproject.eu"
 telegraf_plugins_extra:
   postgres:
     plugin: "postgresql"
