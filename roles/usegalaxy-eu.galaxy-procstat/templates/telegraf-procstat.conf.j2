@@ -4,7 +4,7 @@
 	cgroup = "systemd/system.slice/galaxy-zergpool.service"
 	cmdline_tag = true
 
-{% for zerg in range(2 * galaxy_systemd_zerglings) %}
+{% for zerg in range(galaxy_systemd_zerglings) %}
 [[inputs.procstat]]
 	cgroup = "systemd/system.slice/system-galaxy\\x2dzergling.slice/galaxy-zergling@{{ zerg }}.service"
 	process_name = "galaxy-zerg@{{ zerg }}"
