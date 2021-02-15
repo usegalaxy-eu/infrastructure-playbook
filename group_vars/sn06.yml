@@ -86,7 +86,7 @@ telegraf_plugins_extra:
     plugin: "exec"
     config:
       - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery upload-gb-in-past-hour"]
-      - timeout = "15s"
+      - timeout = "30s"
       - data_format = "influx"
       - interval = "1h"
   galaxy_lastlog:
