@@ -1,0 +1,9 @@
+---
+- copy:
+    content: |
+      #!/bin/bash
+      nfsstat -3 -v -l | awk '(NR>2 && length){print "nfsstat,op="substr($4, 0, length($4)-1)" count="$5}'
+    dest: /usr/bin/nfsstat-influx
+    owner: root
+    group: root
+    mode: 0755
