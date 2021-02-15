@@ -67,11 +67,14 @@
         policy: targeted
         state: permissive
   post_tasks:
-    - name: Append systemd-journal group to galaxy user
+    - name: Append some users to the systemd-journal group
       user:
-        name: "{{ galaxy_user.name }}"
+        name: "{{ item }}"
         groups: systemd-journal
         append: yes
+      loop:
+        - "{{ galaxy_user.name }}"
+        - "telegraf"
     - name: Install utilities
       package:
         name: [ 'mosh' ]
