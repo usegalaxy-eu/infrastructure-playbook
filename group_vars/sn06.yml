@@ -160,7 +160,7 @@ telegraf_plugins_extra:
           "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-stat-bgwriter",
           "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-stat-user-tables",
         ]
-      - timeout = "15s"
+      - timeout = "30s"
       - data_format = "influx"
       - interval = "1m"
 
