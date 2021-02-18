@@ -151,9 +151,42 @@ minimap2: {cores: 8, mem: 20}
 flye: {cores: 20, mem: 24}
 msstats: {mem: 24}
 msstatstmt: {mem: 24}
-dimspy_process_scans: {cores: 4, mem: 12}
-dimspy_replicate_filter: {cores: 4, mem: 12}
-dimspy_align_samples: {cores: 4, mem: 12}
+dimspy_process_scans: 
+  cores: 4
+  mem: 12
+  env:
+    NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+    OMP_NUM_THREADS: 4
+    OPENBLAS_NUM_THREADS: 4
+    MKL_NUM_THREADS: 4
+    VECLIB_MAXIMUM_THREADS: 4
+    NUMEXPR_NUM_THREADS: 4
+    NUMBA_NUM_THREADS: 4
+
+dimspy_replicate_filter:
+  cores: 4
+  mem: 12
+  env:
+    NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+    OMP_NUM_THREADS: 4
+    OPENBLAS_NUM_THREADS: 4
+    MKL_NUM_THREADS: 4
+    VECLIB_MAXIMUM_THREADS: 4
+    NUMEXPR_NUM_THREADS: 4
+    NUMBA_NUM_THREADS: 4
+
+dimspy_align_samples:
+  cores: 4
+  mem: 12
+  env:
+    NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+    OMP_NUM_THREADS: 4
+    OPENBLAS_NUM_THREADS: 4
+    MKL_NUM_THREADS: 4
+    VECLIB_MAXIMUM_THREADS: 4
+    NUMEXPR_NUM_THREADS: 4
+    NUMBA_NUM_THREADS: 4
+
 dimspy_blank_filter: {mem: 12}
 dimspy_sample_filter: {mem: 12}
 dimspy_missing_values_sample_filter: {mem: 12}
