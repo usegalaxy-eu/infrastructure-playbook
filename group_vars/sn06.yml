@@ -902,6 +902,8 @@ galaxy_config_files:
     dest: "{{ galaxy_config['app:main']['blacklist_file'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/user_preferences_extra_conf.yml"
     dest: "{{ galaxy_config['app:main']['user_preferences_extra_conf_path'] }}"
+  - src: "{{ galaxy_config_file_src_dir }}/config/job_resource_params_conf.xml"
+    dest: "{{ galaxy_config['app:main']['job_resource_params_file'] }}"
   # test? Unknown if this works.
   - src: "{{ galaxy_config_file_src_dir }}/config/file_sources_conf.yml"
     dest: "{{ galaxy_config_dir }}/__file_sources_conf.yml"
@@ -961,5 +963,4 @@ galaxy_config_templates:
     dest: "{{ galaxy_config_dir }}/tool_conf.xml"
   - src: "{{ galaxy_config_template_src_dir }}/config/galaxy_workflow_scheduler.j2"
     dest: "{{ galaxy_config_dir }}/workflow_schedulers_conf.xml"
-  - src: "{{ galaxy_config_template_src_dir }}/config/job_resource_params_conf.xml.j2"
-    dest: "{{ galaxy_config['app:main']['job_resource_params_file'] }}"
+
