@@ -32,16 +32,6 @@ openduck_run_smd:
    docker_set_user: 1000
    docker_run_extra_arguments: '-e "OPENDUCK_GPU_PARAM=$OPENDUCK_GPU_PARAM" --gpus all'
 
-interactive_ml_tool_jupyter_notebook:
-   ##runner: remote_condor_cluster_gpu_docker
-   runner: condor_docker_ie
-   ##gpus: 1
-   cores: 1
-   env:
-      CUDA_VISIBLE_DEVICES: 0
-   ##docker_set_user: 1000
-   ##docker_run_extra_arguments: ' --gpus all '
-
 sklearn_searchcv: {mem: 12, cores: 10}
 
 sklearn_model_validation: {mem: 12, cores: 10}
@@ -60,6 +50,19 @@ interactive_tool_climate_notebook:
   env: 
     HOME: /home/jovyan
   force_destination_id: True
+
+
+interactive_ml_tool_jupyter_notebook:
+   ##runner: remote_condor_cluster_gpu_docker
+   runner: condor_docker_ie_interactive
+   force_destination_id: True
+   ##gpus: 1
+   cores: 1
+   mem: 8
+   env:
+      CUDA_VISIBLE_DEVICES: 0
+   ##docker_set_user: 1000
+   ##docker_run_extra_arguments: ' --gpus all '
 
 interactive_tool_rstudio: {mem: 8, cores: 1, runner: condor_docker_ie_interactive, force_destination_id: True}
 interactive_tool_pyiron: {mem: 8, cores: 1, runner: condor_docker_ie_interactive, force_destination_id: True}
