@@ -11,6 +11,22 @@
   login: ${user.preferences['b2drop|username']} 
   password: ${user.preferences['b2drop|password']}
 
+- type: posix
+  root: '/data/5/galaxy_import/galaxy_user_data/covid-19/data/sequences/'
+  id: covid19-raw-sequences
+  label: COVID-19 FASTQ
+  doc: COVID-19 RAW sequences in FASTQ format
+
+- type: ftp
+  id: ebi-ftp
+  label: "EBI FTP server"
+  doc: "EBI FTP server"
+  host: "ftp.ebi.ac.uk"
+  user: "anonymous"
+  passwd: ""
+  timeout: 10
+  port: 21
+
 - type: s3fs
   label: Genome Ark
   id: genomeark
