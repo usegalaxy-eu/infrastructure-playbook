@@ -23,6 +23,8 @@ interactive_tool_askomics: {mem: 4, runner: condor_docker}
 interactive_tool_rstudio: {mem: 4, runner: condor_docker}
 interactive_tool_paraview: {mem: 4, runner: condor_docker}
 
+samtools_idxstats: {runner: condor_singularity_with_conda}
+
 # roary	needs many many cpus if	the number of input files increase
 # a more specific function would ne neat
 roary: {cores: 24}
@@ -68,7 +70,6 @@ viz_overlay_moving_and_fixed_image: {mem: 12}
 ip_projective_transformation: {mem: 24}
 scale_image: {mem: 12}
 re_he_maldi_image_registration: {mem: 48}
-nanopolish_eventalign: {cores: 10, mem: 12}
 nanopolish_methylation: {cores: 10, mem: 12}
 minimap2: {cores: 8, mem: 20}
 flye: {cores: 20, mem: 24}
@@ -76,7 +77,6 @@ nanopolish_variants: {cores: 20, mem: 12}
 nanopolish_eventalign: {cores: 20, mem: 12}
 AccurateMassSearch: {cores: 4, mem: 8}
 AdditiveSeries: {cores: 20, mem: 12}
-AdditiveSeries: {cores: 4, mem: 8}
 augustus: {runner: remote_cluster_mq_be01}
 BaselineFilter: {cores: 4, mem: 8}
 CONVERTER_bedgraph_to_bigwig: {mem: 8}
@@ -351,8 +351,7 @@ TextExporter: {cores: 4, mem: 8}
 TransformationEvaluation: {cores: 4, mem: 8}
 XMLValidator: {cores: 4, mem: 8}
 XTandemAdapter: {cores: 4, mem: 8}
-racon: {cores: 4, mem: 24}
-abims_xcms_fillPeaks: {mem: 32}
+abims_xcms_fillPeaks: { mem: 32}
 abims_xcms_retcor: {mem: 32}
 abims_CAMERA_annotateDiffreport: {mem: 32}
 antismash:
@@ -380,7 +379,6 @@ bismark_bowtie: {cores: 6, mem: 30, name: bismark, tmp: large}
 bismark_bowtie2: {cores: 6, mem: 30, name: bismark, tmp: large}
 blast_parser: {mem: 8}
 blast2go: {mem: 20}
-blast_parser: {mem: 8}
 blockbuster: {mem: 64}
 blockclust: {mem: 10}
 bowtie2: {cores: 8, mem: 20}

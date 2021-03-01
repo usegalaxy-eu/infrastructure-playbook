@@ -269,7 +269,11 @@ def build_spec(tool_spec, dest_spec=SPECIFICATIONS, runner_hint=None):
     env.update(tool_spec.get('env', {}))
     env = {k: str(v).format(**kwargs) for (k, v) in env.items()}
     params.update(tool_spec.get('params', {}))
-    params = {k: str(v).format(**kwargs) for (k, v) in params.items()}
+    for (k, v) in params.items():
+        if not isinstance(v, list):
+            params[k] = str(v).format(**kwargs)
+        else:
+            params[k] = v
 
     tags.add(tool_spec.get('tags', None))
     tags.discard(None)
