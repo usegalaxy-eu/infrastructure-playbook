@@ -33,7 +33,10 @@ condor_singularity_with_conda:
   limits:
     cores: 40
     mem: 1000
-  env: {}
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
   params:
     priority: -{PRIORITY}
     request_cpus: '{PARALLELISATION}'
