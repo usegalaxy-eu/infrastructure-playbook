@@ -1,10 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<toolbox>
-  <section id="get_data" name="Get Data">
+<toolbox monitor="true">
+  <section id="getext" name="Get Data">
     <tool file="data_source/upload.xml" />
     <tool file="data_source/ucsc_tablebrowser.xml" />
     <!-- <tool file="data_source/ucsc_tablebrowser_test.xml" /> -->
     <tool file="data_source/ucsc_tablebrowser_archaea.xml" />
+    <tool file="data_source/sra.xml" />
     <tool file="data_source/ebi_sra.xml" />
     <tool file="data_source/microbial_import.xml" />
     <tool file="data_source/biomart.xml" />
@@ -77,7 +78,17 @@
     <tool file="{{ galaxy_nonrepro_tools }}/unix_tools/replace_text_in_column.xml" hidden="True" />
     <tool file="{{ galaxy_nonrepro_tools }}/unix_tools/replace_text_in_line.xml" hidden="True" />
   </section>
-  <section id="filter_and_sort" name="Filter and Sort">
+  <section id="convert" name="Convert Formats">
+    <tool file="filters/bed2gff.xml" />
+    <tool file="filters/gff2bed.xml" />
+    <tool file="maf/maf_to_bed.xml" />
+    <tool file="maf/maf_to_interval.xml" />
+    <tool file="maf/maf_to_fasta.xml" />
+    <tool file="filters/sff_extractor.xml" />
+    <tool file="filters/wig_to_bigwig.xml" />
+    <tool file="filters/bed_to_bigbed.xml" />
+  </section>
+  <section id="filter" name="Filter and Sort">
     <tool file="stats/filtering.xml" />
     <tool file="filters/sorter.xml" />
     <tool file="filters/grep.xml" />
@@ -89,7 +100,7 @@
     <tool file="{{ galaxy_nonrepro_tools }}/unix_tools/word_list_grep.xml" hidden="True" />
     <tool file="{{ galaxy_nonrepro_tools }}/unix_tools/uniq_tool.xml" hidden="True" />
   </section>
-  <section id="join_subtract_and_group" name="Join, Subtract and Group" version="">
+  <section id="group" name="Join, Subtract and Group">
     <tool file="filters/joiner.xml" />
     <tool file="filters/compare.xml" />
     <tool file="stats/grouping.xml" />
@@ -240,9 +251,10 @@
     <tool file="{{ galaxy_nonrepro_tools }}/dna_methylation/smooth.xml" />
     <tool file="{{ galaxy_nonrepro_tools }}/dna_methylation/correlation_matrix.xml" />
   </section>
-  <section id="phylogenetics" name="Phylogenetics" >
+  <section id="plots" name="Graph/Display Data">
+    <tool file="maf/vcf_to_maf_customtrack.xml" />
   </section>
-  <section id="phenotype_association" name="Phenotype Association">
+  <section id="hgv" name="Phenotype Association">
     <tool file="evolution/codingSnps.xml" />
     <tool file="evolution/add_scores.xml" />
     <tool file="phenotype_association/sift.xml" />
