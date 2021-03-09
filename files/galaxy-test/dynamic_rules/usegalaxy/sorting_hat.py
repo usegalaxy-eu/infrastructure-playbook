@@ -41,18 +41,13 @@ If you're evil and insecure
 
 --hexylena
 """
-from galaxy.jobs import JobDestination
-from galaxy.jobs.mapper import JobMappingException
-from random import sample
-
 import copy
-import math
 import os
 import yaml
 
-# Maximum resources
-CONDOR_MAX_CORES = 40
-CONDOR_MAX_MEM = 1000
+from galaxy.jobs import JobDestination
+from galaxy.jobs.mapper import JobMappingException
+from random import sample
 
 # The default / base specification for the different environments.
 SPECIFICATION_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'destination_specifications.yaml')
@@ -76,7 +71,7 @@ TOOL_DESTINATION_ALLOWED_KEYS = ['cores', 'env', 'gpus', 'mem', 'name', 'nativeS
                                  'params', 'permissions', 'runner', 'tags', 'tmp', 'force_destination_id',
                                  'docker_auto_rm', 'docker_default_container_id', 'docker_set_user',
                                  'docker_memory', 'docker_run_extra_arguments', 'docker_set_user',
-                                 'docker_sudo', 'docker_volumes' ]
+                                 'docker_sudo', 'docker_volumes']
 
 SPECIFICATION_ALLOWED_KEYS = ['env', 'limits', 'params', 'tags', 'nodes']
 
@@ -187,7 +182,7 @@ def _get_limits(destination, dest_spec=SPECIFICATIONS, default_cores=1, default_
 def _weighted_random_sampling(destinations, dest_spec=SPECIFICATIONS):
     bunch = []
     for d in destinations:
-        weight = SPECIFICATIONS[d].get('nodes', 1)
+        weight = dest_spec[d].get('nodes', 1)
         bunch += [d]*weight
     destination = sample(bunch, 1)[0]
     return destination
@@ -239,11 +234,6 @@ def build_spec(tool_spec, dest_spec=SPECIFICATIONS, runner_hint=None):
             if k.startswith('docker'):
                 params[k] = tool_spec.get(k, '')
 
-    # Allow more human-friendly specification
-    if 'nativeSpecification' in params:
-        params['nativeSpecification'] = params['nativeSpecification'].replace('\n', ' ').strip()
-
-    # We have some destination specific kwargs. `nativeSpecExtra` and `tmp` are only defined for SGE
     if 'condor' in destination:
         if 'cores' in tool_spec:
             # kwargs['PARALLELISATION'] = tool_cores
@@ -259,6 +249,9 @@ def build_spec(tool_spec, dest_spec=SPECIFICATIONS, runner_hint=None):
 
         if 'rank' in tool_spec:
             params['rank'] = tool_spec['rank']
+
+        if '+Group' in tool_spec:
+            params['+Group'] = tool_spec['+Group']
 
     if 'remote_cluster_mq' in destination:
         # specif for condor cluster
@@ -279,9 +272,7 @@ def build_spec(tool_spec, dest_spec=SPECIFICATIONS, runner_hint=None):
     tags.discard(None)
     tags = ','.join([x for x in tags if x is not None]) if len(tags) > 0 else None
 
-    if destination == 'sge':
-        runner = 'drmaa'
-    elif 'condor' in destination:
+    if 'condor' in destination:
         runner = 'condor'
     elif 'remote_cluster_mq' in destination:
         # destination label has to follow this convention:
@@ -294,7 +285,7 @@ def build_spec(tool_spec, dest_spec=SPECIFICATIONS, runner_hint=None):
     return env, params, runner, raw_allocation_details, tags
 
 
-def reroute_to_dedicated(tool_spec, user_roles):
+def reroute_to_dedicated(user_roles):
     """
     Re-route users to correct destinations. Some users will be part of a role
     with dedicated training resources.
@@ -312,11 +303,12 @@ def reroute_to_dedicated(tool_spec, user_roles):
     # Otherwise, the user does have one or more training roles.
     # So we must construct a requirement / ranking expression.
     training_expr = " || ".join(['(GalaxyGroup == "%s")' % role for role in training_roles])
+    training_labels = '"'+", ".join(['%s' % role for role in training_roles])+'"'
     return {
         # We require that it does not run on machines that the user is not in the role for.
         'requirements': '(GalaxyGroup == "compute") || (%s)' % training_expr,
         # We then rank based on what they *do* have the roles for
-        'rank': training_expr,
+        '+Group': training_labels,
     }
 
 
@@ -326,7 +318,7 @@ def _finalize_tool_spec(tool_id, user_roles, tools_spec=TOOL_DESTINATIONS, memor
     # Pull the tool specification (i.e. job destination configuration for this tool)
     tool_spec = copy.deepcopy(tools_spec.get(tool, {}))
     # Update the tool specification with any training resources that are available
-    tool_spec.update(reroute_to_dedicated(tool_spec, user_roles))
+    tool_spec.update(reroute_to_dedicated(user_roles))
 
     # Update the tool specification with default values if not specified
     for s in DEFAULT_TOOL_SPEC:
@@ -354,17 +346,7 @@ def _finalize_tool_spec(tool_id, user_roles, tools_spec=TOOL_DESTINATIONS, memor
         }
     # These we're running on a specific subset
     elif 'interactive_tool_' in tool_id:
-        tool_spec['requirements'] = 'GalaxyDockerHack == True'
-
-    return tool_spec
-
-
-def convert_to(tool_spec, runner):
-    tool_spec['runner'] = runner
-
-    if runner == 'sge':
-        # sge doesn't accept non-ints
-        tool_spec['mem'] = int(math.ceil(tool_spec['mem']))
+        tool_spec['requirements'] = 'GalaxyDockerHack == True && GalaxyGroup == "compute"'
 
     return tool_spec
 
@@ -394,10 +376,6 @@ def _gateway(tool_id, user_preferences, user_roles, user_id, user_email, memory_
     # This is a special case, we're requiring it for faster feedback / turnaround times.
     if 'training-hard-limits' in user_roles:
         params['requirements'] = 'GalaxyGroup  ==  "training-hard-limits"'
-
-    # Shortcut to run jobs only on Py3 enables nodes
-    if 'py3' in user_roles:
-        params['requirements'] = 'GalaxyGroup  ==  "py3"'
 
     return env, params, runner, tool_spec, tags
 
@@ -442,11 +420,14 @@ def gateway(tool_id, user, memory_scale=1.0, next_dest=None):
         resubmit=resubmit,
     )
 
+
 def gateway_1x(tool_id, user):
     return gateway(tool_id, user, memory_scale=1, next_dest='gateway_1_5x')
 
+
 def gateway_1_5x(tool_id, user):
     return gateway(tool_id, user, memory_scale=1.5, next_dest='gateway_2x')
+
 
 def gateway_2x(tool_id, user):
     return gateway(tool_id, user, memory_scale=2)
