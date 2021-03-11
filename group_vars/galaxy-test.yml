@@ -561,6 +561,9 @@ galaxy_jobconf:
           destination: gateway_1x
         - id: toolshed.g2.bx.psu.edu/repos/devteam/samtools_stats/samtools_stats/2.0.2+galaxy2
           destination: static_remote_cluster_mq_it01
+        - id: gmx_sim
+          destination: gateway_singlerun
+          resources: usegpu
         #- id: wig_to_bigWig
           #destination: wig_to_bigWig
         #- id: dexseq
@@ -577,6 +580,9 @@ galaxy_jobconf:
           #destination: 24cores_15G_BLAST
         #- id: ncbi_rpsblast_wrapper
           #destination: 24cores_15G_BLAST
+    resources:
+      - id: usegpu
+        names: gpu
     limits:
         - type: 'walltime'
           value: '148:00:00'
