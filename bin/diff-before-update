@@ -17,11 +17,16 @@ else
 	exit 1
 fi
 
+if [[ $2 == "emacs" ]]; then
+  difftool='emacs-ediff.sh'
+else
+  difftool='vimdiff'
+fi
 
 compare() {
 	diff "$1" "$2" > /dev/null
 	if (( $? > 0 )); then
-		vimdiff "$1" "$2"
+		$difftool "$1" "$2"
 	fi
 }
 

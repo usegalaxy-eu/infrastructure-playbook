@@ -85,7 +85,7 @@ base_app_main: &BASE_APP_MAIN
   # valuable to separate these - for instance bootstrapping fresh Galaxy
   # instances with pretested installs.  The following option can be used
   # to separate the tool shed install database (all other options listed
-  # above but prefixed with install_ are also available).
+  # above but prefixed with ``install_`` are also available).
   # Defaults to the value of the 'database_connection' option.
   #install_database_connection: null
 
@@ -107,7 +107,11 @@ base_app_main: &BASE_APP_MAIN
 
   # Where dataset files are stored. It must be accessible at the same
   # path on any cluster nodes that will run Galaxy jobs, unless using
-  # Pulsar.
+  # Pulsar. The default value has been changed from 'files' to 'objects'
+  # as of 20.05; however, Galaxy will first check if the 'files'
+  # directory exists before using 'objects' as the default.
+  # The value of this option will be resolved with respect to
+  # <data_dir>.
   #file_path: objects
 
   # Where temporary files are stored. It must be accessible at the same
@@ -121,6 +125,8 @@ base_app_main: &BASE_APP_MAIN
   # config/tool_conf.xml does not exist). Can be a single file, a list
   # of files, or (for backwards compatibility) a comma-separated list of
   # files.
+  # The value of this option will be resolved with respect to
+  # <config_dir>.
   tool_config_file: "{{ galaxy_config_dir }}/tool_conf.xml,{{ galaxy_config_dir }}/nagios_tool_conf.xml"
 
   # Tool config file for tools installed from the Galaxy Tool Shed. Must
@@ -228,11 +234,15 @@ base_app_main: &BASE_APP_MAIN
   # Path to a file that provides a mapping from abstract packages to
   # concrete conda packages. See `config/local_conda_mapping.yml.sample`
   # for examples.
+  # The value of this option will be resolved with respect to
+  # <config_dir>.
   #local_conda_mapping_file: local_conda_mapping.yml
 
   # Path to a file that provides a mapping from abstract packages to
   # locally installed modules. See
   # `config/environment_modules_mapping.yml.sample` for examples.
+  # The value of this option will be resolved with respect to
+  # <config_dir>.
   #modules_mapping_files: environment_modules_mapping.yml
 
   # Certain dependency resolvers (namely Conda) take a considerable
@@ -279,7 +289,7 @@ base_app_main: &BASE_APP_MAIN
   # Monitor dynamic job rules. If changes are found, rules are
   # automatically reloaded. Takes the same values as the 'watch_tools'
   # option.
-  #watch_job_rules: 'auto'
+  #watch_job_rules: 'false'
 
   # Monitor a subset of options in the core configuration file (See
   # RELOADABLE_CONFIG_OPTIONS in lib/galaxy/config/__init__.py).  If
@@ -293,19 +303,10 @@ base_app_main: &BASE_APP_MAIN
   # option.
   #watch_tours: 'false'
 
-  # As of 18.09, Galaxy defaults to setting up the object store
-  # configuration for output datasets during the job queue step in job
-  # handlers. This should generally provide for more robust job
-  # submission, more configurability, and a better user experience but
-  # may in some cases slightly slow down the job handler job setup
-  # process. On the off chance that an admin would like to or need to
-  # optimize job handlers at the expense of user experience and web
-  # handling this option will remain for some time by setting this
-  # option to true. This behavior however should be considered
-  # deprecated and this option will likely be removed in future versions
-  # of Galaxy. For more information see
-  # https://github.com/galaxyproject/galaxy/issues/6513.
-  legacy_eager_objectstore_initialization: "False"
+  # Configured FileSource plugins.
+  # The value of this option will be resolved with respect to
+  # <config_dir>.
+  #file_sources_config_file: file_sources_conf.yml
 
   # Enable Galaxy to fetch containers registered with quay.io generated
   # from tool requirements resolved through Conda. These containers
@@ -323,7 +324,7 @@ base_app_main: &BASE_APP_MAIN
 
   # involucro is a tool used to build Docker or Singularity containers
   # for tools from Conda dependencies referenced in tools as
-  # `requirement`s. The following path is the location of involucro on
+  # `requirement` s. The following path is the location of involucro on
   # the Galaxy host. This is ignored if the relevant container resolver
   # isn't enabled, and will install on demand unless involucro_auto_init
   # is set to false.
@@ -338,7 +339,7 @@ base_app_main: &BASE_APP_MAIN
 
   # Conda channels to use when building Docker or Singularity containers
   # using involucro.
-  #mulled_channels: 'conda-forge,bioconda'
+  #mulled_channels: conda-forge,bioconda
 
   # Enable automatic polling of relative tool sheds to see if any
   # updates are available for installed repositories.  Ideally only one
@@ -357,6 +358,8 @@ base_app_main: &BASE_APP_MAIN
   # XML config file that contains data table entries for the
   # ToolDataTableManager.  This file is manually # maintained by the
   # Galaxy administrator (.sample used if default does not exist).
+  # The value of this option will be resolved with respect to
+  # <config_dir>.
   tool_data_table_config_path: "{{ galaxy_config_dir }}/tool_data_table_conf.xml"
 
   # XML config file that contains additional data table entries for the
@@ -418,6 +421,8 @@ base_app_main: &BASE_APP_MAIN
   # a datatype appears in multiple files, the last definition is used
   # (though the first sniffer is used so limit sniffer definitions to
   # one file).
+  # The value of this option will be resolved with respect to
+  # <config_dir>.
   datatypes_config_file: "{{ galaxy_config_dir }}/datatypes_conf.xml"
 
   # Enable sniffing of compressed datatypes. This can be
@@ -470,6 +475,8 @@ base_app_main: &BASE_APP_MAIN
 
   # If using a cluster, Galaxy will write job scripts and stdout/stderr
   # to this directory.
+  # The value of this option will be resolved with respect to
+  # <data_dir>.
   cluster_files_directory: /data/dnb01/galaxy_db/pbs
 
   # Mako templates are compiled as needed and cached for reuse, this
@@ -498,13 +505,24 @@ base_app_main: &BASE_APP_MAIN
   # generated commands run in sh.
   #default_job_shell: /bin/bash
 
+  # Whether to enable the tool document cache. This cache stores
+  # expanded XML strings. Enabling the tool cache results in slightly
+  # faster startup times. The tool cache is backed by a SQLite database,
+  # which cannot be stored on certain network disks. The cache location
+  # is configurable using the ``tool_cache_data_dir`` setting, but can
+  # be disabled completely here.
+  #enable_tool_document_cache: false
+
   # Tool related caching. Fully expanded tools and metadata will be
   # stored at this path. Per tool_conf cache locations can be configured
-  # in (shed_)tool_conf.xml files using the tool_cache_data_dir
+  # in (``shed_``)tool_conf.xml files using the tool_cache_data_dir
   # attribute.
+  # The value of this option will be resolved with respect to
+  # <data_dir>.
   #tool_cache_data_dir: tool_cache
 
-  # Directory in which the toolbox search index is stored.
+  # Directory in which the toolbox search index is stored. The value of
+  # this option will be resolved with respect to <data_dir>.
   #tool_search_index_dir: tool_search_index
 
   # Set this to true to delay parsing of tool inputs and outputs until
@@ -522,12 +540,16 @@ base_app_main: &BASE_APP_MAIN
   # from external sources such as https://doi.org/ by Galaxy - the
   # following parameters can be used to control the caching used to
   # store this information.
-  #citation_cache_data_dir: database/citations/data
+  # The value of this option will be resolved with respect to
+  # <data_dir>.
+  #citation_cache_data_dir: citations/data
 
   # Citation related caching.  Tool citations information maybe fetched
   # from external sources such as https://doi.org/ by Galaxy - the
   # following parameters can be used to control the caching used to
   # store this information.
+  # The value of this option will be resolved with respect to
+  # <data_dir>.
   #citation_cache_lock_dir: citations/locks
 
   # Mulled resolution caching. Mulled resolution uses external APIs of
@@ -537,10 +559,14 @@ base_app_main: &BASE_APP_MAIN
 
   # Data directory used by beaker for caching mulled resolution
   # requests.
+  # The value of this option will be resolved with respect to
+  # <data_dir>.
   #mulled_resolution_cache_data_dir: mulled/data
 
   # Lock directory used by beaker for caching mulled resolution
   # requests.
+  # The value of this option will be resolved with respect to
+  # <data_dir>.
   #mulled_resolution_cache_lock_dir: mulled/locks
 
   # Configuration file for the object store If this is set and exists,
@@ -553,7 +579,10 @@ base_app_main: &BASE_APP_MAIN
   # implementation, this can be 'uuid' or 'id'. The default will depend
   # on how the object store is configured, starting with 20.05 Galaxy
   # will try to default to 'uuid' if it can be sure this is a new Galaxy
-  # instance - but the default will be 'id' in many cases.
+  # instance - but the default will be 'id' in many cases. In
+  # particular, if the name of the directory set in <file_path> is
+  # `objects`, the default will be set to 'uuid', otherwise it will be
+  # 'id'.
   #object_store_store_by: null
 
   # Galaxy sends mail for various things: subscribing users to the
@@ -593,31 +622,45 @@ base_app_main: &BASE_APP_MAIN
   error_email_to: galaxy@informatik.uni-freiburg.de
 
   # Email address to use in the 'From' field when sending emails for
-  # account activations, workflow step notifications and password
-  # resets. We recommend using string in the following format: Galaxy
-  # Project <galaxy-no-reply@example.com> If not configured,
-  # '<galaxy-no-reply@HOSTNAME>' will be used.
+  # account activations, workflow step notifications, password resets,
+  # and tool error reports.  We recommend using a string in the
+  # following format: Galaxy Project <galaxy-no-reply@example.com>. If
+  # not configured, '<galaxy-no-reply@HOSTNAME>' will be used.
   email_from: 'European Galaxy Team <galaxy@informatik.uni-freiburg.de>'
+
+  # This text will be inserted at the end of the activation email's
+  # message, before the 'Your Galaxy Team' signature.
+  #custom_activation_email_message: null
 
   # URL of the support resource for the galaxy instance.  Used in
   # activation emails.
   # Example value 'https://galaxyproject.org/'
   instance_resource_url:  "https://galaxyproject.org/support"
 
-  # E-mail domains blacklist is used for filtering out users that are
-  # using disposable email address during the registration.  If their
-  # address domain matches any domain in the blacklist, they are refused
-  # the registration.
-  # Example value 'config/disposable_email_blacklist.conf'
-  blacklist_file: "{{ galaxy_config_dir }}/disposable_email_blacklist.conf"
+  # E-mail domains blocklist is used for filtering out users that are
+  # using disposable email addresses at registration.  If their
+  # address's base domain matches any domain on the list, they are
+  # refused registration. Address subdomains are ignored (both
+  # 'name@spam.com' and 'name@foo.spam.com' will match 'spam.com').
+  # Example value 'email_blocklist.conf'
+  # The value of this option will be resolved with respect to
+  # <config_dir>.
+  email_domain_blocklist_file: "{{ galaxy_config_dir }}/disposable_email_blacklist.conf"
 
-  # E-mail domains whitelist is used to specify allowed email address
+  # E-mail domains allowlist is used to specify allowed email address
   # domains. If the list is non-empty and a user attempts registration
   # using an email address belonging to a domain that is not on the
-  # list, registration will be enied. This is a more restrictive option
-  # than <blacklist_file>, and therefore, in case <whitelist_file> is
-  # defined, <blacklist_file> will be ignored.
-  #whitelist_file: disposable_email_whitelist.conf
+  # list, registration will be denied. Unlike
+  # <email_domain_allowlist_file> which matches the address's base
+  # domain, here email addresses are matched against the full domain
+  # (base + subdomain). This is a more restrictive option than
+  # <email_domain_blocklist_file>, and therefore, in case
+  # <email_domain_allowlist_file> is set and is not empty,
+  # <email_domain_blocklist_file> will be ignored.
+  # Example value 'email_allowlist.conf'
+  # The value of this option will be resolved with respect to
+  # <config_dir>.
+  #email_domain_allowlist_file: null
 
   # Registration warning message is used to discourage people from
   # registering multiple accounts.  Applies mostly for the main Galaxy
@@ -653,7 +696,7 @@ base_app_main: &BASE_APP_MAIN
 
   # You can enter tracking code here to track visitor's behavior through
   # your Google Analytics account.  Example: UA-XXXXXXXX-Y
-  #ga_code: ''
+  #ga_code: null
 
   # Galaxy can display data at various external browsers.  These options
   # specify which browsers should be available.  URLs and builds
@@ -695,7 +738,17 @@ base_app_main: &BASE_APP_MAIN
   #interactivetools_proxy_host: null
 
   # Map for interactivetool proxy.
+  # The value of this option will be resolved with respect to
+  # <data_dir>.
   interactivetools_map: "{{ galaxy_mutable_data_dir }}/interactivetools_map.sqlite"
+
+  # Galaxy Interactive Tools (GxITs) can be stopped from within the
+  # Galaxy interface, killing the GxIT job without completing its
+  # metadata setting post-job steps. In such a case it may be desirable
+  # to set metadata on job outputs internally (in the Galaxy job handler
+  # process). The default is is the value of
+  # `retry_metadata_internally`, which defaults to `true`.
+  #retry_interactivetool_metadata_internally: true
 
   # Show visualization tab and list in masthead.
   #visualizations_visible: true
@@ -730,6 +783,8 @@ base_app_main: &BASE_APP_MAIN
   # 'doc' may be be specified as well for each entry.
   # If this is null (the default), a simple configuration containing
   # just Dockstore will be used.
+  # The value of this option will be resolved with respect to
+  # <config_dir>.
   #trs_servers_config_file: trs_servers_conf.yml
 
   # Location of the configuration file containing extra user
@@ -739,10 +794,10 @@ base_app_main: &BASE_APP_MAIN
   user_preferences_extra_conf_path: "{{ galaxy_config_dir }}/user_preferences_extra_conf.yml"
 
   # Default localization for Galaxy UI. Allowed values are listed at the
-  # end of client/galaxy/scripts/nls/locale.js. With the default value
-  # (auto), the locale will be automatically adjusted to the user's
-  # navigator language. Users can override this settings in their user
-  # preferences if the localization settings are enabled in
+  # end of client/src/nls/locale.js. With the default value (auto), the
+  # locale will be automatically adjusted to the user's navigator
+  # language. Users can override this settings in their user preferences
+  # if the localization settings are enabled in
   # user_preferences_extra_conf.yml
   #default_locale: auto
 
@@ -772,17 +827,29 @@ base_app_main: &BASE_APP_MAIN
   # The URL linked by the "Galaxy/brand" text.
   #logo_url: /
 
+  # The brand image source.
+  #logo_src: /static/favicon.png
+
+  # The custom brand image source.
+  #logo_src_secondary: null
+
   # The URL linked by the "Galaxy Help" link in the "Help" menu.
   helpsite_url: 'https://help.galaxyproject.org/c/usegalaxy-eu-support'
 
   # The URL linked by the "Wiki" link in the "Help" menu.
-  wiki_url: 'https://galaxyproject.org/'
+  wiki_url: https://galaxyproject.org/
+
+  # The URL linked for quota information in the UI.
+  #quota_url: https://galaxyproject.org/support/account-quotas/
 
   # The URL linked by the "Support" link in the "Help" menu.
   support_url: 'https://galaxyproject.org/support/'
 
   # The URL linked by the "How to Cite Galaxy" link in the "Help" menu.
-  #citation_url: 'https://galaxyproject.org/citing-galaxy'
+  #citation_url: https://galaxyproject.org/citing-galaxy
+
+  # The URL linked by the "Galaxy Version" link in the "Help" menu.
+  #release_doc_base_url: https://docs.galaxyproject.org/en/release_
 
   # The URL linked by the "Search" link in the "Help" menu.
   search_url: 'https://galaxyproject.org/search/'
@@ -868,9 +935,20 @@ base_app_main: &BASE_APP_MAIN
   nginx_x_accel_redirect_base: /_x_accel_redirect
 
   # If using compression in the upstream proxy server, use this option
-  # to disable gzipping of library .tar.gz and .zip archives, since the
-  # proxy server will do it faster on the fly.
+  # to disable gzipping of dataset collection and library archives,
+  # since the upstream server will do it faster on the fly. To enable
+  # compression add ``application/zip`` to the proxy's compressable
+  # mimetypes.
   #upstream_gzip: false
+
+  # If using the mod-zip module in nginx, use this option to assemble
+  # zip archives in nginx. This is preferable over the upstream_gzip
+  # option as Galaxy does not need to serve the archive. Requires
+  # setting up internal nginx locations to all paths that can be
+  # archived. See
+  # https://docs.galaxyproject.org/en/master/admin/nginx.html#creating-archives-with-mod-zip
+  # for details.
+  #upstream_mod_zip: false
 
   # The following default adds a header to web request responses that
   # will cause modern web browsers to not allow Galaxy to be embedded in
@@ -928,6 +1006,8 @@ base_app_main: &BASE_APP_MAIN
 
   # The NodeJS dynamic proxy can use an SQLite database or a JSON file
   # for IPC, set that here.
+  # The value of this option will be resolved with respect to
+  # <data_dir>.
   dynamic_proxy_session_map: "{{ galaxy_mutable_data_dir }}/gie_proxy_session_map.sqlite"
 
   # Set the port and IP for the dynamic proxy to bind to, this must
@@ -966,13 +1046,13 @@ base_app_main: &BASE_APP_MAIN
 
   # The golang proxy needs to know how to talk to your docker daemon.
   # Currently TLS is not supported, that will come in an update.
-  #dynamic_proxy_golang_docker_address: 'unix:///var/run/docker.sock'
+  #dynamic_proxy_golang_docker_address: unix:///var/run/docker.sock
 
   # The golang proxy uses a RESTful HTTP API for communication with
   # Galaxy instead of a JSON or SQLite file for IPC. If you do not
   # specify this, it will be set randomly for you. You should set this
   # if you are managing the proxy manually.
-  #dynamic_proxy_golang_api_key: ''
+  #dynamic_proxy_golang_api_key: null
 
   # If true, Galaxy will attempt to configure a simple root logger if a
   # "loggers" section does not appear in this configuration file.
@@ -1000,13 +1080,13 @@ base_app_main: &BASE_APP_MAIN
 
   # Turn on logging of application events and some user events to the
   # database.
-  #log_events: true
+  #log_events: false
 
   # Turn on logging of user actions to the database.  Actions currently
   # logged are grid views, tool searches, and use of "recently" used
   # tools menu.  The log_events and log_actions functionality will
   # eventually be merged.
-  #log_actions: true
+  #log_actions: false
 
   # Fluentd configuration.  Various events can be logged to the fluentd
   # instance configured below by enabling fluent_log.
@@ -1027,13 +1107,13 @@ base_app_main: &BASE_APP_MAIN
   # attacks initiated by your users.
   sanitize_all_html: false
 
-  # Whitelist sanitization file. Datasets created by tools listed in
-  # this file are trusted and will not have their HTML sanitized on
-  # display.  This can be manually edited or manipulated through the
-  # Admin control panel -- see "Manage Display Whitelist"
+  # Datasets created by tools listed in this file are trusted and will
+  # not have their HTML sanitized on display.  This can be manually
+  # edited or manipulated through the Admin control panel -- see "Manage
+  # Allowlist"
   # The value of this option will be resolved with respect to
   # <mutable_config_dir>.
-  #sanitize_whitelist_file: sanitize_whitelist.txt
+  #sanitize_allowlist_file: sanitize_allowlist.txt
 
   # By default Galaxy will serve non-HTML tool output that may
   # potentially contain browser executable JavaScript content as plain
@@ -1048,7 +1128,7 @@ base_app_main: &BASE_APP_MAIN
   # beginning and ending with /. E.g.
   # mysite.com,google.com,usegalaxy.org,/^[\w\.]*example\.com/ See:
   # https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
-  #allowed_origin_hostnames: ''
+  #allowed_origin_hostnames: null
 
   # Set to true to use Jupyter nbconvert to build HTML from Jupyter
   # notebooks in Galaxy histories.  This process may allow users to
@@ -1062,6 +1142,11 @@ base_app_main: &BASE_APP_MAIN
   # use_printdebug.  It also causes the files used by PBS/SGE
   # (submission script, output, and error) to remain on disk after the
   # job is complete.
+  # In addition, this will set uWSGI's `honour-stdin` option to `true`;
+  # thus, preventing uWSGI from remapping stdin to `/dev/null` and
+  # enabling debugging with tools like pdb. To keep uWSGI's default
+  # setting, set `honor-stdin` to `false` in the `uwsgi` section of this
+  # configuration file.
   #debug: false
 
   # Check for WSGI compliance.
@@ -1105,7 +1190,7 @@ base_app_main: &BASE_APP_MAIN
   # errors will be sent to the indicated sentry instance.  This
   # connection string is available in your sentry instance under
   # <project_name> -> Settings -> API Keys.
-  #sentry_dsn: ''
+  #sentry_dsn: null
 
   # Sentry slow request logging.  Requests slower than the threshold
   # indicated below will be sent as events to the configured Sentry
@@ -1146,7 +1231,7 @@ base_app_main: &BASE_APP_MAIN
 
   # Add an option to the library upload form which allows administrators
   # to upload a directory of files.
-  #library_import_dir: ''
+  #library_import_dir: null
 
   # Add an option to the library upload form which allows authorized
   # non-administrators to upload a directory of files.  The configured
@@ -1154,7 +1239,7 @@ base_app_main: &BASE_APP_MAIN
   # non-admin user's Galaxy login ( email ).  The non-admin user is
   # restricted to uploading files or sub-directories of files contained
   # in their directory.
-  #user_library_import_dir: ''
+  #user_library_import_dir: null
 
   # If user_library_import_dir is set, this option will auto create a
   # library import directory for every user (based on their email) upon
@@ -1168,7 +1253,7 @@ base_app_main: &BASE_APP_MAIN
   # user with library import permissions can import from anywhere in
   # these directories (assuming they are able to create symlinks to
   # them).
-  #user_library_import_symlink_whitelist: ''
+  #user_library_import_symlink_allowlist: null
 
   # In conjunction or alternatively, Galaxy can restrict user library
   # imports to those files that the user can read (by checking basic
@@ -1244,7 +1329,7 @@ base_app_main: &BASE_APP_MAIN
   # Enable/ disable Ngram-search for tools. It makes tool search results
   # tolerant for spelling mistakes in the query by dividing the query
   # into multiple ngrams and search for each ngram
-  #tool_enable_ngram_search: false
+  #tool_enable_ngram_search: true
 
   # Set minimum size of ngrams
   #tool_ngram_minsize: 3
@@ -1281,14 +1366,14 @@ base_app_main: &BASE_APP_MAIN
   # method just returns bare usernames, set a default mail domain to be
   # appended to usernames, to become your Galaxy usernames (email
   # addresses).
-  #remote_user_maildomain: ''
+  #remote_user_maildomain: null
 
   # If use_remote_user is enabled, the header that the upstream proxy
   # provides the remote username in defaults to HTTP_REMOTE_USER (the
-  # 'HTTP_' is prepended by WSGI).  This option allows you to change the
-  # header.  Note, you still need to prepend 'HTTP_' to the header in
-  # this option, but your proxy server should *not* include 'HTTP_' at
-  # the beginning of the header name.
+  # ``HTTP_`` is prepended by WSGI).  This option allows you to change
+  # the header.  Note, you still need to prepend ``HTTP_`` to the header
+  # in this option, but your proxy server should *not* include ``HTTP_``
+  # at the beginning of the header name.
   #remote_user_header: HTTP_REMOTE_USER
 
   # If use_remote_user is enabled, anyone who can log in to the Galaxy
@@ -1301,7 +1386,7 @@ base_app_main: &BASE_APP_MAIN
 
   # If use_remote_user is enabled, you can set this to a URL that will
   # log your users out.
-  #remote_user_logout_href: ''
+  #remote_user_logout_href: null
 
   # If your proxy and/or authentication source does not normalize e-mail
   # addresses or user names being passed to Galaxy - set this option to
@@ -1326,7 +1411,7 @@ base_app_main: &BASE_APP_MAIN
   #require_login: false
 
   # Show the site's welcome page (see welcome_url) alongside the login
-  # page (even if require_login is true)
+  # page (even if require_login is true).
   show_welcome_with_login: true
 
   # Allow unregistered users to create new accounts (otherwise, they
@@ -1386,15 +1471,15 @@ base_app_main: &BASE_APP_MAIN
   # overridden and set to false.
   #expose_user_email: false
 
-  # Whitelist for local network addresses for "Upload from URL" dialog.
-  # By default, Galaxy will deny access to the local network address
-  # space, to prevent users making requests to services which the
-  # administrator did not intend to expose. Previously, you could
+  # List of allowed local network addresses for "Upload from URL"
+  # dialog. By default, Galaxy will deny access to the local network
+  # address space, to prevent users making requests to services which
+  # the administrator did not intend to expose. Previously, you could
   # request any network service that Galaxy might have had access to,
   # even if the user could not normally access it. It should be a
   # comma-separated list of IP addresses or IP address/mask, e.g.
   # 10.10.10.10,10.0.1.0/24,fd00::/8
-  #fetch_url_whitelist: null
+  #fetch_url_allowlist: null
 
   # Enables GDPR Compliance mode. This makes several changes to the way
   # Galaxy logs and exposes data externally such as removing emails and
@@ -1416,6 +1501,15 @@ base_app_main: &BASE_APP_MAIN
   # of Galaxy's stable API. (The module state definitions may change and
   # workflows built using these modules may not function in the future.)
   #enable_beta_workflow_modules: false
+
+  # Enable beta EDAM organised toolbox which ignores admin managed
+  # sections in lieu of EDAM topics only.
+  #enable_beta_edam_toolbox: false
+
+  # Sets the path to EDAM ontology file.
+  # The value of this option will be resolved with respect to
+  # <data_dir>.
+  #beta_edam_toolbox_ontology_path: EDAM.tsv
 
   # Default format for the export of workflows. Possible values are 'ga'
   # or 'format2'.
@@ -1469,12 +1563,12 @@ base_app_main: &BASE_APP_MAIN
   # scheduling workflows at the expense of increased total DB traffic
   # because model objects are expunged from the SQL alchemy session
   # between workflow invocation scheduling iterations. Set to -1 to
-  # disable any such maximum (the default).
+  # disable any such maximum.
   maximum_workflow_jobs_per_scheduling_iteration: 100
 
   # Force serial scheduling of workflows within the context of a
   # particular history
-  ## history_local_serial_workflow_scheduling: true
+  #history_local_serial_workflow_scheduling: false
 
   # Enables and disables OpenID Connect (OIDC) support.
   enable_oidc: true
@@ -1498,18 +1592,21 @@ base_app_main: &BASE_APP_MAIN
 
   # Optional list of email addresses of API users who can make calls on
   # behalf of other users.
-  #api_allow_run_as: ''
+  #api_allow_run_as: null
 
-  # Master key that allows many API admin actions to be used without
-  # actually having a defined admin user in the database/config.  Only
-  # set this if you need to bootstrap Galaxy, you probably do not want
-  # to set this on public servers.
+  # API key that allows performing some admin actions without actually
+  # having a real admin user in the database and config. Only set this
+  # if you need to bootstrap Galaxy, in particular to create a real
+  # admin user account via API. You should probably not set this on a
+  # production server.
   #master_api_key: null
 
   # Enable access to post-authentication options via OpenID.
   #enable_openid: false
 
   # If OpenID is enabled, consumer cache directory to use.
+  # The value of this option will be resolved with respect to
+  # <data_dir>.
   #openid_consumer_cache_path: openid_consumer_cache
 
   # Enable tool tags (associating tools with tags).  This has its own
@@ -1605,6 +1702,8 @@ base_app_main: &BASE_APP_MAIN
 
   # File where Data Managers are configured (.sample used if default
   # does not exist).
+  # The value of this option will be resolved with respect to
+  # <config_dir>.
   data_manager_config_file: "{{ galaxy_config_dir }}/data_manager_conf.xml"
 
   # File where Tool Shed based Data Managers are configured. This file
@@ -1621,12 +1720,14 @@ base_app_main: &BASE_APP_MAIN
   # can separate Galaxy into multiple processes.  There are more than
   # one way to do this, and they are explained in detail in the
   # documentation:
-  #   https://docs.galaxyproject.org/en/master/admin/scaling.html
+  # https://docs.galaxyproject.org/en/master/admin/scaling.html
   # By default, Galaxy manages and executes jobs from within a single
   # process and notifies itself of new jobs via in-memory queues.  Jobs
   # are run locally on the system on which Galaxy is started.  Advanced
   # job running capabilities can be configured through the job
   # configuration file.
+  # The value of this option will be resolved with respect to
+  # <config_dir>.
   job_config_file: "{{ galaxy_config_dir }}/job_conf.xml"
 
   # Description of job running configuration, can be embedded into
@@ -1683,9 +1784,9 @@ base_app_main: &BASE_APP_MAIN
   # database.
   #enable_job_recovery: true
 
-  # Determines how metadata will be set. Valid values are `directory`,
-  # `extended` and `legacy`. In extended mode jobs will decide if a tool
-  # run failed, the object stores configuration is serialized and made
+  # Determines how metadata will be set. Valid values are `directory`
+  # and `extended`. In extended mode jobs will decide if a tool run
+  # failed, the object stores configuration is serialized and made
   # available to the job and is used for writing output datasets to the
   # object store as part of the job and dynamic output discovery (e.g.
   # discovered datasets <discover_datasets>, unpopulated collections,
@@ -1798,16 +1899,22 @@ base_app_main: &BASE_APP_MAIN
 
   # CSS file to apply to all Markdown exports to PDF - currently used by
   # WeasyPrint during rendering an HTML export of the document to PDF.
+  # The value of this option will be resolved with respect to
+  # <config_dir>.
   #markdown_export_css: markdown_export.css
 
   # CSS file to apply to "Galaxy Page" exports to PDF. Generally prefer
   # markdown_export_css, but this is here for deployments that would
   # like to tailor different kinds of exports.
+  # The value of this option will be resolved with respect to
+  # <config_dir>.
   #markdown_export_css_pages: markdown_export_pages.css
 
   # CSS file to apply to invocation report exports to PDF. Generally
   # prefer markdown_export_css, but this is here for deployments that
   # would like to tailor different kinds of exports.
+  # The value of this option will be resolved with respect to
+  # <config_dir>.
   #markdown_export_css_invocation_reports: markdown_export_invocation_reports.css
 
   # Prologue Markdown/HTML to apply to markdown exports to PDF. Allowing
@@ -1919,26 +2026,13 @@ base_app_main: &BASE_APP_MAIN
   # For example, when reloading the toolbox or locking job execution,
   # the process that handled that particular request will tell all
   # others to also reload, lock jobs, etc. For connection examples, see
-  # http://docs.celeryproject.org/projects/kombu/en/latest/userguide/con
-  # nections.html  Without specifying anything here, galaxy will first
-  # attempt to use your specified database_connection above.  If that's
-  # not specified either, Galaxy will automatically create and use a
-  # separate sqlite database located in your <galaxy>/database folder
-  # (indicated in the commented out line below).
+  # http://docs.celeryproject.org/projects/kombu/en/latest/userguide/connections.html
+  # Without specifying anything here, galaxy will first attempt to use
+  # your specified database_connection above.  If that's not specified
+  # either, Galaxy will automatically create and use a separate sqlite
+  # database located in your <galaxy>/database folder (indicated in the
+  # commented out line below).
   amqp_internal_connection: "pyamqp://galaxy:{{ rabbitmq_password_galaxy }}@proxy.galaxyproject.eu:5671/galaxy?ssl=1"
-
-  # Galaxy real time communication server settings
-  #enable_communication_server: false
-
-  # Galaxy real time communication server settings
-  #communication_server_host: http://localhost
-
-  # Galaxy real time communication server settings
-  #communication_server_port: 7070
-
-  # persistent_communication_rooms is a comma-separated list of rooms
-  # that should be always available.
-  #persistent_communication_rooms: null
 
   # Allow disabling pbkdf2 hashing of passwords for legacy situations.
   # This should normally be left enabled unless there is a specific
@@ -1978,6 +2072,8 @@ base_app_main: &BASE_APP_MAIN
   # removed from the recommendations and another is for adding
   # additional tools to be recommended along side those from the deep
   # learning model.
+  # The value of this option will be resolved with respect to
+  # <config_dir>.
   #admin_tool_recommendations_path: tool_recommendations_overwrite.yml
 
   # Overwrite or append to the tool recommendations by the deep learning
@@ -1988,6 +2084,22 @@ base_app_main: &BASE_APP_MAIN
   # deep learning model are shown.
   #overwrite_model_recommendations: false
 
+  # Path to error reports configuration file.
+  # The value of this option will be resolved with respect to
+  # <config_dir>.
+  #error_report_file: error_report.yml
+
+  # Path to container interface configuration file. The containers
+  # interface is only used if `enable_beta_containers_interface` config
+  # option is set.
+  # The value of this option will be resolved with respect to
+  # <config_dir>.
+  #containers_config_file: containers_conf.yml
+
+  # Path to dynamic tool destinations configuration file.
+  # The value of this option will be resolved with respect to
+  # <config_dir>.
+  #tool_destinations_config_file: tool_destinations.yml
 
   # TODO(hxr): UNDOCUMENTED
   #job_metrics_config_file: "{{ galaxy_config_dir }}/job_metrics_conf.xml"
