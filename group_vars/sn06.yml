@@ -160,7 +160,7 @@ telegraf_plugins_extra:
           "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-stat-bgwriter",
           "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-stat-user-tables",
         ]
-      - timeout = "15s"
+      - timeout = "30s"
       - data_format = "influx"
       - interval = "1m"
 
@@ -351,7 +351,7 @@ gxadmin_influx_task_notifier: true
 gxadmin_influx_task_notifier_db: notifications
 
 # postgres_pass defined in secret_group_vars/all.yml
-gxadmin_commit: master
+gxadmin_commit: main
 gxadmin_dir: /opt/gxadmin
 gxadmin_bin_dir: /usr/bin
 gxadmin_force: true
@@ -490,6 +490,17 @@ galaxy_jobconf:
             amqp_consumer_timeout: 2.0
             amqp_publish_retry: True
             amqp_publish_retry_max_retries: 60
+        - id: pulsar_eu_it03
+          load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+          params:
+            amqp_url: "pyamqp://galaxy_it03:{{ rabbitmq_password_galaxy_it03 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_it03?ssl=1"
+            galaxy_url: "https://usegalaxy.eu"
+            manager: production
+            amqp_acknowledge: True
+            amqp_ack_republish_time: 300
+            amqp_consumer_timeout: 2.0
+            amqp_publish_retry: True
+            amqp_publish_retry_max_retries: 60
         - id: pulsar_eu_de01
           load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
           params:
@@ -593,6 +604,17 @@ galaxy_jobconf:
           load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
           params:
             amqp_url: "pyamqp://galaxy_no01:{{ rabbitmq_password_galaxy_no01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_no01?ssl=1"
+            galaxy_url: "https://usegalaxy.eu"
+            manager: production
+            amqp_acknowledge: True
+            amqp_ack_republish_time: 300
+            amqp_consumer_timeout: 2.0
+            amqp_publish_retry: True
+            amqp_publish_retry_max_retries: 60
+        - id: pulsar_eu_es01
+          load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+          params:
+            amqp_url: "pyamqp://galaxy_es01:{{ rabbitmq_password_galaxy_es01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_es01?ssl=1"
             galaxy_url: "https://usegalaxy.eu"
             manager: production
             amqp_acknowledge: True
@@ -824,6 +846,12 @@ galaxy_jobconf:
         - id: "toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/2020.4+galaxy0"
           destination: gateway_singlerun
           resources: usegpu
+        - id: "toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/2019.1.5.1"
+          destination: gateway_singlerun
+          resources: usegpu
+        - id: gmx_sim
+          destination: gateway_singlerun
+          resources: usegpu
         #- id: wig_to_bigWig
           #destination: wig_to_bigWig
         #- id: dexseq
@@ -849,12 +877,12 @@ galaxy_jobconf:
       - type: 'output_size'
         value: '300GB'
       - type: 'registered_user_concurrent_jobs'
-        value: '10'
+        value: '100'
       - type: 'anonymous_user_concurrent_jobs'
         value: '5'
       - type: 'destination_user_concurrent_jobs'
         id: 'sh_fdid_condor_docker_ie_interactive'
-        value: '2'
+        value: '10'
       - type: 'destination_user_concurrent_jobs'
         id: 'sh_fdid_condor_intensive_jobs'
         value: '10'
@@ -880,6 +908,8 @@ galaxy_config_files:
     dest: "{{ galaxy_config['app:main']['blacklist_file'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/user_preferences_extra_conf.yml"
     dest: "{{ galaxy_config['app:main']['user_preferences_extra_conf_path'] }}"
+  - src: "{{ galaxy_config_file_src_dir }}/config/job_resource_params_conf.xml"
+    dest: "{{ galaxy_config['app:main']['job_resource_params_file'] }}"
   # test? Unknown if this works.
   - src: "{{ galaxy_config_file_src_dir }}/config/file_sources_conf.yml"
     dest: "{{ galaxy_config_dir }}/__file_sources_conf.yml"
@@ -939,5 +969,4 @@ galaxy_config_templates:
     dest: "{{ galaxy_config_dir }}/tool_conf.xml"
   - src: "{{ galaxy_config_template_src_dir }}/config/galaxy_workflow_scheduler.j2"
     dest: "{{ galaxy_config_dir }}/workflow_schedulers_conf.xml"
-  - src: "{{ galaxy_config_template_src_dir }}/config/job_resource_params_conf.xml.j2"
-    dest: "{{ galaxy_config['app:main']['job_resource_params_file'] }}"
+

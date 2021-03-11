@@ -43,12 +43,27 @@ interactive_tool_jupyter_notebook:
   env: 
     HOME: /home/jovyan
   force_destination_id: True
+
 interactive_tool_climate_notebook: 
   mem: 4
   runner: condor_docker_ie_interactive
   env: 
     HOME: /home/jovyan
   force_destination_id: True
+
+
+interactive_ml_tool_jupyter_notebook:
+   ##runner: remote_condor_cluster_gpu_docker
+   runner: condor_docker_ie_interactive
+   force_destination_id: True
+   ##gpus: 1
+   cores: 1
+   mem: 8
+   env:
+      CUDA_VISIBLE_DEVICES: 0
+   ##docker_set_user: 1000
+   ##docker_run_extra_arguments: ' --gpus all '
+
 interactive_tool_rstudio: {mem: 8, cores: 1, runner: condor_docker_ie_interactive, force_destination_id: True}
 interactive_tool_pyiron: {mem: 8, cores: 1, runner: condor_docker_ie_interactive, force_destination_id: True}
 interactive_tool_guacamole_desktop: {mem: 8, cores: 2, runner: condor_docker_ie_interactive, force_destination_id: True}
@@ -151,11 +166,50 @@ minimap2: {cores: 8, mem: 20}
 flye: {cores: 20, mem: 24}
 msstats: {mem: 24}
 msstatstmt: {mem: 24}
+dimspy_process_scans: 
+  cores: 4
+  mem: 12
+  env:
+    NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+    OMP_NUM_THREADS: 4
+    OPENBLAS_NUM_THREADS: 4
+    MKL_NUM_THREADS: 4
+    VECLIB_MAXIMUM_THREADS: 4
+    NUMEXPR_NUM_THREADS: 4
+    NUMBA_NUM_THREADS: 4
+
+dimspy_replicate_filter:
+  cores: 4
+  mem: 12
+  env:
+    NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+    OMP_NUM_THREADS: 4
+    OPENBLAS_NUM_THREADS: 4
+    MKL_NUM_THREADS: 4
+    VECLIB_MAXIMUM_THREADS: 4
+    NUMEXPR_NUM_THREADS: 4
+    NUMBA_NUM_THREADS: 4
+
+dimspy_align_samples:
+  cores: 4
+  mem: 12
+  env:
+    NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+    OMP_NUM_THREADS: 4
+    OPENBLAS_NUM_THREADS: 4
+    MKL_NUM_THREADS: 4
+    VECLIB_MAXIMUM_THREADS: 4
+    NUMEXPR_NUM_THREADS: 4
+    NUMBA_NUM_THREADS: 4
+
+dimspy_blank_filter: {mem: 12}
+dimspy_sample_filter: {mem: 12}
+dimspy_missing_values_sample_filter: {mem: 12}
 nanopolish_methylation: {cores: 5, mem: 12}
 nanopolish_variants: {cores: 5, mem: 12}
 nanopolish_eventalign: {cores: 5, mem: 12}
 nanopolishcomp_eventaligncollapse: {cores: 10, mem: 12}
-nanocompore_sampcomp: {cores:9, mem: 48}
+nanocompore_sampcomp: {cores: 9, mem: 48}
 AccurateMassSearch: {cores: 4, mem: 8}
 AdditiveSeries: {cores: 20, mem: 12}
 # augustus: {runner: remote_cluster_mq_be01}
@@ -562,12 +616,6 @@ deeptools_plot_heatmap: {mem: 25}
 deeptools_plot_pca: {mem: 20}
 deeptools_plot_profile: {mem: 20}
 deeptools_profiler: {mem: 20}
-demo2D00:
-  env:
-    HOME: /data/2/galaxy_db/tmp
-  mem: 20
-  name: matlab
-  nativeSpecExtra: -l lic_matlab=1
 deseq2: {mem: 8}
 dexseq_count: {mem: 25}
 diamond_database_builder: {cores: 10, mem: 90}
@@ -673,6 +721,7 @@ schicexplorer_schicqualitycontrol: {cores: 20, mem: 64}
 
 
 hicup_mapper: {cores: 6, mem: 24}
+hifiasm: {cores: 12, mem: 24}
 hisat: {cores: 10, mem: 20}
 #hisat2: {cores: 8, mem: 20, runner: condor_singularity_with_conda}
 hisat2: {cores: 8, mem: 20}
@@ -739,24 +788,6 @@ migmap:
   name: java_temp
 proteomics_moff: {mem: 20, cores: 6}
 metagene_annotator: {mem: 16}
-mmbios01:
-  env:
-    HOME: /data/2/galaxy_db/tmp
-  mem: 20
-  name: matlab
-  nativeSpecExtra: -l lic_matlab=1
-mmbios02:
-  env:
-    HOME: /data/2/galaxy_db/tmp
-  mem: 20
-  name: matlab
-  nativeSpecExtra: -l lic_matlab=1
-mmbios03:
-  env:
-    HOME: /data/2/galaxy_db/tmp
-  mem: 20
-  name: matlab
-  nativeSpecExtra: -l lic_matlab=1
 morpheus:
   env:
     MONO_GC_PARAMS: max-heap-size=2g
@@ -934,30 +965,11 @@ SiriusAdapter:
   mem: 16
   env:
     _JAVA_OPTIONS: -Xmx16G -Xms1G
-
 shovill:
   cores: 4
   mem: 50
   env:
     SHOVILL_RAM: 50
-show_2D_image_reshape:
-  env:
-    HOME: /data/2/galaxy_db/tmp
-  mem: 20
-  name: matlab
-  nativeSpecExtra: -l lic_matlab=1
-show_3D_image_reshape:
-  env:
-    HOME: /data/2/galaxy_db/tmp
-  mem: 20
-  name: matlab
-  nativeSpecExtra: -l lic_matlab=1
-show_3D_surface_plot:
-  env:
-    HOME: /data/2/galaxy_db/tmp
-  mem: 20
-  name: matlab
-  nativeSpecExtra: -l lic_matlab=1
 signalp3: {mem: 10}
 smooth_running_window: {mem: 32}
 snippy: {mem: 12}

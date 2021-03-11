@@ -1,0 +1,67 @@
+---
+# Specify which keys can be used
+allowed_keys:
+  destination_specifications:
+    - env
+    - limits
+    - nodes
+    - params
+    - tags
+  tool_destinations:
+    - cores
+    - env
+    - gpus
+    - mem
+    - name
+    - params
+    - permissions
+    - runner
+    - tags
+    - tmp
+    - force_destination_id
+    - docker_auto_rm
+    - docker_default_container_id
+    - docker_set_user
+    - docker_memory
+    - docker_run_extra_arguments
+    - docker_set_user
+    - docker_sudo
+    - docker_volumes
+
+# Set the default destination
+default_destination: &dd 'condor'
+
+# Tool that doesn't specify a job configuration, will run with the following
+default_tool_specification:
+  cores: 1
+  mem: 4.0
+  gpus: 0
+  force_destination_id: False
+  runner: *dd
+
+# Enable this if you need a faster feedback / turnaround times.
+# It implies you have a compute node(s) in a Condor cluster
+# with the custom ClassAd defined in the requirements
+fast_turnaround:
+  enabled: False
+  mode: 'all_jobs'  # can be all_jobs/user_roles
+  role_label: 'fast-turnaround'
+  requirements: 'GalaxyGroup == "fast-turnaround"'
+
+# Some file paths
+file_paths:
+  destination_specifications: 'destination_specifications.yaml'  # Destination details are defined in this file
+  tool_destinations: 'tool_destinations.yaml'                    # Tools execution details are defined in this file
+  joint_destinations: 'joint_destinations.yaml'                  # Joint destinations details are defined in this file
+
+# For some tools, we have to force a static id and this is the prefix
+force_destination_id_prefix: 'sh_fdid_'
+
+special_tools:
+  upload:
+    - 'upload1'
+    - '__DATA_FETCH__'
+  metadata:
+    - '__SET_METADATA__'
+  interactive:
+    - 'interactive_tool_'

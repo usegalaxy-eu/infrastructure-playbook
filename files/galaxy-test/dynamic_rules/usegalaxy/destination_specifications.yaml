@@ -35,23 +35,24 @@ secure_pulsar_singularity:
     singularity_enabled: true
     singularity_default_container_id: '/data/0/cvmfs/singularity/ubuntu:18.04'
 
-#condor_singularity_with_conda:
-#  env: {}
-#  params:
-#    priority: -{PRIORITY}
-#    request_cpus: '{PARALLELISATION}'
-#    request_memory: '{MEMORY}'
-#    singularity_enabled: true
-#    # can and should be made stricter at some point
-#    #singularity_volumes: '/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/0/galaxy_import/galaxy_user_data/:ro,/data/1/galaxy_import/galaxy_user_data/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/$
-#    #singularity_default_container_id: '/data/0/cvmfs/singularity/ubuntu:18.04'
-#    #singularity_run_extra_arguments: '-H /usr/local/galaxy/'
-#    tmp_dir: 'True'
-#    containers:
-#      container: &quot;/data/0/cvmfs/singularity/python:2.7.12--1&quot;
-#      type: singularity
-#      shell: /bin/bash/
-#      resolve_dependencies: true
+condor_singularity_with_conda:
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
+  params:
+    priority: -{PRIORITY}
+    request_cpus: '{PARALLELISATION}'
+    request_memory: '{MEMORY}'
+    require_container: true
+    singularity_enabled: true
+    # can and should be made stricter at some point
+    singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro'
+    container:
+      - type: singularity
+        shell: '/bin/sh'
+        resolve_dependencies: true
+        identifier: '/cvmfs/singularity.galaxyproject.org/all/centos:8.3.2011'
 
 remote_cluster_mq_cz:
   env: {}

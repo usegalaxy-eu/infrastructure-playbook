@@ -288,6 +288,7 @@ galaxy_dynamic_job_rules_dir: "{{ galaxy_root }}/dynamic_rules"
 galaxy_dynamic_job_rules:
   - usegalaxy/joint_destinations.yaml
   - usegalaxy/sorting_hat.py
+  - usegalaxy/sorting_hat.yaml
   - usegalaxy/destination_specifications.yaml
   - usegalaxy/blast_destinations.py
   - usegalaxy/tool_destinations.yaml
@@ -309,10 +310,10 @@ galaxy_dirs:
   -  "{{ galaxy_tool_data_path }}"
 
 galaxy_instance_hostname: usegalaxy.eu
-galaxy_config_style: ini
+galaxy_config_style: yaml
 
 galaxy_repo: 'https://github.com/usegalaxy-eu/galaxy.git'
-galaxy_commit_id: 'release_20.09_europe-test'
+galaxy_commit_id: 'release_21.01_europe-test'
 galaxy_force_checkout: true # discard any modified files
 #galaxy_admin_email_from: 'noreply@usegalaxy.eu'
 
@@ -608,7 +609,7 @@ galaxy_config_files:
   - src: "{{ galaxy_config_file_src_dir }}/config/dependency_resolvers_conf.xml"
     dest: "{{ galaxy_config['galaxy']['dependency_resolvers_config_file'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/disposable_email_blacklist.conf"
-    dest: "{{ galaxy_config['galaxy']['blacklist_file'] }}"
+    dest: "{{ galaxy_config['galaxy']['email_domain_blocklist_file'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/user_preferences_extra_conf.yml"
     dest: "{{ galaxy_config['galaxy']['user_preferences_extra_conf_path'] }}"
   # test? Unknown if this works.
