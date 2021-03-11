@@ -496,6 +496,7 @@ remote_cluster_mq_2wdfalse_it03:
     transport: 'curl'
     singularity_enabled: true
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
+    singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw'
 
 remote_cluster_mq_2wdtrue_it03:
   limits:
@@ -518,6 +519,7 @@ remote_cluster_mq_2wdtrue_it03:
     transport: 'curl'
     singularity_enabled: true
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
+    singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw'
 
 remote_cluster_mq_fr01:
   limits:
