@@ -87,8 +87,7 @@ DEFAULT_TOOL_SPEC = sh_conf.get('default_tool_specification')
 FAST_TURNAROUND = sh_conf.get('fast_turnaround')
 FDID_PREFIX = sh_conf.get('force_destination_id_prefix')
 SPECIAL_TOOLS = sh_conf.get('special_tools')
-SPECIFICATION_ALLOWED_KEYS = sh_conf.get('allowed_keys', 'destination_specifications')
-TOOL_DESTINATION_ALLOWED_KEYS = sh_conf.get('allowed_keys', 'tool_destinations')
+
 
 # The default / base specification for the different environments.
 SPECIFICATION_PATH = sh_conf.get_path('destination_specifications')
@@ -424,7 +423,8 @@ def gateway(tool_id, user, memory_scale=1.0, next_dest=None):
 
     try:
         env, params, runner, spec, tags = _gateway(tool_id, user_preferences, user_roles, user_id, email,
-                                                   SPECIAL_TOOLS, memory_scale=memory_scale)
+                                                   ft=FAST_TURNAROUND, special_tools=SPECIAL_TOOLS,
+                                                   memory_scale=memory_scale)
     except Exception as e:
         return JobMappingException(str(e))
 
