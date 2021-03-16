@@ -905,7 +905,7 @@ galaxy_config_files:
   - src: "{{ galaxy_config_file_src_dir }}/config/dependency_resolvers_conf.xml"
     dest: "{{ galaxy_config['app:main']['dependency_resolvers_config_file'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/disposable_email_blacklist.conf"
-    dest: "{{ galaxy_config['app:main']['blacklist_file'] }}"
+    dest: "{{ galaxy_config['app:main']['email_domain_blocklist_file'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/user_preferences_extra_conf.yml"
     dest: "{{ galaxy_config['app:main']['user_preferences_extra_conf_path'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/job_resource_params_conf.xml"
