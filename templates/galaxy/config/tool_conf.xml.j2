@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <toolbox monitor="true">
-  <section id="getext" name="Get Data">
+  <section id="get_data" name="Get Data">
     <tool file="data_source/upload.xml" />
     <tool file="/opt/galaxy/custom-tools/test/seek.xml" labels="beta" />
     <tool file="data_source/ucsc_tablebrowser.xml" />
@@ -33,7 +33,7 @@
     <tool file="data_source/hbvar.xml" />
     <tool file="/opt/galaxy/custom-tools/test/omicsdi/omicsdi.xml" labels="beta" />
   </section>
-  <section id="send" name="Send Data">
+  <section id="send_data" name="Send Data">
     <tool file="cloud/send.xml" />
     <tool file="/opt/galaxy/custom-tools/test/seek/send.xml" labels="beta" />
     <tool file="/opt/galaxy/custom-tools/test/export/export_to_directory.xml" labels="beta" />
@@ -57,7 +57,7 @@
     <tool file="expression_tools/parse_values_from_file.xml"/>
   </section>
   <label id="general_text_label" text="General Text Tools" />
-  <section id="textutil" name="Text Manipulation">
+  <section id="text_manipulation" name="Text Manipulation">
     <tool file="filters/fixedValueColumn.xml" />
     <tool file="filters/catWrapper.xml" />
     <tool file="filters/cutWrapper.xml" />
@@ -79,7 +79,7 @@
     <tool file="/opt/galaxy/custom-tools/unix_tools/replace_text_in_column.xml" hidden="True" />
     <tool file="/opt/galaxy/custom-tools/unix_tools/replace_text_in_line.xml" hidden="True" />
   </section>
-  <section id="filter" name="Filter and Sort">
+  <section id="filter_and_sort" name="Filter and Sort">
     <tool file="stats/filtering.xml" />
     <tool file="filters/sorter.xml" />
     <tool file="filters/grep.xml" />
@@ -91,7 +91,7 @@
     <tool file="/opt/galaxy/custom-tools/unix_tools/word_list_grep.xml" hidden="True" />
     <tool file="/opt/galaxy/custom-tools/unix_tools/uniq_tool.xml" hidden="True" />
   </section>
-  <section id="group" name="Join, Subtract and Group">
+  <section id="join__subtract_and_group" name="Join, Subtract and Group">
     <tool file="filters/joiner.xml" />
     <tool file="filters/compare.xml" />
     <tool file="stats/grouping.xml" />
@@ -247,7 +247,7 @@
   </section>
   <section id="phylogenetics" name="Phylogenetics" >
   </section>
-  <section id="hgv" name="Phenotype Association">
+  <section id="phenotype_association" name="Phenotype Association">
     <tool file="evolution/codingSnps.xml" />
     <tool file="evolution/add_scores.xml" />
     <tool file="phenotype_association/sift.xml" />
