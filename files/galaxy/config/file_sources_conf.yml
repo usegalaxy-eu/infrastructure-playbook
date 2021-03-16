@@ -4,12 +4,12 @@
   doc: Your Dropbox files - configure an access token via the user preferences
   accessToken: ${user.preferences['dropbox|access_token']}
 
-- type: webdav
-  id: b2drop
-  doc: B2Drop WebDAV server
-  url: https://b2drop.eudat.eu/remote.php/dav
-  login: ${user.preferences['b2drop|username']} 
-  password: ${user.preferences['b2drop|password']}
+#- type: webdav
+#  id: b2drop
+#  doc: B2Drop WebDAV server
+#  url: https://b2drop.eudat.eu/remote.php/dav
+#  login: ${user.preferences['b2drop|username']} 
+#  password: ${user.preferences['b2drop|password']}
 
 - type: posix
   root: '/data/5/galaxy_import/galaxy_user_data/covid-19/data/sequences/'
@@ -26,7 +26,7 @@
 - type: ftp
   id: ebi-ftp
   label: "EBI FTP server"
-  doc: "EBI FTP server"
+  doc: "European Bioinformatic Institute FTP server"
   host: "ftp.ebi.ac.uk"
   user: "anonymous"
   passwd: ""
@@ -42,7 +42,17 @@
   passwd: ""
   timeout: 10
   port: 21
-  
+
+- type: ftp
+  id: ensembl-ftp
+  label: "ENSEMBL FTP server"
+  doc: "ENSEMBL FTP server"
+  host: "ftp.ensemblgenomes.org/vol1/pub/"
+  user: "anonymous"
+  passwd: ""
+  timeout: 10
+  port: 21
+
 - type: s3fs
   label: Genome Ark
   id: genomeark

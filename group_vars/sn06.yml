@@ -914,7 +914,7 @@ galaxy_config_files:
     dest: "{{ galaxy_config['app:main']['trs_servers_config_file'] }}"
   # test? Unknown if this works.
   - src: "{{ galaxy_config_file_src_dir }}/config/file_sources_conf.yml"
-    dest: "{{ galaxy_config_dir }}/__file_sources_conf.yml"
+    dest: "{{ galaxy_config_dir }}/file_sources_conf.yml"
   - src: "{{ galaxy_config_file_src_dir }}/config/error_report.yml"
     dest: "{{ galaxy_config_dir }}/error_report.yml"
   - src: "{{ galaxy_config_file_src_dir }}/config/job_metrics_conf.xml"
