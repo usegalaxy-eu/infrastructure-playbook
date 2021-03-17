@@ -47,3 +47,59 @@ preferences:
                   - ["Brussel (Belgium) - VIB", remote_cluster_mq_be01]
                   - ["Espoo (Finland) - CSC", remote_cluster_mq_fi01]
                   - ["Bergen (Norway) - UIB", remote_cluster_mq_no01]
+
+    ega_account:
+        description: Your EGA (European Genome Archive) account
+        inputs:
+            - name: username
+              label: Username
+              type: text
+              required: False
+            - name: password
+              label: Password
+              type:  password
+              required: False
+
+    dropbox:
+        description: Your Dropbox account
+        inputs:
+            - name: access_token
+              label: Dropbox access token
+              type: password
+              required: False
+
+    b2drop:
+        description: Your B2DROP account (https://b2drop.eudat.eu/)
+        inputs:
+            - name: username
+              label: Username
+              type: text
+              required: False
+            - name: password
+              label: Password
+              type:  password
+              required: False
+
+    omero_account:
+        description: Your OMERO instance connection details
+        inputs:
+            - name: username
+              label: Username
+              type: text
+              required: False
+            - name: password
+              label: Password
+              type:  password
+              required: False
+
+    ena_webin_account:
+        description: Your ENA Webin account details
+        inputs:
+            - name: webin_id
+              label: ENA Webin ID
+              type: text
+              required: False
+            - name: password
+              label: Password
+              type:  password
+              required: False
