@@ -108,16 +108,16 @@ alevin: {mem: 92, cores: 8}
 kc-align: {cores: 3}
 maxquant: {mem: 60, cores: 8}
 scpipe: {mem: 64, cores: 8}
-cardinal_combine: {mem: 92}
-cardinal_classification: {mem: 100}
-cardinal_filtering: {mem: 60}
-cardinal_mz_images: {mem: 20}
-cardinal_preprocessing: {cores: 4, mem: 110}
-cardinal_quality_report: {mem: 180}
-cardinal_segmentations: {mem: 92}
-cardinal_spectra_plots: {mem: 32}
-cardinal_data_exporter: {mem: 200}
-kraken_database_builder: {mem: 200}
+cardinal_combine: {mem: 92, runner: condor_singularity_with_conda}
+cardinal_classification: {mem: 100, runner: condor_singularity_with_conda}
+cardinal_filtering: {mem: 60, runner: condor_singularity_with_conda}
+cardinal_mz_images: {mem: 20, runner: condor_singularity_with_conda}
+cardinal_preprocessing: {cores: 4, mem: 110, runner: condor_singularity_with_conda}
+cardinal_quality_report: {mem: 180, runner: condor_singularity_with_conda}
+cardinal_segmentations: {mem: 92, runner: condor_singularity_with_conda}
+cardinal_spectra_plots: {mem: 32, runner: condor_singularity_with_conda}
+cardinal_data_exporter: {mem: 200, runner: condor_singularity_with_conda}
+kraken_database_builder: {mem: 200, runner: condor_singularity_with_conda}
 heatmap: {mem: 12}
 Heatmap: {mem: 12}
 msconvert: {runner: condor_docker}
@@ -557,15 +557,15 @@ bwameth: {cores: 8, mem: 24}
 bwtool-lift: {mem: 80}
 cat_contigs: {mem: 24}  ## Diamond in the background
 cat_bins: {mem: 24}  ## Diamond in the background
-chira_map: {cores: 10, mem: 80}
-chira_merge: {cores: 1, mem: 60}
-chira_quantify: {cores: 1, mem: 60}
-chira_extract: {cores: 24, mem: 60}
-canu: {cores: 20, mem: 92}
-mass_spectrometry_imaging_preprocessing: {mem: 110}
-mass_spectrometry_imaging_ion_images: {mem: 20}
-mass_spectrometry_imaging_qc: {mem: 110}
-mass_spectrometry_imaging_filtering: {mem: 20}
+chira_map: {cores: 10, mem: 80, runner: condor_singularity_with_conda}
+chira_merge: {cores: 1, mem: 60, runner: condor_singularity_with_conda}
+chira_quantify: {cores: 1, mem: 60, runner: condor_singularity_with_conda}
+chira_extract: {cores: 24, mem: 60, runner: condor_singularity_with_conda}
+canu: {cores: 20, mem: 92, runner: condor_singularity_with_conda}
+mass_spectrometry_imaging_preprocessing: {mem: 110, runner: condor_singularity_with_conda}
+mass_spectrometry_imaging_ion_images: {mem: 20, runner: condor_singularity_with_conda}
+mass_spectrometry_imaging_qc: {mem: 110, runner: condor_singularity_with_conda}
+mass_spectrometry_imaging_filtering: {mem: 20, runner: condor_singularity_with_conda}
 metaspades: {cores: 10, mem: 250}
 megahit: {cores: 10, mem: 48}
 charts: {mem: 10}
@@ -770,9 +770,9 @@ lofreq_call: {cores: 2, mem: 8}
 khmer_abundance_distribution_single: {cores: 8, mem: 8}
 macs2_bdgdiff: {mem: 10}
 macs2_callpeak: {mem: 15}
-maldi_quant_preprocessing: {mem: 400}
-maldi_quant_peak_detection: {mem: 180}
-mass_spectrometry_imaging_classification: {mem: 100}
+maldi_quant_preprocessing: {mem: 400, runner: condor_singularity_with_conda}
+maldi_quant_peak_detection: {mem: 180, runner: condor_singularity_with_conda}
+mass_spectrometry_imaging_classification: {mem: 100, runner: condor_singularity_with_conda}
 megablast_wrapper: {mem: 20}
 meme_dreme: {mem: 16}
 meme_fimo: {mem: 4}
