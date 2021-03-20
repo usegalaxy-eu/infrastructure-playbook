@@ -97,16 +97,16 @@ circos: {mem: 10, runner: remote_cluster_mq_pt01}
 # prepare_box: {runner: remote_cluster_mq_uk01}
 
 stress_ng: {runner: condor_singularity_with_conda}
-fasterq_dump: {cores: 8}
+fasterq_dump: {cores: 8, runner: condor_singularity_with_conda}
 
-busco: {cores: 4, mem: 8}
+busco: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
 
 # roary	needs many many cpus if	the number of input files increase
 # a more specific function would ne neat
-roary: {cores: 24}
-alevin: {mem: 92, cores: 8}
+roary: {cores: 24, runner: condor_singularity_with_conda}
+alevin: {mem: 92, cores: 8, runner: condor_singularity_with_conda}
 kc-align: {cores: 3}
-maxquant: {mem: 60, cores: 8}
+maxquant: {mem: 60, cores: 8, runner: condor_singularity_with_conda}
 scpipe: {mem: 64, cores: 8}
 cardinal_combine: {mem: 92, runner: condor_singularity_with_conda}
 cardinal_classification: {mem: 100, runner: condor_singularity_with_conda}
@@ -136,6 +136,7 @@ encyclopedia_prosit_csv_to_library:
     _JAVA_OPTIONS: -Xmx40G -Xms1G
 
 vardict_java:
+  runner: condor_singularity_with_conda
   mem: 512
   cores: 2
   env:
@@ -203,16 +204,16 @@ dimspy_align_samples:
     NUMEXPR_NUM_THREADS: 4
     NUMBA_NUM_THREADS: 4
 
-dimspy_blank_filter: {mem: 12}
-dimspy_sample_filter: {mem: 12}
-dimspy_missing_values_sample_filter: {mem: 12}
-nanopolish_methylation: {cores: 5, mem: 12}
-nanopolish_variants: {cores: 5, mem: 12}
-nanopolish_eventalign: {cores: 5, mem: 12}
-nanopolishcomp_eventaligncollapse: {cores: 10, mem: 12}
-nanocompore_sampcomp: {cores: 9, mem: 48}
-AccurateMassSearch: {cores: 4, mem: 8}
-AdditiveSeries: {cores: 20, mem: 12}
+dimspy_blank_filter: {mem: 12, runner: condor_singularity_with_conda}
+dimspy_sample_filter: {mem: 12, runner: condor_singularity_with_conda}
+dimspy_missing_values_sample_filter: {mem: 12, runner: condor_singularity_with_conda}
+nanopolish_methylation: {cores: 5, mem: 12, runner: condor_singularity_with_conda}
+nanopolish_variants: {cores: 5, mem: 12, runner: condor_singularity_with_conda}
+nanopolish_eventalign: {cores: 5, mem: 12, runner: condor_singularity_with_conda}
+nanopolishcomp_eventaligncollapse: {cores: 10, mem: 12, runner: condor_singularity_with_conda}
+nanocompore_sampcomp: {cores: 9, mem: 48, runner: condor_singularity_with_conda}
+AccurateMassSearch: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+AdditiveSeries: {cores: 20, mem: 12, runner: condor_singularity_with_conda}
 # augustus: {runner: remote_cluster_mq_be01}
 BaselineFilter: {cores: 4, mem: 8}
 CONVERTER_bedgraph_to_bigwig: {mem: 8}
@@ -230,43 +231,43 @@ EICExtractor: {cores: 4, mem: 8}
 'EMBOSS: fuzztran39': {mem: 10}
 ERPairFinder: {cores: 4, mem: 8}
 FFEval: {cores: 4, mem: 8}
-FalseDiscoveryRate: {cores: 4, mem: 8}
-FeatureFinderCentroided: {cores: 4, mem: 8}
-FeatureFinderIsotopeWavelet: {cores: 4, mem: 8}
-FeatureFinderMRM: {cores: 4, mem: 8}
-FeatureFinderMetabo: {cores: 4, mem: 8}
-FeatureFinderMultiplex: {cores: 8, mem: 8}
-FeatureFinderSuperHirn: {cores: 4, mem: 8}
-FeatureLinkerLabeled: {cores: 4, mem: 8}
-FeatureLinkerUnlabeled: {cores: 4, mem: 8}
-FeatureLinkerUnlabeledQT: {cores: 4, mem: 8}
-FidoAdapter: {cores: 8, mem: 8}
-FileConverter: {cores: 4, mem: 8}
-FileFilter: {cores: 4, mem: 8}
-FileInfo: {cores: 4, mem: 8}
-FileMerger: {cores: 4, mem: 16}
-HighResPrecursorMassCorrector: {cores: 4, mem: 8}
-IDConflictResolver: {cores: 4, mem: 8}
-IDEvaluator: {cores: 4, mem: 8}
-IDExtractor: {cores: 4, mem: 8}
-IDFileConverter: {cores: 4, mem: 8}
-IDFilter: {cores: 4, mem: 8}
-IDMapper: {cores: 4, mem: 8}
-IDMassAccuracy: {cores: 4, mem: 8}
-IDMerger: {cores: 1, mem: 30}
-IDPosteriorErrorProbability: {cores: 4, mem: 8}
-IDRTCalibration: {cores: 4, mem: 8}
-IDSplitter: {cores: 4, mem: 8}
-ITRAQAnalyzer: {cores: 4, mem: 8}
-ImageCreator: {cores: 4, mem: 8}
-InclusionExclusionListCreator: {cores: 4, mem: 8}
-InternalCalibration: {cores: 4, mem: 8}
-IsobaricAnalyzer: {cores: 4, mem: 8}
-LabeledEval: {cores: 4, mem: 8}
+FalseDiscoveryRate: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+FeatureFinderCentroided: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+FeatureFinderIsotopeWavelet: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+FeatureFinderMRM: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+FeatureFinderMetabo: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+FeatureFinderMultiplex: {cores: 8, mem: 8, runner: condor_singularity_with_conda}
+FeatureFinderSuperHirn: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+FeatureLinkerLabeled: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+FeatureLinkerUnlabeled: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+FeatureLinkerUnlabeledQT: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+FidoAdapter: {cores: 8, mem: 8, runner: condor_singularity_with_conda}
+FileConverter: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+FileFilter: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+FileInfo: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+FileMerger: {cores: 4, mem: 16, runner: condor_singularity_with_conda}
+HighResPrecursorMassCorrector: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+IDConflictResolver: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+IDEvaluator: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+IDExtractor: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+IDFileConverter: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+IDFilter: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+IDMapper: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+IDMassAccuracy: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+IDMerger: {cores: 1, mem: 30, runner: condor_singularity_with_conda}
+IDPosteriorErrorProbability: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+IDRTCalibration: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+IDSplitter: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+ITRAQAnalyzer: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+ImageCreator: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+InclusionExclusionListCreator: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+InternalCalibration: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+IsobaricAnalyzer: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
+LabeledEval: {cores: 4, mem: 8, runner: condor_singularity_with_conda}
 #maker: {cores: 8, mem: 8, runner: remote_cluster_mq_fr01}
-gmx_sim: {cores: 16, mem: 8}
-gmx_em: {cores: 16, mem: 8}
-gmx_fep: {cores: 16, mem: 8}
+gmx_sim: {cores: 16, mem: 8, runner: condor_singularity_with_conda}
+gmx_em: {cores: 16, mem: 8, runner: condor_singularity_with_conda}
+gmx_fep: {cores: 16, mem: 8, runner: condor_singularity_with_conda}
 
 # gmx_md: {runner: remote_cluster_mq_de02}
 # gmx_merge_topology_files: {runner: remote_cluster_mq_de02}
@@ -291,7 +292,7 @@ MSGFPlusAdapter:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
   mem: 12
   name: special
-medaka_variant: {mem: 48}
+medaka_variant: {mem: 48, runner: condor_singularity_with_conda}
 mass_spectrometry_imaging_segmentations: {mem: 92}
 mass_spectrometry_imaging_combine: {mem: 12}
 mass_spectrometry_imaging_mzplots: {mem: 24}
@@ -525,36 +526,36 @@ antismash:
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx96G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
 bam-to-wig: {mem: 20}
-bamCompare_deepTools: {mem: 10}
-bamCorrelate_deepTools: {cores: 10, mem: 100}
-bamCoverage_deepTools: {mem: 10}
-bamFingerprint: {mem: 10}
-bedtools_intersectbed: {mem: 20}
-bedtools_intersectbed_bam: {mem: 20}
-bedtools_mergebed: {mem: 15}
-bedtools_sortbed: {mem: 20}
-bedtools_subtractbed: {mem: 8}
-bfast_wrapper: {cores: 10, mem: 20}
-bg_diamond: {cores: 6, mem: 90}
-bg_diamond_makedb: {cores: 10, mem: 40}
-bgchem_fragment_merger: {cores: 10, mem: 40}
-bigwig_to_bedgraph: {mem: 12}
-biosigner: {mem: 12}
-bismark_bowtie: {cores: 6, mem: 30, name: bismark, tmp: large}
-bismark_bowtie2: {cores: 6, mem: 30, name: bismark, tmp: large}
+bamCompare_deepTools: {mem: 10, runner: condor_singularity_with_conda}
+bamCorrelate_deepTools: {cores: 10, mem: 100, runner: condor_singularity_with_conda}
+bamCoverage_deepTools: {mem: 10, runner: condor_singularity_with_conda}
+bamFingerprint: {mem: 10, runner: condor_singularity_with_conda}
+bedtools_intersectbed: {mem: 20, runner: condor_singularity_with_conda}
+bedtools_intersectbed_bam: {mem: 20, runner: condor_singularity_with_conda}
+bedtools_mergebed: {mem: 15, runner: condor_singularity_with_conda}
+bedtools_sortbed: {mem: 20, runner: condor_singularity_with_conda}
+bedtools_subtractbed: {mem: 8, runner: condor_singularity_with_conda}
+bfast_wrapper: {cores: 10, mem: 20, runner: condor_singularity_with_conda}
+bg_diamond: {cores: 6, mem: 90, runner: condor_singularity_with_conda}
+bg_diamond_makedb: {cores: 10, mem: 40, runner: condor_singularity_with_conda}
+bgchem_fragment_merger: {cores: 10, mem: 40, runner: condor_singularity_with_conda}
+bigwig_to_bedgraph: {mem: 12, runner: condor_singularity_with_conda}
+biosigner: {mem: 12, runner: condor_singularity_with_conda}
+bismark_bowtie: {cores: 6, mem: 30, name: bismark, tmp: large, runner: condor_singularity_with_conda}
+bismark_bowtie2: {cores: 6, mem: 30, name: bismark, tmp: large, runner: condor_singularity_with_conda}
 blast2go: {mem: 20}
 blast_parser: {mem: 8}
 blockbuster: {mem: 64}
 blockclust: {mem: 10}
-bowtie2: {cores: 8, mem: 20}
-bwa: {cores: 8, mem: 20}
-bwa_mem: {cores: 8, mem: 30}
+bowtie2: {cores: 8, mem: 20, runner: condor_singularity_with_conda}
+bwa: {cores: 8, mem: 20, runner: condor_singularity_with_conda}
+bwa_mem: {cores: 8, mem: 30, runner: condor_singularity_with_conda}
 bwa_mem_index_builder_data_manager: {mem: 48}
 bwameth_index_builder_data_manager: {mem: 48}
 kallisto_index_builder_data_manager: {mem: 92}
 salmon_index_builder_data_manager: {mem: 92}
-bwameth: {cores: 8, mem: 24}
-bwtool-lift: {mem: 80}
+bwameth: {cores: 8, mem: 24, runner: condor_singularity_with_conda}
+bwtool-lift: {mem: 80, runner: condor_singularity_with_conda}
 cat_contigs: {mem: 24}  ## Diamond in the background
 cat_bins: {mem: 24}  ## Diamond in the background
 chira_map: {cores: 10, mem: 80, runner: condor_singularity_with_conda}
@@ -591,47 +592,47 @@ data_manager_gemini_download: {mem: 20}
 data_manager_humann2_download: {mem: 25}
 data_manager_snpeff_databases: {mem: 12}
 data_manager_snpeff_download: {mem: 12}
-deeptools_bamCompare: {cores: 10, mem: 12}
-deeptools_bamCorrelate: {cores: 10, mem: 90}
-deeptools_bamCoverage: {cores: 10, mem: 48}
-deeptools_bamFingerprint: {cores: 10, mem: 12}
-deeptools_bam_compare: {cores: 10, mem: 24}
-deeptools_bam_coverage: {cores: 10, mem: 24}
-deeptools_bam_pe_fragmentsize: {cores: 10, mem: 24}
-deeptools_bigwigCompare: {cores: 10, mem: 12}
-deeptools_bigwigCorrelate: {cores: 10, mem: 40}
-deeptools_bigwig_compare: {cores: 10, mem: 24}
-deeptools_computeGCBias: {cores: 10, mem: 24}
-deeptools_computeMatrix: {cores: 10, mem: 24}
-deeptools_compute_gc_bias: {cores: 10, mem: 24}
-deeptools_compute_matrix: {cores: 10, mem: 30}
-deeptools_correctGCBias: {cores: 10, mem: 24}
-deeptools_correct_gc_bias: {cores: 10, mem: 24}
-deeptools_heatmapper: {mem: 25}
-deeptools_multi_bam_summary: {cores: 10, mem: 24}
-deeptools_multi_bigwig_summary: {cores: 10, mem: 40}
-deeptools_plot_correlation: {mem: 20}
-deeptools_plot_coverage: {mem: 20}
-deeptools_plot_fingerprint: {mem: 20}
-deeptools_plot_heatmap: {mem: 25}
-deeptools_plot_pca: {mem: 20}
-deeptools_plot_profile: {mem: 20}
-deeptools_profiler: {mem: 20}
-deseq2: {mem: 8}
-dexseq_count: {mem: 25}
+deeptools_bamCompare: {cores: 10, mem: 12, runner: condor_singularity_with_conda}
+deeptools_bamCorrelate: {cores: 10, mem: 90, runner: condor_singularity_with_conda}
+deeptools_bamCoverage: {cores: 10, mem: 48, runner: condor_singularity_with_conda}
+deeptools_bamFingerprint: {cores: 10, mem: 12, runner: condor_singularity_with_conda}
+deeptools_bam_compare: {cores: 10, mem: 24, runner: condor_singularity_with_conda}
+deeptools_bam_coverage: {cores: 10, mem: 24, runner: condor_singularity_with_conda}
+deeptools_bam_pe_fragmentsize: {cores: 10, mem: 24, runner: condor_singularity_with_conda}
+deeptools_bigwigCompare: {cores: 10, mem: 12, runner: condor_singularity_with_conda}
+deeptools_bigwigCorrelate: {cores: 10, mem: 40, runner: condor_singularity_with_conda}
+deeptools_bigwig_compare: {cores: 10, mem: 24, runner: condor_singularity_with_conda}
+deeptools_computeGCBias: {cores: 10, mem: 24, runner: condor_singularity_with_conda}
+deeptools_computeMatrix: {cores: 10, mem: 24, runner: condor_singularity_with_conda}
+deeptools_compute_gc_bias: {cores: 10, mem: 24, runner: condor_singularity_with_conda}
+deeptools_compute_matrix: {cores: 10, mem: 30, runner: condor_singularity_with_conda}
+deeptools_correctGCBias: {cores: 10, mem: 24, runner: condor_singularity_with_conda}
+deeptools_correct_gc_bias: {cores: 10, mem: 24, runner: condor_singularity_with_conda}
+deeptools_heatmapper: {mem: 25, runner: condor_singularity_with_conda}
+deeptools_multi_bam_summary: {cores: 10, mem: 24, runner: condor_singularity_with_conda}
+deeptools_multi_bigwig_summary: {cores: 10, mem: 40, runner: condor_singularity_with_conda}
+deeptools_plot_correlation: {mem: 20, runner: condor_singularity_with_conda}
+deeptools_plot_coverage: {mem: 20, runner: condor_singularity_with_conda}
+deeptools_plot_fingerprint: {mem: 20, runner: condor_singularity_with_conda}
+deeptools_plot_heatmap: {mem: 25, runner: condor_singularity_with_conda}
+deeptools_plot_pca: {mem: 20, runner: condor_singularity_with_conda}
+deeptools_plot_profile: {mem: 20, runner: condor_singularity_with_conda}
+deeptools_profiler: {mem: 20, runner: condor_singularity_with_conda}
+deseq2: {mem: 8, runner: condor_singularity_with_conda}
+dexseq_count: {mem: 25, runner: condor_singularity_with_conda}
 diamond_database_builder: {cores: 10, mem: 90}
 dt_profiler: {mem: 10}
 eukaryotic_ncbi_submission: {cores: 24, mem: 24}
 fastq_dump: {mem: 20}
-fastqc: {mem: 20}
-featurecounts: {cores: 8, mem: 18}
-feebayes: {cores: 10, mem: 12}
+fastqc: {mem: 20, runner: condor_singularity_with_conda}
+featurecounts: {cores: 8, mem: 18, runner: condor_singularity_with_conda}
+feebayes: {cores: 10, mem: 12, runner: condor_singularity_with_conda}
 flashlfq:
   env:
     MONO_GC_PARAMS: max-heap-size=90g
   mem: 90
-flexbar: {cores: 10, mem: 12}
-flexbar_no_split: {cores: 10, mem: 12}
+flexbar: {cores: 10, mem: 12, runner: condor_singularity_with_conda}
+flexbar_no_split: {cores: 10, mem: 12, runner: condor_singularity_with_conda}
 flexbar_split_RR_bcs: {cores: 10, mem: 12}
 flexbar_split_RYYR_bcs: {cores: 10, mem: 12}
 freebayes: {cores: 10, mem: 100}
@@ -681,27 +682,27 @@ hammock_1.0:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
   mem: 20
   name: java_temp
-heatmapper: {mem: 25}
-heatmapper_deepTools: {mem: 25}
-hicexplorer_hicbuildmatrix: {cores: 10, mem: 110}
-hicexplorer_hiccorrectmatrix: {mem: 64}
-hicexplorer_hiccorrelate: {mem: 20}
-hicexplorer_hicfindtads: {mem: 20}
-hicexplorer_hicplotmatrix: {mem: 32}
-hicexplorer_hicplottads: {mem: 20}
-hicexplorer_hicsummatrices: {mem: 64}
-hicexplorer_hicpca: {cores: 10, mem: 60}
-hicexplorer_hicmergematrixbins: {mem: 80}
-hicexplorer_hictransform: {cores: 10, mem: 60}
-hicexplorer_hicplotviewpoint: {mem: 12}
-hicexplorer_hicaggregatecontacts: {mem: 12}
-hicexplorer_chicaggregatestatistic: {cores: 20, mem: 60}
-hicexplorer_chicdifferentialtest: {cores: 20, mem: 60}
-hicexplorer_chicplotviewpoint: {cores: 20, mem: 60}
-hicexplorer_chicqualitycontrol: {cores: 20, mem: 60}
-hicexplorer_chicsignificantinteractions: {cores: 20, mem: 60}
-hicexplorer_chicviewpoint: {cores: 20, mem: 60}
-hicexplorer_chicviewpointbackgroundmodel: {cores: 20, mem: 60}
+heatmapper: {mem: 25, runner: condor_singularity_with_conda}
+heatmapper_deepTools: {mem: 25, runner: condor_singularity_with_conda}
+hicexplorer_hicbuildmatrix: {cores: 10, mem: 110, runner: condor_singularity_with_conda}
+hicexplorer_hiccorrectmatrix: {mem: 64, runner: condor_singularity_with_conda}
+hicexplorer_hiccorrelate: {mem: 20, runner: condor_singularity_with_conda}
+hicexplorer_hicfindtads: {mem: 20, runner: condor_singularity_with_conda}
+hicexplorer_hicplotmatrix: {mem: 32, runner: condor_singularity_with_conda}
+hicexplorer_hicplottads: {mem: 20, runner: condor_singularity_with_conda}
+hicexplorer_hicsummatrices: {mem: 64, runner: condor_singularity_with_conda}
+hicexplorer_hicpca: {cores: 10, mem: 60, runner: condor_singularity_with_conda}
+hicexplorer_hicmergematrixbins: {mem: 80, runner: condor_singularity_with_conda}
+hicexplorer_hictransform: {cores: 10, mem: 60, runner: condor_singularity_with_conda}
+hicexplorer_hicplotviewpoint: {mem: 12, runner: condor_singularity_with_conda}
+hicexplorer_hicaggregatecontacts: {mem: 12, runner: condor_singularity_with_conda}
+hicexplorer_chicaggregatestatistic: {cores: 20, mem: 60, runner: condor_singularity_with_conda}
+hicexplorer_chicdifferentialtest: {cores: 20, mem: 60, runner: condor_singularity_with_conda}
+hicexplorer_chicplotviewpoint: {cores: 20, mem: 60, runner: condor_singularity_with_conda}
+hicexplorer_chicqualitycontrol: {cores: 20, mem: 60, runner: condor_singularity_with_conda}
+hicexplorer_chicsignificantinteractions: {cores: 20, mem: 60, runner: condor_singularity_with_conda}
+hicexplorer_chicviewpoint: {cores: 20, mem: 60, runner: condor_singularity_with_conda}
+hicexplorer_chicviewpointbackgroundmodel: {cores: 20, mem: 60, runner: condor_singularity_with_conda}
 
 schicexplorer_schicdemultiplex: {cores: 5, mem: 64}
 schicexplorer_schicadjustmatrix: {cores: 5, mem: 64}
@@ -722,28 +723,28 @@ schicexplorer_schicqualitycontrol: {cores: 20, mem: 64}
 
 
 hicup_mapper: {cores: 6, mem: 24}
-hifiasm: {cores: 32, mem: 24}
-hisat: {cores: 10, mem: 20}
+hifiasm: {cores: 32, mem: 24, runner: condor_singularity_with_conda}
+hisat: {cores: 10, mem: 20, runner: condor_singularity_with_conda}
 #hisat2: {cores: 8, mem: 20, runner: condor_singularity_with_conda}
 hisat2: {cores: 8, mem: 20, runner: condor_singularity_with_conda}
 
 hisat2_index_builder_data_manager: {cores: 10, mem: 180}
 hmmer_hmmsearch: {mem: 10}
-htseq_count: {mem: 32}
+htseq_count: {mem: 32, runner: condor_singularity_with_conda}
 humann2: {cores: 6, mem: 90}
 
-hyphy_busted: {cores: 20, mem: 10}
-hyphy_bgm: {cores: 20, mem: 10}
-hyphy_gard: {cores: 20, mem: 10}
-hyphy_absrel: {cores: 20, mem: 10}
-hyphy_fubar: {cores: 20, mem: 10}
-hyphy_relax: {cores: 20, mem: 10}
-hyphy_fade: {cores: 20, mem: 10}
-hyphy_sm19: {cores: 20, mem: 10}
-hyphy_meme: {cores: 20, mem: 10}
-hyphy_slac: {cores: 20, mem: 10}
-hyphy_fel: {cores: 20, mem: 10}
-hyphy_prime: {cores: 20}
+hyphy_busted: {cores: 20, mem: 10, runner: condor_singularity_with_conda}
+hyphy_bgm: {cores: 20, mem: 10, runner: condor_singularity_with_conda}
+hyphy_gard: {cores: 20, mem: 10, runner: condor_singularity_with_conda}
+hyphy_absrel: {cores: 20, mem: 10, runner: condor_singularity_with_conda}
+hyphy_fubar: {cores: 20, mem: 10, runner: condor_singularity_with_conda}
+hyphy_relax: {cores: 20, mem: 10, runner: condor_singularity_with_conda}
+hyphy_fade: {cores: 20, mem: 10, runner: condor_singularity_with_conda}
+hyphy_sm19: {cores: 20, mem: 10, runner: condor_singularity_with_conda}
+hyphy_meme: {cores: 20, mem: 10, runner: condor_singularity_with_conda}
+hyphy_slac: {cores: 20, mem: 10, runner: condor_singularity_with_conda}
+hyphy_fel: {cores: 20, mem: 10, runner: condor_singularity_with_conda}
+hyphy_prime: {cores: 20, runner: condor_singularity_with_conda}
 
 
 infernal_cmbuild: {cores: 10, mem: 20}
@@ -883,9 +884,10 @@ rnbeads: {mem: 20}
 rsem_calculate_expression: {mem: 16}
 rseqc_bam2wig: {cores: 8, mem: 16}
 sailfish: {cores: 6, mem: 70}
-salmon: {cores: 6, mem: 70}
+salmon: {cores: 6, mem: 70, runner: condor_singularity_with_conda}
 scanpy_cluster_reduce_dimension:
   cores: 4
+  runner: condor_singularity_with_conda
   env:
     NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
     OMP_NUM_THREADS: 4
@@ -897,6 +899,7 @@ scanpy_cluster_reduce_dimension:
 
 scanpy_filter:
   cores: 4
+  runner: condor_singularity_with_conda
   env:
     NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
     OMP_NUM_THREADS: 4
@@ -908,6 +911,7 @@ scanpy_filter:
 
 scanpy_inspect:
   cores: 4
+  runner: condor_singularity_with_conda
   env:
     NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
     OMP_NUM_THREADS: 4
@@ -919,6 +923,7 @@ scanpy_inspect:
 
 scanpy_normalize:
   cores: 4
+  runner: condor_singularity_with_conda
   env:
     NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
     OMP_NUM_THREADS: 4
@@ -930,6 +935,7 @@ scanpy_normalize:
 
 scanpy_remove_confounders:
   cores: 4
+  runner: condor_singularity_with_conda
   env:
     NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
     OMP_NUM_THREADS: 4
@@ -940,6 +946,7 @@ scanpy_remove_confounders:
     NUMBA_NUM_THREADS: 4
 
 scanpy_plot:
+  runner: condor_singularity_with_conda
   cores: 4
   env:
     NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
@@ -956,6 +963,7 @@ sam_merge2:
   mem: 32
 # samtools_stats: {runner: remote_cluster_mq_de01}
 search_gui:
+  runner: condor_singularity_with_conda
   cores: 10
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
@@ -1027,9 +1035,9 @@ unicycler:
   mem: 80
   name: special
 valet: {cores: 8, mem: 20}
-varscan_somatic: {cores: 8, mem: 12}
-varscan_mpileup: {mem: 12}
-varscan_copynumber: {mem: 12}
+varscan_somatic: {cores: 8, mem: 12, runner: condor_singularity_with_conda}
+varscan_mpileup: {mem: 12, runner: condor_singularity_with_conda}
+varscan_copynumber: {mem: 12, runner: condor_singularity_with_conda}
 velvetg:
   cores: 4
   env:
@@ -1045,7 +1053,6 @@ velveth:
   mem: 16
   name: _velveth
 vsearch_search: {mem: 80}
-
 
 
 # Some admin tools
