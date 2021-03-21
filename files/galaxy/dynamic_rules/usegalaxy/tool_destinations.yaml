@@ -725,8 +725,12 @@ schicexplorer_schicqualitycontrol: {cores: 20, mem: 64}
 hicup_mapper: {cores: 6, mem: 24}
 hifiasm: {cores: 32, mem: 24, runner: condor_singularity_with_conda}
 hisat: {cores: 10, mem: 20, runner: condor_singularity_with_conda}
+
+# It seems that we are running out of temp space according to error reports from 21.03.2021
+# [E::hts_open_format] Failed to open file "/var/lib/condor/execute/dir_2954912.0000.bam" : No such file or directory
+# FATAL:   Unable to handle docker://quay.io/biocontainers/mulled-v2-b570fc8a7b25c6a733660cda7e105007b53ac501:26fa90e5bca490ccf5ba8db752fa36fd5834ef00-0 uri: while building SIF from layers: packer failed to pack: while unpacking tmpfs: error unpacking rootfs: unpack layer: unpack entry: usr/local/bin/hisat2-build-l: unpack to regular file: short write: write /var/lib/condor/execute/dir_2147833/build-temp-943357231/rootfs/usr/local/bin/hisat2-build-l: no space left on device
 #hisat2: {cores: 8, mem: 20, runner: condor_singularity_with_conda}
-hisat2: {cores: 8, mem: 20, runner: condor_singularity_with_conda}
+hisat2: {cores: 8, mem : 20}
 
 hisat2_index_builder_data_manager: {cores: 10, mem: 180}
 hmmer_hmmsearch: {mem: 10}
