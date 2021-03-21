@@ -194,6 +194,12 @@ server {
 
 	{{ gapars_nginx_config }}
 
+        location /webhook-games/ {
+             root /opt/galaxy/custom-tools/;
+             index index.html;
+        }
+
+
 	location /apollo/ {
 		proxy_pass http://apollo.internal.galaxyproject.eu/apollo/;
 		proxy_http_version 1.1;
