@@ -891,7 +891,6 @@ sailfish: {cores: 6, mem: 70}
 salmon: {cores: 6, mem: 70}
 scanpy_cluster_reduce_dimension:
   cores: 4
-  runner: condor_singularity_with_conda
   env:
     NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
     OMP_NUM_THREADS: 4
@@ -903,7 +902,6 @@ scanpy_cluster_reduce_dimension:
 
 scanpy_filter:
   cores: 4
-  runner: condor_singularity_with_conda
   env:
     NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
     OMP_NUM_THREADS: 4
@@ -915,7 +913,6 @@ scanpy_filter:
 
 scanpy_inspect:
   cores: 4
-  runner: condor_singularity_with_conda
   env:
     NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
     OMP_NUM_THREADS: 4
@@ -927,7 +924,6 @@ scanpy_inspect:
 
 scanpy_normalize:
   cores: 4
-  runner: condor_singularity_with_conda
   env:
     NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
     OMP_NUM_THREADS: 4
@@ -939,7 +935,6 @@ scanpy_normalize:
 
 scanpy_remove_confounders:
   cores: 4
-  runner: condor_singularity_with_conda
   env:
     NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
     OMP_NUM_THREADS: 4
@@ -950,7 +945,6 @@ scanpy_remove_confounders:
     NUMBA_NUM_THREADS: 4
 
 scanpy_plot:
-  runner: condor_singularity_with_conda
   cores: 4
   env:
     NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
@@ -967,7 +961,6 @@ sam_merge2:
   mem: 32
 # samtools_stats: {runner: remote_cluster_mq_de01}
 search_gui:
-  runner: condor_singularity_with_conda
   cores: 10
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
