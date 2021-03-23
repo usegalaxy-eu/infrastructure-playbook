@@ -219,6 +219,19 @@ condor_network_interface: eth0
 condor_extra: |
     SSH_TO_JOB_SSH_CMD = "ssh -oUser=galaxy -oIdentityFile=%i -oStrictHostKeyChecking=yes -oUserKnownHostsFile=%k -oGlobalKnownHostsFile=%k -oProxyCommand=%x %h"
 
+# gie_proxy
+gie_proxy_dir: "{{ galaxy_root }}/gie-proxy/proxy"
+gie_proxy_git_version: master
+gie_proxy_setup_nodejs: nodeenv
+gie_proxy_virtualenv_command: /usr/bin/python3 -m virtualenv #"{{ pip_virtualenv_command }}"
+gie_proxy_nodejs_version: "10.13.0"
+gie_proxy_virtualenv: "{{ galaxy_root }}/gie-proxy/venv"
+gie_proxy_setup_service: systemd
+gie_proxy_sessions_path: "{{ galaxy_mutable_data_dir }}/interactivetools_map.sqlite"
+gie_proxy_port: 8800
+gie_proxy_verbose: true
+
+
 # gxadmin
 postgres_user: galaxy-test
 postgres_host: sn03.bi.uni-freiburg.de
