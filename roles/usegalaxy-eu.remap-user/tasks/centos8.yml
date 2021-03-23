@@ -20,7 +20,7 @@
     line: 'input:x:500:'
   when: 'not ansible_check_mode and check_input.rc == 0'
 
-- command: "find / -gid 999 -exec chgrp 500 '{}' +"
+- command: "find / -mount -gid 999 -exec chgrp 500 '{}' +"
   ignore_errors: yes
   when: check_input.rc == 0
 
@@ -41,6 +41,6 @@
     line: 'systemd-coredump:x:500:997:systemd Core Dumper:/:/sbin/nologin'
   when: 'not ansible_check_mode and check_coredump.rc == 0'
 
-- command: "find / -uid 999 -exec chown 500 '{}' +"
+- command: "find / -mount -uid 999 -exec chown 500 '{}' +"
   ignore_errors: yes
   when: check_coredump.rc == 0
