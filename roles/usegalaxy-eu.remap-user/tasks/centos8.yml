@@ -9,7 +9,11 @@
   register: check_input
   changed_when: no
 
-# Unfortunately ssh_keys owns some files.
+- name: Print return information from the previous task
+  ansible.builtin.debug:
+    var: check_input
+  when: debug
+
 - lineinfile:
     path: /etc/group
     regexp: 'input:x:999:'
@@ -25,6 +29,11 @@
   ignore_errors: yes
   register: check_coredump
   changed_when: no
+
+- name: Print return information from the previous task2
+  ansible.builtin.debug:
+    var: check_coredump
+  when: debug
 
 - lineinfile:
     path: /etc/passwd
