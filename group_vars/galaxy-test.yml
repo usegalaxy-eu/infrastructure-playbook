@@ -245,7 +245,6 @@ gxadmin_bin_dir: /usr/bin
 gxadmin_force: true
 
 # GALAXY
-galaxy_group: galaxy
 galaxy_system_group: galaxy
 galaxy_instance_codename: "{{ codename }}"
 galaxy_log_dir: '/var/log/galaxy/'
@@ -261,6 +260,9 @@ galaxy_user:
     home: /opt/galaxy
     uid: 999
     shell: /bin/bash
+galaxy_group:
+  name: galaxy
+  gid: 999
 
 galaxy_root: /opt/galaxy
 galaxy_handler_count: "{{ galaxy_systemd_handlers }}"
