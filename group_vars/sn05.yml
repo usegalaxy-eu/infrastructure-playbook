@@ -22,3 +22,4 @@ condor_extra: |
   SCHEDD_INTERVAL = 100
   JOB_START_COUNT = 250
   JOB_START_DELAY = 0
+  NEGOTIATOR_POST_JOB_RANK = isUndefined(RemoteOwner) * (10000 - TotalLoadAvg)
