@@ -26,15 +26,6 @@ condor_singularity:
     singularity_run_extra_arguments: '-H /usr/local/galaxy/'
     tmp_dir: 'True'
 
-secure_pulsar_singularity:
-  env: {}
-  params:
-    priority: -{PRIORITY}
-    request_cpus: '{PARALLELISATION}'
-    request_memory: '{MEMORY}'
-    singularity_enabled: true
-    singularity_default_container_id: '/data/0/cvmfs/singularity/ubuntu:18.04'
-
 condor_singularity_with_conda:
   env:
     GALAXY_MEMORY_MB: '{MEMORY_MB}'
