@@ -137,11 +137,28 @@
   bucket: copernicus-dem-30m
   anon: true
 
-#- type: s3fs
-#  label: Sigma2 MinIO
-#  endpoint_url: "https://galaxy-minio.uiogeo-apps.sigma2.no"
-#  id: sigma2-minio
-#  doc: MinIO Sigma2 storage for Anne
-#  anon: false
-#  secret: "UJ3gt3xbfFzt7SK"
-#  key: "MCASLHGd8ksnYh7"
+- type: s3fs
+  label: Sigma2 MinIO storage
+  endpoint_url: "https://galaxy-minio.uiogeo-apps.sigma2.no/"
+  id: galaxy-minio-storage
+  doc: Galaxy MinIO S3 storage
+  anon: false
+  secret: "UJ3gt3xbfFzt7SK"
+  key: "MCASLHGd8ksnYh7"
+
+- type: s3fs
+  label: UCloud MinIO storage
+  endpoint_url: "https://app-531712.cloud.sdu.dk/"
+  id: galaxy-dk-minio-storage
+  doc: Galaxy MinIO S3 storage UCloud
+  anon: false
+  secret: "NGY4Y2U1NmNhMzllODJlMmExZGVjY2Q3"
+  key: "OWNiMDFkNmU3NjA2ZmRhOTU3N2FlYjVk"
+
+- type: s3fs
+  label: CSC Allas object storage
+  endpoint_url: "https://a3s.fi/"
+  id: galaxy-csc-object-storage
+  doc: CSC Allas public datasets
+  bucket: Sentinel2-MSIL2A-cloud-0-95-2016-T34VDM
+  anon: true
