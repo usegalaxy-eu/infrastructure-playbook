@@ -312,6 +312,7 @@ condor_allow_negotiator: "132.230.223.239,$(CONDOR_HOST)"
 condor_allow_administrator: "$(ALLOW_NEGOTIATOR)"
 
 condor_system_periodic_hold: "{{ 30 * 24 * 60 * 60}}"
+condor_system_periodic_remove:  "{{ 2 * 24 * 60 * 60}}"
 condor_network_interface: ens802f0.223
 condor_extra: |
   MASTER_UPDATE_INTERVAL = 150
