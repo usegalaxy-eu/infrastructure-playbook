@@ -110,9 +110,7 @@ condor_docker_ie_interactive:
     tmp_dir: 'True'
 
 condor_docker:
-  env:
-    # this can be removed, as soon as we don't expose this env on cn029 anymore
-    DOCKER_HOST: ''
+  env: {}
   params:
     priority: -{PRIORITY}
     request_cpus: '{PARALLELISATION}'
