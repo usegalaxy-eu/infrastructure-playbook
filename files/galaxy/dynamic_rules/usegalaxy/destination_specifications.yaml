@@ -13,6 +13,22 @@ condor:
     request_memory: '{MEMORY}'
     tmp_dir: 'True'
 
+condor_gpu:
+  limits:
+    cores: 8
+    mem: 16
+    gpus: 1
+  env:
+    NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    GPU_AVALAIBLE: 1
+  params:
+    priority: -{PRIORITY}
+    request_cpus: '{PARALLELISATION}'
+    request_memory: '{MEMORY}'
+    request_gpus: '{GPUS}'
+
 condor_singularity:
   limits:
     cores: 40
