@@ -17,7 +17,7 @@ def per_host_tool_labels( context, label ):
     valid_labels = [ "file_meta_label", "general_text_label"]
     general_ngs_labels = [ "genomics_label" ]
     # HiCtools mode: published in NAR 2018
-    if "humancellatlas.usegalaxy.eu" in host or "nanopore.usegalaxy.eu" in host or "hicexplorer.usegalaxy.eu" in host or "singlecell.usegalaxy.eu" in host or "metagenomics.usegalaxy.eu" in host or "rna.usegalaxy.eu" in host or "clipseq.usegalaxy.eu" in host or "graphclust.usegalaxy.eu" in host or "annotation.usegalaxy.eu" in host or "virology.usegalaxy.eu" in host:
+    if "humancellatlas.usegalaxy.eu" in host or "nanopore.usegalaxy.eu" in host or "plants.usegalaxy.eu" in host or "hicexplorer.usegalaxy.eu" in host or "singlecell.usegalaxy.eu" in host or "metagenomics.usegalaxy.eu" in host or "rna.usegalaxy.eu" in host or "clipseq.usegalaxy.eu" in host or "graphclust.usegalaxy.eu" in host or "annotation.usegalaxy.eu" in host or "virology.usegalaxy.eu" in host:
         valid_labels += general_ngs_labels
         return label.id in valid_labels
     if "cheminformatics.usegalaxy.eu" in host:
@@ -64,11 +64,14 @@ DOMAIN_SECTIONS = {
     'rna': GENERAL_NGS_SECTIONS + ["rna_seq", "annotation", "rna_analysis",
         "graph_display_data"],
     'singlecell': GENERAL_NGS_SECTIONS + ["rna_seq", "annotation", "rna_analysis",
-        "graph_display_data", "single-cell"],
+        "graph_display_data", "single-cell", "interactivetools"],
     'humancellatlas': GENERAL_NGS_SECTIONS + ["rna_seq", "annotation", "rna_analysis",
         "graph_display_data", "single-cell", "interactivetools"] + human_cell_atlas_sections,
     'clipseq': GENERAL_NGS_SECTIONS + ["rna_seq", "peak_calling", "rna_analysis",
         "motif_tools"],
+    'plants': GENERAL_NGS_SECTIONS + ["rna_seq", "annotation", "rna_analysis",
+        "graph_display_data", "hicexplorer", "peak_calling", "nanopore", "ncbi_blast", "fasta_fastq", "assembly",
+        "metagenomic_analysis", "single-cell", "interactivetools"],
     'graphclust': GENERAL_NGS_SECTIONS + ["rna_seq", "graphclust", "rna_analysis"],
     'cheminformatics': ['chemicaltoolbox'],
     'imaging': ['imaging', 'proteomics'],
