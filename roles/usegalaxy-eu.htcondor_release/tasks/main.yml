@@ -1,0 +1,45 @@
+---
+- name: "Deploy bash script"
+  copy:
+    content: |
+        #!/bin/bash
+        CAP=409600 # 400GB
+        MULTIPLIER=3
+        LOG=/data/dnb01/maintenance/condor_rerun_held_jobs.log
+
+        if [ ! -f "$LOG" ]; then
+        touch "$LOG"
+        echo "Created $LOG"
+        fi
+
+        for j in $(condor_q -hold -autoformat ClusterId HoldReasonCode| awk '(($2-34) == 0){print $1}'| paste -s -d ' ')
+        do
+          MEMORY_PROVISIONED=$(condor_q "$j" -autoformat MemoryProvisioned)
+          JOB_DESCRIPTION=$(condor_q "$j" -autoformat JobDescription)
+          if [ $(($MEMORY_PROVISIONED * $MULTIPLIER)) -gt $CAP ]; then
+            REQUEST_MEMORY=$CAP
+          else
+            REQUEST_MEMORY=$(($MEMORY_PROVISIONED * $MULTIPLIER))
+          fi
+
+          DATE_WITH_TIME=$(date "+%d/%m/%Y-%H:%M:%S")
+          /bin/cat <<EOM >>$LOG
+          $DATE_WITH_TIME, rerunning held job, id $j, description $JOB_DESCRIPTION, memory_provisioned $MEMORY_PROVISIONED, request_memory $REQUEST_MEMORY
+        EOM
+
+          condor_qedit "$j" RequestMemory=$REQUEST_MEMORY
+          condor_release "$j"
+        done
+    dest: /usr/bin/condor-release-held-jobs
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Add Condor release task to cron
+  cron:
+    name: "Condor release held jobs increasing memory"
+    minute: "*/15"
+    hour: "*"
+    dow: "*"
+    job: "/usr/bin/condor-release-held-jobs"
+    user: "{{ galaxy_user.name }}"
