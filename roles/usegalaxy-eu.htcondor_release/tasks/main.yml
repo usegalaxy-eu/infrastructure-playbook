@@ -14,17 +14,18 @@
 
         for j in $(condor_q -hold -autoformat ClusterId HoldReasonCode| awk '(($2-34) == 0){print $1}'| paste -s -d ' ')
         do
-          MEMORY_PROVISIONED=$(condor_q "$j" -autoformat MemoryProvisioned)
           JOB_DESCRIPTION=$(condor_q "$j" -autoformat JobDescription)
+          MEMORY_PROVISIONED=$(condor_q "$j" -autoformat MemoryProvisioned)          
           if [ $(($MEMORY_PROVISIONED * $MULTIPLIER)) -gt $CAP ]; then
             REQUEST_MEMORY=$CAP
           else
             REQUEST_MEMORY=$(($MEMORY_PROVISIONED * $MULTIPLIER))
           fi
+          REMOTE_HOST=$(condor_q "$j" -autoformat RemoteHost)
 
           DATE_WITH_TIME=$(date "+%d/%m/%Y-%H:%M:%S")
           /bin/cat <<EOM >>$LOG
-          $DATE_WITH_TIME, rerunning held job, id $j, description $JOB_DESCRIPTION, memory_provisioned $MEMORY_PROVISIONED, request_memory $REQUEST_MEMORY
+          $DATE_WITH_TIME, rerunning held job, id $j, description $JOB_DESCRIPTION, memory_provisioned $MEMORY_PROVISIONED, request_memory $REQUEST_MEMORY, REMOTE_HOST
         EOM
 
           condor_qedit "$j" RequestMemory=$REQUEST_MEMORY
