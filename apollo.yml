@@ -26,22 +26,22 @@
         policy: targeted
         state: permissive
   roles:
-    - hostname
-    - usegalaxy-eu.dynmotd
-    - geerlingguy.repo-epel
-    - hxr.admin-tools
-    - influxdata.chrony
-    - hxr.monitor-email
-    - linuxhq.yum_cron
-    - galaxyproject.nginx
-    - hxr.autofs
+    #- hostname
+    #- usegalaxy-eu.dynmotd
+    #- geerlingguy.repo-epel
+    #- hxr.admin-tools
+    #- influxdata.chrony
+    #- hxr.monitor-email
+    #- linuxhq.yum_cron
+    #- galaxyproject.nginx
+    #- hxr.autofs
     # BEGIN custom
     #- hxr.remap-user
     # Now add custom tomcat user with hardcoded ID. The user info is in group_vars/apollo.yml
-    - hxr.replace-galaxy-user
-    - devops.tomcat7
+    #- hxr.replace-galaxy-user
+    #- devops.tomcat7
     - hxr.apollo
     # END custom
-    - dj-wasabi.telegraf
-    - dev-sec.os-hardening
-    - dev-sec.ssh-hardening
+    #- dj-wasabi.telegraf
+    #- dev-sec.os-hardening
+    #- dev-sec.ssh-hardening
