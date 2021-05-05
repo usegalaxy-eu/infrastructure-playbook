@@ -100,7 +100,7 @@ circos: {mem: 10, runner: remote_cluster_mq_pt01}
 stress_ng: {runner: condor_singularity_with_conda}
 fasterq_dump: {cores: 8}
 
-busco: {cores: 4, mem: 8}
+busco: {cores: 16, mem: 80}
 
 # roary	needs many many cpus if	the number of input files increase
 # a more specific function would ne neat
@@ -149,9 +149,12 @@ paralyzer:
     _JAVA_OPTIONS: -Xmx8G -Xms1G
 
 cuffmerge: {mem: 8}
+CruxAdapter: {mem: 8}
 bio3d_pca: {mem: 64}
-bio3d_rmsd: {mem: 64}
-bio3d_rmsf: {mem: 64}
+bio3d_rmsd: {mem: 100}
+bio3d_rmsf: {mem: 100}
+rxdock_sort_filter: {mem: 100}
+rdock_sort_filter: {mem: 100}
 
 cds_essential_variability:
   env:
@@ -165,8 +168,12 @@ viz_overlay_moving_and_fixed_image: {mem: 12}
 ip_projective_transformation: {mem: 24}
 scale_image: {mem: 12}
 re_he_maldi_image_registration: {mem: 48}
+<<<<<<< HEAD
 minimap2: {cores: 8, mem: 32}
 winnowmap: {cores: 8, mem: 32}
+=======
+minimap2: {cores: 8, mem: 64}
+>>>>>>> 79c97043cfd98dd14c43a83d316fba1c31791b60
 flye: {cores: 20, mem: 24}
 msstats: {mem: 24}
 msstatstmt: {mem: 24}
@@ -541,8 +548,8 @@ bamCompare_deepTools: {mem: 10}
 bamCorrelate_deepTools: {cores: 10, mem: 100}
 bamCoverage_deepTools: {mem: 10}
 bamFingerprint: {mem: 10}
-bedtools_intersectbed: {mem: 20}
-bedtools_intersectbed_bam: {mem: 20}
+bedtools_intersectbed: {mem: 40}
+bedtools_intersectbed_bam: {mem: 40}
 bedtools_mergebed: {mem: 15}
 bedtools_sortbed: {mem: 20}
 bedtools_subtractbed: {mem: 8}
@@ -582,7 +589,7 @@ metaspades: {cores: 10, mem: 250}
 megahit: {cores: 10, mem: 48}
 charts: {mem: 10}
 circgraph: {mem: 10}
-computeMatrix: {mem: 80}
+computeMatrix: {mem: 100}
 correctGCBias: {mem: 10}
 cshl_fastx_collapser: {mem: 16}
 create_tool_recommendation_model: {cores: 16, mem: 160}
@@ -614,7 +621,7 @@ deeptools_bigwigCompare: {cores: 10, mem: 12}
 deeptools_bigwigCorrelate: {cores: 10, mem: 40}
 deeptools_bigwig_compare: {cores: 10, mem: 24}
 deeptools_computeGCBias: {cores: 10, mem: 24}
-deeptools_computeMatrix: {cores: 10, mem: 24}
+deeptools_computeMatrix: {cores: 10, mem: 40}
 deeptools_compute_gc_bias: {cores: 10, mem: 24}
 deeptools_compute_matrix: {cores: 10, mem: 30}
 deeptools_correctGCBias: {cores: 10, mem: 24}
@@ -695,12 +702,12 @@ hammock_1.0:
   name: java_temp
 heatmapper: {mem: 25}
 heatmapper_deepTools: {mem: 25}
-hicexplorer_hicbuildmatrix: {cores: 10, mem: 110}
+hicexplorer_hicbuildmatrix: {cores: 10, mem: 160}
 hicexplorer_hiccorrectmatrix: {mem: 64}
 hicexplorer_hiccorrelate: {mem: 20}
 hicexplorer_hicfindtads: {mem: 20}
-hicexplorer_hicplotmatrix: {mem: 32}
-hicexplorer_hicplottads: {mem: 20}
+hicexplorer_hicplotmatrix: {mem: 64}
+hicexplorer_hicplottads: {mem: 64}
 hicexplorer_hicsummatrices: {mem: 64}
 hicexplorer_hicpca: {cores: 10, mem: 60}
 hicexplorer_hicmergematrixbins: {mem: 80}
@@ -776,7 +783,7 @@ je_demultiplex: {cores: 8, mem: 20}
 je_demultiplex_illu: {cores: 8}
 je_markdupes: {cores: 8}
 join1: {mem: 18}
-jq: {runner: condor_singularity_with_conda}
+#jq: {runner: condor_singularity_with_conda}
 kallisto_quant: {cores: 8, mem: 20}
 ## uha,	with the reference.fa file from	the history it is not working?
 ## kallisto_quant: {cores: 8, mem: 20_singularity}
@@ -971,6 +978,7 @@ sam_merge2:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
   mem: 32
 # samtools_stats: {runner: remote_cluster_mq_de01}
+samtools_sort: {cores: 10, mem: 10}
 search_gui:
   cores: 10
   env:
@@ -1041,7 +1049,7 @@ unicycler:
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
     TERM: vt100
-  mem: 80
+  mem: 100
   name: special
 valet: {cores: 8, mem: 20}
 varscan_somatic: {cores: 8, mem: 12}
