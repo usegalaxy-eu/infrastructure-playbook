@@ -21,7 +21,7 @@
           else
             REQUEST_MEMORY=$(($MEMORY_PROVISIONED * $MULTIPLIER))
           fi
-          REMOTE_HOST=$(condor_q "$j" -autoformat RemoteHost)
+          REMOTE_HOST=$(condor_q "$j" -autoformat LastRemoteHost|cut -f2 -d@|cut -f1 -d.)
 
           DATE_WITH_TIME=$(date "+%d/%m/%Y-%H:%M:%S")
           /bin/cat <<EOM >>$LOG
