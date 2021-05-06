@@ -3,6 +3,73 @@ galaxy_custom_site_base_css: '#masthead { background-color: #003399;}'
 galaxy_custom_sites:
   - name: assembly
     brand: Genome Assembly
+    custom_css: |
+      @keyframes fly-right-one {
+          0% {
+              transform: translateY(-2vh) translateX(-55vw) scale(0.5);
+          }
+          15% {
+              transform: translateY(0vh) translateX(-45vw) scale(0.4);
+          }
+          30% {
+              transform: translateY(-2vh) translateX(-25vw) scale(0.6);
+          }
+          45% {
+              transform: translateY(1vh) translateX(-5vw) scale(0.45);
+          }
+          60% {
+              transform: translateY(-2vh) translateX(16vw) scale(0.5);
+          }
+          75% {
+              transform: translateY(0vh) translateX(28vw) scale(0.45);
+          }
+          100% {
+              transform: translateY(-1vh) translateX(48vw) scale(0.45);
+          }
+      }
+      @keyframes fly-right-two {
+          0% {
+              transform: translateY(2vh) translateX(-55vw) scale(0.5);
+          }
+          25% {
+              transform: translateY(0vh) translateX(-35vw) scale(0.4);
+          }
+          50% {
+              transform: translateY(-2vh) translateX(-10vw) scale(0.6);
+          }
+          75% {
+              transform: translateY(1vh) translateX(19vw) scale(0.45);
+          }
+          100% {
+              transform: translateY(0.5vh) translateX(48vw) scale(0.45);
+          }
+      }
+
+       @keyframes fly-cycle {
+           100% {
+               background-position: -900px 0;
+          }
+      }
+
+      #masthead:before {
+      position: absolute;
+      content: "";
+      width: 88px;
+      height: 125px;
+      background-size: auto 100%;
+      animation: fly-cycle  1s steps(10) infinite, fly-right-one  9s linear infinite;
+      background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/174479/bird-cells-new.svg);
+      }
+
+      #masthead:after {
+      position: absolute;
+      content: "";
+      width: 88px;
+      height: 125px;
+      background-size: auto 100%;
+      animation: fly-cycle  1s steps(10) infinite, fly-right-two 15s linear infinite;
+      background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/174479/bird-cells-new.svg);
+      }
   - name: nanopore
     brand: Nanopore
   - name: erasmusmc
