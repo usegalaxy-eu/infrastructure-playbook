@@ -25,6 +25,7 @@ def per_host_tool_labels( context, label ):
     if "ml.usegalaxy.eu" in host:
         return label.id in valid_labels
     if "imaging.usegalaxy.eu" in host:
+        valid_labels += ['stats_viz']
         return label.id in valid_labels
     if "climate.usegalaxy.eu" in host:
         return label.id in valid_labels
