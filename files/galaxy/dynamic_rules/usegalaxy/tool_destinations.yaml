@@ -340,7 +340,7 @@ mothur_clearcut: {cores: 8, env: {TERM: vt100}}
 mothur_cluster: {cores: 8, env: {TERM: vt100}}
 mothur_cluster_classic: {cores: 8, env: {TERM: vt100}}
 mothur_cluster_fragments: {cores: 8, env: {TERM: vt100}}
-mothur_cluster_split: {cores: 8, env: {TERM: vt100}}
+mothur_cluster_split: {cores: 8, env: {TERM: vt100}, runner: condor_singularity}
 mothur_collect_shared: {cores: 8, env: {TERM: vt100}}
 mothur_collect_single: {cores: 8, env: {TERM: vt100}}
 mothur_consensus_seqs: {cores: 8, env: {TERM: vt100}}
@@ -352,7 +352,7 @@ mothur_create_database: {cores: 8, env: {TERM: vt100}}
 mothur_degap_seqs: {cores: 8, env: {TERM: vt100}}
 mothur_deunique_seqs: {cores: 8, env: {TERM: vt100}}
 mothur_deunique_tree: {cores: 8, env: {TERM: vt100}}
-mothur_dist_seqs: {cores: 8, env: {TERM: vt100}}
+mothur_dist_seqs: {cores: 8, env: {TERM: vt100}, runner: condor_singularity}
 mothur_dist_shared: {cores: 8, env: {TERM: vt100}}
 mothur_fastq_info: {cores: 8, env: {TERM: vt100}}
 mothur_filter_seqs: {cores: 8, env: {TERM: vt100}}
