@@ -12,6 +12,7 @@
   copy:
     src: "{{ tomcat_apollo_webapp_dir }}"
     dest: "/tmp/apollo-backup-{{ ansible_date_time.epoch }}"
+    remote_src: true
   when: download.changed
   notify: 'restart tomcat'
 
