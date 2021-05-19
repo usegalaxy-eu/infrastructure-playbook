@@ -8,43 +8,50 @@
     dest: "{{ apollo_tmp_file }}"
   register: download
 
-  #- name: Wipe out old apollo
-  #  file:
-  #    path: "{{ tomcat_apollo_webapp_dir }}"
-  #    state: absent
-  #  when: download.changed
-  #  notify: 'restart tomcat'
-  #
-  #- name: Make new root webapp
-  #  file:
-  #    path: "{{ tomcat_apollo_webapp_dir }}"
-  #    state: directory
-  #    owner: tomcat
-  #    group: tomcat
-  #  when: download.changed
-  #  notify: 'restart tomcat'
-  #
-  #- name: Extract new apollo into root webapp.
-  #  unarchive:
-  #    src: "{{ apollo_tmp_file }}"
-  #    dest: "{{ tomcat_apollo_webapp_dir }}"
-  #    remote_src: true
-  #  when: download.changed
-  #  notify: 'restart tomcat'
-  #
-  #- name: Fix perms
-  #  command: "chown tomcat:tomcat -R /usr/share/tomcat/webapps/apollo/"
-  #  when: download.changed
-  #  notify: 'restart tomcat'
-  #
-  #- name: Deploy config file
-  #  template:
-  #    src: apollo-config.groovy
-  #    dest: "{{ tomcat_apollo_webapp_dir }}/{{ item }}"
-  #    owner: tomcat
-  #    group: tomcat
-  #    mode: 0640
-  #  with_items:
-  #    #- WEB-INF/classes/java/apollo-config.groovy
-  #    - WEB-INF/classes/apollo-config.groovy
-  #  notify: 'restart tomcat'
+- name: Backup old apollo
+  copy:
+    src: "{{ tomcat_apollo_webapp_dir }}"
+    dest: "/tmp/apollo-backup-{{ ansible_date_time.epoch }}"
+  when: download.changed
+  notify: 'restart tomcat'
+
+- name: Wipe out old apollo
+  file:
+    path: "{{ tomcat_apollo_webapp_dir }}"
+    state: absent
+  when: download.changed
+  notify: 'restart tomcat'
+
+- name: Make new root webapp
+  file:
+    path: "{{ tomcat_apollo_webapp_dir }}"
+    state: directory
+    owner: tomcat
+    group: tomcat
+  when: download.changed
+  notify: 'restart tomcat'
+
+- name: Extract new apollo into root webapp.
+  unarchive:
+    src: "{{ apollo_tmp_file }}"
+    dest: "{{ tomcat_apollo_webapp_dir }}"
+    remote_src: true
+  when: download.changed
+  notify: 'restart tomcat'
+
+- name: Fix perms
+  command: "chown tomcat:tomcat -R /usr/share/tomcat/webapps/apollo/"
+  when: download.changed
+  notify: 'restart tomcat'
+
+- name: Deploy config file
+  template:
+    src: apollo-config.groovy
+    dest: "{{ tomcat_apollo_webapp_dir }}/{{ item }}"
+    owner: tomcat
+    group: tomcat
+    mode: 0640
+  with_items:
+    #- WEB-INF/classes/java/apollo-config.groovy
+    - WEB-INF/classes/apollo-config.groovy
+  notify: 'restart tomcat'
