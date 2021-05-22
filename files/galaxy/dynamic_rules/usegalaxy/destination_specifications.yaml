@@ -128,7 +128,10 @@ condor_docker_ie_interactive:
     tmp_dir: 'True'
 
 condor_docker:
-  env: {}
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
   params:
     priority: -{PRIORITY}
     request_cpus: '{PARALLELISATION}'
