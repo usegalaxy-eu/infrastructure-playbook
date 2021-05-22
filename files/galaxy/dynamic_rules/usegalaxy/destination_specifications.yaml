@@ -128,6 +128,9 @@ condor_docker_ie_interactive:
     tmp_dir: 'True'
 
 condor_docker:
+  limits:
+    cores: 40
+    mem: 1000
   env:
     GALAXY_MEMORY_MB: '{MEMORY_MB}'
     GALAXY_SLOTS: '{PARALLELISATION}'
