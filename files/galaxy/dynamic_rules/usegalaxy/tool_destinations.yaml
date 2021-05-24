@@ -2,7 +2,8 @@
 __default__: {}
 
 keras_train_and_eval:
-   runner: remote_condor_cluster_gpu
+   ##runner: remote_condor_cluster_gpu
+   runner: condor_gpu
    gpus: 1
    cores: 10
    env:
