@@ -127,6 +127,26 @@ condor_docker_ie_interactive:
     docker_set_user: ''
     tmp_dir: 'True'
 
+condor_docker_ie_interactive_gpu:
+  limits:
+    cores: 8
+    mem: 18
+    gpus: 1
+  env: {}
+  params:
+    priority: -{PRIORITY}
+    request_cpus: '{PARALLELISATION}'
+    request_memory: '{MEMORY}'
+    docker_enabled: true
+    # can and should be made stricter at some point
+    docker_volumes: '$working_directory:rw,$job_directory:rw,$tool_directory:ro'
+    docker_memory: '{MEMORY}'
+    docker_auto_rm: true
+    docker_default_container_id: busybox:ubuntu-14.04
+    docker_sudo: false
+    docker_set_user: ''
+    tmp_dir: 'True'
+
 condor_docker:
   limits:
     cores: 40
