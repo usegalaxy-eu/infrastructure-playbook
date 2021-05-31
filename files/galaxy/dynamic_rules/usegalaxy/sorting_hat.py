@@ -357,7 +357,7 @@ def _finalize_tool_spec(tool_id, user_roles, tools_spec=TOOL_DESTINATIONS, memor
             'requirements': 'GalaxyTraining == false',
         }
     # These we're running on a specific subset
-    elif tool in ('interactive_tool_ml', 'gmx_sim', 'keras_train_and_eval'):
+    elif tool in ('interactive_tool_ml_jupyter_notebook', 'gmx_sim', 'keras_train_and_eval'):
         tool_spec['requirements'] = 'GalaxyGroup == "compute_gpu"'
     elif 'interactive_tool_' in tool_id:
         tool_spec['requirements'] = 'GalaxyDockerHack == True && GalaxyGroup == "compute"'
