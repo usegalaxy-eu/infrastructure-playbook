@@ -142,3 +142,6 @@ ssh_use_pam: true
 # Required if you want to run ansible more than once.
 sftp_enabled: true
 ssh_client_alive_interval: 600
+
+# Apollo env vars
+apollo_env: "GALAXY_WEBAPOLLO_URL={{ GALAXY_WEBAPOLLO_URL }} GALAXY_WEBAPOLLO_USER={{ GALAXY_WEBAPOLLO_USER }} GALAXY_WEBAPOLLO_PASSWORD={{ GALAXY_WEBAPOLLO_PASSWORD }} GALAXY_WEBAPOLLO_EXT_URL={{ GALAXY_WEBAPOLLO_EXT_URL }} GALAXY_SHARED_DIR={{ GALAXY_SHARED_DIR }} GALAXY_APOLLO_ORG_SUFFIX=id"
