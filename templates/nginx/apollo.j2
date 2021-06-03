@@ -20,6 +20,18 @@ server {
 		proxy_redirect http://usegalaxy.eu/apollo/ https://usegalaxy.eu/apollo/;
 	}
 
+	location /apollo-permapol/ {
+		proxy_set_header           Host $host:$server_port;
+		proxy_set_header           X-Real-IP $remote_addr;
+		proxy_set_header           X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header           X-Forwarded-Proto $scheme;
+		proxy_pass                 http://127.0.0.1:5001/apollo-permapol/;
+		proxy_pass_request_headers on;
+
+		proxy_set_header X-Forwarded-Proto https;
+		proxy_set_header X-Forwarded-Port 443;
+	}
+
 	# Not sure if needed.
 	location /apollo/stomp/ {
 		proxy_pass http://127.0.0.1:8080/apollo/stomp/;

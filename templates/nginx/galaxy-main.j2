@@ -202,6 +202,14 @@ server {
 		proxy_set_header Host $host;
 	}
 
+	location /apollo-permapol/ {
+		proxy_pass http://apollo.internal.galaxyproject.eu/apollo-permapol/;
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection $connection_upgrade;
+		proxy_set_header Host $host;
+	}
+
 	location /apollo_api/ {
 		proxy_pass http://apollo.internal.galaxyproject.eu/apollo_api/;
 	}
