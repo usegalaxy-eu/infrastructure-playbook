@@ -4,8 +4,8 @@ for dir in "{{ job_working_dir }}"/*/; do
     dir=${dir%*/}      # remove the trailing "/"
     echo "Cleaning $dir"
     if [[ $dir == *"_cleared_contents"* ]]; then
-        tmpwatch -v -a --mtime --dirmtime 3d "{{ job_working_dir }}/$dir"
+        tmpwatch -v -a --mtime --dirmtime 3d "$dir"
     else
-        tmpwatch -v -a --mtime --dirmtime 31d "{{ job_working_dir }}/$dir"
+        tmpwatch -v -a --mtime --dirmtime 31d "$dir"
     fi
 done;
