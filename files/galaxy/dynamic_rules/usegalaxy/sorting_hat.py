@@ -363,6 +363,8 @@ def _finalize_tool_spec(tool_id, user_roles, tools_spec=TOOL_DESTINATIONS, memor
         tool_spec['requirements'] = 'GalaxyDockerHack == True && GalaxyGroup == "compute"'
     elif tool in ('msconvert', 'glassgo'):
         tool_spec['requirements'] = 'GalaxyDockerHack == True && GalaxyGroup == "compute"'
+    elif tool in ('blast2go', 'blast_parser', 'megablast_wrapper', 'ncbi_blastp_wrapper', 'ncbi_blastn_wrapper', 'ncbi_tblastn_wrapper', 'ncbi_blastx_wrapper', 'ncbi_makeblastdb'):
+        tool_spec['requirements'] = 'GalaxyGroup == "compute_blast"'
 
     return tool_spec
 
