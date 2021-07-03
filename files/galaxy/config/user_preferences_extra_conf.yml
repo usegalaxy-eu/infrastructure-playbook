@@ -76,9 +76,18 @@ preferences:
               type: password
               required: False
 
-    b2drop:
-        description: Your B2DROP account (https://b2drop.eudat.eu/)
+    # Used in file_sources_conf.yml
+    nextcloud:
+        description: Your Personal Nextcloud / ownCloud account
         inputs:
+            - name: url
+              label: Server Domain (e.g. https://myowncloud.org)
+              type: text
+              required: False
+            - name: root
+              label: Server Path (should end with /remote.php/webdav, e.g. /a/sub/path/remote.php/webdav)
+              type: text
+              required: False
             - name: username
               label: Username
               type: text
