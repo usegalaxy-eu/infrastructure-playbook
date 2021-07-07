@@ -363,6 +363,8 @@ def _finalize_tool_spec(tool_id, user_roles, tools_spec=TOOL_DESTINATIONS, memor
         tool_spec['requirements'] = 'GalaxyDockerHack == True && GalaxyGroup == "compute"'
     elif tool in ('msconvert', 'glassgo'):
         tool_spec['requirements'] = 'GalaxyDockerHack == True && GalaxyGroup == "compute"'
+    elif 'mothur' in tool:
+        tool_spec['requirements'] = 'GalaxyGroup == "compute_mothur"'
 
     return tool_spec
 
