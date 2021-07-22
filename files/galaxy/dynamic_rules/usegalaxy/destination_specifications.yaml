@@ -659,12 +659,12 @@ remote_cluster_mq_cz01:
     GALAXY_MEMORY_MB: '{MEMORY_MB}'
     GALAXY_SLOTS: '{PARALLELISATION}'
     LC_ALL: C
-    SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
+    SINGULARITY_CACHEDIR: /storage/praha5-elixir/home/marten/pulsar/files/singularity_cache
   params:
     priority: -{PRIORITY}
     submit_request_cpus: '{PARALLELISATION}'
     submit_request_memory: '{MEMORY}'
-    jobs_directory: '/mnt/pulsar/files/staging'
+    jobs_directory: '/storage/praha5-elixir/home/marten/pulsar/files/staging'
     default_file_action: 'remote_transfer'
     dependency_resolution: 'none'
     outputs_to_working_directory: False
