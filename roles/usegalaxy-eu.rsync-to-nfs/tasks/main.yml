@@ -25,4 +25,6 @@
 
 - name: "Execute the script. Syncing in progress."
   command: /usr/bin/galaxy-sync-to-nfs
+  become: true
+  become_user: galaxy
   when: execute_galaxy_sync_to_nfs
