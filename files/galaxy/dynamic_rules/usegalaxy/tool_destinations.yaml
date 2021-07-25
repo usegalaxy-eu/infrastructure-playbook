@@ -59,7 +59,7 @@ interactive_tool_ml_jupyter_notebook:
    mem: 8
    docker_run_extra_arguments: ' --gpus all'
 
-interactive_tool_rstudio: {mem: 8, cores: 1, runner: condor_docker_ie_interactive, force_destination_id: True}
+interactive_tool_rstudio: {mem: 8, cores: 2, runner: condor_docker_ie_interactive, force_destination_id: True}
 interactive_tool_pyiron: {mem: 8, cores: 1, runner: condor_docker_ie_interactive, force_destination_id: True}
 interactive_tool_guacamole_desktop: {mem: 8, cores: 2, runner: condor_docker_ie_interactive, force_destination_id: True}
 interactive_tool_openrefine: {mem: 4, runner: condor_docker_ie_interactive, force_destination_id: True}
