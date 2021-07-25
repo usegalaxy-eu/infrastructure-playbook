@@ -22,6 +22,16 @@
     mode: 0644
   notify: autofs restart
 
+- name: Copy discontinued conf file
+  template:
+    src: "discontinued.conf.j2"
+    dest: "/etc/auto.discontinued"
+    owner: root
+    group: root
+    mode: 0644
+  when: '"discontinued" in usegalaxy_eu_autofs_mounts'
+  notify: autofs restart
+
 - name: Copy usrlocal conf file
   template:
     src: "usrlocal.conf.j2"

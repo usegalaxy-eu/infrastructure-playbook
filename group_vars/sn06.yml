@@ -8,6 +8,7 @@ docker_users:
 # Autofs
 usegalaxy_eu_autofs_mounts:
  - data
+ - discontinued
  - usrlocal
 
 data_conf:
@@ -24,10 +25,12 @@ data_conf:
   - dnb03   -rw,hard,intr,nosuid,quota      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
   - dnb04   -rw,hard,intr,nosuid,quota      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
   - db      -rw,hard,intr,nosuid,quota      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
-  - bd      -rw,hard,intr,nosuid,quota      sn02.bi.uni-freiburg.de:/export/fdata1/galaxy/net/data/db
-  - gxnew   -rw,hard,intr,nosuid,quota      sn03.bi.uni-freiburg.de:/export/galaxy1/system/galaxy-i1
   - gxtst   -rw,hard,intr,nosuid,quota      sn03.bi.uni-freiburg.de:/export/galaxy1/system/galaxy-i2
   - gxkey   -rw,hard,intr,nosuid,quota      sn03.bi.uni-freiburg.de:/export/galaxy1/system/galaxy-i3
+
+discontinued_conf:
+  - db      -rw,hard,nosuid      sn02.bi.uni-freiburg.de:/export/fdata1/galaxy/net/data/db
+  - gxnew   -rw,hard,nosuid      sn03.bi.uni-freiburg.de:/export/galaxy1/system/galaxy-i1
 
 # Telegraf
 telegraf_agent_hostname: "{{ hostname }}"
