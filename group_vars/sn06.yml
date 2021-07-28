@@ -24,9 +24,12 @@ data_conf:
   - dnb02   -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
   - dnb03   -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
   - dnb04   -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
+  - dnb05   -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/&
+  - dnb06   -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/&
   - db      -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
   - gxtst   -rw,hard,nosuid      sn03.bi.uni-freiburg.de:/export/galaxy1/system/galaxy-i2
   - gxkey   -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/ws01/galaxy-sync/main
+  - jwd     -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/ws01/&
 
 discontinued_conf:
   - 2       -rw,hard,nosuid      sn01.bi.uni-freiburg.de:/export/data4/galaxy/net/data/&
@@ -37,9 +40,10 @@ discontinued_conf:
   - gxmnt   -rw,hard,nosuid      sn03.bi.uni-freiburg.de:/export/galaxy1/system/galaxy
   - gxnew   -rw,hard,nosuid      sn03.bi.uni-freiburg.de:/export/galaxy1/system/galaxy-i1
   - gxkey   -rw,hard,nosuid      sn03.bi.uni-freiburg.de:/export/galaxy1/system/galaxy-i3
+  - tools   -rw,hard,nosuid      sn03.bi.uni-freiburg.de:/export/galaxy1/system/tools
 
 usrlocal_conf:
-  - /usr/local/tools   -rw,hard,nosuid,quota       sn03.bi.uni-freiburg.de:/export/galaxy1/system/tools
+  - /usr/local/tools   -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/tools
 
 # Telegraf
 telegraf_agent_hostname: "{{ hostname }}"
