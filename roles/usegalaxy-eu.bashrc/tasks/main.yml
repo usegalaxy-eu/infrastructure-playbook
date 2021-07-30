@@ -53,7 +53,7 @@
                       fi
       done
       JID=$1
-      WD=$(dirname `condor_q -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || dirname `condor_history -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '`)
+      WD=$(dirname `condor_q -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || dirname `condor_history -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || find /data/dnb03/galaxy_db/job_working_directory -maxdepth 3 -type d -name ${JID})
       cd $WD
       }
 
