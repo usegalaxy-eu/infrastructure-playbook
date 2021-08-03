@@ -96,6 +96,16 @@
   anon: true
 
 - type: s3fs
+  label: Genome Ark Test Instance
+  id: genomeark_galaxy
+  doc: Access to Genome Ark open data on AWS.
+  bucket_name: genomeark
+  requires_groups: vgp
+  writable: true
+  aws_secret_access_key: "{{ genomeark_galaxy_aws_secret_access_key }}"
+  aws_access_key_id: "{{ genomeark_galaxy_aws_access_key_id }}"
+
+- type: s3fs
   label: 1000 Genomes
   id: 1000genomes
   doc: Access to the 1000 Genomes Project with human genetic variation, including SNPs, structural variants, and their haplotype context.
@@ -178,3 +188,4 @@
   doc: Global and high-resolution regional atmospheric models from Météo-France.
   bucket: mf-nwp-models
   anon: true
+
