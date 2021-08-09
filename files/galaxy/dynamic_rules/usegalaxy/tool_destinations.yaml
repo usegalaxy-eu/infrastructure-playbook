@@ -699,6 +699,18 @@ gatk2_variant_validate: {cores: 10, mem: 24}
 gatk_picard_index_builder: {mem: 12}
 gemini_load: {cores: 10, mem: 40}
 
+gemini_inheritance:
+  env:
+    NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+    OMP_NUM_THREADS: 4
+    OPENBLAS_NUM_THREADS: 4
+    MKL_NUM_THREADS: 4
+    VECLIB_MAXIMUM_THREADS: 4
+    NUMEXPR_NUM_THREADS: 4
+    NUMBA_NUM_THREADS: 4
+
+
+
 # Permissions
 #gemini_query:
 #    permissions:
