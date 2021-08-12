@@ -660,7 +660,10 @@ remote_cluster_mq_cz01:
     GALAXY_SLOTS: '{PARALLELISATION}'
     LC_ALL: C
     SINGULARITY_CACHEDIR: /storage/praha5-elixir/home/marten/pulsar/files/singularity_cache
-    file: /storage/praha5-elixir/home/marten/.galaxyrc.sh
+    SINGULARITY_TMPDIR: $SCRATCHDIR
+    TMPDIR: $SCRATCHDIR
+    TMP: $SCRATCHDIR
+    TEMP: $SCRATCHDIR
   params:
     priority: -{PRIORITY}
     submit_request_cpus: '{PARALLELISATION}'
