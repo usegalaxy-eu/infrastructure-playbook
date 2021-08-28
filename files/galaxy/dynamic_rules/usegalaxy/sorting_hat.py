@@ -424,6 +424,10 @@ def gateway(tool_id, user, memory_scale=1.0, next_dest=None):
     if get_tool_id(tool_id).startswith('interactive_tool_') and user_id == -1:
         raise JobMappingException("This tool is restricted to registered users, "
                                   "please contact a site administrator")
+        
+    if get_tool_id(tool_id).startswith('interactive_tool_ml') and 'interactive-tool-ml-jupyter-notebook' not in user_roles:
+        raise JobMappingException("This tool is restricted to authorized users, "
+                                  "please contact a site administrator")
 
     try:
         env, params, runner, spec, tags = _gateway(tool_id, user_preferences, user_roles, user_id, email,
