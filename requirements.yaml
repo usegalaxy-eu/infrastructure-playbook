@@ -1,77 +1,101 @@
-- src: dev-sec.os-hardening
-  version: 4.2.0
-- src: dev-sec.ssh-hardening
-  version: 9.7.0
-- src: geerlingguy.nfs
-  version: 1.5.0
-- src: devops.tomcat7
-  version: 1.0.0
-#- src: dj-wasabi.telegraf
-#  version: 0.10.0
-- src: https://github.com/galaxyproject/ansible-galaxy
-  name: galaxyproject.galaxy
-  version: 0.9.6
-- src: galaxyproject.cvmfs
-  version: 0.2.14
-- src: galaxyproject.proftpd
-  version: 0.2.4
-- src: https://github.com/usegalaxy-eu/ansible-nginx
-  name: usegalaxy-eu.nginx
-  version: master
-- src: galaxyproject.nginx
-  version: 0.6.4
-- src: galaxyproject.postgresql
-  version: 1.0.1
-- src: natefoo.postgresql_objects
-  version: 1.1
-- src: geerlingguy.gitlab
-  version: 2.5.1
-- src: geerlingguy.java
-  version: 1.9.5
-- src: geerlingguy.jenkins
-  version: 3.2.0
-- src: geerlingguy.nodejs
-  version: 4.2.2
-- src: geerlingguy.pip
-  version: 1.0.0
-- src: geerlingguy.repo-epel
-  version: 1.3.0
-- src: https://github.com/usegalaxy-eu/ansible-chrony
-  name: influxdata.chrony
-  version: "0.1"
-- src: jasonroyle.rabbitmq
-  version: 0.0.4
-- src: linuxhq.yum_cron
-  version: master
-- src: usegalaxy_eu.influxdb
-  version: v6.0.8
-- src: galaxyproject.gxadmin
-  version: 0.0.8
-- src: https://github.com/usegalaxy-eu/ansible-certbot
-  name: usegalaxy-eu.certbot
-  version: master
-- src: https://github.com/usegalaxy-eu/ansible-galaxy-systemd
-  name: usegalaxy-eu.galaxy-systemd
-  version: 0.1.4
-- src: https://github.com/usegalaxy-eu/ansible-dynmotd
-  name: usegalaxy-eu.dynmotd
-  version: master
-- src: cloudalchemy.grafana
-  version: 0.16.2
-- src: geerlingguy.docker
-  version: 3.1.0
-- src: https://github.com/usegalaxy-eu/ansible-tiaas2
-  name: usegalaxy_eu.tiaas2
-  version: 0.0.8
-- src: https://github.com/usegalaxy-eu/ansible-autoupdates
-  name: usegalaxy-eu.autoupdates
-  version: master
-- src: https://github.com/usegalaxy-eu/ansible-htcondor
-  name: usegalaxy-eu.htcondor
-  version: 0.0.4
-- src: https://github.com/usegalaxy-eu/ansible-update-hosts
-  name: usegalaxy-eu.update-hosts
-  version: 0.0.1
-- src: usegalaxy_eu.gie_proxy
-  name: usegalaxy-eu.gie_proxy
-  version: 0.0.2
+---
+collections:
+  # With just the collection name
+  - name: amazon.aws
+    version: 1.5.0
+    source: https://galaxy.ansible.com
+    type: galaxy
+  - name: community.docker
+    version: 1.9.0
+    source: https://galaxy.ansible.com
+    type: galaxy
+  - name: community.grafana
+    version: 1.2.1
+    source: https://galaxy.ansible.com
+    type: galaxy
+  - name: community.rabbitmq
+    version: 1.1.0
+    source: https://galaxy.ansible.com
+    type: galaxy
+  - name: devsec.hardening
+    version: 7.9.0
+    source: https://galaxy.ansible.com
+    type: galaxy
+
+roles:
+  - name: dev-sec.os-hardening
+    version: 4.2.0
+  - name: dev-sec.ssh-hardening
+    version: 9.7.0
+  - name: devops.tomcat7
+    version: 1.0.0
+    #- name: dj-wasabi.telegraf
+    #  version: 0.10.0
+  - name: galaxyproject.galaxy
+    src: https://github.com/galaxyproject/ansible-galaxy
+    version: 0.9.6
+  - name: galaxyproject.cvmfs
+    version: 0.2.14
+  - name: galaxyproject.proftpd
+    version: 0.2.4
+  - name: usegalaxy-eu.nginx
+    src: https://github.com/usegalaxy-eu/ansible-nginx
+    version: master
+  - name: galaxyproject.nginx
+    version: 0.6.4
+  - name: galaxyproject.postgresql
+    version: 1.0.1
+  - name: geerlingguy.docker
+    version: 3.1.0
+    # - name: geerlingguy.gitlab
+    # version: 2.5.1
+  - name: geerlingguy.java
+    version: 1.9.5
+  - name: geerlingguy.jenkins
+    version: 4.3.0
+    # - name: geerlingguy.nfs
+    # version: 1.5.0
+  - name: geerlingguy.nodejs
+    version: 4.2.2
+  - name: geerlingguy.pip
+    version: 1.0.0
+  - name: geerlingguy.repo-epel
+    version: 1.3.0
+  - name: influxdata.chrony
+    src: https://github.com/usegalaxy-eu/ansible-chrony
+    version: 0.1.0
+  - name: jasonroyle.rabbitmq
+    version: 0.0.4
+  - name: linuxhq.yum_cron
+    version: master
+  - name: natefoo.postgresql_objects
+    version: 1.1
+  - name: usegalaxy_eu.influxdb
+    version: v6.0.8
+  - name: galaxyproject.gxadmin
+    version: 0.0.8
+  - name: usegalaxy-eu.certbot
+    src: https://github.com/usegalaxy-eu/ansible-certbot
+    version: 0.1.5
+  - name: usegalaxy-eu.galaxy-systemd
+    src: https://github.com/usegalaxy-eu/ansible-galaxy-systemd
+    version: 0.1.4
+  - name: usegalaxy-eu.dynmotd
+    src: https://github.com/usegalaxy-eu/ansible-dynmotd
+    version: 0.0.1
+  - name: cloudalchemy.grafana
+    version: 0.16.2
+  - name: usegalaxy_eu.tiaas2
+    src: https://github.com/usegalaxy-eu/ansible-tiaas2
+    version: 0.0.8
+  - name: usegalaxy-eu.autoupdates
+    src: https://github.com/usegalaxy-eu/ansible-autoupdates
+    version: 0.0.1
+  - name: usegalaxy-eu.htcondor
+    src: https://github.com/usegalaxy-eu/ansible-htcondor
+    version: 0.0.4
+  - name: usegalaxy-eu.update-hosts
+    src: https://github.com/usegalaxy-eu/ansible-update-hosts
+    version: 0.0.1
+  - name: usegalaxy_eu.gie_proxy
+    version: 0.0.2

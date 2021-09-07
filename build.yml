@@ -12,6 +12,8 @@
       package:
         name: ['policycoreutils-python']
       become: yes
+  collections:
+    - devsec.hardening
   roles:
     - hostname
     - usegalaxy-eu.dynmotd
@@ -29,5 +31,7 @@
     - usegalaxy-eu.jenkins-ssh-key
     ## END CUSTOM
     - dj-wasabi.telegraf
-    - dev-sec.os-hardening
-    - dev-sec.ssh-hardening
+    - os_hardening
+    - nginx_hardening
+    - ssh_hardening
+
