@@ -41,10 +41,15 @@
             <extra_dir type="temp" path="/data/dnb02/galaxy_db/tmp"/>
             <extra_dir type="job_work" path="/data/dnb03/galaxy_db/job_working_directory"/>
         </backend>
-        <backend id="files10" type="disk" weight="1" store_by="uuid">
+        <backend id="files10" type="disk" weight="0" store_by="uuid">
             <files_dir path="/data/dnb03/galaxy_db/files"/>
             <extra_dir type="temp" path="/data/dnb02/galaxy_db/tmp"/>
             <extra_dir type="job_work" path="/data/dnb03/galaxy_db/job_working_directory"/>
+        </backend>
+        <backend id="files11" type="disk" weight="1" store_by="uuid">
+            <files_dir path="/data/dnb05/galaxy_db/files"/>
+            <extra_dir type="temp" path="/data/jwd/tmp"/>
+            <extra_dir type="job_work" path="/data/jwd/main"/>
         </backend>
         <backend id="secondary" type="disk" weight="0" store_by="id">
             <files_dir path="/data/0/galaxy_db/files"/>
