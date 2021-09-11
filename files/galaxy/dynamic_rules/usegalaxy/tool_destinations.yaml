@@ -59,7 +59,7 @@ interactive_tool_ml_jupyter_notebook:
    mem: 8
    docker_run_extra_arguments: ' --gpus all'
 
-interactive_tool_rstudio: {mem: 8, cores: 1, runner: condor_docker_ie_interactive, force_destination_id: True}
+interactive_tool_rstudio: {mem: 8, cores: 2, runner: condor_docker_ie_interactive, force_destination_id: True}
 interactive_tool_pyiron: {mem: 8, cores: 1, runner: condor_docker_ie_interactive, force_destination_id: True}
 interactive_tool_guacamole_desktop: {mem: 8, cores: 2, runner: condor_docker_ie_interactive, force_destination_id: True}
 interactive_tool_openrefine: {mem: 4, runner: condor_docker_ie_interactive, force_destination_id: True}
@@ -104,6 +104,7 @@ roary: {cores: 24}
 alevin: {mem: 92, cores: 8}
 kc-align: {cores: 3}
 maxquant: {mem: 60, cores: 8, runner: condor_singularity}
+deepvariant: {mem: 10, runner: condor_singularity}
 scpipe: {mem: 64, cores: 8}
 cardinal_combine: {mem: 92}
 cardinal_classification: {mem: 100}
@@ -282,6 +283,7 @@ InternalCalibration: {cores: 4, mem: 8}
 IsobaricAnalyzer: {cores: 4, mem: 8}
 LabeledEval: {cores: 4, mem: 8}
 #maker: {cores: 8, mem: 8, runner: remote_cluster_mq_fr01}
+maker: {cores: 12, mem: 12}
 gmx_sim: {cores: 8, mem: 8, gpus: 1, runner: remote_cluster_mq_uk01}
 gmx_em: {cores: 16, mem: 8}
 gmx_fep: {cores: 16, mem: 8}
@@ -310,7 +312,10 @@ MSGFPlusAdapter:
   mem: 12
   name: special
 medaka_variant: {mem: 48}
-repeatmasker_wrapper: {cores: 8}
+repeatmasker_wrapper:
+  cores: 8
+  env:
+    RM_LIB_PATH: "/data/db/databases/dfam/3.4/"
 mass_spectrometry_imaging_segmentations: {mem: 92}
 mass_spectrometry_imaging_combine: {mem: 12}
 mass_spectrometry_imaging_mzplots: {mem: 24}
@@ -698,6 +703,18 @@ gatk2_variant_select: {cores: 10, mem: 24}
 gatk2_variant_validate: {cores: 10, mem: 24}
 gatk_picard_index_builder: {mem: 12}
 gemini_load: {cores: 10, mem: 40}
+
+gemini_inheritance:
+  env:
+    NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+    OMP_NUM_THREADS: 4
+    OPENBLAS_NUM_THREADS: 4
+    MKL_NUM_THREADS: 4
+    VECLIB_MAXIMUM_THREADS: 4
+    NUMEXPR_NUM_THREADS: 4
+    NUMBA_NUM_THREADS: 4
+
+
 
 # Permissions
 #gemini_query:

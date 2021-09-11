@@ -8,26 +8,42 @@ docker_users:
 # Autofs
 usegalaxy_eu_autofs_mounts:
  - data
+ - discontinued
  - usrlocal
 
 data_conf:
-  - 0       -rw,hard,intr,nosuid,quota      sn01.bi.uni-freiburg.de:/export/data3/galaxy/net/data/&
-  - 1       -rw,hard,intr,nosuid,quota      sn03.bi.uni-freiburg.de:/export/galaxy1/data/&
-  - 2       -rw,hard,intr,nosuid,quota      sn01.bi.uni-freiburg.de:/export/data4/galaxy/net/data/&
-  - 3       -rw,hard,intr,nosuid,quota      sn01.bi.uni-freiburg.de:/export/data5/galaxy/net/data/&
-  - 4       -rw,hard,intr,nosuid,quota      sn03.bi.uni-freiburg.de:/export/galaxy1/data/&
-  - 5       -rw,hard,intr,nosuid,quota      sn03.bi.uni-freiburg.de:/export/galaxy1/data/&
-  - 6       -rw,hard,intr,nosuid,quota      sn03.bi.uni-freiburg.de:/export/galaxy1/data/&
-  - 7       -rw,hard,intr,nosuid,quota      sn03.bi.uni-freiburg.de:/export/galaxy1/data/&
-  - dnb01   -rw,hard,intr,nosuid,quota      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
-  - dnb02   -rw,hard,intr,nosuid,quota      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
-  - dnb03   -rw,hard,intr,nosuid,quota      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
-  - dnb04   -rw,hard,intr,nosuid,quota      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
-  - db      -rw,hard,intr,nosuid,quota      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
-  - bd      -rw,hard,intr,nosuid,quota      sn02.bi.uni-freiburg.de:/export/fdata1/galaxy/net/data/db
-  - gxnew   -rw,hard,intr,nosuid,quota      sn03.bi.uni-freiburg.de:/export/galaxy1/system/galaxy-i1
-  - gxtst   -rw,hard,intr,nosuid,quota      sn03.bi.uni-freiburg.de:/export/galaxy1/system/galaxy-i2
-  - gxkey   -rw,hard,intr,nosuid,quota      sn03.bi.uni-freiburg.de:/export/galaxy1/system/galaxy-i3
+  - 0       -rw,hard,nosuid      sn01.bi.uni-freiburg.de:/export/data3/galaxy/net/data/&
+  - 1       -rw,hard,nosuid      sn03.bi.uni-freiburg.de:/export/galaxy1/data/&
+  - 2       -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/depot/&
+  - 3       -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/depot/&
+  - 4       -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/depot/&
+  - 5       -rw,hard,nosuid      sn03.bi.uni-freiburg.de:/export/galaxy1/data/&
+  - 6       -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/depot/&
+  - 7       -rw,hard,nosuid      sn03.bi.uni-freiburg.de:/export/galaxy1/data/&
+  - dnb01   -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
+  - dnb02   -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
+  - dnb03   -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
+  - dnb04   -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
+  - dnb05   -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/&
+  - dnb06   -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/&
+  - db      -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
+  - gxtst   -rw,hard,nosuid      sn03.bi.uni-freiburg.de:/export/galaxy1/system/galaxy-i2
+  - gxkey   -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/ws01/galaxy-sync/main
+  - jwd     -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/ws01/&
+
+discontinued_conf:
+  - 2       -rw,hard,nosuid      sn01.bi.uni-freiburg.de:/export/data4/galaxy/net/data/&
+  - 3       -rw,hard,nosuid      sn01.bi.uni-freiburg.de:/export/data5/galaxy/net/data/&
+  - 4       -rw,hard,nosuid      sn03.bi.uni-freiburg.de:/export/galaxy1/data/&
+  - 6       -rw,hard,nosuid      sn03.bi.uni-freiburg.de:/export/galaxy1/data/&
+  - db      -rw,hard,nosuid      sn02.bi.uni-freiburg.de:/export/fdata1/galaxy/net/data/db
+  - gxmnt   -rw,hard,nosuid      sn03.bi.uni-freiburg.de:/export/galaxy1/system/galaxy
+  - gxnew   -rw,hard,nosuid      sn03.bi.uni-freiburg.de:/export/galaxy1/system/galaxy-i1
+  - gxkey   -rw,hard,nosuid      sn03.bi.uni-freiburg.de:/export/galaxy1/system/galaxy-i3
+  - tools   -rw,hard,nosuid      sn03.bi.uni-freiburg.de:/export/galaxy1/system/tools
+
+usrlocal_conf:
+  - /usr/local/tools   -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/tools
 
 # Telegraf
 telegraf_agent_hostname: "{{ hostname }}"
@@ -618,6 +634,17 @@ galaxy_jobconf:
           load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
           params:
             amqp_url: "pyamqp://galaxy_es01:{{ rabbitmq_password_galaxy_es01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_es01?ssl=1"
+            galaxy_url: "https://usegalaxy.eu"
+            manager: production
+            amqp_acknowledge: True
+            amqp_ack_republish_time: 300
+            amqp_consumer_timeout: 2.0
+            amqp_publish_retry: True
+            amqp_publish_retry_max_retries: 60
+        - id: pulsar_eu_cz01
+          load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+          params:
+            amqp_url: "pyamqp://galaxy_cz01:{{ rabbitmq_password_galaxy_cz01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_cz01?ssl=1"
             galaxy_url: "https://usegalaxy.eu"
             manager: production
             amqp_acknowledge: True

@@ -22,6 +22,17 @@
   login: ${user.preferences['nextcloud|username']}
   password: ${user.preferences['nextcloud|password']}
 
+- type: webdav
+  id: ergo_nextcloud
+  label: ERGA Nextcloud
+  doc: ERGA Pilot storage provided by BSC
+  writable: true
+  url: 'https://ergapilot.bsc.es'
+  root: '/remote.php/webdav'
+  login: "{{ erga_nextcloud_login }}"
+  password: "{{ erga_nextcloud_password }}"
+  requires_groups: erga
+
 - type: posix
   root: '/data/5/galaxy_import/galaxy_user_data/covid-19/data/sequences/'
   id: covid19-raw-sequences
@@ -94,6 +105,16 @@
   doc: Access to Genome Ark open data on AWS.
   bucket: genomeark
   anon: true
+
+- type: s3
+  label: Genome Ark Test Instance
+  id: genomeark_galaxy
+  doc: Access to Genome Ark open data on AWS.
+  bucket_name: genomeark
+  requires_groups: vgp
+  writable: true
+  aws_secret_access_key: "{{ genomeark_galaxy_aws_secret_access_key }}"
+  aws_access_key_id: "{{ genomeark_galaxy_aws_access_key_id }}"
 
 - type: s3fs
   label: 1000 Genomes
@@ -178,3 +199,4 @@
   doc: Global and high-resolution regional atmospheric models from Météo-France.
   bucket: mf-nwp-models
   anon: true
+
