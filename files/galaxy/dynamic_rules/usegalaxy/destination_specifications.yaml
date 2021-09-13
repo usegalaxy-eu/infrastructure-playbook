@@ -119,7 +119,7 @@ condor_docker_ie_interactive:
     request_memory: '{MEMORY}'
     docker_enabled: true
     # can and should be made stricter at some point
-    docker_volumes: '$working_directory:rw,$job_directory:rw,$tool_directory:ro'
+    docker_volumes: '$working_directory:rw,$job_directory:rw,$tool_directory:ro,/etc/hosts:/etc/hosts:ro'
     docker_memory: '{MEMORY}'
     docker_auto_rm: true
     docker_default_container_id: busybox:ubuntu-14.04
