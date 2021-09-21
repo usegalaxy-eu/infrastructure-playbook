@@ -85,7 +85,7 @@ server {
 	}
 
 	location /_upload {
-		upload_store /data/dnb01/nginx-galaxy/uploads;
+		upload_store {{ galaxy_config['app:main']['nginx_upload_store'] }};
 		upload_limit_rate 32k;
 		upload_store_access user:rw group:rw all:rw;
 		upload_pass_form_field "";
