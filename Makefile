@@ -40,6 +40,6 @@ main.eu:
 	ansible-playbook galaxy.yml      $(CHECK_C) $(DIFF_C) $(DEBUG) $(OTHER) --extra-vars "__galaxy_dir_perms='0755'"
 
 %.yml: deps
-	.venv/bin/ansible-playbook $@ $(CHECK_C) $(DIFF_C) $(DEBUG) $(OTHER)
+	ansible-playbook $@ $(CHECK_C) $(DIFF_C) $(DEBUG) $(OTHER)
 
 .PHONY: test.eu main.eu known_hosts deps pull help

@@ -10,6 +10,8 @@
       package:
         name: ['python-requests', 'python3-virtualenv', 'python36']
       become: yes
+  collections:
+    - devsec.hardening
   roles:
     - hostname
     - usegalaxy-eu.dynmotd
@@ -25,5 +27,6 @@
     - hxr.influxdb
     # END custom
     - dj-wasabi.telegraf
-    - dev-sec.os-hardening
-    - dev-sec.ssh-hardening
+    #- os_hardening
+    #- nginx_hardening
+    #- ssh_hardening

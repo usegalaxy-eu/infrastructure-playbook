@@ -8,6 +8,8 @@
     - group_vars/all.yml
     - secret_group_vars/pulsar.yml     # Pulsar + MQ Connections
     - secret_group_vars/all.yml
+  collections:
+    - devsec.hardening
   roles:
     - hostname
     - usegalaxy-eu.dynmotd
@@ -19,5 +21,6 @@
     - jasonroyle.rabbitmq
     - galaxyproject.nginx
     - dj-wasabi.telegraf
-    - dev-sec.os-hardening
-    - dev-sec.ssh-hardening
+    #- os_hardening
+    #- nginx_hardening
+    #- ssh_hardening

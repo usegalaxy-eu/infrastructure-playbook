@@ -22,6 +22,8 @@
     package:
       name: [ 'python3-virtualenv', 'python36' ]
     become: yes
+  collections:
+    - devsec.hardening
   roles:
     - hostname
     - usegalaxy-eu.dynmotd
@@ -40,5 +42,7 @@
     - hxr.grafana-gitter-bridge
     # End Custom
     - dj-wasabi.telegraf
-    - dev-sec.os-hardening
-    - dev-sec.ssh-hardening
+    #- os_hardening
+    #- nginx_hardening
+    #- ssh_hardening
+

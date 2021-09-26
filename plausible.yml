@@ -7,6 +7,8 @@
   vars_files:
     - secret_group_vars/all.yml
     - secret_group_vars/plausible.yml
+  collections:
+    - devsec.hardening
   roles:
     - hostname
     - usegalaxy-eu.dynmotd
@@ -21,5 +23,6 @@
     - usegalaxy-eu.plausible
     # End Custom
     - dj-wasabi.telegraf
-    - dev-sec.os-hardening
-    - dev-sec.ssh-hardening
+    #- os_hardening
+    #- nginx_hardening
+    #- ssh_hardening
