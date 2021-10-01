@@ -43,8 +43,8 @@ GENERAL_NGS_SECTIONS = ["deeptools", "bed", "sam_bam",
         "operate_on_genomic_intervals", "fasta_fastq_manipulation",
         "fasta_fastq", "fastq_quality_control",
         "picard", "mapping", "sam_bam_manipulation"]
-        
-human_cell_atlas_sections = ['hca_sc_get-scrna', 'hca_sc_seurat_tools', 'hca_sc_sc3_tools', 
+
+human_cell_atlas_sections = ['hca_sc_get-scrna', 'hca_sc_seurat_tools', 'hca_sc_sc3_tools',
                       'hca_sc_scanpy_tools', 'hca_sc_monocle3_tools', 'hca_sc_scater_tools',
                       'hca_sc_scpred_tools', 'hca_sc_garnett_tools', 'hca_sc_label_analysis_tools',
                       'hca_sc_scmap_tools', 'hca_sc_sccaf_tools', 'hca_sc_utils_viz']
@@ -61,6 +61,10 @@ DOMAIN_SECTIONS = {
         "gis_data_handling", "climate_analysis", "interactivetools"],
     'climate': ["climate_analysis", "gis_data_handling", "graph_display_data", "interactivetools"],
     'metagenomics': GENERAL_NGS_SECTIONS + ["fasta_fastq_manipulation",
+        "multiple_alignments", "assembly", "annotation",
+        "graph_display_data", "metagenomic_analysis", "mothur", "qiime",
+        "biom_manipulation"],
+    'microgalaxy': GENERAL_NGS_SECTIONS + ["fasta_fastq_manipulation",
         "multiple_alignments", "assembly", "annotation",
         "graph_display_data", "metagenomic_analysis", "mothur", "qiime",
         "biom_manipulation"],
