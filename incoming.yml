@@ -1,0 +1,35 @@
+---
+- name: Incoming
+  hosts: incoming
+  become: true
+  vars:
+    hostname: incoming.galaxyproject.eu
+    server_names:
+      - 'incoming.usegalaxy.eu'
+  vars_files:    
+    - secret_group_vars/all.yml
+  collections:
+    - devsec.hardening
+  roles:
+    - hostname
+    - usegalaxy-eu.dynmotd
+    - geerlingguy.repo-epel
+    - hxr.admin-tools
+    - influxdata.chrony
+    - usegalaxy-eu.autoupdates
+
+    # User
+    - usegalaxy-eu.remap-user
+    - usegalaxy-eu.create-user
+
+    # Filesystems
+    - hxr.autofs 
+
+    # Services
+    - galaxyproject.nginx
+    - galaxyproject.proftpd
+
+    - dj-wasabi.telegraf
+    - os_hardening
+    - ssh_hardening
+    
