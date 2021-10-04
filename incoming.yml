@@ -10,6 +10,13 @@
     - secret_group_vars/all.yml
   collections:
     - devsec.hardening
+  pre_tasks:
+    - name: Set timezone to Europe/Berlin
+      community.general.timezone:
+        name: Europe/Berlin
+    - name: Install Dependencies
+      package:
+        name: [ 'postgresql' ]
   roles:
     - hostname
     - usegalaxy-eu.dynmotd
