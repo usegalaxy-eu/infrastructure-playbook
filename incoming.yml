@@ -17,6 +17,30 @@
     - name: Install Dependencies
       package:
         name: [ 'postgresql' ]
+    - name: Configure SELinux
+      ansible.posix.seboolean:
+        name: "{{ item }}"
+        state: yes
+        persistent: yes
+      loop:
+        - ftpd_full_access
+        - ftpd_connect_db
+        - ftpd_use_passive_mode
+  post_tasks:
+    - name: Replace sql
+      ansible.builtin.replace:
+        path: /etc/proftpd.conf.d/10_galaxy_auth.conf
+        regexp: 'galaxy_user'
+        replace: "galaxy.galaxy_user"
+      notify:
+        - reload proftpd
+    - name: Enable Dynamic ban lists
+      ansible.builtin.lineinfile:
+        path: /etc/sysconfig/proftpd
+        regexp: '^PROFTPD_OPTIONS='
+        line: PROFTPD_OPTIONS="-DDYNAMIC_BAN_LISTS"
+      notify:
+        - reload proftpd
   roles:
     - hostname
     - usegalaxy-eu.dynmotd
