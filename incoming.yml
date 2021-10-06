@@ -14,7 +14,7 @@
         name: Europe/Berlin
     - name: Install Dependencies
       package:
-        name: [ 'postgresql' ]
+        name: [ 'postgresql', 'proftpd-utils' ]
     - name: Configure SELinux
       ansible.posix.seboolean:
         name: "{{ item }}"
