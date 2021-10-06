@@ -136,7 +136,7 @@
     - role: hxr.galaxy-nonreproducible-tools
       become: yes
       become_user: galaxy
-    - hxr.galaxy-misc           # fix-ftp - make users FTP directories
+    #- hxr.galaxy-misc           # fix-ftp - make users FTP directories
     - usegalaxy-eu.dynmotd      # nicer MOTD/welcome message
     - usegalaxy-eu.rsync-to-nfs # sync codebase to NFS
     - role: usegalaxy-eu.webhooks     # Clone webhook repository
@@ -188,7 +188,7 @@
     - usegalaxy-eu.fix-unscheduled-workflows # Workaround for https://github.com/galaxyproject/galaxy/issues/8209
     - usegalaxy-eu.fix-stuck-handlers        # Restart handlers to prevent several classes of issues
     - usegalaxy-eu.log-cleaner               # do not retain journalctl logs, they are unnecessary/risky under GDPR
-    - usegalaxy-eu.fix-ancient-ftp-data      # Remove FTP data older than 3 months
+    - usegalaxy-eu.fix-ancient-ftp-data      # Remove FTP data older than 3 months, create FTP user directories
     - usegalaxy-eu.galaxy-procstat           # Some custom telegraf monitoring that's templated
     - usegalaxy-eu.fix-missing-api-keys      # Workaround for IE users not have a key set.
     - usegalaxy-eu.fix-user-quotas           # Automatically recalculate user quotas and attribute ELIXIR quota to ELIXIR AAI user on a regular basis

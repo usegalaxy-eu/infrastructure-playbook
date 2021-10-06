@@ -1,9 +1,24 @@
 ---
 - name: Remove old FTP data
-  cron:
+  ansible.builtin.cron:
     name: Remove old FTP data
     minute: 0
     hour: 1
     user: "{{ galaxy_user.name }}"
     job: |
-      cd /data/0/incoming/ && find . -type f -not -newermt "3 months ago" -exec rm '{}' +
+      cd "{{ galaxy_config['app:main']['ftp_upload_dir'] }}" && find . -type f -not -newermt "3 months ago" -exec rm '{}' +
+
+- name: Copy script to create FTP users
+  ansible.builtin.template:
+    src: "fix-ftp.sh.j2"
+    dest: /usr/bin/fix-ftp
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Add to cron the script to create FTP users
+  ansible.builtin.cron:
+    name: "Fix ftp"
+    job: /usr/bin/fix-ftp
+    minute: "*/15"
+    user: "{{ galaxy_user.name }}"
