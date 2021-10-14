@@ -109,7 +109,7 @@ server {
 		if ($request_method != POST) {
 				rewrite "" /api/jobs/$arg_job_id/files last;
 		}
-		upload_store /data/dnb01/nginx-galaxy/jobfiles;
+		upload_store {{ galaxy_config['app:main']['nginx_upload_job_files_store'] }};
 		upload_limit_rate 32k;
 		upload_store_access user:rw group:rw all:rw;
 		upload_pass_form_field "";
