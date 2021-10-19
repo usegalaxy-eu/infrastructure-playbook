@@ -1,4 +1,12 @@
 #!/bin/bash
+
+lockdir=/tmp/BXgqt0lsoeykp9L9NZjIurqvu7BNILL4foAazpJcTs3YkwtiJ9
+mkdir $lockdir  || {
+    echo "lock directory exists. exiting"
+    exit 1
+}
+trap "rmdir $lockdir" EXIT INT KILL TERM
+
 . /opt/galaxy/.bashrc
 
 stat_timeout=0.1 # seconds
