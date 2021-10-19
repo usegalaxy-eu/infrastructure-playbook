@@ -342,7 +342,7 @@ def _finalize_tool_spec(tool_id, user_roles, tools_spec=TOOL_DESTINATIONS, memor
     if tool_id in ('upload1', '__DATA_FETCH__'):
         tool_spec = {
             'mem': 0.3,
-            'runner': 'condor',
+            'runner': 'condor_upload',
             'rank': 'GalaxyGroup == "upload"',
             'requirements': 'GalaxyTraining == false',
             'env': {
@@ -352,7 +352,7 @@ def _finalize_tool_spec(tool_id, user_roles, tools_spec=TOOL_DESTINATIONS, memor
     elif tool_id == '__SET_METADATA__':
         tool_spec = {
             'mem': 0.3,
-            'runner': 'condor',
+            'runner': 'condor_upload',
             'rank': 'GalaxyGroup == "metadata"',
             'requirements': 'GalaxyTraining == false',
         }
