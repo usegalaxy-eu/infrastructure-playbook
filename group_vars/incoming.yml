@@ -72,5 +72,6 @@ proftpd_conf_ssl_certificate_key: /etc/ssl/user/privkey-proftpd.pem
 proftpd_conf_ssl_ca_certificate: /etc/letsencrypt/live/ftp.usegalaxy.eu/chain.pem
 proftpd_global_options:
   - PassivePorts: 49152 65534
+  - TransferLog: /var/log/proftpd/xfer.log
 proftpd_use_mod_tls_shmcache: false
 proftpd_tls_options: NoSessionReuseRequired
