@@ -18,7 +18,7 @@
 		</plugin>
 {% endfor %}
 	</plugins>
-	<handlers{% if galaxy_jobconf.handlers.assign_with is defined %} assign_with="{{ galaxy_jobconf.handlers.assign_with }}"{% endif %}{% if galaxy_jobconf.handlers.default is defined %} default="{{ galaxy_jobconf.handlers.default }}"{% endif %}{% if galaxy_jobconf.handlers.max_grab is defined %} max_grab="{{ galaxy_jobconf.handlers.max_grab }}"{% endif %}>
+	<handlers{% if galaxy_jobconf.handlers.assign_with is defined %} assign_with="{{ galaxy_jobconf.handlers.assign_with }}"{% endif %}{% if galaxy_jobconf.handlers.default is defined %} default="{{ galaxy_jobconf.handlers.default }}"{% endif %}{% if galaxy_jobconf.handlers.max_grab is defined %} max_grab="{{ galaxy_jobconf.handlers.max_grab }}"{% endif %}{% if galaxy_jobconf.handlers.ready_window_size is defined %} ready_window_size="{{ galaxy_jobconf.handlers.ready_window_size }}"{% endif %}>
 {% for n in range(galaxy_handler_count) %}
 		<handler id="handler_{{ galaxy_instance_codename }}_{{ n }}"/>
 {% endfor %}
