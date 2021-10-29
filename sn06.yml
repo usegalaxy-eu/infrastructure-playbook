@@ -101,7 +101,7 @@
     - influxdata.chrony # Keep our time in sync.
 
     ## Filesystems
-    - hxr.autofs # Setup the mount points which will be needed later
+    - usegalaxy-eu.autofs # Setup the mount points which will be needed later
     - galaxyproject.cvmfs # Galaxy datasets
 
     ## Monitoring
@@ -136,7 +136,6 @@
     - role: hxr.galaxy-nonreproducible-tools
       become: yes
       become_user: galaxy
-    #- hxr.galaxy-misc           # fix-ftp - make users FTP directories
     - usegalaxy-eu.dynmotd      # nicer MOTD/welcome message
     - usegalaxy-eu.rsync-to-nfs # sync codebase to NFS
     - role: usegalaxy-eu.webhooks     # Clone webhook repository
