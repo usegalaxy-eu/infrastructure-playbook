@@ -50,6 +50,67 @@ autofs_conf_files:
   usrlocal:
     - /usr/local/tools   -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/tools
 
+# fs-maintenance
+fsm_maintenance_dir: "/data/dnb01/maintenance"
+
+fsm_scripts:
+  temporary_dirs:
+    enable: True
+    src: 'temporary_dirs.sh.j2'
+    dst: "{{ fsm_maintenance_dir }}/temporary_dirs.sh"
+    user: "{{ fsm_galaxy_user.username }}"
+    group: "{{ fsm_galaxy_user.groupname }}"
+    paths:
+      - /data/2/galaxy_db/tmp
+      - /data/dnb01/galaxy_db/tmp
+      - /data/dnb02/galaxy_db/tmp
+      - /data/dnb03/galaxy_db/tmp
+      - /data/jwd/tmp
+    time: "{{ fsm_intervals.long }}"
+  upload_dirs:
+    enable: True
+    src: 'uploads.sh.j2'
+    dst: "{{ fsm_maintenance_dir }}/uploads.sh"
+    user: "{{ fsm_galaxy_user.username }}"
+    group: "{{ fsm_galaxy_user.groupname }}"
+    paths:
+      - "{{ galaxy_config['app:main']['nginx_upload_store'] }}"
+      - "{{ galaxy_config['app:main']['nginx_upload_job_files_store'] }}"
+    time: "{{ fsm_intervals.medium }}"
+  job_working_dirs:
+    enable: True
+    src: 'job_working_dir.sh.j2'
+    dst: "{{ fsm_maintenance_dir }}/job_working_dir.sh"
+    user: "{{ fsm_galaxy_user.username }}"
+    group: "{{ fsm_galaxy_user.groupname }}"
+    paths:
+      - "{{ galaxy_config['app:main']['job_working_directory'] }}"
+    time: "{{ fsm_intervals.long }}"
+
+fsm_cron_tasks:
+  docker:
+    enable: True
+    name: "Docker clean up"
+    minute: 30
+    hour: 2
+    dom: "*"
+    month: "*"
+    dow: "*"
+    job: ". {{ galaxy_root }}/.bashrc && docker system prune -f > /dev/null"
+    user: "{{ fsm_galaxy_user.username }}"
+  gxadmin:
+    enable: True
+    name: "Gxadmin Galaxy clean up"
+    minute: 0
+    hour: "*/6"
+    dom: "*"
+    month: "*"
+    dow: "*"
+    job: "{{ custom_telegraf_env }} /usr/bin/gxadmin galaxy cleanup 60"
+    user: "{{ fsm_galaxy_user.username }}"
+
+fsm_htcondor_enable: True
+
 # Telegraf
 telegraf_agent_hostname: "{{ hostname }}"
 telegraf_agent_version: 1.17.2
