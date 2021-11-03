@@ -228,6 +228,28 @@ server {
 
 	# TIaaS 2
 	location /tiaas {
+                return 301 https://galaxyproject.eu/tiaas;
+	}
+	
+	location /tiaas/admin {
+		uwsgi_pass 127.0.0.1:5002;
+		uwsgi_param UWSGI_SCHEME $scheme;
+		include uwsgi_params;
+	}
+	
+	location /tiaas/stats {
+		uwsgi_pass 127.0.0.1:5002;
+		uwsgi_param UWSGI_SCHEME $scheme;
+		include uwsgi_params;
+	}
+	
+	location /tiaas/calendar {
+		uwsgi_pass 127.0.0.1:5002;
+		uwsgi_param UWSGI_SCHEME $scheme;
+		include uwsgi_params;
+	}
+	
+	location /tiaas/number.csv {
 		uwsgi_pass 127.0.0.1:5002;
 		uwsgi_param UWSGI_SCHEME $scheme;
 		include uwsgi_params;
