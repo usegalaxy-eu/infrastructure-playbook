@@ -88,6 +88,9 @@ fsm_scripts:
     group: "{{ fsm_galaxy_user.groupname }}"
     paths:
       - "{{ galaxy_config['app:main']['job_working_directory'] }}"
+      - /data/dnb03/galaxy_db/job_working_directory
+      - /data/dnb05/galaxy_db/jwd
+      - /data/dnb06/galaxy_db/jwd
     time: "{{ fsm_intervals.long }}"
 
 fsm_cron_tasks:
