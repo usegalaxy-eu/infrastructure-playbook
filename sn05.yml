@@ -4,6 +4,37 @@
   become: true
   vars:
     hostname: sn05.galaxyproject.eu
+    postgresql_conf:
+      - listen_addresses: "'*'"
+      - max_connections: 512
+      - shared_buffers: "4GB"
+      - temp_buffers: "64MB"
+      - max_prepared_transactions: 100
+      - work_mem: "64MB"
+      - maintenance_work_mem: "64MB"
+# the following line throws an error in v13
+#      - shared_preload_libraries: "'pg_stat_statements'"
+      - checkpoint_completion_target: 0.9
+      - random_page_cost: 1.0
+      - effective_cache_size: "16GB"
+# log dirs not set up yet
+#      - log_directory: "'/export/backups/pgsql/pg_log'"
+#      - log_checkpoints: "on"
+#      - log_line_prefix: "'%t:%r:%u@%d:[%p]<%m>: '"
+#      - log_min_duration_statement: 100
+    postgresql_pg_hba_conf:
+       - "host    galaxy          galaxy          132.230.223.239/32      md5"
+       - "host    galaxy          galaxy-readonly 132.230.223.239/32      md5"
+       - "host    tiaas           tiaas           132.230.223.239/32      md5"
+       - "host    galaxy-test     galaxy-test     132.230.223.239/32      md5"
+       - "host    galaxy-test     galaxy-test     10.5.68.0/24            md5"
+       - "host    galaxy          galaxyftp       132.230.223.103/32      md5"
+       - "host    galaxy          galaxyftp       10.5.68.0/24            md5"
+       - "host    galaxy          galaxy-apollo   10.5.68.0/24            md5"
+       - "host    apollo          apollo          10.5.68.0/24            md5"
+       - "host    chado           apollo          10.5.68.0/24            md5"
+       - "host    grt             grt             10.5.68.0/24            md5"
+    postgresql_pgdump_dir: "/var/lib/pgsql/pgdump"
   vars_files:
     - secret_group_vars/all.yml
   pre_tasks:
@@ -32,3 +63,4 @@
     - dj-wasabi.telegraf
 #    - dev-sec.os-hardening
     - dev-sec.ssh-hardening
+    - usegalaxy-eu.ansible-postgresql
