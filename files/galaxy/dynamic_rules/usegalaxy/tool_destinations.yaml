@@ -667,7 +667,10 @@ diamond_database_builder: {cores: 10, mem: 90}
 dt_profiler: {mem: 10}
 eukaryotic_ncbi_submission: {cores: 24, mem: 24}
 fastq_dump: {mem: 20}
-fastqc: {mem: 20}
+fastqc:
+  env:
+    _JAVA_OPTIONS: -Xmx8G -Xms1G
+  mem: 8
 featurecounts: {cores: 8, mem: 18}
 feebayes: {cores: 10, mem: 12}
 flashlfq:
