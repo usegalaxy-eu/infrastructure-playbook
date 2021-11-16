@@ -259,7 +259,7 @@ def build_spec(tool_spec, dest_spec=SPECIFICATIONS, runner_hint=None):
 
         if 'rank' in tool_spec:
             params['rank'] = tool_spec['rank']
-            
+
         if '+Group' in tool_spec:
             params['+Group'] = tool_spec['+Group']
 
@@ -297,15 +297,19 @@ def build_spec(tool_spec, dest_spec=SPECIFICATIONS, runner_hint=None):
     return env, params, runner, raw_allocation_details, tags
 
 
+def get_training_roles(user_roles):
+    training_roles = [role for role in user_roles if role.startswith('training-')]
+    if any([role.startswith('training-gcc-') for role in training_roles]):
+        training_roles.append('training-gcc')
+    return training_roles
+
 def reroute_to_dedicated(tool_spec, user_roles):
     """
     Re-route users to correct destinations. Some users will be part of a role
     with dedicated training resources.
     """
     # Collect their possible training roles identifiers.
-    training_roles = [role for role in user_roles if role.startswith('training-')]
-    if any([role.startswith('training-gcc-') for role in training_roles]):
-        training_roles.append('training-gcc')
+    training_roles = get_training_roles(user_roles)
 
     # No changes to specification.
     if len(training_roles) == 0:
@@ -364,7 +368,8 @@ def _finalize_tool_spec(tool_id, user_roles, tools_spec=TOOL_DESTINATIONS, memor
     elif tool in ('deepvariant', 'msconvert', 'glassgo', 'bionano_scaffold', 'mitohifi'):
         tool_spec['requirements'] = 'GalaxyDockerHack == True && GalaxyGroup == "compute"'
     elif 'mothur' in tool:
-        tool_spec['requirements'] = 'GalaxyGroup == "compute_mothur"'
+        if len(get_training_roles(user_roles)) == 0:
+            tool_spec['requirements'] = 'GalaxyGroup == "compute_mothur"'
 
     return tool_spec
 
@@ -424,7 +429,7 @@ def gateway(tool_id, user, memory_scale=1.0, next_dest=None):
     if get_tool_id(tool_id).startswith('interactive_tool_') and user_id == -1:
         raise JobMappingException("This tool is restricted to registered users, "
                                   "please contact a site administrator")
-        
+
     if get_tool_id(tool_id).startswith('interactive_tool_ml') and 'interactive-tool-ml-jupyter-notebook' not in user_roles:
         raise JobMappingException("This tool is restricted to authorized users, "
                                   "please contact a site administrator")
