@@ -6,10 +6,12 @@
     hostname: sn05.galaxyproject.eu
   vars_files:
     - secret_group_vars/all.yml
+  collections:
+    - devsec.hardening
   pre_tasks:
     - name: Install Dependencies
       package:
-        name: [ 'python36' ]
+        name: [ 'python36', 'rsync' ]
       become: yes
     - name: Set default version of Python
       alternatives:
@@ -31,6 +33,4 @@
     - usegalaxy-eu.ansible-postgresql
     # End Applications
     - dj-wasabi.telegraf
-#    - dev-sec.os-hardening
-    - dev-sec.ssh-hardening
-
+    - ssh-hardening
