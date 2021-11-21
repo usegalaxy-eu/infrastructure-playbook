@@ -3,6 +3,8 @@
   hosts: sn06
   become: true
   become_user: root
+  collections:
+    - usegalaxy_eu.handy
   vars:
     # The full internal name.
     hostname: sn06.galaxyproject.eu
@@ -92,7 +94,7 @@
 
     ## Dependencies
     - geerlingguy.repo-epel # Install EPEL
-    - usegalaxy-eu.powertools # geerlingguy.repo-epel role doesn't enable (yet) PowerTools repository
+    - powertools # From usegalaxy_eu.handy collection; geerlingguy.repo-epel role doesn't enable PowerTools repository
     # We want to exclude a couple of packages as we will fetch those
     # dependencies from other repos: condor, node/npm
     - hxr.exclude-repo

@@ -8,6 +8,7 @@
     - secret_group_vars/all.yml
   collections:
     - devsec.hardening
+    - usegalaxy_eu.handy
   pre_tasks:
     - name: Install Dependencies
       package:
@@ -21,7 +22,7 @@
     - hostname
     - usegalaxy-eu.dynmotd
     - geerlingguy.repo-epel
-    - usegalaxy-eu.powertools # geerlingguy.repo-epel role doesn't enable (yet) PowerTools repository
+    - powertools # From usegalaxy_eu.handy collection; geerlingguy.repo-epel role doesn't enable PowerTools repository
     - hxr.admin-tools
     - influxdata.chrony
     - hxr.monitor-email
