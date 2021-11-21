@@ -1,20 +1,20 @@
 ---
-# geerlingguy.repo-epel role doesn't enable (yet) PowerTools repository
+# geerlingguy.repo-epel role doesn't enable PowerTools repository
 # but EPEL packages may depend on packages from it
-- name: Enable PowerTools repository Centos8.2
+- name: Enable CentOS PowerTools repository
   ini_file:
-    path: /etc/yum.repos.d/CentOS-PowerTools.repo
-    section: PowerTools
+    path: "{{ CentOS.path }}"
+    section: "{{ CentOS.section }}"
     option: enabled
     value: "1"
     no_extra_spaces: yes
-  when: ansible_os_family == "RedHat" and ansible_distribution_version == "8.2"
+  when: ansible_os_family == "RedHat" and ansible_distribution_version in CentOS.version
 
-- name: Enable PowerTools repository Centos8.4
+- name: Enable CentOS-Linux PowerTools repository
   ini_file:
-    path: /etc/yum.repos.d/CentOS-Linux-PowerTools.repo
-    section: powertools
+    path: "{{ CentOS-Linux.path }}"
+    section: "{{ CentOS-Linux.section }}"
     option: enabled
     value: "1"
     no_extra_spaces: yes
-  when: ansible_os_family == "RedHat" and ansible_distribution_version == "8.4"
+  when: ansible_os_family == "RedHat" and ansible_distribution_version in CentOS_Linux.version
