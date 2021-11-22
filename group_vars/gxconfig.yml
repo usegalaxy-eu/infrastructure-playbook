@@ -197,13 +197,10 @@ base_app_main: &BASE_APP_MAIN
   # <data_dir>.
   tool_dependency_dir: /usr/local/tools
 
-  # The dependency resolvers config file specifies an ordering and
-  # options for how Galaxy resolves tool dependencies (requirement tags
-  # in Tool XML). The default ordering is to the use the Tool Shed for
-  # tools installed that way, use local Galaxy packages, and then use
-  # Conda if available. See
-  # https://github.com/galaxyproject/galaxy/blob/dev/doc/source/admin/dependency_resolvers.rst
-  # for more information on these options.
+  # Specifies the path to the standalone dependency resolvers
+  # configuration file. This configuration can now be specified directly
+  # in the Galaxy configuration, see the description of the
+  # 'dependency_resolvers' option for details.
   # The value of this option will be resolved with respect to
   # <config_dir>.
   dependency_resolvers_config_file: "{{ galaxy_config_dir }}/dependency_resolvers_conf.xml"
@@ -331,9 +328,18 @@ base_app_main: &BASE_APP_MAIN
 
   # Container resolvers configuration (beta). Set up a file describing
   # container resolvers to use when discovering containers for Galaxy.
-  # If this is set to None, the default containers loaded is determined
-  # by enable_mulled_containers.
+  # If this is set to None, the default container resolvers loaded is
+  # determined by enable_mulled_containers.
   containers_resolvers_config_file: "{{ galaxy_config_dir }}/container_resolvers_conf.xml"
+
+  # Rather than specifying a container_resolvers_config_file, the
+  # definition of the resolvers to enable can be embedded into Galaxy's
+  # config with this option. This has no effect if a
+  # container_resolvers_config_file is used.
+  # The syntax, available resolvers, and documentation of their options
+  # is explained in detail in the documentation:
+  # https://docs.galaxyproject.org/en/master/admin/dependency_resolvers.html
+  #container_resolvers: null
 
   # involucro is a tool used to build Docker or Singularity containers
   # for tools from Conda dependencies referenced in tools as
@@ -545,6 +551,31 @@ base_app_main: &BASE_APP_MAIN
   # memory when using forked Galaxy processes.
   #delay_tool_initialization: false
 
+  # Point Galaxy at a repository consisting of a copy of the bio.tools
+  # database (e.g. https://github.com/bio-tools/content/) to resolve
+  # bio.tools data for tool metadata.
+  #biotools_content_directory: null
+
+  # Set this to true to attempt to resolve bio.tools metadata for tools
+  # for tool not resovled via biotools_content_directory.
+  #biotools_use_api: false
+
+  # bio.tools web service request related caching. The type of beaker
+  # cache used.
+  #biotools_service_cache_type: file
+
+  # bio.tools web service request related caching. The data directory to
+  # point beaker cache at.
+  # The value of this option will be resolved with respect to
+  # <cache_dir>.
+  #biotools_service_cache_data_dir: biotools/data
+
+  # bio.tools web service request related caching. The lock directory to
+  # point beaker cache at.
+  # The value of this option will be resolved with respect to
+  # <cache_dir>.
+  #biotools_service_cache_lock_dir: biotools/locks
+
   # Citation related caching.  Tool citations information maybe fetched
   # from external sources such as https://doi.org/ by Galaxy - the
   # following parameters can be used to control the caching used to
@@ -626,8 +657,16 @@ base_app_main: &BASE_APP_MAIN
   # list. This is the address used to subscribe to the list. Uncomment
   # and leave empty if you want to remove this option from the user
   # registration form.
-  # Example value 'galaxy-announce-join@bx.psu.edu'
+  # Example value 'galaxy-announce-join@lists.galaxyproject.org'
   #mailing_join_addr: null
+
+  # The subject of the email sent to the mailing list join address. See
+  # the `mailing_join_addr` option for more information.
+  #mailing_join_subject: Join Mailing List
+
+  # The body of the email sent to the mailing list join address. See the
+  # `mailing_join_addr` option for more information.
+  #mailing_join_body: Join Mailing List
 
   # Datasets in an error state include a link to report the error.
   # Those reports will be sent to this address.  Error reports are
@@ -696,13 +735,17 @@ base_app_main: &BASE_APP_MAIN
 
   # Shown in warning box to users that were not activated yet. In use
   # only if activation_grace_period is set.
-  inactivity_box_content: "Your account has not been activated yet.  Feel free to browse around and see what's available, but you won't be able to upload data or run jobs until you have verified your email address."
+  inactivity_box_content: Your account has not been activated yet.  Feel free to browse around and see what's available, but you won't be able to upload data or run jobs until you have verified your email address.
 
   # Password expiration period (in days). Users are required to change
   # their password every x days. Users will be redirected to the change
   # password screen when they log in after their password expires. Enter
   # 0 to disable password expiration.
   #password_expiration_period: 0
+
+  # Allow users to manage their account data, change passwords or delete
+  # their accounts.
+  #enable_account_interface: true
 
   # Galaxy Session Timeout This provides a timeout (in minutes) after
   # which a user will have to log back in. A duration of 0 disables this
@@ -769,6 +812,10 @@ base_app_main: &BASE_APP_MAIN
   # as Galaxy by default.
   #interactivetools_proxy_host: null
 
+  # Base path for interactive tools running at a subpath without a
+  # subdomain. Defaults to "/".
+  #interactivetools_base_path: /
+
   # Map for interactivetool proxy.
   # The value of this option will be resolved with respect to
   # <data_dir>.
@@ -782,6 +829,7 @@ base_app_main: &BASE_APP_MAIN
   # tools. Especially useful for avoiding the need for wildcard
   # certificates by keeping subdomain under 63 chars
   #interactivetools_shorten_url: false
+
   # Galaxy Interactive Tools (GxITs) can be stopped from within the
   # Galaxy interface, killing the GxIT job without completing its
   # metadata setting post-job steps. In such a case it may be desirable
@@ -1232,12 +1280,9 @@ base_app_main: &BASE_APP_MAIN
   # <project_name> -> Settings -> API Keys.
   #sentry_dsn: null
 
-  # Sentry slow request logging.  Requests slower than the threshold
-  # indicated below will be sent as events to the configured Sentry
-  # server (above, sentry_dsn).  A value of '0' is disabled.  For
-  # example, you would set this to .005 to log all queries taking longer
-  # than 5 milliseconds.
-  #sentry_sloreq_threshold: 0.0
+  # Determines the minimum log level that will be sent as an event to
+  # Sentry. Possible values are DEBUG, INFO, WARNING, ERROR or CRITICAL.
+  #sentry_event_level: ERROR
 
   # Log to statsd Statsd is an external statistics aggregator
   # (https://github.com/etsy/statsd) Enabling the following options will
@@ -1545,14 +1590,33 @@ base_app_main: &BASE_APP_MAIN
   # workflows built using these modules may not function in the future.)
   #enable_beta_workflow_modules: false
 
-  # Enable beta EDAM organised toolbox which ignores admin managed
-  # sections in lieu of EDAM topics only.
-  #enable_beta_edam_toolbox: false
+  # Comma-separated list of the EDAM panel views to load - choose from
+  # merged, operations, topics. Set to empty string to disable EDAM all
+  # together. Set default_panel_view to 'ontology:edam_topics' to
+  # override default tool panel to use an EDAM view.
+  #edam_panel_views: operations,topics
 
-  # Sets the path to EDAM ontology file.
+  # Sets the path to EDAM ontology file - if the path doesn't exist PyPI
+  # package data will be loaded.
   # The value of this option will be resolved with respect to
   # <data_dir>.
-  #beta_edam_toolbox_ontology_path: EDAM.tsv
+  #edam_toolbox_ontology_path: EDAM.tsv
+
+  # Directory to check out for toolbox tool panel views. The path is
+  # relative to the Galaxy root dir.  To use an absolute path begin the
+  # path with '/'.  This is a comma-separated list.
+  #panel_views_dir: config/plugins/activities
+
+  # Definitions of static toolbox panel views embedded directly in the
+  # config instead of reading YAML from directory with panel_views_dir.
+  #panel_views: null
+
+  # Default tool panel view for the current Galaxy configuration. This
+  # should refer to an id of a panel view defined using the panel_views
+  # or panel_views_dir configuration options or an EDAM panel view. The
+  # default panel view is simply called `default` and refers to the tool
+  # panel state defined by the integrated tool panel.
+  #default_panel_view: default
 
   # Default format for the export of workflows. Possible values are 'ga'
   # or 'format2'.
@@ -1700,14 +1764,15 @@ base_app_main: &BASE_APP_MAIN
   # Enable Galaxy's "Upload via FTP" interface.  You'll need to install
   # and configure an FTP server (we've used ProFTPd since it can use
   # Galaxy's database for authentication) and set the following two
-  # options. This should point to a directory containing subdirectories
-  # matching users' identifier (defaults to e-mail), where Galaxy will
-  # look for files.
-  ftp_upload_dir: /data/jwd/incoming
-
-  # This should be the hostname of your FTP server, which will be
-  # provided to users in the help text.
+  # options. This will be provided to users in the help text as 'log in
+  # to the FTP server at '. Thus, it should be the hostname of your FTP
+  # server.
   ftp_upload_site: 'ftp://ftp.usegalaxy.eu'
+
+  # This should point to a directory containing subdirectories matching
+  # users' identifier (defaults to e-mail), where Galaxy will look for
+  # files.
+  ftp_upload_dir: /data/jwd/incoming
 
   # User attribute to use as subdirectory in calculating default
   # ftp_upload_dir pattern. By default this will be email so a user's
@@ -1789,6 +1854,9 @@ base_app_main: &BASE_APP_MAIN
   # definition of the resolvers to enable can be embedded into Galaxy's
   # config with this option. This has no effect if a
   # dependency_resolvers_config_file is used.
+  # The syntax, available resolvers, and documentation of their options
+  # is explained in detail in the documentation:
+  # https://docs.galaxyproject.org/en/master/admin/dependency_resolvers.html
   #dependency_resolvers: null
 
   # Alternative representation of various dependency resolution
@@ -1828,11 +1896,22 @@ base_app_main: &BASE_APP_MAIN
   # for production servers yet.
   #local_task_queue_workers: 2
 
-  # Enable job recovery (if Galaxy is restarted while cluster jobs are
-  # running, it can "recover" them when it starts).  This is not safe to
-  # use if you are running more than one Galaxy server using the same
-  # database.
-  #enable_job_recovery: true
+  # Each Galaxy job handler process runs one thread responsible for
+  # discovering jobs and dispatching them to runners. This thread
+  # operates in a loop and sleeps for the given number of seconds at the
+  # end of each iteration. This can be decreased if extremely high job
+  # throughput is necessary, but doing so can increase CPU usage of
+  # handler processes. Float values are allowed.
+  #job_handler_monitor_sleep: 1.0
+
+  # Each Galaxy job handler process runs one thread per job runner
+  # plugin responsible for checking the state of queued and running
+  # jobs.  This thread operates in a loop and sleeps for the given
+  # number of seconds at the end of each iteration. This can be
+  # decreased if extremely high job throughput is necessary, but doing
+  # so can increase CPU usage of handler processes. Float values are
+  # allowed.
+  #job_runner_monitor_sleep: 1.0
 
   # Determines how metadata will be set. Valid values are `directory`
   # and `extended`. In extended mode jobs will decide if a tool run
@@ -2155,6 +2234,11 @@ base_app_main: &BASE_APP_MAIN
   # The value of this option will be resolved with respect to
   # <config_dir>.
   #tool_destinations_config_file: tool_destinations.yml
+
+  # Location of New User Welcome data, a single directory containing the
+  # images and JSON of Topics/Subtopics/Slides as export. This location
+  # is relative to galaxy/static
+  #welcome_directory: plugins/welcome_page/new_user/static/topics/
 
   # TODO(hxr): UNDOCUMENTED
   #job_metrics_config_file: "{{ galaxy_config_dir }}/job_metrics_conf.xml"
