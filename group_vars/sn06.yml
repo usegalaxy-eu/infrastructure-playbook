@@ -249,9 +249,9 @@ telegraf_plugins_extra:
           "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-stat-bgwriter",
           "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-stat-user-tables",
         ]
-      - timeout = "30s"
+      - timeout = "60s"
       - data_format = "influx"
-      - interval = "1m"
+      - interval = "2m"
 
 # Custom pip installer
 pip_venv_path: "{{ galaxy_venv_dir }}"
