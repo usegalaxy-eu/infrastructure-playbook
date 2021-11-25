@@ -1,4 +1,24 @@
 preferences:
+    openstack_account:
+        description: Your own Open Stack account
+        inputs:
+            - name: username
+              label: Username
+              type: text
+              required: False
+            - name: url
+              label: Open Stack URL
+              type: text
+              required: True
+
+    webhook_overlay_search:
+        description: Configuration option for your search results
+        inputs:
+            - name: max_search_results
+              label: Maximum number of search results
+              type: text
+              required: False
+
     use_cached_job:
         description: Do you want to be able to re-use previously run jobs ?
         inputs:
