@@ -12,6 +12,7 @@ condor:
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
     tmp_dir: 'True'
+    metadata_strategy: 'extended'
 
 condor_extended:
   limits:
@@ -30,10 +31,9 @@ condor_extended:
 
 condor_upload:
   limits:
-    cores: 40
-    mem: 1000
+    cores: 20
+    mem: 10
   env:
-    NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
     GALAXY_MEMORY_MB: '{MEMORY_MB}'
     GALAXY_SLOTS: '{PARALLELISATION}'
   params:
