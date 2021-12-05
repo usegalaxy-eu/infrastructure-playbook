@@ -306,7 +306,7 @@ gxadmin_influx_task_notifier: true
 gxadmin_influx_task_notifier_db: notifications
 
 # postgres_pass defined in secret_group_vars/all.yml
-gxadmin_commit: master
+gxadmin_commit: main
 gxadmin_dir: /opt/gxadmin
 gxadmin_bin_dir: /usr/bin
 gxadmin_force: true
@@ -742,7 +742,7 @@ galaxy_jobconf:
               singularity_enabled: 'true'
               singularity_enabled: 'true'
               require_container: 'true'
-              singularity_volumes: '/usr/local/tools/:ro,$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro'        
+              singularity_volumes: '/usr/local/tools/:ro,$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro'
               singularity_default_container_id: '/data/0/cvmfs/singularity/ubuntu:18.04'
           raw: |
             <param id="container">

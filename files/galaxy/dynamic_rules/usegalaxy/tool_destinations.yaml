@@ -44,6 +44,13 @@ interactive_tool_jupyter_notebook:
     HOME: /home/jovyan
   force_destination_id: True
 
+interactive_tool_pangeo_notebook: 
+  mem: 4
+  runner: condor_docker_ie_interactive
+  env: 
+    HOME: /home/jovyan
+  force_destination_id: True
+
 interactive_tool_climate_notebook: 
   mem: 4
   runner: condor_docker_ie_interactive
@@ -670,7 +677,7 @@ diamond_database_builder: {cores: 10, mem: 90}
 dt_profiler: {mem: 10}
 eukaryotic_ncbi_submission: {cores: 24, mem: 24}
 fastq_dump: {mem: 20}
-fastqc: {mem: 20}
+fastqc: {cores: 4}
 featurecounts: {cores: 8, mem: 18}
 feebayes: {cores: 10, mem: 12}
 flashlfq:

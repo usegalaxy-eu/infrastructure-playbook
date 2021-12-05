@@ -413,8 +413,31 @@ def _gateway(tool_id, user_preferences, user_roles, user_id, user_email, memory_
     return env, params, runner, tool_spec, tags
 
 
-def gateway(tool_id, user, memory_scale=1.0, next_dest=None):
-    # And run it.
+def _special_case(param_dict, tool_id, user_id, user_roles):
+    """"
+    Takes care of tools with special cases
+    """
+    if get_tool_id(tool_id).startswith('interactive_tool_') and user_id == -1:
+        raise JobMappingException("This tool is restricted to registered users, "
+                                  "please contact a site administrator")
+
+    if get_tool_id(tool_id).startswith('interactive_tool_ml') and 'interactive-tool-ml-jupyter-notebook' not in user_roles:
+        raise JobMappingException("This tool is restricted to authorized users, "
+                                  "please contact a site administrator")
+
+    if get_tool_id(tool_id).startswith('gmx_sim'):
+        md_steps_limit = 1000000
+        if param_dict['sets']['mdp']['md_steps'] > md_steps_limit and 'gmx_sim_powerusers' not in user_roles:
+            raise JobMappingException("this tool's configuration has exceeded a computational limit, "
+                                      "please contact a site administrator")
+
+    return
+
+
+def gateway(app, job, tool, user, memory_scale=1.0, next_dest=None):
+    param_dict = dict([(p.name, p.value) for p in job.parameters])
+    param_dict = tool.params_from_strings(param_dict, app)
+    tool_id = tool.id
     if user:
         user_roles = [role.name for role in user.all_roles() if not role.deleted]
         user_preferences = user.extra_preferences
@@ -426,13 +449,7 @@ def gateway(tool_id, user, memory_scale=1.0, next_dest=None):
         email = ''
         user_id = -1
 
-    if get_tool_id(tool_id).startswith('interactive_tool_') and user_id == -1:
-        raise JobMappingException("This tool is restricted to registered users, "
-                                  "please contact a site administrator")
-
-    if get_tool_id(tool_id).startswith('interactive_tool_ml') and 'interactive-tool-ml-jupyter-notebook' not in user_roles:
-        raise JobMappingException("This tool is restricted to authorized users, "
-                                  "please contact a site administrator")
+    _special_case(param_dict, tool_id, user_id, user_roles)
 
     try:
         env, params, runner, spec, tags = _gateway(tool_id, user_preferences, user_roles, user_id, email,
@@ -457,11 +474,11 @@ def gateway(tool_id, user, memory_scale=1.0, next_dest=None):
         resubmit=resubmit,
     )
 
-def gateway_1x(tool_id, user):
-    return gateway(tool_id, user, memory_scale=1, next_dest='gateway_1_5x')
+def gateway_1x(app, job, tool, user):
+    return gateway(app, job, tool, user, memory_scale=1, next_dest='gateway_1_5x')
 
-def gateway_1_5x(tool_id, user):
-    return gateway(tool_id, user, memory_scale=1.5, next_dest='gateway_2x')
+def gateway_1_5x(app, job, tool, user):
+    return gateway(app, job, tool, user, memory_scale=1.5, next_dest='gateway_2x')
 
-def gateway_2x(tool_id, user):
-    return gateway(tool_id, user, memory_scale=2)
+def gateway_2x(app, job, tool, user):
+    return gateway(app, job, tool, user, memory_scale=2)
