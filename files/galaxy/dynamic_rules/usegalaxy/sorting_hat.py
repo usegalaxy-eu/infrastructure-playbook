@@ -427,9 +427,10 @@ def _special_case(param_dict, tool_id, user_id, user_roles):
 
     if get_tool_id(tool_id).startswith('gmx_sim'):
         md_steps_limit = 1000000
-        if param_dict['sets']['mdp']['md_steps'] > md_steps_limit and 'gmx_sim_powerusers' not in user_roles:
-            raise JobMappingException("this tool's configuration has exceeded a computational limit, "
-                                      "please contact a site administrator")
+        if 'md_steps' in param_dict['sets']['mdp']:
+            if param_dict['sets']['mdp']['md_steps'] > md_steps_limit and 'gmx_sim_powerusers' not in user_roles:
+                raise JobMappingException("this tool's configuration has exceeded a computational limit, "
+                                          "please contact a site administrator")
 
     return
 
