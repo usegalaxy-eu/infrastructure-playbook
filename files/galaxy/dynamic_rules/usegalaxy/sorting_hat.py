@@ -434,10 +434,7 @@ def _special_case(param_dict, tool_id, user_id, user_roles):
     return
 
 
-def gateway(app, job, tool, user, memory_scale=1.0, next_dest=None):
-    param_dict = dict([(p.name, p.value) for p in job.parameters])
-    param_dict = tool.params_from_strings(param_dict, app)
-    tool_id = tool.id
+def gateway(tool_id, user, memory_scale=1.0, next_dest=None):
     if user:
         user_roles = [role.name for role in user.all_roles() if not role.deleted]
         user_preferences = user.extra_preferences
@@ -448,8 +445,6 @@ def gateway(app, job, tool, user, memory_scale=1.0, next_dest=None):
         user_preferences = []
         email = ''
         user_id = -1
-
-    _special_case(param_dict, tool_id, user_id, user_roles)
 
     try:
         env, params, runner, spec, tags = _gateway(tool_id, user_preferences, user_roles, user_id, email,
@@ -474,11 +469,35 @@ def gateway(app, job, tool, user, memory_scale=1.0, next_dest=None):
         resubmit=resubmit,
     )
 
-def gateway_1x(app, job, tool, user):
-    return gateway(app, job, tool, user, memory_scale=1, next_dest='gateway_1_5x')
 
-def gateway_1_5x(app, job, tool, user):
-    return gateway(app, job, tool, user, memory_scale=1.5, next_dest='gateway_2x')
+def gateway_1x(tool_id, user):
+    return gateway(tool_id, user, memory_scale=1, next_dest='gateway_1_5x')
 
-def gateway_2x(app, job, tool, user):
-    return gateway(app, job, tool, user, memory_scale=2)
+
+def gateway_1_5x(tool_id, user):
+    return gateway(tool_id, user, memory_scale=1.5, next_dest='gateway_2x')
+
+
+def gateway_2x(tool_id, user):
+    return gateway(tool_id, user, memory_scale=2)
+
+
+def gateway_checkpoint(app, job, tool, user):
+    """"
+    These are tools that have to be blocked before starting to run, if a particular condition arise.
+    If not, reroute to gateway single run.
+    """
+    param_dict = dict([(p.name, p.value) for p in job.parameters])
+    param_dict = tool.params_from_strings(param_dict, app)
+    tool_id = tool.id
+    if user:
+        user_roles = [role.name for role in user.all_roles() if not role.deleted]
+        user_id = user.id
+    else:
+        user_roles = []
+        user_id = -1
+
+    _special_case(param_dict, tool_id, user_id, user_roles)
+
+    return gateway(tool_id, user)
+

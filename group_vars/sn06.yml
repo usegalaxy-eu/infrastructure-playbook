@@ -754,6 +754,11 @@ galaxy_jobconf:
           params:
               type: python
               function: gateway_2x
+        - id: gateway_checkpoint
+          runner: dynamic
+          params:
+            type: python
+            function: gateway_checkpoint
         # Pulsar MQs
         - id: remote_cluster_mq_cz
           runner: pulsar_eu_cz
@@ -955,22 +960,56 @@ galaxy_jobconf:
         - id: gmx_sim
           destination: gateway_singlerun
           resources: usegpu
-        #- id: wig_to_bigWig
-          #destination: wig_to_bigWig
-        #- id: dexseq
-          #destination: dexseq_dynamic
-        #- id: ncbi_blastn_wrapper
-          #destination: 24cores_15G_BLAST
-        #- id: ncbi_blastx_wrapper
-          #destination: 24cores_15G_BLAST
-        #- id: ncbi_tblastn_wrapper
-          #destination: 24cores_15G_BLAST
-        #- id: ncbi_tblastx_wrapper
-          #destination: 24cores_15G_BLAST
-        #- id: ncbi_blastp_wrapper
-          #destination: 24cores_15G_BLAST
-        #- id: ncbi_rpsblast_wrapper
-          #destination: 24cores_15G_BLAST
+        - id: interactive_tool_jupyter_notebook
+          destination: gateway_checkpoint
+        - id: interactive_tool_pangeo_notebook
+          destination: gateway_checkpoint
+        - id: interactive_tool_climate_notebook
+          destination: gateway_checkpoint
+        - id: interactive_tool_ml_jupyter_notebook
+          destination: gateway_checkpoint
+        - id: interactive_tool_rstudio
+          destination: gateway_checkpoint
+        - id: interactive_tool_pyiron
+          destination: gateway_checkpoint
+        - id: interactive_tool_guacamole_desktop
+          destination: gateway_checkpoint
+        - id: interactive_tool_openrefine
+          destination: gateway_checkpoint
+        - id: interactive_tool_panoply
+          destination: gateway_checkpoint
+        - id: interactive_tool_vrm_editor
+          destination: gateway_checkpoint
+        - id: interactive_tool_ethercalc
+          destination: gateway_checkpoint
+        - id: interactive_tool_geoexplorer
+          destination: gateway_checkpoint
+        - id: interactive_tool_radiant
+          destination: gateway_checkpoint
+        - id: interactive_tool_higlass
+          destination: gateway_checkpoint
+        - id: interactive_tool_phinch
+          destination: gateway_checkpoint
+        - id: interactive_tool_neo4j
+          destination: gateway_checkpoint
+        - id: interactive_tool_hicbrowser
+          destination: gateway_checkpoint
+        - id: interactive_tool_cellxgene
+          destination: gateway_checkpoint
+        - id: interactive_tool_bam_iobio
+          destination: gateway_checkpoint
+        - id: interactive_tool_vcf_iobio
+          destination: gateway_checkpoint
+        - id: interactive_tool_askomics
+          destination: gateway_checkpoint
+        - id: interactive_tool_wilson
+          destination: gateway_checkpoint
+        - id: interactive_tool_wallace
+          destination: gateway_checkpoint
+        - id: interactive_tool_paraview
+          destination: gateway_checkpoint
+        - id: interactive_tool_simtext_app
+          destination: gateway_checkpoint
     resources:
       - id: usegpu
         names: gpu
@@ -989,10 +1028,6 @@ galaxy_jobconf:
       - type: 'destination_user_concurrent_jobs'
         id: 'sh_fdid_condor_intensive_jobs'
         value: '10'
-      # We do not have a fixed name for a puslar endpoint, would that make sense?
-      #- type: 'destination_user_concurrent_jobs'
-      #  id: 'destination_name_of_pulsar_endpoint'
-      #  value: '1000'
 
 galaxy_config: "{{ galaxy_config_hash }}"
 
