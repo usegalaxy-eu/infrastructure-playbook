@@ -13,6 +13,10 @@ server {
 		proxy_pass                 http://127.0.0.1:5000;
 		proxy_pass_request_headers on;
 
+		location /apollo/organism/findAllOrganisms {
+			proxy_pass http://127.0.0.1:4321/organism/findAllOrganisms;
+		}
+
 		proxy_set_header X-Forwarded-Proto https;
 		proxy_set_header X-Forwarded-Port 443;
 
