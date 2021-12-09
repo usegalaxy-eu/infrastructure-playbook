@@ -1,7 +1,7 @@
 ---
 condor:
   limits:
-    cores: 40
+    cores: 64
     mem: 1000
   env:
     NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
@@ -16,7 +16,7 @@ condor:
 
 condor_extended:
   limits:
-    cores: 40
+    cores: 64
     mem: 1000
   env:
     NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
@@ -60,7 +60,7 @@ condor_gpu:
 
 condor_singularity:
   limits:
-    cores: 40
+    cores: 64
     mem: 1000
   env:
     GALAXY_MEMORY_MB: '{MEMORY_MB}'
@@ -78,7 +78,7 @@ condor_singularity:
 
 condor_singularity_with_conda:
   limits:
-    cores: 40
+    cores: 64
     mem: 1000
   env:
     GALAXY_MEMORY_MB: '{MEMORY_MB}'
