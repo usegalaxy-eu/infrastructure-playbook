@@ -91,12 +91,10 @@
     - geerlingguy.repo-epel # Install EPEL repository
     - role: usegalaxy_eu.handy.os_setup
       vars:
-        enable_powertools: True # geerlingguy.repo-epel role doesn't enable PowerTools repository
-        enable_remap_user: True
+        enable_powertools: true # geerlingguy.repo-epel role doesn't enable PowerTools repository
+        enable_remap_user: true
+        enable_exclude_packages:  true
 
-    # We want to exclude a couple of packages as we will fetch those
-    # dependencies from other repos: condor, node/npm
-    - hxr.exclude-repo
     - usegalaxy-eu.autoupdates # keep all of our packages up to date
     - hxr.admin-tools # Some extra admin tools (*top, vim, etc)
     - influxdata.chrony # Keep our time in sync.
