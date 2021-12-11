@@ -22,7 +22,9 @@
     - hostname
     - usegalaxy-eu.dynmotd
     - geerlingguy.repo-epel
-    - powertools # From usegalaxy_eu.handy collection; geerlingguy.repo-epel role doesn't enable PowerTools repository
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        enable_powertools: true # geerlingguy.repo-epel role doesn't enable PowerTools repository
     - hxr.admin-tools
     - influxdata.chrony
     - hxr.monitor-email
