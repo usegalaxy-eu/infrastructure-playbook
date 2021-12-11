@@ -19,12 +19,12 @@
         name: python
         path: /usr/bin/python3
   roles:
-    - hostname
-    - usegalaxy-eu.dynmotd
-    - geerlingguy.repo-epel
     - role: usegalaxy_eu.handy.os_setup
       vars:
+        enable_hostname: true
         enable_powertools: true # geerlingguy.repo-epel role doesn't enable PowerTools repository
+    - usegalaxy-eu.dynmotd
+    - geerlingguy.repo-epel
     - hxr.admin-tools
     - influxdata.chrony
     - hxr.monitor-email

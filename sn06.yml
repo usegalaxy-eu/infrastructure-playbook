@@ -85,15 +85,14 @@
         name: [ 'cairo', 'cairo-devel', 'pango-devel' ]
       become: yes
   roles:
-    - hostname
-
     ## Starting configuration of the operating system
-    - geerlingguy.repo-epel # Install EPEL repository
     - role: usegalaxy_eu.handy.os_setup
       vars:
+        enable_hostname: true
         enable_powertools: true # geerlingguy.repo-epel role doesn't enable PowerTools repository
         enable_remap_user: true
         enable_exclude_packages:  true
+    - geerlingguy.repo-epel # Install EPEL repository
 
     - usegalaxy-eu.autoupdates # keep all of our packages up to date
     - hxr.admin-tools # Some extra admin tools (*top, vim, etc)
