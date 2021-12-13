@@ -76,7 +76,7 @@ TOOL_DESTINATION_ALLOWED_KEYS = ['cores', 'env', 'gpus', 'mem', 'name', 'nativeS
                                  'params', 'permissions', 'runner', 'tags', 'tmp', 'force_destination_id',
                                  'docker_auto_rm', 'docker_default_container_id', 'docker_set_user',
                                  'docker_memory', 'docker_run_extra_arguments', 'docker_set_user',
-                                 'docker_sudo', 'docker_volumes' ]
+                                 'docker_sudo', 'docker_volumes']
 
 SPECIFICATION_ALLOWED_KEYS = ['env', 'limits', 'params', 'tags', 'nodes']
 
@@ -217,7 +217,7 @@ def build_spec(tool_spec, dest_spec=SPECIFICATIONS, runner_hint=None):
 
     # We apply some constraints to these values, to ensure that we do not
     # produce unschedulable jobs, requesting more ram/cpu than is available in a
-    # given location. Currently we clamp those values rather than intelligently
+    # given location. Currently, we clamp those values rather than intelligently
     # re-scheduling to a different location due to TaaS constraints.
     limits = _get_limits(destination, dest_spec=dest_spec)
     tool_memory = min(tool_memory, limits.get('mem'))
@@ -302,6 +302,7 @@ def get_training_roles(user_roles):
     if any([role.startswith('training-gcc-') for role in training_roles]):
         training_roles.append('training-gcc')
     return training_roles
+
 
 def reroute_to_dedicated(tool_spec, user_roles):
     """
@@ -484,7 +485,7 @@ def gateway_2x(tool_id, user):
 
 
 def gateway_checkpoint(app, job, tool, user):
-    """"
+    """
     These are tools that have to be blocked before starting to run, if a particular condition arise.
     If not, reroute to gateway single run.
     """
@@ -502,3 +503,73 @@ def gateway_checkpoint(app, job, tool, user):
 
     return gateway(tool_id, user)
 
+
+def _compute_memory_for_hifiasm(param_dict):
+    computed_memory = 0
+    converter = {
+        'g': 1,
+        'G': 1,
+        'm': 1000,
+        'M': 1000,
+        'k': 1000000,
+        'K': 1000000
+    }
+    kcov = 36
+    if 'advanced_options' in param_dict:
+        if 'kcov' in param_dict['advanced_options']:
+            kcov = param_dict['advanced_options']['kcov']
+        if 'hg_size' in param_dict['advanced_options']:
+            hg_size = param_dict['advanced_options']['hg_size']
+            hg_size_suffix = hg_size[-1:]
+            hg_size_value = float(hg_size[:len(hg_size)-1].replace(",", "."))
+            # (len*(kmercov*2) * 1.75
+            hg_size_value_in_Gb = hg_size_value / converter[hg_size_suffix]
+            computed_memory = math.ceil(hg_size_value_in_Gb*(kcov*2)*1.75)
+
+    return computed_memory
+
+
+def gateway_for_hifism(app, job, tool, user):
+    """"
+    The memory requirement of Hifiasm depends on a wrapper's input
+    """
+    param_dict = dict([(p.name, p.value) for p in job.parameters])
+    param_dict = tool.params_from_strings(param_dict, app)
+    tool_id = tool.id
+    if user:
+        user_roles = [role.name for role in user.all_roles() if not role.deleted]
+        user_preferences = user.extra_preferences
+        email = user.email
+        user_id = user.id
+    else:
+        user_roles = []
+        user_preferences = []
+        email = ''
+        user_id = -1
+
+    try:
+        env, params, runner, spec, tags = _gateway(tool_id, user_preferences, user_roles, user_id, email,
+                                                   memory_scale=memory_scale)
+    except Exception as e:
+        return JobMappingException(str(e))
+
+    limits = _get_limits(runner)
+    request_memory = str(min(_compute_memory_for_hifiasm(param_dict), limits.get('mem'))) + 'G'
+    params['request_memory'] = request_memory
+
+    resubmit = []
+    if next_dest:
+        resubmit = [{
+            'condition': 'any_failure and attempt <= 3',
+            'destination': next_dest
+        }]
+
+    name = name_it(spec)
+    return JobDestination(
+        id=name,
+        tags=tags,
+        runner=runner,
+        params=params,
+        env=env,
+        resubmit=resubmit,
+    )
