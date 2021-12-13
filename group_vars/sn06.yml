@@ -759,6 +759,11 @@ galaxy_jobconf:
           params:
             type: python
             function: gateway_checkpoint
+        - id: gateway_for_hifiasm
+          runner: dynamic
+          params:
+            type: python
+            function: gateway_for_hifiasm
         # Pulsar MQs
         - id: remote_cluster_mq_cz
           runner: pulsar_eu_cz
