@@ -548,8 +548,7 @@ def gateway_for_hifiasm(app, job, tool, user):
         user_id = -1
 
     try:
-        env, params, runner, spec, tags = _gateway(tool_id, user_preferences, user_roles, user_id, email,
-                                                   memory_scale=memory_scale)
+        env, params, runner, spec, tags = _gateway(tool_id, user_preferences, user_roles, user_id, email)
     except Exception as e:
         return JobMappingException(str(e))
 
