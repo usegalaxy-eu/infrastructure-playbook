@@ -529,7 +529,7 @@ def _compute_memory_for_hifiasm(param_dict):
     return computed_memory
 
 
-def gateway_for_hifiasm(app, job, tool, user):
+def gateway_for_hifiasm(app, job, tool, user, next_dest=None):
     """"
     The memory requirement of Hifiasm depends on a wrapper's input
     """
