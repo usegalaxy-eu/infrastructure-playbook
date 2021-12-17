@@ -76,14 +76,7 @@
       loop:
         - "{{ galaxy_user.name }}"
         - "telegraf"
-    - name: Install utilities
-      package:
-        name: [ 'mosh' ]
-      become: yes
-    - name: Install pdf export dependencies
-      package:
-        name: [ 'cairo', 'cairo-devel', 'pango-devel' ]
-      become: yes
+
   roles:
     ## Starting configuration of the operating system
     - role: usegalaxy_eu.handy.os_setup
@@ -92,10 +85,11 @@
         enable_powertools: true # geerlingguy.repo-epel role doesn't enable PowerTools repository
         enable_remap_user: true
         enable_exclude_packages:  true
+        enable_pam_limits: true # Prevent out of control processes
+        enable_install_software: true # Some extra admin tools (*top, vim, etc)
     - geerlingguy.repo-epel # Install EPEL repository
 
     - usegalaxy-eu.autoupdates # keep all of our packages up to date
-    - hxr.admin-tools # Some extra admin tools (*top, vim, etc)
     - influxdata.chrony # Keep our time in sync.
 
     ## Filesystems
@@ -174,7 +168,6 @@
     - usegalaxy-eu.update-hosts          # Update hosts list
     - usegalaxy-eu.gie_proxy             # Setup the NodeJS proxy for GxIT
     - usegalaxy-eu.subdomain-themes      # Custom subdomain themes
-    - usegalaxy-eu.limits                # Prevent out of control processes
     - usegalaxy_eu.fs_maintenance        # Filesystems maintenance
     - usegalaxy-eu.logrotate             # Rotate logs
     - usegalaxy-eu.error-pages           # Copy the NGINX error pages
