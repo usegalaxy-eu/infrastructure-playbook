@@ -25,13 +25,6 @@ nginx_conf_http:
   gzip_disable: '"MSIE [1-6]\."'
   client_max_body_size: 1g
 
-nginx_conf_http_multiline_option: |  
-  map $http_upgrade $connection_upgrade {
-      default upgrade;
-      '' close;
-  }
-
-
 nginx_remove_default_vhost: true
 
 # Nginx Letsencrypt bindings
