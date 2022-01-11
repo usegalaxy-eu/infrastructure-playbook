@@ -4,10 +4,10 @@
     content: |
         #!/bin/bash
         cd {{ galaxy_root }};
-        for dir in {custom-tools,dynamic_rules,interactive_environments,mutable-config,mutable-data,server,venv,tool-data}; do
+        for dir in {custom-tools,dynamic_rules,mutable-config,mutable-data,server,venv,tool-data}; do
             if [ -d $dir ]; then
                 echo "Syncing $dir"
-                rsync -avr --delete --exclude client/node_modules $dir/ {{ galaxy_nfs_location }}/$dir/
+                rsync -avr --delete --exclude node_modules --exclude .git --exclude __pycache__ $dir/ {{ galaxy_nfs_location }}/$dir/
             else
                 echo "Skipping $dir"
             fi
