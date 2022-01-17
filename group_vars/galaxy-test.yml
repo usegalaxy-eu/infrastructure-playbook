@@ -8,9 +8,35 @@ docker_service_state: stopped
 docker_service_enabled: false
 
 # Autofs
-usegalaxy_eu_autofs_mounts:
+autofs_service.install: True
+autofs_service.enable: True
+nfs_kernel_tuning: True
+autofs_mount_points:
  - data
  - usrlocal
+
+autofs_conf_files:
+  data:
+    - 0       -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/depot/&
+    - 1       -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/depot/&
+    - 2       -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/depot/&
+    - 3       -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/depot/&
+    - 4       -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/depot/&
+    - 5       -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/depot/&
+    - 6       -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/depot/&
+    - 7       -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/depot/&
+    - dnb01   -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
+    - dnb02   -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
+    - dnb03   -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
+    - dnb04   -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
+    - dnb05   -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/&
+    - dnb06   -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/&
+    - db      -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
+    - gxtst   -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/ws01/galaxy-sync/test
+    - jwd     -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/ws01/&
+  usrlocal:
+    - /usr/local/tools   -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/tools
+
 
 # Telegraf
 custom_telegraf_env: "/usr/bin/env GDPR_MODE=1 PGUSER=galaxy PGHOST=sn05.galaxyproject.eu"
