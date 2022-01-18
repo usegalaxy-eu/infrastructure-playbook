@@ -24,12 +24,12 @@
   pre_tasks:
     - name: Install Dependencies
       package:
-        name: ['git', 'postgresql', 'python3-psycopg2', 'python3-virtualenv', 'bc', 'python38']
+        name: ['git', 'postgresql', 'python3-psycopg2', 'python3-virtualenv', 'bc', 'python36', 'python38']
       become: yes
     - name: Set default version of Python
       alternatives:
         name: python
-        path: /usr/bin/python3.8
+        path: /usr/bin/python3
     - name: Put SELinux in permissive mode, logging actions that would be blocked.
       selinux:
         policy: targeted
