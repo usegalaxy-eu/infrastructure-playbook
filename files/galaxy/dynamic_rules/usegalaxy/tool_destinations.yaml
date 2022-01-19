@@ -133,9 +133,10 @@ jellyfish: {mem: 12}
 medaka_consensus_pipeline: {cores: 12, mem: 12}
 shasta: {cores: 10, mem: 12}
 msconvert: {runner: condor_docker}
+## should be dynamically set, or lowered back to 250
 bionano_scaffold:
     runner: condor_docker
-    mem: 256
+    mem: 650
     cores: 24
 mitohifi:
     runner: condor_docker
