@@ -4,7 +4,7 @@
   become: true
   vars:
     hostname: incoming.galaxyproject.eu
-  vars_files:    
+  vars_files:
     - secret_group_vars/all.yml
   collections:
     - devsec.hardening
@@ -14,12 +14,12 @@
         name: Europe/Berlin
     - name: Install Dependencies
       package:
-        name: [ 'postgresql', 'proftpd-utils' ]
+        name: ['postgresql', 'proftpd-utils']
     - name: Configure SELinux
       ansible.posix.seboolean:
         name: "{{ item }}"
-        state: yes
-        persistent: yes
+        state: true
+        persistent: true
       loop:
         - ftpd_full_access
         - ftpd_connect_db
@@ -61,4 +61,3 @@
     - dj-wasabi.telegraf
     - os_hardening
     - ssh_hardening
-    

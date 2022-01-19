@@ -11,7 +11,7 @@
     - name: Install Dependencies
       package:
         name: ['policycoreutils-python']
-      become: yes
+      become: true
   collections:
     - devsec.hardening
   roles:
@@ -24,14 +24,13 @@
     - linuxhq.yum_cron
     - galaxyproject.nginx
     - ssh-host-sign
-    #- hxr.autofs-format-n-mount
+    # - hxr.autofs-format-n-mount
     # CUSTOM
     - geerlingguy.java
     - geerlingguy.jenkins
     - usegalaxy-eu.jenkins-ssh-key
     ## END CUSTOM
     - dj-wasabi.telegraf
-    #- os_hardening
-    #- nginx_hardening
-    #- ssh_hardening
-
+    # - os_hardening
+    # - nginx_hardening
+    # - ssh_hardening

@@ -11,8 +11,8 @@
   pre_tasks:
     - name: Install Dependencies
       package:
-        name: [ 'python36', 'rsync' ]
-      become: yes
+        name: ['python36', 'rsync']
+      become: true
     - name: Set default version of Python
       alternatives:
         name: python
@@ -20,19 +20,19 @@
     - name: Disable firewalld service
       ansible.builtin.service:
         name: firewalld
-        enabled: no
+        enabled: false
         state: stopped
   roles:
     - role: usegalaxy_eu.handy.os_setup
       vars:
         enable_hostname: true
-        enable_powertools: true # geerlingguy.repo-epel role doesn't enable PowerTools repository
-        enable_install_software: true # Some extra admin tools (*top, vim, etc)
+        enable_powertools: true        # geerlingguy.repo-epel role doesn't enable PowerTools repository
+        enable_install_software: true  # Some extra admin tools (*top, vim, etc)
     - usegalaxy-eu.dynmotd
     - geerlingguy.repo-epel
     - influxdata.chrony
     - hxr.monitor-email
-    - usegalaxy-eu.autoupdates # keep all of our packages up to date
+    - usegalaxy-eu.autoupdates  # keep all of our packages up to date
     - hxr.autofs
     - ssh-host-sign
     # Applications
