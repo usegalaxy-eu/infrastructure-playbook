@@ -2,11 +2,10 @@ cron_tasks:
   - name: "Restart handlers part 1"
     minute: 0
     hour: 6
-    job: systemctl restart galaxy-handler@0 
+    job: systemctl restart galaxy-handler@0
     user: root
   - name: "Restart zergling 0"
     minute: 0
     hour: 6
     job: systemctl restart galaxy-zergling@0
     user: root
-

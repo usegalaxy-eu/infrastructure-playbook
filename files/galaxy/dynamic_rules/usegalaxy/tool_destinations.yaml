@@ -37,24 +37,24 @@ sklearn_searchcv: {mem: 12, cores: 10}
 sklearn_model_validation: {mem: 12, cores: 10}
 
 # These are interactive and get restricted volumes
-interactive_tool_jupyter_notebook: 
+interactive_tool_jupyter_notebook:
   mem: 4
   runner: condor_docker_ie_interactive
-  env: 
+  env:
     HOME: /home/jovyan
   force_destination_id: True
 
 interactive_tool_pangeo_notebook: 
   mem: 4
   runner: condor_docker_ie_interactive
-  env: 
+  env:
     HOME: /home/jovyan
   force_destination_id: True
 
-interactive_tool_climate_notebook: 
+interactive_tool_climate_notebook:
   mem: 4
   runner: condor_docker_ie_interactive
-  env: 
+  env:
     HOME: /home/jovyan
   force_destination_id: True
 
@@ -195,7 +195,7 @@ flye: {cores: 20, mem: 24}
 msstats: {mem: 24}
 msstatstmt: {mem: 24}
 xarray_select: {mem: 12}
-dimspy_process_scans: 
+dimspy_process_scans:
   cores: 4
   mem: 12
   env:
