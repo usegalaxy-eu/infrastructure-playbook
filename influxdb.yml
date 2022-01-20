@@ -9,7 +9,7 @@
     - name: Install Dependencies
       package:
         name: ['python-requests', 'python3-virtualenv', 'python36']
-      become: yes
+      become: true
   collections:
     - devsec.hardening
   roles:
@@ -21,12 +21,12 @@
     - hxr.monitor-email
     - linuxhq.yum_cron
     - galaxyproject.nginx
-    #- hxr.autofs - disabled because volumes are not working properly (12/2020)
+    # - hxr.autofs - disabled because volumes are not working properly (12/2020)
     # BEGIN custom
     - usegalaxy_eu.influxdb
     - hxr.influxdb
     # END custom
     - dj-wasabi.telegraf
-    #- os_hardening
-    #- nginx_hardening
-    #- ssh_hardening
+    # - os_hardening
+    # - nginx_hardening
+    # - ssh_hardening

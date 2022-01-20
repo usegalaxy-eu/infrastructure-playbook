@@ -127,13 +127,13 @@ rabbitmq_plugins:
   - rabbitmq_management
 
 rabbitmq_config:
-- rabbit:
-  #- tcp_listeners:
-    #- "'0.0.0.0'": 5671
-  - ssl_listeners:
-    - "'0.0.0.0'": 5671
-  - ssl_options:
-    - cacertfile: /etc/ssl/certs/fullchain.pem
-    - certfile: /etc/ssl/certs/cert.pem
-    - keyfile: /etc/ssl/user/privkey-rabbitmq.pem
-    - fail_if_no_peer_cert: 'false'
+  - rabbit:
+      #- tcp_listeners:
+        #- "'0.0.0.0'": 5671
+      - ssl_listeners:
+          - "'0.0.0.0'": 5671
+      - ssl_options:
+          - cacertfile: /etc/ssl/certs/fullchain.pem
+          - certfile: /etc/ssl/certs/cert.pem
+          - keyfile: /etc/ssl/user/privkey-rabbitmq.pem
+          - fail_if_no_peer_cert: 'false'

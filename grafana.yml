@@ -12,16 +12,16 @@
   # change is likely only applied if a change is detected since it can't figure
   # out if the rule is there or not.
   # TODO: make the nginx task check if the rule is in place, rather than a change in path.
-  #pre_tasks:
-    #- name: Put SELinux in permissive mode, logging actions that would be blocked.
-      #selinux:
-        #policy: targeted
-        #state: permissive
+  # pre_tasks:
+  #   - name: Put SELinux in permissive mode, logging actions that would be blocked.
+  #     selinux:
+  #       policy: targeted
+  #       state: permissive
   pre_tasks:
-  - name: Install Dependencies
-    package:
-      name: [ 'python3-virtualenv', 'python36' ]
-    become: yes
+    - name: Install Dependencies
+      package:
+        name: ['python3-virtualenv', 'python36']
+      become: true
   collections:
     - devsec.hardening
   roles:
@@ -34,15 +34,14 @@
     - hxr.monitor-ssl
     - linuxhq.yum_cron
     - galaxyproject.nginx
-    #- hxr.autofs-format-n-mount
+    # - hxr.autofs-format-n-mount
     # Custom
-    #- hxr.simple-nagios
+    # - hxr.simple-nagios
     - cloudalchemy.grafana
     - pgs
     - hxr.grafana-gitter-bridge
     # End Custom
     - dj-wasabi.telegraf
-    #- os_hardening
-    #- nginx_hardening
-    #- ssh_hardening
-
+    # - os_hardening
+    # - nginx_hardening
+    # - ssh_hardening

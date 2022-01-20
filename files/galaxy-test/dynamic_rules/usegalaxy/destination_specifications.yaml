@@ -233,10 +233,10 @@ remote_cluster_mq_uk01:
     cores: 60
     mem: 300
   env:
-      GALAXY_MEMORY_MB: '{MEMORY_MB}'
-      GALAXY_SLOTS: '{PARALLELISATION}'
-      LC_ALL: C
-      SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
+    SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
   params:
     priority: -{PRIORITY}
     submit_request_cpus: '{PARALLELISATION}'

@@ -8,12 +8,12 @@ docker_service_state: stopped
 docker_service_enabled: false
 
 # Autofs
-autofs_service.install: True
-autofs_service.enable: True
-nfs_kernel_tuning: True
+autofs_service.install: true
+autofs_service.enable: true
+nfs_kernel_tuning: true
 autofs_mount_points:
- - data
- - usrlocal
+  - data
+  - usrlocal
 
 autofs_conf_files:
   data:
@@ -126,29 +126,29 @@ telegraf_plugins_extra:
 # Custom pip installer
 pip_venv_path: "{{ galaxy_venv_dir }}"
 pip_install_dependencies:
-    # phdcomics
-    - beautifulsoup4
-    # Used by code_files for apollo
-    - biopython
-    - bcbio-gff
-    # Needed for tool watching
-    - watchdog
-    # Needed gxadmin graphs
-    - data_hacks
-    # for convenience
-    - uwsgitop
+  # phdcomics
+  - beautifulsoup4
+  # Used by code_files for apollo
+  - biopython
+  - bcbio-gff
+  # Needed for tool watching
+  - watchdog
+  # Needed gxadmin graphs
+  - data_hacks
+  # for convenience
+  - uwsgitop
 
 
 yum_exclude_repos:
-    - condor*
-    - npm*
+  - condor*
+  - npm*
 
 all_yum_repositories:
   - name: galaxy_gpel
     description: Galaxy Packages for Enterprise Linux $releasever - $basearch
     baseurl: https://depot.galaxyproject.org/yum/el/$releasever/$basearch/
-    enabled: yes
-    gpgcheck: no
+    enabled: true
+    gpgcheck: false
     retries: 1
     timeout: 10
 
@@ -235,8 +235,8 @@ galaxy_systemd_zergling_uwsgi_config_file: "{{ galaxy_config_dir }}/uwsgi.ini"
 condor_host: "condor-cm.galaxyproject.eu"
 condor_allow_write: "10.5.68.0/24, 132.230.68.0/24, 132.230.223.0/24, *.bi.uni-freiburg.de"
 condor_daemons:
-    - MASTER
-    - SCHEDD
+  - MASTER
+  - SCHEDD
 condor_allow_negotiator: "132.230.223.239,$(CONDOR_HOST)"
 condor_allow_administrator: "$(ALLOW_NEGOTIATOR)"
 
@@ -294,11 +294,11 @@ galaxy_build_client: false
 galaxy_restart_handler_name: Restart Galaxy
 galaxy_create_user: true
 galaxy_user:
-    name: galaxy
-    create_home: true
-    home: /opt/galaxy
-    uid: 999
-    shell: /bin/bash
+  name: galaxy
+  create_home: true
+  home: /opt/galaxy
+  uid: 999
+  shell: /bin/bash
 galaxy_group:
   name: galaxy
   gid: 999
@@ -348,7 +348,7 @@ galaxy_dirs:
   #- "{{ galaxy_tool_dependency_dir }}"
   - "{{ galaxy_file_path }}"
   - "{{ galaxy_job_working_directory }}"
-  -  "{{ galaxy_tool_data_path }}"
+  - "{{ galaxy_tool_data_path }}"
 
 galaxy_instance_hostname: usegalaxy.eu
 galaxy_config_style: yaml
@@ -363,284 +363,282 @@ galaxy_singularity_images_cvmfs_path: '/cvmfs/singularity.galaxyproject.org/all/
 # Job Conf
 
 galaxy_jobconf:
-    plugin_workers: 8
-    handlers:
-        count: "{{ galaxy_handler_count }}"
-        assign_with: db-skip-locked
-        max_grab: 4
-    plugins:
-        #- id: drmaa
-          #load: galaxy.jobs.runners.drmaa:DRMAAJobRunner
-          #workers: 3
-        # These live on the pythonpath
-        - id: dynamic
-          params:
-            rules_module: 'usegalaxy'
-        - id: condor
-          load: galaxy.jobs.runners.condor:CondorJobRunner
-        - id: local
-          load: galaxy.jobs.runners.local:LocalJobRunner
-        - id: pulsar_embedded
-          load: galaxy.jobs.runners.pulsar:PulsarEmbeddedJobRunner
-        - id: pulsar_eu_cz
-          load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
-          params:
-            amqp_url: "pyamqp://galaxy_cz:{{ rabbitmq_password_galaxy_cz }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_cz?ssl=1"
-            galaxy_url: "https://usegalaxy.eu"
-            manager: _default_
-            amqp_acknowledge: True
-            amqp_ack_republish_time: 300
-            amqp_consumer_timeout: 2.0
-            amqp_publish_retry: True
-            amqp_publish_retry_max_retries: 60
-        - id: pulsar_eu_it01
-          load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
-          params:
-            amqp_url: "pyamqp://galaxy_it01:{{ rabbitmq_password_galaxy_it01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_it01?ssl=1"
-            galaxy_url: "https://test.usegalaxy.eu"
-            manager: test
-            amqp_acknowledge: True
-            amqp_ack_republish_time: 300
-            amqp_consumer_timeout: 2.0
-            amqp_publish_retry: True
-            amqp_publish_retry_max_retries: 60
-        - id: pulsar_eu_de01
-          load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
-          params:
-            amqp_url: "pyamqp://galaxy_de01:{{ rabbitmq_password_galaxy_de01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_de01?ssl=1"
-            galaxy_url: "https://test.usegalaxy.eu"
-            manager: test
-            amqp_acknowledge: True
-            amqp_ack_republish_time: 300
-            amqp_consumer_timeout: 2.0
-            amqp_publish_retry: True
-            amqp_publish_retry_max_retries: 60
-        - id: pulsar_eu_de02
-          load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
-          params:
-            amqp_url: "pyamqp://galaxy_de02:{{ rabbitmq_password_galaxy_de02 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_de02?ssl=1"
-            galaxy_url: "https://test.usegalaxy.eu"
-            manager: test
-            amqp_acknowledge: True
-            amqp_ack_republish_time: 300
-            amqp_consumer_timeout: 2.0
-            amqp_publish_retry: True
-            amqp_publish_retry_max_retries: 60
-        - id: pulsar_eu_de03
-          load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
-          params:
-            amqp_url: "pyamqp://galaxy_de03:{{ rabbitmq_password_galaxy_de03 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_de03?ssl=1"
-            galaxy_url: "https://test.usegalaxy.eu"
-            manager: test
-            amqp_acknowledge: True
-            amqp_ack_republish_time: 300
-            amqp_consumer_timeout: 2.0
-            amqp_publish_retry: True
-            amqp_publish_retry_max_retries: 60
-        - id: pulsar_eu_pt01
-          load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
-          params:
-            amqp_url: "pyamqp://galaxy_pt01:{{ rabbitmq_password_galaxy_pt01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_pt01?ssl=1"
-            galaxy_url: "https://test.usegalaxy.eu"
-            manager: test
-            amqp_acknowledge: True
-            amqp_ack_republish_time: 300
-            amqp_consumer_timeout: 2.0
-            amqp_publish_retry: True
-            amqp_publish_retry_max_retries: 60
-        - id: pulsar_eu_uk01
-          load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
-          params:
-            amqp_url: "pyamqp://galaxy_uk01:{{ rabbitmq_password_galaxy_uk01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_uk01?ssl=1"
-            galaxy_url: "https://test.usegalaxy.eu"
-            manager: test
-            amqp_acknowledge: True
-            amqp_ack_republish_time: 300
-            amqp_consumer_timeout: 2.0
-            amqp_publish_retry: True
-            amqp_publish_retry_max_retries: 60
-        - id: pulsar_eu_be01
-          load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
-          params:
-            amqp_url: "pyamqp://galaxy_be01:{{ rabbitmq_password_galaxy_be01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_be01?ssl=1"
-            galaxy_url: "https://test.usegalaxy.eu"
-            manager: test
-            amqp_acknowledge: True
-            amqp_ack_republish_time: 300
-            amqp_consumer_timeout: 2.0
-            amqp_publish_retry: True
-            amqp_publish_retry_max_retries: 60
-        - id: pulsar_au_au01
-          load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
-          params:
-            amqp_url: "pyamqp://galaxy_au01:{{ rabbitmq_password_galaxy_au01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_au01?ssl=1"
-            galaxy_url: "https://test.usegalaxy.eu"
-            manager: test
-            amqp_acknowledge: True
-            amqp_ack_republish_time: 300
-            amqp_consumer_timeout: 2.0
-            amqp_publish_retry: True
-            amqp_publish_retry_max_retries: 60
-    default_destination: gateway_singlerun
-    destinations:
-        - id: local
-          runner: local
-        - id: condor
-          runner: condor
-          params:
-            tmp_dir: "True"
-        # Gateways
-        - id: gateway_singlerun
-          runner: dynamic
-          params:
-              type: python
-              function: gateway
-        - id: gateway_1x
-          runner: dynamic
-          params:
-              type: python
-              function: gateway_1x
-        - id: gateway_1_5x
-          runner: dynamic
-          params:
-              type: python
-              function: gateway_1_5x
-        - id: gateway_2x
-          runner: dynamic
-          params:
-              type: python
-              function: gateway_2x
-        # Pulsar MQs
-        - id: remote_cluster_mq_cz
-          runner: pulsar_eu_cz
-          params:
-              jobs_directory: /storage/brno11-elixir/home/galaxyeu/galaxy-staging/
-        - id: remote_cluster_mq_test
-          runner: pulsar_eu_test
-          env:
-              LC_ALL: C
-          params:
-              jobs_directory: /data/share/staging
-              transport: curl
-              remote_metadata: "false"
-              default_file_action: remote_transfer
-              dependency_resolution: remote
-              rewrite_parameters: "true"
-              persistence_directory: /data/share/persisted_data
-        - id: static_remote_cluster_mq_it01
-          runner: pulsar_eu_it01
-          env:
-              LC_ALL: C
-          params:
-              jobs_directory: /data/share/staging
-              transport: curl
-              remote_metadata: "false"
-              default_file_action: remote_transfer
-              dependency_resolution: remote
-              rewrite_parameters: "true"
-              persistence_directory: /data/share/persisted_data
-              metadata_strategy: directory
-        - id: condor_singularity
-          runner: condor
-          params:
-              singularity_enabled: 'true'
-              singularity_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro'
-              singularity_default_container_id: '/data/0/cvmfs/singularity/ubuntu:18.04'
-        - id: condor_singularity2
-          runner: condor
-          params:
-              singularity_enabled: 'true'
-              singularity_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro'
-              singularity_default_container_id: '/data/0/cvmfs/singularity/ubuntu:18.04'
-          raw: |
-            <param id="container">
-                <container type="singularity" shell="/bin/sh" resolve_dependencies="true">/data/0/cvmfs/singularity/ubuntu:18.04</container>
-            </param>
-        - id: condor_singularity_with_conda
-          runner: condor
-          params:
-              singularity_enabled: 'true'
-          raw: |
-            <param id="container">
-                <container type="singularity" shell="/bin/bash" resolve_dependencies="true">/data/0/cvmfs/singularity/python:2.7.12--1</container>
-            </param>
-        - id: condor_docker
-          runner: condor
-          params:
-            docker_enabled: 'true'
-            docker_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro'
-            docker_default_container_id: 'ubuntu:18.04'
-            docker_auto_rm: 'true'
-            docker_sudo: 'false'
-            docker_set_user: ''
-        # TODO(hxr): check functionality
-        #- id: 24cores_15G_BLAST
-        #  runner: dynamic
-        #  params:
-        #      type: python
-        #      function: blast_destinations
-        #- id: wig_to_bigWig
-        #  runner: dynamic
-        #  params:
-        #      type: python
-        #      function: wig_to_bigwig
-        #- id: dexseq_dynamic
-        #  runner: dynamic
-        #  params:
-        #      type: python
-        #      function: dexseq
-        # Embedded pulsar
-        - id: secure_pulsar_singularity
-          runner: pulsar_embedded
-          params:
-              remote_metadata: true
-              singularity_enabled: true
-    tools:
-        # TODO(hxr): implement validation that checks that every destination
-        # used here is defined above.
-        - id: upload1
-          destination: gateway_1x
-        - id: toolshed.g2.bx.psu.edu/repos/devteam/samtools_stats/samtools_stats/2.0.2+galaxy2
-          destination: static_remote_cluster_mq_it01
-        - id: gmx_sim
-          destination: gateway_singlerun
-          resources: usegpu
-        #- id: wig_to_bigWig
-          #destination: wig_to_bigWig
-        #- id: dexseq
-          #destination: dexseq_dynamic
-        #- id: ncbi_blastn_wrapper
-          #destination: 24cores_15G_BLAST
-        #- id: ncbi_blastx_wrapper
-          #destination: 24cores_15G_BLAST
-        #- id: ncbi_tblastn_wrapper
-          #destination: 24cores_15G_BLAST
-        #- id: ncbi_tblastx_wrapper
-          #destination: 24cores_15G_BLAST
-        #- id: ncbi_blastp_wrapper
-          #destination: 24cores_15G_BLAST
-        #- id: ncbi_rpsblast_wrapper
-          #destination: 24cores_15G_BLAST
-    resources:
-      - id: usegpu
-        names: gpu
-    limits:
-        - type: 'walltime'
-          value: '148:00:00'
-        - type: 'output_size'
-          value: '300GB'
-        - type: 'registered_user_concurrent_jobs'
-          value: '30'
-        - type: 'anonymous_user_concurrent_jobs'
-          value: '10'
-        - type: 'destination_user_concurrent_jobs'
-          id: 'condor_test'
-          value: '5'
-        - type: 'destination_total_concurrent_jobs'
-          id: 'condor_test'
-          value: '100'
-
-
+  plugin_workers: 8
+  handlers:
+    count: "{{ galaxy_handler_count }}"
+    assign_with: db-skip-locked
+    max_grab: 4
+  plugins:
+    #- id: drmaa
+      #load: galaxy.jobs.runners.drmaa:DRMAAJobRunner
+      #workers: 3
+    # These live on the pythonpath
+    - id: dynamic
+      params:
+        rules_module: 'usegalaxy'
+    - id: condor
+      load: galaxy.jobs.runners.condor:CondorJobRunner
+    - id: local
+      load: galaxy.jobs.runners.local:LocalJobRunner
+    - id: pulsar_embedded
+      load: galaxy.jobs.runners.pulsar:PulsarEmbeddedJobRunner
+    - id: pulsar_eu_cz
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_cz:{{ rabbitmq_password_galaxy_cz }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_cz?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: _default_
+        amqp_acknowledge: True
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: True
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_it01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_it01:{{ rabbitmq_password_galaxy_it01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_it01?ssl=1"
+        galaxy_url: "https://test.usegalaxy.eu"
+        manager: test
+        amqp_acknowledge: True
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: True
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_de01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_de01:{{ rabbitmq_password_galaxy_de01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_de01?ssl=1"
+        galaxy_url: "https://test.usegalaxy.eu"
+        manager: test
+        amqp_acknowledge: True
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: True
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_de02
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_de02:{{ rabbitmq_password_galaxy_de02 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_de02?ssl=1"
+        galaxy_url: "https://test.usegalaxy.eu"
+        manager: test
+        amqp_acknowledge: True
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: True
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_de03
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_de03:{{ rabbitmq_password_galaxy_de03 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_de03?ssl=1"
+        galaxy_url: "https://test.usegalaxy.eu"
+        manager: test
+        amqp_acknowledge: True
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: True
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_pt01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_pt01:{{ rabbitmq_password_galaxy_pt01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_pt01?ssl=1"
+        galaxy_url: "https://test.usegalaxy.eu"
+        manager: test
+        amqp_acknowledge: True
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: True
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_uk01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_uk01:{{ rabbitmq_password_galaxy_uk01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_uk01?ssl=1"
+        galaxy_url: "https://test.usegalaxy.eu"
+        manager: test
+        amqp_acknowledge: True
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: True
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_be01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_be01:{{ rabbitmq_password_galaxy_be01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_be01?ssl=1"
+        galaxy_url: "https://test.usegalaxy.eu"
+        manager: test
+        amqp_acknowledge: True
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: True
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_au_au01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_au01:{{ rabbitmq_password_galaxy_au01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_au01?ssl=1"
+        galaxy_url: "https://test.usegalaxy.eu"
+        manager: test
+        amqp_acknowledge: True
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: True
+        amqp_publish_retry_max_retries: 60
+  default_destination: gateway_singlerun
+  destinations:
+    - id: local
+      runner: local
+    - id: condor
+      runner: condor
+      params:
+        tmp_dir: "True"
+    # Gateways
+    - id: gateway_singlerun
+      runner: dynamic
+      params:
+        type: python
+        function: gateway
+    - id: gateway_1x
+      runner: dynamic
+      params:
+        type: python
+        function: gateway_1x
+    - id: gateway_1_5x
+      runner: dynamic
+      params:
+        type: python
+        function: gateway_1_5x
+    - id: gateway_2x
+      runner: dynamic
+      params:
+        type: python
+        function: gateway_2x
+    # Pulsar MQs
+    - id: remote_cluster_mq_cz
+      runner: pulsar_eu_cz
+      params:
+        jobs_directory: /storage/brno11-elixir/home/galaxyeu/galaxy-staging/
+    - id: remote_cluster_mq_test
+      runner: pulsar_eu_test
+      env:
+        LC_ALL: C
+      params:
+        jobs_directory: /data/share/staging
+        transport: curl
+        remote_metadata: "false"
+        default_file_action: remote_transfer
+        dependency_resolution: remote
+        rewrite_parameters: "true"
+        persistence_directory: /data/share/persisted_data
+    - id: static_remote_cluster_mq_it01
+      runner: pulsar_eu_it01
+      env:
+        LC_ALL: C
+      params:
+        jobs_directory: /data/share/staging
+        transport: curl
+        remote_metadata: "false"
+        default_file_action: remote_transfer
+        dependency_resolution: remote
+        rewrite_parameters: "true"
+        persistence_directory: /data/share/persisted_data
+        metadata_strategy: directory
+    - id: condor_singularity
+      runner: condor
+      params:
+        singularity_enabled: 'true'
+        singularity_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro'
+        singularity_default_container_id: '/data/0/cvmfs/singularity/ubuntu:18.04'
+    - id: condor_singularity2
+      runner: condor
+      params:
+        singularity_enabled: 'true'
+        singularity_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro'
+        singularity_default_container_id: '/data/0/cvmfs/singularity/ubuntu:18.04'
+      raw: |
+        <param id="container">
+            <container type="singularity" shell="/bin/sh" resolve_dependencies="true">/data/0/cvmfs/singularity/ubuntu:18.04</container>
+        </param>
+    - id: condor_singularity_with_conda
+      runner: condor
+      params:
+        singularity_enabled: 'true'
+      raw: |
+        <param id="container">
+            <container type="singularity" shell="/bin/bash" resolve_dependencies="true">/data/0/cvmfs/singularity/python:2.7.12--1</container>
+        </param>
+    - id: condor_docker
+      runner: condor
+      params:
+        docker_enabled: 'true'
+        docker_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro'
+        docker_default_container_id: 'ubuntu:18.04'
+        docker_auto_rm: 'true'
+        docker_sudo: 'false'
+        docker_set_user: ''
+    # TODO(hxr): check functionality
+    #- id: 24cores_15G_BLAST
+    #  runner: dynamic
+    #  params:
+    #      type: python
+    #      function: blast_destinations
+    #- id: wig_to_bigWig
+    #  runner: dynamic
+    #  params:
+    #      type: python
+    #      function: wig_to_bigwig
+    #- id: dexseq_dynamic
+    #  runner: dynamic
+    #  params:
+    #      type: python
+    #      function: dexseq
+    # Embedded pulsar
+    - id: secure_pulsar_singularity
+      runner: pulsar_embedded
+      params:
+        remote_metadata: true
+        singularity_enabled: true
+  tools:
+    # TODO(hxr): implement validation that checks that every destination
+    # used here is defined above.
+    - id: upload1
+      destination: gateway_1x
+    - id: toolshed.g2.bx.psu.edu/repos/devteam/samtools_stats/samtools_stats/2.0.2+galaxy2
+      destination: static_remote_cluster_mq_it01
+    - id: gmx_sim
+      destination: gateway_singlerun
+      resources: usegpu
+    #- id: wig_to_bigWig
+      #destination: wig_to_bigWig
+    #- id: dexseq
+      #destination: dexseq_dynamic
+    #- id: ncbi_blastn_wrapper
+      #destination: 24cores_15G_BLAST
+    #- id: ncbi_blastx_wrapper
+      #destination: 24cores_15G_BLAST
+    #- id: ncbi_tblastn_wrapper
+      #destination: 24cores_15G_BLAST
+    #- id: ncbi_tblastx_wrapper
+      #destination: 24cores_15G_BLAST
+    #- id: ncbi_blastp_wrapper
+      #destination: 24cores_15G_BLAST
+    #- id: ncbi_rpsblast_wrapper
+      #destination: 24cores_15G_BLAST
+  resources:
+    - id: usegpu
+      names: gpu
+  limits:
+    - type: 'walltime'
+      value: '148:00:00'
+    - type: 'output_size'
+      value: '300GB'
+    - type: 'registered_user_concurrent_jobs'
+      value: '30'
+    - type: 'anonymous_user_concurrent_jobs'
+      value: '10'
+    - type: 'destination_user_concurrent_jobs'
+      id: 'condor_test'
+      value: '5'
+    - type: 'destination_total_concurrent_jobs'
+      id: 'condor_test'
+      value: '100'
 
 galaxy_config: "{{ galaxy_config_hash }}"
 

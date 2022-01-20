@@ -39,34 +39,34 @@ grafana_instance: "{{ hostname }}"
 grafana_address: "127.0.0.1"
 grafana_url: "https://stats.galaxyproject.eu"
 grafana_server:
-    domain: "{{ hostname }}"
-    root_url: "https://%(domain)s/"
+  domain: "{{ hostname }}"
+  root_url: "https://%(domain)s/"
 
 grafana_users:
-    default_theme: "light"
+  default_theme: "light"
 
 grafana_security:
-    admin_user: admin
-    admin_password: "{{ grafana_auth_admin_password }}"
-    allow_embedding: "true"
-    cookie_secure: "true"
+  admin_user: admin
+  admin_password: "{{ grafana_auth_admin_password }}"
+  allow_embedding: "true"
+  cookie_secure: "true"
 
 grafana_auth:
-    anonymous:
-        enabled: "true"
-        org_name: "UseGalaxy.eu"
-        org_role: "Viewer"
+  anonymous:
+    enabled: "true"
+    org_name: "UseGalaxy.eu"
+    org_role: "Viewer"
 
-    github:
-        enabled: "true"
-        allow_sign_up: "true"
-        client_id: "{{ grafana_auth__github_client_id }}"
-        client_secret: "{{ grafana_auth__github_client_secret }}"
-        scopes: "user:email,read:org"
-        auth_url: "https://github.com/login/oauth/authorize"
-        token_url: "https://github.com/login/oauth/access_token"
-        api_url: "https://api.github.com/user"
-        allowed_organisations: "usegalaxy.eu galaxyproject"
+  github:
+    enabled: "true"
+    allow_sign_up: "true"
+    client_id: "{{ grafana_auth__github_client_id }}"
+    client_secret: "{{ grafana_auth__github_client_secret }}"
+    scopes: "user:email,read:org"
+    auth_url: "https://github.com/login/oauth/authorize"
+    token_url: "https://github.com/login/oauth/access_token"
+    api_url: "https://api.github.com/user"
+    allowed_organisations: "usegalaxy.eu galaxyproject"
 
 grafana_image_storage:
   provider: local
@@ -80,57 +80,57 @@ grafana_plugins:
   - natel-discrete-panel
 
 grafana_datasources:
- - name: Galaxy
-   type: influxdb
-   access: proxy
-   url: "{{ influxdb.url }}"
-   isDefault: true
-   version: 1
-   editable: false
-   database: galaxy
-   user: "{{ influxdb.grafana.username }}"
-   secureJsonData:
-     password: "{{ influxdb.grafana.password }}"
- - name: Galaxy Historical
-   type: influxdb
-   access: proxy
-   url: "{{ influxdb.url }}"
-   version: 1
-   editable: false
-   database: galaxy_stats
-   user: "{{ influxdb.grafana.username }}"
-   secureJsonData:
-     password: "{{ influxdb.grafana.password }}"
- - name: GRT Tool Usage
-   type: influxdb
-   access: proxy
-   url: "{{ influxdb.url }}"
-   version: 1
-   editable: false
-   database: grt
-   user: "{{ influxdb.grafana.username }}"
-   secureJsonData:
-     password: "{{ influxdb.grafana.password }}"
- - name: InfluxDB - internal
-   type: influxdb
-   access: proxy
-   url: "{{ influxdb.url }}"
-   version: 1
-   editable: false
-   database: _internal
-   user: "{{ influxdb.grafana.username }}"
-   secureJsonData:
-     password: "{{ influxdb.grafana.password }}"
- - name: Notifications
-   type: influxdb
-   access: proxy
-   url: "{{ influxdb.url }}"
-   version: 1
-   editable: false
-   database: notifications
-   user: "{{ influxdb.grafana.username }}"
-   secureJsonData:
-     password: "{{ influxdb.grafana.password }}"
+  - name: Galaxy
+    type: influxdb
+    access: proxy
+    url: "{{ influxdb.url }}"
+    isDefault: true
+    version: 1
+    editable: false
+    database: galaxy
+    user: "{{ influxdb.grafana.username }}"
+    secureJsonData:
+      password: "{{ influxdb.grafana.password }}"
+  - name: Galaxy Historical
+    type: influxdb
+    access: proxy
+    url: "{{ influxdb.url }}"
+    version: 1
+    editable: false
+    database: galaxy_stats
+    user: "{{ influxdb.grafana.username }}"
+    secureJsonData:
+      password: "{{ influxdb.grafana.password }}"
+  - name: GRT Tool Usage
+    type: influxdb
+    access: proxy
+    url: "{{ influxdb.url }}"
+    version: 1
+    editable: false
+    database: grt
+    user: "{{ influxdb.grafana.username }}"
+    secureJsonData:
+      password: "{{ influxdb.grafana.password }}"
+  - name: InfluxDB - internal
+    type: influxdb
+    access: proxy
+    url: "{{ influxdb.url }}"
+    version: 1
+    editable: false
+    database: _internal
+    user: "{{ influxdb.grafana.username }}"
+    secureJsonData:
+      password: "{{ influxdb.grafana.password }}"
+  - name: Notifications
+    type: influxdb
+    access: proxy
+    url: "{{ influxdb.url }}"
+    version: 1
+    editable: false
+    database: notifications
+    user: "{{ influxdb.grafana.username }}"
+    secureJsonData:
+      password: "{{ influxdb.grafana.password }}"
 
 hxr_monitor_ssl_expiry:
   # A couple of usegalaxy.eu subdomains.

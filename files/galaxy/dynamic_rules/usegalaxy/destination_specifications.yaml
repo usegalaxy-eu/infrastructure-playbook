@@ -451,10 +451,10 @@ remote_cluster_mq_uk01:
     mem: 300
     gpus: 1
   env:
-      GALAXY_MEMORY_MB: '{MEMORY_MB}'
-      GALAXY_SLOTS: '{PARALLELISATION}'
-      LC_ALL: C
-      GPU_AVAILABLE: 1
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
+    GPU_AVAILABLE: 1
   params:
     priority: -{PRIORITY}
     submit_request_cpus: '{PARALLELISATION}'
@@ -473,11 +473,11 @@ remote_cluster_mq_singularity_uk01:
     mem: 300
     gpus: 1
   env:
-      GALAXY_MEMORY_MB: '{MEMORY_MB}'
-      GALAXY_SLOTS: '{PARALLELISATION}'
-      LC_ALL: C
-      GPU_AVAILABLE: 1
-      SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
+    GPU_AVAILABLE: 1
+    SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
   params:
     priority: -{PRIORITY}
     submit_request_cpus: '{PARALLELISATION}'
@@ -499,10 +499,10 @@ remote_cluster_mq_docker_uk01:
     mem: 300
     gpus: 1
   env:
-      GALAXY_MEMORY_MB: '{MEMORY_MB}'
-      GALAXY_SLOTS: '{PARALLELISATION}'
-      LC_ALL: C
-      GPU_AVAILABLE: 1
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
+    GPU_AVAILABLE: 1
   params:
     priority: -{PRIORITY}
     submit_request_cpus: '{PARALLELISATION}'
