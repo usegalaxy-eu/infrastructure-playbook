@@ -1,0 +1,161 @@
+certbot_auto_renew_extra: "--preferred-challenges http-01 --http-01-port 8118"
+certbot_post_renewal: |
+    systemctl restart nginx || true
+
+nginx_remove_default_vhost: true
+nginx_vhosts:
+  - listen: "80"
+    server_name: "{{ hostname }}"
+    return: "301 https://{{ hostname }}$request_uri"
+    filename: "{{ hostname }}.80.conf"
+
+  - listen: "443 ssl"
+    server_name: "{{ hostname }}"
+    root: "/var/www/{{ hostname }}"
+    index: "index.html"
+    access_log: "/var/log/nginx/access.log"
+    error_log: "/var/log/nginx/error.log"
+    state: "present"
+    filename: "{{ hostname }}.conf"
+    extra_parameters: |
+        location / {
+            proxy_set_header           Host $host:$server_port;
+            proxy_set_header           X-Real-IP $remote_addr;
+            proxy_set_header           X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header           X-Forwarded-Proto $scheme;
+            proxy_pass                 http://127.0.0.1:8080;
+            proxy_pass_request_headers on;
+        }
+
+        location /.well-known/ {
+            proxy_set_header           Host $host:$server_port;
+            proxy_set_header           X-Real-IP $remote_addr;
+            proxy_set_header           X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header           X-Forwarded-Proto $scheme;
+            proxy_pass                 http://127.0.0.1:8118;
+            proxy_pass_request_headers on;
+        }
+
+        ssl_certificate /etc/ssl/certs/{{ hostname }};
+        ssl_certificate_key /etc/ssl/private/privkey.pem;
+
+        ssl_protocols TLSv1.2;# Requires nginx >= 1.13.0 else use TLSv1.2
+        ssl_prefer_server_ciphers on;
+        #ssl_dhparam /etc/nginx/dhparam.pem; # openssl dhparam -out /etc/nginx/dhparam.pem 4096
+        ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384;
+        ssl_ecdh_curve secp384r1; # Requires nginx >= 1.1.0
+        ssl_session_timeout  10m;
+        ssl_session_cache shared:SSL:10m;
+        ssl_session_tickets off; # Requires nginx >= 1.5.9
+        ssl_stapling on; # Requires nginx >= 1.3.7
+        ssl_stapling_verify on; # Requires nginx => 1.3.7
+
+        resolver 8.8.8.8 8.8.4.4 valid=300s;
+        resolver_timeout 5s;
+
+        add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";
+        add_header X-Content-Type-Options nosniff;
+        add_header X-XSS-Protection "1; mode=block";
+        add_header X-Robots-Tag none;
+
+etherpad_required_packages:
+  - curl
+  - git
+etherpad_repository: "https://github.com/ether/etherpad-lite.git"
+etherpad_repository_key_file: ""
+etherpad_repository_version: "master"
+etherpad_user: "etherpad"
+etherpad_group: "etherpad"
+etherpad_home: "/opt/etherpad"
+etherpad_path: "{{ etherpad_home }}/etherpad-lite"
+etherpad_console_path: "{{ etherpad_home }}/etherpad-lite-console"
+etherpad_console_purge_delay: 30
+etherpad_console_purge_enabled: False
+etherpad_title: "Etherpad"
+etherpad_favicon: "favicon.ico"
+etherpad_ip: 0.0.0.0
+etherpad_port: 8080
+etherpad_ssl_enabled: false
+#etherpad_ssl_key: "/path-to-your/epl-server.key"
+#etherpad_ssl_cert: "/path-to-your/epl-server.crt"
+#etherpad_ssl_ca_intermediate_cert1: "/path-to-your/epl-intermediate-cert1.crt"
+#etherpad_ssl_ca_intermediate_cert2: "/path-to-your/epl-intermediate-cert2.crt"
+
+etherpad_db_type: dirty
+etherpad_users: []
+#  -
+#    name: admin
+#    password: ""
+#    is_admin: "true"
+
+etherpad_api_key: "deadbeefcafe"
+etherpad_session_key: "deadbeefcafe"
+etherpad_disable_ip_logging: "true"
+etherpad_default_text: '"Welcome to Etherpad!\\n\\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\\n\\nGet involved with Etherpad at http:\\/\\/etherpad.org\\n"'
+etherpad_pad_options_no_colors: "false"
+etherpad_pad_options_show_controls: "true"
+etherpad_pad_options_show_chat: "true"
+etherpad_pad_options_show_line_numbers: "true"
+etherpad_pad_options_use_monospace_font: "false"
+etherpad_pad_options_user_name: "false"
+etherpad_pad_options_user_color: "false"
+etherpad_pad_options_rtl: "false"
+etherpad_pad_options_always_show_chat: "false"
+etherpad_pad_options_chat_and_users: "false"
+etherpad_pad_options_lang: "en-gb"
+etherpad_suppress_errors_in_pad_text: "false"
+etherpad_require_session: "false"
+etherpad_edit_only: "false"
+etherpad_session_no_password: "false"
+etherpad_minify: "true"
+etherpad_max_age: 21600
+etherpad_abiword: "null"
+etherpad_soffice: "null"
+etherpad_tidyhtml: "null"
+etherpad_allow_unknown_file_ends: "true"
+etherpad_require_authentication: "false"
+etherpad_require_authorization: "false"
+etherpad_trust_proxy: "false"
+etherpad_socket_transport_protocols: ["xhr-polling", "jsonp-polling", "htmlfile"]
+etherpad_load_test: "false"
+etherpad_indentation_on_new_line: "false"
+etherpad_toolbar:
+  left:
+    - ["bold", "italic", "underline", "strikethrough"]
+    - ["orderedlist", "unorderedlist", "indent", "outdent"]
+    - ["undo", "redo"]
+    - ["clearauthorship"]
+  right:
+    - ["importexport", "timeslider", "savedrevision"]
+    - ["settings", "embed"]
+    - ["showusers"]
+  timeslider:
+    - ["timeslider_export", "timeslider_returnToPad"]
+etherpad_log_level: "INFO"
+etherpad_log_appenders:
+  -
+    type: console
+
+etherpad_console_enabled: true
+etherpad_monit_enabled: False
+# list of etherpad plugins to be installed
+etherpad_plugins: []
+
+# Redis settings
+etherpad_redis_host: localhost
+etherpad_redis_port: 6379
+etherpad_redis_database: 0
+
+# MySQL settings
+etherpad_mysql_database_host: localhost
+etherpad_mysql_database_name: etherpad
+etherpad_mysql_database_user: etherpad
+etherpad_mysql_database_password:
+etherpad_mysql_database_port: 3306
+# Recommendation for large setups is MyISAM
+etherpad_mysql_database_engine: InnoDB
+etherpad_mysql_database_collation: utf8mb4_bin
+etherpad_mysql_database_charset: utf8mb4
+
+# Dirty settings
+etherpad_dirty_filename: "var/dirty.db"
