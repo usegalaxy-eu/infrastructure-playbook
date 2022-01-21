@@ -1279,7 +1279,7 @@ base_app_main: &BASE_APP_MAIN
   # errors will be sent to the indicated sentry instance.  This
   # connection string is available in your sentry instance under
   # <project_name> -> Settings -> API Keys.
-  #sentry_dsn: null
+  sentry_dsn: "{{ sentry_dns.main }}"
 
   # Determines the minimum log level that will be sent as an event to
   # Sentry. Possible values are DEBUG, INFO, WARNING, ERROR or CRITICAL.
