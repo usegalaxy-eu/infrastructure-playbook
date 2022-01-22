@@ -345,7 +345,7 @@ def _finalize_tool_spec(tool_id, user_roles, special_tools=SPECIAL_TOOLS, tools_
             'cores': 1,
             'mem': 0.3,
             'gpus': 0,
-            'runner': 'condor',
+            'runner': 'condor_upload',
             'rank': 'GalaxyGroup == "upload"',
             'requirements': 'GalaxyTraining == false',
             'env': {
@@ -357,7 +357,7 @@ def _finalize_tool_spec(tool_id, user_roles, special_tools=SPECIAL_TOOLS, tools_
             'cores': 1,
             'mem': 0.3,
             'gpus': 0,
-            'runner': 'condor',
+            'runner': 'condor_upload',
             'rank': 'GalaxyGroup == "metadata"',
             'requirements': 'GalaxyTraining == false',
         }
