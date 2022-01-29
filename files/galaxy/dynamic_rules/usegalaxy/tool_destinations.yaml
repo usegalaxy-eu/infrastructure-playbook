@@ -162,10 +162,11 @@ encyclopedia_prosit_csv_to_library:
 
 vardict_java:
   runner: condor_singularity_with_conda
-  mem: 512
+  mem: 128
   cores: 2
   env:
-    _JAVA_OPTIONS: -Xmx512G -Xms1G
+    _JAVA_OPTIONS: -Xmx128G -Xms1G
+    VARDICT_CHUNKSIZE: 1000000
 
 paralyzer:
   mem: 8
