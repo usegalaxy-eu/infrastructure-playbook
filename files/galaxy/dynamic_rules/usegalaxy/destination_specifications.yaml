@@ -92,6 +92,7 @@ condor_singularity_with_gpu:
     request_memory: '{MEMORY}'
     request_gpus: '{GPUS}'
     dependency_resolution: 'none'
+    require_container: true
     singularity_enabled: true
     singularity_run_extra_arguments: '--nv'
     # can and should be made stricter at some point
