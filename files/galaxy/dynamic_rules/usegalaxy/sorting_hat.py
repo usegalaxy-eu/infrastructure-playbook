@@ -520,11 +520,12 @@ def _compute_memory_for_hifiasm(param_dict):
             kcov = param_dict['advanced_options']['kcov']
         if 'hg_size' in param_dict['advanced_options']:
             hg_size = param_dict['advanced_options']['hg_size']
-            hg_size_suffix = hg_size[-1:]
-            hg_size_value = float(hg_size[:len(hg_size)-1].replace(",", "."))
-            # (len*(kmercov*2) * 1.75
-            hg_size_value_in_Gb = hg_size_value / converter[hg_size_suffix]
-            computed_memory = math.ceil(hg_size_value_in_Gb*(kcov*2)*1.75)
+            if len(hg_size) > 1:
+                hg_size_suffix = hg_size[-1:]
+                hg_size_value = float(hg_size[:len(hg_size)-1].replace(",", "."))
+                # (len*(kmercov*2) * 1.75
+                hg_size_value_in_Gb = hg_size_value / converter[hg_size_suffix]
+                computed_memory = math.ceil(hg_size_value_in_Gb*(kcov*2)*1.75)
 
     return computed_memory
 
