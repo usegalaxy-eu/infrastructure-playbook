@@ -553,7 +553,7 @@ def gateway_for_hifiasm(app, job, tool, user, next_dest=None):
         return JobMappingException(str(e))
 
     limits = _get_limits(runner)
-    request_memory = min(_compute_memory_for_hifiasm(param_dict), limits.get('mem'))
+    request_memory = min(max(_compute_memory_for_hifiasm(param_dict), spec['mem']), limits.get('mem'))
     params['request_memory'] = "{}{}".format(request_memory, 'G')
 
     resubmit = []
