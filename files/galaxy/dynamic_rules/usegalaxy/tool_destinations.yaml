@@ -1090,7 +1090,12 @@ spyboat: {cores: 8, mem: 4}
 sshmm: {mem: 16}
 structurefold: {mem: 12}
 rnaspades: {cores: 10, mem: 110}
-spades_biosyntheticspades: {cores: 10, mem: 330}
+spades_biosyntheticspades: 
+  cores: 10
+  mem: 330
+  env:
+    GALAXY_MEMORY_GB: 330
+{cores: 10, mem: 330}
 spades_coronaspades: {cores: 10, mem: 110}
 spades_metaplasmidspades: {cores: 10, mem: 330}
 spades_metaviralspades: {cores: 10, mem: 110}
