@@ -1,3 +1,4 @@
+---
 certbot_auto_renew_extra: "--preferred-challenges http-01 --http-01-port 8118"
 certbot_post_renewal: |
     systemctl restart nginx || true
@@ -70,7 +71,7 @@ etherpad_home: "/opt/etherpad"
 etherpad_path: "{{ etherpad_home }}/etherpad-lite"
 etherpad_console_path: "{{ etherpad_home }}/etherpad-lite-console"
 etherpad_console_purge_delay: 30
-etherpad_console_purge_enabled: False
+etherpad_console_purge_enabled: false
 etherpad_title: "Etherpad"
 etherpad_favicon: "favicon.ico"
 etherpad_ip: 0.0.0.0
@@ -137,7 +138,7 @@ etherpad_log_appenders:
     type: console
 
 etherpad_console_enabled: true
-etherpad_monit_enabled: False
+etherpad_monit_enabled: false
 # list of etherpad plugins to be installed
 etherpad_plugins: []
 

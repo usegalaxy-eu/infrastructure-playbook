@@ -1,36 +1,36 @@
+---
 __default__: {}
 
 keras_train_and_eval:
-   ##runner: remote_condor_cluster_gpu
-   runner: condor_gpu
-   gpus: 1
-   cores: 8
-   env:
-      CUDA_VISIBLE_DEVICES: 0
+  runner: condor_gpu
+  gpus: 1
+  cores: 8
+  env:
+    CUDA_VISIBLE_DEVICES: 0
 
 xchem_transfs_scoring:
-   runner: remote_condor_cluster_gpu_docker
-   gpus: 1
-   cores: 1
-   env:
-      CUDA_VISIBLE_DEVICES: 0
+  runner: remote_condor_cluster_gpu_docker
+  gpus: 1
+  cores: 1
+  env:
+    CUDA_VISIBLE_DEVICES: 0
 
 xchem_pose_scoring:
-   runner: remote_condor_cluster_gpu_docker
-   gpus: 1
-   cores: 1
-   env:
-      CUDA_VISIBLE_DEVICES: 0
+  runner: remote_condor_cluster_gpu_docker
+  gpus: 1
+  cores: 1
+  env:
+    CUDA_VISIBLE_DEVICES: 0
 
 openduck_run_smd:
-   runner: remote_condor_cluster_gpu_docker
-   gpus: 1
-   cores: 1
-   env:
-      CUDA_VISIBLE_DEVICES: 0
-      OPENDUCK_GPU_PARAM: "--gpu-id 1"
-   docker_set_user: 1000
-   docker_run_extra_arguments: '-e "OPENDUCK_GPU_PARAM=$OPENDUCK_GPU_PARAM" --gpus all'
+  runner: remote_condor_cluster_gpu_docker
+  gpus: 1
+  cores: 1
+  env:
+    CUDA_VISIBLE_DEVICES: 0
+    OPENDUCK_GPU_PARAM: "--gpu-id 1"
+  docker_set_user: 1000
+  docker_run_extra_arguments: '-e "OPENDUCK_GPU_PARAM=$OPENDUCK_GPU_PARAM" --gpus all'
 
 sklearn_searchcv: {mem: 12, cores: 10}
 
@@ -42,54 +42,54 @@ interactive_tool_jupyter_notebook:
   runner: condor_docker_ie_interactive
   env:
     HOME: /home/jovyan
-  force_destination_id: True
+  force_destination_id: true
 
-interactive_tool_pangeo_notebook: 
+interactive_tool_pangeo_notebook:
   mem: 4
   runner: condor_docker_ie_interactive
   env:
     HOME: /home/jovyan
-  force_destination_id: True
+  force_destination_id: true
 
 interactive_tool_climate_notebook:
   mem: 4
   runner: condor_docker_ie_interactive
   env:
     HOME: /home/jovyan
-  force_destination_id: True
+  force_destination_id: true
 
 interactive_tool_ml_jupyter_notebook:
-   runner: condor_docker_ie_interactive_gpu
-   force_destination_id: True
-   gpus: 1
-   cores: 1
-   mem: 8
-   docker_run_extra_arguments: ' --gpus all'
+  runner: condor_docker_ie_interactive_gpu
+  force_destination_id: true
+  gpus: 1
+  cores: 1
+  mem: 8
+  docker_run_extra_arguments: ' --gpus all'
 
-interactive_tool_rstudio: {mem: 8, cores: 2, runner: condor_docker_ie_interactive, force_destination_id: True}
-interactive_tool_pyiron: {mem: 8, cores: 1, runner: condor_docker_ie_interactive, force_destination_id: True}
-interactive_tool_guacamole_desktop: {mem: 8, cores: 2, runner: condor_docker_ie_interactive, force_destination_id: True}
-interactive_tool_openrefine: {mem: 4, runner: condor_docker_ie_interactive, force_destination_id: True}
-interactive_tool_panoply: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
-interactive_tool_vrm_editor: {mem: 4, cores: 1, runner: condor_docker_ie_interactive, force_destination_id: True}
+interactive_tool_rstudio: {mem: 8, cores: 2, runner: condor_docker_ie_interactive, force_destination_id: true}
+interactive_tool_pyiron: {mem: 8, cores: 1, runner: condor_docker_ie_interactive, force_destination_id: true}
+interactive_tool_guacamole_desktop: {mem: 8, cores: 2, runner: condor_docker_ie_interactive, force_destination_id: true}
+interactive_tool_openrefine: {mem: 4, runner: condor_docker_ie_interactive, force_destination_id: true}
+interactive_tool_panoply: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+interactive_tool_vrm_editor: {mem: 4, cores: 1, runner: condor_docker_ie_interactive, force_destination_id: true}
 
 # These are not
-interactive_tool_ethercalc: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
-interactive_tool_geoexplorer: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
-interactive_tool_radiant: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
-interactive_tool_higlass: {mem: 20, cores: 5, runner: condor_docker_ie, force_destination_id: True}
-interactive_tool_phinch: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
-interactive_tool_neo4j: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
-interactive_tool_hicbrowser: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
-interactive_tool_cellxgene: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
-interactive_tool_bam_iobio: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
-interactive_tool_vcf_iobio: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
-interactive_tool_askomics: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
-interactive_tool_wilson: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
-interactive_tool_wallace: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
-interactive_tool_paraview: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
-interactive_tool_simtext_app: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
-interactive_tool_isee: {mem: 4, runner: condor_docker_ie, force_destination_id: True}
+interactive_tool_ethercalc: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+interactive_tool_geoexplorer: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+interactive_tool_radiant: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+interactive_tool_higlass: {mem: 20, cores: 5, runner: condor_docker_ie, force_destination_id: true}
+interactive_tool_phinch: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+interactive_tool_neo4j: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+interactive_tool_hicbrowser: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+interactive_tool_cellxgene: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+interactive_tool_bam_iobio: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+interactive_tool_vcf_iobio: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+interactive_tool_askomics: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+interactive_tool_wilson: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+interactive_tool_wallace: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+interactive_tool_paraview: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+interactive_tool_simtext_app: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+interactive_tool_isee: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
 
 
 transdecoder: {cores: 8, mem: 8}
@@ -139,20 +139,20 @@ msconvert: {runner: condor_docker}
 ## should be dynamically set, or lowered back to 250
 
 pharmcat:
-    runner: condor_docker
-    mem: 4
-    env:
-        _JAVA_OPTIONS: -Xmx4G -Xms1G
+  runner: condor_docker
+  mem: 4
+  env:
+    _JAVA_OPTIONS: -Xmx4G -Xms1G
 
 bionano_scaffold:
-    runner: condor_docker
-    mem: 250
-    cores: 24
+  runner: condor_docker
+  mem: 250
+  cores: 24
 
 mitohifi:
-    runner: condor_docker
-    mem: 16
-    cores: 8
+  runner: condor_docker
+  mem: 16
+  cores: 8
 
 RNAlien: {cores: 10}
 slamdunk: {cores: 10}
@@ -571,10 +571,6 @@ SpectraFilterSqrtMower: {cores: 4, mem: 8}
 SpectraFilterThresholdMower: {cores: 4, mem: 8}
 SpectraFilterWindowMower: {cores: 4, mem: 8}
 SpectraMerger: {cores: 4, mem: 8}
-SiriusAdapter:
-  mem: 12
-  env:
-    _JAVA_OPTIONS: -Xmx12G -Xms1G
 TMTAnalyzer: {cores: 4, mem: 8}
 TOFCalibration: {cores: 4, mem: 8}
 TextExporter: {cores: 4, mem: 8}
@@ -612,7 +608,7 @@ bigwig_to_bedgraph: {mem: 12}
 biosigner: {mem: 12}
 bismark_bowtie: {cores: 6, mem: 30, name: bismark, tmp: large}
 bismark_bowtie2: {cores: 6, mem: 30, name: bismark, tmp: large}
-bismark_methylation_extractor: { cores: 4, mem: 12 }
+bismark_methylation_extractor: {cores: 4, mem: 12}
 blast2go: {mem: 20}
 blast_parser: {mem: 8}
 blockbuster: {mem: 64}
@@ -624,7 +620,7 @@ bwa_mem_index_builder_data_manager: {cores: 12, mem: 48}
 bwameth_index_builder_data_manager: {cores: 12, mem: 48}
 kallisto_index_builder_data_manager: {cores: 12, mem: 92}
 salmon_index_builder_data_manager: {cores: 12, mem: 92}
-data_manager_metaphlan_download:  {cores: 12, mem: 92}
+data_manager_metaphlan_download: {cores: 12, mem: 92}
 data_manager_funannotate: {cores: 1, mem: 64}
 data_manager_build_kraken2_database: {cores: 1, mem: 64}
 bwameth: {cores: 8, mem: 24}
@@ -749,8 +745,6 @@ gemini_inheritance:
     NUMEXPR_NUM_THREADS: 4
     NUMBA_NUM_THREADS: 4
 
-
-
 # Permissions
 #gemini_query:
 #    permissions:
@@ -816,7 +810,7 @@ hisat: {cores: 10, mem: 20}
 # [E::hts_open_format] Failed to open file "/var/lib/condor/execute/dir_2954912.0000.bam" : No such file or directory
 # FATAL:   Unable to handle docker://quay.io/biocontainers/mulled-v2-b570fc8a7b25c6a733660cda7e105007b53ac501:26fa90e5bca490ccf5ba8db752fa36fd5834ef00-0 uri: while building SIF from layers: packer failed to pack: while unpacking tmpfs: error unpacking rootfs: unpack layer: unpack entry: usr/local/bin/hisat2-build-l: unpack to regular file: short write: write /var/lib/condor/execute/dir_2147833/build-temp-943357231/rootfs/usr/local/bin/hisat2-build-l: no space left on device
 #hisat2: {cores: 8, mem: 20}
-hisat2: {cores: 8, mem : 20}
+hisat2: {cores: 8, mem: 20}
 
 hisat2_index_builder_data_manager: {cores: 10, mem: 180}
 hmmer_hmmsearch: {mem: 10}
@@ -889,7 +883,7 @@ morpheus:
   mem: 64
 msaboot: {mem: 6}
 naive_variant_caller: {mem: 20}
-ncbi_blastp_wrapper: {cores: 10, mem: 40, runner: condor_intensive_jobs, force_destination_id: True}
+ncbi_blastp_wrapper: {cores: 10, mem: 40, runner: condor_intensive_jobs, force_destination_id: true}
 ncbi_blastn_wrapper: {cores: 10, mem: 40}
 ncbi_tblastn_wrapper: {cores: 10, mem: 40}
 ncbi_blastx_wrapper: {cores: 10, mem: 40}
@@ -1090,7 +1084,7 @@ spyboat: {cores: 8, mem: 4}
 sshmm: {mem: 16}
 structurefold: {mem: 12}
 rnaspades: {cores: 10, mem: 110}
-spades_biosyntheticspades: 
+spades_biosyntheticspades:
   cores: 10
   mem: 330
   env:
@@ -1160,10 +1154,10 @@ cesm: {cores: 16, mem: 128}
 
 # Some admin tools
 echo_main_env:
-    permissions:
-        allow:
-            roles:
-                - admin
+  permissions:
+    allow:
+      roles:
+        - admin
 
 #tp_awk_tool:
 #    runner: condor_docker
@@ -1182,15 +1176,15 @@ echo_main_env:
 _test_permissions_0: {}
 
 _test_permissions_1:
-    permissions:
-        allow:
-            users:
-                - b@example.com
+  permissions:
+    allow:
+      users:
+        - b@example.com
 
 _test_permissions_2:
-    permissions:
-        allow:
-            users:
-                - a@example.com
-            roles:
-                - role-b
+  permissions:
+    allow:
+      users:
+        - a@example.com
+      roles:
+        - role-b

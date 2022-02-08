@@ -26,7 +26,7 @@
     - name: Install Dependencies
       package:
         name: ['git', 'postgresql', 'python3-psycopg2', 'python3-virtualenv', 'bc', 'python36', 'python38']
-      become: yes
+      become: true
     - name: Set default version of Python
       alternatives:
         name: python
@@ -65,14 +65,14 @@
     # Setup Galaxy user
     - role: galaxyproject.galaxy
       vars:
-        galaxy_create_user: yes
-        galaxy_manage_clone: no
-        galaxy_manage_paths: yes
-        galaxy_manage_static_setup: no
-        galaxy_manage_mutable_setup: no
-        galaxy_manage_database: no
-        galaxy_fetch_dependencies: no
-        galaxy_build_client: no
+        galaxy_create_user: true
+        galaxy_manage_clone: false
+        galaxy_manage_paths: true
+        galaxy_manage_static_setup: false
+        galaxy_manage_mutable_setup: false
+        galaxy_manage_database: false
+        galaxy_fetch_dependencies: false
+        galaxy_build_client: false
     # The bashrc needs to be created for several later features.
     #- usegalaxy-eu.bashrc
 
@@ -84,10 +84,10 @@
 
     # Misc.
     - role: hxr.galaxy-cron
-      become: yes
+      become: true
       become_user: galaxy
     - role: hxr.galaxy-nonreproducible-tools
-      become: yes
+      become: true
       become_user: galaxy
     # - hxr.galaxy-misc
     - usegalaxy-eu.dynmotd      # nicer MOTD/welcome message
@@ -109,13 +109,13 @@
     # The REAL galaxy role
     - role: galaxyproject.galaxy
       vars:
-        galaxy_create_user: yes
-        galaxy_manage_clone: yes
-        galaxy_manage_static_setup: yes
-        galaxy_manage_mutable_setup: yes
-        galaxy_manage_database: yes
-        galaxy_fetch_dependencies: yes
-        galaxy_build_client: yes
+        galaxy_create_user: true
+        galaxy_manage_clone: true
+        galaxy_manage_static_setup: true
+        galaxy_manage_mutable_setup: true
+        galaxy_manage_database: true
+        galaxy_fetch_dependencies: true
+        galaxy_build_client: true
 
     # Extras!
     - usegalaxy-eu.fix-galaxy-server-dir # Fix details into the galaxy server dir
