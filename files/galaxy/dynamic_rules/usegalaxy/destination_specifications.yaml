@@ -1,5 +1,8 @@
 ---
 condor:
+  info:
+    remote: false
+    scheduler: 'condor'
   limits:
     cores: 64
     mem: 1000
@@ -11,25 +14,33 @@ condor:
     priority: -{PRIORITY}
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
+    requirements: 'GalaxyGroup == "compute"'
     tmp_dir: 'True'
     metadata_strategy: 'extended'
 
+# TBD
 condor_extended:
+  info:
+    remote: false
+    scheduler: 'condor'
   limits:
     cores: 64
     mem: 1000
   env:
-    NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
     GALAXY_MEMORY_MB: '{MEMORY_MB}'
     GALAXY_SLOTS: '{PARALLELISATION}'
   params:
     priority: -{PRIORITY}
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
+    requirements: 'GalaxyGroup == "compute"'
     tmp_dir: 'True'
     metadata_strategy: 'extended'
 
 condor_upload:
+  info:
+    remote: false
+    scheduler: 'condor'
   limits:
     cores: 20
     mem: 10
@@ -40,15 +51,38 @@ condor_upload:
     priority: -{PRIORITY}
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
+    requirements: 'GalaxyTraining == false'
+    rank: 'GalaxyGroup == "upload"'
     tmp_dir: 'True'
 
+# needed because of this https://github.com/galaxyproject/tools-iuc/issues/3663
+condor_mothur:
+  info:
+    remote: false
+    scheduler: 'condor'
+  limits:
+    cores: 64
+    mem: 400
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+  params:
+    priority: -{PRIORITY}
+    request_cpus: '{PARALLELISATION}'
+    request_memory: '{MEMORY}'
+    requirements: 'GalaxyGroup == "compute_mothur"'
+    tmp_dir: 'True'
+    metadata_strategy: 'extended'
+
 condor_gpu:
+  info:
+    remote: false
+    scheduler: 'condor'
   limits:
     cores: 8
     mem: 16
     gpus: 1
   env:
-    NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
     GALAXY_MEMORY_MB: '{MEMORY_MB}'
     GALAXY_SLOTS: '{PARALLELISATION}'
     GPU_AVAILABLE: 1
@@ -56,9 +90,14 @@ condor_gpu:
     priority: -{PRIORITY}
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
+    requirements: 'GalaxyGroup == "compute_gpu"'
     request_gpus: '{GPUS}'
+    tmp_dir: 'True'
 
 condor_singularity:
+  info:
+    remote: false
+    scheduler: 'condor'
   limits:
     cores: 64
     mem: 1000
@@ -70,6 +109,7 @@ condor_singularity:
     priority: -{PRIORITY}
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
+    requirements: 'GalaxyGroup == "compute"'
     singularity_enabled: true
     # can and should be made stricter at some point
     singularity_volumes: '$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro'
@@ -77,6 +117,9 @@ condor_singularity:
     tmp_dir: 'True'
 
 condor_singularity_with_gpu:
+  info:
+    remote: false
+    scheduler: 'condor'
   limits:
     cores: 8
     mem: 18
@@ -92,6 +135,7 @@ condor_singularity_with_gpu:
     request_gpus: '{GPUS}'
     dependency_resolution: 'none'
     require_container: true
+    requirements: 'GalaxyGroup == "compute_gpu"'
     singularity_enabled: true
     singularity_run_extra_arguments: '--nv'
     # can and should be made stricter at some point
@@ -100,6 +144,9 @@ condor_singularity_with_gpu:
     tmp_dir: 'True'
 
 condor_singularity_with_conda:
+  info:
+    remote: false
+    scheduler: 'condor'
   limits:
     cores: 64
     mem: 1000
@@ -111,6 +158,7 @@ condor_singularity_with_conda:
     priority: -{PRIORITY}
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
+    requirements: 'GalaxyGroup == "compute"'
     require_container: true
     singularity_enabled: true
     # can and should be made stricter at some point
@@ -121,26 +169,10 @@ condor_singularity_with_conda:
         resolve_dependencies: true
         identifier: '/cvmfs/singularity.galaxyproject.org/all/centos:8.3.2011'
 
-remote_cluster_mq_cz:
-  env: {}
-  params:
-    priority: -{PRIORITY}
-    request_cpus: '{PARALLELISATION}'
-    request_memory: '{MEMORY}'
-    jobs_directory: '/storage/brno11-elixir/home/galaxyeu/galaxy-staging/'
-    dependency_resolution: 'remote'
-    submit_user: 'galaxy'
-
-remote_cluster_mq_test:
-  env: {}
-  params:
-    priority: -{PRIORITY}
-    request_cpus: '{PARALLELISATION}'
-    request_memory: '{MEMORY}'
-    jobs_directory: '/data/share/staging/'
-    dependency_resolution: 'remote'
-
 condor_docker_ie:
+  info:
+    remote: false
+    scheduler: 'condor'
   limits:
     cores: 10
     mem: 50
@@ -149,6 +181,7 @@ condor_docker_ie:
     priority: -{PRIORITY}
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
+    requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
     docker_enabled: true
     # can and should be made stricter at some point
     docker_volumes: '/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/0/galaxy_import/galaxy_user_data/:ro,/data/1/galaxy_import/galaxy_user_data/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro'
@@ -161,6 +194,9 @@ condor_docker_ie:
 
 
 condor_docker_ie_interactive:
+  info:
+    remote: false
+    scheduler: 'condor'
   limits:
     cores: 10
     mem: 50
@@ -169,6 +205,7 @@ condor_docker_ie_interactive:
     priority: -{PRIORITY}
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
+    requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
     docker_enabled: true
     # can and should be made stricter at some point
     docker_volumes: '$working_directory:rw,$job_directory:rw,$tool_directory:ro'
@@ -180,6 +217,9 @@ condor_docker_ie_interactive:
     tmp_dir: 'True'
 
 condor_docker_ie_interactive_gpu:
+  info:
+    remote: false
+    scheduler: 'condor'
   limits:
     cores: 8
     mem: 18
@@ -190,6 +230,7 @@ condor_docker_ie_interactive_gpu:
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
     request_gpus: '{GPUS}'
+    requirements: 'GalaxyDockerHack == True && GalaxyGroup == "compute_gpu"'
     docker_enabled: true
     # can and should be made stricter at some point
     docker_volumes: '$working_directory:rw,$job_directory:rw,$tool_directory:ro'
@@ -201,6 +242,9 @@ condor_docker_ie_interactive_gpu:
     tmp_dir: 'True'
 
 condor_docker:
+  info:
+    remote: false
+    scheduler: 'condor'
   limits:
     cores: 40
     mem: 1000
@@ -212,6 +256,7 @@ condor_docker:
     priority: -{PRIORITY}
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
+    requirements: 'GalaxyDockerHack == True && GalaxyGroup == "compute"'
     docker_enabled: true
     # can and should be made stricter at some point
     docker_volumes: '/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:rw,/data/0/galaxy_import/galaxy_user_data/:ro,/data/1/galaxy_import/galaxy_user_data/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro'
@@ -220,10 +265,15 @@ condor_docker:
     docker_default_container_id: busybox:ubuntu-14.04
     docker_sudo: false
     docker_set_user: ''
-    tmp_dir: 'True'
 
-
+# TBD
 condor_docker_interactive:
+  info:
+    remote: false
+    scheduler: 'condor'
+  limits:
+    cores: 40
+    mem: 1000
   env:
     # this can be removed, as soon as we don't expose this env on cn029 anymore
     DOCKER_HOST: ''
@@ -231,6 +281,7 @@ condor_docker_interactive:
     priority: -{PRIORITY}
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
+    requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
     docker_enabled: true
     # can and should be made stricter at some point
     docker_volumes: '$working_directory:rw,$job_directory:rw,$tool_directory:ro'
@@ -241,29 +292,10 @@ condor_docker_interactive:
     docker_set_user: ''
     tmp_dir: 'True'
 
-sge:
-  env: {}
-  params:
-    nativeSpecification: |
-        -p -{PRIORITY}
-        -l galaxy1_slots=1
-        -l h_vmem={MEMORY}
-        {NATIVE_SPEC_EXTRA}
-        {PARALLELISATION}
-        -v _JAVA_OPTIONS
-        -v TEMP
-        -v TMPDIR
-        -v PATH
-        -v PYTHONPATH
-        -v LD_LIBRARY_PATH
-        -v XAPPLRESDIR
-        -v GDFONTPATH
-        -v GNUPLOT_DEFAULT_GDFONT
-        -v MPLCONFIGDIR
-        -soft
-        -l galaxy1_dedicated=1
-
 remote_cluster_mq_it01:
+  info:
+    remote: true
+    scheduler: 'condor'
   limits:
     cores: 16
     mem: 31
@@ -286,6 +318,9 @@ remote_cluster_mq_it01:
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
 
 remote_cluster_mq_be01:
+  info:
+    remote: true
+    scheduler: 'condor'
   limits:
     cores: 8
     mem: 15
@@ -304,6 +339,9 @@ remote_cluster_mq_be01:
     transport: 'curl'
 
 remote_cluster_mq_de01:
+  info:
+    remote: true
+    scheduler: 'condor'
   limits:
     cores: 16
     mem: 31
@@ -327,6 +365,9 @@ remote_cluster_mq_de01:
     singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw'
 
 remote_cluster_mq_singularity_2wdtrue_de01:
+  info:
+    remote: true
+    scheduler: 'condor'
   limits:
     cores: 16
     mem: 31
@@ -350,6 +391,9 @@ remote_cluster_mq_singularity_2wdtrue_de01:
     singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw'
 
 remote_cluster_mq_docker_de01:
+  info:
+    remote: true
+    scheduler: 'condor'
   limits:
     cores: 16
     mem: 31
@@ -378,6 +422,9 @@ remote_cluster_mq_docker_de01:
 
 remote_cluster_mq_de02:
   ## our singularity test bed
+  info:
+    remote: true
+    scheduler: 'condor'
   limits:
     cores: 16
     mem: 31
@@ -393,6 +440,9 @@ remote_cluster_mq_de02:
     tmp_dir: 'True'
 
 remote_cluster_mq_de03:
+  info:
+    remote: true
+    scheduler: 'condor'
   limits:
     cores: 8
     mem: 19
@@ -415,6 +465,9 @@ remote_cluster_mq_de03:
     transport: 'curl'
 
 remote_cluster_mq_docker_de03:
+  info:
+    remote: true
+    scheduler: 'condor'
   nodes: 18
   limits:
     cores: 8
@@ -449,6 +502,9 @@ remote_cluster_mq_docker_de03:
 
 
 remote_cluster_mq_pt01:
+  info:
+    remote: true
+    scheduler: 'condor'
   limits:
     cores: 4
     mem: 15
@@ -468,6 +524,9 @@ remote_cluster_mq_pt01:
     transport: 'curl'
 
 remote_cluster_mq_uk01:
+  info:
+    remote: true
+    scheduler: 'condor'
   nodes: 40
   limits:
     cores: 60
@@ -491,6 +550,9 @@ remote_cluster_mq_uk01:
     transport: 'curl'
 
 remote_cluster_mq_singularity_uk01:
+  info:
+    remote: true
+    scheduler: 'condor'
   limits:
     cores: 60
     mem: 300
@@ -516,6 +578,9 @@ remote_cluster_mq_singularity_uk01:
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
 
 remote_cluster_mq_docker_uk01:
+  info:
+    remote: true
+    scheduler: 'condor'
   nodes: 40
   limits:
     cores: 60
@@ -549,6 +614,9 @@ remote_cluster_mq_docker_uk01:
     tmp_dir: 'True'
 
 remote_cluster_mq_it02:
+  info:
+    remote: true
+    scheduler: 'condor'
   limits:
     cores: 4
     mem: 7
@@ -571,6 +639,9 @@ remote_cluster_mq_it02:
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
 
 remote_cluster_mq_2wdfalse_it03:
+  info:
+    remote: true
+    scheduler: 'condor'
   limits:
     cores: 8
     mem: 15
@@ -594,6 +665,9 @@ remote_cluster_mq_2wdfalse_it03:
     singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw'
 
 remote_cluster_mq_2wdtrue_it03:
+  info:
+    remote: true
+    scheduler: 'condor'
   limits:
     cores: 8
     mem: 15
@@ -617,6 +691,9 @@ remote_cluster_mq_2wdtrue_it03:
     singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw'
 
 remote_cluster_mq_fr01:
+  info:
+    remote: true
+    scheduler: 'condor'
   limits:
     cores: 8
     mem: 31
@@ -639,6 +716,9 @@ remote_cluster_mq_fr01:
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
 
 remote_cluster_mq_fi01:
+  info:
+    remote: true
+    scheduler: 'condor'
   limits:
     cores: 8
     mem: 31
@@ -661,6 +741,9 @@ remote_cluster_mq_fi01:
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
 
 remote_cluster_mq_no01:
+  info:
+    remote: true
+    scheduler: 'condor'
   limits:
     cores: 4
     mem: 15
@@ -681,6 +764,9 @@ remote_cluster_mq_no01:
     transport: 'curl'
 
 remote_cluster_mq_es01:
+  info:
+    remote: true
+    scheduler: 'condor'
   limits:
     cores: 4
     mem: 16
@@ -704,6 +790,9 @@ remote_cluster_mq_es01:
     singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw'
 
 remote_cluster_mq_cz01:
+  info:
+    remote: true
+    scheduler: 'condor'
   limits:
     cores: 4
     mem: 16
