@@ -1,6 +1,31 @@
 ---
 __default__: {}
 
+upload1:
+  cores: 1
+  mem: 3
+  gpus: 0
+  runner: condor_upload
+  env:
+    TEMP: /data/1/galaxy_db/tmp
+
+__DATA_FETCH__:
+  cores: 1
+  mem: 3
+  gpus: 0
+  runner: condor_upload
+  env:
+    TEMP: /data/1/galaxy_db/tmp
+
+__SET_METADATA__:
+  cores: 1
+  mem: 1
+  gpus: 0
+  runner: condor
+  params:
+    requirements: 'GalaxyTraining == false'
+    rank: 'GalaxyGroup == "metadata"'
+
 keras_train_and_eval:
   runner: condor_gpu
   gpus: 1
