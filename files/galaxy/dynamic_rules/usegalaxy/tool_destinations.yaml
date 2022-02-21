@@ -836,9 +836,15 @@ schicexplorer_schicplotclusterprofiles: {cores: 20, mem: 64}
 schicexplorer_schicplotconsensusmatrices: {cores: 10, mem: 32}
 schicexplorer_schicqualitycontrol: {cores: 20, mem: 64}
 
-
 hicup_mapper: {cores: 6, mem: 24}
-hifiasm: {cores: 32, mem: 120}
+
+hifiasm:
+  cores: 20
+  mem: 120
+  params:
+    requirements: 'GalaxyTraining == false'
+    rank: 'GalaxyGroup == "compute_hifiasm"'
+
 hisat: {cores: 10, mem: 20}
 
 # It seems that we are running out of temp space according to error reports from 21.03.2021
