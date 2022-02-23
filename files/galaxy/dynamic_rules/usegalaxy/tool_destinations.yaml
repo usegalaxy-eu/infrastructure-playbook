@@ -93,12 +93,10 @@ interactive_tool_ml_jupyter_notebook:
 
 # this tool is only used from within another Jupyter notebook
 run_jupyter_job:
-  runner: condor_docker_ie_interactive_gpu
+  runner: condor_docker_ie_interactive
   force_destination_id: true
-  gpus: 1
-  cores: 1
-  mem: 8
-  docker_run_extra_arguments: ' --gpus all'
+  cores: 8
+  mem: 32
 
 interactive_tool_rstudio: {mem: 8, cores: 2, runner: condor_docker_ie_interactive, force_destination_id: true}
 interactive_tool_pyiron: {mem: 8, cores: 1, runner: condor_docker_ie_interactive, force_destination_id: true}
