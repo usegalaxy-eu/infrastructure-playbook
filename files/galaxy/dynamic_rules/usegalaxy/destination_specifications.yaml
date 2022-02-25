@@ -54,6 +54,7 @@ condor_upload:
     requirements: 'GalaxyTraining == false'
     rank: 'GalaxyGroup == "upload"'
     tmp_dir: 'True'
+    metadata_strategy: 'extended'
 
 # needed because of this https://github.com/galaxyproject/tools-iuc/issues/3663
 condor_mothur:
@@ -93,6 +94,7 @@ condor_gpu:
     requirements: 'GalaxyGroup == "compute_gpu"'
     request_gpus: '{GPUS}'
     tmp_dir: 'True'
+    metadata_strategy: 'extended'
 
 condor_singularity:
   info:
@@ -110,11 +112,13 @@ condor_singularity:
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
     requirements: 'GalaxyGroup == "compute"'
+    tmp_dir: 'True'
+    metadata_strategy: 'extended'
     singularity_enabled: true
     # can and should be made stricter at some point
     singularity_volumes: '$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro'
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/all/centos:8.3.2011'
-    tmp_dir: 'True'
+
 
 condor_singularity_with_gpu:
   info:
@@ -136,12 +140,14 @@ condor_singularity_with_gpu:
     dependency_resolution: 'none'
     require_container: true
     requirements: 'GalaxyGroup == "compute_gpu"'
+    tmp_dir: 'True'
+    metadata_strategy: 'extended'
     singularity_enabled: true
     singularity_run_extra_arguments: '--nv'
     # can and should be made stricter at some point
     singularity_volumes: '$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro'
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/all/centos:8.3.2011'
-    tmp_dir: 'True'
+
 
 condor_singularity_with_conda:
   info:
@@ -159,6 +165,8 @@ condor_singularity_with_conda:
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
     requirements: 'GalaxyGroup == "compute"'
+    tmp_dir: 'True'
+    metadata_strategy: 'extended'
     require_container: true
     singularity_enabled: true
     # can and should be made stricter at some point
@@ -182,6 +190,8 @@ condor_docker_ie:
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
     requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
+    tmp_dir: 'True'
+    metadata_strategy: 'extended'
     docker_enabled: true
     # can and should be made stricter at some point
     docker_volumes: '/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/0/galaxy_import/galaxy_user_data/:ro,/data/1/galaxy_import/galaxy_user_data/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro'
@@ -190,8 +200,6 @@ condor_docker_ie:
     docker_default_container_id: busybox:ubuntu-14.04
     docker_sudo: false
     docker_set_user: ''
-    tmp_dir: 'True'
-
 
 condor_docker_ie_interactive:
   info:
@@ -206,6 +214,8 @@ condor_docker_ie_interactive:
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
     requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
+    tmp_dir: 'True'
+    metadata_strategy: 'extended'
     docker_enabled: true
     # can and should be made stricter at some point
     docker_volumes: '$working_directory:rw,$job_directory:rw,$tool_directory:ro'
@@ -214,7 +224,6 @@ condor_docker_ie_interactive:
     docker_default_container_id: busybox:ubuntu-14.04
     docker_sudo: false
     docker_set_user: ''
-    tmp_dir: 'True'
 
 condor_docker_ie_interactive_gpu:
   info:
@@ -231,6 +240,8 @@ condor_docker_ie_interactive_gpu:
     request_memory: '{MEMORY}'
     request_gpus: '{GPUS}'
     requirements: 'GalaxyDockerHack == True && GalaxyGroup == "compute_gpu"'
+    tmp_dir: 'True'
+    metadata_strategy: 'extended'
     docker_enabled: true
     # can and should be made stricter at some point
     docker_volumes: '$working_directory:rw,$job_directory:rw,$tool_directory:ro'
@@ -239,7 +250,6 @@ condor_docker_ie_interactive_gpu:
     docker_default_container_id: busybox:ubuntu-14.04
     docker_sudo: false
     docker_set_user: ''
-    tmp_dir: 'True'
 
 condor_docker:
   info:
@@ -257,6 +267,8 @@ condor_docker:
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
     requirements: 'GalaxyDockerHack == True && GalaxyGroup == "compute"'
+    tmp_dir: 'True'
+    metadata_strategy: 'extended'
     docker_enabled: true
     # can and should be made stricter at some point
     docker_volumes: '/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:rw,/data/0/galaxy_import/galaxy_user_data/:ro,/data/1/galaxy_import/galaxy_user_data/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro'
@@ -282,6 +294,8 @@ condor_docker_interactive:
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
     requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
+    tmp_dir: 'True'
+    metadata_strategy: 'extended'
     docker_enabled: true
     # can and should be made stricter at some point
     docker_volumes: '$working_directory:rw,$job_directory:rw,$tool_directory:ro'
@@ -290,7 +304,6 @@ condor_docker_interactive:
     docker_default_container_id: busybox:ubuntu-14.04
     docker_sudo: false
     docker_set_user: ''
-    tmp_dir: 'True'
 
 remote_cluster_mq_it01:
   info:
