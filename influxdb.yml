@@ -5,28 +5,28 @@
     hostname: influxdb.galaxyproject.eu
   vars_files:
     - "secret_group_vars/all.yml"
-  pre_tasks:
-    - name: Install Dependencies
-      package:
-        name: ['python-requests', 'python3-virtualenv', 'python36']
-      become: true
+#  pre_tasks:
+#    - name: Install Dependencies
+#      package:
+#        name: ['python-requests', 'python3-virtualenv', 'python36']
+#      become: true
   collections:
     - devsec.hardening
   roles:
-    - hostname
+    ## Starting configuration of the operating system
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        enable_hostname: true
+        enable_powertools: true        # geerlingguy.repo-epel role doesn't enable PowerTools repository
+        enable_install_software: true  # Some extra admin tools (*top, vim, etc)
+    - geerlingguy.repo-epel     # Install EPEL repository
+    - usegalaxy-eu.autoupdates  # keep all of our packages up to date
+    - influxdata.chrony         # Keep our time in sync.
     - usegalaxy-eu.dynmotd
-    - geerlingguy.repo-epel
-    - hxr.admin-tools
-    - influxdata.chrony
     - hxr.monitor-email
-    - linuxhq.yum_cron
     - galaxyproject.nginx
-    # - hxr.autofs - disabled because volumes are not working properly (12/2020)
-    # BEGIN custom
     - usegalaxy_eu.influxdb
     - hxr.influxdb
-    # END custom
     - dj-wasabi.telegraf
-    # - os_hardening
-    # - nginx_hardening
-    # - ssh_hardening
+    - os_hardening
+    - ssh_hardening
