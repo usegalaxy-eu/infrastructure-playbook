@@ -5,11 +5,15 @@
     hostname: influxdb.galaxyproject.eu
   vars_files:
     - "secret_group_vars/all.yml"
-#  pre_tasks:
-#    - name: Install Dependencies
-#      package:
-#        name: ['python-requests', 'python3-virtualenv', 'python36']
-#      become: true
+  pre_tasks:
+    - name: Set default version of Python
+      alternatives:
+        name: python
+        path: /usr/bin/python3
+    - name: Install Dependencies
+      package:
+        name: ['python3-requests', 'python3-virtualenv']
+      become: true
   collections:
     - devsec.hardening
   roles:

@@ -11,6 +11,7 @@ certbot_share_key_users:
   - nginx
   - influxdb
 certbot_virtualenv_command: virtualenv-3.6
+certbot_virtualenv_package_name: python3-virtualenv
 certbot_post_renewal: |
     systemctl restart nginx || true
     systemctl restart influxdb || true
