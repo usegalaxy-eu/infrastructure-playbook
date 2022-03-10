@@ -148,7 +148,7 @@ maxquant: {mem: 60, cores: 8, runner: condor_singularity}
 deepvariant: {mem: 10, runner: condor_singularity}
 scpipe: {mem: 64, cores: 8}
 cardinal_combine: {mem: 92}
-cardinal_classification: {mem: 100}
+cardinal_classification: {mem: 90}
 cardinal_filtering: {mem: 60}
 cardinal_mz_images: {mem: 20}
 cardinal_preprocessing: {cores: 4, mem: 110}
@@ -220,10 +220,10 @@ paralyzer:
 cuffmerge: {mem: 8}
 CruxAdapter: {mem: 8}
 bio3d_pca: {mem: 64}
-bio3d_rmsd: {mem: 100}
-bio3d_rmsf: {mem: 100}
-rxdock_sort_filter: {mem: 100}
-rdock_sort_filter: {mem: 100}
+bio3d_rmsd: {mem: 90}
+bio3d_rmsf: {mem: 90}
+rxdock_sort_filter: {mem: 90}
+rdock_sort_filter: {mem: 90}
 
 alphafold:
   cores: 10
@@ -237,7 +237,7 @@ cds_essential_variability:
     COPERNICUS_CDSAPIRC_KEY_FILE: /data/db/data_managers/COPERNICUS_CDSAPIRC_KEY_FILE
 
 idr_download_by_ids: {mem: 24, runner: condor_singularity_with_conda}
-kraken: {mem: 100}
+kraken: {mem: 90}
 kraken2: {mem: 64}
 ont_fast5_api_compress_fast5: {cores: 8}
 viz_overlay_moving_and_fixed_image: {mem: 12}
@@ -406,7 +406,7 @@ OpenSwathWorkflow: {mem: 156}
 mira_assembler: {mem: 24}
 meryl: {cores: 24, mem: 130}
 mothur_align_check: {cores: 1, mem: 20, env: {TERM: vt100}}
-mothur_align_seqs: {cores: 2, mem: 100, env: {TERM: vt100}}
+mothur_align_seqs: {cores: 2, mem: 90, env: {TERM: vt100}}
 mothur_amova: {cores: 1, mem: 20, env: {TERM: vt100}}
 mothur_anosim: {cores: 1, mem: 20, env: {TERM: vt100}}
 mothur_bin_seqs: {cores: 1, mem: 20, env: {TERM: vt100}}
@@ -426,7 +426,7 @@ mothur_clearcut: {cores: 1, mem: 20, env: {TERM: vt100}}
 mothur_cluster: {cores: 1, mem: 20, env: {TERM: vt100}}
 mothur_cluster_classic: {cores: 1, mem: 20, env: {TERM: vt100}}
 mothur_cluster_fragments: {cores: 1, mem: 20, env: {TERM: vt100}}
-mothur_cluster_split: {cores: 1, mem: 100, env: {TERM: vt100}}
+mothur_cluster_split: {cores: 1, mem: 90, env: {TERM: vt100}}
 mothur_collect_shared: {cores: 1, mem: 20, env: {TERM: vt100}}
 mothur_collect_single: {cores: 1, mem: 20, env: {TERM: vt100}}
 mothur_consensus_seqs: {cores: 1, mem: 20, env: {TERM: vt100}}
@@ -469,7 +469,7 @@ mothur_lefse: {cores: 1, mem: 20, env: {TERM: vt100}}
 mothur_libshuff: {cores: 1, mem: 20, env: {TERM: vt100}}
 mothur_list_otulabels: {cores: 1, mem: 20, env: {TERM: vt100}}
 mothur_list_seqs: {cores: 1, mem: 20, env: {TERM: vt100}}
-mothur_make_biom: {cores: 1, mem: 100, env: {TERM: vt100}}
+mothur_make_biom: {cores: 1, mem: 90, env: {TERM: vt100}}
 mothur_make_contigs: {cores: 2, mem: 20, env: {TERM: vt100}}
 mothur_make_design: {cores: 1, mem: 20, env: {TERM: vt100}}
 mothur_make_fastq: {cores: 1, mem: 20, env: {TERM: vt100}}
@@ -628,12 +628,12 @@ anndata_inspect: {cores: 4}
 anndata_manipulate: {cores: 4}
 antismash:
   cores: 10
-  mem: 100
+  mem: 90
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx96G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
 bam-to-wig: {mem: 20}
 bamCompare_deepTools: {mem: 10}
-bamCorrelate_deepTools: {cores: 10, mem: 100}
+bamCorrelate_deepTools: {cores: 10, mem: 90}
 bamCoverage_deepTools: {mem: 10}
 bamFingerprint: {mem: 10}
 bedtools_intersectbed: {mem: 40}
@@ -682,7 +682,7 @@ metaspades: {cores: 10, mem: 200}
 megahit: {cores: 10, mem: 80}
 charts: {mem: 10}
 circgraph: {mem: 10}
-computeMatrix: {mem: 100}
+computeMatrix: {mem: 90}
 correctGCBias: {mem: 10}
 cshl_fastx_collapser: {mem: 16}
 create_tool_recommendation_model: {cores: 16, mem: 160}
@@ -747,7 +747,7 @@ flexbar: {cores: 10, mem: 12}
 flexbar_no_split: {cores: 10, mem: 12}
 flexbar_split_RR_bcs: {cores: 10, mem: 12}
 flexbar_split_RYYR_bcs: {cores: 10, mem: 12}
-freebayes: {cores: 10, mem: 100}
+freebayes: {cores: 10, mem: 90}
 gatk2_base_recalibrator:
   cores: 10
   env:
@@ -906,7 +906,7 @@ macs2_bdgdiff: {mem: 10}
 macs2_callpeak: {mem: 15}
 maldi_quant_preprocessing: {mem: 400}
 maldi_quant_peak_detection: {mem: 180}
-mass_spectrometry_imaging_classification: {mem: 100}
+mass_spectrometry_imaging_classification: {mem: 90}
 megablast_wrapper: {mem: 20}
 meme_dreme: {mem: 16}
 meme_fimo: {mem: 4}
@@ -943,7 +943,7 @@ peptide_shaker:
   cores: 10
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=4G -Xmx120G -Xms4G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
-  mem: 100
+  mem: 90
   name: _special
 picard_ARRG: {mem: 12}
 picard_AddOrReplaceReadGroups: {mem: 12}
@@ -1009,7 +1009,7 @@ rgPicardMarkDups:
   env:
     _JAVA_OPTIONS: -Xmx12G -Xms1G
 rm_spurious_events.py: {mem: 4}
-rna_star: {cores: 10, mem: 100}
+rna_star: {cores: 10, mem: 90}
 rna_starsolo: {cores: 4, mem: 40}
 rna_star_index_builder_data_manager:
   cores: 10
@@ -1144,7 +1144,7 @@ spades_plasmidspades: {cores: 10, mem: 110}
 spades_rnaviralspades: {cores: 10, mem: 110}
 stringtie: {mem: 25}
 t_coffee:
-  mem: 100
+  mem: 90
   env:
     DIR_4_TCOFFEE: $TMP
     TMP_4_TCOFFEE: $TMP
@@ -1166,14 +1166,14 @@ trinity:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx170G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
   name: special
 umi_tools_group: {mem: 12}
-umi_tools_dedup: {mem: 100}
+umi_tools_dedup: {mem: 90}
 umi_tools_extract: {mem: 4}
 unicycler:
   cores: 10
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
     TERM: vt100
-  mem: 100
+  mem: 90
   name: special
 unzip: {runner: condor_singularity}
 wig_to_bigWig: {mem: 10}
