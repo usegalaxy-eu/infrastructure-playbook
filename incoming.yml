@@ -4,6 +4,7 @@
   become: true
   vars:
     hostname: incoming.galaxyproject.eu
+    proftpd_modules_config_file: /etc/proftpd/modules.conf
   vars_files:
     - secret_group_vars/all.yml
   collections:
@@ -24,6 +25,11 @@
         - ftpd_full_access
         - ftpd_connect_db
         - ftpd_use_passive_mode
+    - name: Disable firewalld service
+      ansible.builtin.service:
+        name: firewalld
+        enabled: false
+        state: stopped
   post_tasks:
     - name: Replace sql
       ansible.builtin.replace:
@@ -40,20 +46,21 @@
       notify:
         - reload proftpd
   roles:
-    - hostname
+    ## Starting configuration of the operating system
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        enable_hostname: true
+        enable_powertools: true        # geerlingguy.repo-epel role doesn't enable PowerTools repository
+        enable_remap_user: true
+        enable_install_software: true  # Some extra admin tools (*top, vim, etc)
+    - geerlingguy.repo-epel     # Install EPEL repository
+    - usegalaxy-eu.autoupdates  # keep all of our packages up to date
+    - influxdata.chrony         # Keep our time in sync.
     - usegalaxy-eu.dynmotd
-    - geerlingguy.repo-epel
-    - hxr.admin-tools
-    - influxdata.chrony
-    - usegalaxy-eu.autoupdates
-
+    ## Filesystems
+    - usegalaxy-eu.autofs  # Setup the mount points which will be needed later
     # User
-    - usegalaxy-eu.remap-user
     - usegalaxy-eu.create-user
-
-    # Filesystems
-    - usegalaxy-eu.autofs
-
     # Services
     - galaxyproject.nginx
     - galaxyproject.proftpd
