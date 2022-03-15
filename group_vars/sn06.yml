@@ -558,21 +558,10 @@ galaxy_jobconf:
       load: galaxy.jobs.runners.local:LocalJobRunner
     - id: pulsar_embedded
       load: galaxy.jobs.runners.pulsar:PulsarEmbeddedJobRunner
-    - id: pulsar_eu_cz
-      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
-      params:
-        amqp_url: "pyamqp://galaxy_cz:{{ rabbitmq_password_galaxy_cz }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_cz?ssl=1"
-        galaxy_url: "https://usegalaxy.eu"
-        manager: _default_
-        amqp_acknowledge: true
-        amqp_ack_republish_time: 300
-        amqp_consumer_timeout: 2.0
-        amqp_publish_retry: true
-        amqp_publish_retry_max_retries: 60
     - id: pulsar_eu_it01
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
       params:
-        amqp_url: "pyamqp://galaxy_it01:{{ rabbitmq_password_galaxy_it01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_it01?ssl=1"
+        amqp_url: "pyamqp://galaxy_it01:{{ rabbitmq_password_galaxy_it01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_it01?ssl=1"
         galaxy_url: "https://usegalaxy.eu"
         manager: production
         amqp_acknowledge: true
@@ -583,7 +572,7 @@ galaxy_jobconf:
     - id: pulsar_eu_it02
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
       params:
-        amqp_url: "pyamqp://galaxy_it02:{{ rabbitmq_password_galaxy_it02 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_it02?ssl=1"
+        amqp_url: "pyamqp://galaxy_it02:{{ rabbitmq_password_galaxy_it02 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_it02?ssl=1"
         galaxy_url: "https://usegalaxy.eu"
         manager: production
         amqp_acknowledge: true
@@ -594,40 +583,7 @@ galaxy_jobconf:
     - id: pulsar_eu_it03
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
       params:
-        amqp_url: "pyamqp://galaxy_it03:{{ rabbitmq_password_galaxy_it03 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_it03?ssl=1"
-        galaxy_url: "https://usegalaxy.eu"
-        manager: production
-        amqp_acknowledge: true
-        amqp_ack_republish_time: 300
-        amqp_consumer_timeout: 2.0
-        amqp_publish_retry: true
-        amqp_publish_retry_max_retries: 60
-    - id: pulsar_eu_de01
-      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
-      params:
-        amqp_url: "pyamqp://galaxy_de01:{{ rabbitmq_password_galaxy_de01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_de01?ssl=1"
-        galaxy_url: "https://usegalaxy.eu"
-        manager: production
-        amqp_acknowledge: true
-        amqp_ack_republish_time: 300
-        amqp_consumer_timeout: 2.0
-        amqp_publish_retry: true
-        amqp_publish_retry_max_retries: 60
-    - id: pulsar_eu_de02
-      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
-      params:
-        amqp_url: "pyamqp://galaxy_de02:{{ rabbitmq_password_galaxy_de02 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_de02?ssl=1"
-        galaxy_url: "https://usegalaxy.eu"
-        manager: production
-        amqp_acknowledge: true
-        amqp_ack_republish_time: 300
-        amqp_consumer_timeout: 2.0
-        amqp_publish_retry: true
-        amqp_publish_retry_max_retries: 60
-    - id: pulsar_eu_de03
-      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
-      params:
-        amqp_url: "pyamqp://galaxy_de03:{{ rabbitmq_password_galaxy_de03 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_de03?ssl=1"
+        amqp_url: "pyamqp://galaxy_it03:{{ rabbitmq_password_galaxy_it03 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_it03?ssl=1"
         galaxy_url: "https://usegalaxy.eu"
         manager: production
         amqp_acknowledge: true
@@ -638,7 +594,7 @@ galaxy_jobconf:
     - id: pulsar_eu_pt01
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
       params:
-        amqp_url: "pyamqp://galaxy_pt01:{{ rabbitmq_password_galaxy_pt01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_pt01?ssl=1"
+        amqp_url: "pyamqp://galaxy_pt01:{{ rabbitmq_password_galaxy_pt01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_pt01?ssl=1"
         galaxy_url: "https://usegalaxy.eu"
         manager: production
         amqp_acknowledge: true
@@ -649,7 +605,7 @@ galaxy_jobconf:
     - id: pulsar_eu_be01
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
       params:
-        amqp_url: "pyamqp://galaxy_be01:{{ rabbitmq_password_galaxy_be01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_be01?ssl=1"
+        amqp_url: "pyamqp://galaxy_be01:{{ rabbitmq_password_galaxy_be01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_be01?ssl=1"
         galaxy_url: "https://usegalaxy.eu"
         manager: production
         amqp_acknowledge: true
@@ -660,20 +616,9 @@ galaxy_jobconf:
     - id: pulsar_eu_uk01
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
       params:
-        amqp_url: "pyamqp://galaxy_uk01:{{ rabbitmq_password_galaxy_uk01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_uk01?ssl=1"
+        amqp_url: "pyamqp://galaxy_uk01:{{ rabbitmq_password_galaxy_uk01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_uk01?ssl=1"
         galaxy_url: "https://usegalaxy.eu"
         manager: production
-        amqp_acknowledge: true
-        amqp_ack_republish_time: 300
-        amqp_consumer_timeout: 2.0
-        amqp_publish_retry: true
-        amqp_publish_retry_max_retries: 60
-    - id: pulsar_eu_test
-      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
-      params:
-        amqp_url: "pyamqp://galaxy_test:{{ rabbitmq_password_galaxy_test }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_test?ssl=1"
-        galaxy_url: https://usegalaxy.eu
-        manager: _default_
         amqp_acknowledge: true
         amqp_ack_republish_time: 300
         amqp_consumer_timeout: 2.0
@@ -682,7 +627,7 @@ galaxy_jobconf:
     - id: pulsar_eu_fr01
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
       params:
-        amqp_url: "pyamqp://galaxy_fr01:{{ rabbitmq_password_galaxy_fr01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_fr01?ssl=1"
+        amqp_url: "pyamqp://galaxy_fr01:{{ rabbitmq_password_galaxy_fr01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_fr01?ssl=1"
         galaxy_url: "https://usegalaxy.eu"
         manager: production
         amqp_acknowledge: true
@@ -693,7 +638,7 @@ galaxy_jobconf:
     - id: pulsar_eu_fi01
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
       params:
-        amqp_url: "pyamqp://galaxy_fi01:{{ rabbitmq_password_galaxy_fi01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_fi01?ssl=1"
+        amqp_url: "pyamqp://galaxy_fi01:{{ rabbitmq_password_galaxy_fi01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_fi01?ssl=1"
         galaxy_url: "https://usegalaxy.eu"
         manager: production
         amqp_acknowledge: true
@@ -704,7 +649,7 @@ galaxy_jobconf:
     - id: pulsar_eu_no01
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
       params:
-        amqp_url: "pyamqp://galaxy_no01:{{ rabbitmq_password_galaxy_no01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_no01?ssl=1"
+        amqp_url: "pyamqp://galaxy_no01:{{ rabbitmq_password_galaxy_no01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_no01?ssl=1"
         galaxy_url: "https://usegalaxy.eu"
         manager: production
         amqp_acknowledge: true
@@ -715,7 +660,7 @@ galaxy_jobconf:
     - id: pulsar_eu_es01
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
       params:
-        amqp_url: "pyamqp://galaxy_es01:{{ rabbitmq_password_galaxy_es01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_es01?ssl=1"
+        amqp_url: "pyamqp://galaxy_es01:{{ rabbitmq_password_galaxy_es01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_es01?ssl=1"
         galaxy_url: "https://usegalaxy.eu"
         manager: production
         amqp_acknowledge: true
@@ -726,7 +671,7 @@ galaxy_jobconf:
     - id: pulsar_eu_cz01
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
       params:
-        amqp_url: "pyamqp://galaxy_cz01:{{ rabbitmq_password_galaxy_cz01 }}@proxy.internal.galaxyproject.eu:5671//pulsar/galaxy_cz01?ssl=1"
+        amqp_url: "pyamqp://galaxy_cz01:{{ rabbitmq_password_galaxy_cz01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_cz01?ssl=1"
         galaxy_url: "https://usegalaxy.eu"
         manager: production
         amqp_acknowledge: true
