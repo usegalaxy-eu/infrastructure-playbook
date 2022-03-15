@@ -25,7 +25,7 @@ certbot_share_key_users:
 
 certbot_post_renewal: |
     systemctl restart nginx || true
-#    systemctl restart rabbitmq-server || true
+    systemctl restart docker || true
 certbot_virtualenv_package_name: python3-virtualenv
 certbot_virtualenv_command: virtualenv
 certbot_well_known_root: /srv/nginx/_well-known_root
