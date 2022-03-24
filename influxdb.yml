@@ -10,10 +10,24 @@
       alternatives:
         name: python
         path: /usr/bin/python3
-    - name: Install Dependencies
-      package:
-        name: ['python3-requests', 'python3-virtualenv']
-      become: true
+    - name: Install docker pip package
+      ansible.builtin.pip:
+        name: docker
+    - name: Set docker_users (Docker role)
+      set_fact:
+        docker_users: "centos"
+    - name: Configure SELinux
+      ansible.posix.seboolean:
+        name: "{{ item }}"
+        state: true
+        persistent: true
+      loop:
+        - httpd_can_network_connect
+    - name: Disable firewalld service
+      ansible.builtin.service:
+        name: firewalld
+        enabled: false
+        state: stopped
   collections:
     - devsec.hardening
   roles:
@@ -22,15 +36,18 @@
       vars:
         enable_hostname: true
         enable_powertools: true        # geerlingguy.repo-epel role doesn't enable PowerTools repository
-        enable_install_software: true  # Some extra admin tools (*top, vim, etc)
-    - geerlingguy.repo-epel     # Install EPEL repository
-    - usegalaxy-eu.autoupdates  # keep all of our packages up to date
-    - influxdata.chrony         # Keep our time in sync.
-    - usegalaxy-eu.dynmotd
-    - hxr.monitor-email
-    - galaxyproject.nginx
-    - usegalaxy_eu.influxdb
-    - hxr.influxdb
+        enable_remap_user: true
+        enable_create_user: true
+#    - geerlingguy.repo-epel     # Install EPEL repository
+#    - usegalaxy-eu.autoupdates  # keep all of our packages up to date
+#    - influxdata.chrony         # Keep our time in sync.
+#    - usegalaxy-eu.dynmotd
+#    - hxr.monitor-email
+#    # Applications
+#    - geerlingguy.docker
+#    - galaxyproject.nginx
+    - usegalaxy_eu.influxdbserver
     - dj-wasabi.telegraf
+    # hardening
     - os_hardening
     - ssh_hardening

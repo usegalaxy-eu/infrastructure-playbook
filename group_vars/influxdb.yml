@@ -1,53 +1,78 @@
 ---
-# Volumes
-influxdb_base_data_dir: /data_is/monitoring/influxdb_data
-# usegalaxy_eu_autofs_mounts:
-#  - vdb
+# influxdb
+influxdb_https_enabled: "true"
+
+influxdb_users:
+  admin:
+    - {username: "{{ influxdb.admin.username }}", password: "{{ influxdb.admin.password }}"}
+  regular:
+    - {username: "{{ influxdb.grafana.username }}", password: "{{ influxdb.grafana.password }}"}
+    - {username: "{{ influxdb.node.username }}", password: "{{ influxdb.node.password }}"}
+influxdb_data_dir: /data/monitoring/influxdb_data
+
+influxdb_container_standalone_setup_details:
+  volumes:
+    - "{{ influxdb_data_dir }}:/var/lib/influxdb"
+    - "/etc/pki/tls/certs:/etc/ssl/certs/"
+    - "/etc/ssl/user:/etc/ssl/user"
+  ports:
+    - 8086:8086
+  env:
+    {
+      'INFLUXDB_HTTP_AUTH_ENABLED': "true",
+      'INFLUXDB_HTTP_ENABLED': "true",
+      'INFLUXDB_HTTP_HTTPS_ENABLED': "{{ influxdb_https_enabled }}",
+      'INFLUXDB_HTTP_HTTPS_CERTIFICATE': "/etc/ssl/certs/fullchain.pem",
+      'INFLUXDB_HTTP_HTTPS_PRIVATE_KEY': "/etc/ssl/user/privkey-influxdb.pem",
+      'INFLUXDB_HTTP_LOG_ENABLED': "false",
+      'INFLUXDB_DATA_INDEX_VERSION': "tsi1",
+      'INFLUXDB_DATA_CACHE_MAX_MEMORY_SYZE': '1048576000',
+      'INFLUXDB_DATA_CACHE_SNAPSHOT_WRITE_COLD_DURATION': "10s",
+      'INFLUXDB_DATA_MAX_VALUES_PER_TAG': '3000000',
+      'INFLUXDB_LOGGING_LEVEL': "error"
+    }
+# see:
+# https://docs.influxdata.com/influxdb/v1.8/administration/config/
+
+
+# create_user task
+user_name: influxdb
+user_uid: 999
+user_group_name: influxdb
+user_gid: 999
 
 # Certbot
+certbot_admin_email: security@usegalaxy.eu
+certbot_agree_tos: --agree-tos
 certbot_auth_method: --webroot
-certbot_well_known_root: /srv/nginx/_well-known_root
+certbot_auto_renew: true
+certbot_auto_renew_user: root
+certbot_auto_renew_hour: "{{ 23 |random(seed=inventory_hostname)  }}"
+certbot_auto_renew_minute: "{{ 59 |random(seed=inventory_hostname)  }}"
+certbot_domains:
+  - "{{ hostname }}"
+certbot_environment: "production"    # change to production when ready to go
+certbot_install_method: virtualenv
 certbot_share_key_users:
   - nginx
   - influxdb
-certbot_virtualenv_command: virtualenv-3.6
-certbot_virtualenv_package_name: python3-virtualenv
+
 certbot_post_renewal: |
     systemctl restart nginx || true
-    systemctl restart influxdb || true
+    systemctl restart docker || true
+certbot_virtualenv_package_name: python3-virtualenv
+certbot_virtualenv_command: virtualenv
+certbot_well_known_root: /srv/nginx/_well-known_root
 
 # NGINX
 nginx_enable_default_server: false
 nginx_servers:
-  - influxdb
+  - redirect-ssl
 nginx_ssl_servers:
   - influxdb-ssl
-nginx_conf_http:
-  client_max_body_size: 1g
+nginx_remove_default_vhost: true
 
 # Nginx Letsencrypt bindings
 nginx_ssl_role: usegalaxy-eu.certbot
 nginx_conf_ssl_certificate: /etc/ssl/certs/fullchain.pem
 nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
-
-# InfluxDB
-influxdb_http_auth_enabled: "true"
-influxdb_http_https_enabled: "true"
-influxdb_http_https_certificate: "/etc/ssl/certs/fullchain.pem"
-influxdb_http_https_private_key: "/etc/ssl/user/privkey-influxdb.pem"
-influxdb_http_log_enabled: "false"
-
-# InfluxDB data
-influxdb_index_version: "tsi1"
-influxdb_data_cache_max_memory_size: 1048576000
-influxdb_data_cache_snapshot_write_cold_duration: "10s"
-influxdb_data_max_values_per_tag: 3000000
-
-# InfluxDB logging
-influxdb_logging_level: "error"
-
-# [[graphite]]
-influxdb_graphite_enabled: "false"
-influxdb_collectd_enabled: "false"
-influxdb_tsb_enabled: "false"
-influxdb_udp_enabled: "false"
