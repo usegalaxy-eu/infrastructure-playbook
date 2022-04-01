@@ -7,6 +7,11 @@
     - "secret_group_vars/all.yml"
   collections:
     - devsec.hardening
+  pre_tasks:
+    - name: Set default version of Python
+      alternatives:
+        name: python
+        path: /usr/bin/python3
   post_tasks:
     - file:
         src: /data/dnb01
@@ -21,8 +26,8 @@
       vars:
         enable_hostname: true
         enable_powertools: true        # geerlingguy.repo-epel role doesn't enable PowerTools repository
-        enable_remap_user: true
-        enable_create_user: true
+        enable_grub: true
+        enable_kernel_5: true
     - geerlingguy.repo-epel     # Install EPEL repository
     - usegalaxy-eu.autoupdates  # keep all of our packages up to date
     - influxdata.chrony         # Keep our time in sync.

@@ -12,6 +12,14 @@ autofs_service.enable: true
 nfs_kernel_tuning: true
 
 # CVMFS
+cvmfs_packages:
+  stratum1:
+    - httpd
+    - python3-mod_wsgi
+    - squid
+    - cvmfs-server
+    - cvmfs-config-default
+
 cvmfs_stratum1_create_directory: false
 
 cvmfs_stratum1_cache_dir:
