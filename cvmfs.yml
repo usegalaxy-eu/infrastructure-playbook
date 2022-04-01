@@ -1,0 +1,69 @@
+---
+- hosts: cvmfsstratum1servers
+  become: true
+  vars:
+    hostname: cvmfs1-ufr0.internal.galaxyproject.eu
+    cvmfs_packages:
+      stratum1:
+        - httpd
+        - python3-mod_wsgi
+        - squid
+        - cvmfs-server
+        - cvmfs-config-default
+  vars_files:
+    - "secret_group_vars/all.yml"
+  collections:
+    - devsec.hardening
+  pre_tasks:
+    - name: Set default version of Python
+      alternatives:
+        name: python
+        path: /usr/bin/python3
+  post_tasks:
+    - file:
+        src: /data/dnb01
+        dest: /srv
+        owner: root
+        group: root
+        state: link
+        force: true
+  roles:
+    ## Starting configuration of the operating system
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        enable_hostname: true
+        enable_powertools: true        # geerlingguy.repo-epel role doesn't enable PowerTools repository
+        enable_grub: true
+        enable_kernel_5: true
+    - geerlingguy.repo-epel     # Install EPEL repository
+    - usegalaxy-eu.autoupdates  # keep all of our packages up to date
+    - influxdata.chrony         # Keep our time in sync.
+    - usegalaxy-eu.dynmotd
+    ## Filesystems
+    - usegalaxy-eu.autofs
+      # Applications
+    - galaxyproject.cvmfs
+    - hxr.monitor-squid
+    - hxr.monitor-cvmfs
+    - dj-wasabi.telegraf
+    # hardening
+    - os_hardening
+    - ssh_hardening
+
+#
+#    - hostname
+#    - usegalaxy-eu.dynmotd
+#    - geerlingguy.repo-epel
+#    - hxr.admin-tools
+#    - influxdata.chrony
+#    - hxr.monitor-email
+#    - linuxhq.yum_cron
+#    - hxr.autofs
+#    # BEGIN custom
+#    - galaxyproject.cvmfs
+#    - hxr.monitor-squid
+#    - hxr.monitor-cvmfs
+#    # END custom
+#    - dj-wasabi.telegraf
+#    - dev-sec.os-hardening
+#    - dev-sec.ssh-hardening
