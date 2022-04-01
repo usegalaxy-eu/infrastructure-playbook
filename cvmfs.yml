@@ -3,14 +3,7 @@
   become: true
   vars:
     hostname: cvmfs1-ufr0.internal.galaxyproject.eu
-    cvmfs_packages:
-      stratum1:
-        - httpd
-        - python3-mod_wsgi
-        - squid
-        - cvmfs-server
-        - cvmfs-config-default
-  vars_files:
+   vars_files:
     - "secret_group_vars/all.yml"
   collections:
     - devsec.hardening
