@@ -20,7 +20,7 @@
         state: link
         force: true
   roles:
-    ## Starting configuration of the operating system
+    # Starting configuration of the operating system
     - role: usegalaxy_eu.handy.os_setup
       vars:
         enable_hostname: true
@@ -31,9 +31,9 @@
     - usegalaxy-eu.autoupdates  # keep all of our packages up to date
     - influxdata.chrony         # Keep our time in sync.
     - usegalaxy-eu.dynmotd
-    ## Filesystems
+    # Filesystems
     - usegalaxy-eu.autofs
-      # Applications
+    # Applications
     - galaxyproject.cvmfs
     - hxr.monitor-squid
     - hxr.monitor-cvmfs
