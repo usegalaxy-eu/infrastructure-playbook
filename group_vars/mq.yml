@@ -112,3 +112,12 @@ rabbitmq_container:
   name: rabbit_hole
   image: rabbitmq:3.9.11
   hostname: "{{ inventory_hostname }}"
+
+# Telegraf
+telegraf_plugins_extra:
+  rabbitmq:
+    plugin: rabbitmq
+    config:
+      - url = "http://localhost:15672"
+      - username = "telegraf"
+      - password = "{{ rabbitmq_password_telegraf }}"
