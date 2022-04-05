@@ -77,6 +77,13 @@
       loop:
         - "{{ galaxy_user.name }}"
         - "telegraf"
+    - name: Set authorized SSH key
+      ansible.posix.authorized_key:
+        user: "{{ galaxy_user.name }}"
+        state: present
+        key: "{{ item }}"
+      loop:
+        - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFH54+qZEBeU5uwIeWWOViLcC509qxoRW6oN0VHRQr4r nate@treehouse"
 
   roles:
     ## Starting configuration of the operating system
