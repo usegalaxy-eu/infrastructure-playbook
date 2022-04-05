@@ -27,9 +27,7 @@ __SET_METADATA__:
     rank: 'GalaxyGroup == "metadata"'
 
 keras_train_and_eval:
-  runner: condor_gpu
-  gpus: 1
-  cores: 7
+  cores: 4
   env:
     CUDA_VISIBLE_DEVICES: 0
 
