@@ -574,3 +574,50 @@ def gateway_for_hifiasm(app, job, tool, user, next_dest=None):
         env=env,
         resubmit=resubmit,
     )
+
+
+def gateway_for_keras_train_eval(app, job, tool, user, next_dest=None):
+    """"
+    Type of compute resource (CPU or GPU) for keras_train_eval tool depends on user's input from its wrapper.
+    Default resource is CPU.
+    """
+    param_dict = dict([(p.name, p.value) for p in job.parameters])
+    param_dict = tool.params_from_strings(param_dict, app)
+    tool_id = tool.id
+    if user:
+        user_roles = [role.name for role in user.all_roles() if not role.deleted]
+        user_preferences = user.extra_preferences
+        email = user.email
+        user_id = user.id
+    else:
+        user_roles = []
+        user_preferences = []
+        email = ''
+        user_id = -1
+
+    try:
+        env, params, runner, spec, tags = _gateway(tool_id, user_preferences, user_roles, user_id, email)
+    except Exception as e:
+        return JobMappingException(str(e))
+
+    resubmit = []
+    if next_dest:
+        resubmit = [{
+            'condition': 'any_failure and attempt <= 3',
+            'destination': next_dest
+        }]
+
+    name = name_it(spec)
+
+    if 'gpu' in param_dict:
+        if param_dict['gpu'] == '1':
+            runner = "condor_docker_ie_interactive_gpu"
+
+    return JobDestination(
+        id=name,
+        tags=tags,
+        runner=runner,
+        params=params,
+        env=env,
+        resubmit=resubmit,
+    )

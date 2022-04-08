@@ -720,6 +720,11 @@ galaxy_jobconf:
       params:
         type: python
         function: gateway_for_hifiasm
+    - id: gateway_for_keras_train_eval
+      runner: dynamic
+      params:
+        type: python
+        function: gateway_for_keras_train_eval
     # Pulsar MQs
     - id: remote_cluster_mq_cz
       runner: pulsar_eu_cz
