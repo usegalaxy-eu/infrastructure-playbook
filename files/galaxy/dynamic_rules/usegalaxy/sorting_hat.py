@@ -613,7 +613,8 @@ def gateway_for_keras_train_eval(app, job, tool, user, next_dest=None):
     # assign dynamic runner based on user's input from tool wrapper
     if 'gpu' in param_dict:
         if param_dict['gpu'] == '1':
-            runner = "condor_docker_ie_interactive_gpu"
+            params['requirements'] = 'GalaxyGroup == "compute_gpu"'
+            params['request_gpus'] = 1
 
     # create dynamic destination rule
     return JobDestination(
