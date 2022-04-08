@@ -595,24 +595,27 @@ def gateway_for_keras_train_eval(app, job, tool, user, next_dest=None):
         email = ''
         user_id = -1
 
+    # get default job destination parameters
     try:
         env, params, runner, spec, tags = _gateway(tool_id, user_preferences, user_roles, user_id, email)
     except Exception as e:
         return JobMappingException(str(e))
 
+    # set up to resubmit job in case of failure
     resubmit = []
     if next_dest:
         resubmit = [{
             'condition': 'any_failure and attempt <= 3',
             'destination': next_dest
         }]
-
     name = name_it(spec)
 
+    # assign dynamic runner based on user's input from tool wrapper
     if 'gpu' in param_dict:
         if param_dict['gpu'] == '1':
             runner = "condor_docker_ie_interactive_gpu"
 
+    # create dynamic destination rule
     return JobDestination(
         id=name,
         tags=tags,
