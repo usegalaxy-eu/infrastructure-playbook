@@ -611,10 +611,11 @@ def gateway_for_keras_train_eval(app, job, tool, user, next_dest=None):
     name = name_it(spec)
 
     # assign dynamic runner based on user's input from tool wrapper
-    if 'gpu' in param_dict:
-        if param_dict['gpu'] == '1':
-            params['requirements'] = 'GalaxyGroup == "compute_gpu"'
-            params['request_gpus'] = 1
+    if '__job_resource' in param_dict:
+        if 'gpu' in param_dict['__job_resource']:
+            if param_dict['__job_resource']['gpu'] == '1':
+                params['requirements'] = 'GalaxyGroup == "compute_gpu"'
+                params['request_gpus'] = 1
 
     # create dynamic destination rule
     return JobDestination(
