@@ -135,6 +135,17 @@ def assert_permissions(tool_spec, user_email, user_roles):
     raise Exception(exception_text)
 
 
+def change_object_store_dependent_on_user(params, user_roles):
+    """
+    Different roles can have their own storage. Here we overwrite the object store based on user associated roles.
+    Example: A user belongs to the role 'dataplant'. Those users own dedicated storage that they include into Galaxy.
+        Here, we change the 'object_store_id' based in the role 'dataplant'.
+    """
+    if 'dataplant' in user_roles:
+        params['object_store_id'] = 'dataplant01'
+    return params
+
+
 def get_tool_id(tool_id):
     """
     Convert ``toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/1.1.0``
@@ -462,6 +473,7 @@ def gateway(tool_id, user, memory_scale=1.0, next_dest=None):
         }]
 
     name = name_it(spec)
+    params = change_object_store_dependent_on_user(params, user_roles)
     return JobDestination(
         id=name,
         tags=tags,
@@ -616,6 +628,7 @@ def gateway_for_keras_train_eval(app, job, tool, user, next_dest=None):
             if param_dict['__job_resource']['gpu'] == '1':
                 params['requirements'] = 'GalaxyGroup == "compute_gpu"'
                 params['request_gpus'] = 1
+                # env.append({'name': 'GPU_AVAILABLE', 'value': '1'})
 
     # create dynamic destination rule
     return JobDestination(
