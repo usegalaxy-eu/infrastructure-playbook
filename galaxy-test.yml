@@ -36,19 +36,23 @@
         policy: targeted
         state: permissive
   roles:
-    - hostname
-
-    ## remap user
-    - usegalaxy-eu.remap-user
+    ## Starting configuration of the operating system
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        enable_hostname: true
+        enable_powertools: true        # geerlingguy.repo-epel role doesn't enable PowerTools repository
+        enable_remap_user: true
+        enable_exclude_packages: true
+        enable_pam_limits: true        # Prevent out of control processes
+        enable_install_software: true  # Some extra admin tools (*top, vim, etc)
 
     ## Dependencies
     - geerlingguy.repo-epel # Install EPEL
     #- usegalaxy-eu.powertools # geerlingguy.repo-epel role doesn't enable (yet) PowerTools repository
     # We want to exclude a couple of packages as we will fetch those
     # dependencies from other repos: condor, node/npm
-    - hxr.exclude-repo
+
     - usegalaxy-eu.autoupdates # keep all of our packages up to date
-    - hxr.admin-tools # Some extra admin tools (*top, vim, etc)
     - influxdata.chrony # Keep our time in sync.
 
     ## Filesystems
@@ -74,7 +78,7 @@
         galaxy_fetch_dependencies: false
         galaxy_build_client: false
     # The bashrc needs to be created for several later features.
-    #- usegalaxy-eu.bashrc
+    - usegalaxy-eu.bashrc
 
     ## Setup docker
     - geerlingguy.docker
@@ -83,10 +87,7 @@
     - usegalaxy-eu.htcondor
 
     # Misc.
-    - role: hxr.galaxy-cron
-      become: true
-      become_user: galaxy
-    - role: hxr.galaxy-nonreproducible-tools
+      - role: hxr.galaxy-nonreproducible-tools
       become: true
       become_user: galaxy
     # - hxr.galaxy-misc
