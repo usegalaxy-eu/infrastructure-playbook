@@ -7,9 +7,9 @@
     tusd_instances:
       - name: test_uploads
         # user that tusd will run as
-        user: "{{ galaxy_user.name }}"
+        user: "{{ user_name }}"
         # group that tusd will run as
-        group: "{{ galaxy_group.name }}"
+        group: "{{ group_name }}"
         # args passed to tusd
         args:
           - -host=upload.galaxyproject.eu
@@ -19,9 +19,9 @@
           - -hooks-http-forward-headers=X-Api-Key,Cookie
       - name: main_uploads
         # user that tusd will run as
-        user: "{{ galaxy_user.name }}"
+        user: "{{ user_name }}"
         # group that tusd will run as
-        group: "{{ galaxy_group.name }}"
+        group: "{{ group_name }}"
         # args passed to tusd
         args:
           - -host=upload.galaxyproject.eu
