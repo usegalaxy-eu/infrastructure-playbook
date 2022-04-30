@@ -1,14 +1,10 @@
 ---
-# users
-galaxy_user:
-    name: galaxy
-    uid: 999
-    shell: /sbin/nologin
-    comment: Tusd Service-Acct
-
-galaxy_group:
-    name: galaxy
-    gid: 999
+# create_user task
+user_name: galaxy
+user_uid: 999
+user_comment: Tusd Service-Acct
+user_group_name: galaxy
+user_gid: 999
 
 # Autofs
 autofs_service.install: true
