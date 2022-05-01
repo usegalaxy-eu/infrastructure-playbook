@@ -306,6 +306,9 @@ galaxy_group:
   name: galaxy
   gid: 999
 
+# Galaxy configuration files will be written with these permissions (mode argument to Ansible copy/template module)
+galaxy_config_perms: 0644
+
 galaxy_root: /opt/galaxy
 galaxy_handler_count: "{{ galaxy_systemd_handlers }}"
 galaxy_workflow_scheduler_count: "{{ galaxy_systemd_workflow_schedulers }}"
