@@ -89,8 +89,8 @@ fsm_scripts:
     user: "{{ fsm_galaxy_user.username }}"
     group: "{{ fsm_galaxy_user.groupname }}"
     paths:
-      - "{{ galaxy_config['app:main']['nginx_upload_store'] }}"
-      - "{{ galaxy_config['app:main']['nginx_upload_job_files_store'] }}"
+      - "{{ galaxy_config['galaxy']['nginx_upload_store'] }}"
+      - "{{ galaxy_config['galaxy']['nginx_upload_job_files_store'] }}"
     time: "{{ fsm_intervals.medium }}"
   job_working_dirs:
     enable: true
@@ -99,7 +99,7 @@ fsm_scripts:
     user: "{{ fsm_galaxy_user.username }}"
     group: "{{ fsm_galaxy_user.groupname }}"
     paths:
-      - "{{ galaxy_config['app:main']['job_working_directory'] }}"
+      - "{{ galaxy_config['galaxy']['job_working_directory'] }}"
       - /data/dnb03/galaxy_db/job_working_directory
       - /data/dnb05/galaxy_db/jwd
       - /data/dnb06/galaxy_db/jwd
@@ -132,7 +132,7 @@ fsm_htcondor_enable: true
 # Telegraf
 telegraf_agent_hostname: "{{ hostname }}"
 telegraf_agent_version: 1.17.2
-custom_telegraf_env: "/usr/bin/env GDPR_MODE=1 PGUSER={{ galaxy_user.name }} PGHOST={{ postgres_host }} GALAXY_ROOT={{ galaxy_server_dir }} GALAXY_CONFIG_FILE={{ galaxy_config_dir }}/galaxy.ini GALAXY_LOG_DIR={{ galaxy_log_dir }} GXADMIN_PYTHON={{ galaxy_venv_dir }}/bin/python"
+custom_telegraf_env: "/usr/bin/env GDPR_MODE=1 PGUSER={{ galaxy_user.name }} PGHOST={{ postgres_host }} GALAXY_ROOT={{ galaxy_server_dir }} GALAXY_CONFIG_FILE={{ galaxy_config_file }} GALAXY_LOG_DIR={{ galaxy_log_dir }} GXADMIN_PYTHON={{ galaxy_venv_dir }}/bin/python"
 telegraf_plugins_extra:
   postgres:
     plugin: "postgresql"
@@ -497,6 +497,9 @@ galaxy_backup_configfiles: false
 galaxy_server_dir: "{{ galaxy_root }}/server"
 galaxy_config_dir: "{{ galaxy_root }}/config"
 galaxy_venv_dir: "{{ galaxy_root }}/venv"
+galaxy_job_working_directory: "{{ galaxy_config['galaxy']['job_working_directory'] }}"
+ucsc_build_sites:
+
 galaxy_virtualenv_command: "pyvenv"
 #galaxy_virtualenv_python: "python3.6"
 galaxy_nonrepro_tools: "{{ galaxy_root }}/custom-tools"
@@ -532,7 +535,7 @@ galaxy_dirs:
   - "{{ galaxy_log_dir }}"
 
 galaxy_instance_hostname: usegalaxy.eu
-galaxy_config_style: ini
+galaxy_config_style: yaml
 
 galaxy_repo: 'https://github.com/usegalaxy-eu/galaxy.git'
 galaxy_commit_id: 'release_21.09_europe'
@@ -1012,36 +1015,36 @@ galaxy_config_file_src_dir: files/galaxy
 galaxy_config_files:
   # TODO(bgruening): sync this with cvmfs? can we have ours be just a small additional builds.txt?
   - src: "{{ galaxy_config_file_src_dir }}/config/builds.txt"
-    dest: "{{ galaxy_config['app:main']['builds_file_path'] }}"
+    dest: "{{ galaxy_config['galaxy']['builds_file_path'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/data_manager_conf.xml"
-    dest: "{{ galaxy_config['app:main']['data_manager_config_file'] }}"
+    dest: "{{ galaxy_config['galaxy']['data_manager_config_file'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/datatypes_conf.xml"
-    dest: "{{ galaxy_config['app:main']['datatypes_config_file'] }}"
+    dest: "{{ galaxy_config['galaxy']['datatypes_config_file'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/dependency_resolvers_conf.xml"
-    dest: "{{ galaxy_config['app:main']['dependency_resolvers_config_file'] }}"
+    dest: "{{ galaxy_config['galaxy']['dependency_resolvers_config_file'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/email_domain_blocklist.conf"
-    dest: "{{ galaxy_config['app:main']['email_domain_blocklist_file'] }}"
+    dest: "{{ galaxy_config['galaxy']['email_domain_blocklist_file'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/user_preferences_extra_conf.yml"
-    dest: "{{ galaxy_config['app:main']['user_preferences_extra_conf_path'] }}"
+    dest: "{{ galaxy_config['galaxy']['user_preferences_extra_conf_path'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/job_resource_params_conf.xml"
-    dest: "{{ galaxy_config['app:main']['job_resource_params_file'] }}"
+    dest: "{{ galaxy_config['galaxy']['job_resource_params_file'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/trs_servers_conf.yml"
-    dest: "{{ galaxy_config['app:main']['trs_servers_config_file'] }}"
+    dest: "{{ galaxy_config['galaxy']['trs_servers_config_file'] }}"
   # test? Unknown if this works.
   - src: "{{ galaxy_config_file_src_dir }}/config/error_report.yml"
     dest: "{{ galaxy_config_dir }}/error_report.yml"
   - src: "{{ galaxy_config_file_src_dir }}/config/job_metrics_conf.xml"
-    dest: "{{ galaxy_config['app:main']['job_metrics_config_file'] }}"
+    dest: "{{ galaxy_config['galaxy']['job_metrics_config_file'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/migrated_tools_conf.xml"
-    dest: "{{ galaxy_config['app:main']['migrated_tools_config'] }}"
+    dest: "{{ galaxy_config['galaxy']['migrated_tools_config'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/object_store_conf.xml"
-    dest: "{{ galaxy_config['app:main']['object_store_config_file'] }}"
+    dest: "{{ galaxy_config['galaxy']['object_store_config_file'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/tool_data_table_conf.xml"
     dest: "{{ galaxy_config_dir }}/tool_data_table_conf.xml"
   - src: "{{ galaxy_config_file_src_dir }}/config/tool_sheds_conf.xml"
-    dest: "{{ galaxy_config['app:main']['tool_sheds_config_file'] }}"
+    dest: "{{ galaxy_config['galaxy']['tool_sheds_config_file'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/ucsc_build_sites.txt"
-    dest: "{{ galaxy_config['app:main']['ucsc_build_sites'] }}"
+    dest: "{{ galaxy_config['galaxy']['ucsc_build_sites'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/echo_main_env.xml"
     dest: "{{ galaxy_config_dir }}/echo_main_env.xml"
 
@@ -1059,7 +1062,7 @@ galaxy_config_files:
 galaxy_config_template_src_dir: templates/galaxy
 galaxy_config_templates:
   - src: "{{ galaxy_config_template_src_dir }}/config/build_sites.yml.j2"
-    dest: "{{ galaxy_config['app:main']['build_sites_config_file'] }}"
+    dest: "{{ galaxy_config['galaxy']['build_sites_config_file'] }}"
   - src: "{{ galaxy_config_template_src_dir }}/config/global_host_filters.py.j2"
     dest: "{{ galaxy_server_dir }}/lib/galaxy/tools/toolbox/filters/global_host_filters.py"
   - src: "{{ galaxy_config_template_src_dir }}/config/job_conf.xml.j2"
@@ -1073,9 +1076,9 @@ galaxy_config_templates:
   - src: "{{ galaxy_config_template_src_dir }}/config/nagios_tool_conf.xml"
     dest: "{{ galaxy_config_dir }}/nagios_tool_conf.xml"
   - src: "{{ galaxy_config_template_src_dir }}/config/oidc_backends_config.xml"
-    dest: "{{ galaxy_config['app:main']['oidc_backends_config_file'] }}"
+    dest: "{{ galaxy_config['galaxy']['oidc_backends_config_file'] }}"
   - src: "{{ galaxy_config_template_src_dir }}/config/oidc_config.xml"
-    dest: "{{ galaxy_config['app:main']['oidc_config_file'] }}"
+    dest: "{{ galaxy_config['galaxy']['oidc_config_file'] }}"
   - src: "{{ galaxy_config_template_src_dir }}/config/grt.yml.j2"
     dest: "{{ galaxy_config_dir }}/grt.yml"
   - src: "{{ galaxy_config_template_src_dir }}/config/pulsar_app.yml"
