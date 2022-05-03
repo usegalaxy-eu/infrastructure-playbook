@@ -133,6 +133,11 @@ base_app_main: &BASE_APP_MAIN
   # <data_dir>.
   new_file_path: /data/jwd/tmp
 
+  # Maximum size of uploadable files, specified in bytes (default:
+  # 100GB). This value is ignored if an external upload server is
+  # configured.
+  #maximum_upload_file_size: 107374182400
+
   # Tool config files, defines what tools are available in Galaxy. Tools
   # can be locally developed or installed from Galaxy tool sheds.
   # (config/tool_conf.xml.sample will be used if left unset and
@@ -156,18 +161,10 @@ base_app_main: &BASE_APP_MAIN
   # <managed_config_dir>.
   shed_tool_config_file: "{{ galaxy_shed_tool_conf_file }}"
 
-  # Enable / disable checking if any tools defined in the above non-shed
-  # tool_config_files (i.e., tool_conf.xml) have been migrated from the
-  # Galaxy code distribution to the Tool Shed. This functionality is
-  # largely untested in modern Galaxy releases and has serious issues
-  # such as #7273 and the possibility of slowing down Galaxy startup, so
-  # the default and recommended value is false.
-  #check_migrate_tools: false
-
-  # Tool config maintained by tool migration scripts.  If you use the
-  # migration scripts to install tools that have been migrated to the
-  # tool shed upon a new release, they will be added to this tool config
-  # file.
+  # This option is deprecated. In previous releases this file was
+  # maintained by tool migration scripts that are no longer part of the
+  # code base. The option remains as a placeholder for deployments where
+  # these scripts were previously run and such a file exists.
   # The value of this option will be resolved with respect to
   # <managed_config_dir>.
   migrated_tools_config: "{{ galaxy_config_dir }}/migrated_tools_conf.xml"
@@ -286,6 +283,15 @@ base_app_main: &BASE_APP_MAIN
   # <config_dir>.
   tool_sheds_config_file: "{{ galaxy_config_dir }}/tool_sheds_conf.xml"
 
+  # This option controls whether legacy datatypes are loaded from
+  # installed tool shed repositories. We're are in the process of
+  # disabling Tool Shed datatypes. This option with a default of true
+  # will be added in 22.01, we will disable the datatypes on the big
+  # public servers during that release. This option will be switched to
+  # False by default in 22.05 and this broken functionality will be
+  # removed all together during some future release.
+  #load_tool_shed_datatypes: true
+
   # Monitor the tools and tool directories listed in any tool config
   # file specified in tool_config_file option.  If changes are found,
   # tools are automatically reloaded. Watchdog (
@@ -327,19 +333,19 @@ base_app_main: &BASE_APP_MAIN
   # Singularity enabled.
   enable_mulled_containers: 'True'
 
-  # Container resolvers configuration (beta). Set up a file describing
+  # Container resolvers configuration. Set up a file describing
   # container resolvers to use when discovering containers for Galaxy.
   # If this is set to None, the default container resolvers loaded is
-  # determined by enable_mulled_containers.
+  # determined by enable_mulled_containers. For available options see
+  # config/container_resolvers_conf.xml.sample.
   container_resolvers_config_file: "{{ galaxy_config_dir }}/container_resolvers_conf.xml"
+
 
   # Rather than specifying a container_resolvers_config_file, the
   # definition of the resolvers to enable can be embedded into Galaxy's
   # config with this option. This has no effect if a
-  # container_resolvers_config_file is used.
-  # The syntax, available resolvers, and documentation of their options
-  # is explained in detail in the documentation:
-  # https://docs.galaxyproject.org/en/master/admin/dependency_resolvers.html
+  # container_resolvers_config_file is used. Takes the same options that
+  # can be set in container_resolvers_config_file.
   #container_resolvers: null
 
   # involucro is a tool used to build Docker or Singularity containers
@@ -497,7 +503,7 @@ base_app_main: &BASE_APP_MAIN
   # to this directory.
   # The value of this option will be resolved with respect to
   # <data_dir>.
-  cluster_files_directory: /data/dnb01/galaxy_db/pbs
+  #cluster_files_directory: pbs
 
   # Mako templates are compiled as needed and cached for reuse, this
   # directory is used for the cache
@@ -615,6 +621,10 @@ base_app_main: &BASE_APP_MAIN
   # The value of this option will be resolved with respect to
   # <cache_dir>.
   #mulled_resolution_cache_lock_dir: mulled/locks
+
+  # Seconds until the beaker cache is considered old and a new value is
+  # created.
+  #mulled_resolution_cache_expire: 3600
 
   # Configuration file for the object store If this is set and exists,
   # it overrides any other objectstore settings.
@@ -801,16 +811,21 @@ base_app_main: &BASE_APP_MAIN
   # third-party server, tricking a Galaxy user to access said site.
   enable_old_display_applications: 'false'
 
-  # Enable InteractiveTools.
-  interactivetools_enable: true
-
   # This flag enables an AWS cost estimate for every job based on their
   # runtime matrices. CPU, RAM and runtime usage is mapped against AWS
   # pricing table. Please note, that those numbers are only estimates.
   aws_estimate: true
 
-  # Proxy host - assumed to just be hosted on the same hostname and port
-  # as Galaxy by default.
+  # Enable InteractiveTools.
+  interactivetools_enable: true
+
+  # Set this to false to redirect users of Interactive tools directly to
+  # the Interactive tools proxy. `interactivetools_upstream_proxy`
+  # should only be set to false in development.
+  #interactivetools_upstream_proxy: true
+
+  # Hostname and port of Interactive tools proxy. It is assumed to be
+  # hosted on the same hostname and port as Galaxy by default.
   #interactivetools_proxy_host: null
 
   # Base path for interactive tools running at a subpath without a
@@ -891,15 +906,18 @@ base_app_main: &BASE_APP_MAIN
   # user_preferences_extra_conf.yml
   #default_locale: auto
 
+  # URL prefix for Galaxy application. If Galaxy should be served under
+  # a prefix set this to the desired prefix value.
+  #galaxy_url_prefix: /
+
   # URL (with schema http/https) of the Galaxy instance as accessible
-  # within your local network - if specified used as a default by pulsar
-  # file staging and Jupyter Docker container for communicating back
+  # within your local network. This URL is used as a default by pulsar
+  # file staging and Interactive Tool containers for communicating back
   # with Galaxy via the API.
-  # If you are attempting to set up GIEs on Mac OS X with Docker Desktop
-  # for Mac and your Galaxy instance runs on port 8080 this should be
-  # 'http://host.docker.internal:8080'.  For more details see
-  # https://docs.docker.com/docker-for-mac/networking/
-  galaxy_infrastructure_url: 'https://usegalaxy.eu'
+  # If you plan to run Interactive Tools make sure the docker container
+  # can reach this URL. For more details see
+  # `job_conf.xml.interactivetools`.
+  #galaxy_infrastructure_url: https://usegalaxy.eu
 
   # If the above URL cannot be determined ahead of time in dynamic
   # environments but the port which should be used to access Galaxy can
@@ -1074,9 +1092,14 @@ base_app_main: &BASE_APP_MAIN
   # documentation for the corresponding nginx configuration.
   nginx_upload_job_files_path: '/_job_files'
 
+  # The upload store is a temporary directory in which files uploaded by
+  # the tus middleware or server will be placed. Defaults to
+  # new_file_path if not set.
+  #tus_upload_store: null
+
   # Galaxy can upload user files in chunks without using nginx. Enable
   # the chunk uploader by specifying a chunk size larger than 0. The
-  # chunk size is specified in bytes (default: 100MB).
+  # chunk size is specified in bytes (default: 10MB).
   chunk_upload_size: 0
 
   # Have Galaxy manage dynamic proxy component for routing requests to
@@ -1624,35 +1647,6 @@ base_app_main: &BASE_APP_MAIN
   # or 'format2'.
   #default_workflow_export_format: ga
 
-  # Following options only apply to workflows scheduled using the legacy
-  # workflow run API (running workflows via a POST to /api/workflows).
-  # Force usage of Galaxy's beta workflow scheduler under certain
-  # circumstances - this workflow scheduling forces Galaxy to schedule
-  # workflows in the background so initial submission of the workflows
-  # is significantly sped up. This does however force the user to
-  # refresh their history manually to see newly scheduled steps (for
-  # "normal" workflows - steps are still scheduled far in advance of
-  # them being queued and scheduling here doesn't refer to actual
-  # cluster job scheduling). Workflows containing more than the
-  # specified number of steps will always use the Galaxy's beta workflow
-  # scheduling.
-  #force_beta_workflow_scheduled_min_steps: 250
-
-  # Following options only apply to workflows scheduled using the legacy
-  # workflow run API (running workflows via a POST to /api/workflows).
-  # Force usage of Galaxy's beta workflow scheduler under certain
-  # circumstances - this workflow scheduling forces Galaxy to schedule
-  # workflows in the background so initial submission of the workflows
-  # is significantly sped up. This does however force the user to
-  # refresh their history manually to see newly scheduled steps (for
-  # "normal" workflows - steps are still scheduled far in advance of
-  # them being queued and scheduling here doesn't refer to actual
-  # cluster job scheduling). Workflows containing more than the
-  # specified number of steps will always use the Galaxy's beta workflow
-  # scheduling. Switch to using Galaxy's beta workflow scheduling for
-  # all workflows involving collections.
-  #force_beta_workflow_scheduled_for_collections: false
-
   # If multiple job handlers are enabled, allow Galaxy to schedule
   # workflow invocations in multiple handlers simultaneously. This is
   # discouraged because it results in a less predictable order of
@@ -1681,6 +1675,14 @@ base_app_main: &BASE_APP_MAIN
   # faster execution, but require more memory. Set to -1 to disable
   # creating datasets in batches.
   #flush_per_n_datasets: 1000
+
+  # Set this to a positive integer value to limit the number of datasets
+  # that can be discovered by a single job. This prevents accidentally
+  # creating large numbers of datasets when running tools that create a
+  # potentially unlimited number of output datasets, such as tools that
+  # split a file into a collection of datasets for each line in an input
+  # dataset.
+  #max_discovered_files: 10000
 
   # Force serial scheduling of workflows within the context of a
   # particular history
@@ -1716,14 +1718,6 @@ base_app_main: &BASE_APP_MAIN
   # admin user account via API. You should probably not set this on a
   # production server.
   #master_api_key: null
-
-  # Enable access to post-authentication options via OpenID.
-  #enable_openid: false
-
-  # If OpenID is enabled, consumer cache directory to use.
-  # The value of this option will be resolved with respect to
-  # <cache_dir>.
-  #openid_consumer_cache_path: openid_consumer_cache
 
   # Enable tool tags (associating tools with tags).  This has its own
   # option since its implementation has a few performance implications
@@ -1800,6 +1794,13 @@ base_app_main: &BASE_APP_MAIN
   # command line to non-administrative users. Administrators can always
   # see dataset paths.
   expose_dataset_path: true
+
+  # This option allows users to view the tool wrapper source code. This
+  # is safe to enable if you have not hardcoded any secrets in any of
+  # the tool wrappers installed on this Galaxy server. If you have only
+  # installed tool wrappers from  public tool sheds and tools shipped
+  # with Galaxy there you can enable this option.
+  #enable_tool_source_display: false
 
   # XML config file that contains the job metric collection
   # configuration.
@@ -1956,6 +1957,16 @@ base_app_main: &BASE_APP_MAIN
   # may want to try the -noac mount option (Linux) or -actimeo=0
   # (Solaris).
   retry_job_output_collection: 30
+
+  # Determines which process will evaluate the tool command line. If set
+  # to "local" the tool command line, configuration files and other
+  # dynamic values will be templated in the job handler process. If set
+  # to ``remote`` the tool command line will be built as part of the
+  # submitted job. Note that ``remote`` is a beta setting that will be
+  # useful for materializing deferred datasets as part of the submitted
+  # job. Note also that you have to set ``metadata_strategy`` to
+  # ``extended`` if you set this option to ``remote``.
+  #tool_evaluation_strategy: local
 
   # In the past Galaxy would preserve its Python environment when
   # running jobs ( and still does for internal tools packaged with
@@ -2242,6 +2253,11 @@ base_app_main: &BASE_APP_MAIN
   # images and JSON of Topics/Subtopics/Slides as export. This location
   # is relative to galaxy/static
   #welcome_directory: plugins/welcome_page/new_user/static/topics/
+
+  # Vault config file.
+  # The value of this option will be resolved with respect to
+  # <config_dir>.
+  #vault_config_file: vault_conf.yml
 
   # TODO(hxr): UNDOCUMENTED
   #job_metrics_config_file: "{{ galaxy_config_dir }}/job_metrics_conf.xml"
