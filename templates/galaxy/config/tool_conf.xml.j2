@@ -6,6 +6,7 @@
     <tool file="data_source/ucsc_tablebrowser.xml" />
     <!-- <tool file="data_source/ucsc_tablebrowser_test.xml" /> -->
     <tool file="data_source/ucsc_tablebrowser_archaea.xml" />
+    <tool file="data_source/ncbi_datasets.xml" />
     <tool file="/opt/galaxy/custom-tools/test/lftp.xml" />
     <tool file="data_source/ebi_sra.xml" />
     <tool file="data_source/sra.xml" />
@@ -34,7 +35,7 @@
     <tool file="/opt/galaxy/custom-tools/test/omicsdi/omicsdi.xml" labels="beta" />
   </section>
   <section id="send_data" name="Send Data">
-    <tool file="cloud/send.xml" />
+    <tool file="data_export/send.xml" />
     <!--tool file="/opt/galaxy/custom-tools/test/seek/send.xml" labels="beta" /-->
     <!-- can be removed in 22.01 -->
     <tool file="/opt/galaxy/custom-tools/test/export/export_to_directory.xml" labels="beta" />
@@ -81,6 +82,16 @@
     <tool file="/opt/galaxy/custom-tools/unix_tools/find_and_replace.xml" hidden="True" />
     <tool file="/opt/galaxy/custom-tools/unix_tools/replace_text_in_column.xml" hidden="True" />
     <tool file="/opt/galaxy/custom-tools/unix_tools/replace_text_in_line.xml" hidden="True" />
+  </section>
+    <section id="convert" name="Convert Formats">
+    <tool file="filters/bed2gff.xml" />
+    <tool file="filters/gff2bed.xml" />
+    <tool file="maf/maf_to_bed.xml" />
+    <tool file="maf/maf_to_interval.xml" />
+    <tool file="maf/maf_to_fasta.xml" />
+    <tool file="filters/sff_extractor.xml" />
+    <tool file="filters/wig_to_bigwig.xml" />
+    <tool file="filters/bed_to_bigbed.xml" />
   </section>
   <section id="filter_and_sort" name="Filter and Sort">
     <tool file="stats/filtering.xml" />
