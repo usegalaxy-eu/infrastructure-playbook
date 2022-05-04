@@ -53,7 +53,7 @@
                       fi
       done
       JID=$1
-      WD=$(dirname `condor_q -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || dirname `condor_history -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || find "{{ galaxy_config['app:main']['job_working_directory'] }}" -maxdepth 3 -type d -name ${JID})
+      WD=$(dirname `condor_q -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || dirname `condor_history -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || find "{{ galaxy_config['galaxy']['job_working_directory'] }}" -maxdepth 3 -type d -name ${JID})
       cd $WD
       }
 
@@ -67,7 +67,7 @@
 - name: Insert some export vars
   lineinfile:
     path: "{{ galaxy_user.home }}/.bashrc"
-    line: "export GALAXY_CONFIG_FILE={{ galaxy_config_dir }}/galaxy.ini"
+    line: "export GALAXY_CONFIG_FILE={{ galaxy_config_file }}"
 
 - name: Check for bash_history
   stat:

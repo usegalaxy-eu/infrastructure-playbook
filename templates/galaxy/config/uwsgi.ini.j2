@@ -36,7 +36,7 @@ log-master-bufsize = 15865856
 ; application
 pythonpath = lib
 module = galaxy.webapps.galaxy.buildapp:uwsgi_app_factory()
-set = galaxy_config_file={{ galaxy_config_dir }}/galaxy.ini
+set = galaxy_config_file={{ galaxy_config_file }}
 set = galaxy_root={{ galaxy_server_dir }}
 
 die-on-term = true
