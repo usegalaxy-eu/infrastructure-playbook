@@ -19,6 +19,8 @@
     job: /usr/bin/galaxy-fix-user-quotas
     user: "{{ galaxy_user.name }}"
 
+# The gxadmin script has the following syntax: mutate set-quota-for-oidc-user <provider_name> <quota_name>
+
 - name: "Deploy script to attribute ELIXIR quota to ELIXIR AAI users "
   copy:
     content: |
