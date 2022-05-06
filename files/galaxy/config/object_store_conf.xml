@@ -142,8 +142,8 @@ The storage consists of 16 Gen6 type A200 storage nodes and 16 Gen5 type X410 no
 </object_store>
 
 <object_store type="s3" id="s3_netapp01">
-     <auth access_key="...." secret_key="....." />
-     <bucket name="unique_bucket_name_all_lowercase" use_reduced_redundancy="False" />
+     <auth access_key="{{ s3_netapp01.usegalaxy_eu.access_key }}" secret_key="{{ s3_netapp01.usegalaxy_eu.secret_key }}" />
+     <bucket name="{{ s3_netapp01.usegalaxy_eu.bucket_name }}" use_reduced_redundancy="False" />
      <cache path="/data/dnb06/s3_object_store_cache" size="1000" />
      <extra_dir type="job_work" path="/data/jwd/main"/>
      <extra_dir type="temp" path="/data/jwd/tmp"/>
