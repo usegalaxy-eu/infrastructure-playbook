@@ -3,7 +3,7 @@
 master = true
 processes = 4
 threads = 1
-listen = 200
+listen = 1000
 
 ; needed for IEs
 ;http-raw-body = true
@@ -19,6 +19,7 @@ thunder-lock = true
 ## harakiri = 600
 harakiri = 6000
 buffer-size = 16384
+max-requests = 5000 # respawn processes after serving 5000 requests
 
 # Mapping to serve style content.
 static-map= /static/style=static/style/blue
