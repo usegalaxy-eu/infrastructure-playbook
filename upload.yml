@@ -32,16 +32,16 @@
           - -hooks-http=https://usegalaxy.eu/api/upload/hooks
           - -hooks-http-forward-headers=X-Api-Key,Cookie
   pre_tasks:
-    name: Create a directory if it does not exist
-    ansible.builtin.file:
-      path: "{{ item }}"
-      state: directory
-      mode: '0755'
-      owner: "{{ user_name }}"
-      group: "{{ user_group_name }}"
-    loop:
-      - "{{ upload_dir_test }}"
-      - "{{ upload_dir_main }}"
+    - name: Create a directory if it does not exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+        owner: "{{ user_name }}"
+        group: "{{ user_group_name }}"
+      loop:
+        - "{{ upload_dir_test }}"
+        - "{{ upload_dir_main }}"
 
   roles:
     - role: usegalaxy_eu.handy.os_setup
