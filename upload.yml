@@ -4,6 +4,8 @@
   become: true
   become_user: root
   vars:
+    upload-dir-test: /data/jwd/tus_upload/test
+    upload-dir-main: /data/jwd/tus_upload/main
     tusd_instances:
       - name: test_uploads
         # user that tusd will run as
@@ -14,7 +16,7 @@
         args:
           - -host=upload.galaxyproject.eu
           - -port=1080
-          - -upload-dir=/data/dnb01/galaxy_db/tmp
+          - -upload-dir="{{ upload-dir-test }}"
           - -hooks-http=https://test.usegalaxy.eu/api/upload/hooks
           - -hooks-http-forward-headers=X-Api-Key,Cookie
       - name: main_uploads
@@ -26,9 +28,20 @@
         args:
           - -host=upload.galaxyproject.eu
           - -port=1081
-          - -upload-dir=/data/jwd/tmp
+          - -upload-dir="{{ upload-dir-main }}"
           - -hooks-http=https://usegalaxy.eu/api/upload/hooks
           - -hooks-http-forward-headers=X-Api-Key,Cookie
+  pre_tasks:
+    name: Create a directory if it does not exist
+    ansible.builtin.file:
+      path: "{{ item }}"
+      state: directory
+      mode: '0755'
+      owner: "{{ user_name }}"
+      group: "{{ user_group_name }}"
+    loop:
+      - "{{ upload-dir-test }}"
+      - "{{ upload-dir-main }}"
 
   roles:
     - role: usegalaxy_eu.handy.os_setup
