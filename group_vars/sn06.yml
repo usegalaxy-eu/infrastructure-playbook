@@ -1090,27 +1090,3 @@ galaxy_config_templates:
     dest: "{{ galaxy_config_dir }}/workflow_schedulers_conf.xml"
   - src: "{{ galaxy_config_template_src_dir }}/config/file_sources_conf.yml.j2"
     dest: "{{ galaxy_config_dir }}/file_sources_conf.yml"
-
-# usegalaxy-eu.fix-stuck-handlers
-sleep_duration: 300
-cron_tasks:
-  - name: "Call sync-to-nfs"
-    minute: 30
-    hour: 2
-    job: "/usr/bin/galaxy-sync-to-nfs"
-    user: galaxy
-  - name: "Restart handlers"
-    minute: 0
-    hour: 3
-    job: "/bin/bash -c 'for (( c=0; c<{{ galaxy_systemd_handlers }}; c++ )); do systemctl restart galaxy-handler@$c && sleep {{ sleep_duration }}; done'"
-    user: root
-  - name: "Restart zerglings"
-    minute: 19
-    hour: '*'
-    job: "/bin/bash -c 'for (( c=0; c<{{ galaxy_systemd_zerglings }}; c++ )); do systemctl restart galaxy-zergling@$c && sleep {{ sleep_duration }}; done'"
-    user: root
-  - name: "Restart workflow schedulers"
-    minute: 0
-    hour: 4
-    job: "/bin/bash -c 'for (( c=0; c<{{ galaxy_systemd_workflow_schedulers }}; c++ )); do systemctl restart galaxy-workflow-scheduler@$c && sleep {{ sleep_duration }}; done'"
-    user: root
