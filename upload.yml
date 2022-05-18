@@ -28,7 +28,7 @@
         args:
           - -host=upload.galaxyproject.eu
           - -port=1081
-          - -upload-dir=/data/jwd/tus_upload/main
+          - "-upload-dir={{ upload_dir_main }}"
           - -hooks-http=https://usegalaxy.eu/api/upload/hooks
           - -hooks-http-forward-headers=X-Api-Key,Cookie
   pre_tasks:
