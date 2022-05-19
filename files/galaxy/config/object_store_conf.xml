@@ -120,12 +120,12 @@ The storage consists of 16 Gen6 type A200 storage nodes and 16 Gen5 type X410 no
         </backend>
         <backend id="files11" type="disk" weight="0" store_by="uuid">
             <files_dir path="/data/dnb05/galaxy_db/files"/>
-            <extra_dir type="temp" path="/data/jwd/tmp"/>
+            <extra_dir type="temp" path="/data/jwd/object_store_temp/dnb05"/>
             <extra_dir type="job_work" path="/data/jwd/main"/>
         </backend>
         <backend id="files12" type="disk" weight="1" store_by="uuid">
             <files_dir path="/data/dnb06/galaxy_db/files"/>
-            <extra_dir type="temp" path="/data/jwd/tmp"/>
+            <extra_dir type="temp" path="/data/jwd/object_store_temp/dnb06"/>
             <extra_dir type="job_work" path="/data/jwd/main"/>
         </backend>
         <backend id="secondary" type="disk" weight="0" store_by="id">
@@ -135,7 +135,7 @@ The storage consists of 16 Gen6 type A200 storage nodes and 16 Gen5 type X410 no
         </backend>
         <backend id="dataplant01" type="disk" weight="0" store_by="uuid">
             <files_dir path="/data/dp01/galaxy_db/files"/>
-            <extra_dir type="temp" path="/data/jwd/tmp"/>
+            <extra_dir type="temp" path="/data/jwd/object_store_temp/dataplant01"/>
             <extra_dir type="job_work" path="/data/jwd/main"/>
         </backend>
     </backends>
