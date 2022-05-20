@@ -64,10 +64,9 @@
       alternatives:
         name: python
         path: /usr/bin/python3
-    - name: Put SELinux in permissive mode, logging actions that would be blocked.
+    - name: Disable SELinux
       selinux:
-        policy: targeted
-        state: permissive
+        state: disabled
   post_tasks:
     - name: Append some users to the systemd-journal group
       user:
