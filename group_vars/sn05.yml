@@ -70,11 +70,9 @@ postgresql_conf:
   - checkpoint_completion_target: 0.9
   - random_page_cost: 1.0
   - effective_cache_size: "16GB"
-# log dirs not set up yet
-#  - log_directory: "'/export/backups/pgsql/pg_log'"
-#  - log_checkpoints: "on"
 #  - log_line_prefix: "'%t:%r:%u@%d:[%p]<%m>: '"
-#  - log_min_duration_statement: 100
+  - log_checkpoints: "on"
+  - log_min_duration_statement: 100
 postgresql_pg_hba_conf:
   - "host    postgres        galaxy          132.230.223.239/32      md5"
   - "host    postgres        galaxy-test     132.230.223.239/32      md5"
