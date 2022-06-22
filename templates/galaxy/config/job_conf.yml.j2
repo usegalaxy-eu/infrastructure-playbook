@@ -44,7 +44,7 @@ handling:
 {% if galaxy_handler_count is defined %}
   processes:
 {% for n in range(galaxy_handler_count) %}
-    handler_{{ galaxy_instance_codename }}_{{ n }}
+    handler_{{ galaxy_instance_codename }}_{{ n }}:
 {% endfor %}
 {% endif %}
 
@@ -55,11 +55,11 @@ execution:
   default: {{ galaxy_jobconf['default_destination'] }}
   environments:
 {% for destination in galaxy_jobconf['destinations']|sort(attribute='id') %}
-    {{ destination['id'] }}
+    {{ destination['id'] }}:
       runner: {{ destination['runner'] }}
 {% if 'env' in destination %}
-{% for k in destination['env']|dict2items|sort(attribute='key')|list|items2dict %}
       env:
+{% for k in destination['env']|dict2items|sort(attribute='key')|list|items2dict %}
         - name: {{ k }}
           value: {{ destination['env'][k] }}
 {% endfor %}
@@ -68,9 +68,6 @@ execution:
 {% for k in destination['params']|dict2items|sort(attribute='key')|list|items2dict %}
       {{ k }}: {{ destination['params'][k] }}
 {% endfor %}
-{% endif %}
-{% if 'raw' in destination %}
-      {{ destination['raw'] }}
 {% endif %}
 {% endfor %}
 
@@ -103,13 +100,13 @@ tools:
 #
 limits:
 {% for limit in galaxy_jobconf['limits'] | sort(attribute='type') %}
-- type: {{ limit['type'] }}
-  value: {{ limit['value'] }}
+  - type: {{ limit['type'] }}
+    value: {{ limit['value'] }}
 {% if 'id' in limit %}
-  id: {{ limit['id'] }}
+    id: {{ limit['id'] }}
 {% elif 'tag' in limit %}
-  tag: {{ limit['tag'] }}
+    tag: {{ limit['tag'] }}
 {% elif 'window' in limit %}
-  window: {{ limit['window'] }}
+    window: {{ limit['window'] }}
 {% endif %}
 {% endfor %}
