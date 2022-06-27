@@ -53,7 +53,7 @@
                       fi
       done
       JID=$1
-      WD=$(dirname `condor_q -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || dirname `condor_history -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || find "{{ galaxy_config['galaxy']['job_working_directory'] }}""/0"${JID:0:2}"/"${JID:2:3:} -maxdepth 3 -type d -name ${JID})
+      WD=$(dirname `condor_q -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || dirname `condor_history -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || find "{{ galaxy_config['galaxy']['job_working_directory'] }}""/0"${JID:0:2}"/"${JID:2:3} -maxdepth 1 -type d -name ${JID})
       cd $WD
       }
 
