@@ -36,6 +36,9 @@
         policy: targeted
         state: permissive
   roles:
+    ## Dependencies
+    - geerlingguy.repo-epel # Install EPEL
+
     ## Starting configuration of the operating system
     - role: usegalaxy_eu.handy.os_setup
       vars:
@@ -45,12 +48,6 @@
         enable_exclude_packages: true
         enable_pam_limits: true        # Prevent out of control processes
         enable_install_software: true  # Some extra admin tools (*top, vim, etc)
-
-    ## Dependencies
-    - geerlingguy.repo-epel # Install EPEL
-    #- usegalaxy-eu.powertools # geerlingguy.repo-epel role doesn't enable (yet) PowerTools repository
-    # We want to exclude a couple of packages as we will fetch those
-    # dependencies from other repos: condor, node/npm
 
     - usegalaxy-eu.autoupdates # keep all of our packages up to date
     - influxdata.chrony # Keep our time in sync.
