@@ -225,8 +225,8 @@ galaxy_systemd_handlers: 2
 galaxy_systemd_workflow_schedulers: 2
 galaxy_systemd_memory_limit: 10
 galaxy_systemd_gunicorn_env: "{{ apollo_env }}"
-galaxy_systemd_handler_env: "{{ galaxy_systemd_handler_env }}"
-galaxy_systemd_workflow_scheduler_env: "{{ galaxy_systemd_handler_env }}"
+galaxy_systemd_handler_env: "{{ galaxy_systemd_gunicorn_env }}"
+galaxy_systemd_workflow_scheduler_env: "{{ galaxy_systemd_gunicorn_env }}"
 
 # HTCondor
 condor_host: "condor-cm.galaxyproject.eu"
