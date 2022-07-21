@@ -58,6 +58,7 @@
       }
 
       alias gl='journalctl  -f -u galaxy-*'
+      alias glg='journalctl -fu galaxy-gunicorn'
       alias glh='journalctl -f -u galaxy-handler@*'
       alias glz='journalctl -f -u galaxy-zergpool -u galaxy-zergling@* | grep -v "/api/histories"'
       alias glw='journalctl -f -u galaxy-workflow-scheduler@*'
