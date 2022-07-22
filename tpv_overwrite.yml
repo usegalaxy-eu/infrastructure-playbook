@@ -1,0 +1,840 @@
+## This file is a local EU overwrite of the global community TPV shared database of rules for the Total Perspective Vortex
+tools:
+  # local tools
+  upload1:
+    cores: 1
+    mem: 3
+    gpus: 0
+    env:
+      TEMP: /data/1/galaxy_db/tmp
+    scheduling:
+      require:
+      - condor_upload
+      - upload
+  __DATA_FETCH__:
+    cores: 1
+    mem: 3
+    gpus: 0
+    env:
+      TEMP: /data/1/galaxy_db/tmp
+    scheduling:
+      require:
+      - condor_upload
+      - upload
+  __SET_METADATA__:
+    cores: 1
+    mem: 1
+    gpus: 0
+    scheduling:
+      reject:
+      - pulsar
+    ## TODO this is to investigated
+    params:
+      requirements: GalaxyTraining == false
+      rank: GalaxyGroup == "metadata"
+    context:
+      params:
+        requirements: GalaxyTraining == false
+        rank: GalaxyGroup == "metadata"
+
+  interactive_tool_jupyter_notebook:
+    mem: 4
+    env:
+      HOME: /home/jovyan
+    scheduling:
+      require:
+      - condor_docker_ie_interactive
+      - docker
+    context:
+      force_destination_id: true
+  interactive_tool_pangeo_notebook:
+    mem: 4
+    env:
+      HOME: /home/jovyan
+    scheduling:
+      require:
+      - condor_docker_ie_interactive
+    context:
+      force_destination_id: true
+  interactive_tool_climate_notebook:
+    mem: 4
+    env:
+      HOME: /home/jovyan
+    scheduling:
+      require:
+      - condor_docker_ie_interactive
+    context:
+      force_destination_id: true
+  interactive_tool_ml_jupyter_notebook:
+    cores: 1
+    mem: 8
+    gpus: 1
+    scheduling:
+      require:
+      - condor_docker_ie_interactive_gpu
+    context:
+      force_destination_id: true
+      docker_run_extra_arguments: ' --gpus all'
+  interactive_tool_rstudio:
+    cores: 2
+    mem: 8
+    scheduling:
+      require:
+      - condor_docker_ie_interactive
+    context:
+      force_destination_id: true
+  interactive_tool_pyiron:
+    cores: 1
+    mem: 8
+    scheduling:
+      require:
+      - condor_docker_ie_interactive
+    context:
+      force_destination_id: true
+  interactive_tool_guacamole_desktop:
+    cores: 2
+    mem: 8
+    scheduling:
+      require:
+      - condor_docker_ie_interactive
+    context:
+      force_destination_id: true
+  interactive_tool_panoply:
+    mem: 4
+    scheduling:
+      require:
+      - condor_docker_ie
+    context:
+      force_destination_id: true
+  interactive_tool_vrm_editor:
+    cores: 1
+    mem: 4
+    scheduling:
+      require:
+      - condor_docker_ie_interactive
+    context:
+      force_destination_id: true
+  interactive_tool_openrefine:
+    mem: 4
+    scheduling:
+      require:
+      - condor_docker_ie
+    context:
+      force_destination_id: true
+  interactive_tool_audiolabeler:
+    mem: 4
+    scheduling:
+      require:
+      - condor_docker_ie
+    context:
+      force_destination_id: true
+  interactive_tool_ethercalc:
+    mem: 4
+    scheduling:
+      require:
+      - condor_docker_ie
+    context:
+      force_destination_id: true
+  interactive_tool_geoexplorer:
+    mem: 4
+    scheduling:
+      require:
+      - condor_docker_ie
+    context:
+      force_destination_id: true
+  interactive_tool_radiant:
+    mem: 4
+    scheduling:
+      require:
+      - condor_docker_ie
+    context:
+      force_destination_id: true
+  interactive_tool_higlass:
+    cores: 5
+    mem: 20
+    scheduling:
+      require:
+      - condor_docker_ie
+    context:
+      force_destination_id: true
+  interactive_tool_phinch:
+    mem: 4
+    scheduling:
+      require:
+      - condor_docker_ie
+    context:
+      force_destination_id: true
+  interactive_tool_neo4j:
+    mem: 4
+    scheduling:
+      require:
+      - condor_docker_ie
+    context:
+      force_destination_id: true
+  interactive_tool_cellxgene:
+    mem: 4
+    scheduling:
+      require:
+      - condor_docker_ie
+    context:
+      force_destination_id: true
+  interactive_tool_bam_iobio:
+    mem: 4
+    scheduling:
+      require:
+      - condor_docker_ie
+    context:
+      force_destination_id: true
+  interactive_tool_vcf_iobio:
+    mem: 4
+    scheduling:
+      require:
+      - condor_docker_ie
+    context:
+      force_destination_id: true
+  interactive_tool_askomics:
+    mem: 4
+    scheduling:
+      require:
+      - condor_docker_ie
+    context:
+      force_destination_id: true
+  interactive_tool_wilson:
+    mem: 4
+    scheduling:
+      require:
+      - condor_docker_ie
+    context:
+      force_destination_id: true
+  interactive_tool_wallace:
+    mem: 4
+    scheduling:
+      require:
+      - condor_docker_ie
+    context:
+      force_destination_id: true
+  interactive_tool_paraview:
+    mem: 4
+    scheduling:
+      require:
+      - condor_docker_ie
+    context:
+      force_destination_id: true
+  interactive_tool_simtext_app:
+    mem: 4
+    scheduling:
+      require:
+      - condor_docker_ie
+    context:
+      force_destination_id: true
+  interactive_tool_isee:
+    mem: 4
+    scheduling:
+      require:
+      - condor_docker_ie
+    context:
+      force_destination_id: true
+  interactive_tool_metashark:
+    cores: 1
+    mem: 4
+    scheduling:
+      require:
+      - condor_docker_ie
+    context:
+      force_destination_id: true
+  pcgr:
+    cores: 8
+    mem: 16
+    env:
+      GALAXY_PCGR_DIR: /data/db/databases/pcgr
+    scheduling:
+      require:
+      - condor_docker
+
+  interactive_tool_hicbrowser:
+    mem: 4
+    scheduling:
+      require:
+      - condor_docker_ie
+    context:
+      force_destination_id: true
+
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/openduck_run_smd/openduck_run_smd/.*:
+    cores: 1
+    gpus: 1
+    env:
+      CUDA_VISIBLE_DEVICES: 0
+      OPENDUCK_GPU_PARAM: --gpu-id 1
+    scheduling:
+      require:
+      - gpu
+      - docker
+    context:
+      docker_set_user: 1000
+      docker_run_extra_arguments: -e "OPENDUCK_GPU_PARAM=$OPENDUCK_GPU_PARAM" --gpus all
+
+  toolshed.g2.bx.psu.edu/repos/iuc/zerone/zerone/.*:
+    scheduling:
+      require:
+      - remote_cluster_mq_it01
+  toolshed.g2.bx.psu.edu/repos/iuc/basil/basil/.*:
+    scheduling:
+      require:
+      - remote_cluster_mq_it01
+  toolshed.g2.bx.psu.edu/repos/iuc/circos/circos/.*:
+    mem: 10
+    scheduling:
+      require:
+      - remote_cluster_mq_pt01
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/maxquant/maxquant/.*:
+    cores: 8
+    mem: 60
+    scheduling:
+      require:
+      - condor_singularity
+
+  toolshed.g2.bx.psu.edu/repos/iuc/lumpy_prep/lumpy_prep/.*:
+    mem: 8
+    scheduling:
+      require:
+      - condor_singularity_with_conda
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/pharmcat/pharmcat/.*:
+    mem: 4
+    env:
+      _JAVA_OPTIONS: -Xmx4G -Xms1G
+    scheduling:
+      require:
+      - docker
+
+  toolshed.g2.bx.psu.edu/repos/iuc/vardict_java/vardict_java/.*:
+    cores: 2
+    mem: 128
+    env:
+      _JAVA_OPTIONS: -Xmx128G -Xms1G
+      VARDICT_CHUNKSIZE: 1000000
+    scheduling:
+      require:
+      - condor_singularity_with_conda
+
+  toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold/.*:
+    cores: 10
+    mem: 32
+    env:
+      ALPHAFOLD_DB: /data/db/databases/alphafold_databases
+    scheduling:
+      require:
+      - condor_singularity
+
+  toolshed.g2.bx.psu.edu/repos/climate/cds_essential_variability/cds_essential_variability/.*:
+    env:
+      COPERNICUS_CDSAPIRC_KEY_FILE: /data/db/data_managers/COPERNICUS_CDSAPIRC_KEY_FILE
+  toolshed.g2.bx.psu.edu/repos/iuc/idr_download_by_ids/idr_download_by_ids/.*:
+    mem: 24
+    scheduling:
+      require:
+      - condor_singularity_with_conda
+
+  toolshed.g2.bx.psu.edu/repos/computational-metabolomics/dimspy_process_scans/dimspy_process_scans/.*:
+    cores: 4
+    mem: 12
+    env:
+      NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+      OMP_NUM_THREADS: 4
+      OPENBLAS_NUM_THREADS: 4
+      MKL_NUM_THREADS: 4
+      VECLIB_MAXIMUM_THREADS: 4
+      NUMEXPR_NUM_THREADS: 4
+      NUMBA_NUM_THREADS: 4
+  toolshed.g2.bx.psu.edu/repos/computational-metabolomics/dimspy_replicate_filter/dimspy_replicate_filter/.*:
+    cores: 4
+    mem: 12
+    env:
+      NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+      OMP_NUM_THREADS: 4
+      OPENBLAS_NUM_THREADS: 4
+      MKL_NUM_THREADS: 4
+      VECLIB_MAXIMUM_THREADS: 4
+      NUMEXPR_NUM_THREADS: 4
+      NUMBA_NUM_THREADS: 4
+
+  toolshed.g2.bx.psu.edu/repos/computational-metabolomics/dimspy_align_samples/dimspy_align_samples/.*:
+    cores: 4
+    mem: 12
+    env:
+      NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+      OMP_NUM_THREADS: 4
+      OPENBLAS_NUM_THREADS: 4
+      MKL_NUM_THREADS: 4
+      VECLIB_MAXIMUM_THREADS: 4
+      NUMEXPR_NUM_THREADS: 4
+      NUMBA_NUM_THREADS: 4
+
+  toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/.*:
+    cores: 8
+    mem: 8
+    gpus: 1
+    scheduling:
+      require:
+      - remote_cluster_mq_uk01
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/msgfplus/msgfplus/.*:
+    cores: 10
+    mem: 12
+    env:
+      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+    context:
+      name: special
+  toolshed.g2.bx.psu.edu/repos/galaxyp/openms_msgfplusadapter/MSGFPlusAdapter/.*:
+    cores: 10
+    mem: 12
+    env:
+      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+    context:
+      name: special
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/repeat_masker/repeatmasker_wrapper/.*:
+    cores: 8
+    env:
+      RM_LIB_PATH: /data/db/databases/dfam/3.4/
+
+  toolshed.g2.bx.psu.edu/repos/iuc/mothur_dist_seqs/mothur_dist_seqs/.*:
+    cores: 2
+    mem: 20
+    env:
+      TERM: vt100
+    scheduling:
+      require:
+      - condor_singularity
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/antismash/antismash/.*:
+    cores: 10
+    mem: 90
+    env:
+      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx96G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/bismark/bismark_bowtie/.*:
+    cores: 6
+    mem: 30
+    context:
+      name: bismark
+      tmp: large
+  toolshed.g2.bx.psu.edu/repos/bgruening/bismark/bismark_bowtie2/.*:
+    cores: 6
+    mem: 30
+    context:
+      name: bismark
+      tmp: large
+
+  toolshed.g2.bx.psu.edu/repos/iuc/chira_map/chira_map/.*:
+    cores: 10
+    mem: 80
+    scheduling:
+      require:
+      - condor_singularity_with_conda
+  toolshed.g2.bx.psu.edu/repos/iuc/chira_merge/chira_merge/.*:
+    cores: 1
+    mem: 60
+    scheduling:
+      require:
+      - condor_singularity_with_conda
+  toolshed.g2.bx.psu.edu/repos/iuc/chira_quantify/chira_quantify/.*:
+    cores: 1
+    mem: 60
+    scheduling:
+      require:
+      - condor_singularity_with_conda
+
+  toolshed.g2.bx.psu.edu/repos/iuc/chira_extract/chira_extract/.*:
+    cores: 24
+    mem: 100
+    scheduling:
+      require:
+      - condor_singularity_with_conda
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/openmg/ctb_openmg/.*:
+    mem: 20
+    env:
+      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+
+  toolshed.g2.bx.psu.edu/repos/iuc/gemini_inheritance/gemini_inheritance/.*:
+    env:
+      NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+      OMP_NUM_THREADS: 4
+      OPENBLAS_NUM_THREADS: 4
+      MKL_NUM_THREADS: 4
+      VECLIB_MAXIMUM_THREADS: 4
+      NUMEXPR_NUM_THREADS: 4
+      NUMBA_NUM_THREADS: 4
+
+  toolshed.g2.bx.psu.edu/repos/hammock/hammock/hammock_1.0/.*:
+    mem: 20
+    env:
+      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+    context:
+      name: java_temp
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/interproscan/interproscan/.*:
+    cores: 6
+    mem: 40
+    env:
+      PATH: $PATH:/data/0/interproscan/interproscan-5.36-75.0/
+
+  toolshed.g2.bx.psu.edu/repos/iuc/migmap/migmap/.*:
+    cores: 10
+    mem: 16
+    env:
+      _JAVA_OPTIONS: -XX:MaxPermSize=6G -Xmx14G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+    context:
+      name: java_temp
+
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastp_wrapper/.*:
+    cores: 10
+    mem: 40
+    scheduling:
+      require:
+      - condor_intensive_jobs
+    context:
+      force_destination_id: true
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/.*:
+    cores: 10
+    mem: 90
+    env:
+      _JAVA_OPTIONS: -XX:MaxPermSize=4G -Xmx120G -Xms4G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+    context:
+      name: _special
+
+  toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_FilterSamReads/.*:
+    mem: 12
+    env:
+      TMP_DIR: $TMPDIR
+    context:
+      tmp: large
+
+  toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicates/.*:
+    mem: 12
+    env:
+      _JAVA_OPTIONS: -Xmx12G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+    context:
+      name: java_temp
+
+  toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_SortSam/.*:
+    mem: 10
+    env:
+      _JAVA_OPTIONS: -Xmx4G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+    context:
+      name: java_temp
+
+  toolshed.g2.bx.psu.edu/repos/crs4/prokka/prokka/.*:
+    cores: 8
+    mem: 20
+    env:
+      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/reactome_pathwaymatcher/reactome_pathwaymatcher/.*:
+    mem: 20
+    env:
+      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx17G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+
+  toolshed.g2.bx.psu.edu/repos/iuc/scanpy_cluster_reduce_dimension/scanpy_cluster_reduce_dimension/.*:
+    cores: 4
+    env:
+      NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+      OMP_NUM_THREADS: 4
+      OPENBLAS_NUM_THREADS: 4
+      MKL_NUM_THREADS: 4
+      VECLIB_MAXIMUM_THREADS: 4
+      NUMEXPR_NUM_THREADS: 4
+      NUMBA_NUM_THREADS: 4
+  toolshed.g2.bx.psu.edu/repos/iuc/scanpy_filter/scanpy_filter/.*:
+    cores: 4
+    env:
+      NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+      OMP_NUM_THREADS: 4
+      OPENBLAS_NUM_THREADS: 4
+      MKL_NUM_THREADS: 4
+      VECLIB_MAXIMUM_THREADS: 4
+      NUMEXPR_NUM_THREADS: 4
+      NUMBA_NUM_THREADS: 4
+  toolshed.g2.bx.psu.edu/repos/iuc/scanpy_inspect/scanpy_inspect/.*:
+    cores: 4
+    env:
+      NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+      OMP_NUM_THREADS: 4
+      OPENBLAS_NUM_THREADS: 4
+      MKL_NUM_THREADS: 4
+      VECLIB_MAXIMUM_THREADS: 4
+      NUMEXPR_NUM_THREADS: 4
+      NUMBA_NUM_THREADS: 4
+  toolshed.g2.bx.psu.edu/repos/iuc/scanpy_normalize/scanpy_normalize/.*:
+    cores: 4
+    env:
+      NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+      OMP_NUM_THREADS: 4
+      OPENBLAS_NUM_THREADS: 4
+      MKL_NUM_THREADS: 4
+      VECLIB_MAXIMUM_THREADS: 4
+      NUMEXPR_NUM_THREADS: 4
+      NUMBA_NUM_THREADS: 4
+  toolshed.g2.bx.psu.edu/repos/iuc/scanpy_remove_confounders/scanpy_remove_confounders/.*:
+    cores: 4
+    env:
+      NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+      OMP_NUM_THREADS: 4
+      OPENBLAS_NUM_THREADS: 4
+      MKL_NUM_THREADS: 4
+      VECLIB_MAXIMUM_THREADS: 4
+      NUMEXPR_NUM_THREADS: 4
+      NUMBA_NUM_THREADS: 4
+  toolshed.g2.bx.psu.edu/repos/iuc/scanpy_plot/scanpy_plot/.*:
+    cores: 4
+    env:
+      NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+      OMP_NUM_THREADS: 4
+      OPENBLAS_NUM_THREADS: 4
+      MKL_NUM_THREADS: 4
+      VECLIB_MAXIMUM_THREADS: 4
+      NUMEXPR_NUM_THREADS: 4
+      NUMBA_NUM_THREADS: 4
+  toolshed.g2.bx.psu.edu/repos/devteam/sam_merge/sam_merge2/.*:
+    mem: 32
+    env:
+      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/.*:
+    cores: 10
+    mem: 12
+    env:
+      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+    context:
+      name: special
+
+  toolshed.g2.bx.psu.edu/repos/earlhaminst/t_coffee/t_coffee/.*:
+    mem: 90
+    env:
+      DIR_4_TCOFFEE: $TMP
+      TMP_4_TCOFFEE: $TMP
+      CACHE_4_TCOFFEE: $TMP
+
+  toolshed.g2.bx.psu.edu/repos/pjbriggs/trimmomatic/trimmomatic/.*:
+    cores: 6
+    mem: 12
+    env:
+      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+    context:
+      name: special
+  toolshed.g2.bx.psu.edu/repos/iuc/trinity/trinity/.*:
+    cores: 4
+    mem: 512
+    env:
+      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx170G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+    context:
+      name: special
+
+  toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*:
+    cores: 10
+    mem: 90
+    env:
+      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+      TERM: vt100
+    context:
+      name: special
+  toolshed.g2.bx.psu.edu/repos/imgteam/unzip/unzip/.*:
+    scheduling:
+      require:
+      - condor_singularity
+  .*xchem_pose_scoring.*:
+    cores: 1
+    gpus: 1
+    env:
+      CUDA_VISIBLE_DEVICES: 0
+    scheduling:
+      require:
+      - remote_condor_cluster_gpu_docker
+  .*run_jupyter_job.*:
+    cores: 8
+    mem: 32
+    scheduling:
+      require:
+      - condor_docker
+
+  .*stress_ng.*:
+    scheduling:
+      require:
+      - condor_singularity_with_conda
+
+  .*gatk2_base_recalibrator.*:
+    cores: 10
+    mem: 24
+    env:
+      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx8G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+    context:
+      name: _special
+
+  .*gatk2_reduce_reads.*:
+    cores: 10
+    mem: 24
+    env:
+      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx8G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+    context:
+      name: _special
+
+  .*echo_main_env.*:
+    context:
+      permissions:
+        allow:
+          roles:
+          - admin
+  .*_test_permissions_0.*: {}
+  .*_test_permissions_1.*:
+    rules:
+      - if: |
+          not user or user.email != "b@example.org"
+        fail: "The user does not have permission to run this tool"
+
+
+
+  .*_test_permissions_2.*:
+    rules:
+    
+    not user or 'Alphafold' not in [role.name for role in user.all_roles() if not role.deleted]
+    
+    
+      - if: |
+          not user or user.email != "a@example.org" or user not in roles.role-b
+        fail: "The user does not have permission to run this tool"
+
+
+
+
+
+
+    context:
+      permissions:
+        allow:
+          users:
+          - a@example.com
+          roles:
+          - role-b
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
