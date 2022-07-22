@@ -3,6 +3,10 @@ map $http_upgrade $connection_upgrade {
 	''      close;
 }
 
+upstream galaxy {
+    server unix:{{ galaxy_systemd_gunicorn_listen_path }};
+}
+
 server {
 	listen 443 default_server;
 	listen [::]:443 default_server;
@@ -34,24 +38,17 @@ server {
 	client_body_buffer_size 1024m;
 
 	location / {
-		uwsgi_pass      127.0.0.1:4001;
+		# This is the backend to send the requests to.
+		proxy_pass http://galaxy;
+		proxy_set_header Host $http_host;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header Upgrade $http_upgrade;
 
-		# For testing, send data to the private zergling.
-		# if ( $remote_addr ~* 95.208.248.14  ) {
-		#     uwsgi_pass      127.0.0.1:4020;
-		# }
 		# Throttle downloads. First 100Mb are free, after that 5Mb/s.
 		# users can move to FTP if they need / we can sort that out.
 		limit_rate_after 100m;
 		limit_rate 5m;
-
-		include         uwsgi_params;
-		proxy_hide_header x-frame-options;
-		add_header X-Content-Type-Options nosniff;
-
-		include uwsgi_params;
-		uwsgi_param HTTPS on;
-		uwsgi_param REQUEST_SCHEME https;
 
 		# Temporarily break downloading :(
 		location /api/libraries/datasets/download/ {
@@ -61,12 +58,13 @@ server {
 		#	return 302 https://usegalaxy.eu;
 		#}
 	}
-
 	location ~ ^/api/dataset_collections/([^/]+)/download/?$ {
 		proxy_buffering off;
-		uwsgi_pass 127.0.0.1:4001;
-		uwsgi_param UWSGI_SCHEME $scheme;
-		include uwsgi_params;
+		proxy_pass http://galaxy;
+		proxy_set_header Host $http_host;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header Upgrade $http_upgrade;
 	}
 
 	location /_x_accel_redirect {
@@ -297,6 +295,4 @@ server {
 	add_header X-Robots-Tag none;
 
 	client_max_body_size 1G; # aka max upload size, defaults to 1M
-	uwsgi_read_timeout 2400;
-
 }
