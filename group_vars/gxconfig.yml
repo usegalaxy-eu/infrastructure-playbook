@@ -2180,7 +2180,7 @@ base_app_main: &BASE_APP_MAIN
   # Offload long-running tasks to a Celery task queue. Activate this
   # only if you have setup a Celery worker for Galaxy. For details, see
   # https://docs.galaxyproject.org/en/master/admin/production.html
-  #enable_celery_tasks: false
+  enable_celery_tasks: true
 
   # Allow disabling pbkdf2 hashing of passwords for legacy situations.
   # This should normally be left enabled unless there is a specific

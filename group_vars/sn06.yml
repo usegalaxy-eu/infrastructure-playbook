@@ -386,18 +386,20 @@ galaxy_cvmfs_server_urls:
 
 # SystemD
 galaxy_systemd_mode: "gunicorn"
+
 galaxy_systemd_gunicorn_workers: 4
+galaxy_systemd_handlers: 6
+galaxy_systemd_workflow_schedulers: 3
+
 galaxy_systemd_gunicorn_env: "{{ apollo_env }}"
 galaxy_systemd_handler_env: "{{ galaxy_systemd_gunicorn_env }}"
 galaxy_systemd_workflow_scheduler_env: "{{ galaxy_systemd_gunicorn_env }}"
-
-galaxy_systemd_handlers: 6
-galaxy_systemd_workflow_schedulers: 3
 
 galaxy_systemd_memory_limit: 20
 galaxy_systemd_memory_limit_handler: 12
 galaxy_systemd_memory_limit_workflow: 15
 
+galaxy_systemd_celery: true
 
 # HTCondor
 condor_host: "condor-cm.galaxyproject.eu"
