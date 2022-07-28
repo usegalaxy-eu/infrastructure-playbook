@@ -36,9 +36,6 @@
   </section>
   <section id="send_data" name="Send Data">
     <tool file="data_export/send.xml" />
-    <!--tool file="/opt/galaxy/custom-tools/test/seek/send.xml" labels="beta" /-->
-    <!-- can be removed in 22.01 -->
-    <tool file="/opt/galaxy/custom-tools/test/export/export_to_directory.xml" labels="beta" />
     <tool file="data_export/export_remote.xml" />
   </section>
   <section id="collection_operations" name="Collection Operations">
@@ -83,7 +80,7 @@
     <tool file="/opt/galaxy/custom-tools/unix_tools/replace_text_in_column.xml" hidden="True" />
     <tool file="/opt/galaxy/custom-tools/unix_tools/replace_text_in_line.xml" hidden="True" />
   </section>
-    <section id="convert" name="Convert Formats">
+  <section id="convert" name="Convert Formats">
     <tool file="filters/bed2gff.xml" />
     <tool file="filters/gff2bed.xml" />
     <tool file="maf/maf_to_bed.xml" />
@@ -550,7 +547,6 @@
 	<tool file="interactive/interactivetool_isee.xml" />
 	<tool file="interactive/interactivetool_metashark.xml" />
 	<tool file="interactive/interactivetool_audiolabeler.xml" />
-	<!--tool file="interactive/codingSnps.xml" /-->
   </section>
 
 </toolbox>
