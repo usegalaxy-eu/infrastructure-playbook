@@ -51,6 +51,12 @@
   shell: "cat {{ galaxy_server_dir }}/static/style/base.css {% if galaxy_custom_site_base_css is defined %}{{ multisite_dir }}/usegalaxy.eu-custom.css {% endif %} > {{ multisite_dir }}/usegalaxy.eu.css"
   when: __galaxy_git_update_result is changed or (galaxy_custom_site_base_css is defined and base_css is changed)
 
+- name: Main CSS replace background color
+  replace:
+    path: "{{ multisite_dir }}/usegalaxy.eu.css"
+    regexp: '#masthead{background-color:#2c3143}'
+    replace: '#masthead{background-color:#003399}'
+
 - name: Merge CSS files
   shell: "cat {{ galaxy_server_dir }}/static/style/base.css {{ multisite_dir }}/{{ item.domain | default([item.name, '.usegalaxy.eu'] | join) }}-custom.css > {{ multisite_dir }}/{{ item.domain | default([item.name, '.usegalaxy.eu'] | join) }}.css"
   with_items: "{{ galaxy_custom_sites }}"
