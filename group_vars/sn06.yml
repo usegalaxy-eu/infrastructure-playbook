@@ -394,7 +394,8 @@ galaxy_systemd_gunicorn_env: "{{ apollo_env }}"
 galaxy_systemd_handler_env: "{{ galaxy_systemd_gunicorn_env }}"
 galaxy_systemd_workflow_scheduler_env: "{{ galaxy_systemd_gunicorn_env }}"
 
-galaxy_systemd_memory_limit: 60
+galaxy_systemd_memory_limit: 100
+galaxy_systemd_memory_limit_celery: 10
 galaxy_systemd_memory_limit_handler: 12
 galaxy_systemd_memory_limit_workflow: 15
 
