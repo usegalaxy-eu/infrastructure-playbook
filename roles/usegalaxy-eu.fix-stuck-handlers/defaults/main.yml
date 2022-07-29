@@ -13,7 +13,7 @@ cron_tasks:
   - name: "Restart gunicorn"
     minute: 30
     hour: 3
-    job: "systemctl reload galaxy-gunicorn"
+    job: "systemctl restart galaxy-gunicorn"
     user: root
   - name: "Restart workflow schedulers"
     minute: 0
