@@ -62,6 +62,7 @@
       alias glh='journalctl -f -u galaxy-handler@*'
       alias glz='journalctl -f -u galaxy-zergpool -u galaxy-zergling@* | grep -v "/api/histories"'
       alias glw='journalctl -f -u galaxy-workflow-scheduler@*'
+      alias glc='journalctl -fu galaxy-celery'
       alias cu="sudo awk '{print $1}' /var/log/nginx/access.log | sort | uniq -c | sort -nr"
       alias chg2wd='change_to_wd'
 
