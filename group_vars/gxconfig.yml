@@ -1400,7 +1400,11 @@ base_app_main: &BASE_APP_MAIN
   # higher the boost, the more importance the scoring algorithm gives to
   # the given field.  Section refers to the tool group in the tool
   # panel.  Rest of the fields are tool's attributes.
-  tool_name_boost: 0.1
+  tool_name_boost: 20
+
+  # If a search query matches a tool name exactly, the score will be
+  # multiplied by this factor.
+  tool_name_exact_multiplier: 10.0
 
   # Boosts are used to customize this instance's toolbox search. The
   # higher the boost, the more importance the scoring algorithm gives to
@@ -1412,31 +1416,31 @@ base_app_main: &BASE_APP_MAIN
   # higher the boost, the more importance the scoring algorithm gives to
   # the given field.  Section refers to the tool group in the tool
   # panel.  Rest of the fields are tool's attributes.
-  tool_section_boost: 1
+  tool_section_boost: 3.0
 
   # Boosts are used to customize this instance's toolbox search. The
   # higher the boost, the more importance the scoring algorithm gives to
   # the given field.  Section refers to the tool group in the tool
   # panel.  Rest of the fields are tool's attributes.
-  tool_description_boost: 0.1
+  tool_description_boost: 8.0
 
   # Boosts are used to customize this instance's toolbox search. The
   # higher the boost, the more importance the scoring algorithm gives to
   # the given field.  Section refers to the tool group in the tool
   # panel.  Rest of the fields are tool's attributes.
-  tool_label_boost: 1
+  tool_label_boost: 1.0
 
   # Boosts are used to customize this instance's toolbox search. The
   # higher the boost, the more importance the scoring algorithm gives to
   # the given field.  Section refers to the tool group in the tool
   # panel.  Rest of the fields are tool's attributes.
-  tool_stub_boost: 1
+  tool_stub_boost: 2.0
 
   # Boosts are used to customize this instance's toolbox search. The
   # higher the boost, the more importance the scoring algorithm gives to
   # the given field.  Section refers to the tool group in the tool
   # panel.  Rest of the fields are tool's attributes.
-  tool_help_boost: 1
+  tool_help_boost: 1.0
 
   # Limits the number of results in toolbox search.  Can be used to
   # tweak how many results will appear.
@@ -1452,6 +1456,11 @@ base_app_main: &BASE_APP_MAIN
 
   # Set maximum size of ngrams
   #tool_ngram_maxsize: 4
+
+  # Ngram matched scores will be multiplied by this factor. Should
+  # always be below 1, because an ngram match is a partial match of a
+  # search term.
+  #tool_ngram_factor: 0.2
 
   # Set tool test data directory. The test framework sets this value to
   # 'test-data,https://github.com/galaxyproject/galaxy-test-data.git'
