@@ -18,30 +18,31 @@
   #       policy: targeted
   #       state: permissive
   pre_tasks:
+    - name: Set default version of Python
+      alternatives:
+        name: python
+        path: /usr/bin/python3
     - name: Install Dependencies
       package:
-        name: ['python3-virtualenv', 'python36']
+        name: ['python3-virtualenv']
       become: true
   collections:
     - devsec.hardening
   roles:
-    - hostname
-    - usegalaxy-eu.dynmotd
-    - geerlingguy.repo-epel
-    - hxr.admin-tools
-    - influxdata.chrony
-    - hxr.monitor-email
+    ## Starting configuration of the operating system
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        enable_hostname: true
+        enable_powertools: true        # geerlingguy.repo-epel role doesn't enable PowerTools repository
+    - geerlingguy.repo-epel     # Install EPEL repository
+    - usegalaxy-eu.autoupdates  # keep all of our packages up to date
+    - influxdata.chrony         # Keep our time in sync.
+    ## Monitoring
     - hxr.monitor-ssl
-    - linuxhq.yum_cron
+    - hxr.monitor-email
+
     - galaxyproject.nginx
-    # - hxr.autofs-format-n-mount
-    # Custom
-    # - hxr.simple-nagios
     - cloudalchemy.grafana
     - pgs
     - hxr.grafana-gitter-bridge
-    # End Custom
     - dj-wasabi.telegraf
-    # - os_hardening
-    # - nginx_hardening
-    # - ssh_hardening
