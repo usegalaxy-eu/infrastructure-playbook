@@ -26,6 +26,11 @@
       package:
         name: ['python3-virtualenv']
       become: true
+    - name: Disable firewalld service
+      ansible.builtin.service:
+        name: firewalld
+        enabled: false
+        state: stopped
   collections:
     - devsec.hardening
   roles:
