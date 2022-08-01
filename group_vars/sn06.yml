@@ -387,6 +387,7 @@ galaxy_cvmfs_server_urls:
 galaxy_systemd_mode: "gunicorn"
 galaxy_systemd_gunicorn_workers: 4
 galaxy_systemd_gunicorn_timeout: 600
+galaxy_systemd_celery_workers: 5
 galaxy_systemd_handlers: 6
 galaxy_systemd_workflow_schedulers: 3
 
@@ -395,7 +396,7 @@ galaxy_systemd_handler_env: "{{ galaxy_systemd_gunicorn_env }}"
 galaxy_systemd_workflow_scheduler_env: "{{ galaxy_systemd_gunicorn_env }}"
 
 galaxy_systemd_memory_limit: 120
-galaxy_systemd_memory_limit_celery: 10
+galaxy_systemd_memory_limit_celery: 20
 galaxy_systemd_memory_limit_handler: 12
 galaxy_systemd_memory_limit_workflow: 15
 
