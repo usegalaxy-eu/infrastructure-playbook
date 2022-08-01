@@ -77,6 +77,7 @@
       loop:
         - "{{ galaxy_user.name }}"
         - "telegraf"
+        - "stats" # special account to retrieve statistics from the server in read-only mode
     - name: Set authorized SSH key (galaxy user)
       ansible.posix.authorized_key:
         user: "{{ galaxy_user.name }}"
