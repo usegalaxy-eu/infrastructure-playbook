@@ -12,4 +12,12 @@
         state: stopped
 
   roles:
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        enable_kernel_5: true
+        enable_install_software: true
+    - influxdata.chrony
+    -
+    ## Filesystems
+    - usegalaxy-eu.autofs     # Set up the mount points which will be needed later
     - usegalaxy_eu.galaxy_systemd
