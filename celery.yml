@@ -4,13 +4,6 @@
   become: true
   become_user: root
 
-  pre_tasks:
-    - name: Disable htcondor service
-      ansible.builtin.service:
-        name: condor
-        enabled: false
-        state: stopped
-
   roles:
     - role: usegalaxy_eu.handy.os_setup
       vars:
