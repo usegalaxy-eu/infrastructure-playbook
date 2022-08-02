@@ -22,6 +22,7 @@ nfs_kernel_tuning: true
 
 autofs_mount_points:
   - data
+  - usrlocal
 
 autofs_conf_files:
   data:
@@ -47,6 +48,8 @@ autofs_conf_files:
     - gxkey   -rw,hard,nosuid,nconnect=2      denbi.svm.bwsfs.uni-freiburg.de:/ws01/galaxy-sync/main
     - jwd     -rw,hard,nosuid,nconnect=2      denbi.svm.bwsfs.uni-freiburg.de:/ws01/&
     - jwd01   -rw,hard,nosuid      zfs1.galaxyproject.eu:/export/&
+  usrlocal:
+    - /opt/galaxy        -rw,hard,nosuid,nconnect=2      denbi.svm.bwsfs.uni-freiburg.de:/ws01/galaxy-sync/main
 
 # SystemD
 galaxy_systemd_mode: ""
@@ -57,4 +60,4 @@ galaxy_systemd_celery_concurrency: 32
 galaxy_systemd_celery_log_level: DEBUG
 galaxy_systemd_celery_env: ""
 galaxy_systemd_celery_beat_schedule_path: "/opt/galaxy/celery/celery-beat-schedule"
-galaxy_systemd_memory_limit_celery: 20G
+galaxy_systemd_memory_limit_celery: 20

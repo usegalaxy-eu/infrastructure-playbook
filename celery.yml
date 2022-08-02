@@ -3,7 +3,15 @@
   hosts: celerycluster
   become: true
   become_user: root
-
+  pre_tasks:
+    - name: Install Dependencies
+      package:
+        name: ['python38']
+      become: true
+    - name: Set default version of Python
+      alternatives:
+        name: python
+        path: /usr/bin/python3
   roles:
     - role: usegalaxy_eu.handy.os_setup
       vars:
