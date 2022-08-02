@@ -1,0 +1,15 @@
+---
+- name: Celery cluster
+  hosts: celerycluster
+  become: true
+  become_user: root
+
+  pre_tasks:
+    - name: Disable htcondor service
+      ansible.builtin.service:
+        name: condor
+        enabled: false
+        state: stopped
+
+  roles:
+    - usegalaxy_eu.galaxy_systemd
