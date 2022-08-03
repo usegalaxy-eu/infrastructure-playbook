@@ -2203,7 +2203,7 @@ base_app_main: &BASE_APP_MAIN
   # database located in your <galaxy>/database folder (indicated in the
   # commented out line below).
   amqp_internal_connection: "pyamqp://galaxy:{{ rabbitmq_password_galaxy }}@mq.galaxyproject.eu:5671/galaxy?ssl=1"
-  #amqp_internal_connection: "amqp://galaxy:lOXjnjop12uAPS@localhost:5672/galaxy"
+  #amqp_internal_connection: "amqp://galaxy:{{ rabbitmq_password_galaxy }}@localhost:5672/galaxy"
 
   # Offload long-running tasks to a Celery task queue. Activate this
   # only if you have setup a Celery worker for Galaxy. For details, see
