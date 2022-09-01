@@ -7,8 +7,8 @@ user_group_name: galaxy
 user_gid: 999
 
 galaxy_user:
-  name: user_name
-__galaxy_user_group: user_group_name
+  name: "{{ user_name }}"
+__galaxy_user_group: "{{ user_group_name }}"
 galaxy_root: /opt/galaxy
 galaxy_server_dir: "{{ galaxy_root }}/server"
 galaxy_venv_dir: "{{ galaxy_root }}/venv"
