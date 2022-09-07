@@ -81,6 +81,11 @@ interactive_tool_climate_notebook:
     HOME: /home/jovyan
   force_destination_id: true
 
+interactive_tool_phinch:
+  mem: 4
+  runner: condor_docker_ie_interactive
+  force_destination_id: true
+
 interactive_tool_ml_jupyter_notebook:
   runner: condor_docker_ie_interactive_gpu
   force_destination_id: true
@@ -108,7 +113,6 @@ interactive_tool_ethercalc: {mem: 4, runner: condor_docker_ie, force_destination
 interactive_tool_geoexplorer: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
 interactive_tool_radiant: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
 interactive_tool_higlass: {mem: 20, cores: 5, runner: condor_docker_ie, force_destination_id: true}
-interactive_tool_phinch: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
 interactive_tool_neo4j: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
 interactive_tool_hicbrowser: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
 interactive_tool_cellxgene: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
