@@ -53,6 +53,10 @@ rabbitmq_users:
     password: "{{ rabbitmq_password_telegraf }}"
     tags: administrator
     vhost: /
+  - user: flower
+    password: "{{ rabbitmq_password_flower }}"
+    tags: administrator
+    vhost: /
   - user: galaxy
     password: "{{ rabbitmq_password_galaxy }}"
     vhost: galaxy
@@ -116,9 +120,7 @@ rabbitmq_container:
 
 # Telegraf
 telegraf_plugins_extra:
-  rabbitmq:
-    plugin: rabbitmq
+  prometheus:
+    plugin: prometheus
     config:
-      - url = "http://localhost:15672"
-      - username = "telegraf"
-      - password = "{{ rabbitmq_password_telegraf }}"
+      - urls = "http://172.17.0.2:15692/metrics"
