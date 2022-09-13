@@ -49,10 +49,6 @@ rabbitmq_users:
     password: "{{ rabbitmq_password_admin }}"
     tags: administrator
     vhost: /
-  - user: telegraf
-    password: "{{ rabbitmq_password_telegraf }}"
-    tags: administrator
-    vhost: /
   - user: flower
     password: "{{ rabbitmq_password_flower }}"
     tags: administrator
