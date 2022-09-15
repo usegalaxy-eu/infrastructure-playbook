@@ -1,0 +1,69 @@
+---
+- name: Dokku
+  hosts: dokku
+  become: true
+  vars:
+    hostname: apps.galaxyproject.eu
+  vars_files:
+    - secret_group_vars/all.yml
+  collections:
+    - devsec.hardening
+  pre_tasks:
+    - shell: "dnf -y module enable container-tools"
+    - name: Set default version of Python
+      alternatives:
+        name: python
+        path: /usr/bin/python3
+    - name: Install docker pip package
+      ansible.builtin.pip:
+        name: docker
+    - name: Set docker_users (Docker role)
+      set_fact:
+        docker_users: "centos"
+  roles:
+    # Starting configuration of the operating system
+    #- role: usegalaxy_eu.handy.os_setup
+      #vars:
+        #enable_hostname: true
+        #enable_powertools: true        # geerlingguy.repo-epel role doesn't enable PowerTools repository
+        #enable_remap_user: true
+        #enable_create_user: true
+    - geerlingguy.repo-epel     # Install EPEL repository
+    - usegalaxy-eu.autoupdates  # keep all of our packages up to date
+    - influxdata.chrony         # Keep our time in sync.
+    # Applications
+    - geerlingguy.docker
+    - dj-wasabi.telegraf
+    # hardening
+    #- os_hardening
+    #- ssh_hardening
+  post_tasks:
+    - name: Create a directory if it does not exist
+      file:
+        path: /var/lib/dokku/
+        state: directory
+        mode: '0755'
+    - name: Plugin Configuration
+      copy:
+        content: |
+          postgres: https://github.com/dokku/dokku-postgres.git
+          redis: https://github.com/dokku/dokku-redis.git
+          letsencrypt: https://github.com/dokku/dokku-letsencrypt.git
+        dest: /var/lib/dokku/plugin-list
+    - name: Dokku
+      docker_container:
+        name: dokku
+        image: dokku/dokku:0.28.1
+        state: started
+        restart_policy: always
+        #restart_retries: 3
+        volumes:
+        - /var/lib/dokku:/mnt/dokku
+        - /var/run/docker.sock:/var/run/docker.sock
+        env:
+            DOKKU_HOSTNAME: apps.galaxyproject.eu
+            DOKKU_HOST_ROOT: /var/lib/dokku/home/dokku
+        ports:
+        - "80:80"
+        - "443:443"
+        - "8080:22"
