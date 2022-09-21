@@ -4,7 +4,70 @@ server {
 
 	server_name galaxyproject.eu;
 
+	# Redirect homepages.
+	location = / {
+		return 301 https://galaxyproject.org/eu/;
+	}
+	location = /freiburg/ {
+		return 301 https://galaxyproject.org/freiburg/;
+	}
+	location = /erasmusmc/ {
+		return 301 https://galaxyproject.org/erasmusmc/;
+	}
+	location = /belgium/ {
+		return 301 https://galaxyproject.org/belgium/;
+	}
+	location = /pasteur/ {
+		return 301 https://galaxyproject.org/pasteur/;
+	}
+	location = /genouest/ {
+		return 301 https://galaxyproject.org/genouest/;
+	}
+	location = /elixir-it/ {
+		return 301 https://galaxyproject.org/elixir-it/;
+	}
+	location = /ifb/ {
+		return 301 https://galaxyproject.org/ifb/;
+	}
+
+	# EU-wide news/events feeds.
+	location ~ ^/news(\.html)?$ {
+		return 301 https://galaxyproject.org/eu/news/;
+	}
+	location ~ ^/events(\.html)?$ {
+		return 301 https://galaxyproject.org/eu/events/;
+	}
+
+	# Misc.
+	location = /widgets/news.html {
+		return 301 https://galaxyproject.org/bare/eu/latest/news/;
+	}
+	location = /widgets/events.html {
+		return 301 https://galaxyproject.org/bare/eu/latest/events/;
+	}
+	location = /galaxy/news.html {
+		return 301 https://galaxyproject.org/bare/eu/news/;
+	}
+	location = /galaxy/events.html {
+		return 301 https://galaxyproject.org/bare/eu/events/;
+	}
+
+	# Galaxy server middle pane homepages.
+	location = /galaxy/ {
+		return 301 https://galaxyproject.org/bare/eu/usegalaxy/main/;
+	}
+	location = /index-metabolomics.html {
+		return 301 https://galaxyproject.org/bare/eu/usegalaxy/metabolomics/;
+	}
+	location = /index-proteomics.html {
+		return 301 https://galaxyproject.org/bare/eu/usegalaxy/proteomics/;
+	}
+
 	location / {
+		# Subsite-specific news and events pages.
+		rewrite ^/([^/]+)/(news|events)(\.html)?$  https://galaxyproject.org/$1/$2/  permanent;
+
+		# The rest should be transparently proxied to github.io.
 		proxy_pass https://usegalaxy-eu.github.io/;
 		proxy_cache           STATIC;
 		proxy_cache_valid     200  5m;
