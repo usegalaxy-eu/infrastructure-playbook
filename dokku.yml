@@ -4,8 +4,12 @@
   become: true
   vars:
     hostname: apps.galaxyproject.eu
+    server_names:
+      - "{{ hostname }}"
+      - "*.{{ hostname }}"
   vars_files:
     - secret_group_vars/all.yml
+    - secret_group_vars/aws.yml
   collections:
     - devsec.hardening
   pre_tasks:
@@ -31,8 +35,10 @@
     - geerlingguy.repo-epel     # Install EPEL repository
     - usegalaxy-eu.autoupdates  # keep all of our packages up to date
     - influxdata.chrony         # Keep our time in sync.
+    - hxr.aws-cli               # Setup the AWS client that will be needed for route53 authentication of certbot. MUST come before nginx role
     # Applications
     - geerlingguy.docker
+    - galaxyproject.nginx
     - dj-wasabi.telegraf
     # hardening
     #- os_hardening
@@ -64,6 +70,6 @@
             DOKKU_HOSTNAME: apps.galaxyproject.eu
             DOKKU_HOST_ROOT: /var/lib/dokku/home/dokku
         ports:
-        - "80:80"
-        - "443:443"
         - "8080:22"
+        - "8081:80"
+        - "8082:443"
