@@ -61,3 +61,15 @@ galaxy_systemd_celery_log_level: DEBUG
 galaxy_systemd_celery_env: ""
 galaxy_systemd_celery_beat_schedule_path: "/opt/galaxy/celery/celery-beat-schedule"
 galaxy_systemd_memory_limit_celery: 20
+
+# Flower
+flower_python_version: python38
+flower_app_dir: /opt/galaxy/
+flower_python_path: server/lib
+flower_venv_dir: /opt/galaxy/venv
+flower_app_name: galaxy.celery
+
+flower_persistent: "True"
+
+flower_broker_api: https://flower:"{{ rabbitmq_password_flower }}"@"{{ rabbitmq_url }}"/api/vhosts
+flower_broker_url: amqp://flower:"{{ rabbitmq_password_flower }}"@"{{ rabbitmq_url }}":5671/galaxy?ssl=true
