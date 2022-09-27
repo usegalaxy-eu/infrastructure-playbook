@@ -71,5 +71,5 @@ flower_app_name: galaxy.celery
 
 flower_persistent: "True"
 
-flower_broker_api: https://flower:"{{ rabbitmq_password_flower }}"@"{{ rabbitmq_url }}"/api/vhosts
-flower_broker_url: amqp://flower:"{{ rabbitmq_password_flower }}"@"{{ rabbitmq_url }}":5671/galaxy?ssl=true
+flower_broker_api: "https://flower:{{ rabbitmq_password_flower }}@{{ rabbitmq_url }}/api/vhosts"
+flower_broker_url: "amqp://flower:{{ rabbitmq_password_flower }}@{{ rabbitmq_url }}:5671/galaxy?ssl=true"
