@@ -6,7 +6,7 @@
   pre_tasks:
     - name: Install Dependencies
       package:
-        name: ['python38']
+        name: ["python38"]
       become: true
     - name: Set default version of Python
       alternatives:
@@ -21,6 +21,6 @@
         enable_install_software: true
     - usegalaxy_eu.galaxy_systemd
     - influxdata.chrony
-
     ## Filesystems
-    - usegalaxy-eu.autofs     # Set up the mount points which will be needed later
+    - usegalaxy-eu.autofs # Set up the mount points which will be needed later
+    - usegalaxy_eu.flower
