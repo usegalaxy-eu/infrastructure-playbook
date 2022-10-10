@@ -57,6 +57,22 @@ execution:
 {% for destination in galaxy_jobconf['destinations']|sort(attribute='id') %}
     {{ destination['id'] }}:
       runner: {{ destination['runner'] }}
+{% if 'type' in destination %}
+      type: {{ destination['type'] }}
+{% endif %}
+{% if 'function' in destination %}
+      function: {{ destination['function'] }}
+{% endif %}
+{% if 'rules_module' in destination %}
+      rules_module: {{ destination['rules_module'] }}
+{% endif %}
+{% endif %}
+{% if 'tpv_config_files' in destination %}
+      tpv_config_files:
+{% for k in destination['tpv_config_files'] %}
+        - {{ k }}
+{% endfor %}
+{% endif %}
 {% if 'env' in destination %}
       env:
 {% for k in destination['env']|dict2items|sort(attribute='key')|list|items2dict %}
