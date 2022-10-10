@@ -1,0 +1,21 @@
+destinations:
+  - id: condor_tpv
+    cores: 64
+    mem: 1000
+    scheduling:
+      accept:
+        - condor_tpv
+
+  - id: pulsar_it_tpv
+    cores: 16
+    mem: 31
+    scheduling:
+      require:
+        - pulsar
+
+  - id: pulsar_be_tpv
+    cores: 8
+    mem: 15
+    scheduling:
+      require:
+        - pulsar

@@ -1,0 +1,16 @@
+global:
+  default_inherits: default
+tools:
+  default:
+    cores: 2
+    mem: cores * 3.8
+    env: {}
+    params:
+      tmp_dir: true
+    scheduling:
+      reject:
+        - offline
+    rules: []
+    rank: |
+      final_destinations = helpers.weighted_random_sampling(candidate_destinations)
+      final_destinations
