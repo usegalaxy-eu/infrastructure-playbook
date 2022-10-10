@@ -1,0 +1,13 @@
+tools:
+  toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy/.*:
+    cores: 2
+    scheduling:
+      accept:
+        - pulsar
+    rules:
+      - if: input_size >= 0.015
+        cores: 14
+  toolshed.g2.bx.psu.edu/repos/iuc/fasta_stats/fasta-stats/.*:
+    rules:
+      - if: input_size >= 0.01
+        cores: 3
