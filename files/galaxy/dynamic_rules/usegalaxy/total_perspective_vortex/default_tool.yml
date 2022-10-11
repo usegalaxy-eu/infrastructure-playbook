@@ -6,12 +6,17 @@ tools:
     mem: cores * 3.8
     gpus: 0
     env: {}
+    context:
+      training_expr: '{" || ".join(["(GalaxyGroup == \'%s\')" % r.name for r in user.all_roles if not r.deleted and "training" in r.name])}'
+      training_labels: '{\'"\' + ", ".join([\'%s\' % r.name for r in user.all_roles if not r.deleted and "training" in r.name]) + \'"\'}'
     params:
       tmp_dir: true
       request_cpus: '{cores}'
       request_memory: '{mem}G'
       submit_request_gpus: '{gpus}'
       docker_memory: '{mem}G'
+      requirements: '{\'(GalaxyGroup == "compute") || (%s)\' % training_expr}'
+      +Group: '{training_labels}'
     scheduling:
       reject:
         - offline
