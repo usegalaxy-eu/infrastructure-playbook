@@ -217,7 +217,7 @@ base_app_main: &BASE_APP_MAIN
 
   # conda channels to enable by default
   # (https://conda.io/docs/user-guide/tasks/manage-channels.html)
-  conda_ensure_channels: 'iuc,conda-forge,bioconda,defaults,bgruening'
+  conda_ensure_channels: "iuc,conda-forge,bioconda,defaults,bgruening"
 
   # Use locally-built conda packages.
   #conda_use_local: false
@@ -237,7 +237,7 @@ base_app_main: &BASE_APP_MAIN
   # creating hardlinks or symlinks. This will prevent problems with some
   # specific packages (perl, R), at the cost of extra disk space usage
   # and extra time spent copying packages.
-  conda_copy_dependencies: 'True'
+  conda_copy_dependencies: "True"
 
   # Path to a file that provides a mapping from abstract packages to
   # concrete conda packages. See `config/local_conda_mapping.yml.sample`
@@ -263,7 +263,7 @@ base_app_main: &BASE_APP_MAIN
   # This only affects tools where some requirements can be resolved but
   # not others, most modern best practice tools can use prebuilt
   # environments in the Conda directory.
-  use_cached_dependency_manager: 'True'
+  use_cached_dependency_manager: "True"
 
   # By default the tool_dependency_cache_dir is the _cache directory of
   # the tool dependency directory.
@@ -306,13 +306,13 @@ base_app_main: &BASE_APP_MAIN
   # Monitor dynamic job rules. If changes are found, rules are
   # automatically reloaded. Takes the same values as the 'watch_tools'
   # option.
-  watch_job_rules: 'auto'
+  watch_job_rules: "auto"
 
   # Monitor a subset of options in the core configuration file (See
   # RELOADABLE_CONFIG_OPTIONS in lib/galaxy/config/__init__.py).  If
   # changes are found, modified options are automatically reloaded.
   # Takes the same values as the 'watch_tools' option.
-  watch_core_config: 'auto'
+  watch_core_config: "auto"
 
   # Monitor the interactive tours directory specified in the
   # 'tour_config_dir' option. If changes are found, modified tours are
@@ -359,7 +359,7 @@ base_app_main: &BASE_APP_MAIN
   # https://github.com/mulled. Container availability will vary by tool,
   # this option will only be used for job destinations with Docker or
   # Singularity enabled.
-  enable_mulled_containers: 'True'
+  enable_mulled_containers: "True"
 
   # Container resolvers configuration. Set up a file describing
   # container resolvers to use when discovering containers for Galaxy.
@@ -367,7 +367,6 @@ base_app_main: &BASE_APP_MAIN
   # determined by enable_mulled_containers. For available options see
   # config/container_resolvers_conf.xml.sample.
   container_resolvers_config_file: "{{ galaxy_config_dir }}/container_resolvers_conf.xml"
-
 
   # Rather than specifying a container_resolvers_config_file, the
   # definition of the resolvers to enable can be embedded into Galaxy's
@@ -508,7 +507,7 @@ base_app_main: &BASE_APP_MAIN
   # an absolute path begin the path with '/'.  This is a comma-separated
   # list. Add test/functional/webhooks to this list to include the demo
   # webhooks used to test the webhook framework.
-  webhooks_dir: '{{ galaxy_webhook_dir }}'
+  webhooks_dir: "{{ galaxy_webhook_dir }}"
 
   # Each job is given a unique empty directory as its current working
   # directory. This option defines in what parent directory those
@@ -708,7 +707,7 @@ base_app_main: &BASE_APP_MAIN
   # and tool error reports.  We recommend using a string in the
   # following format: Galaxy Project <galaxy-no-reply@example.com>. If
   # not configured, '<galaxy-no-reply@HOSTNAME>' will be used.
-  email_from: 'European Galaxy Team <galaxy-no-reply@informatik.uni-freiburg.de>'
+  email_from: "European Galaxy Team <galaxy-no-reply@informatik.uni-freiburg.de>"
 
   # This text will be inserted at the end of the activation email's
   # message, before the 'Your Galaxy Team' signature.
@@ -754,7 +753,7 @@ base_app_main: &BASE_APP_MAIN
   # activation is disabled (i.e. accounts are active since
   # registration). The activation is also not working in case the SMTP
   # server is not defined.
-  user_activation_on: 'True'
+  user_activation_on: "True"
 
   # Activation grace period (in hours).  Activation is not forced (login
   # is not disabled) until grace period has passed.  Users under grace
@@ -826,7 +825,7 @@ base_app_main: &BASE_APP_MAIN
   # applications, where a malicious party could provide a link that
   # appears to reference the Galaxy server, but contains a redirect to a
   # third-party server, tricking a Galaxy user to access said site.
-  enable_old_display_applications: 'false'
+  enable_old_display_applications: "false"
 
   # This flag enables an AWS cost estimate for every job based on their
   # runtime matrices. CPU, RAM and runtime usage is mapped against AWS
@@ -964,7 +963,7 @@ base_app_main: &BASE_APP_MAIN
   #logo_src_secondary: null
 
   # The URL linked by the "Galaxy Help" link in the "Help" menu.
-  helpsite_url: 'https://help.galaxyproject.org/c/usegalaxy-eu-support'
+  helpsite_url: "https://help.galaxyproject.org/c/usegalaxy-eu-support"
 
   # The URL linked by the "Community Hub" link in the "Help" menu.
   wiki_url: https://galaxyproject.org/
@@ -1077,36 +1076,36 @@ base_app_main: &BASE_APP_MAIN
   # proxy in front of Galaxy - please ensure this header remains intact
   # to protect your users.  Uncomment and leave empty to not set the
   # `X-Frame-Options` header.
-  x_frame_options: ''
+  x_frame_options: ""
 
   # nginx can also handle file uploads (user-to-Galaxy) via
   # nginx_upload_module. Configuration for this is complex and explained
   # in detail in the documentation linked above.  The upload store is a
   # temporary directory in which files uploaded by the upload module
   # will be placed.
-  nginx_upload_store: '/data/jwd/nginx_upload/main/uploads'
+  nginx_upload_store: "/data/jwd/nginx_upload/main/uploads"
 
   # This value overrides the action set on the file upload form, e.g.
   # the web path where the nginx_upload_module has been configured to
   # intercept upload requests.
-  nginx_upload_path: '/_upload'
+  nginx_upload_path: "/_upload"
 
   # Galaxy can also use nginx_upload_module to receive files staged out
   # upon job completion by remote job runners (i.e. Pulsar) that
   # initiate staging operations on the remote end.  See the Galaxy nginx
   # documentation for the corresponding nginx configuration.
-  nginx_upload_job_files_store: '/data/jwd/nginx_upload/main/jobfiles'
+  nginx_upload_job_files_store: "/data/jwd/nginx_upload/main/jobfiles"
 
   # Galaxy can also use nginx_upload_module to receive files staged out
   # upon job completion by remote job runners (i.e. Pulsar) that
   # initiate staging operations on the remote end.  See the Galaxy nginx
   # documentation for the corresponding nginx configuration.
-  nginx_upload_job_files_path: '/_job_files'
+  nginx_upload_job_files_path: "/_job_files"
 
   # The upload store is a temporary directory in which files uploaded by
   # the tus middleware or server will be placed. Defaults to
   # new_file_path if not set.
-  tus_upload_store: '/data/jwd/tus_upload/main'
+  tus_upload_store: "/data/jwd/tus_upload/main"
 
   # Galaxy can upload user files in chunks without using nginx. Enable
   # the chunk uploader by specifying a chunk size larger than 0. The
@@ -1318,7 +1317,7 @@ base_app_main: &BASE_APP_MAIN
   # configured statsd instance.  The statsd_prefix is useful if you are
   # running multiple Galaxy instances and want to segment statistics
   # between them within the same aggregator.
-  statsd_host: '127.0.0.1'
+  statsd_host: "127.0.0.1"
 
   # Log to statsd Statsd is an external statistics aggregator
   # (https://github.com/etsy/statsd) Enabling the following options will
@@ -1530,7 +1529,7 @@ base_app_main: &BASE_APP_MAIN
   # Admin section of the server, and will have access to create users,
   # groups, roles, libraries, and more.  For more information, see:
   # https://galaxyproject.org/admin/
-  admin_users: "hxr@informatik.uni-freiburg.de,bjoern.gruening@gmail.com,gmauro@informatik.uni-freiburg.de,sbray@informatik.uni-freiburg.de,maierw@informatik.uni-freiburg.de,berenice.batut@gmail.com,gallardo@informatik.uni-freiburg.de"
+  admin_users: "hxr@informatik.uni-freiburg.de,bjoern.gruening@gmail.com,kuntzm@informatik.uni-freiburg.de,sbray@informatik.uni-freiburg.de,maierw@informatik.uni-freiburg.de,berenice.batut@gmail.com,gallardo@informatik.uni-freiburg.de"
 
   # Force everyone to log in (disable anonymous access).
   #require_login: false
@@ -1781,7 +1780,7 @@ base_app_main: &BASE_APP_MAIN
   # options. This will be provided to users in the help text as 'log in
   # to the FTP server at '. Thus, it should be the hostname of your FTP
   # server.
-  ftp_upload_site: 'ftp://ftp.usegalaxy.eu'
+  ftp_upload_site: "ftp://ftp.usegalaxy.eu"
 
   # This should point to a directory containing subdirectories matching
   # users' identifier (defaults to e-mail), where Galaxy will look for
@@ -2165,12 +2164,12 @@ base_app_main: &BASE_APP_MAIN
   # Define toolbox filters
   # (https://galaxyproject.org/user-defined-toolbox-filters/) that
   # admins may use to restrict the tool labels to display.
-  tool_label_filters: 'global_host_filters:per_host_tool_labels'
+  tool_label_filters: "global_host_filters:per_host_tool_labels"
 
   # Define toolbox filters
   # (https://galaxyproject.org/user-defined-toolbox-filters/) that
   # admins may use to restrict the tool sections to display.
-  tool_section_filters: 'global_host_filters:per_host_tool_sections'
+  tool_section_filters: "global_host_filters:per_host_tool_sections"
 
   # Define toolbox filters
   # (https://galaxyproject.org/user-defined-toolbox-filters/) that users
