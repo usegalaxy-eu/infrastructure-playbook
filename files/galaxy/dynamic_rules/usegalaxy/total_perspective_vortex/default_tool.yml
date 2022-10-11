@@ -4,9 +4,14 @@ tools:
   default:
     cores: 2
     mem: cores * 3.8
+    gpus: 0
     env: {}
     params:
       tmp_dir: true
+      request_cpus: '{cores}'
+      request_memory: '{mem}G'
+      submit_request_gpus: '{gpus}'
+      docker_memory: '{mem}G'
     scheduling:
       reject:
         - offline
