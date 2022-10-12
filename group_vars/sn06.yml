@@ -750,7 +750,7 @@ galaxy_jobconf:
       docker_sudo: false
       docker_net: bridge
       docker_auto_rm: true
-      docker_set_user: ''
+      docker_set_user: ""
       require_container: true
       outputs_to_working_directory: false
       container_monitor_result: callback
@@ -1004,55 +1004,61 @@ galaxy_jobconf:
       destination: gateway_for_keras_train_eval
       resources: usegpu
     - id: interactive_tool_jupyter_notebook
-      destination: gateway_checkpoint
+      destination: interactive_pulsar
     - id: interactive_tool_pangeo_notebook
-      destination: gateway_checkpoint
+      destination: interactive_pulsar
     - id: interactive_tool_climate_notebook
-      destination: gateway_checkpoint
+      destination: interactive_pulsar
     - id: interactive_tool_ml_jupyter_notebook
-      destination: gateway_checkpoint
+      destination: interactive_pulsar
+    - id: interactive_tool_audiolabeler
+      destination: interactive_pulsar
     - id: interactive_tool_rstudio
-      destination: gateway_checkpoint
+      destination: interactive_pulsar_hi_mem
     - id: interactive_tool_pyiron
-      destination: gateway_checkpoint
+      destination: interactive_pulsar_hi_mem
     - id: interactive_tool_guacamole_desktop
-      destination: gateway_checkpoint
+      destination: interactive_pulsar_hi_mem
     - id: interactive_tool_openrefine
-      destination: gateway_checkpoint
+      destination: interactive_pulsar
     - id: interactive_tool_panoply
-      destination: gateway_checkpoint
+      destination: interactive_pulsar
     - id: interactive_tool_vrm_editor
-      destination: gateway_checkpoint
+      destination: interactive_pulsar
     - id: interactive_tool_ethercalc
-      destination: gateway_checkpoint
+      destination: interactive_pulsar
     - id: interactive_tool_geoexplorer
-      destination: gateway_checkpoint
+      destination: interactive_pulsar
+    - id: interactive_tool_isee
+      destination: interactive_pulsar
     - id: interactive_tool_radiant
-      destination: gateway_checkpoint
+      destination: interactive_pulsar
+    - id: interactive_tool_metashark
+      destination: interactive_pulsar
     - id: interactive_tool_higlass
-      destination: gateway_checkpoint
+      destination: interactive_pulsar_hi_mem
     - id: interactive_tool_phinch
-      destination: gateway_checkpoint
+      destination: interactive_pulsar
     - id: interactive_tool_neo4j
-      destination: gateway_checkpoint
+      destination: interactive_pulsar
     - id: interactive_tool_hicbrowser
-      destination: gateway_checkpoint
+      destination: interactive_pulsar
     - id: interactive_tool_cellxgene
-      destination: gateway_checkpoint
+      destination: interactive_pulsar
     - id: interactive_tool_bam_iobio
-      destination: gateway_checkpoint
+      destination: interactive_pulsar
     - id: interactive_tool_vcf_iobio
-      destination: gateway_checkpoint
+      destination: interactive_pulsar
     - id: interactive_tool_askomics
-      destination: gateway_checkpoint
+      destination: interactive_pulsar
     - id: interactive_tool_wilson
-      destination: gateway_checkpoint
+      destination: interactive_pulsar
     - id: interactive_tool_wallace
-      destination: gateway_checkpoint
+      destination: interactive_pulsar
     - id: interactive_tool_paraview
-      destination: gateway_checkpoint
+      destination: interactive_pulsar
     - id: interactive_tool_simtext_app
-      destination: gateway_checkpoint
+      destination: interactive_pulsar
   resources:
     - id: usegpu
       names: [gpu]
@@ -1116,6 +1122,7 @@ galaxy_config_files:
     dest: "{{ galaxy_config['galaxy']['ucsc_build_sites'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/echo_main_env.xml"
     dest: "{{ galaxy_config_dir }}/echo_main_env.xml"
+
   - src: "{{ galaxy_config_file_src_dir }}/dynamic_rules/usegalaxy/total_perspective_vortex/destinations.yml"
     dest: "{{ galaxy_config_dir }}/total_perspective_vortex/destinations.yml"
   - src: "{{ galaxy_config_file_src_dir }}/dynamic_rules/usegalaxy/total_perspective_vortex/default_tool.yml"
