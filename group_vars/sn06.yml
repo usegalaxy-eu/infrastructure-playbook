@@ -1059,6 +1059,11 @@ galaxy_jobconf:
   limits:
     - type: "walltime"
       value: "'148:00:00'"
+    # Limited time for Interactive tools
+    - type: "walltime"
+      value: "'12:00:00'"
+      id: "interactive_pulsar"
+
     - type: "output_size"
       value: "'300GB'"
     - type: "registered_user_concurrent_jobs"
