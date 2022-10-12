@@ -744,21 +744,20 @@ galaxy_jobconf:
     # Internal Pulsar runner for ITs
     - id: interactive_pulsar
       runner: pulsar_embedded
-      params:
-        tmp_dir: true
-        docker_enabled: true
-        #docker_volumes: $defaults
-        docker_sudo: false
-        docker_net: bridge
-        docker_auto_rm: true
-        docker_set_user: ''
-        require_container: true
-        outputs_to_working_directory: false
-        container_monitor_result: callback
-        submit_requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
-        submit_request_memory: 4
-        #submit_rank: 'GalaxyGroup == "upload"'  # submit_rank: can look like that
-        docker_memory: 4
+      tmp_dir: true
+      docker_enabled: true
+      #docker_volumes: $defaults
+      docker_sudo: false
+      docker_net: bridge
+      docker_auto_rm: true
+      docker_set_user: ''
+      require_container: true
+      outputs_to_working_directory: false
+      container_monitor_result: callback
+      submit_requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
+      submit_request_memory: 4
+      #submit_rank: 'GalaxyGroup == "upload"'  # submit_rank: can look like that
+      docker_memory: 4
 
     # Pulsar MQs
     - id: remote_cluster_mq_cz
