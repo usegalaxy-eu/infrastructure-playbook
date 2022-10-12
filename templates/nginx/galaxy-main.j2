@@ -5,6 +5,7 @@ map $http_upgrade $connection_upgrade {
 
 upstream galaxy {
     server unix:{{ galaxy_systemd_gunicorn_listen_path }};
+    server unix:{{ galaxy_systemd_gunicorn_listen_path_2 }};
 }
 
 server {
