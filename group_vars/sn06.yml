@@ -755,8 +755,10 @@ galaxy_jobconf:
         require_container: true
         outputs_to_working_directory: false
         container_monitor_result: callback
-        requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
-        #docker_memory: '{MEMORY}'
+        submit_requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
+        submit_request_memory: 4
+        #submit_rank: 'GalaxyGroup == "upload"'  # submit_rank: can look like that
+        docker_memory: 4
 
     # Pulsar MQs
     - id: remote_cluster_mq_cz
