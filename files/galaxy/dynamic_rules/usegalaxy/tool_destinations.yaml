@@ -55,9 +55,9 @@ openduck_run_smd:
   docker_set_user: 1000
   docker_run_extra_arguments: '-e "OPENDUCK_GPU_PARAM=$OPENDUCK_GPU_PARAM" --gpus all'
 
-sklearn_searchcv: { mem: 12, cores: 10 }
+sklearn_searchcv: {mem: 12, cores: 10}
 
-sklearn_model_validation: { mem: 12, cores: 10 }
+sklearn_model_validation: {mem: 12, cores: 10}
 
 # These are interactive and get restricted volumes
 interactive_tool_jupyter_notebook:
@@ -122,55 +122,55 @@ run_jupyter_job:
 #interactive_tool_isee: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
 #interactive_tool_metashark: {mem: 4, cores: 1, runner: condor_docker_ie, force_destination_id: true}
 
-transdecoder: { cores: 8, mem: 8 }
-zerone: { runner: remote_cluster_mq_it01 }
-basil: { runner: remote_cluster_mq_it01 }
+transdecoder: {cores: 8, mem: 8}
+zerone: {runner: remote_cluster_mq_it01}
+basil: {runner: remote_cluster_mq_it01}
 #goenrichment: {runner: remote_cluster_mq_be01}
 #circos: {mem: 10, runner: remote_cluster_mq_pt01}
-circos: { mem: 10 }
+circos: {mem: 10}
 
 # docking: {runner: remote_cluster_mq_uk01}
 # prepare_ligands_for_docking: {runner: remote_cluster_mq_it01}
 # prepare_box: {runner: remote_cluster_mq_uk01}
 
-stress_ng: { runner: condor_singularity_with_conda }
-fasterq_dump: { cores: 8 }
+stress_ng: {runner: condor_singularity_with_conda}
+fasterq_dump: {cores: 8}
 
-busco: { cores: 16, mem: 80 }
-filtlong: { mem: 50 }
-orfipy: { cores: 8, mem: 8 }
-nanoplot: { cores: 12 }
+busco: {cores: 16, mem: 80}
+filtlong: {mem: 50}
+orfipy: {cores: 8, mem: 8}
+nanoplot: {cores: 12}
 # roary	needs many many cpus if	the number of input files increase
 # a more specific function would ne neat
-roary: { cores: 24 }
-tgsgapcloser: { cores: 16, mem: 24 }
-alevin: { mem: 92, cores: 8 }
-kc-align: { cores: 3 }
-maxquant: { mem: 60, cores: 8, runner: condor_singularity }
-deepvariant: { mem: 10, runner: condor_singularity }
-scpipe: { mem: 64, cores: 8 }
-cardinal_combine: { mem: 92 }
-cardinal_classification: { mem: 90 }
-cardinal_filtering: { mem: 60 }
-cardinal_mz_images: { mem: 20 }
-cardinal_preprocessing: { cores: 4, mem: 110 }
-cardinal_quality_report: { mem: 180 }
-cardinal_segmentations: { mem: 92 }
-cardinal_spectra_plots: { mem: 32 }
-cardinal_data_exporter: { mem: 200 }
-kraken_database_builder: { mem: 200 }
-heatmap: { mem: 12 }
-Heatmap: { mem: 12 }
-mitos2: { mem: 12 }
-feelnc: { mem: 12 }
-merqury: { mem: 12 }
-quast: { cores: 10, mem: 12 }
-jellyfish: { mem: 12 }
-medaka_consensus_pipeline: { cores: 12, mem: 12 }
-shasta: { cores: 10, mem: 12 }
-msconvert: { runner: condor_docker }
+roary: {cores: 24}
+tgsgapcloser: {cores: 16, mem: 24}
+alevin: {mem: 92, cores: 8}
+kc-align: {cores: 3}
+maxquant: {mem: 60, cores: 8, runner: condor_singularity}
+deepvariant: {mem: 10, runner: condor_singularity}
+scpipe: {mem: 64, cores: 8}
+cardinal_combine: {mem: 92}
+cardinal_classification: {mem: 90}
+cardinal_filtering: {mem: 60}
+cardinal_mz_images: {mem: 20}
+cardinal_preprocessing: {cores: 4, mem: 110}
+cardinal_quality_report: {mem: 180}
+cardinal_segmentations: {mem: 92}
+cardinal_spectra_plots: {mem: 32}
+cardinal_data_exporter: {mem: 200}
+kraken_database_builder: {mem: 200}
+heatmap: {mem: 12}
+Heatmap: {mem: 12}
+mitos2: {mem: 12}
+feelnc: {mem: 12}
+merqury: {mem: 12}
+quast: {cores: 10, mem: 12}
+jellyfish: {mem: 12}
+medaka_consensus_pipeline: {cores: 12, mem: 12}
+shasta: {cores: 10, mem: 12}
+msconvert: {runner: condor_docker}
 ## should be dynamically set, or lowered back to 250
-lumpy_sv: { mem: 8 }
+lumpy_sv: {mem: 8}
 lumpy_prep:
   runner: condor_singularity_with_conda
   mem: 8
@@ -198,11 +198,11 @@ pcgr:
   env:
     GALAXY_PCGR_DIR: "/data/db/databases/pcgr"
 
-RNAlien: { cores: 10 }
-slamdunk: { cores: 10 }
-tombo_resquiggle: { cores: 10, mem: 32 }
-tombo_detect_modifications: { cores: 10, mem: 32 }
-pangolin: { cores: 8 }
+RNAlien: {cores: 10}
+slamdunk: {cores: 10}
+tombo_resquiggle: {cores: 10, mem: 32}
+tombo_detect_modifications: {cores: 10, mem: 32}
+pangolin: {cores: 8}
 pilon:
   mem: 32
   env:
@@ -226,13 +226,13 @@ paralyzer:
   env:
     _JAVA_OPTIONS: -Xmx8G -Xms1G
 
-cuffmerge: { mem: 8 }
-CruxAdapter: { mem: 8 }
-bio3d_pca: { mem: 64 }
-bio3d_rmsd: { mem: 90 }
-bio3d_rmsf: { mem: 90 }
-rxdock_sort_filter: { mem: 90 }
-rdock_sort_filter: { mem: 90 }
+cuffmerge: {mem: 8}
+CruxAdapter: {mem: 8}
+bio3d_pca: {mem: 64}
+bio3d_rmsd: {mem: 90}
+bio3d_rmsf: {mem: 90}
+rxdock_sort_filter: {mem: 90}
+rdock_sort_filter: {mem: 90}
 
 alphafold:
   cores: 10
@@ -246,21 +246,21 @@ cds_essential_variability:
   env:
     COPERNICUS_CDSAPIRC_KEY_FILE: /data/db/data_managers/COPERNICUS_CDSAPIRC_KEY_FILE
 
-idr_download_by_ids: { mem: 24, runner: condor_singularity_with_conda }
-kraken: { mem: 90 }
-kraken2: { mem: 64 }
-ont_fast5_api_compress_fast5: { cores: 8 }
-viz_overlay_moving_and_fixed_image: { mem: 12 }
-ip_projective_transformation: { mem: 24 }
-scale_image: { mem: 12 }
-re_he_maldi_image_registration: { mem: 48 }
-minimap2: { cores: 8, mem: 32 }
-winnowmap: { cores: 8, mem: 32 }
-flye: { cores: 20, mem: 60 }
-msstats: { mem: 24 }
-msstatstmt: { mem: 24 }
-xarray_select: { mem: 12 }
-datamash_transpose: { mem: 8 }
+idr_download_by_ids: {mem: 24, runner: condor_singularity_with_conda}
+kraken: {mem: 90}
+kraken2: {mem: 64}
+ont_fast5_api_compress_fast5: {cores: 8}
+viz_overlay_moving_and_fixed_image: {mem: 12}
+ip_projective_transformation: {mem: 24}
+scale_image: {mem: 12}
+re_he_maldi_image_registration: {mem: 48}
+minimap2: {cores: 8, mem: 32}
+winnowmap: {cores: 8, mem: 32}
+flye: {cores: 20, mem: 60}
+msstats: {mem: 24}
+msstatstmt: {mem: 24}
+xarray_select: {mem: 12}
+datamash_transpose: {mem: 8}
 dimspy_process_scans:
   cores: 4
   mem: 12
@@ -297,75 +297,75 @@ dimspy_align_samples:
     NUMEXPR_NUM_THREADS: 4
     NUMBA_NUM_THREADS: 4
 
-dimspy_blank_filter: { mem: 12 }
-dimspy_sample_filter: { mem: 12 }
-dimspy_missing_values_sample_filter: { mem: 12 }
-drep_dereplicate: { cores: 6, mem: 12 }
-nanopolish_methylation: { cores: 5, mem: 12 }
-nanopolish_variants: { cores: 5, mem: 12 }
-nanopolish_eventalign: { cores: 5, mem: 12 }
-nanopolishcomp_eventaligncollapse: { cores: 10, mem: 12 }
-nanocompore_sampcomp: { cores: 9, mem: 48 }
-salsa: { cores: 1, mem: 12 }
-AccurateMassSearch: { cores: 4, mem: 8 }
-AdditiveSeries: { cores: 20, mem: 12 }
+dimspy_blank_filter: {mem: 12}
+dimspy_sample_filter: {mem: 12}
+dimspy_missing_values_sample_filter: {mem: 12}
+drep_dereplicate: {cores: 6, mem: 12}
+nanopolish_methylation: {cores: 5, mem: 12}
+nanopolish_variants: {cores: 5, mem: 12}
+nanopolish_eventalign: {cores: 5, mem: 12}
+nanopolishcomp_eventaligncollapse: {cores: 10, mem: 12}
+nanocompore_sampcomp: {cores: 9, mem: 48}
+salsa: {cores: 1, mem: 12}
+AccurateMassSearch: {cores: 4, mem: 8}
+AdditiveSeries: {cores: 20, mem: 12}
 # augustus: {runner: remote_cluster_mq_be01}
-BaselineFilter: { cores: 4, mem: 8 }
-CONVERTER_bedgraph_to_bigwig: { mem: 8 }
-CVInspector: { cores: 4, mem: 8 }
-CompNovo: { cores: 4, mem: 8 }
-CompNovoCID: { cores: 4, mem: 8 }
-ConsensusID: { cores: 1, mem: 58 }
-ConsensusMapNormalizer: { cores: 4, mem: 8 }
-DeMeanderize: { cores: 4, mem: 8 }
-Decharger: { cores: 4, mem: 8 }
-DecoyDatabase: { cores: 4, mem: 8 }
-Digestor: { cores: 4, mem: 8 }
-DigestorMotif: { cores: 4, mem: 8 }
-EICExtractor: { cores: 4, mem: 8 }
-"EMBOSS: fuzztran39": { mem: 10 }
-ERPairFinder: { cores: 4, mem: 8 }
-FFEval: { cores: 4, mem: 8 }
-FalseDiscoveryRate: { cores: 4, mem: 8 }
-FeatureFinderCentroided: { cores: 4, mem: 8 }
-FeatureFinderIsotopeWavelet: { cores: 4, mem: 8 }
-FeatureFinderMRM: { cores: 4, mem: 8 }
-FeatureFinderMetabo: { cores: 4, mem: 8 }
-FeatureFinderMultiplex: { cores: 8, mem: 8 }
-FeatureFinderSuperHirn: { cores: 4, mem: 8 }
-FeatureLinkerLabeled: { cores: 4, mem: 8 }
-FeatureLinkerUnlabeled: { cores: 4, mem: 8 }
-FeatureLinkerUnlabeledQT: { cores: 4, mem: 8 }
-FidoAdapter: { cores: 8, mem: 8 }
-FileConverter: { cores: 4, mem: 8 }
-FileFilter: { cores: 4, mem: 8 }
-FileInfo: { cores: 4, mem: 8 }
-FileMerger: { cores: 4, mem: 16 }
-HighResPrecursorMassCorrector: { cores: 4, mem: 8 }
-IDConflictResolver: { cores: 4, mem: 8 }
-IDEvaluator: { cores: 4, mem: 8 }
-IDExtractor: { cores: 4, mem: 8 }
-IDFileConverter: { cores: 4, mem: 8 }
-IDFilter: { cores: 4, mem: 8 }
-IDMapper: { cores: 4, mem: 8 }
-IDMassAccuracy: { cores: 4, mem: 8 }
-IDMerger: { cores: 1, mem: 30 }
-IDPosteriorErrorProbability: { cores: 4, mem: 8 }
-IDRTCalibration: { cores: 4, mem: 8 }
-IDSplitter: { cores: 4, mem: 8 }
-ITRAQAnalyzer: { cores: 4, mem: 8 }
-ImageCreator: { cores: 4, mem: 8 }
-InclusionExclusionListCreator: { cores: 4, mem: 8 }
-InternalCalibration: { cores: 4, mem: 8 }
-IsobaricAnalyzer: { cores: 4, mem: 8 }
-LabeledEval: { cores: 4, mem: 8 }
+BaselineFilter: {cores: 4, mem: 8}
+CONVERTER_bedgraph_to_bigwig: {mem: 8}
+CVInspector: {cores: 4, mem: 8}
+CompNovo: {cores: 4, mem: 8}
+CompNovoCID: {cores: 4, mem: 8}
+ConsensusID: {cores: 1, mem: 58}
+ConsensusMapNormalizer: {cores: 4, mem: 8}
+DeMeanderize: {cores: 4, mem: 8}
+Decharger: {cores: 4, mem: 8}
+DecoyDatabase: {cores: 4, mem: 8}
+Digestor: {cores: 4, mem: 8}
+DigestorMotif: {cores: 4, mem: 8}
+EICExtractor: {cores: 4, mem: 8}
+"EMBOSS: fuzztran39": {mem: 10}
+ERPairFinder: {cores: 4, mem: 8}
+FFEval: {cores: 4, mem: 8}
+FalseDiscoveryRate: {cores: 4, mem: 8}
+FeatureFinderCentroided: {cores: 4, mem: 8}
+FeatureFinderIsotopeWavelet: {cores: 4, mem: 8}
+FeatureFinderMRM: {cores: 4, mem: 8}
+FeatureFinderMetabo: {cores: 4, mem: 8}
+FeatureFinderMultiplex: {cores: 8, mem: 8}
+FeatureFinderSuperHirn: {cores: 4, mem: 8}
+FeatureLinkerLabeled: {cores: 4, mem: 8}
+FeatureLinkerUnlabeled: {cores: 4, mem: 8}
+FeatureLinkerUnlabeledQT: {cores: 4, mem: 8}
+FidoAdapter: {cores: 8, mem: 8}
+FileConverter: {cores: 4, mem: 8}
+FileFilter: {cores: 4, mem: 8}
+FileInfo: {cores: 4, mem: 8}
+FileMerger: {cores: 4, mem: 16}
+HighResPrecursorMassCorrector: {cores: 4, mem: 8}
+IDConflictResolver: {cores: 4, mem: 8}
+IDEvaluator: {cores: 4, mem: 8}
+IDExtractor: {cores: 4, mem: 8}
+IDFileConverter: {cores: 4, mem: 8}
+IDFilter: {cores: 4, mem: 8}
+IDMapper: {cores: 4, mem: 8}
+IDMassAccuracy: {cores: 4, mem: 8}
+IDMerger: {cores: 1, mem: 30}
+IDPosteriorErrorProbability: {cores: 4, mem: 8}
+IDRTCalibration: {cores: 4, mem: 8}
+IDSplitter: {cores: 4, mem: 8}
+ITRAQAnalyzer: {cores: 4, mem: 8}
+ImageCreator: {cores: 4, mem: 8}
+InclusionExclusionListCreator: {cores: 4, mem: 8}
+InternalCalibration: {cores: 4, mem: 8}
+IsobaricAnalyzer: {cores: 4, mem: 8}
+LabeledEval: {cores: 4, mem: 8}
 #maker: {cores: 8, mem: 8, runner: remote_cluster_mq_fr01}
-maker: { cores: 12, mem: 12 }
-funannotate_predict: { cores: 12, mem: 12 }
-fastp: { cores: 4 }
-gmx_sim: { cores: 8, mem: 8, gpus: 1, runner: remote_cluster_mq_uk01 }
-gmx_em: { cores: 16, mem: 8 }
-gmx_fep: { cores: 16, mem: 8 }
+maker: {cores: 12, mem: 12}
+funannotate_predict: {cores: 12, mem: 12}
+fastp: {cores: 4}
+gmx_sim: {cores: 8, mem: 8, gpus: 1, runner: remote_cluster_mq_uk01}
+gmx_em: {cores: 16, mem: 8}
+gmx_fep: {cores: 16, mem: 8}
 
 # gmx_md: {runner: remote_cluster_mq_de02}
 # gmx_merge_topology_files: {runner: remote_cluster_mq_de02}
@@ -375,9 +375,9 @@ gmx_fep: { cores: 16, mem: 8 }
 # gmx_setup: {runner: remote_cluster_mq_de02}
 # gmx_solvate: {runner: remote_cluster_mq_de02}
 # mdanalysis_hbonds: {runner: remote_cluster_mq_de02}
-mdanalysis_extract_rmsd: { cores: 4, mem: 16 }
-MRMMapper: { cores: 4, mem: 8 }
-MRMPairFinder: { cores: 4, mem: 8 }
+mdanalysis_extract_rmsd: {cores: 4, mem: 16}
+MRMMapper: {cores: 4, mem: 8}
+MRMPairFinder: {cores: 4, mem: 8}
 msgfplus:
   cores: 10
   env:
@@ -390,183 +390,183 @@ MSGFPlusAdapter:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
   mem: 12
   name: special
-medaka_variant: { mem: 48 }
+medaka_variant: {mem: 48}
 repeatmasker_wrapper:
   cores: 8
   env:
     RM_LIB_PATH: "/data/db/databases/dfam/3.4/"
-repeatmodeler: { cores: 8 }
-mass_spectrometry_imaging_segmentations: { mem: 92 }
-mass_spectrometry_imaging_combine: { mem: 12 }
-mass_spectrometry_imaging_mzplots: { mem: 24 }
-msi_ion_images: { mem: 92 }
-msi_spectra_plot: { mem: 210 }
-MSSimulator: { cores: 4, mem: 8 }
-MapAlignerIdentification: { cores: 4, mem: 8 }
-MapAlignerPoseClustering: { cores: 4, mem: 8 }
-MapAlignerSpectrum: { cores: 4, mem: 8 }
-MapAlignmentEvaluation: { cores: 4, mem: 8 }
-MapNormalizer: { cores: 4, mem: 8 }
-MapRTTransformer: { cores: 4, mem: 8 }
-MapStatistics: { cores: 4, mem: 8 }
-MassCalculator: { cores: 4, mem: 8 }
-MassTraceExtractor: { cores: 4, mem: 8 }
-MyriMatchAdapter: { cores: 4, mem: 8 }
-MzTabExporter: { cores: 4, mem: 8 }
-QCCalculator: { mem: 8 }
-OpenSwathWorkflow: { mem: 156 }
-mira_assembler: { mem: 24 }
-meryl: { cores: 24, mem: 130 }
-mothur_align_check: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_align_seqs: { cores: 2, mem: 90, env: { TERM: vt100 } }
-mothur_amova: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_anosim: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_bin_seqs: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_chimera_bellerophon: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_chimera_ccode: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_chimera_check: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_chimera_perseus: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_chimera_pintail: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_chimera_slayer: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_chimera_uchime: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_chop_seqs: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_classify_otu: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_classify_rf: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_classify_seqs: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_classify_tree: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_clearcut: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_cluster: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_cluster_classic: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_cluster_fragments: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_cluster_split: { cores: 1, mem: 90, env: { TERM: vt100 } }
-mothur_collect_shared: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_collect_single: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_consensus_seqs: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_cooccurrence: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_corr_axes: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_count_groups: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_count_seqs: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_create_database: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_degap_seqs: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_deunique_seqs: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_deunique_tree: { cores: 1, mem: 20, env: { TERM: vt100 } }
+repeatmodeler: {cores: 8}
+mass_spectrometry_imaging_segmentations: {mem: 92}
+mass_spectrometry_imaging_combine: {mem: 12}
+mass_spectrometry_imaging_mzplots: {mem: 24}
+msi_ion_images: {mem: 92}
+msi_spectra_plot: {mem: 210}
+MSSimulator: {cores: 4, mem: 8}
+MapAlignerIdentification: {cores: 4, mem: 8}
+MapAlignerPoseClustering: {cores: 4, mem: 8}
+MapAlignerSpectrum: {cores: 4, mem: 8}
+MapAlignmentEvaluation: {cores: 4, mem: 8}
+MapNormalizer: {cores: 4, mem: 8}
+MapRTTransformer: {cores: 4, mem: 8}
+MapStatistics: {cores: 4, mem: 8}
+MassCalculator: {cores: 4, mem: 8}
+MassTraceExtractor: {cores: 4, mem: 8}
+MyriMatchAdapter: {cores: 4, mem: 8}
+MzTabExporter: {cores: 4, mem: 8}
+QCCalculator: {mem: 8}
+OpenSwathWorkflow: {mem: 156}
+mira_assembler: {mem: 24}
+meryl: {cores: 24, mem: 130}
+mothur_align_check: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_align_seqs: {cores: 2, mem: 90, env: {TERM: vt100}}
+mothur_amova: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_anosim: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_bin_seqs: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_chimera_bellerophon: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_chimera_ccode: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_chimera_check: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_chimera_perseus: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_chimera_pintail: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_chimera_slayer: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_chimera_uchime: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_chop_seqs: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_classify_otu: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_classify_rf: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_classify_seqs: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_classify_tree: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_clearcut: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_cluster: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_cluster_classic: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_cluster_fragments: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_cluster_split: {cores: 1, mem: 90, env: {TERM: vt100}}
+mothur_collect_shared: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_collect_single: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_consensus_seqs: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_cooccurrence: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_corr_axes: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_count_groups: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_count_seqs: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_create_database: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_degap_seqs: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_deunique_seqs: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_deunique_tree: {cores: 1, mem: 20, env: {TERM: vt100}}
 mothur_dist_seqs:
-  { cores: 2, mem: 20, env: { TERM: vt100 }, runner: condor_singularity }
-mothur_dist_shared: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_fastq_info: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_filter_seqs: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_filter_shared: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_get_communitytype: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_get_coremicrobiome: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_get_dists: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_get_group: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_get_groups: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_get_label: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_get_lineage: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_get_mimarkspackage: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_get_otulabels: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_get_otulist: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_get_oturep: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_get_otus: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_get_rabund: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_get_relabund: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_get_sabund: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_get_seqs: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_get_sharedseqs: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_hcluster: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_heatmap_bin: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_heatmap_sim: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_homova: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_indicator: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_lefse: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_libshuff: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_list_otulabels: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_list_seqs: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_make_biom: { cores: 1, mem: 90, env: { TERM: vt100 } }
-mothur_make_contigs: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_make_design: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_make_fastq: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_make_group: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_make_lefse: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_make_lookup: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_make_shared: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_make_sra: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_mantel: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_merge_files: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_merge_groups: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_merge_sfffiles: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_merge_taxsummary: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_metastats: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_mimarks_attributes: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_nmds: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_normalize_shared: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_otu_association: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_otu_hierarchy: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_pairwise_seqs: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_parse_list: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_parsimony: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_pca: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_pcoa: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_pcr_seqs: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_phylo_diversity: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_phylotype: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_pre_cluster: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_primer_design: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_rarefaction_shared: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_rarefaction_single: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_remove_dists: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_remove_groups: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_remove_lineage: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_remove_otulabels: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_remove_otus: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_remove_rare: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_remove_seqs: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_reverse_seqs: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_screen_seqs: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_sens_spec: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_seq_error: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_sffinfo: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_shhh_flows: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_shhh_seqs: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_sort_seqs: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_split_abund: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_split_groups: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_sub_sample: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_summary_qual: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_summary_seqs: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_summary_shared: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_summary_single: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_summary_tax: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_tree_shared: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_trim_flows: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_trim_seqs: { cores: 2, mem: 20, env: { TERM: vt100 } }
-mothur_unifrac_unweighted: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_unifrac_weighted: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_unique_seqs: { cores: 1, mem: 20, env: { TERM: vt100 } }
-mothur_venn: { cores: 1, mem: 20, env: { TERM: vt100 } }
+  {cores: 2, mem: 20, env: {TERM: vt100}, runner: condor_singularity}
+mothur_dist_shared: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_fastq_info: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_filter_seqs: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_filter_shared: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_get_communitytype: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_get_coremicrobiome: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_get_dists: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_get_group: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_get_groups: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_get_label: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_get_lineage: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_get_mimarkspackage: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_get_otulabels: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_get_otulist: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_get_oturep: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_get_otus: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_get_rabund: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_get_relabund: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_get_sabund: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_get_seqs: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_get_sharedseqs: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_hcluster: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_heatmap_bin: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_heatmap_sim: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_homova: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_indicator: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_lefse: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_libshuff: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_list_otulabels: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_list_seqs: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_make_biom: {cores: 1, mem: 90, env: {TERM: vt100}}
+mothur_make_contigs: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_make_design: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_make_fastq: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_make_group: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_make_lefse: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_make_lookup: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_make_shared: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_make_sra: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_mantel: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_merge_files: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_merge_groups: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_merge_sfffiles: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_merge_taxsummary: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_metastats: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_mimarks_attributes: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_nmds: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_normalize_shared: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_otu_association: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_otu_hierarchy: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_pairwise_seqs: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_parse_list: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_parsimony: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_pca: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_pcoa: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_pcr_seqs: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_phylo_diversity: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_phylotype: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_pre_cluster: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_primer_design: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_rarefaction_shared: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_rarefaction_single: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_remove_dists: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_remove_groups: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_remove_lineage: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_remove_otulabels: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_remove_otus: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_remove_rare: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_remove_seqs: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_reverse_seqs: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_screen_seqs: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_sens_spec: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_seq_error: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_sffinfo: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_shhh_flows: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_shhh_seqs: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_sort_seqs: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_split_abund: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_split_groups: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_sub_sample: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_summary_qual: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_summary_seqs: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_summary_shared: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_summary_single: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_summary_tax: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_tree_shared: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_trim_flows: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_trim_seqs: {cores: 2, mem: 20, env: {TERM: vt100}}
+mothur_unifrac_unweighted: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_unifrac_weighted: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_unique_seqs: {cores: 1, mem: 20, env: {TERM: vt100}}
+mothur_venn: {cores: 1, mem: 20, env: {TERM: vt100}}
 mz_to_sqlite:
   mem: 16
   env:
     _JAVA_OPTIONS: -Xmx16G -Xms1G
-NSPDK_candidateClust: { mem: 32 }
-novoplasty: { mem: 40 }
-NoiseFilterGaussian: { cores: 4, mem: 8 }
-NoiseFilterSGolay: { cores: 4, mem: 8 }
-OMSSAAdapter: { cores: 4, mem: 8 }
-OpenSwathAnalyzer: { cores: 4, mem: 8 }
-OpenSwathChromatogramExtractor: { cores: 4, mem: 8 }
-OpenSwathConfidenceScoring: { cores: 4, mem: 8 }
-OpenSwathDIAPreScoring: { cores: 4, mem: 8 }
-OpenSwathDecoyGenerator: { cores: 4, mem: 8 }
-OpenSwathFeatureXMLToTSV: { cores: 4, mem: 8 }
-OpenSwathRTNormalizer: { cores: 4, mem: 8 }
-OpenSwathRewriteToFeatureXML: { cores: 4, mem: 8 }
-PTModel: { cores: 4, mem: 8 }
-PTPredict: { cores: 4, mem: 8 }
-PeakPickerHiRes: { cores: 4, mem: 8 }
-PeakPickerWavelet: { cores: 4, mem: 8 }
-PepNovoAdapter: { cores: 4, mem: 8 }
-PeptideIndexer: { cores: 4, mem: 8 }
+NSPDK_candidateClust: {mem: 32}
+novoplasty: {mem: 40}
+NoiseFilterGaussian: {cores: 4, mem: 8}
+NoiseFilterSGolay: {cores: 4, mem: 8}
+OMSSAAdapter: {cores: 4, mem: 8}
+OpenSwathAnalyzer: {cores: 4, mem: 8}
+OpenSwathChromatogramExtractor: {cores: 4, mem: 8}
+OpenSwathConfidenceScoring: {cores: 4, mem: 8}
+OpenSwathDIAPreScoring: {cores: 4, mem: 8}
+OpenSwathDecoyGenerator: {cores: 4, mem: 8}
+OpenSwathFeatureXMLToTSV: {cores: 4, mem: 8}
+OpenSwathRTNormalizer: {cores: 4, mem: 8}
+OpenSwathRewriteToFeatureXML: {cores: 4, mem: 8}
+PTModel: {cores: 4, mem: 8}
+PTPredict: {cores: 4, mem: 8}
+PeakPickerHiRes: {cores: 4, mem: 8}
+PeakPickerWavelet: {cores: 4, mem: 8}
+PepNovoAdapter: {cores: 4, mem: 8}
+PeptideIndexer: {cores: 4, mem: 8}
 pepquery:
   mem: 8
   env:
@@ -595,204 +595,204 @@ AssayGeneratorMetabo:
   mem: 12
   env:
     _JAVA_OPTIONS: -Xmx12G -Xms1G
-PrecursorIonSelector: { cores: 4, mem: 8 }
-PrecursorMassCorrector: { cores: 4, mem: 8 }
-ProteinInference: { cores: 4, mem: 8 }
-ProteinQuantifier: { cores: 4, mem: 8 }
-ProteinResolver: { cores: 4, mem: 8 }
-RNPxl: { cores: 4, mem: 8 }
-RTEvaluation: { cores: 4, mem: 8 }
-RTModel: { cores: 4, mem: 8 }
-RTPredict: { cores: 4, mem: 8 }
-Resampler: { cores: 4, mem: 8 }
-sopra_wpc: { cores: 4, mem: 16 }
-stacks2_denovomap: { cores: 4, mem: 16 }
-stacks_clonefilter: { mem: 8 }
-stacks2_clonefilter: { mem: 8 }
-SeedListGenerator: { cores: 4, mem: 8 }
-SemanticValidator: { cores: 4, mem: 8 }
-SequenceCoverageCalculator: { cores: 4, mem: 8 }
-SpecLibCreator: { cores: 4, mem: 8 }
-SpecLibSearcher: { cores: 4, mem: 8 }
-SpectraFilterBernNorm: { cores: 4, mem: 8 }
-SpectraFilterMarkerMower: { cores: 4, mem: 8 }
-SpectraFilterNLargest: { cores: 4, mem: 8 }
-SpectraFilterNormalizer: { cores: 4, mem: 8 }
-SpectraFilterParentPeakMower: { cores: 4, mem: 8 }
-SpectraFilterScaler: { cores: 4, mem: 8 }
-SpectraFilterSqrtMower: { cores: 4, mem: 8 }
-SpectraFilterThresholdMower: { cores: 4, mem: 8 }
-SpectraFilterWindowMower: { cores: 4, mem: 8 }
-SpectraMerger: { cores: 4, mem: 8 }
-TMTAnalyzer: { cores: 4, mem: 8 }
-TOFCalibration: { cores: 4, mem: 8 }
-TextExporter: { cores: 4, mem: 8 }
-TransformationEvaluation: { cores: 4, mem: 8 }
-XMLValidator: { cores: 4, mem: 8 }
-XTandemAdapter: { cores: 4, mem: 8 }
-racon: { cores: 16, mem: 36 }
-abims_xcms_fillPeaks: { mem: 32 }
-abims_xcms_retcor: { mem: 32 }
-abims_CAMERA_annotateDiffreport: { mem: 32 }
-abyss-pe: { cores: 20, mem: 70 }
-anndata_export: { cores: 4 }
-anndata_import: { mem: 200 }
-anndata_inspect: { cores: 4 }
-anndata_manipulate: { cores: 4 }
+PrecursorIonSelector: {cores: 4, mem: 8}
+PrecursorMassCorrector: {cores: 4, mem: 8}
+ProteinInference: {cores: 4, mem: 8}
+ProteinQuantifier: {cores: 4, mem: 8}
+ProteinResolver: {cores: 4, mem: 8}
+RNPxl: {cores: 4, mem: 8}
+RTEvaluation: {cores: 4, mem: 8}
+RTModel: {cores: 4, mem: 8}
+RTPredict: {cores: 4, mem: 8}
+Resampler: {cores: 4, mem: 8}
+sopra_wpc: {cores: 4, mem: 16}
+stacks2_denovomap: {cores: 4, mem: 16}
+stacks_clonefilter: {mem: 8}
+stacks2_clonefilter: {mem: 8}
+SeedListGenerator: {cores: 4, mem: 8}
+SemanticValidator: {cores: 4, mem: 8}
+SequenceCoverageCalculator: {cores: 4, mem: 8}
+SpecLibCreator: {cores: 4, mem: 8}
+SpecLibSearcher: {cores: 4, mem: 8}
+SpectraFilterBernNorm: {cores: 4, mem: 8}
+SpectraFilterMarkerMower: {cores: 4, mem: 8}
+SpectraFilterNLargest: {cores: 4, mem: 8}
+SpectraFilterNormalizer: {cores: 4, mem: 8}
+SpectraFilterParentPeakMower: {cores: 4, mem: 8}
+SpectraFilterScaler: {cores: 4, mem: 8}
+SpectraFilterSqrtMower: {cores: 4, mem: 8}
+SpectraFilterThresholdMower: {cores: 4, mem: 8}
+SpectraFilterWindowMower: {cores: 4, mem: 8}
+SpectraMerger: {cores: 4, mem: 8}
+TMTAnalyzer: {cores: 4, mem: 8}
+TOFCalibration: {cores: 4, mem: 8}
+TextExporter: {cores: 4, mem: 8}
+TransformationEvaluation: {cores: 4, mem: 8}
+XMLValidator: {cores: 4, mem: 8}
+XTandemAdapter: {cores: 4, mem: 8}
+racon: {cores: 16, mem: 36}
+abims_xcms_fillPeaks: {mem: 32}
+abims_xcms_retcor: {mem: 32}
+abims_CAMERA_annotateDiffreport: {mem: 32}
+abyss-pe: {cores: 20, mem: 70}
+anndata_export: {cores: 4}
+anndata_import: {mem: 200}
+anndata_inspect: {cores: 4}
+anndata_manipulate: {cores: 4}
 antismash:
   cores: 10
   mem: 90
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx96G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
-bam-to-wig: { mem: 20 }
-bamCompare_deepTools: { mem: 10 }
-bamCorrelate_deepTools: { cores: 10, mem: 90 }
-bamCoverage_deepTools: { mem: 10 }
-bamFingerprint: { mem: 10 }
-bedtools_intersectbed: { mem: 40 }
-bedtools_intersectbed_bam: { mem: 40 }
-bedtools_mergebed: { mem: 15 }
-bedtools_sortbed: { mem: 20 }
-bedtools_subtractbed: { mem: 8 }
-bfast_wrapper: { cores: 10, mem: 20 }
-bg_diamond: { cores: 6, mem: 90 }
-bg_diamond_makedb: { cores: 10, mem: 40 }
-bgchem_fragment_merger: { cores: 10, mem: 40 }
-bigwig_to_bedgraph: { mem: 12 }
-biosigner: { mem: 12 }
-bismark_bowtie: { cores: 6, mem: 30, name: bismark, tmp: large }
-bismark_bowtie2: { cores: 6, mem: 30, name: bismark, tmp: large }
-bismark_methylation_extractor: { cores: 4, mem: 12 }
-blast2go: { mem: 20 }
-blast_parser: { mem: 8 }
-blockbuster: { mem: 64 }
-blockclust: { mem: 10 }
-bowtie2: { cores: 8, mem: 20 }
-bwa: { cores: 8, mem: 20 }
-bwa_mem: { cores: 8, mem: 30 }
-bwa_mem2: { cores: 8, mem: 30 }
-bwa_mem_index_builder_data_manager: { cores: 12, mem: 48 }
-bwameth_index_builder_data_manager: { cores: 12, mem: 92 }
-kallisto_index_builder_data_manager: { cores: 12, mem: 92 }
-salmon_index_builder_data_manager: { cores: 12, mem: 92 }
-data_manager_metaphlan_download: { cores: 12, mem: 92 }
-data_manager_funannotate: { cores: 1, mem: 64 }
-data_manager_build_kraken2_database: { cores: 1, mem: 64 }
-bwameth: { cores: 8, mem: 24 }
-bwtool-lift: { mem: 80 }
-cat_contigs: { mem: 24 } ## Diamond in the background
-cat_bins: { mem: 24 } ## Diamond in the background
-chira_map: { cores: 10, mem: 80, runner: condor_singularity_with_conda }
-chira_merge: { cores: 1, mem: 60, runner: condor_singularity_with_conda }
-chira_quantify: { cores: 1, mem: 60, runner: condor_singularity_with_conda }
-chira_extract: { cores: 24, mem: 100, runner: condor_singularity_with_conda }
-canu: { cores: 20, mem: 92 }
-mass_spectrometry_imaging_preprocessing: { mem: 110 }
-mass_spectrometry_imaging_ion_images: { mem: 20 }
-mass_spectrometry_imaging_qc: { mem: 110 }
-mass_spectrometry_imaging_filtering: { mem: 20 }
-metaspades: { cores: 10, mem: 250 }
-megahit: { cores: 10, mem: 80 }
-maxbin2: { cores: 10, mem: 48 }
-metabat2: { cores: 10, mem: 48 }
-concoct: { cores: 10, mem: 48 }
-charts: { mem: 10 }
-circgraph: { mem: 10 }
-computeMatrix: { mem: 90 }
-correctGCBias: { mem: 10 }
-cshl_fastx_collapser: { mem: 16 }
-create_tool_recommendation_model: { cores: 16, mem: 160 }
-crispr_recognition_tool: { mem: 10 }
-ctb_np-likeness-calculator: { mem: 12 }
-ctb_online_data_fetch: { mem: 10 }
+bam-to-wig: {mem: 20}
+bamCompare_deepTools: {mem: 10}
+bamCorrelate_deepTools: {cores: 10, mem: 90}
+bamCoverage_deepTools: {mem: 10}
+bamFingerprint: {mem: 10}
+bedtools_intersectbed: {mem: 40}
+bedtools_intersectbed_bam: {mem: 40}
+bedtools_mergebed: {mem: 15}
+bedtools_sortbed: {mem: 20}
+bedtools_subtractbed: {mem: 8}
+bfast_wrapper: {cores: 10, mem: 20}
+bg_diamond: {cores: 6, mem: 90}
+bg_diamond_makedb: {cores: 10, mem: 40}
+bgchem_fragment_merger: {cores: 10, mem: 40}
+bigwig_to_bedgraph: {mem: 12}
+biosigner: {mem: 12}
+bismark_bowtie: {cores: 6, mem: 30, name: bismark, tmp: large}
+bismark_bowtie2: {cores: 6, mem: 30, name: bismark, tmp: large}
+bismark_methylation_extractor: {cores: 4, mem: 12}
+blast2go: {mem: 20}
+blast_parser: {mem: 8}
+blockbuster: {mem: 64}
+blockclust: {mem: 10}
+bowtie2: {cores: 8, mem: 20}
+bwa: {cores: 8, mem: 20}
+bwa_mem: {cores: 8, mem: 30}
+bwa_mem2: {cores: 8, mem: 30}
+bwa_mem_index_builder_data_manager: {cores: 12, mem: 48}
+bwameth_index_builder_data_manager: {cores: 12, mem: 92}
+kallisto_index_builder_data_manager: {cores: 12, mem: 92}
+salmon_index_builder_data_manager: {cores: 12, mem: 92}
+data_manager_metaphlan_download: {cores: 12, mem: 92}
+data_manager_funannotate: {cores: 1, mem: 64}
+data_manager_build_kraken2_database: {cores: 1, mem: 64}
+bwameth: {cores: 8, mem: 24}
+bwtool-lift: {mem: 80}
+cat_contigs: {mem: 24} ## Diamond in the background
+cat_bins: {mem: 24} ## Diamond in the background
+chira_map: {cores: 10, mem: 80, runner: condor_singularity_with_conda}
+chira_merge: {cores: 1, mem: 60, runner: condor_singularity_with_conda}
+chira_quantify: {cores: 1, mem: 60, runner: condor_singularity_with_conda}
+chira_extract: {cores: 24, mem: 100, runner: condor_singularity_with_conda}
+canu: {cores: 20, mem: 92}
+mass_spectrometry_imaging_preprocessing: {mem: 110}
+mass_spectrometry_imaging_ion_images: {mem: 20}
+mass_spectrometry_imaging_qc: {mem: 110}
+mass_spectrometry_imaging_filtering: {mem: 20}
+metaspades: {cores: 10, mem: 250}
+megahit: {cores: 10, mem: 80}
+maxbin2: {cores: 10, mem: 48}
+metabat2: {cores: 10, mem: 48}
+concoct: {cores: 10, mem: 48}
+charts: {mem: 10}
+circgraph: {mem: 10}
+computeMatrix: {mem: 90}
+correctGCBias: {mem: 10}
+cshl_fastx_collapser: {mem: 16}
+create_tool_recommendation_model: {cores: 16, mem: 160}
+crispr_recognition_tool: {mem: 10}
+ctb_np-likeness-calculator: {mem: 12}
+ctb_online_data_fetch: {mem: 10}
 ctb_openmg:
   mem: 20
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
-ctb_pubchem_download_as_smiles: { cores: 10, mem: 20 }
-cuffcompare: { mem: 10 }
-cuffdiff: { cores: 6, mem: 40 }
-cufflinks: { cores: 6, mem: 30 }
-cuffnorm: { cores: 6, mem: 20 }
-cuffquant: { cores: 6, mem: 20 }
-data_manager_gemini_download: { mem: 20 }
-data_manager_humann2_download: { mem: 25 }
-data_manager_snpeff_databases: { mem: 12 }
-data_manager_snpeff_download: { mem: 12 }
-deeptools_bamCompare: { cores: 10, mem: 12 }
-deeptools_bamCorrelate: { cores: 10, mem: 90 }
-deeptools_bamCoverage: { cores: 10, mem: 48 }
-deeptools_bamFingerprint: { cores: 10, mem: 12 }
-deeptools_bam_compare: { cores: 10, mem: 24 }
-deeptools_bam_coverage: { cores: 10, mem: 24 }
-deeptools_bam_pe_fragmentsize: { cores: 10, mem: 24 }
-deeptools_bigwigCompare: { cores: 10, mem: 12 }
-deeptools_bigwigCorrelate: { cores: 10, mem: 40 }
-deeptools_bigwig_compare: { cores: 10, mem: 24 }
-deeptools_computeGCBias: { cores: 10, mem: 24 }
-deeptools_computeMatrix: { cores: 10, mem: 40 }
-deeptools_compute_gc_bias: { cores: 10, mem: 24 }
-deeptools_compute_matrix: { cores: 10, mem: 30 }
-deeptools_correctGCBias: { cores: 10, mem: 24 }
-deeptools_correct_gc_bias: { cores: 10, mem: 24 }
-deeptools_heatmapper: { mem: 25 }
-deeptools_multi_bam_summary: { cores: 10, mem: 24 }
-deeptools_multi_bigwig_summary: { cores: 10, mem: 40 }
-deeptools_plot_correlation: { mem: 20 }
-deeptools_plot_coverage: { mem: 20 }
-deeptools_plot_fingerprint: { mem: 20 }
-deeptools_plot_heatmap: { mem: 25 }
-deeptools_plot_pca: { mem: 20 }
-deeptools_plot_profile: { mem: 20 }
-deeptools_profiler: { mem: 20 }
-deseq2: { mem: 8 }
-dexseq_count: { mem: 25 }
-dexseq: { cores: 8 }
-diamond_database_builder: { cores: 10, mem: 90 }
-dt_profiler: { mem: 10 }
-eggnog_mapper: { cores: 8, mem: 12 }
-eukaryotic_ncbi_submission: { cores: 24, mem: 24 }
-fastq_dump: { mem: 20 }
-fastqc: { cores: 8 }
-featurecounts: { cores: 8, mem: 18 }
-feebayes: { cores: 10, mem: 12 }
+ctb_pubchem_download_as_smiles: {cores: 10, mem: 20}
+cuffcompare: {mem: 10}
+cuffdiff: {cores: 6, mem: 40}
+cufflinks: {cores: 6, mem: 30}
+cuffnorm: {cores: 6, mem: 20}
+cuffquant: {cores: 6, mem: 20}
+data_manager_gemini_download: {mem: 20}
+data_manager_humann2_download: {mem: 25}
+data_manager_snpeff_databases: {mem: 12}
+data_manager_snpeff_download: {mem: 12}
+deeptools_bamCompare: {cores: 10, mem: 12}
+deeptools_bamCorrelate: {cores: 10, mem: 90}
+deeptools_bamCoverage: {cores: 10, mem: 48}
+deeptools_bamFingerprint: {cores: 10, mem: 12}
+deeptools_bam_compare: {cores: 10, mem: 24}
+deeptools_bam_coverage: {cores: 10, mem: 24}
+deeptools_bam_pe_fragmentsize: {cores: 10, mem: 24}
+deeptools_bigwigCompare: {cores: 10, mem: 12}
+deeptools_bigwigCorrelate: {cores: 10, mem: 40}
+deeptools_bigwig_compare: {cores: 10, mem: 24}
+deeptools_computeGCBias: {cores: 10, mem: 24}
+deeptools_computeMatrix: {cores: 10, mem: 40}
+deeptools_compute_gc_bias: {cores: 10, mem: 24}
+deeptools_compute_matrix: {cores: 10, mem: 30}
+deeptools_correctGCBias: {cores: 10, mem: 24}
+deeptools_correct_gc_bias: {cores: 10, mem: 24}
+deeptools_heatmapper: {mem: 25}
+deeptools_multi_bam_summary: {cores: 10, mem: 24}
+deeptools_multi_bigwig_summary: {cores: 10, mem: 40}
+deeptools_plot_correlation: {mem: 20}
+deeptools_plot_coverage: {mem: 20}
+deeptools_plot_fingerprint: {mem: 20}
+deeptools_plot_heatmap: {mem: 25}
+deeptools_plot_pca: {mem: 20}
+deeptools_plot_profile: {mem: 20}
+deeptools_profiler: {mem: 20}
+deseq2: {mem: 8}
+dexseq_count: {mem: 25}
+dexseq: {cores: 8}
+diamond_database_builder: {cores: 10, mem: 90}
+dt_profiler: {mem: 10}
+eggnog_mapper: {cores: 8, mem: 12}
+eukaryotic_ncbi_submission: {cores: 24, mem: 24}
+fastq_dump: {mem: 20}
+fastqc: {cores: 8}
+featurecounts: {cores: 8, mem: 18}
+feebayes: {cores: 10, mem: 12}
 flashlfq:
   env:
     MONO_GC_PARAMS: max-heap-size=90g
   mem: 90
-flexbar: { cores: 10, mem: 12 }
-flexbar_no_split: { cores: 10, mem: 12 }
-flexbar_split_RR_bcs: { cores: 10, mem: 12 }
-flexbar_split_RYYR_bcs: { cores: 10, mem: 12 }
-freebayes: { cores: 10, mem: 90 }
+flexbar: {cores: 10, mem: 12}
+flexbar_no_split: {cores: 10, mem: 12}
+flexbar_split_RR_bcs: {cores: 10, mem: 12}
+flexbar_split_RYYR_bcs: {cores: 10, mem: 12}
+freebayes: {cores: 10, mem: 90}
 gatk2_base_recalibrator:
   cores: 10
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx8G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
   mem: 24
   name: _special
-gatk2_depth_of_coverage: { cores: 10, mem: 24 }
-gatk2_haplotype_caller: { cores: 10, mem: 24 }
-gatk2_indel_realigner: { mem: 10 }
-gatk2_print_reads: { cores: 10, mem: 24 }
-gatk2_realigner_target_creator: { cores: 10, mem: 24 }
+gatk2_depth_of_coverage: {cores: 10, mem: 24}
+gatk2_haplotype_caller: {cores: 10, mem: 24}
+gatk2_indel_realigner: {mem: 10}
+gatk2_print_reads: {cores: 10, mem: 24}
+gatk2_realigner_target_creator: {cores: 10, mem: 24}
 gatk2_reduce_reads:
   cores: 10
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx8G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
   mem: 24
   name: _special
-gatk2_unified_genotyper: { cores: 10, mem: 24 }
-gatk2_variant_annotator: { cores: 10, mem: 24 }
-gatk2_variant_apply_recalibration: { cores: 10, mem: 24 }
-gatk2_variant_combine: { cores: 10, mem: 24 }
-gatk2_variant_eval: { cores: 10, mem: 24 }
-gatk2_variant_filtration: { mem: 10 }
-gatk2_variant_recalibrator: { cores: 10, mem: 24 }
-gatk2_variant_select: { cores: 10, mem: 24 }
-gatk2_variant_validate: { cores: 10, mem: 24 }
-gatk_picard_index_builder: { mem: 12 }
-gemini_load: { cores: 10, mem: 40 }
+gatk2_unified_genotyper: {cores: 10, mem: 24}
+gatk2_variant_annotator: {cores: 10, mem: 24}
+gatk2_variant_apply_recalibration: {cores: 10, mem: 24}
+gatk2_variant_combine: {cores: 10, mem: 24}
+gatk2_variant_eval: {cores: 10, mem: 24}
+gatk2_variant_filtration: {mem: 10}
+gatk2_variant_recalibrator: {cores: 10, mem: 24}
+gatk2_variant_select: {cores: 10, mem: 24}
+gatk2_variant_validate: {cores: 10, mem: 24}
+gatk_picard_index_builder: {mem: 12}
+gemini_load: {cores: 10, mem: 40}
 
 gemini_inheritance:
   env:
@@ -811,9 +811,9 @@ gemini_inheritance:
 #            roles:
 #                - admin
 
-ggplot2_heatmap2: { mem: 24 }
-glassgo: { mem: 4, runner: condor_docker }
-graphprot_predict_profile: { mem: 16 }
+ggplot2_heatmap2: {mem: 24}
+glassgo: {mem: 4, runner: condor_docker}
+graphprot_predict_profile: {mem: 16}
 # this tool was developed by IGC Bioinformatics Unit and Daniel Sobral from ELIXIR-PT
 # goenrichment: {runner: remote_cluster_mq_pt01}
 hammock_1.0:
@@ -821,128 +821,128 @@ hammock_1.0:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
   mem: 20
   name: java_temp
-heatmapper: { mem: 25 }
-heatmapper_deepTools: { mem: 25 }
-hicexplorer_hicbuildmatrix: { cores: 10, mem: 160 }
-hicexplorer_hiccorrectmatrix: { mem: 64 }
-hicexplorer_hiccorrelate: { mem: 20 }
-hicexplorer_hicfindtads: { mem: 20 }
-hicexplorer_hicplotmatrix: { mem: 64 }
-hicexplorer_hicplottads: { mem: 64 }
-hicexplorer_hicsummatrices: { mem: 64 }
-hicexplorer_hicpca: { cores: 10, mem: 150 }
-hicexplorer_hicmergematrixbins: { mem: 80 }
-hicexplorer_hictransform: { cores: 10, mem: 60 }
-hicexplorer_hicplotviewpoint: { mem: 12 }
-hicexplorer_hicaggregatecontacts: { mem: 12 }
-hicexplorer_chicaggregatestatistic: { cores: 20, mem: 60 }
-hicexplorer_chicdifferentialtest: { cores: 20, mem: 60 }
-hicexplorer_chicplotviewpoint: { cores: 20, mem: 60 }
-hicexplorer_chicqualitycontrol: { cores: 20, mem: 60 }
-hicexplorer_chicsignificantinteractions: { cores: 20, mem: 60 }
-hicexplorer_chicviewpoint: { cores: 20, mem: 60 }
-hicexplorer_chicviewpointbackgroundmodel: { cores: 20, mem: 60 }
+heatmapper: {mem: 25}
+heatmapper_deepTools: {mem: 25}
+hicexplorer_hicbuildmatrix: {cores: 10, mem: 160}
+hicexplorer_hiccorrectmatrix: {mem: 64}
+hicexplorer_hiccorrelate: {mem: 20}
+hicexplorer_hicfindtads: {mem: 20}
+hicexplorer_hicplotmatrix: {mem: 64}
+hicexplorer_hicplottads: {mem: 64}
+hicexplorer_hicsummatrices: {mem: 64}
+hicexplorer_hicpca: {cores: 10, mem: 150}
+hicexplorer_hicmergematrixbins: {mem: 80}
+hicexplorer_hictransform: {cores: 10, mem: 60}
+hicexplorer_hicplotviewpoint: {mem: 12}
+hicexplorer_hicaggregatecontacts: {mem: 12}
+hicexplorer_chicaggregatestatistic: {cores: 20, mem: 60}
+hicexplorer_chicdifferentialtest: {cores: 20, mem: 60}
+hicexplorer_chicplotviewpoint: {cores: 20, mem: 60}
+hicexplorer_chicqualitycontrol: {cores: 20, mem: 60}
+hicexplorer_chicsignificantinteractions: {cores: 20, mem: 60}
+hicexplorer_chicviewpoint: {cores: 20, mem: 60}
+hicexplorer_chicviewpointbackgroundmodel: {cores: 20, mem: 60}
 
-schicexplorer_schicdemultiplex: { cores: 5, mem: 64 }
-schicexplorer_schicadjustmatrix: { cores: 5, mem: 64 }
-schicexplorer_schiccluster: { cores: 20, mem: 64 }
-schicexplorer_schiccorrectmatrices: { cores: 20, mem: 110 }
-schicexplorer_schiccreatebulkmatrix: { cores: 10, mem: 64 }
-schicexplorer_schicclustercomparments: { cores: 20, mem: 64 }
-schicexplorer_schicclusterminhash: { cores: 20, mem: 240 }
-schicexplorer_schicclustersvl: { cores: 20, mem: 20 }
-schicexplorer_schicconsensusmatrices: { cores: 20, mem: 64 }
-schicexplorer_schicinfo: { cores: 1, mem: 8 }
-schicexplorer_schicmergematrixbins: { cores: 20, mem: 64 }
-schicexplorer_schicmergetoscool: { cores: 20, mem: 64 }
-schicexplorer_schicnormalize: { cores: 20, mem: 64 }
-schicexplorer_schicplotclusterprofiles: { cores: 20, mem: 64 }
-schicexplorer_schicplotconsensusmatrices: { cores: 10, mem: 32 }
-schicexplorer_schicqualitycontrol: { cores: 20, mem: 64 }
+schicexplorer_schicdemultiplex: {cores: 5, mem: 64}
+schicexplorer_schicadjustmatrix: {cores: 5, mem: 64}
+schicexplorer_schiccluster: {cores: 20, mem: 64}
+schicexplorer_schiccorrectmatrices: {cores: 20, mem: 110}
+schicexplorer_schiccreatebulkmatrix: {cores: 10, mem: 64}
+schicexplorer_schicclustercomparments: {cores: 20, mem: 64}
+schicexplorer_schicclusterminhash: {cores: 20, mem: 240}
+schicexplorer_schicclustersvl: {cores: 20, mem: 20}
+schicexplorer_schicconsensusmatrices: {cores: 20, mem: 64}
+schicexplorer_schicinfo: {cores: 1, mem: 8}
+schicexplorer_schicmergematrixbins: {cores: 20, mem: 64}
+schicexplorer_schicmergetoscool: {cores: 20, mem: 64}
+schicexplorer_schicnormalize: {cores: 20, mem: 64}
+schicexplorer_schicplotclusterprofiles: {cores: 20, mem: 64}
+schicexplorer_schicplotconsensusmatrices: {cores: 10, mem: 32}
+schicexplorer_schicqualitycontrol: {cores: 20, mem: 64}
 
-gubbins: { cores: 6 }
-hicup_mapper: { cores: 6, mem: 24 }
-hifiasm: { cores: 20, mem: 120 }
-hisat: { cores: 10, mem: 20 }
+gubbins: {cores: 6}
+hicup_mapper: {cores: 6, mem: 24}
+hifiasm: {cores: 20, mem: 120}
+hisat: {cores: 10, mem: 20}
 
 # It seems that we are running out of temp space according to error reports from 21.03.2021
 # [E::hts_open_format] Failed to open file "/var/lib/condor/execute/dir_2954912.0000.bam" : No such file or directory
 # FATAL:   Unable to handle docker://quay.io/biocontainers/mulled-v2-b570fc8a7b25c6a733660cda7e105007b53ac501:26fa90e5bca490ccf5ba8db752fa36fd5834ef00-0 uri: while building SIF from layers: packer failed to pack: while unpacking tmpfs: error unpacking rootfs: unpack layer: unpack entry: usr/local/bin/hisat2-build-l: unpack to regular file: short write: write /var/lib/condor/execute/dir_2147833/build-temp-943357231/rootfs/usr/local/bin/hisat2-build-l: no space left on device
 #hisat2: {cores: 8, mem: 20}
-hisat2: { cores: 8, mem: 20 }
+hisat2: {cores: 8, mem: 20}
 
-hisat2_index_builder_data_manager: { cores: 10, mem: 180 }
-hmmer_hmmsearch: { mem: 10 }
-htseq_count: { mem: 32 }
-humann2: { cores: 6, mem: 90 }
-humann: { cores: 6, mem: 90 }
+hisat2_index_builder_data_manager: {cores: 10, mem: 180}
+hmmer_hmmsearch: {mem: 10}
+htseq_count: {mem: 32}
+humann2: {cores: 6, mem: 90}
+humann: {cores: 6, mem: 90}
 
-hyphy_busted: { cores: 20, mem: 10 }
-hyphy_bgm: { cores: 20, mem: 10 }
-hyphy_gard: { cores: 20, mem: 10 }
-hyphy_absrel: { cores: 20, mem: 10 }
-hyphy_fubar: { cores: 20, mem: 10 }
-hyphy_relax: { cores: 20, mem: 10 }
-hyphy_fade: { cores: 20, mem: 10 }
-hyphy_sm19: { cores: 20, mem: 10 }
-hyphy_meme: { cores: 20, mem: 10 }
-hyphy_slac: { cores: 20, mem: 10 }
-hyphy_fel: { cores: 20, mem: 10 }
-hyphy_prime: { cores: 20 }
-hypo: { cores: 8 }
+hyphy_busted: {cores: 20, mem: 10}
+hyphy_bgm: {cores: 20, mem: 10}
+hyphy_gard: {cores: 20, mem: 10}
+hyphy_absrel: {cores: 20, mem: 10}
+hyphy_fubar: {cores: 20, mem: 10}
+hyphy_relax: {cores: 20, mem: 10}
+hyphy_fade: {cores: 20, mem: 10}
+hyphy_sm19: {cores: 20, mem: 10}
+hyphy_meme: {cores: 20, mem: 10}
+hyphy_slac: {cores: 20, mem: 10}
+hyphy_fel: {cores: 20, mem: 10}
+hyphy_prime: {cores: 20}
+hypo: {cores: 8}
 
-infernal_cmbuild: { cores: 10, mem: 20 }
-infernal_cmsearch: { cores: 10, mem: 20 }
+infernal_cmbuild: {cores: 10, mem: 20}
+infernal_cmsearch: {cores: 10, mem: 20}
 interproscan:
   #env:
   #  PATH: $PATH:/data/0/interproscan/interproscan-5.36-75.0/
   mem: 40
   cores: 6
-iqtree: { cores: 10 }
-iterative_map_pipeline: { mem: 60 }
-je_clip: { cores: 8 }
-je_demultiplex: { cores: 8, mem: 20 }
-je_demultiplex_illu: { cores: 8 }
-je_markdupes: { cores: 8 }
-join1: { mem: 18 }
+iqtree: {cores: 10}
+iterative_map_pipeline: {mem: 60}
+je_clip: {cores: 8}
+je_demultiplex: {cores: 8, mem: 20}
+je_demultiplex_illu: {cores: 8}
+je_markdupes: {cores: 8}
+join1: {mem: 18}
 #jq: {runner: condor_singularity_with_conda}
-kallisto_quant: { cores: 8, mem: 20 }
+kallisto_quant: {cores: 8, mem: 20}
 ## uha,	with the reference.fa file from	the history it is not working?
 ## kallisto_quant: {cores: 8, mem: 20_singularity}
-lastz_wrapper_2: { mem: 8 }
-limma_voom: { mem: 4 }
-lofreq_call: { cores: 2, mem: 8 }
-lotus2: { cores: 4, mem: 8 }
-khmer_abundance_distribution_single: { cores: 8, mem: 8 }
-macs2_bdgdiff: { mem: 10 }
-macs2_callpeak: { mem: 15 }
-maldi_quant_preprocessing: { mem: 400 }
-maldi_quant_peak_detection: { mem: 180 }
-mass_spectrometry_imaging_classification: { mem: 90 }
-megablast_wrapper: { mem: 20 }
-meme_dreme: { mem: 16 }
-meme_fimo: { mem: 4 }
-merge_pcr_duplicates.py: { mem: 4 }
-methtools_calling: { cores: 10, mem: 40 }
-methtools_filter: { mem: 10 }
-methtools_plot: { cores: 10, mem: 20 }
-metilene: { cores: 10, mem: 20 }
-mimodd_varcall: { cores: 6 }
-minced: { mem: 10 }
+lastz_wrapper_2: {mem: 8}
+limma_voom: {mem: 4}
+lofreq_call: {cores: 2, mem: 8}
+lotus2: {cores: 4, mem: 8}
+khmer_abundance_distribution_single: {cores: 8, mem: 8}
+macs2_bdgdiff: {mem: 10}
+macs2_callpeak: {mem: 15}
+maldi_quant_preprocessing: {mem: 400}
+maldi_quant_peak_detection: {mem: 180}
+mass_spectrometry_imaging_classification: {mem: 90}
+megablast_wrapper: {mem: 20}
+meme_dreme: {mem: 16}
+meme_fimo: {mem: 4}
+merge_pcr_duplicates.py: {mem: 4}
+methtools_calling: {cores: 10, mem: 40}
+methtools_filter: {mem: 10}
+methtools_plot: {cores: 10, mem: 20}
+metilene: {cores: 10, mem: 20}
+mimodd_varcall: {cores: 6}
+minced: {mem: 10}
 migmap:
   cores: 10
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=6G -Xmx14G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
   mem: 16
   name: java_temp
-proteomics_moff: { mem: 20, cores: 6 }
-metagene_annotator: { mem: 16 }
+proteomics_moff: {mem: 20, cores: 6}
+metagene_annotator: {mem: 16}
 morpheus:
   env:
     MONO_GC_PARAMS: max-heap-size=2g
   mem: 64
-msaboot: { mem: 6 }
-naive_variant_caller: { mem: 20 }
+msaboot: {mem: 6}
+naive_variant_caller: {mem: 20}
 ncbi_blastp_wrapper:
   {
     cores: 10,
@@ -950,95 +950,95 @@ ncbi_blastp_wrapper:
     runner: condor_intensive_jobs,
     force_destination_id: true,
   }
-ncbi_blastn_wrapper: { cores: 10, mem: 40 }
-ncbi_tblastn_wrapper: { cores: 10, mem: 40 }
-ncbi_blastx_wrapper: { cores: 10, mem: 40 }
-ncbi_makeblastdb: { mem: 20 }
-nspdk_sparse: { mem: 16 }
-numeric_clustering: { mem: 12 }
-peakachu: { mem: 16 }
+ncbi_blastn_wrapper: {cores: 10, mem: 40}
+ncbi_tblastn_wrapper: {cores: 10, mem: 40}
+ncbi_blastx_wrapper: {cores: 10, mem: 40}
+ncbi_makeblastdb: {mem: 20}
+nspdk_sparse: {mem: 16}
+numeric_clustering: {mem: 12}
+peakachu: {mem: 16}
 peptide_shaker:
   cores: 10
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=4G -Xmx120G -Xms4G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
   mem: 90
   name: _special
-picard_ARRG: { mem: 12 }
-picard_AddOrReplaceReadGroups: { mem: 12 }
-picard_BamIndexStats: { mem: 12 }
-picard_CASM: { mem: 12 }
-picard_CollectInsertSizeMetrics: { mem: 12 }
-picard_CollectRnaSeqMetrics: { mem: 12 }
-picard_DownsampleSam: { mem: 12 }
-picard_EstimateLibraryComplexity: { mem: 12 }
-picard_NormalizeFasta: { mem: 12 }
+picard_ARRG: {mem: 12}
+picard_AddOrReplaceReadGroups: {mem: 12}
+picard_BamIndexStats: {mem: 12}
+picard_CASM: {mem: 12}
+picard_CollectInsertSizeMetrics: {mem: 12}
+picard_CollectRnaSeqMetrics: {mem: 12}
+picard_DownsampleSam: {mem: 12}
+picard_EstimateLibraryComplexity: {mem: 12}
+picard_NormalizeFasta: {mem: 12}
 picard_FilterSamReads:
   env:
     TMP_DIR: $TMPDIR
   mem: 12
   tmp: large
-picard_FixMateInformation: { mem: 12 }
-picard_FastqToSam: { mem: 12 }
+picard_FixMateInformation: {mem: 12}
+picard_FastqToSam: {mem: 12}
 picard_MarkDuplicates:
   env:
     _JAVA_OPTIONS: -Xmx12G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
   mem: 12
   name: java_temp
-picard_MergeSamFiles: { mem: 12 }
-picard_QualityScoreDistribution: { mem: 12 }
-picard_ReorderSam: { mem: 12 }
-picard_ReplaceSamHeader: { mem: 12 }
-picard_SamToFastq: { mem: 12 }
+picard_MergeSamFiles: {mem: 12}
+picard_QualityScoreDistribution: {mem: 12}
+picard_ReorderSam: {mem: 12}
+picard_ReplaceSamHeader: {mem: 12}
+picard_SamToFastq: {mem: 12}
 picard_SortSam:
   env:
     _JAVA_OPTIONS: -Xmx4G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
   mem: 10
   name: java_temp
-picard_index_builder_data_manager: { mem: 12 }
-pileometh: { cores: 1, mem: 24 }
-piranha: { mem: 15 }
-plotly_regression_performance_plots: { mem: 8 }
-porechop: { mem: 40 }
-preproc: { mem: 10 }
-prokaryotic_ncbi_submission: { cores: 24, mem: 24 }
+picard_index_builder_data_manager: {mem: 12}
+pileometh: {cores: 1, mem: 24}
+piranha: {mem: 15}
+plotly_regression_performance_plots: {mem: 8}
+porechop: {mem: 40}
+preproc: {mem: 10}
+prokaryotic_ncbi_submission: {cores: 24, mem: 24}
 prokka:
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
   mem: 20
   cores: 8
-proteomics_search_msgfplus_1: { mem: 10 }
-pyprophet_score: { mem: 400, cores: 1 }
-pureclip: { mem: 32, cores: 2 }
-qualimap_bamqc: { mem: 24 }
-qualimap_rnaseq: { mem: 12 }
-quality_metrics: { mem: 12 }
-r_correlation_matrix: { mem: 80 }
-rbc_mirdeep2_mapper: { cores: 10, mem: 20 }
-rcas: { cores: 4, mem: 16 }
-ribotaper_ribosome_profiling: { cores: 12, mem: 16 }
+proteomics_search_msgfplus_1: {mem: 10}
+pyprophet_score: {mem: 400, cores: 1}
+pureclip: {mem: 32, cores: 2}
+qualimap_bamqc: {mem: 24}
+qualimap_rnaseq: {mem: 12}
+quality_metrics: {mem: 12}
+r_correlation_matrix: {mem: 80}
+rbc_mirdeep2_mapper: {cores: 10, mem: 20}
+rcas: {cores: 4, mem: 16}
+ribotaper_ribosome_profiling: {cores: 12, mem: 16}
 reactome_pathwaymatcher:
   mem: 20
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx17G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
-rgEstLibComp: { mem: 12 }
-rgPicFixMate: { mem: 12 }
+rgEstLibComp: {mem: 12}
+rgPicFixMate: {mem: 12}
 rgPicardMarkDups:
   mem: 12
   env:
     _JAVA_OPTIONS: -Xmx12G -Xms1G
-rm_spurious_events.py: { mem: 4 }
-rna_star: { cores: 10, mem: 90 }
-rna_starsolo: { cores: 4, mem: 40 }
+rm_spurious_events.py: {mem: 4}
+rna_star: {cores: 10, mem: 90}
+rna_starsolo: {cores: 4, mem: 40}
 rna_star_index_builder_data_manager:
   cores: 10
   mem: 300
   params:
     local_slots: 6
-rnbeads: { mem: 20 }
-rsem_calculate_expression: { mem: 16 }
-rseqc_bam2wig: { cores: 8, mem: 16 }
-sailfish: { cores: 6, mem: 70 }
-salmon: { cores: 6, mem: 70 }
+rnbeads: {mem: 20}
+rsem_calculate_expression: {mem: 16}
+rseqc_bam2wig: {cores: 8, mem: 16}
+sailfish: {cores: 6, mem: 70}
+salmon: {cores: 6, mem: 70}
 scanpy_cluster_reduce_dimension:
   cores: 4
   env:
@@ -1110,16 +1110,16 @@ sam_merge2:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
   mem: 32
 # samtools_stats: {runner: remote_cluster_mq_de01}
-samtools_sort: { cores: 10, mem: 10 }
+samtools_sort: {cores: 10, mem: 10}
 search_gui:
   cores: 10
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
   mem: 12
   name: special
-secretbt2test: { cores: 10, mem: 20 }
-segemehl: { mem: 80 }
-seq_filter_by_mapping: { mem: 8 }
+secretbt2test: {cores: 10, mem: 20}
+segemehl: {mem: 80}
+seq_filter_by_mapping: {mem: 8}
 SiriusAdapter:
   mem: 16
   env:
@@ -1129,46 +1129,46 @@ shovill:
   mem: 50
   env:
     SHOVILL_RAM: 50
-signalp3: { mem: 10 }
-smooth_running_window: { mem: 32 }
-snippy: { mem: 12 }
-snpEff: { mem: 12 }
-snpEff_databases: { mem: 12 }
-snpEff_download: { mem: 12 }
-snpEff_get_chr_names: { mem: 12 }
+signalp3: {mem: 10}
+smooth_running_window: {mem: 32}
+snippy: {mem: 12}
+snpEff: {mem: 12}
+snpEff_databases: {mem: 12}
+snpEff_download: {mem: 12}
+snpEff_get_chr_names: {mem: 12}
 snpEff_build_gb:
   mem: 48
   env:
     _JAVA_OPTIONS: -Xmx48G -Xms1G
-snpSift_annotate: { mem: 12 }
-snpSift_caseControl: { mem: 12 }
-snpSift_filter: { mem: 18 }
-snpSift_geneSets: { mem: 12 }
-snpSift_int: { mem: 12 }
-spades: { cores: 20, mem: 330 }
-spyboat: { cores: 8, mem: 4 }
-sshmm: { mem: 16 }
-structurefold: { mem: 12 }
-rnaspades: { cores: 10, mem: 250 }
-spades_biosyntheticspades: { cores: 10, mem: 450 }
-spades_coronaspades: { cores: 10, mem: 250 }
-spades_metaplasmidspades: { cores: 10, mem: 330 }
-spades_metaviralspades: { cores: 10, mem: 250 }
-spades_plasmidspades: { cores: 10, mem: 250 }
-spades_rnaviralspades: { cores: 10, mem: 250 }
-strelka_germline: { cores: 8, mem: 12 }
-strelka_somatic: { cores: 8, mem: 12 }
-stringtie: { mem: 25 }
+snpSift_annotate: {mem: 12}
+snpSift_caseControl: {mem: 12}
+snpSift_filter: {mem: 18}
+snpSift_geneSets: {mem: 12}
+snpSift_int: {mem: 12}
+spades: {cores: 20, mem: 330}
+spyboat: {cores: 8, mem: 4}
+sshmm: {mem: 16}
+structurefold: {mem: 12}
+rnaspades: {cores: 10, mem: 250}
+spades_biosyntheticspades: {cores: 10, mem: 450}
+spades_coronaspades: {cores: 10, mem: 250}
+spades_metaplasmidspades: {cores: 10, mem: 330}
+spades_metaviralspades: {cores: 10, mem: 250}
+spades_plasmidspades: {cores: 10, mem: 250}
+spades_rnaviralspades: {cores: 10, mem: 250}
+strelka_germline: {cores: 8, mem: 12}
+strelka_somatic: {cores: 8, mem: 12}
+stringtie: {mem: 25}
 t_coffee:
   mem: 90
   env:
     DIR_4_TCOFFEE: $TMP
     TMP_4_TCOFFEE: $TMP
     CACHE_4_TCOFFEE: $TMP
-tophat2: { cores: 10, mem: 90 }
-tp_easyjoin_tool: { mem: 12 }
-tp_multijoin_tool: { mem: 8 }
-tp_uniq_tool: { mem: 12 }
+tophat2: {cores: 10, mem: 90}
+tp_easyjoin_tool: {mem: 12}
+tp_multijoin_tool: {mem: 8}
+tp_uniq_tool: {mem: 12}
 trimmomatic:
   cores: 6
   mem: 12
@@ -1181,9 +1181,9 @@ trinity:
   env:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx170G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
   name: special
-umi_tools_group: { mem: 12 }
-umi_tools_dedup: { mem: 90 }
-umi_tools_extract: { mem: 4 }
+umi_tools_group: {mem: 12}
+umi_tools_dedup: {mem: 90}
+umi_tools_extract: {mem: 4}
 unicycler:
   cores: 10
   env:
@@ -1191,12 +1191,12 @@ unicycler:
     TERM: vt100
   mem: 90
   name: special
-unzip: { runner: condor_singularity }
-wig_to_bigWig: { mem: 10 }
-valet: { cores: 8, mem: 20 }
-varscan_somatic: { cores: 8, mem: 12 }
-varscan_mpileup: { mem: 12 }
-varscan_copynumber: { mem: 12 }
+unzip: {runner: condor_singularity}
+wig_to_bigWig: {mem: 10}
+valet: {cores: 8, mem: 20}
+varscan_somatic: {cores: 8, mem: 12}
+varscan_mpileup: {mem: 12}
+varscan_copynumber: {mem: 12}
 velvetg:
   cores: 4
   env:
@@ -1211,12 +1211,12 @@ velveth:
     OMP_THREAD_LIMIT: 4
   mem: 16
   name: _velveth
-vsearch_search: { mem: 80 }
-vsearch_alignment: { cores: 16, mem: 24 }
-yahs: { mem: 100 }
+vsearch_search: {mem: 80}
+vsearch_alignment: {cores: 16, mem: 24}
+yahs: {mem: 100}
 
 # Climate tool
-cesm: { cores: 16, mem: 128 }
+cesm: {cores: 16, mem: 128}
 
 # Some admin tools
 echo_main_env:
