@@ -18,7 +18,7 @@ runners:
     load: {{ plugin['load'] }}
 {% endif %}
 {% if 'pulsar_config' in plugin %}
-    pulsar_config: {{ plugin['pulsar_config'] }}
+    pulsar_config: "{{ plugin['pulsar_config'] }}"
 {% endif %}
 
 {% if 'params' in plugin %}
