@@ -564,7 +564,7 @@ galaxy_jobconf:
       load: galaxy.jobs.runners.local:LocalJobRunner
     - id: pulsar_embedded
       load: galaxy.jobs.runners.pulsar:PulsarEmbeddedJobRunner
-      pulsar_config: "{{ galaxy_config_dir }}"
+      pulsar_config: "{{ galaxy_config_dir }}/pulsar_app.yml"
 
     - id: pulsar_eu_it01
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
