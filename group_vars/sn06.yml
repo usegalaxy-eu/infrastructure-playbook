@@ -1002,8 +1002,6 @@ galaxy_jobconf:
   tools:
     # TODO(hxr): implement validation that checks that every destination
     # used here is defined above.
-    - id: interactive_tool_jupyter_notebook
-      destination: interactive_pulsar
     - id: snippy
       destination: tpv_dispatcher
     - id: fasta-stats
@@ -1026,62 +1024,63 @@ galaxy_jobconf:
     - id: keras_train_and_eval
       destination: gateway_for_keras_train_eval
       resources: usegpu
-    - id: interactive_tool_jupyter_notebook
-      destination: interactive_pulsar
-    - id: interactive_tool_pangeo_notebook
-      destination: interactive_pulsar
-    - id: interactive_tool_climate_notebook
-      destination: interactive_pulsar
-    - id: interactive_tool_ml_jupyter_notebook
-      destination: interactive_pulsar
-    - id: interactive_tool_audiolabeler
-      destination: interactive_pulsar
-    - id: interactive_tool_rstudio
-      destination: interactive_pulsar_hi_mem
-    - id: interactive_tool_pyiron
-      destination: interactive_pulsar_hi_mem
-    - id: interactive_tool_guacamole_desktop
-      destination: interactive_pulsar_hi_mem
     - id: interactive_tool_openrefine
-      destination: interactive_pulsar
-    - id: interactive_tool_panoply
-      destination: interactive_pulsar
-    - id: interactive_tool_vrm_editor
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
+    - id: interactive_tool_audiolabeler
+      environment: tpv_dispatcher
     - id: interactive_tool_ethercalc
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_geoexplorer
-      destination: interactive_pulsar
-    - id: interactive_tool_isee
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_radiant
-      destination: interactive_pulsar
-    - id: interactive_tool_metashark
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_higlass
-      destination: interactive_pulsar_hi_mem
+      environment: tpv_dispatcher
     - id: interactive_tool_phinch
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_neo4j
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_hicbrowser
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_cellxgene
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_bam_iobio
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_vcf_iobio
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_askomics
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_wilson
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_wallace
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_paraview
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_simtext_app
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
+    - id: interactive_tool_isee
+      environment: tpv_dispatcher
+    - id: interactive_tool_metashark
+      environment: tpv_dispatcher
+    - id: interactive_tool_rstudio
+      environment: tpv_dispatcher
+    - id: interactive_tool_pyiron
+      environment: tpv_dispatcher
+    - id: interactive_tool_guacamole_desktop
+      environment: tpv_dispatcher
+    - id: interactive_tool_panoply
+      environment: tpv_dispatcher
+    - id: interactive_tool_vrm_editor
+      environment: tpv_dispatcher
+    - id: interactive_tool_jupyter_notebook
+      environment: tpv_dispatcher
+    - id: interactive_tool_pangeo_notebook
+      environment: tpv_dispatcher
+    - id: interactive_tool_climate_notebook
+      environment: tpv_dispatcher
+    - id: interactive_tool_ml_jupyter_notebook
+      environment: tpv_dispatcher
+
   resources:
     - id: usegpu
       names: [gpu]
