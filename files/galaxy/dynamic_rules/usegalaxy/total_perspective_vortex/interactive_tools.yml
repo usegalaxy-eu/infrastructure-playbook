@@ -1,0 +1,151 @@
+---
+tools:
+  interactive_tool:
+    cores: 1
+    mem: 4
+    params:
+      runner: pulsar_embedded
+      tmp_dir: true
+      docker_enabled: true
+      docker_volumes: $defaults
+      docker_sudo: false
+      docker_net: bridge
+      docker_auto_rm: true
+      docker_set_user: ''
+      require_container: true
+      container_monitor_result: callback
+      submit_requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
+    scheduling:
+      require:
+        - docker
+        - interactive
+
+  interactive_tool_openrefine:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_audiolabeler:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_ethercalc:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_geoexplorer:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_radiant:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_higlass:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_phinch:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_neo4j:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_hicbrowser:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_cellxgene:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_bam_iobio:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_vcf_iobio:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_askomics:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_wilson:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_wallace:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_paraview:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_simtext_app:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_isee:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_metashark:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_rstudio:
+    inherits: interactive_tool
+    cores: 2
+    mem: 8
+  interactive_tool_pyiron:
+    inherits: interactive_tool
+    cores: 1
+    mem: 8
+  interactive_tool_guacamole_desktop:
+    inherits: interactive_tool
+    cores: 2
+    mem: 8
+  interactive_tool_panoply:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_vrm_editor:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+
+  interactive_tool_jupyter_notebook:
+    inherits: interactive_tool
+    mem: 4
+    env:
+      HOME: /home/jovyan
+
+  interactive_tool_pangeo_notebook:
+    inherits: interactive_tool
+    mem: 4
+    env:
+      HOME: /home/jovyan
+
+  interactive_tool_climate_notebook:
+    inherits: interactive_tool
+    mem: 4
+    env:
+      HOME: /home/jovyan
+
+  interactive_tool_ml_jupyter_notebook:
+    inherits: interactive_tool
+    gpus: 1
+    cores: 1
+    mem: 8
+    docker_run_extra_arguments: " --gpus all"
+
+
+  #interactive_tool_jupyter_notebook:
+  #  inherits: interactive_tool
+  #  rules:
+  #    - if: |
+  #        not user or not 'trusted_for_ITs' in [role.name for role in user.all_roles() if not role.deleted]
+  #      fail: "Interactive tool jupyter not available for user"  # TODO: update placeholder text

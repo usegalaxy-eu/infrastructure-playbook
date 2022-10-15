@@ -697,9 +697,11 @@ galaxy_jobconf:
       function: map_tool_to_destination
       rules_module: tpv.rules
       tpv_config_files:
+        - "https://raw.githubusercontent.com/galaxyproject/tpv-shared-database/main/tools.yml"
         - "{{ galaxy_config_dir }}/total_perspective_vortex/destinations.yml"
         - "{{ galaxy_config_dir }}/total_perspective_vortex/default_tool.yml"
         - "{{ galaxy_config_dir }}/total_perspective_vortex/tools.yml"
+        - "{{ galaxy_config_dir }}/total_perspective_vortex/interactive_tools.yml"
     - id: condor
       runner: condor
       params:
@@ -756,29 +758,9 @@ galaxy_jobconf:
         outputs_to_working_directory: false
         container_monitor_result: callback
         submit_requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
-        submit_request_memory: 4
+        #submit_request_memory: 4
         #submit_rank: 'GalaxyGroup == "upload"'  # submit_rank: can look like that
-        docker_memory: 4
-
-    # Internal Pulsar runner for ITs with high mem
-    - id: interactive_pulsar_hi_mem
-      runner: pulsar_embedded
-      params:
-        tmp_dir: true
-        docker_enabled: true
-        #docker_volumes: $defaults
-        docker_sudo: false
-        docker_net: bridge
-        docker_auto_rm: true
-        docker_set_user: ""
-        require_container: true
-        outputs_to_working_directory: false
-        container_monitor_result: callback
-        submit_requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
-        submit_request_memory: 16
-        submit_request_cores: 5
-        #submit_rank: 'GalaxyGroup == "upload"'  # submit_rank: can look like that
-        docker_memory: 4
+        #docker_memory: 4
 
     # Pulsar MQs
     - id: remote_cluster_mq_cz
@@ -1000,8 +982,6 @@ galaxy_jobconf:
   tools:
     # TODO(hxr): implement validation that checks that every destination
     # used here is defined above.
-    - id: interactive_tool_jupyter_notebook
-      destination: interactive_pulsar
     - id: snippy
       destination: tpv_dispatcher
     - id: fasta-stats
@@ -1024,62 +1004,63 @@ galaxy_jobconf:
     - id: keras_train_and_eval
       destination: gateway_for_keras_train_eval
       resources: usegpu
-    - id: interactive_tool_jupyter_notebook
-      destination: interactive_pulsar
-    - id: interactive_tool_pangeo_notebook
-      destination: interactive_pulsar
-    - id: interactive_tool_climate_notebook
-      destination: interactive_pulsar
-    - id: interactive_tool_ml_jupyter_notebook
-      destination: interactive_pulsar
-    - id: interactive_tool_audiolabeler
-      destination: interactive_pulsar
-    - id: interactive_tool_rstudio
-      destination: interactive_pulsar_hi_mem
-    - id: interactive_tool_pyiron
-      destination: interactive_pulsar_hi_mem
-    - id: interactive_tool_guacamole_desktop
-      destination: interactive_pulsar_hi_mem
     - id: interactive_tool_openrefine
-      destination: interactive_pulsar
-    - id: interactive_tool_panoply
-      destination: interactive_pulsar
-    - id: interactive_tool_vrm_editor
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
+    - id: interactive_tool_audiolabeler
+      environment: tpv_dispatcher
     - id: interactive_tool_ethercalc
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_geoexplorer
-      destination: interactive_pulsar
-    - id: interactive_tool_isee
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_radiant
-      destination: interactive_pulsar
-    - id: interactive_tool_metashark
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_higlass
-      destination: interactive_pulsar_hi_mem
+      environment: tpv_dispatcher
     - id: interactive_tool_phinch
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_neo4j
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_hicbrowser
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_cellxgene
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_bam_iobio
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_vcf_iobio
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_askomics
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_wilson
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_wallace
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_paraview
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
     - id: interactive_tool_simtext_app
-      destination: interactive_pulsar
+      environment: tpv_dispatcher
+    - id: interactive_tool_isee
+      environment: tpv_dispatcher
+    - id: interactive_tool_metashark
+      environment: tpv_dispatcher
+    - id: interactive_tool_rstudio
+      environment: tpv_dispatcher
+    - id: interactive_tool_pyiron
+      environment: tpv_dispatcher
+    - id: interactive_tool_guacamole_desktop
+      environment: tpv_dispatcher
+    - id: interactive_tool_panoply
+      environment: tpv_dispatcher
+    - id: interactive_tool_vrm_editor
+      environment: tpv_dispatcher
+    - id: interactive_tool_jupyter_notebook
+      environment: tpv_dispatcher
+    - id: interactive_tool_pangeo_notebook
+      environment: tpv_dispatcher
+    - id: interactive_tool_climate_notebook
+      environment: tpv_dispatcher
+    - id: interactive_tool_ml_jupyter_notebook
+      environment: tpv_dispatcher
+
   resources:
     - id: usegpu
       names: [gpu]
@@ -1153,6 +1134,8 @@ galaxy_config_files:
     dest: "{{ galaxy_config_dir }}/total_perspective_vortex/tools.yml"
   - src: "{{ galaxy_config_file_src_dir }}/dynamic_rules/usegalaxy/total_perspective_vortex/roles.yml"
     dest: "{{ galaxy_config_dir }}/total_perspective_vortex/roles.yml"
+  - src: "{{ galaxy_config_file_src_dir }}/dynamic_rules/usegalaxy/total_perspective_vortex/interactive_tools.yml"
+    dest: "{{ galaxy_config_dir }}/total_perspective_vortex/interactive_tools.yml"
 
   #- src: files/galaxy/config/job_resource_params_conf.xml
   #dest: "{{ galaxy_config['app:main']['job_resource_params_file'] }}"
