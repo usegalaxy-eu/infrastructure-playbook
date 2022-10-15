@@ -14,6 +14,10 @@ tools:
       require_container: true
       container_monitor_result: callback
       submit_requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
+    scheduling:
+      require:
+        - docker
+        - interactive
 
   interactive_tool_openrefine:
     inherits: interactive_tool
