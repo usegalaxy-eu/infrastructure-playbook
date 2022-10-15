@@ -1,4 +1,25 @@
 destinations:
+  interactive_pulsar:
+    cores: 24  # arbritrary max
+    mem: 128   # arbritrary max
+    #runner: pulsar_embedded
+    #container_monitor_result: callback
+    #docker_auto_rm: True
+    #docker_enabled: True
+    #docker_memory: 4
+    #docker_net: bridge
+    #docker_set_user:
+    #docker_sudo: False
+    #outputs_to_working_directory: False
+    #require_container: True
+    #submit_request_memory: 4
+    submit_requirements: GalaxyDockerHack == True && GalaxyGroup == "interactive"
+    #tmp_dir: True
+    scheduling:
+      prefer:
+        - docker
+        - interactive
+
   condor_tpv:
     cores: 64
     mem: 1000
