@@ -1,8 +1,8 @@
 ---
 destinations:
   interactive_pulsar:
-    cores: 24  # arbritrary max
-    mem: 128   # arbritrary max
+    cores: 24 # arbritrary max
+    mem: 128 # arbritrary max
     #runner: pulsar_embedded
     #container_monitor_result: callback
     #docker_auto_rm: True
@@ -27,6 +27,13 @@ destinations:
     scheduling:
       accept:
         - condor_tpv
+
+  pulsar_mira_tpv:
+    cores: 2
+    mem: 4
+    scheduling:
+      require:
+        - mira_pulsar
 
   pulsar_it_tpv:
     cores: 16
