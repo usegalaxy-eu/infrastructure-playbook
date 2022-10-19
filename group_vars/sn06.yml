@@ -577,6 +577,17 @@ galaxy_jobconf:
         amqp_consumer_timeout: 2.0
         amqp_publish_retry: "true"
         amqp_publish_retry_max_retries: 60
+    - id: pulsar_mira_runner
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_mira_pulsar:{{ rabbitmq_password_galaxy_mira_pulsar }}@mq.galaxyproject.eu:5671//pulsar/galaxy_mira_pulsar?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
     - id: pulsar_eu_it02
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
       params:
@@ -963,6 +974,18 @@ galaxy_jobconf:
         dependency_resolution: remote
         rewrite_parameters: "true"
         persistence_directory: /data/share/persisted_data
+    - id: pulsar_mira_tpv
+      runner: pulsar_mira_runner
+      env:
+        LC_ALL: C
+      params:
+        jobs_directory: /data/share/staging
+        transport: curl
+        remote_metadata: "false"
+        default_file_action: remote_transfer
+        dependency_resolution: remote
+        rewrite_parameters: "true"
+        persistence_directory: /data/share/persisted_data
     # TODO(hxr): check functionality
     #- id: 24cores_15G_BLAST
     #  runner: dynamic
@@ -1060,7 +1083,6 @@ galaxy_jobconf:
       destination: tpv_dispatcher
     - id: interactive_tool_ml_jupyter_notebook
       destination: tpv_dispatcher
-
 
   resources:
     - id: usegpu
