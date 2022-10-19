@@ -713,6 +713,8 @@ galaxy_jobconf:
         - "{{ galaxy_config_dir }}/total_perspective_vortex/default_tool.yml"
         - "{{ galaxy_config_dir }}/total_perspective_vortex/tools.yml"
         - "{{ galaxy_config_dir }}/total_perspective_vortex/interactive_tools.yml"
+        - "{{ galaxy_config_dir }}/total_perspective_vortex/users.yml"
+        - "{{ galaxy_config_dir }}/total_perspective_vortex/roles.yml"
     - id: condor
       runner: condor
       params:
@@ -1159,6 +1161,8 @@ galaxy_config_files:
     dest: "{{ galaxy_config_dir }}/total_perspective_vortex/roles.yml"
   - src: "{{ galaxy_config_file_src_dir }}/dynamic_rules/usegalaxy/total_perspective_vortex/interactive_tools.yml"
     dest: "{{ galaxy_config_dir }}/total_perspective_vortex/interactive_tools.yml"
+  - src: "{{ galaxy_config_file_src_dir }}/dynamic_rules/usegalaxy/total_perspective_vortex/users.yml"
+    dest: "{{ galaxy_config_dir }}/total_perspective_vortex/users.yml"
 
   #- src: files/galaxy/config/job_resource_params_conf.xml
   #dest: "{{ galaxy_config['app:main']['job_resource_params_file'] }}"
