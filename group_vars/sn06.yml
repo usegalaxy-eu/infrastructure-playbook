@@ -979,15 +979,23 @@ galaxy_jobconf:
     - id: pulsar_mira_tpv
       runner: pulsar_mira_runner
       env:
+        GALAXY_MEMORY_MB: "{MEMORY_MB}"
+        GALAXY_SLOTS: "{PARALLELISATION}"
         LC_ALL: C
+        SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
       params:
         jobs_directory: /data/share/staging
         transport: curl
         remote_metadata: "false"
+        submit_request_cpus: "{PARALLELISATION}"
+        submit_request_memory: "{MEMORY}"
+        outputs_to_working_directory: "false"
         default_file_action: remote_transfer
-        dependency_resolution: remote
+        dependency_resolution: "none"
         rewrite_parameters: "true"
         persistence_directory: /data/share/persisted_data
+        singularity_enabled: true
+        singularity_default_container_id: "/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04"
     # TODO(hxr): check functionality
     #- id: 24cores_15G_BLAST
     #  runner: dynamic
