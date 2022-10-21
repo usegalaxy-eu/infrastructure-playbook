@@ -16,8 +16,7 @@ tools:
     cores: 10
     mem: 32
     params:
-      singularity_enabled: true
       singularity_run_extra_arguments: '--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases,ALPHAFOLD_USE_GPU=False'
     scheduling:
       require:
-        - container
+        - singularity
