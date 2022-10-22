@@ -12,3 +12,11 @@ tools:
     rules:
       - if: input_size >= 0.01
         cores: 3
+  toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold/.*:
+    cores: 10
+    mem: 32
+    params:
+      singularity_run_extra_arguments: '--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases,ALPHAFOLD_USE_GPU=False'
+    scheduling:
+      require:
+        - singularity
