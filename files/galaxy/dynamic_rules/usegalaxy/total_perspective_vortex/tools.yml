@@ -25,29 +25,29 @@ tools:
     cores: 2
     scheduling:
       accept:
-      - pulsar
-      - pulsar-training-large
+        - pulsar
+        - pulsar-training-large
     rules:
-    - if: 0.05 <= input_size < 1
-      cores: 8
-    - if: 1 <= input_size < 60
-      cores: 16
-    - if: input_size >= 60
-      fail: Too much data, please don't use Spades for this
+      - if: 0.05 <= input_size < 1
+        cores: 8
+      - if: 1 <= input_size < 60
+        cores: 16
+      - if: input_size >= 60
+        fail: Too much data, please don't use Spades for this
 
   toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*:
     cores: 2
     rules:
-    - if: 0.005 <= input_size < 2
-      cores: 8
-    - if: 2 <= input_size < 20
-      cores: 20
-      mem: 350
-      scheduling:
-        accept:
-        - high-mem
-    - if: input_size >= 20
-      fail: Too much data, please don't use Spades for this
+      - if: 0.005 <= input_size < 2
+        cores: 8
+      - if: 2 <= input_size < 20
+        cores: 20
+        mem: 350
+        scheduling:
+          accept:
+          - high-mem
+      - if: input_size >= 20
+        fail: Too much data, please don't use Spades for this
   toolshed.g2.bx.psu.edu/repos/iuc/spades_rnaviralspades/spades_rnaviralspades/.*:
     inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
   toolshed.g2.bx.psu.edu/repos/iuc/rnaspades/rnaspades/.*:
