@@ -16,7 +16,27 @@ tools:
     cores: 10
     mem: 32
     params:
-      singularity_run_extra_arguments: '--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases,ALPHAFOLD_USE_GPU=False'
+      singularity_run_extra_arguments: "--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases,ALPHAFOLD_USE_GPU=False"
     scheduling:
       require:
         - singularity
+
+  toolshed.g2.bx.psu.edu/repos/iuc/trinity/trinity/.*:
+    cores: 8
+    scheduling:
+      prefer:
+        - condor_tpv
+    rules:
+      - if: 0.1 <= input_size < 1
+        cores: 20
+        mem: 100
+      - if: 1 <= input_size < 2
+        cores: 30
+        mem: 200
+      - if: 2 <= input_size < 30
+        cores: 60
+        mem: 950
+      - if: input_size >= 30
+        fail:
+          Too much data, we cannot support such large Trinity assemblies with our
+          backend. Please use another server for your job.
