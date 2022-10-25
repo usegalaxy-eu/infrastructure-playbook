@@ -21,7 +21,7 @@ tools:
         execute: |
           training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
           training_expr = " || ".join(['(GalaxyGroup == "%s")' % role for role in training_roles])
-          training_labels = '"' + ", ".join(['%s' % role for role in training_roles]) + '"'
+          training_labels = '"' + ", ".join(training_roles) + '"'
           entity.params['requirements'] = '(GalaxyGroup == "compute") || (%s)' % training_expr if training_expr else '(GalaxyGroup == "compute")'
           entity.params['+Group'] = training_labels
     rank: |
