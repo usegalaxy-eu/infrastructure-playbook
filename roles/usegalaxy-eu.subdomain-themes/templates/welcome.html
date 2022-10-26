@@ -20,7 +20,7 @@ iframe { width:100% ;
     <iframe id='center-iframe' src="" height="100%" onload="this.style.position='static'; this.style.visibility='visible';"></iframe>
 <script type="text/javascript">
 var pseudo_rand = parseInt(Date.now() / 1000 / 60 / 10);
-document.getElementById('center-iframe').src = 'https://galaxyproject.org/bare/eu/usegalaxy/{% if item.name is defined %}/index-{{ item.name }}.html{% else %}{{ item.index }}{% endif %}?nonce=' + pseudo_rand + '#';
+document.getElementById('center-iframe').src = '{% if item.name is defined %}https://usegalaxy-eu.github.io/index-{{ item.name }}.html{% else %}https://galaxyproject.org/bare/eu/usegalaxy/{{ item.index }}{% endif %}?nonce=' + pseudo_rand + '#';
 </script>
 </body>
 </html>
