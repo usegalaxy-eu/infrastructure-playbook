@@ -30,8 +30,10 @@ tools:
     rules:
       - if: 0.05 <= input_size < 1
         cores: 8
+        mem: 100
       - if: 1 <= input_size < 60
         cores: 16
+        mem: 350
       - if: input_size >= 60
         fail: Too much data, please don't use Spades for this
 
