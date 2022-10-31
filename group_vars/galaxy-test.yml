@@ -40,12 +40,10 @@ autofs_conf_files:
   usrlocal:
     - /usr/local/tools   -rw,hard,nosuid,nconnect=2      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/tools
 
-
 # Telegraf
 custom_telegraf_env: "/usr/bin/env GDPR_MODE=1 PGUSER=galaxy PGHOST=sn05.galaxyproject.eu"
 telegraf_agent_hostname: test.galaxyproject.eu
 telegraf_plugins_extra:
-
   listen_galaxy_routes:
     plugin: "statsd"
     config:
@@ -56,13 +54,13 @@ telegraf_plugins_extra:
       - percentile_limit = 100
 
   #monitor_condor_queue_split:
-    #plugin: "exec"
-    #config:
-       ## TODO: sudoers rule?
-      #- commands = ["sudo /usr/bin/monitor-condor-queue-split"]
-      #- timeout = "10s"
-      #- data_format = "influx"
-      #- interval = "15s"
+  #plugin: "exec"
+  #config:
+  ## TODO: sudoers rule?
+  #- commands = ["sudo /usr/bin/monitor-condor-queue-split"]
+  #- timeout = "10s"
+  #- data_format = "influx"
+  #- interval = "15s"
 
   monitor_condor_queue:
     plugin: "exec"
@@ -125,7 +123,6 @@ telegraf_plugins_extra:
       - data_format = "influx"
       - interval = "1m"
 
-
 # Custom pip installer
 pip_venv_path: "{{ galaxy_venv_dir }}"
 pip_install_dependencies:
@@ -176,21 +173,21 @@ nginx_conf_http:
   gzip_vary: "on"
   gzip_comp_level: 6
   gzip_types: |
-      text/plain
-      text/css
-      text/xml
-      text/javascript
-      application/javascript
-      application/x-javascript
-      application/json
-      application/xml
-      application/xml+rss
-      application/xhtml+xml
-      application/x-font-ttf
-      application/x-font-opentype
-      image/png
-      image/svg+xml
-      image/x-icon
+    text/plain
+    text/css
+    text/xml
+    text/javascript
+    application/javascript
+    application/x-javascript
+    application/json
+    application/xml
+    application/xml+rss
+    application/xhtml+xml
+    application/x-font-ttf
+    application/x-font-opentype
+    image/png
+    image/svg+xml
+    image/x-icon
   gzip_buffers: "16 8k"
   gzip_min_length: 128
 nginx_enable_default_server: false
@@ -216,7 +213,6 @@ galaxy_cvmfs_repos_enabled: config-repo
 #      - "http://galaxy.jrc.ec.europa.eu:8008/@fqrn@"
 
 # SystemD
-galaxy_systemd_celery: true
 galaxy_systemd_mode: "gunicorn"
 galaxy_systemd_gunicorn_workers: 2
 galaxy_systemd_handlers: 2
@@ -238,7 +234,7 @@ condor_allow_administrator: "$(ALLOW_NEGOTIATOR)"
 condor_system_periodic_hold: "{{ 30 * 24 * 60 * 60}}"
 condor_network_interface: eth0
 condor_extra: |
-    SSH_TO_JOB_SSH_CMD = "ssh -oUser=galaxy -oIdentityFile=%i -oStrictHostKeyChecking=yes -oUserKnownHostsFile=%k -oGlobalKnownHostsFile=%k -oProxyCommand=%x %h"
+  SSH_TO_JOB_SSH_CMD = "ssh -oUser=galaxy -oIdentityFile=%i -oStrictHostKeyChecking=yes -oUserKnownHostsFile=%k -oGlobalKnownHostsFile=%k -oProxyCommand=%x %h"
 
 # gie_proxy
 gie_proxy_dir: "{{ galaxy_root }}/gie-proxy/proxy"
@@ -251,7 +247,6 @@ gie_proxy_setup_service: systemd
 gie_proxy_sessions_path: "{{ galaxy_mutable_data_dir }}/interactivetools_map.sqlite"
 gie_proxy_port: 8800
 gie_proxy_verbose: true
-
 
 # gxadmin
 postgres_user: galaxy-test
@@ -281,7 +276,7 @@ gxadmin_force: true
 # GALAXY
 galaxy_system_group: galaxy
 galaxy_instance_codename: "{{ codename }}"
-galaxy_log_dir: '/var/log/galaxy/'
+galaxy_log_dir: "/var/log/galaxy/"
 galaxy_layout: root-dir
 galaxy_separate_privileges: true
 galaxy_manage_paths: true
@@ -351,12 +346,12 @@ galaxy_dirs:
 galaxy_instance_hostname: usegalaxy.eu
 galaxy_config_style: yaml
 
-galaxy_repo: 'https://github.com/usegalaxy-eu/galaxy.git'
-galaxy_commit_id: 'release_22.05_europe-test'
+galaxy_repo: "https://github.com/usegalaxy-eu/galaxy.git"
+galaxy_commit_id: "release_22.05_europe-test"
 galaxy_force_checkout: true # discard any modified files
 #galaxy_admin_email_from: 'noreply@usegalaxy.eu'
 
-galaxy_singularity_images_cvmfs_path: '/cvmfs/singularity.galaxyproject.org/all/'
+galaxy_singularity_images_cvmfs_path: "/cvmfs/singularity.galaxyproject.org/all/"
 
 # Job Conf
 
@@ -368,12 +363,12 @@ galaxy_jobconf:
     max_grab: 4
   plugins:
     #- id: drmaa
-      #load: galaxy.jobs.runners.drmaa:DRMAAJobRunner
-      #workers: 3
+    #load: galaxy.jobs.runners.drmaa:DRMAAJobRunner
+    #workers: 3
     # These live on the pythonpath
     - id: dynamic
       params:
-        rules_module: 'usegalaxy'
+        rules_module: "usegalaxy"
     - id: condor
       load: galaxy.jobs.runners.condor:CondorJobRunner
     - id: local
@@ -386,10 +381,10 @@ galaxy_jobconf:
         amqp_url: "pyamqp://galaxy_cz:{{ rabbitmq_password_galaxy_cz }}@mq.galaxyproject.eu:5671//pulsar/galaxy_cz?ssl=1"
         galaxy_url: "https://usegalaxy.eu"
         manager: _default_
-        amqp_acknowledge: 'true'
+        amqp_acknowledge: "true"
         amqp_ack_republish_time: 300
         amqp_consumer_timeout: 2.0
-        amqp_publish_retry: 'true'
+        amqp_publish_retry: "true"
         amqp_publish_retry_max_retries: 60
     - id: pulsar_eu_it01
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
@@ -408,10 +403,10 @@ galaxy_jobconf:
         amqp_url: "pyamqp://galaxy_de01:{{ rabbitmq_password_galaxy_de01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_de01?ssl=1"
         galaxy_url: "https://test.usegalaxy.eu"
         manager: test
-        amqp_acknowledge: 'true'
+        amqp_acknowledge: "true"
         amqp_ack_republish_time: 300
         amqp_consumer_timeout: 2.0
-        amqp_publish_retry: 'true'
+        amqp_publish_retry: "true"
         amqp_publish_retry_max_retries: 60
     - id: pulsar_eu_de02
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
@@ -419,10 +414,10 @@ galaxy_jobconf:
         amqp_url: "pyamqp://galaxy_de02:{{ rabbitmq_password_galaxy_de02 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_de02?ssl=1"
         galaxy_url: "https://test.usegalaxy.eu"
         manager: test
-        amqp_acknowledge: 'true'
+        amqp_acknowledge: "true"
         amqp_ack_republish_time: 300
         amqp_consumer_timeout: 2.0
-        amqp_publish_retry: 'true'
+        amqp_publish_retry: "true"
         amqp_publish_retry_max_retries: 60
     - id: pulsar_eu_de03
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
@@ -430,10 +425,10 @@ galaxy_jobconf:
         amqp_url: "pyamqp://galaxy_de03:{{ rabbitmq_password_galaxy_de03 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_de03?ssl=1"
         galaxy_url: "https://test.usegalaxy.eu"
         manager: test
-        amqp_acknowledge: 'true'
+        amqp_acknowledge: "true"
         amqp_ack_republish_time: 300
         amqp_consumer_timeout: 2.0
-        amqp_publish_retry: 'true'
+        amqp_publish_retry: "true"
         amqp_publish_retry_max_retries: 60
     - id: pulsar_eu_pt01
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
@@ -441,10 +436,10 @@ galaxy_jobconf:
         amqp_url: "pyamqp://galaxy_pt01:{{ rabbitmq_password_galaxy_pt01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_pt01?ssl=1"
         galaxy_url: "https://test.usegalaxy.eu"
         manager: test
-        amqp_acknowledge: 'true'
+        amqp_acknowledge: "true"
         amqp_ack_republish_time: 300
         amqp_consumer_timeout: 2.0
-        amqp_publish_retry: 'true'
+        amqp_publish_retry: "true"
         amqp_publish_retry_max_retries: 60
     - id: pulsar_eu_uk01
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
@@ -452,10 +447,10 @@ galaxy_jobconf:
         amqp_url: "pyamqp://galaxy_uk01:{{ rabbitmq_password_galaxy_uk01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_uk01?ssl=1"
         galaxy_url: "https://test.usegalaxy.eu"
         manager: test
-        amqp_acknowledge: 'true'
+        amqp_acknowledge: "true"
         amqp_ack_republish_time: 300
         amqp_consumer_timeout: 2.0
-        amqp_publish_retry: 'true'
+        amqp_publish_retry: "true"
         amqp_publish_retry_max_retries: 60
     - id: pulsar_eu_be01
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
@@ -463,10 +458,10 @@ galaxy_jobconf:
         amqp_url: "pyamqp://galaxy_be01:{{ rabbitmq_password_galaxy_be01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_be01?ssl=1"
         galaxy_url: "https://test.usegalaxy.eu"
         manager: test
-        amqp_acknowledge: 'true'
+        amqp_acknowledge: "true"
         amqp_ack_republish_time: 300
         amqp_consumer_timeout: 2.0
-        amqp_publish_retry: 'true'
+        amqp_publish_retry: "true"
         amqp_publish_retry_max_retries: 60
     - id: pulsar_au_au01
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
@@ -474,10 +469,10 @@ galaxy_jobconf:
         amqp_url: "pyamqp://galaxy_au01:{{ rabbitmq_password_galaxy_au01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_au01?ssl=1"
         galaxy_url: "https://test.usegalaxy.eu"
         manager: test
-        amqp_acknowledge: 'true'
+        amqp_acknowledge: "true"
         amqp_ack_republish_time: 300
         amqp_consumer_timeout: 2.0
-        amqp_publish_retry: 'true'
+        amqp_publish_retry: "true"
         amqp_publish_retry_max_retries: 60
   default_destination: gateway_singlerun
   destinations:
@@ -541,15 +536,15 @@ galaxy_jobconf:
     - id: condor_singularity
       runner: condor
       params:
-        singularity_enabled: 'true'
-        singularity_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro'
-        singularity_default_container_id: '/data/0/cvmfs/singularity/ubuntu:18.04'
+        singularity_enabled: "true"
+        singularity_volumes: "$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro"
+        singularity_default_container_id: "/data/0/cvmfs/singularity/ubuntu:18.04"
     - id: condor_singularity2
       runner: condor
       params:
-        singularity_enabled: 'true'
-        singularity_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro'
-        singularity_default_container_id: '/data/0/cvmfs/singularity/ubuntu:18.04'
+        singularity_enabled: "true"
+        singularity_volumes: "$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro"
+        singularity_default_container_id: "/data/0/cvmfs/singularity/ubuntu:18.04"
       raw: |
         <param id="container">
             <container type="singularity" shell="/bin/sh" resolve_dependencies="true">/data/0/cvmfs/singularity/ubuntu:18.04</container>
@@ -557,7 +552,7 @@ galaxy_jobconf:
     - id: condor_singularity_with_conda
       runner: condor
       params:
-        singularity_enabled: 'true'
+        singularity_enabled: "true"
       raw: |
         <param id="container">
             <container type="singularity" shell="/bin/bash" resolve_dependencies="true">/data/0/cvmfs/singularity/python:2.7.12--1</container>
@@ -565,12 +560,12 @@ galaxy_jobconf:
     - id: condor_docker
       runner: condor
       params:
-        docker_enabled: 'true'
-        docker_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro'
-        docker_default_container_id: 'ubuntu:18.04'
-        docker_auto_rm: 'true'
-        docker_sudo: 'false'
-        docker_set_user: ''
+        docker_enabled: "true"
+        docker_volumes: "$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro"
+        docker_default_container_id: "ubuntu:18.04"
+        docker_auto_rm: "true"
+        docker_sudo: "false"
+        docker_set_user: ""
     # TODO(hxr): check functionality
     #- id: 24cores_15G_BLAST
     #  runner: dynamic
@@ -604,39 +599,39 @@ galaxy_jobconf:
       destination: gateway_singlerun
       resources: usegpu
     #- id: wig_to_bigWig
-      #destination: wig_to_bigWig
+    #destination: wig_to_bigWig
     #- id: dexseq
-      #destination: dexseq_dynamic
+    #destination: dexseq_dynamic
     #- id: ncbi_blastn_wrapper
-      #destination: 24cores_15G_BLAST
+    #destination: 24cores_15G_BLAST
     #- id: ncbi_blastx_wrapper
-      #destination: 24cores_15G_BLAST
+    #destination: 24cores_15G_BLAST
     #- id: ncbi_tblastn_wrapper
-      #destination: 24cores_15G_BLAST
+    #destination: 24cores_15G_BLAST
     #- id: ncbi_tblastx_wrapper
-      #destination: 24cores_15G_BLAST
+    #destination: 24cores_15G_BLAST
     #- id: ncbi_blastp_wrapper
-      #destination: 24cores_15G_BLAST
+    #destination: 24cores_15G_BLAST
     #- id: ncbi_rpsblast_wrapper
-      #destination: 24cores_15G_BLAST
+    #destination: 24cores_15G_BLAST
   resources:
     - id: usegpu
       names: gpu
   limits:
-    - type: 'walltime'
+    - type: "walltime"
       value: "'148:00:00'"
-    - type: 'output_size'
+    - type: "output_size"
       value: "'300GB'"
-    - type: 'registered_user_concurrent_jobs'
-      value: '30'
-    - type: 'anonymous_user_concurrent_jobs'
-      value: '10'
-    - type: 'destination_user_concurrent_jobs'
-      id: 'condor_test'
-      value: '5'
-    - type: 'destination_total_concurrent_jobs'
-      id: 'condor_test'
-      value: '100'
+    - type: "registered_user_concurrent_jobs"
+      value: "30"
+    - type: "anonymous_user_concurrent_jobs"
+      value: "10"
+    - type: "destination_user_concurrent_jobs"
+      id: "condor_test"
+      value: "5"
+    - type: "destination_total_concurrent_jobs"
+      id: "condor_test"
+      value: "100"
 
 galaxy_config: "{{ galaxy_config_hash }}"
 
@@ -676,15 +671,15 @@ galaxy_config_files:
     dest: "{{ galaxy_config_dir }}/echo_main_env.xml"
 
   #- src: files/galaxy/config/job_resource_params_conf.xml
-    #dest: "{{ galaxy_config['galaxy']['job_resource_params_file'] }}"
+  #dest: "{{ galaxy_config['galaxy']['job_resource_params_file'] }}"
   #- src: files/galaxy/config/pulsar_stampede_actions.yml
-    #dest: "{{ galaxy_config_dir }}/pulsar_stampede_actions.yml"
+  #dest: "{{ galaxy_config_dir }}/pulsar_stampede_actions.yml"
   #- src: files/galaxy/config/pulsar_bridges_actions.yml
-    #dest: "{{ galaxy_config_dir }}/pulsar_bridges_actions.yml"
+  #dest: "{{ galaxy_config_dir }}/pulsar_bridges_actions.yml"
   #- src: files/galaxy/config/pulsar_jetstream.yml
-    #dest: "{{ galaxy_config_dir }}/pulsar_jetstream.yml"
+  #dest: "{{ galaxy_config_dir }}/pulsar_jetstream.yml"
   #- src: files/galaxy/config/pulsar_jetstream_actions.yml
-    #dest: "{{ galaxy_config_dir }}/pulsar_jetstream_actions.yml"
+  #dest: "{{ galaxy_config_dir }}/pulsar_jetstream_actions.yml"
 
 galaxy_config_template_src_dir: templates/galaxy-test
 galaxy_config_templates:
@@ -705,7 +700,7 @@ galaxy_config_templates:
   - src: "{{ galaxy_config_template_src_dir }}/config/oidc_config.xml"
     dest: "{{ galaxy_config['galaxy']['oidc_config_file'] }}"
   #- src: "{{ galaxy_config_template_src_dir }}/config/grt.yml.j2"
-    #dest: "{{ galaxy_config_dir }}/grt.yml"
+  #dest: "{{ galaxy_config_dir }}/grt.yml"
   - src: "{{ galaxy_config_template_src_dir }}/config/pulsar_app.yml"
     dest: "{{ galaxy_config_dir }}/pulsar_app.yml"
   - src: "{{ galaxy_config_template_src_dir }}/config/tool_conf.xml.j2"
