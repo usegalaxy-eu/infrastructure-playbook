@@ -38,7 +38,7 @@ server {
 		return 301 https://galaxyproject.org/eu/events/;
 	}
 
-	# Misc.
+	# Redirect other pages used by Galaxy servers to .org
 	location = /widgets/news.html {
 		return 301 https://galaxyproject.org/bare/eu/latest/news/;
 	}
@@ -67,10 +67,7 @@ server {
 		# Subsite-specific news and events pages.
 		rewrite ^/([^/]+)/(news|events)(\.html)?$  https://galaxyproject.org/$1/$2/  permanent;
 
-		# The rest should be transparently proxied to github.io.
-		proxy_pass https://usegalaxy-eu.github.io/;
-		proxy_cache           STATIC;
-		proxy_cache_valid     200  5m;
-		proxy_cache_use_stale error timeout invalid_header updating http_500 http_502 http_503 http_504;
+		# The rest should continue to be served by the European website, but under the github.io domain.
+		return 301 https://usegalaxy-eu.github.io$request_uri;
 	}
 }
