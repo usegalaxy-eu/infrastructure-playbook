@@ -4,10 +4,59 @@ server {
 
 	server_name galaxyproject.eu;
 
+	# Redirect homepages to .org
+	location = / {
+		return 301 https://galaxyproject.org/eu/;
+	}
+	location = /freiburg/ {
+		return 301 https://galaxyproject.org/freiburg/;
+	}
+	location = /erasmusmc/ {
+		return 301 https://galaxyproject.org/erasmusmc/;
+	}
+	location = /belgium/ {
+		return 301 https://galaxyproject.org/belgium/;
+	}
+	location = /pasteur/ {
+		return 301 https://galaxyproject.org/pasteur/;
+	}
+	location = /genouest/ {
+		return 301 https://galaxyproject.org/genouest/;
+	}
+	location = /elixir-it/ {
+		return 301 https://galaxyproject.org/elixir-it/;
+	}
+	location = /ifb/ {
+		return 301 https://galaxyproject.org/ifb/;
+	}
+
+	# Redirect Galaxy server middle pane homepages to .org
+	location = /galaxy/ {
+		return 301 https://galaxyproject.org/bare/eu/usegalaxy/main/;
+	}
+	location = /index-metabolomics.html {
+		return 301 https://galaxyproject.org/bare/eu/usegalaxy/metabolomics/;
+	}
+	location = /index-proteomics.html {
+		return 301 https://galaxyproject.org/bare/eu/usegalaxy/proteomics/;
+	}
+
+	# Redirect other pages used by Galaxy servers to .org
+	location = /widgets/news.html {
+		return 301 https://galaxyproject.org/bare/eu/latest/news/;
+	}
+	location = /widgets/events.html {
+		return 301 https://galaxyproject.org/bare/eu/latest/events/;
+	}
+	location = /galaxy/news.html {
+		return 301 https://galaxyproject.org/bare/eu/news/;
+	}
+	location = /galaxy/events.html {
+		return 301 https://galaxyproject.org/bare/eu/events/;
+	}
+
+	# Everything else can keep being served by the European website, but under the github.io domain.
 	location / {
-		proxy_pass https://usegalaxy-eu.github.io/;
-		proxy_cache           STATIC;
-		proxy_cache_valid     200  5m;
-		proxy_cache_use_stale error timeout invalid_header updating http_500 http_502 http_503 http_504;
+		return 301 https://usegalaxy-eu.github.io$request_uri;
 	}
 }
