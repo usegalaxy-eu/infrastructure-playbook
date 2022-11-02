@@ -27,6 +27,7 @@ tools:
       accept:
         - pulsar
         - pulsar-training-large
+        - condor-tpv
     rules:
       - if: 0.05 <= input_size < 1
         cores: 8
@@ -46,8 +47,8 @@ tools:
         cores: 20
         mem: 350
         scheduling:
-          accept:
-            - high-mem
+          prefer:
+            - condor-tpv
       - if: input_size >= 20
         fail: Too much data, please don't use Spades for this
   toolshed.g2.bx.psu.edu/repos/iuc/spades_rnaviralspades/spades_rnaviralspades/.*:
@@ -64,7 +65,6 @@ tools:
     inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
   toolshed.g2.bx.psu.edu/repos/iuc/spades_biosyntheticspades/spades_biosyntheticspades/.*:
     inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
-
 
   toolshed.g2.bx.psu.edu/repos/iuc/trinity/trinity/.*:
     cores: 8
