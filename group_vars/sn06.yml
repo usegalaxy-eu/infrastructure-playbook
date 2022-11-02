@@ -890,7 +890,7 @@ galaxy_jobconf:
       runner: condor
       params:
         singularity_enabled: "true"
-        singularity_volumes: '$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro'
+        singularity_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
         singularity_default_container_id: "/data/0/cvmfs/singularity/ubuntu:18.04"
     - id: condor_singularity2
       runner: condor
@@ -1016,7 +1016,7 @@ galaxy_jobconf:
     # TODO(hxr): implement validation that checks that every destination
     # used here is defined above.
 
-    - id: metaspades
+    - id: "toolshed.g2.bx.psu.edu/repos/nml/metaspades/metaspades"
       destination: tpv_dispatcher
     - id: spades
       destination: tpv_dispatcher
@@ -1060,7 +1060,7 @@ galaxy_jobconf:
     - id: keras_train_and_eval
       destination: gateway_for_keras_train_eval
       resources: usegpu
-    - id: interactive_tool_openrefine
+    - id: interactive_tool_openrefine?
       destination: tpv_dispatcher
     - id: interactive_tool_audiolabeler
       destination: tpv_dispatcher
