@@ -32,26 +32,26 @@
     #
     # The nginx user needed into the galaxyproject.nginx role
     server_names:
-      - 'usegalaxy.eu'
-      - '*.usegalaxy.eu'
-      - 'galaxyproject.eu'
-      - '*.galaxyproject.eu'
-      - '*.interactivetoolentrypoint.interactivetool.usegalaxy.eu'
-      - '*.interactivetoolentrypoint.interactivetool.live.usegalaxy.eu'
-      - '*.interactivetoolentrypoint.interactivetool.test.usegalaxy.eu'
+      - "usegalaxy.eu"
+      - "*.usegalaxy.eu"
+      - "galaxyproject.eu"
+      - "*.galaxyproject.eu"
+      - "*.interactivetoolentrypoint.interactivetool.usegalaxy.eu"
+      - "*.interactivetoolentrypoint.interactivetool.live.usegalaxy.eu"
+      - "*.interactivetoolentrypoint.interactivetool.test.usegalaxy.eu"
   vars_files:
-    - group_vars/tiaas.yml                # All of the training infrastructure
-    - group_vars/custom-sites.yml         # Subdomains are listed here
-    - group_vars/gxconfig.yml             # The base galaxy configuration
-    - group_vars/toolbox.yml              # User controlled toolbox
-    - secret_group_vars/sentry.yml        # Sentry SDK init url
-    - secret_group_vars/aws.yml           # AWS creds
-    - secret_group_vars/pulsar.yml        # Pulsar + MQ Connections
-    - secret_group_vars/oidc.yml          # OIDC credentials (ELIXIR, keycloak)
-    - secret_group_vars/object_store.yml  # Object Store credentils (S3 etc ...)
-    - secret_group_vars/db-main.yml       # DB URL + some postgres stuff
-    - secret_group_vars/file_sources.yml  # file_sources_conf.yml creds
-    - secret_group_vars/all.yml           # All of the other assorted secrets...
+    - group_vars/tiaas.yml # All of the training infrastructure
+    - group_vars/custom-sites.yml # Subdomains are listed here
+    - group_vars/gxconfig.yml # The base galaxy configuration
+    - group_vars/toolbox.yml # User controlled toolbox
+    - secret_group_vars/sentry.yml # Sentry SDK init url
+    - secret_group_vars/aws.yml # AWS creds
+    - secret_group_vars/pulsar.yml # Pulsar + MQ Connections
+    - secret_group_vars/oidc.yml # OIDC credentials (ELIXIR, keycloak)
+    - secret_group_vars/object_store.yml # Object Store credentils (S3 etc ...)
+    - secret_group_vars/db-main.yml # DB URL + some postgres stuff
+    - secret_group_vars/file_sources.yml # file_sources_conf.yml creds
+    - secret_group_vars/all.yml # All of the other assorted secrets...
   handlers:
     - name: Restart Galaxy
       shell: |
@@ -59,7 +59,16 @@
   pre_tasks:
     - name: Install Dependencies
       package:
-        name: ['git', 'postgresql', 'python3-psycopg2', 'python3-virtualenv', 'bc', 'python38', 'python38-devel']
+        name:
+          [
+            "git",
+            "postgresql",
+            "python3-psycopg2",
+            "python3-virtualenv",
+            "bc",
+            "python38",
+            "python38-devel",
+          ]
       become: true
     - name: Set default version of Python
       alternatives:
@@ -85,6 +94,7 @@
         key: "{{ item }}"
       loop:
         - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFH54+qZEBeU5uwIeWWOViLcC509qxoRW6oN0VHRQr4r nate@treehouse"
+        - "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBOBINXdjILF6x3WuppXyq6J2a2oSLR6waZ6txgjYJogHdIKPbI0TdReCv4EVxxYRY/NqGpHbjkqfRTsf2VgoU3U= mk@galaxy-mira"
         - https://github.com/wm75.keys
         - https://github.com/gmauro.keys
     - name: Set authorized SSH key (stats user)
@@ -109,19 +119,19 @@
     - role: usegalaxy_eu.handy.os_setup
       vars:
         enable_hostname: true
-        enable_powertools: true        # geerlingguy.repo-epel role doesn't enable PowerTools repository
+        enable_powertools: true # geerlingguy.repo-epel role doesn't enable PowerTools repository
         enable_remap_user: true
         enable_exclude_packages: true
-        enable_pam_limits: true        # Prevent out of control processes
-        enable_install_software: true  # Some extra admin tools (*top, vim, etc)
-    - geerlingguy.repo-epel     # Install EPEL repository
+        enable_pam_limits: true # Prevent out of control processes
+        enable_install_software: true # Some extra admin tools (*top, vim, etc)
+    - geerlingguy.repo-epel # Install EPEL repository
 
-    - usegalaxy-eu.autoupdates  # keep all of our packages up to date
-    - influxdata.chrony         # Keep our time in sync.
+    - usegalaxy-eu.autoupdates # keep all of our packages up to date
+    - influxdata.chrony # Keep our time in sync.
 
     ## Filesystems
-    - usegalaxy-eu.autofs  # Setup the mount points which will be needed later
-    - galaxyproject.cvmfs  # Galaxy datasets
+    - usegalaxy-eu.autofs # Setup the mount points which will be needed later
+    - galaxyproject.cvmfs # Galaxy datasets
 
     ## Monitoring
     - hxr.monitor-cluster
@@ -157,19 +167,19 @@
     - role: hxr.galaxy-nonreproducible-tools
       become: true
       become_user: galaxy
-    - usegalaxy-eu.dynmotd       # nicer MOTD/welcome message
-    - usegalaxy-eu.rsync-to-nfs  # sync codebase to NFS
-    - role: usegalaxy-eu.webhooks     # Clone webhook repository
+    - usegalaxy-eu.dynmotd # nicer MOTD/welcome message
+    - usegalaxy-eu.rsync-to-nfs # sync codebase to NFS
+    - role: usegalaxy-eu.webhooks # Clone webhook repository
       become: true
       become_user: galaxy
-    - role: usegalaxy-eu.tours        # Clone tour repository
+    - role: usegalaxy-eu.tours # Clone tour repository
       become: true
       become_user: galaxy
 
     ## SSL / Security
     # https://en.wikipedia.org/wiki/Trust_on_first_use
-    - ssh-host-sign  # Sign the server host key to prevent TOFU for SSH
-    - hxr.aws-cli    # Setup the AWS client that will be needed for route53 authentication of certbot. MUST come before nginx role
+    - ssh-host-sign # Sign the server host key to prevent TOFU for SSH
+    - hxr.aws-cli # Setup the AWS client that will be needed for route53 authentication of certbot. MUST come before nginx role
 
     ## GALAXY
     - hxr.postgres-connection
@@ -177,7 +187,7 @@
     - usegalaxy-eu.nginx
     # TODO move under monitoring + telegraf.
     - usegalaxy-eu.galaxy-slurp
-#    - galaxyproject.tiaas2
+    #    - galaxyproject.tiaas2
     - usegalaxy-eu.gapars-galaxy
     # The REAL galaxy role
     - role: galaxyproject.galaxy
@@ -193,25 +203,25 @@
         galaxy_build_client: true
 
     ## Extras!
-    - usegalaxy-eu.fix-galaxy-server-dir  # Fix details into the galaxy server dirs
-    - hxr.install-to-venv                 # Some extra packages our site needs.
-    - usegalaxy_eu.galaxy_systemd         # Manage the Galaxy processes with SystemD
-    - usegalaxy-eu.update-hosts           # Update hosts list
-    - usegalaxy_eu.gie_proxy              # Setup the NodeJS proxy for GxIT
-    - usegalaxy-eu.subdomain-themes       # Custom subdomain themes
-    - usegalaxy_eu.fs_maintenance         # Filesystems maintenance
-    - usegalaxy-eu.logrotate              # Rotate logs
-    - usegalaxy-eu.error-pages            # Copy the NGINX error pages
-    - usegalaxy-eu.htcondor_release       # Condor release held jobs increasing memory
+    - usegalaxy-eu.fix-galaxy-server-dir # Fix details into the galaxy server dirs
+    - hxr.install-to-venv # Some extra packages our site needs.
+    - usegalaxy_eu.galaxy_systemd # Manage the Galaxy processes with SystemD
+    - usegalaxy-eu.update-hosts # Update hosts list
+    - usegalaxy_eu.gie_proxy # Setup the NodeJS proxy for GxIT
+    - usegalaxy-eu.subdomain-themes # Custom subdomain themes
+    - usegalaxy_eu.fs_maintenance # Filesystems maintenance
+    - usegalaxy-eu.logrotate # Rotate logs
+    - usegalaxy-eu.error-pages # Copy the NGINX error pages
+    - usegalaxy-eu.htcondor_release # Condor release held jobs increasing memory
     # Various ugly fixes
-    - usegalaxy-eu.fix-unscheduled-jobs       # Workaround for ???
-    - usegalaxy-eu.fix-unscheduled-workflows  # Workaround for https://github.com/galaxyproject/galaxy/issues/8209
-    - usegalaxy-eu.fix-stuck-handlers         # Restart handlers to prevent several classes of issues
-    - usegalaxy-eu.log-cleaner                # do not retain journalctl logs, they are unnecessary/risky under GDPR
-    - usegalaxy-eu.fix-ancient-ftp-data       # Remove FTP data older than 3 months, create FTP user directories
-    - usegalaxy-eu.galaxy-procstat            # Some custom telegraf monitoring that's templated
-    - usegalaxy-eu.fix-missing-api-keys       # Workaround for IE users not have a key set.
-    - usegalaxy-eu.fix-user-quotas            # Automatically recalculate user quotas and attribute ELIXIR quota to ELIXIR AAI user on a regular basis
+    - usegalaxy-eu.fix-unscheduled-jobs # Workaround for ???
+    - usegalaxy-eu.fix-unscheduled-workflows # Workaround for https://github.com/galaxyproject/galaxy/issues/8209
+    - usegalaxy-eu.fix-stuck-handlers # Restart handlers to prevent several classes of issues
+    - usegalaxy-eu.log-cleaner # do not retain journalctl logs, they are unnecessary/risky under GDPR
+    - usegalaxy-eu.fix-ancient-ftp-data # Remove FTP data older than 3 months, create FTP user directories
+    - usegalaxy-eu.galaxy-procstat # Some custom telegraf monitoring that's templated
+    - usegalaxy-eu.fix-missing-api-keys # Workaround for IE users not have a key set.
+    - usegalaxy-eu.fix-user-quotas # Automatically recalculate user quotas and attribute ELIXIR quota to ELIXIR AAI user on a regular basis
 
     # Some of our 'cleanups' also generate telegraf format so this goes at end.
     - dj-wasabi.telegraf
