@@ -246,21 +246,7 @@ server {
 	}
 
 	# TIaaS 2
-	location /tiaas {
-		uwsgi_pass 127.0.0.1:5002;
-		uwsgi_param UWSGI_SCHEME $scheme;
-		include uwsgi_params;
-	}
-
-	location /tiaas/static {
-		alias /opt/tiaas2/static;
-	}
-
-	location /join-training {
-		uwsgi_pass 127.0.0.1:5002;
-		uwsgi_param UWSGI_SCHEME $scheme;
-		include uwsgi_params;
-	}
+	{{ tiaas_nginx_routes }}
 
 	# For GTN in Galaxy Webhook
 	location /training-material/ {
