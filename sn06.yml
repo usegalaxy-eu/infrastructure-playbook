@@ -52,6 +52,7 @@
     - secret_group_vars/db-main.yml # DB URL + some postgres stuff
     - secret_group_vars/file_sources.yml # file_sources_conf.yml creds
     - secret_group_vars/all.yml # All of the other assorted secrets...
+    - templates/galaxy/config/job_conf.yml
   handlers:
     - name: Restart Galaxy
       shell: |
