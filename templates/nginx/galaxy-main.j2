@@ -4,8 +4,9 @@ map $http_upgrade $connection_upgrade {
 }
 
 upstream galaxy {
-    server unix:{{ galaxy_systemd_gunicorn_listen_path }};
-    server unix:{{ galaxy_systemd_gunicorn_listen_path_2 }};
+	{% for n in range(galaxy_systemd_gunicorns) %}
+    	server unix:{{ galaxy_mutable_data_dir }}/{{ galaxy_systemd_gunicorn_socket_name }}{{ n }}.sock;
+	{% endfor %}
 }
 
 server {
