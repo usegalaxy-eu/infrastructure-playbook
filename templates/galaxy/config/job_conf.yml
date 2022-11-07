@@ -5,7 +5,7 @@
 galaxy_jobconf:
   plugin_workers: 8
   handlers:
-    count: "{{ galaxy_handler_count }}"
+    count: "{{ galaxy_systemd_handlers }}"
     assign_with: db-skip-locked
     max_grab: 16
     ready_window_size: 32
