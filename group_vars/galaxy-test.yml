@@ -274,7 +274,6 @@ galaxy_group:
 galaxy_config_perms: 0644
 
 galaxy_root: /opt/galaxy
-galaxy_handler_count: "{{ galaxy_systemd_handlers }}"
 galaxy_workflow_scheduler_count: "{{ galaxy_systemd_workflow_schedulers }}"
 galaxy_host_codename: "{{ codename }}"
 galaxy_home_dir: /opt/galaxy
@@ -335,7 +334,7 @@ galaxy_singularity_images_cvmfs_path: "/cvmfs/singularity.galaxyproject.org/all/
 galaxy_jobconf:
   plugin_workers: 8
   handlers:
-    count: "{{ galaxy_handler_count }}"
+    count: "{{ galaxy_systemd_handlers }}"
     assign_with: db-skip-locked
     max_grab: 4
   plugins:
