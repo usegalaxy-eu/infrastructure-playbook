@@ -46,7 +46,7 @@ handling:
 {% endif %}
 {% if galaxy_systemd_handlers is defined %}
   processes:
-{% for n in range galaxy_systemd_handlers) %}
+{% for n in range(galaxy_systemd_handlers) %}
     {{ galaxy_systemd_handler_prefix }}_{{ n }}:
 {% endfor %}
 {% endif %}
