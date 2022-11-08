@@ -58,12 +58,11 @@
       }
 
       alias gl='journalctl  -f -u galaxy-*'
-      alias glg='journalctl -fu galaxy-gunicorn | grep -v -e "/api/upload/hooks" -e "/history/current_history_json"'
+      alias glg='journalctl -fu galaxy-gunicorn@* | grep -v -e "/api/upload/hooks" -e "/history/current_history_json"'
       alias glh='journalctl -f -u galaxy-handler@*'
-      alias glz='journalctl -f -u galaxy-zergpool -u galaxy-zergling@* | grep -v "/api/histories"'
       alias glw='journalctl -f -u galaxy-workflow-scheduler@*'
       alias glc='journalctl -fu galaxy-celery@*'
-      alias cu='journalctl -u galaxy-gunicorn.service --since "10 minutes ago" | grep "/history/current_history_json"  | awk "{print \$11}" | sort -u | wc -l'
+      alias cu='journalctl -u galaxy-gunicorn@.service --since "10 minutes ago" | grep "/history/current_history_json"  | awk "{print \$11}" | sort -u | wc -l'
       alias chg2wd='change_to_wd'
 
 - name: Insert some export vars
