@@ -8,10 +8,26 @@ tools:
     rules:
       - if: input_size >= 0.015
         cores: 14
+
+  toolshed.g2.bx.psu.edu/repos/rnateam/dewseq/dewseq/.*:
+    cores: 2
+    mem: 40
+    scheduling:
+      prefer:
+        - condor-tpv
+
   toolshed.g2.bx.psu.edu/repos/iuc/fasta_stats/fasta-stats/.*:
     rules:
       - if: input_size >= 0.01
         cores: 3
+
+  toolshed.g2.bx.psu.edu/repos/rnateam/htseq-clip/htseq-clip/.*:
+    cores: 4
+    mem: 16
+    scheduling:
+      prefer:
+        - condor-tpv
+
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold/.*:
     cores: 10
     mem: 32
@@ -51,6 +67,7 @@ tools:
             - condor-tpv
       - if: input_size >= 20
         fail: Too much data, please don't use Spades for this
+
   toolshed.g2.bx.psu.edu/repos/iuc/spades_rnaviralspades/spades_rnaviralspades/.*:
     inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
   toolshed.g2.bx.psu.edu/repos/iuc/rnaspades/rnaspades/.*:
