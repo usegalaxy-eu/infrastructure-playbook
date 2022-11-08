@@ -475,7 +475,11 @@ galaxy_jobconf:
     # TODO(hxr): implement validation that checks that every destination
     # used here is defined above.
 
-    - id: "toolshed.g2.bx.psu.edu/repos/nml/metaspades/metaspades"
+    - id: "dewseq"
+      destination: tpv_dispatcher
+    - id: "htseq-clip"
+      destination: tpv_dispatcher
+    - id: "metaspades"
       destination: tpv_dispatcher
     - id: spades
       destination: tpv_dispatcher
