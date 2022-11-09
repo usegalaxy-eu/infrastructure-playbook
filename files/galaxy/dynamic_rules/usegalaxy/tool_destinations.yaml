@@ -74,6 +74,14 @@ interactive_tool_jupyter_notebook:
     HOME: /home/jovyan
   force_destination_id: true
 
+instagraal:
+  runner: condor_docker_gpu
+  force_destination_id: true
+  gpus: 1
+  cores: 1
+  mem: 4
+  docker_run_extra_arguments: " --gpus all"
+
 interactive_tool_pangeo_notebook:
   mem: 4
   runner: condor_docker_ie_interactive
