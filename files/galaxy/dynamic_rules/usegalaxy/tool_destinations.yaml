@@ -31,13 +31,6 @@ keras_train_and_eval:
   env:
     CUDA_VISIBLE_DEVICES: 0
 
-instagraal:
-  runner: condor_gpu
-  gpus: 1
-  cores: 1
-  env:
-    CUDA_VISIBLE_DEVICES: 0
-
 xchem_transfs_scoring:
   runner: remote_condor_cluster_gpu_docker
   gpus: 1
