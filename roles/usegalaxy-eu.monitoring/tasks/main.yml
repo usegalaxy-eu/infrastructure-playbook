@@ -1,3 +1,6 @@
 ---
 - include_tasks: nfsstat.yml
+
+# Because pdsh is only available on RHEL8 and deprecated at RHEL9
 - include_tasks: network_disks_access_time.yml
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == '8'
