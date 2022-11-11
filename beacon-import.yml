@@ -1,12 +1,12 @@
 ---
 - name: Beacon Import
   hosts:
-    - beacon-import
+    - beacon_import
   vars_files:
     - secret_group_vars/beacon.yml
   vars:
-    - galaxy_api_url: usegalaxy.eu
-    - script_user: beacon
-    - script-dir: /home/beacon/script
+    script_user: beacon
+    script_dir: /home/beacon/script
+    galaxy_api_url: usegalaxy.eu
   roles:
     - paprikant.beacon-importer
