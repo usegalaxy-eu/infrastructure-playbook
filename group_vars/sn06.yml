@@ -1,6 +1,4 @@
 ---
-codename: key
-
 # packages
 software_groups_to_install:
   - admin
@@ -422,7 +420,6 @@ galaxy_group:
   name: galaxy
   gid: 999
 galaxy_system_group: galaxy
-galaxy_instance_codename: "{{ codename }}"
 galaxy_log_dir: "/var/log/galaxy"
 galaxy_layout: root-dir
 galaxy_separate_privileges: true
@@ -442,7 +439,6 @@ galaxy_config_perms: 0644
 
 galaxy_root: /opt/galaxy
 galaxy_workflow_scheduler_count: "{{ galaxy_systemd_workflow_schedulers }}"
-galaxy_host_codename: "{{ codename }}"
 galaxy_home_dir: /opt/galaxy
 galaxy_mutable_config_dir: "{{ galaxy_root }}/mutable-config"
 galaxy_mutable_data_dir: "{{ galaxy_root }}/mutable-data"

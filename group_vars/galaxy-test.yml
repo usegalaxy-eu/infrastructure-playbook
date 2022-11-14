@@ -1,6 +1,4 @@
 ---
-codename: test
-
 # Docker
 docker_users:
   - galaxy
@@ -252,7 +250,6 @@ gxadmin_force: true
 
 # GALAXY
 galaxy_system_group: galaxy
-galaxy_instance_codename: "{{ codename }}"
 galaxy_log_dir: "/var/log/galaxy/"
 galaxy_layout: root-dir
 galaxy_separate_privileges: true
@@ -275,7 +272,6 @@ galaxy_config_perms: 0644
 
 galaxy_root: /opt/galaxy
 galaxy_workflow_scheduler_count: "{{ galaxy_systemd_workflow_schedulers }}"
-galaxy_host_codename: "{{ codename }}"
 galaxy_home_dir: /opt/galaxy
 galaxy_mutable_config_dir: /opt/galaxy/mutable-config
 galaxy_mutable_data_dir: /opt/galaxy/mutable-data
