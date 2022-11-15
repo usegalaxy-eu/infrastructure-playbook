@@ -64,13 +64,13 @@ destinations:
       require:
         - pulsar
 
-  condor_singularity_with_conda:
+  condor_singularity_with_conda_python2:
     runner: "condor"
     cores: 64
     mem: 1000
     scheduling:
       require:
-        - condor_singularity_with_conda
+        - condor_singularity_with_conda_python2
     env:
       GALAXY_MEMORY_MB: "{MEMORY_MB}"
       GALAXY_SLOTS: "{PARALLELISATION}"
