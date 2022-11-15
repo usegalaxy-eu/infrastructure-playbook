@@ -9,6 +9,11 @@ tools:
       - if: input_size >= 0.015
         cores: 14
 
+  toolshed.g2.bx.psu.edu/repos/iuc/enasearch_search_data/enasearch_search_data/.*:
+    scheduling:
+      require:
+        - condor_singularity_with_conda
+
   toolshed.g2.bx.psu.edu/repos/rnateam/dewseq/dewseq/.*:
     cores: 2
     mem: 40
