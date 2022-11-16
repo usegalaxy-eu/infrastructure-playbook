@@ -588,6 +588,9 @@ galaxy_jobconf:
     - id: usegpu
       names: [gpu]
   limits:
+    - type: "destination_user_concurrent_jobs"
+      id: "condor_upload"
+      value: "5"
     - type: "walltime"
       value: "'148:00:00'"
     # Limited time for Interactive tools
