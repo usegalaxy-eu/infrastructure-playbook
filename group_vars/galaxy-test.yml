@@ -6,8 +6,9 @@ docker_service_state: stopped
 docker_service_enabled: false
 
 # Autofs
-autofs_service.install: true
-autofs_service.enable: true
+autofs_service:
+  install: true
+  enable: true
 nfs_kernel_tuning: true
 autofs_mount_points:
   - data
