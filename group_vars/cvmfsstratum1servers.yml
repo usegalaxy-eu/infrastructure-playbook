@@ -7,8 +7,9 @@ autofs_conf_files:
   data:
     - dnb01   -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
 
-autofs_service.install: true
-autofs_service.enable: true
+autofs_service:
+  install: true
+  enable: true
 nfs_kernel_tuning: true
 
 # CVMFS

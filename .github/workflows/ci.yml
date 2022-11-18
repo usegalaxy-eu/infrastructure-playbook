@@ -20,14 +20,5 @@ jobs:
         with:
           path: 'infrastructure-playbook'
 
-      - name: Set up Python 3.
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
-
-      - name: Install test dependencies.
-        run: pip3 install yamllint
-
-      - name: Lint code.
-        run: |
-          yamllint .
+      - name: Ansible Lint
+        uses: ansible/ansible-lint-action@v6.8.2

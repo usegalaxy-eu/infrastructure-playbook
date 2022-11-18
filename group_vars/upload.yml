@@ -7,21 +7,23 @@ user_group_name: galaxy
 user_gid: 999
 
 # Autofs
-autofs_service.install: true
-autofs_service.enable: true
+
+autofs_service:
+  install: true
+  enable: true
 nfs_kernel_tuning: true
 
 autofs_mount_points:
-    - data
-    - gxtest
-    - gxkey
-    - jwd
+  - data
+  - gxtest
+  - gxkey
+  - jwd
 
 # usegalaxy_eu.handy.os_setup
 ## packages
 software_groups_to_install:
-    - editors
-    - utils
+  - editors
+  - utils
 
 ## kernel_5
 kernel_5_package: kernel-ml
