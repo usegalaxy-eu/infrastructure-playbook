@@ -701,6 +701,15 @@ mass_spectrometry_imaging_qc: {mem: 110}
 mass_spectrometry_imaging_filtering: {mem: 20}
 metaspades: {cores: 10, mem: 250}
 megahit: {cores: 10, mem: 80}
+megan_daa_meganizer:
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx8G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+megan_daa2rma:
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx8G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+megan_sam2rma:
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx8G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
 maxbin2: {cores: 10, mem: 48}
 metabat2: {cores: 10, mem: 48}
 concoct: {cores: 10, mem: 48}
