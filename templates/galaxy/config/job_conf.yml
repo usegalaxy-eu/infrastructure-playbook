@@ -234,6 +234,21 @@ galaxy_jobconf:
         #submit_rank: 'GalaxyGroup == "upload"'  # submit_rank: can look like that
         #docker_memory: 4
 
+    - id: embedded_pulsar_docker
+      runner: pulsar_embedded
+      params:
+        tmp_dir: true
+        docker_enabled: true
+        #docker_volumes: $defaults
+        docker_sudo: false
+        docker_net: bridge
+        docker_auto_rm: true
+        docker_set_user: ""
+        require_container: true
+        outputs_to_working_directory: false
+        container_monitor_result: callback
+        submit_requirements: 'GalaxyDockerHack == True'
+
     # Pulsar MQs
     - id: remote_cluster_mq_cz
       runner: pulsar_eu_cz
@@ -492,6 +507,21 @@ galaxy_jobconf:
     # TODO(hxr): implement validation that checks that every destination
     # used here is defined above.
 
+
+    - id: "basic_illumination"
+      destination: tpv_dispatcher
+    - id: "mesmer"
+      destination: tpv_dispatcher
+    - id: "quantification"
+      destination: tpv_dispatcher
+    - id: "s3segmenter"
+      destination: tpv_dispatcher
+    - id: "unet_coreograph"
+      destination: tpv_dispatcher
+    - id: "unmicst"
+      destination: tpv_dispatcher
+    - id: "ashlar"
+      destination: tpv_dispatcher
     - id: "enasearch_search_data"
       destination: tpv_dispatcher
     - id: "dewseq"
