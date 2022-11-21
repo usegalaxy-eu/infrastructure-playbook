@@ -1,0 +1,243 @@
+---
+- name: UseGalaxy.eu
+  hosts: sn07
+  become: true
+  become_user: root
+  vars:
+    # The full internal name.
+    hostname: sn07.galaxyproject.eu
+    # The nginx user needed into the galaxyproject.nginx role
+    nginx_conf_user: galaxy
+    # This server has multiple CNAMEs that are important. Additionally it
+    # provides proxying for many of the other services run by Galaxy Europe.
+    # These server_names are passed to certbot. They generally should not need
+    # to be updated unless you add a new domain. They *only* work with the
+    # route53 provider, so if we want to do usegalaxy.xy, it may require
+    # refactoring / multiple certbot runs.
+    #
+    #
+    # The best way to expand them is to run the playbook, it will leave a message with the command it would have run (look for `skipped, since /etc/letsencrypt/renewal/usegalaxy.eu.conf exists`)
+    #
+    # Then take this command to the command line (root@sn04) and run it with `--expand`. E.g. (DO NOT COPY PASTE (in case the config changes))
+    #
+    # $ /opt/certbot/bin/certbot certonly --non-interactive --dns-route53 \
+    #     -m security@usegalaxy.eu --agree-tos -d 'usegalaxy.eu,*.usegalaxy.eu,galaxyproject.eu,*.galaxyproject.eu,*.interactivetoolentrypoint.interactivetool.usegalaxy.eu,*.interactivetoolentrypoint.interactivetool.live.usegalaxy.eu,*.interactivetoolentrypoint.interactivetool.test.usegalaxy.eu' --expand
+    # Saving debug log to /var/log/letsencrypt/letsencrypt.log
+    # Credentials found in config file: ~/.aws/config
+    # ....
+    # IMPORTANT NOTES:
+    #  - Congratulations! Your certificate and chain have been saved at:
+    #
+    # And you're done expanding the certs.
+    #
+    # The nginx user needed into the galaxyproject.nginx role
+    server_names:
+      - "usegalaxy.eu"
+      - "*.usegalaxy.eu"
+      - "galaxyproject.eu"
+      - "*.galaxyproject.eu"
+      - "*.interactivetoolentrypoint.interactivetool.usegalaxy.eu"
+      - "*.interactivetoolentrypoint.interactivetool.live.usegalaxy.eu"
+      - "*.interactivetoolentrypoint.interactivetool.test.usegalaxy.eu"
+  vars_files:
+    - group_vars/tiaas.yml # All of the training infrastructure
+    - group_vars/custom-sites.yml # Subdomains are listed here
+    - group_vars/gxconfig.yml # The base galaxy configuration
+    - group_vars/toolbox.yml # User controlled toolbox
+    - secret_group_vars/sentry.yml # Sentry SDK init url
+    - secret_group_vars/aws.yml # AWS creds
+    - secret_group_vars/pulsar.yml # Pulsar + MQ Connections
+    - secret_group_vars/oidc.yml # OIDC credentials (ELIXIR, keycloak)
+    - secret_group_vars/object_store.yml # Object Store credentils (S3 etc ...)
+    - secret_group_vars/db-main.yml # DB URL + some postgres stuff
+    - secret_group_vars/file_sources.yml # file_sources_conf.yml creds
+    - secret_group_vars/all.yml # All of the other assorted secrets...
+    - templates/galaxy/config/job_conf.yml
+  handlers:
+    - name: Restart Galaxy
+      shell: |
+        echo 'Manual web handler restart required' && cd /opt/galaxy/ && source /opt/galaxy/.bashrc  && sudo -u galaxy /usr/bin/galaxy-sync-to-nfs && systemctl restart galaxy-handler@* && systemctl restart galaxy-workflow-scheduler@*
+  pre_tasks:
+    - name: Install Dependencies
+      package:
+        name:
+          [
+            "git",
+            "postgresql",
+            "python3-psycopg2",
+            "python3-virtualenv",
+            "bc",
+            "python3",
+            "python3-devel",
+          ]
+      become: true
+    - name: Set default version of Python
+      alternatives:
+        name: python
+        path: /usr/bin/python3
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+  post_tasks:
+    - name: Append some users to the systemd-journal group
+      user:
+        name: "{{ item }}"
+        groups: systemd-journal
+        append: true
+      loop:
+        - "{{ galaxy_user.name }}"
+        - "telegraf"
+        - "stats" # special account to retrieve statistics from the server in read-only mode
+    - name: Set authorized SSH key (galaxy user)
+      ansible.posix.authorized_key:
+        user: "{{ galaxy_user.name }}"
+        state: present
+        key: "{{ item }}"
+      loop:
+        - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFH54+qZEBeU5uwIeWWOViLcC509qxoRW6oN0VHRQr4r nate@treehouse"
+        - "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBOBINXdjILF6x3WuppXyq6J2a2oSLR6waZ6txgjYJogHdIKPbI0TdReCv4EVxxYRY/NqGpHbjkqfRTsf2VgoU3U= mk@galaxy-mira"
+        - https://github.com/wm75.keys
+        - https://github.com/gmauro.keys
+    - name: Set authorized SSH key (stats user)
+      ansible.posix.authorized_key:
+        user: "stats"
+        state: present
+        key: "{{ item }}"
+      loop:
+        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDC6kanRFWmhjkV8pkwOYtHoCNDIP/nj2umigbSylMFmiXm2rwnqi1qhDeJqd53PTrT4RWynT7Gqg7/HSITPAZA4wdGNcDLHD7QvexBDhIhUJCERmMZa6EWPvOPgDACbJDjrwLxd8oF65UhQU+meVrkBmpod6YDSuVIfmZXHUheK7NuZfvfNx3ruQNU5MRbI3p6vuY++B4GYRXrxM68+GWYEOEa6zz142Nl1PNnvDMkiobro0k6P5bXv4LDYMW3YyDXu69okJgPqEKjE/IsI4/2JKfzduEZMQyPZDQswyuNQwMAfKQjvDQ0gvQiVE0eM2gdR7qi/jOqFXrzkOwYWQd00Cy9EtSWqhDlpu9KrIfs8T2HTn9p/XU+Bwg4anyMh//gb+EOctpvptqoBhjNxoRTX/bwNLFq/ARFAtFDn+qX8w9HWeB5/vNvdOkH7fSMTTFmFkDZ8U/Hrg5vhcwy2Hid2K7j9peixB/41d7/O08qL99qH9362L8ZmhyT9aNeOKQ0MUEEhAasYkKO7AQcChDpkgW635mkvI5EOZGsqCRPiX8P8iTH5neH6ZI4H21JoON5E0raMJlwznNq3D4as12kZBtw198DHFAMQXlfMR24NTcv0nFnS6JmxlwCKu+Uzyt3Xlyj/wEzKYnr71vfShb3/vUgYbzIEdDQmGV8DXEJBw== anup"
+        - "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEApcUIRRUHl0wVVXz5GX1QnHSq9+nThIKKH3fYM21LfW1n6gGvC7UiCCaDZQUbejJTq3EITbH3J6/Tji2jGAIJ6Xzn0Jf7sQ1yON/dO/75To32Jdo8YWS7XQeA7lU9heSc7FM5yKIBJN7PrpnYAveCsOE/1kkfUSsBZsqj9yyoFe/tquoVm5Y3nFZfKJv7/gszSVkzNxhHvn+0ccClRLpnFUHjqXgXHIQCm7P/9Lf7unSoYRd9Iefwgp52Lcm6AIncQvz5tdAFD2WciP4J15EFPMTKPdc6tfT5Tis/+/oNfYlsnaIGrbV5Hc2909KiYnvuvqKcrSFloXWzAdXJOxhszw== videmp@cn001.bi.uni-freiburg.de"
+        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC8/9GdD96Xfc0MavIJQEuNSIrOlaBSYkH4s5RyGhNnc8Al7x3hC7KXt/mcqyNoI1JTvrXp23aDpTr67e3Dnrp6Me7z8nyY9oIy5WHOgwG2ra1Ga8oi89MVgXPhtxvcYnk8hVfuPDmhWkgwS5ILH/7V/1hEKHcS0H7Q0pJp8EGCBDFWrxNfUWqJJuVcXb11CMnaSJX/VhD+S4g4rG01lMr696+k8eKs9y2sq9JpuUD1TNN16RYu1uVlVz8nhIPbEBsnFeKV+EYKLcSRQnjDTNjWqZHHM9NMWfK3wGvr5pfla158ZdsYQTmQtcchTsEoB+7eAQaER3XsEtuo8yQj4zbL videmp@work"
+        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDAAvfZPfHiI4YHXwqz5LMOnq5XY2UlM15CQXM/lSxmzYZtUxEt1TcoVcCAy1y7WTjcQtcNiwd6Zf59L3inG4EjMAzD1VNoaBZ0IPXloUEMLpgrNZUnB6uZHe6vbe7NWYVrlk/PsCW/Bu2hvPcLwMxlXl+/SQ9Y5wnj54h+q0Iu/vkZyRyEw+gB2ILm2Je5ebanXjCjHEr+FzLsReAI5yxCenlrtewA86DfJo26+CekYwaVwfEtNv+vM7vpbjeIazIjcU4tEfWdt3BAtyFY13GLWnnfZmVbl5Xf+YEdJsuEYRRqC6Xa3JRNpZ0C3NpehAvUvvJAhj41kiKoQmtmhW2KGltPShMFP8umBsbo8beUWp3K+rFW7OXQKypIhXhqJmfv5oXnDGOin/rZKiB+fLPvYt7X0O36g94ueibzNB7MV/GNGgChKwnz31M2ifMzkOD3AdVQD2PO8xUHVgr3J+/QuAK8q2AFQVvGtsHwsoS6+WQyHgzhqIlYtxnQhX+D7Yk ubuntu@pavan-dedicated-vm"
+        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCZnImSDzCCijMP+P0CRSuXJuJ3XPO00kKQIOgQO6iLljxPQBFLB/MNHWmt7lRSocnJqVvOwJzueU5vbmDMR+ixPmZ58jDMAoPWrhja8NjivflcN2/NQUI/bS1akfr/y4wJgFYNYP0vPejmCqL1CGACMe1O3yPlb5JA++1f78R4eHEuseaY/VnQpHMycbf8V21GOq9t2VJRQJNsMXt2mPkZEhg9z04JYPpzgATB6inMU8Ud+wlHjwmlO+KJzZWkfIYOS/Gr1wso8AWnnd5fr7osilGFHhxoqRSL8kcF0sMh05l2QRnq3pRSXFQcJd42kTOSqd4R8FFq3iiko+K7FCUITKdnxvc7ZADWDAe60TT9G8FrAuQsshYX6MMzsfBE7gtxltsBnyuCE/qhyMf29U2dGFZGvx9ozn3qbI2IhteD3ebym1MIO2dT5e2Ni0UHIh+7AQrlHm3WDFw4xszMQvTRQ8uCcvIO2siicf4yMx9n8d6DeLy2QI+c0XifKeYtLHE= laptop@freiburg"
+        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCoWkk57x20iE5Wf0cDX3QvkJf/XxO4wqIeZIPIosK7rFcvy/SvDF/mwQk4iQrQ7qDam35NFHrFden+5zoE5HJoRVeHYhqNaItmiMNBY9CqgITCXsD2j9/6NdzIcR66uzLHDVvLlXr2hJmrNoeGTzg94+EVtQ0/BARwffAq//2WzgG4oClgYE4RqahQRXbmBygf4g4BAbEb5JnsLJ3qqnhsAgcUYyXg7/dz36QVsvoTwChMMCXDJpPyNb1+PqOKAgl7+yZQiPD0yI5zZG+iF6dsvc6Dhscpmt0nOjr4h+o97wQk3sbvq9ysXPlARqgL950H+0LtSiWnC+KEBK4KOgc83g6NynCE7zGZ9LJiKoT0mmt8BKaJKFRDVob3nlYR3/DDLEq2AkCoxYF0JFUNVta/wEF/likB61Yhsv01gNVMNcCfK9nzZVyTGNwdsFPdi4WL+KfkMgEcA0xrCtLXhkxnU8f3H8a7XcwJWr3fuSK1ndFwNxmfKlA+sRRKYBHouU8rpnC/HCxYsxF/palYxHv8KNcfGIRUBIgfgugsigzFcB5yz4lY73NiEyVEY9ZnBbbXllyX3ICoI/IboMQVUDyccRZiDAeHJ/v29pIsIihkmWIT2I1VqppXuVYgTydPM42CDBaKE7ko3p0CuZDyB2sZaS4XYUQlkRpX9ZARtcC/AQ== david"
+        - "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAA6oD5Ps9h6pKokzaAcCI6R08CKm2aSVv86h/O2HTEQkzeJq/Uvu4gbrONAM0FK5R693mHggIwaROKf1Z1+q4YNtACtYjV1c+6a9lcrGMM31y5RzO6mAW+rHNEXgZ1n3wqDcBQhSXhSekSen0R2QKwvmB7xeP4XX9qE10azZuafIFU9hQ== sanjay"
+        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC9itwmMTgcRCrwjO3RCke/NWJsRb3N5lUTF5fubw/V0PlSbFDuv7IMKp5hhFfhiOuVRMoXQBHnnOWWu1xd9jDqZKXmNGHg06JtnddQ/OVprZ6Dpu2g9pZ6uc4r1As94mvpICLVK9lNHPNA60sIwTsTRVFSb1VbXALI4iuLOxPLzIxhrZ1LouK19VWetJIQ/Uq8UalfTDr1KOyQQ/ZgjBeWdD5InSOl3sbPJZhGQLqSHIi0MVxH527CMnh1PQIxiD/vqX8SK7HaKvUZIHHzz5TFrUgrw7BkfRd04UIgr1OhnMf1E413yZdeQzJQV7C1CL9MbAThXX6Ruvs0Rg3ylazpYfwDifMWvqLeRoTCDUbGx94ySO/wzer/kcjpJ27iydNo+en/hImMYz7kktf6A3BzOYxFmOQvnQ9cChP+iuk7fTiQZS7Qtkz+axNIvwCkm7Hmgt7vYizHc+OAtKmzZFTHecozjxCXs9RwynnWpToheP3ZPYgOpKc7pkUngRSjXyc= bebatut@bebatut-ThinkPad-T14-Gen-1"
+        - "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBADKblzzPBc3+dEfFvhJQHsHGkFFN6ORjfXo71P1OutwcKEMCIcNkZKJHhYkLLrfTDN5JJ5tK2L5AaSxdwETofwm4AG1xv3LuoYsXC6e3sjKi09BVmzef520pIMW+rvL+hESwSazZaUAC0wDcH4aNDTonZYcAY87rpMX7pNMkNPJvWilUA== mira"
+        - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFH54+qZEBeU5uwIeWWOViLcC509qxoRW6oN0VHRQr4r nate"
+
+  roles:
+    ## Starting configuration of the operating system
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        enable_hostname: true
+        enable_powertools: true # geerlingguy.repo-epel role doesn't enable PowerTools repository
+        enable_remap_user: true
+        enable_exclude_packages: true
+        enable_pam_limits: true # Prevent out of control processes
+        enable_install_software: true # Some extra admin tools (*top, vim, etc)
+    - geerlingguy.repo-epel # Install EPEL repository
+
+    ## Istall miniconda, create a _galaxy_ environment and install Packages
+    ## Galaxy will use the virtualenv from this conda environment (see
+    ## galaxy_virtualenv_command) in the group_vars/sn07.yml
+    - role: galaxyproject.miniconda
+      vars:
+        miniconda_prefix: "{{ miniconda_prefix }}"
+        galaxy_conda_create_env: true
+        galaxy_conda_env_packages:
+          - python=3.8
+          - pip
+          - virtualenv
+
+    - usegalaxy-eu.autoupdates # keep all of our packages up to date
+    - influxdata.chrony # Keep our time in sync.
+
+    ## Filesystems
+    - usegalaxy-eu.autofs # Setup the mount points which will be needed later
+    - galaxyproject.cvmfs # Galaxy datasets
+
+    ## Monitoring
+    - hxr.monitor-cluster
+    - hxr.monitor-email
+    - hxr.monitor-uwsgi
+    - hxr.monitor-galaxy-journalctl
+    # - usegalaxy-eu.monitor-disk-access-time
+    - usegalaxy-eu.monitoring
+
+    # Setup Galaxy user
+    - role: galaxyproject.galaxy
+      vars:
+        galaxy_create_user: true
+        galaxy_manage_clone: false
+        galaxy_manage_download: false
+        galaxy_manage_existing: true
+        galaxy_manage_paths: true
+        galaxy_manage_static_setup: false
+        galaxy_manage_mutable_setup: false
+        galaxy_manage_database: false
+        galaxy_fetch_dependencies: false
+        galaxy_build_client: false
+    # The bashrc needs to be created for several later features.
+    - usegalaxy-eu.bashrc
+
+    ## Setup docker
+    - geerlingguy.docker
+
+    # HTCondor Cluster setup
+    # - usegalaxy_eu.htcondor
+
+    # Misc.
+    - role: hxr.galaxy-nonreproducible-tools
+      become: true
+      become_user: galaxy
+    - usegalaxy-eu.dynmotd # nicer MOTD/welcome message
+    # - usegalaxy-eu.rsync-to-nfs # sync codebase to NFS
+    - role: usegalaxy-eu.webhooks # Clone webhook repository
+      become: true
+      become_user: galaxy
+    - role: usegalaxy-eu.tours # Clone tour repository
+      become: true
+      become_user: galaxy
+
+    ## SSL / Security
+    # https://en.wikipedia.org/wiki/Trust_on_first_use
+    - ssh-host-sign # Sign the server host key to prevent TOFU for SSH
+    - hxr.aws-cli # Setup the AWS client that will be needed for route53 authentication of certbot. MUST come before nginx role
+
+    ## GALAXY
+    - hxr.postgres-connection
+    - galaxyproject.gxadmin
+    - galaxyproject.tiaas2
+    - usegalaxy-eu.nginx-upload-module
+    - usegalaxy-eu.nginx
+    # TODO move under monitoring + telegraf.
+    - usegalaxy-eu.galaxy-slurp
+    - usegalaxy-eu.gapars-galaxy
+    # The REAL galaxy role
+    - role: galaxyproject.galaxy
+      vars:
+        galaxy_create_user: true
+        galaxy_manage_clone: true
+        galaxy_manage_download: false
+        galaxy_manage_existing: false
+        galaxy_manage_static_setup: true
+        galaxy_manage_mutable_setup: true
+        galaxy_manage_database: true
+        galaxy_fetch_dependencies: true
+        galaxy_build_client: true
+
+    ## Extras!
+    - usegalaxy-eu.fix-galaxy-server-dir # Fix details into the galaxy server dirs
+    - hxr.install-to-venv # Some extra packages our site needs.
+    - usegalaxy_eu.galaxy_systemd # Manage the Galaxy processes with SystemD
+    - usegalaxy-eu.update-hosts # Update hosts list
+    - usegalaxy_eu.gie_proxy # Setup the NodeJS proxy for GxIT
+    - usegalaxy-eu.subdomain-themes # Custom subdomain themes
+    - usegalaxy_eu.fs_maintenance # Filesystems maintenance
+    - usegalaxy-eu.logrotate # Rotate logs
+    - usegalaxy-eu.error-pages # Copy the NGINX error pages
+    - usegalaxy-eu.htcondor_release # Condor release held jobs increasing memory
+    # Various ugly fixes
+    - usegalaxy-eu.fix-unscheduled-jobs # Workaround for ???
+    - usegalaxy-eu.fix-unscheduled-workflows # Workaround for https://github.com/galaxyproject/galaxy/issues/8209
+    - usegalaxy-eu.fix-stuck-handlers # Restart handlers to prevent several classes of issues
+    - usegalaxy-eu.log-cleaner # do not retain journalctl logs, they are unnecessary/risky under GDPR
+    - usegalaxy-eu.fix-ancient-ftp-data # Remove FTP data older than 3 months, create FTP user directories
+    - usegalaxy-eu.galaxy-procstat # Some custom telegraf monitoring that's templated
+    - usegalaxy-eu.fix-missing-api-keys # Workaround for IE users not have a key set.
+    - usegalaxy-eu.fix-user-quotas # Automatically recalculate user quotas and attribute ELIXIR quota to ELIXIR AAI user on a regular basis
+
+    # Some of our 'cleanups' also generate telegraf format so this goes at end.
+    - dj-wasabi.telegraf
+    # - dev-sec.os-hardening
+    - dev-sec.ssh-hardening
