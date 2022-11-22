@@ -42,6 +42,26 @@ tools:
       require:
         - singularity
 
+
+  basic_docker_tool:
+    scheduling:
+      require:
+        - docker
+  basic_illumination:
+    inherits: basic_docker_tool
+  mesmer:
+    inherits: basic_docker_tool
+  quantification:
+    inherits: basic_docker_tool
+  s3segmenter:
+    inherits: basic_docker_tool
+  unet_coreograph:
+    inherits: basic_docker_tool
+  unmicst:
+    inherits: basic_docker_tool
+  ashlar:
+    inherits: basic_docker_tool
+
   toolshed.g2.bx.psu.edu/repos/nml/metaspades/metaspades/.*:
     cores: 2
     scheduling:
