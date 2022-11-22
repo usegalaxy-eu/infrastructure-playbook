@@ -10,20 +10,20 @@ defaults:
 
 jobs:
   ansible-lint:
-     runs-on: ubuntu-latest
-     steps:
-      - uses: actions/checkout@v2
-        with:
-          path: 'infrastructure-playbook'
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-          cache: 'pip'
-      - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install ansible ansible-lint
-      - name: Lint playbook
-        run: |
-          ansible-lint
+    runs-on: ubuntu-latest
+    steps:
+     - uses: actions/checkout@v2
+       with:
+         path: 'infrastructure-playbook'
+     - name: Set up Python
+       uses: actions/setup-python@v4
+       with:
+         python-version: '3.9'
+         cache: 'pip'
+     - name: Install dependencies
+       run: |
+         pip install --upgrade pip
+         pip install ansible ansible-lint
+     - name: Lint playbook
+       run: |
+         ansible-lint
