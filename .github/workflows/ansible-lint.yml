@@ -26,4 +26,9 @@ jobs:
           pip install ansible ansible-lint
       - name: Lint playbook
         run: |
-          ansible-lint
+          if ! ansible-lint; then
+            exit 1
+          fi
+          if ! ansible-lint *.yml --offline; then
+            exit 1
+          fi
