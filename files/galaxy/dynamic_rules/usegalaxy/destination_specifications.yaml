@@ -18,24 +18,6 @@ condor:
     tmp_dir: 'True'
     metadata_strategy: 'extended'
 
-condor_normal_metadata:
-  info:
-    remote: false
-    scheduler: 'condor'
-  limits:
-    cores: 64
-    mem: 1000
-  env:
-    NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
-    GALAXY_MEMORY_MB: '{MEMORY_MB}'
-    GALAXY_SLOTS: '{PARALLELISATION}'
-  params:
-    priority: -{PRIORITY}
-    request_cpus: '{PARALLELISATION}'
-    request_memory: '{MEMORY}'
-    requirements: 'GalaxyGroup == "compute"'
-    tmp_dir: 'True'
-
 # TBD
 condor_extended:
   info:
