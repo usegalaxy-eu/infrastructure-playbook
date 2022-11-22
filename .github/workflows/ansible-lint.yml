@@ -1,0 +1,27 @@
+---
+name: Ansible-lint
+
+'on':
+  push:
+
+defaults:
+  run:
+    working-directory: 'infrastructure-playbook'
+
+jobs:
+  ansible-lint:
+     runs-on: ubuntu-latest
+     steps:
+     - uses: actions/checkout@v1
+     - name: Set up Python
+       uses: actions/setup-python@v1
+       with:
+         python-version: 3.9
+     - name: Install dependencies
+       run: |
+         python -m pip install --upgrade pip
+         pip install ansible ansible-lint
+     - name: Lint playbook
+       run: |
+         ansible-playbook site.yml --syntax-check
+         ansible-lint site.yml
