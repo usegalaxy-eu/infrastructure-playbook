@@ -1,10 +1,11 @@
 ---
+# ALL tags must be with dashes (-) instead of underscores (_)
 tools:
   toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy/.*:
     cores: 2
-    #scheduling:
-    #  accept:
-    #    - pulsar
+    scheduling:
+      require:
+        - condor-tpv
     rules:
       - if: input_size >= 0.015
         cores: 14
@@ -12,7 +13,7 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/enasearch_search_data/enasearch_search_data/.*:
     scheduling:
       require:
-        - condor_singularity_with_conda_python2
+        - condor-singularity-with-conda-python2
 
   toolshed.g2.bx.psu.edu/repos/rnateam/dewseq/dewseq/.*:
     cores: 2
@@ -116,7 +117,7 @@ tools:
     cores: 8
     scheduling:
       prefer:
-        - condor_tpv
+        - condor-tpv
     rules:
       - if: 0.1 <= input_size < 1
         cores: 20
