@@ -3,7 +3,17 @@ destinations:
   interactive_pulsar:
     cores: 24 # arbritrary max
     mem: 128 # arbritrary max
-    tmp_dir: true
+    params:
+        tmp_dir: true
+        docker_enabled: true
+        docker_sudo: false
+        docker_net: bridge
+        docker_auto_rm: true
+        docker_set_user: ""
+        require_container: true
+        outputs_to_working_directory: false
+        container_monitor_result: callback
+        submit_requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
     docker_enabled: true
     docker_sudo: false
     docker_net: bridge
