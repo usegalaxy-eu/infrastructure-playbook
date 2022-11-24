@@ -128,7 +128,7 @@
     ## galaxy_virtualenv_command) in the group_vars/sn07.yml
     - role: galaxyproject.miniconda
       vars:
-        miniconda_prefix: "{{ miniconda_prefix }}"
+        miniconda_prefix: "{{ conda_prefix }}"
         galaxy_conda_create_env: true
         galaxy_conda_env_packages:
           - python=3.8

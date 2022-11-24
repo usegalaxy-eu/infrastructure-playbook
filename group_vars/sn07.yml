@@ -26,7 +26,7 @@ autofs_mount_points:
   - usrlocal
 
 # Miniconda role variables (galaxyproject.miniconda)
-miniconda_prefix: /opt/miniconda
+conda_prefix: /opt/miniconda
 
 # fs-maintenance
 fsm_maintenance_dir: "/data/dnb01/maintenance"
@@ -456,7 +456,7 @@ galaxy_venv_dir: "{{ galaxy_root }}/venv"
 galaxy_job_working_directory: "{{ galaxy_config['galaxy']['job_working_directory'] }}"
 ucsc_build_sites:
 
-galaxy_virtualenv_command: "{{ miniconda_prefix }}/envs/_galaxy_/bin/virtualenv"
+galaxy_virtualenv_command: "{{ conda_prefix }}/envs/_galaxy_/bin/virtualenv"
 galaxy_nonrepro_tools: "{{ galaxy_root }}/custom-tools"
 galaxy_nonrepro_commit: master
 
