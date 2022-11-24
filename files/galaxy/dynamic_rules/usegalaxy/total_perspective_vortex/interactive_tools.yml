@@ -18,8 +18,7 @@ tools:
     rules:
       - if: |
           user_limit = 4
-          total_limit = 10
-          helpers.concurrent_job_count_for_tool(app, tool, user) >= user_limit or helpers.concurrent_job_count_for_tool(app, tool) >= total_limit
+          helpers.concurrent_job_count_for_tool(app, tool, user) >= user_limit
         execute: |
           from galaxy.jobs.mapper import JobNotReadyException
           raise JobNotReadyException()
