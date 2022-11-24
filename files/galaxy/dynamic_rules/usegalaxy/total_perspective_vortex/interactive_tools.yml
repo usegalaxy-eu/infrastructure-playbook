@@ -15,6 +15,13 @@ tools:
       require_container: true
       container_monitor_result: callback
       submit_requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
+    rules:
+      - if: |
+          user_limit = 4
+          helpers.concurrent_job_count_for_tool(app, tool, user) >= user_limit
+        execute: |
+          from galaxy.jobs.mapper import JobNotReadyException
+          raise JobNotReadyException()
     scheduling:
       require:
         - docker
