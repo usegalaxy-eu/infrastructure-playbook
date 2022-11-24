@@ -71,10 +71,6 @@
             "python3-devel",
           ]
       become: true
-    - name: Set default version of Python
-      alternatives:
-        name: python
-        path: /usr/bin/python3
     - name: Disable SELinux
       selinux:
         state: disabled
