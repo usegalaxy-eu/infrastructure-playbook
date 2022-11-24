@@ -15,7 +15,7 @@
 
         for j in $(condor_q -hold -autoformat ClusterId HoldReasonCode| awk '(($2-34) == 0){print $1}'| paste -s -d ' ')
         do
-          NUMBER_OF_TIMES_SUBMITTED=$(grep "$j" "$LOG" | wc -l)
+          NUMBER_OF_TIMES_SUBMITTED=$(grep -c "$j" "$LOG")
           if [ $NUMBER_OF_TIMES_SUBMITTED -gt $RESUBMIT_CAP ]; then
             condor_rm -reason "This job was resubmitted $RESUBMIT_CAP times. Most likely because of running out of memory." "$j"
             continue
