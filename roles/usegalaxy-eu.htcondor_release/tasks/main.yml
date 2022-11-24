@@ -4,6 +4,7 @@
     content: |
         #!/bin/bash
         CAP=524288 # 512GB
+        RESUBMIT_CAP=2 # only N resubmission is allowed
         MULTIPLIER=3
         LOG=/data/dnb01/maintenance/condor_rerun_held_jobs.log
 
@@ -14,6 +15,11 @@
 
         for j in $(condor_q -hold -autoformat ClusterId HoldReasonCode| awk '(($2-34) == 0){print $1}'| paste -s -d ' ')
         do
+          NUMBER_OF_TIMES_SUBMITTED=$(grep "$j" "$LOG" | wc -l)
+          if [ $NUMBER_OF_TIMES_SUBMITTED -gt $RESUBMIT_CAP ]; then
+            condor_rm -reason "This job was resubmitted $RESUBMIT_CAP times. Most likely because of running out of memory." "$j"
+            continue
+          fi
           JOB_DESCRIPTION=$(condor_q "$j" -autoformat JobDescription)
           MEMORY_PROVISIONED=$(condor_q "$j" -autoformat MemoryProvisioned)          
           if [ $(($MEMORY_PROVISIONED * $MULTIPLIER)) -gt $CAP ]; then
