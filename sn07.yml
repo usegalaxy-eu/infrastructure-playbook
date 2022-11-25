@@ -53,6 +53,8 @@
     - secret_group_vars/file_sources.yml # file_sources_conf.yml creds
     - secret_group_vars/all.yml # All of the other assorted secrets...
     - templates/galaxy/config/job_conf.yml
+  collections:
+    - devsec.hardening
   handlers:
     - name: Restart Galaxy
       shell: |
@@ -189,7 +191,6 @@
     ## GALAXY
     - hxr.postgres-connection
     - galaxyproject.gxadmin
-    - galaxyproject.tiaas2
     - usegalaxy_eu.ansible_nginx_upload_module
     - usegalaxy-eu.nginx
     # TODO move under monitoring + telegraf.
@@ -208,6 +209,10 @@
         galaxy_fetch_dependencies: true
         galaxy_build_client: true
 
+    - role: galaxyproject.tiaas2
+      vars:
+        tiaas_virtualenv_command: "{{ galaxy_virtualenv_command }}"
+
     ## Extras!
     - usegalaxy-eu.fix-galaxy-server-dir # Fix details into the galaxy server dirs
     - hxr.install-to-venv # Some extra packages our site needs.
@@ -225,14 +230,17 @@
     - usegalaxy-eu.fix-stuck-handlers # Restart handlers to prevent several classes of issues
     - usegalaxy-eu.log-cleaner # do not retain journalctl logs, they are unnecessary/risky under GDPR
     - usegalaxy-eu.fix-ancient-ftp-data # Remove FTP data older than 3 months, create FTP user directories
+
+    # Some of our 'cleanups' also generate telegraf format so this goes at end.
+    # 25.11.2022: Moved here becuase the galaxy-procstat role fails
+    # as it is not able to find the /etc/telegraf/telegraf.d/ directory
+    - dj-wasabi.telegraf
     - usegalaxy-eu.galaxy-procstat # Some custom telegraf monitoring that's templated
     - usegalaxy-eu.fix-missing-api-keys # Workaround for IE users not have a key set.
     - usegalaxy-eu.fix-user-quotas # Automatically recalculate user quotas and attribute ELIXIR quota to ELIXIR AAI user on a regular basis
 
-    # Some of our 'cleanups' also generate telegraf format so this goes at end.
-    - dj-wasabi.telegraf
     # - dev-sec.os-hardening
-    - dev-sec.ssh-hardening
+    - ssh_hardening
 
     ## Setup docker
     - geerlingguy.docker
