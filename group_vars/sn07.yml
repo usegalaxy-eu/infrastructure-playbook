@@ -78,8 +78,10 @@ fsm_cron_tasks:
     dow: "*"
     job: ". {{ galaxy_root }}/.bashrc && docker system prune -f > /dev/null"
     user: "{{ fsm_galaxy_user.username }}"
+  # 29.11.2022: We do not want to have the clean up task run on both the head nodes
+  # For now it will run only on sn06. So set "enable" to "false".
   gxadmin:
-    enable: true
+    enable: false
     name: "Gxadmin Galaxy clean up"
     minute: 0
     hour: "*/6"
