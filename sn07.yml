@@ -56,7 +56,7 @@
   handlers:
     - name: Restart Galaxy
       shell: |
-        echo 'Manual web handler restart required' && cd /opt/galaxy/ && source /opt/galaxy/.bashrc  && sudo -u galaxy /usr/bin/galaxy-sync-to-nfs && systemctl restart galaxy-handler@* && systemctl restart galaxy-workflow-scheduler@*
+        echo 'Manual web handler restart required' && cd /opt/galaxy/ && source /opt/galaxy/.bashrc  && systemctl restart galaxy-handler@* && systemctl restart galaxy-workflow-scheduler@*
   pre_tasks:
     - name: Install Dependencies
       package:
@@ -143,10 +143,12 @@
     - galaxyproject.cvmfs # Galaxy datasets
 
     ## Monitoring
-    - hxr.monitor-cluster
+    # this should be unique, because it sends data to about the cluster to influxDB
+    #- hxr.monitor-cluster
     - hxr.monitor-email
     - hxr.monitor-galaxy-journalctl
-    # - usegalaxy-eu.monitor-disk-access-time
+    # - usegalaxy-eu.monitor-disk-access-time merged with usegalaxy-eu.monitoring
+    # uses the nfsstat command only
     - usegalaxy-eu.monitoring
 
     # Setup Galaxy user
@@ -193,7 +195,8 @@
     - usegalaxy_eu.ansible_nginx_upload_module
     - usegalaxy-eu.nginx
     # TODO move under monitoring + telegraf.
-    - usegalaxy-eu.galaxy-slurp
+    # Role that creates a cron to gather galaxy stats, neets to run only on one node
+    #- usegalaxy-eu.galaxy-slurp
     - usegalaxy-eu.gapars-galaxy
     # The REAL galaxy role
     - role: galaxyproject.galaxy
@@ -215,24 +218,27 @@
     - usegalaxy-eu.update-hosts # Update hosts list
     - usegalaxy_eu.gie_proxy # Setup the NodeJS proxy for GxIT
     - usegalaxy-eu.subdomain-themes # Custom subdomain themes
-    - usegalaxy_eu.fs_maintenance # Filesystems maintenance
-    - usegalaxy-eu.logrotate # Rotate logs
+    # This is mixed: schedules cron to submit condor jobs that clean up dirs
+    # also cleans up docker and 'gxadmin cleanup 60'
+    #- usegalaxy_eu.fs_maintenance # Filesystems maintenance
     - usegalaxy-eu.error-pages # Copy the NGINX error pages
-    - usegalaxy-eu.htcondor_release # Condor release held jobs increasing memory
+    # Needs to run only on one machine, and only if condor is actually available
+    #- usegalaxy-eu.htcondor_release # Condor release held jobs increasing memory
     # Various ugly fixes
-    - usegalaxy-eu.fix-unscheduled-jobs # Workaround for ???
-    - usegalaxy-eu.fix-unscheduled-workflows # Workaround for https://github.com/galaxyproject/galaxy/issues/8209
     - usegalaxy-eu.fix-stuck-handlers # Restart handlers to prevent several classes of issues
+    # first one sets the logrotate.d config for galaxy, second vacuums galaxy-xxx@* at midnight
+    - usegalaxy-eu.logrotate # Rotate galaxy logs on headnodes
     - usegalaxy-eu.log-cleaner # do not retain journalctl logs, they are unnecessary/risky under GDPR
-    - usegalaxy-eu.fix-ancient-ftp-data # Remove FTP data older than 3 months, create FTP user directories
+    #- usegalaxy-eu.fix-ancient-ftp-data # Remove FTP data older than 3 months, create FTP user directories
+    # This one creates telegraf plugins for the galaxy-xxxx@* services (now with gunicorn!)
     - usegalaxy-eu.galaxy-procstat # Some custom telegraf monitoring that's templated
-    - usegalaxy-eu.fix-missing-api-keys # Workaround for IE users not have a key set.
-    - usegalaxy-eu.fix-user-quotas # Automatically recalculate user quotas and attribute ELIXIR quota to ELIXIR AAI user on a regular basis
+    # This can be moved to maintenance machine (gxadmin mutate ...)
+    #- usegalaxy-eu.fix-user-quotas # Automatically attribute ELIXIR quota to ELIXIR AAI user on a regular basis
 
     # Some of our 'cleanups' also generate telegraf format so this goes at end.
     - dj-wasabi.telegraf
     # - dev-sec.os-hardening
     - dev-sec.ssh-hardening
 
-    ## Setup docker
-    - geerlingguy.docker
+    ## Setup docker commented on 11/30/2022, remove if everything works
+    #- geerlingguy.docker
