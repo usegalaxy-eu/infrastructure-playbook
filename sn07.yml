@@ -53,10 +53,13 @@
     - secret_group_vars/file_sources.yml # file_sources_conf.yml creds
     - secret_group_vars/all.yml # All of the other assorted secrets...
     - templates/galaxy/config/job_conf.yml
+  collections:
+    - devsec.hardening
   handlers:
     - name: Restart Galaxy
       shell: |
         echo 'Manual web handler restart required' && cd /opt/galaxy/ && source /opt/galaxy/.bashrc  && systemctl restart galaxy-handler@* && systemctl restart galaxy-workflow-scheduler@*
+
   pre_tasks:
     - name: Install Dependencies
       package:
@@ -71,9 +74,6 @@
             "python3-devel",
           ]
       become: true
-    - name: Disable SELinux
-      selinux:
-        state: disabled
   post_tasks:
     - name: Append some users to the systemd-journal group
       user:
@@ -110,6 +110,56 @@
         - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC9itwmMTgcRCrwjO3RCke/NWJsRb3N5lUTF5fubw/V0PlSbFDuv7IMKp5hhFfhiOuVRMoXQBHnnOWWu1xd9jDqZKXmNGHg06JtnddQ/OVprZ6Dpu2g9pZ6uc4r1As94mvpICLVK9lNHPNA60sIwTsTRVFSb1VbXALI4iuLOxPLzIxhrZ1LouK19VWetJIQ/Uq8UalfTDr1KOyQQ/ZgjBeWdD5InSOl3sbPJZhGQLqSHIi0MVxH527CMnh1PQIxiD/vqX8SK7HaKvUZIHHzz5TFrUgrw7BkfRd04UIgr1OhnMf1E413yZdeQzJQV7C1CL9MbAThXX6Ruvs0Rg3ylazpYfwDifMWvqLeRoTCDUbGx94ySO/wzer/kcjpJ27iydNo+en/hImMYz7kktf6A3BzOYxFmOQvnQ9cChP+iuk7fTiQZS7Qtkz+axNIvwCkm7Hmgt7vYizHc+OAtKmzZFTHecozjxCXs9RwynnWpToheP3ZPYgOpKc7pkUngRSjXyc= bebatut@bebatut-ThinkPad-T14-Gen-1"
         - "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBADKblzzPBc3+dEfFvhJQHsHGkFFN6ORjfXo71P1OutwcKEMCIcNkZKJHhYkLLrfTDN5JJ5tK2L5AaSxdwETofwm4AG1xv3LuoYsXC6e3sjKi09BVmzef520pIMW+rvL+hESwSazZaUAC0wDcH4aNDTonZYcAY87rpMX7pNMkNPJvWilUA== mira"
         - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFH54+qZEBeU5uwIeWWOViLcC509qxoRW6oN0VHRQr4r nate"
+
+    # Add SELinux policy for nginx to interact with the gunicorn socket
+    - name: Check if nginx-gunicorn selinux policy is installed
+      command: semodule --list=full | grep -q nginx_gunicorn_selinux
+      register: nginx_gunicorn_selinux_policy
+      failed_when: nginx_gunicorn_selinux_policy.rc > 1
+
+    - name: Add SELinux policy for nginx to interact with the gunicorn socket
+      when: nginx_gunicorn_selinux_policy.rc == 1
+      block:
+        - name: Copy nginx-gunicorn selinux type enforcement file
+          copy:
+            src: "files/galaxy/config/nginx_gunicorn_selinux.te"
+            dest: "/tmp/nginx_gunicorn_selinux.te"
+
+        - name: Compile nginx-gunicorn selinux module
+          command: "checkmodule -M -m -o /tmp/nginx_gunicorn_selinux.mod /tmp/nginx_gunicorn_selinux.te"
+
+        - name: Compile nginx-gunicorn selinux policy package
+          command: "semodule_package -o /tmp/nginx_gunicorn_selinux.pp -m /tmp/nginx_gunicorn_selinux.mod"
+
+        - name: Install nginx-gunicorn selinux policy package
+          command: "semodule -i /tmp/nginx_gunicorn_selinux.pp"
+
+        - name: Clean up nginx-gunicorn selinux policy files
+          file:
+            path: "{{ item }}"
+            state: absent
+          with_items:
+            - "/tmp/nginx_gunicorn_selinux.te"
+            - "/tmp/nginx_gunicorn_selinux.mod"
+            - "/tmp/nginx_gunicorn_selinux.pp"
+
+    # Add http and https to the current firewall zone
+    - name: Add http and https services to the current firewall zone
+      firewalld:
+        service: "{{ item }}"
+        immediate: true
+        permanent: true
+        state: enabled
+      with_items:
+        - http
+        - https
+
+    - name: Change compliance.log file ownership to the galaxy user
+      file:
+        path: "{{ galaxy_server_dir }}/compliance.log"
+        owner: galaxy
+        group: root
+        mode: 0644
 
   roles:
     ## Starting configuration of the operating system
@@ -191,7 +241,6 @@
     ## GALAXY
     - hxr.postgres-connection
     - galaxyproject.gxadmin
-    - galaxyproject.tiaas2
     - usegalaxy_eu.ansible_nginx_upload_module
     - usegalaxy-eu.nginx
     # TODO move under monitoring + telegraf.
@@ -211,6 +260,10 @@
         galaxy_fetch_dependencies: true
         galaxy_build_client: true
 
+    - role: galaxyproject.tiaas2
+      vars:
+        tiaas_virtualenv_command: "{{ galaxy_virtualenv_command }}"
+
     ## Extras!
     - usegalaxy-eu.fix-galaxy-server-dir # Fix details into the galaxy server dirs
     - hxr.install-to-venv # Some extra packages our site needs.
@@ -229,16 +282,20 @@
     # first one sets the logrotate.d config for galaxy, second vacuums galaxy-xxx@* at midnight
     - usegalaxy-eu.logrotate # Rotate galaxy logs on headnodes
     - usegalaxy-eu.log-cleaner # do not retain journalctl logs, they are unnecessary/risky under GDPR
+
     #- usegalaxy-eu.fix-ancient-ftp-data # Remove FTP data older than 3 months, create FTP user directories
+
+    # Some of our 'cleanups' also generate telegraf format so this goes at end.
+    # 25.11.2022: Moved here becuase the galaxy-procstat role fails
+    # as it is not able to find the /etc/telegraf/telegraf.d/ directory
+    - dj-wasabi.telegraf
     # This one creates telegraf plugins for the galaxy-xxxx@* services (now with gunicorn!)
     - usegalaxy-eu.galaxy-procstat # Some custom telegraf monitoring that's templated
     # This can be moved to maintenance machine (gxadmin mutate ...)
     #- usegalaxy-eu.fix-user-quotas # Automatically attribute ELIXIR quota to ELIXIR AAI user on a regular basis
 
-    # Some of our 'cleanups' also generate telegraf format so this goes at end.
-    - dj-wasabi.telegraf
     # - dev-sec.os-hardening
-    - dev-sec.ssh-hardening
+    - ssh_hardening #dev-sec.hardening collection
 
     ## Setup docker commented on 11/30/2022, remove if everything works
     #- geerlingguy.docker

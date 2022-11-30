@@ -44,11 +44,14 @@ handling:
 {% if galaxy_jobconf.handlers.ready_window_size is defined %}
   ready_window_size: {{ galaxy_jobconf.handlers.ready_window_size }}
 {% endif %}
-{% if galaxy_systemd_handlers is defined %}
+{% if galaxy_systemd_handlers is defined and galaxy_systemd_handlers > 0 %}
   processes:
 {% for n in range(galaxy_systemd_handlers) %}
     {{ galaxy_systemd_handler_prefix }}_{{ n }}:
 {% endfor %}
+{% elif galaxy_systemd_handlers is defined and galaxy_systemd_handlers == 0 %}
+  processes:
+    DUMMY_PLACEHOLDER_FOR_HANDLER:
 {% endif %}
 
 #
