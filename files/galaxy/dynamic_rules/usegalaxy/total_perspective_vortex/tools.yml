@@ -132,3 +132,10 @@ tools:
         fail:
           Too much data, we cannot support such large Trinity assemblies with our
           backend. Please use another server for your job.
+
+  toolshed.g2.bx.psu.edu/repos/iuc/mothur_cluster_split/mothur_cluster_split/.*:
+    cores: 1
+    mem: 90
+    scheduling:
+      require:
+        - condor-docker-with-conda
