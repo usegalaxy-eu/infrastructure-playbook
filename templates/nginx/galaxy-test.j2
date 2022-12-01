@@ -1,5 +1,5 @@
 upstream galaxy {
-    server unix:{{ galaxy_systemd_gunicorn_listen_path }};
+    server unix:{{ galaxy_mutable_data_dir }}/{{ galaxy_systemd_gunicorn_socket_name }}.sock;
 }
 
 server {
