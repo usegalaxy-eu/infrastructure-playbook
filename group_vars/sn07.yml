@@ -29,69 +29,68 @@ autofs_mount_points:
 conda_prefix: /opt/miniconda
 
 # fs-maintenance
-fsm_maintenance_dir: "/data/dnb01/maintenance"
-
-fsm_scripts:
-  temporary_dirs:
-    enable: true
-    src: "temporary_dirs.sh.j2"
-    dst: "{{ fsm_maintenance_dir }}/temporary_dirs.sh"
-    user: "{{ fsm_galaxy_user.username }}"
-    group: "{{ fsm_galaxy_user.groupname }}"
-    paths:
-      - /data/2/galaxy_db/tmp
-      - /data/dnb01/galaxy_db/tmp
-      - /data/dnb02/galaxy_db/tmp
-      - /data/dnb03/galaxy_db/tmp
-      - /data/jwd/tmp
-    time: "{{ fsm_intervals.long }}"
-  upload_dirs:
-    enable: true
-    src: "uploads.sh.j2"
-    dst: "{{ fsm_maintenance_dir }}/uploads.sh"
-    user: "{{ fsm_galaxy_user.username }}"
-    group: "{{ fsm_galaxy_user.groupname }}"
-    paths:
-      - "{{ galaxy_config['galaxy']['nginx_upload_store'] }}"
-      - "{{ galaxy_config['galaxy']['nginx_upload_job_files_store'] }}"
-    time: "{{ fsm_intervals.medium }}"
-  job_working_dirs:
-    enable: true
-    src: "job_working_dir.sh.j2"
-    dst: "{{ fsm_maintenance_dir }}/job_working_dir.sh"
-    user: "{{ fsm_galaxy_user.username }}"
-    group: "{{ fsm_galaxy_user.groupname }}"
-    paths:
-      - "{{ galaxy_config['galaxy']['job_working_directory'] }}"
-      - /data/dnb03/galaxy_db/job_working_directory
-      - /data/jwd/main
-    time: "{{ fsm_intervals.long }}"
-
-fsm_cron_tasks:
-  docker:
-    enable: true
-    name: "Docker clean up"
-    minute: 30
-    hour: 2
-    dom: "*"
-    month: "*"
-    dow: "*"
-    job: ". {{ galaxy_root }}/.bashrc && docker system prune -f > /dev/null"
-    user: "{{ fsm_galaxy_user.username }}"
-  # 29.11.2022: We do not want to have the clean up task run on both the head nodes
-  # For now it will run only on sn06. So set "enable" to "false".
-  gxadmin:
-    enable: false
-    name: "Gxadmin Galaxy clean up"
-    minute: 0
-    hour: "*/6"
-    dom: "*"
-    month: "*"
-    dow: "*"
-    job: "{{ custom_telegraf_env }} /usr/bin/gxadmin galaxy cleanup 60"
-    user: "{{ fsm_galaxy_user.username }}"
-
-fsm_htcondor_enable: true
+# Remove this if fs_maintenance was moved to maintenance machine, otherwise activate it with condor on sn07
+#fsm_maintenance_dir: "/data/dnb01/maintenance"
+#
+#fsm_scripts:
+#  temporary_dirs:
+#    enable: true
+#    src: "temporary_dirs.sh.j2"
+#    dst: "{{ fsm_maintenance_dir }}/temporary_dirs.sh"
+#    user: "{{ fsm_galaxy_user.username }}"
+#    group: "{{ fsm_galaxy_user.groupname }}"
+#    paths:
+#      - /data/2/galaxy_db/tmp
+#      - /data/dnb01/galaxy_db/tmp
+#      - /data/dnb02/galaxy_db/tmp
+#      - /data/dnb03/galaxy_db/tmp
+#      - /data/jwd/tmp
+#    time: "{{ fsm_intervals.long }}"
+#  upload_dirs:
+#    enable: true
+#    src: "uploads.sh.j2"
+#    dst: "{{ fsm_maintenance_dir }}/uploads.sh"
+#    user: "{{ fsm_galaxy_user.username }}"
+#    group: "{{ fsm_galaxy_user.groupname }}"
+#    paths:
+#      - "{{ galaxy_config['galaxy']['nginx_upload_store'] }}"
+#      - "{{ galaxy_config['galaxy']['nginx_upload_job_files_store'] }}"
+#    time: "{{ fsm_intervals.medium }}"
+#  job_working_dirs:
+#    enable: true
+#    src: "job_working_dir.sh.j2"
+#    dst: "{{ fsm_maintenance_dir }}/job_working_dir.sh"
+#    user: "{{ fsm_galaxy_user.username }}"
+#    group: "{{ fsm_galaxy_user.groupname }}"
+#    paths:
+#      - "{{ galaxy_config['galaxy']['job_working_directory'] }}"
+#      - /data/dnb03/galaxy_db/job_working_directory
+#      - /data/jwd/main
+#    time: "{{ fsm_intervals.long }}"
+# Docker is not used on headnode anymore, gxadmin cleanup needs to run only once - commented 11/29/2022
+#fsm_cron_tasks:
+#  docker:
+#    enable: false
+##    name: "Docker clean up"
+##    minute: 30
+##    hour: 2
+##    dom: "*"
+##    month: "*"
+##    dow: "*"
+##    job: ". {{ galaxy_root }}/.bashrc && docker system prune -f > /dev/null"
+##    user: "{{ fsm_galaxy_user.username }}"
+#  gxadmin:
+#    enable: false
+##    name: "Gxadmin Galaxy clean up"
+##    minute: 0
+##    hour: "*/6"
+##    dom: "*"
+##    month: "*"
+##    dow: "*"
+##    job: "{{ custom_telegraf_env }} /usr/bin/gxadmin galaxy cleanup 60"
+##    user: "{{ fsm_galaxy_user.username }}"
+##
+#fsm_htcondor_enable: false
 
 # TIaaS
 tiaas_virtualenv_python: "python3.8"
@@ -116,31 +115,6 @@ telegraf_plugins_extra:
       - allowed_pending_messages = 10000
       - percentile_limit = 100
 
-  #monitor_condor_queue_split:
-  #plugin: "exec"
-  #config:
-  ## TODO: sudoers rule?
-  #- commands = ["sudo /usr/bin/monitor-condor-queue-split"]
-  #- timeout = "10s"
-  #- data_format = "influx"
-  #- interval = "15s"
-
-  monitor_condor_queue:
-    plugin: "exec"
-    config:
-      - commands = ["sudo /usr/bin/monitor-condor-queue"]
-      - timeout = "10s"
-      - data_format = "influx"
-      - interval = "1m"
-
-  monitor_condor_util:
-    plugin: "exec"
-    config:
-      - commands = ["sudo /usr/bin/monitor-condor-utilisation"]
-      - timeout = "10s"
-      - data_format = "influx"
-      - interval = "1m"
-
   monitor_nfsstat:
     plugin: "exec"
     config:
@@ -148,89 +122,6 @@ telegraf_plugins_extra:
       - timeout = "10s"
       - data_format = "influx"
       - interval = "15s"
-
-  # Some custom galaxy monitoring stuff
-  galaxy_uploaded:
-    plugin: "exec"
-    config:
-      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery upload-gb-in-past-hour"]
-      - timeout = "120s"
-      - data_format = "influx"
-      - interval = "1h"
-  galaxy_lastlog:
-    plugin: "exec"
-    config:
-      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin uwsgi lastlog"]
-      - timeout = "15s"
-      - data_format = "influx"
-      - interval = "15s"
-  galaxy_jobs_queued:
-    plugin: "exec"
-    config:
-      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery jobs-queued"]
-      - timeout = "15s"
-      - data_format = "influx"
-      - interval = "1m"
-  galaxy_jobs_queued_internal:
-    plugin: "exec"
-    config:
-      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery jobs-queued-internal-by-handler"]
-      - timeout = "15s"
-      - data_format = "influx"
-      - interval = "1m"
-  galaxy_jobs_queue_overview:
-    plugin: "exec"
-    config:
-      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery queue-overview --short-tool-id"]
-      - timeout = "30s"
-      - data_format = "influx"
-      - interval = "1m"
-  galaxy_oidc:
-    plugin: "exec"
-    config:
-      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery users-with-oidc"]
-      - timeout = "15s"
-      - data_format = "influx"
-      - interval = "1m"
-  galaxy_workflow:
-    plugin: "exec"
-    config:
-      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery workflow-invocation-status"]
-      - timeout = "15s"
-      - data_format = "influx"
-      - interval = "1m"
-  galaxy_workflow_totals:
-    plugin: "exec"
-    config:
-      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery workflow-invocation-totals"]
-      - timeout = "15s"
-      - data_format = "influx"
-      - interval = "1m"
-  galaxy_active_users:
-    plugin: "exec"
-    config:
-      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin uwsgi active-users"]
-      - timeout = "15s"
-      - data_format = "influx"
-      - interval = "1m"
-
-  postgres_extra:
-    plugin: "exec"
-    config:
-      - commands = [
-        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-cache-hit",
-        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-index-size",
-        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-index-usage",
-        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-table-bloat",
-        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-table-size",
-        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-unused-indexes",
-        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-vacuum-stats",
-        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-stat-bgwriter",
-        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-stat-user-tables",
-        ]
-      - timeout = "60s"
-      - data_format = "influx"
-      - interval = "2m"
 
 # Custom pip installer
 pip_venv_path: "{{ galaxy_venv_dir }}"
@@ -282,9 +173,6 @@ aws_cli_credentials:
     homedir: /root
     owner: root
     group: root
-
-# rsync to nfs
-galaxy_nfs_location: /data/gxkey
 
 # Nginx
 nginx_servers:
