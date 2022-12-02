@@ -401,19 +401,6 @@ galaxy_jobconf:
             shell: "/bin/bash"
             resolve_dependencies: true
             identifier: "/data/0/singularity_base_images/centos:8.3.2011"
-    - id: condor_docker_with_conda
-      runner: condor
-      env:
-        LC_ALL: C
-      params:
-        submit_requirements: 'GalaxyDockerHack == True && GalaxyGroup == "compute_mothur"'
-        docker_enabled: "true"
-        docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
-        docker_default_container_id: "centos:8.3.2011"
-        docker_auto_rm: "true"
-        docker_sudo: "false"
-        docker_run_extra_arguments: "--pids-limit 10000 --env TERM=vt100"
-        docker_set_user: ""
 
     - id: condor_docker
       runner: condor
