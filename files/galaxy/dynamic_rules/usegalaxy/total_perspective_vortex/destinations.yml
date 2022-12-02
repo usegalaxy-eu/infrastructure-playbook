@@ -38,6 +38,7 @@ destinations:
     scheduling:
       prefer:
         - docker
+        - embedded-pulsar
 
   condor_singularity:
     runner: condor
@@ -90,10 +91,3 @@ destinations:
     scheduling:
       require:
         - condor-singularity-with-conda-python2
-
-  condor_docker_with_conda:
-    cores: 64
-    mem: 1000
-    scheduling:
-      require:
-        - condor-docker-with-conda
