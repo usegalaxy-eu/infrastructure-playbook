@@ -2,7 +2,7 @@
 
 {% for guniconrn in range(galaxy_systemd_gunicorns) %}
 [[inputs.procstat]]
-	cgroup = "systemd/system.slice/system-galaxy\\x2dgunicorn.slice/galaxy-gunicorn@{{ zerg }}.service"
+	cgroup = "systemd/system.slice/system-galaxy\\x2dgunicorn.slice/galaxy-gunicorn@{{ guinicorn }}.service"
 	process_name = "galaxy-gunicorn@{{ gunicorn }}"
 	cmdline_tag = true
 {% endfor %}
