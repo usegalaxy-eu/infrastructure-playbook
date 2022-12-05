@@ -59,6 +59,8 @@ server {
 		#location /history/export_archive {
 		#	return 302 https://usegalaxy.eu;
 		#}
+
+		add_header X-Clacks-Overhead 'GNU James Taylor (@jxtx) Simon Gladman (@slugger70)';
 	}
 	location ~ ^/api/dataset_collections/([^/]+)/download/?$ {
 		proxy_buffering off;
