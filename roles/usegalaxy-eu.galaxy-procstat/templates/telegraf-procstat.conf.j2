@@ -1,6 +1,6 @@
 ### MANAGED BY usegalaxy-eu.galaxy-procstat ANSIBLE ROLE ###
 
-{% for guniconrn in range(galaxy_systemd_gunicorns) %}
+{% for gunicorn in range(galaxy_systemd_gunicorns) %}
 [[inputs.procstat]]
 	cgroup = "systemd/system.slice/system-galaxy\\x2dgunicorn.slice/galaxy-gunicorn@{{ gunicorn }}.service"
 	process_name = "galaxy-gunicorn@{{ gunicorn }}"
