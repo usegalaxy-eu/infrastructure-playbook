@@ -136,6 +136,11 @@ The storage consists of 16 Gen6 type A200 storage nodes and 16 Gen5 type X410 no
             <files_dir path="/data/dnb07/galaxy_db/files"/>
             <extra_dir type="job_work" path="/data/jwd02f/main"/>
         </backend>
+        <backend id="files15" type="disk" weight="1" store_by="uuid">
+            <files_dir path="/data/dnb07/galaxy_db/files"/>
+            <extra_dir type="job_work" path="/data/jwd03f/main"/>
+        </backend>
+
         <backend id="secondary" type="disk" weight="0" store_by="id">
             <files_dir path="/data/0/galaxy_db/files"/>
             <extra_dir type="temp" path="/data/2/galaxy_db/tmp"/>
