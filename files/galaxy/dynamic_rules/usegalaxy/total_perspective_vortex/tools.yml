@@ -1,6 +1,34 @@
 ---
 # ALL tags must be with dashes (-) instead of underscores (_)
+global:
+  default_inherits: default
 tools:
+  default:
+    cores: 2
+    mem: cores * 3.8
+    gpus: 0
+    env: {}
+    params:
+      tmp_dir: true
+      request_cpus: "{cores}"
+      request_memory: "{mem}G"
+      submit_request_gpus: "{gpus or 0}"
+      docker_memory: "{mem}G"
+    scheduling:
+      reject:
+        - offline
+    rules:
+      - if: user is not None
+        execute: |
+          training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
+          training_expr = " || ".join(['(GalaxyGroup == "%s")' % role for role in training_roles])
+          training_labels = '"' + ", ".join(training_roles) + '"'
+          entity.params['requirements'] = '(GalaxyGroup == "compute") || (%s)' % training_expr if training_expr else '(GalaxyGroup == "compute")'
+          entity.params['+Group'] = training_labels
+    rank: |
+      final_destinations = helpers.weighted_random_sampling(candidate_destinations)
+      final_destinations
+
   toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy/.*:
     cores: 2
     scheduling:
@@ -62,7 +90,9 @@ tools:
     inherits: basic_docker_tool
   ashlar:
     inherits: basic_docker_tool
-  '*cherri*':
+  toolshed.g2.bx.psu.edu/repos/iuc/cherri_train/cherri_train/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/iuc/cherri_eval/cherri_eval/.*:
     inherits: basic_docker_tool
 
   toolshed.g2.bx.psu.edu/repos/nml/metaspades/metaspades/.*:
