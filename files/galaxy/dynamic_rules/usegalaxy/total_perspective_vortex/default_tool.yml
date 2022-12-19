@@ -17,7 +17,7 @@ tools:
       reject:
         - offline
     rules:
-      - if: "True"
+      - if: user is not None
         execute: |
           training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
           training_expr = " || ".join(['(GalaxyGroup == "%s")' % role for role in training_roles])
