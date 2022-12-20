@@ -204,7 +204,7 @@ telegraf_plugins_extra:
   galaxy_active_users:
     plugin: "exec"
     config:
-      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin uwsgi active-users"]
+      - commands = ["/usr/bin/gxadmin local cu"]
       - timeout = "15s"
       - data_format = "influx"
       - interval = "1m"
