@@ -1,8 +1,8 @@
 local_cu() { ## : Shows active users in last 10 minutes
-        handle_help "$@" <<-EOF
+        handle_help "$@" <<-EOFhelp
                 cu unique sorts the IP adresses from gunicorns log, using "GET /history/current_history_json"
                 and prints it in influx line format
-        EOF
+        EOFhelp
 
-        echo "active_users,timespan=last_10_min users=$(journalctl -u galaxy-gunicorn@*.service --since "10 minutes ago" | grep "/history/current_history_json"  | awk "{print \$11}" | sort -u | wc -l)"
+        echo "active_users,timespan=last_10_min users=$(journalctl -u galaxy-gunicorn@*.service --since '10 minutes ago' | grep '/history/current_history_json'  | awk '{print $11}' | sort -u | wc -l)"
 }
