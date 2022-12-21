@@ -1,0 +1,29 @@
+---
+- name: "Deploy IT stopper script"
+  copy:
+    content: |
+        #!/bin/bash
+        DAY=86400
+        . {{ galaxy_root }}/.bashrc
+          for job in $(gxadmin query queue-details --all | grep running | grep interactive_tool | grep days | awk '{print $3}')
+          do
+            chg2wd $job
+            ClusterID=$( head -n 1 job_condor.log | awk '{print $2}' | awk -F. '{print $1"."$2}' | sed 's/^(//' )
+            if [ $(expr $(date +"%s") - $(condor_q $ClusterID -autoformat JobStartDate)) -ge $DAY ]
+            then
+              condor_rm $ClusterID
+            fi
+          done
+    dest: /usr/bin/stop-old-ITs
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Add to cron
+  cron:
+    name: "Stop ITs older than 24h"
+    day: "*"
+    hour: "*/1"
+    minute: "0"
+    user: "{{ galaxy_user.name }}"
+    job: /usr/bin/stop-old-ITs
