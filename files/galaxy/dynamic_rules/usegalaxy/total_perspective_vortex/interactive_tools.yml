@@ -20,6 +20,26 @@ tools:
         - docker
         - interactive
 
+  interactive_tool_gpu:
+    cores: 1
+    mem: 4
+    params:
+      runner: pulsar_embedded
+      tmp_dir: true
+      docker_enabled: true
+      docker_volumes: $defaults
+      docker_sudo: false
+      docker_net: bridge
+      docker_auto_rm: true
+      docker_set_user: ''
+      require_container: true
+      container_monitor_result: callback
+      submit_requirements: 'GalaxyDockerHack == True'
+    scheduling:
+      require:
+        - docker
+        - interactive
+
   interactive_tool_pavian:
     inherits: interactive_tool
     cores: 1
@@ -144,7 +164,7 @@ tools:
       HOME: /home/jovyan
 
   interactive_tool_ml_jupyter_notebook:
-    inherits: interactive_tool
+    inherits: interactive_tool_gpu
     gpus: 1
     cores: 1
     mem: 8
