@@ -146,6 +146,21 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/spades_biosyntheticspades/spades_biosyntheticspades/.*:
     inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
 
+  # cactus suite
+  toolshed.g2.bx.psu.edu/repos/galaxy-australia/cactus_cactus/cactus_cactus/.*:
+    context:
+      test_cores: 4
+    cores: 20
+    mem: 256
+    scheduling:
+      prefer:
+        - condor-tpv
+    params:
+      singularity_enabled: True
+  toolshed.g2.bx.psu.edu/repos/galaxy-australia/cactus_export/cactus_export/.*:
+    params:
+      singularity_enabled: True
+
   toolshed.g2.bx.psu.edu/repos/iuc/trinity/trinity/.*:
     cores: 8
     scheduling:
