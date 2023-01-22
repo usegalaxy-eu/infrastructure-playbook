@@ -35,10 +35,16 @@ tools:
       require_container: true
       container_monitor_result: callback
       submit_requirements: 'GalaxyDockerHack == True'
-    scheduling:
-      require:
-        - docker
-        - interactive
+    rules:
+      - if: user and 'gpu_access_validated' in [role.name for role in user.all_roles() if not role.deleted]
+        scheduling:
+          require:
+            - docker
+            - interactive
+      - if: |
+          not user or not any([ role for role in user.all_roles() if (role.name in ['gpu_access_validated'] and not role.deleted) ])
+        fail: |
+          This tool has restricted access. Please request access by visiting https://usegalaxy.eu/gpu-request.
 
   interactive_tool_pavian:
     inherits: interactive_tool
