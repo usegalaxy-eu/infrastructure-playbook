@@ -91,11 +91,19 @@ tools:
   ashlar:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_train/cherri_train/.*:
-    cores: 1
-    mem: 40
+    cores: 10
+    mem: 90
+    scheduling:
+      require:
+        - docker
+
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_eval/cherri_eval/.*:
     cores: 1
     mem: 20
+    scheduling:
+      require:
+        - docker
+
   toolshed.g2.bx.psu.edu/repos/nml/metaspades/metaspades/.*:
     cores: 2
     scheduling:
