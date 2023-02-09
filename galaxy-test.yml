@@ -45,6 +45,13 @@
       selinux:
         policy: targeted
         state: permissive
+  post_tasks:
+    - name: Deploy condor allow cron
+      ansible.builtin.cron:
+        name: restart condor auto accept
+        minute: "0"
+        user: root
+        job: "/usr/bin/condor_token_request_auto_approve -netblock 10.5.68.0/24 -lifetime 3660"
   roles:
     ## Dependencies
     - geerlingguy.repo-epel # Install EPEL
