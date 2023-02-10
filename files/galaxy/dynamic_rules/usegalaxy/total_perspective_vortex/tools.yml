@@ -66,14 +66,10 @@ tools:
     cores: 10
     mem: 32
     params:
-      singularity_run_extra_arguments: "--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases/2021-09/,ALPHAFOLD_USE_GPU=False"
+      singularity_run_extra_arguments: "--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases/2.2/,ALPHAFOLD_USE_GPU=False"
     scheduling:
       require:
         - singularity
-  toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold/2.1.*:
-    inherits: toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold/.*
-    params:
-      singularity_run_extra_arguments: "--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases/2.1/,ALPHAFOLD_USE_GPU=False"
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold/2.3.*:
     inherits: toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold/.*
     params:
