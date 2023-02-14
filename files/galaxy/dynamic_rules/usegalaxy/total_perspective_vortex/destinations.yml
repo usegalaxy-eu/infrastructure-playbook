@@ -76,7 +76,7 @@ destinations:
       default_file_action: remote_transfer
       dependency_resolution: remote
       rewrite_parameters: "true"
-      persistence_directory: /data/share/persisted_data   
+      persistence_directory: /data/share/persisted_data
     scheduling:
       require:
         - pulsar
@@ -137,5 +137,3 @@ destinations:
           shell: "/bin/bash"
           resolve_dependencies: true
           identifier: "/data/0/singularity_base_images/centos:8.3.2011"
-
-
