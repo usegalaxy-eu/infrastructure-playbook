@@ -215,6 +215,7 @@ galaxy_jobconf:
         function: gateway_for_keras_train_eval
 
     # Internal Pulsar runner for ITs
+    # this can go once TPV 2.0 runs smoothly
     - id: interactive_pulsar
       runner: pulsar_embedded
       params:
@@ -233,6 +234,7 @@ galaxy_jobconf:
         #submit_rank: 'GalaxyGroup == "upload"'  # submit_rank: can look like that
         #docker_memory: 4
 
+    # this can be safely deleted once TPV 2.0 runs smoothly
     - id: embedded_pulsar_docker
       runner: pulsar_embedded
       params:
@@ -424,10 +426,12 @@ galaxy_jobconf:
         docker_auto_rm: "true"
         docker_sudo: "false"
         docker_set_user: ""
+    # this can be safely deleted once TPV 2.0 runs smoothly
     - id: condor_tpv
       runner: condor
       params:
         tmp_dir: "true"
+    # this can be safely deleted once TPV 2.0 runs smoothly
     - id: pulsar_it_tpv
       runner: pulsar_eu_it01
       env:
@@ -440,6 +444,7 @@ galaxy_jobconf:
         dependency_resolution: remote
         rewrite_parameters: "true"
         persistence_directory: /data/share/persisted_data
+    # this can be safely deleted once TPV 2.0 runs smoothly
     - id: pulsar_be_tpv
       runner: pulsar_eu_be01
       env:
@@ -452,6 +457,7 @@ galaxy_jobconf:
         dependency_resolution: remote
         rewrite_parameters: "true"
         persistence_directory: /data/share/persisted_data
+    # this can be safely deleted once TPV 2.0 runs smoothly
     - id: pulsar_mira_tpv
       runner: pulsar_mira_runner
       env:
