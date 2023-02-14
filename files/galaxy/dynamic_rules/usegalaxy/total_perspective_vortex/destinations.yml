@@ -83,13 +83,13 @@ destinations:
 
 
   pulsar_mira_tpv:
+    runner: pulsar_mira_runner
     max_accepted_cores: 2
     max_accepted_mem: 4
     scheduling:
       require:
         - mira-pulsar
         - docker
-    runner: pulsar_mira_runner
     env:
       GALAXY_MEMORY_MB: "{MEMORY_MB}"
       GALAXY_SLOTS: "{PARALLELISATION}"
@@ -109,25 +109,25 @@ destinations:
       singularity_default_container_id: "/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04"
 
   pulsar_it_tpv:
+    runner: pulsar_eu_it01
     inherits: pulsar_default
     max_accepted_cores: 16
     max_accepted_mem: 31
-    runner: pulsar_eu_it01
 
 
   pulsar_be_tpv:
+    runner: pulsar_eu_be01
     inherits: pulsar_default
     max_accepted_cores: 8
     max_accepted_mem: 15
-    runner: pulsar_eu_be01
 
   condor_singularity_with_conda_python:
+    runner: condor
     max_accepted_cores: 64
     max_accepted_mem: 1000
     scheduling:
       require:
         - condor-singularity-with-conda-python
-    runner: condor
     params:
       singularity_enabled: true
       # can and should be made stricter at some point
