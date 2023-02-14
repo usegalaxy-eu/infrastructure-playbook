@@ -3,8 +3,8 @@
 destinations:
   interactive_pulsar:
     runner: pulsar_embedded
-    cores: 24 # arbritrary max
-    mem: 128 # arbritrary max
+    max_accepted_cores: 24 # arbritrary max
+    max_accepted_mem: 128 # arbritrary max
     params:
       tmp_dir: true
       docker_enabled: true
@@ -42,8 +42,8 @@ destinations:
 
   condor_singularity:
     runner: condor
-    cores: 24 # arbritrary max
-    mem: 128 # arbritrary max
+    max_accepted_cores: 24
+    max_accepted_mem: 128
     params:
       singularity_enabled: true
       singularity_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
@@ -57,37 +57,83 @@ destinations:
 
   condor_tpv:
     runner: condor
-    cores: 64
-    mem: 1000
+    max_accepted_cores: 64
+    max_accepted_mem: 1000
     scheduling:
       accept:
         - condor-tpv
+    params:
+      tmp_dir: true
+
+  pulsar_default: # use for remote Pulsar nodes and ALWAYS overwrite the runner.
+    runner: pulsar_embedded
+    env:
+      LC_ALL: C
+    params:
+      jobs_directory: /data/share/staging
+      transport: curl
+      remote_metadata: "false"
+      default_file_action: remote_transfer
+      dependency_resolution: remote
+      rewrite_parameters: "true"
+      persistence_directory: /data/share/persisted_data
+    scheduling:
+      require:
+        - pulsar
+
 
   pulsar_mira_tpv:
-    cores: 2
-    mem: 4
+    runner: pulsar_mira_runner
+    max_accepted_cores: 2
+    max_accepted_mem: 4
     scheduling:
       require:
         - mira-pulsar
         - docker
+    env:
+      GALAXY_MEMORY_MB: "{MEMORY_MB}"
+      GALAXY_SLOTS: "{PARALLELISATION}"
+      LC_ALL: C
+      SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
+    params:
+      jobs_directory: /data/share/staging
+      transport: curl
+      remote_metadata: "false"
+      submit_request_cpus: "{PARALLELISATION}"
+      submit_request_memory: "{MEMORY}"
+      outputs_to_working_directory: "false"
+      default_file_action: remote_transfer
+      dependency_resolution: "none"
+      rewrite_parameters: "true"
+      singularity_enabled: true
+      singularity_default_container_id: "/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04"
 
   pulsar_it_tpv:
-    cores: 16
-    mem: 31
-    scheduling:
-      require:
-        - pulsar
+    runner: pulsar_eu_it01
+    inherits: pulsar_default
+    max_accepted_cores: 16
+    max_accepted_mem: 31
+
 
   pulsar_be_tpv:
-    cores: 8
-    mem: 15
-    scheduling:
-      require:
-        - pulsar
+    runner: pulsar_eu_be01
+    inherits: pulsar_default
+    max_accepted_cores: 8
+    max_accepted_mem: 15
 
-  condor_singularity_with_conda_python2:
-    cores: 64
-    mem: 1000
+  condor_singularity_with_conda_python:
+    runner: condor
+    max_accepted_cores: 64
+    max_accepted_mem: 1000
     scheduling:
       require:
-        - condor-singularity-with-conda-python2
+        - condor-singularity-with-conda-python
+    params:
+      singularity_enabled: true
+      # can and should be made stricter at some point
+      singularity_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      container_override:
+        - type: singularity
+          shell: "/bin/bash"
+          resolve_dependencies: true
+          identifier: "/data/0/singularity_base_images/centos:8.3.2011"
