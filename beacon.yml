@@ -1,0 +1,16 @@
+---
+- name: Beacon
+  become: true
+  hosts:
+    - beacon
+  vars_files:
+    - secret_group_vars/beacon.yml
+  vars:
+    postgres_data_dir: /data/postgresql/data
+    postgres_init_dir: /data/postgresql/init
+    bp_external_binding: 80
+    postgres_user: "{{ beacon_db_user }}"
+    postgres_pass: "{{ beacon_db_password }}"
+    postgres_external_binding: "{{ beacon_db_port }}"
+  roles:
+    - paprikant.beacon

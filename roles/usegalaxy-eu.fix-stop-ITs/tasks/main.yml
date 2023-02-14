@@ -1,0 +1,44 @@
+---
+- name: "Deploy IT stopper script"
+  template:
+    src: stop-ITs.sh.j2
+    dest: /usr/bin/stop-ITs
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Create logfile
+  file:
+    state: directory
+    path: /var/log/cron/stop-ITs.log
+    mode: 0664
+    owner: "{{ galaxy_user.name }}"
+    group: "{{ galaxy_group.name }}"
+    state: touch
+
+- name: Setup logrotate
+  copy:
+    content: |
+      /var/log/stop-ITs.log
+      {
+          rotate 6
+          daily
+          missingok
+          dateext
+          copytruncate
+          notifempty
+          compress
+      }
+    dest: /etc/logrotate.d/stop-ITs
+    mode: 0664
+    owner: root
+    group: root
+
+- name: Add to cron
+  cron:
+    name: "Stop ITs older than 24h"
+    day: "*"
+    hour: "*/1"
+    minute: "0"
+    user: "{{ galaxy_user.name }}"
+    job: /usr/bin/stop-ITs >> /var/log/cron/stop-ITs.log 2>&1

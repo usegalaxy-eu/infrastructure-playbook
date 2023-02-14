@@ -4,6 +4,8 @@
   become: true
   become_user: root
   vars:
+    upload_dir_test: /data/jwd04/tus_upload/test
+    upload_dir_main: /data/jwd04/tus_upload/main
     tusd_instances:
       - name: test_uploads
         # user that tusd will run as
@@ -14,7 +16,7 @@
         args:
           - -host=upload.galaxyproject.eu
           - -port=1080
-          - -upload-dir=/data/dnb01/galaxy_db/tmp
+          - "-upload-dir={{ upload_dir_test }}"
           - -hooks-http=https://test.usegalaxy.eu/api/upload/hooks
           - -hooks-http-forward-headers=X-Api-Key,Cookie
       - name: main_uploads
@@ -26,7 +28,7 @@
         args:
           - -host=upload.galaxyproject.eu
           - -port=1081
-          - -upload-dir=/data/jwd/tmp
+          - "-upload-dir={{ upload_dir_main }}"
           - -hooks-http=https://usegalaxy.eu/api/upload/hooks
           - -hooks-http-forward-headers=X-Api-Key,Cookie
 

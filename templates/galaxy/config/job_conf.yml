@@ -1,0 +1,996 @@
+---
+# This is a file of variables that will be processed in job_conf.yml.j2
+# This is needed, because it contains other variables
+
+galaxy_jobconf:
+  plugin_workers: 8
+  handlers:
+    count: "{{ galaxy_systemd_handlers }}"
+    assign_with: db-skip-locked
+    max_grab: 16
+    ready_window_size: 32
+  plugins:
+    #- id: drmaa
+    #load: galaxy.jobs.runners.drmaa:DRMAAJobRunner
+    #workers: 3
+    # These live on the pythonpath
+    - id: dynamic
+      params:
+        rules_module: "usegalaxy"
+    - id: condor
+      load: galaxy.jobs.runners.condor:CondorJobRunner
+    - id: local
+      load: galaxy.jobs.runners.local:LocalJobRunner
+    - id: pulsar_embedded
+      load: galaxy.jobs.runners.pulsar:PulsarEmbeddedJobRunner
+      pulsar_config: "{{ galaxy_config_dir }}/pulsar_app.yml"
+
+    - id: pulsar_eu_it01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_it01:{{ rabbitmq_password_galaxy_it01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_it01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_mira_runner
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_mira_pulsar:{{ rabbitmq_password_galaxy_mira_pulsar }}@mq.galaxyproject.eu:5671//pulsar/galaxy_mira_pulsar?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_it02
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_it02:{{ rabbitmq_password_galaxy_it02 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_it02?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_it03
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_it03:{{ rabbitmq_password_galaxy_it03 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_it03?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_pt01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_pt01:{{ rabbitmq_password_galaxy_pt01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_pt01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_be01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_be01:{{ rabbitmq_password_galaxy_be01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_be01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_uk01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_uk01:{{ rabbitmq_password_galaxy_uk01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_uk01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_fr01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_fr01:{{ rabbitmq_password_galaxy_fr01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_fr01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_fi01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_fi01:{{ rabbitmq_password_galaxy_fi01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_fi01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_no01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_no01:{{ rabbitmq_password_galaxy_no01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_no01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_es01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_es01:{{ rabbitmq_password_galaxy_es01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_es01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_cz01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_cz01:{{ rabbitmq_password_galaxy_cz01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_cz01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+  default_destination: gateway_singlerun
+  destinations:
+    - id: local
+      runner: local
+    - id: tpv_dispatcher
+      runner: dynamic
+      type: python
+      function: map_tool_to_destination
+      rules_module: tpv.rules
+      tpv_config_files:
+        - "https://raw.githubusercontent.com/galaxyproject/tpv-shared-database/main/tools.yml"
+        - "{{ galaxy_config_dir }}/total_perspective_vortex/destinations.yml"
+        - "{{ galaxy_config_dir }}/total_perspective_vortex/tools.yml"
+        - "{{ galaxy_config_dir }}/total_perspective_vortex/interactive_tools.yml"
+        - "{{ galaxy_config_dir }}/total_perspective_vortex/users.yml"
+        - "{{ galaxy_config_dir }}/total_perspective_vortex/roles.yml"
+    - id: condor
+      runner: condor
+      params:
+        tmp_dir: "true"
+    # Gateways
+    - id: gateway_singlerun
+      runner: dynamic
+      params:
+        type: python
+        function: gateway
+    - id: gateway_1x
+      runner: dynamic
+      params:
+        type: python
+        function: gateway_1x
+    - id: gateway_1_5x
+      runner: dynamic
+      params:
+        type: python
+        function: gateway_1_5x
+    - id: gateway_2x
+      runner: dynamic
+      params:
+        type: python
+        function: gateway_2x
+    - id: gateway_checkpoint
+      runner: dynamic
+      params:
+        type: python
+        function: gateway_checkpoint
+    - id: gateway_for_hifiasm
+      runner: dynamic
+      params:
+        type: python
+        function: gateway_for_hifiasm
+    - id: gateway_for_keras_train_eval
+      runner: dynamic
+      params:
+        type: python
+        function: gateway_for_keras_train_eval
+
+    # Internal Pulsar runner for ITs
+    - id: interactive_pulsar
+      runner: pulsar_embedded
+      params:
+        tmp_dir: true
+        docker_enabled: true
+        #docker_volumes: $defaults
+        docker_sudo: false
+        docker_net: bridge
+        docker_auto_rm: true
+        docker_set_user: ""
+        require_container: true
+        outputs_to_working_directory: false
+        container_monitor_result: callback
+        submit_requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
+        #submit_request_memory: 4
+        #submit_rank: 'GalaxyGroup == "upload"'  # submit_rank: can look like that
+        #docker_memory: 4
+
+    - id: embedded_pulsar_docker
+      runner: pulsar_embedded
+      params:
+        tmp_dir: true
+        docker_enabled: true
+        #docker_volumes: $defaults
+        docker_sudo: false
+        docker_net: bridge
+        docker_auto_rm: true
+        docker_set_user: ""
+        require_container: true
+        outputs_to_working_directory: false
+        container_monitor_result: callback
+        submit_requirements: 'GalaxyDockerHack == True'
+
+    # Pulsar MQs
+    - id: remote_cluster_mq_cz
+      runner: pulsar_eu_cz
+      params:
+        jobs_directory: /storage/brno11-elixir/home/galaxyeu/galaxy-staging/
+    - id: remote_cluster_mq_test
+      runner: pulsar_eu_test
+      env:
+        LC_ALL: C
+      params:
+        jobs_directory: /data/share/staging
+        transport: curl
+        remote_metadata: "false"
+        default_file_action: remote_transfer
+        dependency_resolution: remote
+        rewrite_parameters: "true"
+        persistence_directory: /data/share/persisted_data
+    - id: remote_cluster_mq_it01
+      runner: pulsar_eu_it01
+      env:
+        LC_ALL: C
+      params:
+        jobs_directory: /data/share/staging
+        transport: curl
+        remote_metadata: "false"
+        default_file_action: remote_transfer
+        dependency_resolution: remote
+        rewrite_parameters: "true"
+        persistence_directory: /data/share/persisted_data
+    - id: remote_cluster_mq_de01
+      runner: pulsar_eu_de01
+      env:
+        LC_ALL: C
+        SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
+      params:
+        jobs_directory: /data/share/staging
+        transport: curl
+        remote_metadata: "false"
+        default_file_action: remote_transfer
+        dependency_resolution: remote
+        rewrite_parameters: "true"
+        persistence_directory: /data/share/persisted_data
+        singularity_enabled: "true"
+        singularity_volumes: $defaults
+    - id: remote_cluster_mq_de02
+      runner: pulsar_eu_de02
+      env:
+        LC_ALL: C
+      params:
+        jobs_directory: /data/share/staging
+        transport: curl
+        remote_metadata: "false"
+        default_file_action: remote_transfer
+        dependency_resolution: remote
+        rewrite_parameters: "true"
+        persistence_directory: /data/share/persisted_data
+    - id: remote_cluster_mq_de03
+      runner: pulsar_eu_de03
+      env:
+        LC_ALL: C
+      params:
+        jobs_directory: /data/share/staging
+        transport: curl
+        remote_metadata: "false"
+        default_file_action: remote_transfer
+        dependency_resolution: remote
+        rewrite_parameters: "true"
+        persistence_directory: /data/share/persisted_data
+    - id: remote_cluster_mq_docker_de03
+      runner: pulsar_eu_de03
+      env:
+        LC_ALL: C
+      params:
+        jobs_directory: /data/share/staging
+        transport: curl
+        remote_metadata: "false"
+        default_file_action: remote_transfer
+        dependency_resolution: remote
+        rewrite_parameters: "true"
+        persistence_directory: /data/share/persisted_data
+        docker_enabled: "true"
+        docker_volumes: "$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/share/staging/:ro"
+        docker_default_container_id: "ubuntu:18.04"
+        docker_auto_rm: "true"
+        docker_sudo: "false"
+        docker_run_extra_arguments: "--gpus all"
+        docker_set_user: ""
+    - id: remote_cluster_mq_be01
+      runner: pulsar_eu_be01
+      env:
+        LC_ALL: C
+      params:
+        jobs_directory: /data/share/staging
+        transport: curl
+        remote_metadata: "false"
+        default_file_action: remote_transfer
+        dependency_resolution: remote
+        rewrite_parameters: "true"
+        persistence_directory: /data/share/persisted_data
+    - id: remote_cluster_mq_uk01
+      runner: pulsar_eu_uk01
+      env:
+        LC_ALL: C
+      params:
+        jobs_directory: /data/share/staging
+        transport: curl
+        remote_metadata: "false"
+        default_file_action: remote_transfer
+        dependency_resolution: remote
+        rewrite_parameters: "true"
+        persistence_directory: /data/share/persisted_data
+    - id: condor_singularity
+      runner: condor
+      params:
+        singularity_enabled: "true"
+        singularity_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+        singularity_default_container_id: "/data/0/cvmfs/singularity/ubuntu:18.04"
+    - id: condor_singularity2
+      runner: condor
+      params:
+        singularity_enabled: "true"
+        singularity_volumes: "$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro"
+        singularity_default_container_id: "/data/0/cvmfs/singularity/ubuntu:18.04"
+        container:
+          - type: singularity
+            shell: /bin/sh
+            resolve_dependencies: "true"
+            identifier: "/data/0/cvmfs/singularity/ubuntu:18.04"
+
+      # Can be removed with Sorting Hat
+    - id: condor_singularity_with_conda
+      runner: condor
+      params:
+        singularity_enabled: "true"
+        container:
+          - type: singularity
+            shell: /bin/bash
+            resolve_dependencies: "true"
+            identifier: "/data/0/cvmfs/singularity/python:2.7.12--1"
+
+      # TPV conda singularity destination
+    - id: condor_singularity_with_conda_python2
+      runner: condor
+      params:
+        singularity_enabled: true
+        # can and should be made stricter at some point
+        singularity_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+        container_override:
+          - type: singularity
+            shell: "/bin/bash"
+            resolve_dependencies: true
+            identifier: "/data/0/singularity_base_images/centos:8.3.2011"
+
+    - id: condor_docker
+      runner: condor
+      params:
+        docker_enabled: "true"
+        docker_volumes: "$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro"
+        docker_default_container_id: "ubuntu:18.04"
+        docker_auto_rm: "true"
+        docker_sudo: "false"
+        docker_set_user: ""
+    - id: condor_docker_interactive
+      runner: condor
+      params:
+        docker_enabled: "true"
+        docker_volumes: "$working_directory:rw,$job_directory:rw"
+        docker_default_container_id: "ubuntu:18.04"
+        docker_auto_rm: "true"
+        docker_sudo: "false"
+        docker_set_user: ""
+    - id: condor_docker_ie
+      runner: condor
+      params:
+        docker_enabled: "true"
+        docker_volumes: "$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro"
+        docker_default_container_id: "ubuntu:18.04"
+        docker_auto_rm: "true"
+        docker_sudo: "false"
+        docker_set_user: ""
+    - id: condor_docker_ie_interactive
+      runner: condor
+      params:
+        docker_enabled: "true"
+        docker_volumes: "$working_directory:rw,$job_directory:rw"
+        docker_default_container_id: "ubuntu:18.04"
+        docker_auto_rm: "true"
+        docker_sudo: "false"
+        docker_set_user: ""
+    - id: condor_tpv
+      runner: condor
+      params:
+        tmp_dir: "true"
+    - id: pulsar_it_tpv
+      runner: pulsar_eu_it01
+      env:
+        LC_ALL: C
+      params:
+        jobs_directory: /data/share/staging
+        transport: curl
+        remote_metadata: "false"
+        default_file_action: remote_transfer
+        dependency_resolution: remote
+        rewrite_parameters: "true"
+        persistence_directory: /data/share/persisted_data
+    - id: pulsar_be_tpv
+      runner: pulsar_eu_be01
+      env:
+        LC_ALL: C
+      params:
+        jobs_directory: /data/share/staging
+        transport: curl
+        remote_metadata: "false"
+        default_file_action: remote_transfer
+        dependency_resolution: remote
+        rewrite_parameters: "true"
+        persistence_directory: /data/share/persisted_data
+    - id: pulsar_mira_tpv
+      runner: pulsar_mira_runner
+      env:
+        GALAXY_MEMORY_MB: "{MEMORY_MB}"
+        GALAXY_SLOTS: "{PARALLELISATION}"
+        LC_ALL: C
+        SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
+      params:
+        jobs_directory: /data/share/staging
+        transport: curl
+        remote_metadata: "false"
+        submit_request_cpus: "{PARALLELISATION}"
+        submit_request_memory: "{MEMORY}"
+        outputs_to_working_directory: "false"
+        default_file_action: remote_transfer
+        dependency_resolution: "none"
+        rewrite_parameters: "true"
+        persistence_directory: /data/share/persisted_data
+        singularity_enabled: true
+        singularity_default_container_id: "/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04"
+
+    # TODO(hxr): check functionality
+    #- id: 24cores_15G_BLAST
+    #  runner: dynamic
+    #  params:
+    #      type: python
+    #      function: blast_destinations
+    #- id: wig_to_bigWig
+    #  runner: dynamic
+    #  params:
+    #      type: python
+    #      function: wig_to_bigwig
+    #- id: dexseq_dynamic
+    #  runner: dynamic
+    #  params:
+    #      type: python
+    #      function: dexseq
+  tools:
+    # TODO(hxr): implement validation that checks that every destination
+    # used here is defined above.
+
+    - id: "cactus_export"
+      destination: tpv_dispatcher
+    - id: "cactus_export"
+      destination: tpv_dispatcher
+    - id: "mothur_cluster_split"
+      destination: tpv_dispatcher
+    - id: "basic_illumination"
+      destination: tpv_dispatcher
+    - id: "mesmer"
+      destination: tpv_dispatcher
+    - id: "quantification"
+      destination: tpv_dispatcher
+    - id: "s3segmenter"
+      destination: tpv_dispatcher
+    - id: "unet_coreograph"
+      destination: tpv_dispatcher
+    - id: "unmicst"
+      destination: tpv_dispatcher
+    - id: "ashlar"
+      destination: tpv_dispatcher
+    - id: "cherri_eval"
+      destination: tpv_dispatcher
+    - id: "cherri_train"
+      destination: tpv_dispatcher
+    - id: "enasearch_search_data"
+      destination: tpv_dispatcher
+    - id: "dewseq"
+      destination: tpv_dispatcher
+    - id: "htseq-clip"
+      destination: tpv_dispatcher
+   # - id: "metaspades"
+   #   destination: tpv_dispatcher
+   # - id: spades
+   #   destination: tpv_dispatcher
+   # - id: spades_rnaviralspades
+   #   destination: tpv_dispatcher
+   # - id: rnaspades
+   #   destination: tpv_dispatcher
+   # - id: spades_plasmidspades
+   #   destination: tpv_dispatcher
+   # - id: spades_metaviralspades
+   #   destination: tpv_dispatcher
+   # - id: spades_metaplasmidspades
+   #   destination: tpv_dispatcher
+   # - id: spades_coronaspades
+   #   destination: tpv_dispatcher
+   # - id: spades_biosyntheticspades
+   #   destination: tpv_dispatcher
+    - id: snippy
+      destination: tpv_dispatcher
+    - id: fasta-stats
+      destination: tpv_dispatcher
+    - id: alphafold
+      destination: tpv_dispatcher
+    - id: trinity
+      destination: tpv_dispatcher
+    - id: upload1
+      destination: gateway_singlerun
+    - id: "toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/2020.4+galaxy0"
+      destination: gateway_singlerun
+      resources: usegpu
+    - id: "toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/2019.1.5.1"
+      destination: gateway_singlerun
+      resources: usegpu
+    - id: gmx_sim
+      destination: gateway_singlerun
+      resources: usegpu
+    - id: "toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.16.1+galaxy2"
+      destination: gateway_for_hifiasm
+    - id: "toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.16.1+galaxy1"
+      destination: gateway_for_hifiasm
+    - id: keras_train_and_eval
+      destination: gateway_for_keras_train_eval
+      resources: usegpu
+    - id: interactive_tool_pavian
+      destination: tpv_dispatcher      
+    - id: interactive_tool_openrefine
+      destination: tpv_dispatcher
+    - id: interactive_tool_audiolabeler
+      destination: tpv_dispatcher
+    - id: interactive_tool_ethercalc
+      destination: tpv_dispatcher
+    - id: interactive_tool_geoexplorer
+      destination: tpv_dispatcher
+    - id: interactive_tool_radiant
+      destination: tpv_dispatcher
+    - id: interactive_tool_higlass
+      destination: tpv_dispatcher
+    - id: interactive_tool_phinch
+      destination: tpv_dispatcher
+    - id: interactive_tool_neo4j
+      destination: tpv_dispatcher
+    - id: interactive_tool_hicbrowser
+      destination: tpv_dispatcher
+    - id: interactive_tool_cellxgene
+      destination: tpv_dispatcher
+    - id: interactive_tool_bam_iobio
+      destination: tpv_dispatcher
+    - id: interactive_tool_vcf_iobio
+      destination: tpv_dispatcher
+    - id: interactive_tool_askomics
+      destination: tpv_dispatcher
+    - id: interactive_tool_wilson
+      destination: tpv_dispatcher
+    - id: interactive_tool_wallace
+      destination: tpv_dispatcher
+    - id: interactive_tool_paraview
+      destination: tpv_dispatcher
+    - id: interactive_tool_simtext_app
+      destination: tpv_dispatcher
+    - id: interactive_tool_isee
+      destination: tpv_dispatcher
+    - id: interactive_tool_metashark
+      destination: tpv_dispatcher
+    - id: interactive_tool_rstudio
+      destination: tpv_dispatcher
+    - id: interactive_tool_pyiron
+      destination: tpv_dispatcher
+    - id: interactive_tool_guacamole_desktop
+      destination: tpv_dispatcher
+    - id: interactive_tool_panoply
+      destination: tpv_dispatcher
+    - id: interactive_tool_vrm_editor
+      destination: tpv_dispatcher
+    - id: interactive_tool_jupyter_notebook
+      destination: tpv_dispatcher
+    - id: interactive_tool_pangeo_notebook
+      destination: tpv_dispatcher
+    - id: interactive_tool_climate_notebook
+      destination: tpv_dispatcher
+    - id: interactive_tool_ml_jupyter_notebook
+      destination: tpv_dispatcher
+    - id: interactive_tool_mgnify_notebook
+      destination: tpv_dispatcher
+    - id: qiime2__alignment__mafft
+      destination: tpv_dispatcher
+    - id: qiime2__alignment__mafft_add
+      destination: tpv_dispatcher
+    - id: qiime2__alignment__mask
+      destination: tpv_dispatcher
+    - id: qiime2__composition__add_pseudocount
+      destination: tpv_dispatcher
+    - id: qiime2__composition__ancom
+      destination: tpv_dispatcher
+    - id: qiime2__composition__ancombc
+      destination: tpv_dispatcher
+    - id: qiime2__composition__tabulate
+      destination: tpv_dispatcher
+    - id: qiime2__cutadapt__demux_paired
+      destination: tpv_dispatcher
+    - id: qiime2__cutadapt__demux_single
+      destination: tpv_dispatcher
+    - id: qiime2__cutadapt__trim_paired
+      destination: tpv_dispatcher
+    - id: qiime2__cutadapt__trim_single
+      destination: tpv_dispatcher
+    - id: qiime2__dada2__denoise_ccs
+      destination: tpv_dispatcher
+    - id: qiime2__dada2__denoise_paired
+      destination: tpv_dispatcher
+    - id: qiime2__dada2__denoise_pyro
+      destination: tpv_dispatcher
+    - id: qiime2__dada2__denoise_single
+      destination: tpv_dispatcher
+    - id: qiime2__deblur__denoise_16S
+      destination: tpv_dispatcher
+    - id: qiime2__deblur__denoise_other
+      destination: tpv_dispatcher
+    - id: qiime2__deblur__visualize_stats
+      destination: tpv_dispatcher
+    - id: qiime2__demux__emp_paired
+      destination: tpv_dispatcher
+    - id: qiime2__demux__emp_single
+      destination: tpv_dispatcher
+    - id: qiime2__demux__filter_samples
+      destination: tpv_dispatcher
+    - id: qiime2__demux__subsample_paired
+      destination: tpv_dispatcher
+    - id: qiime2__demux__subsample_single
+      destination: tpv_dispatcher
+    - id: qiime2__demux__summarize
+      destination: tpv_dispatcher
+    - id: qiime2__diversity__adonis
+      destination: tpv_dispatcher
+    - id: qiime2__diversity__alpha
+      destination: tpv_dispatcher
+    - id: qiime2__diversity__alpha_correlation
+      destination: tpv_dispatcher
+    - id: qiime2__diversity__alpha_group_significance
+      destination: tpv_dispatcher
+    - id: qiime2__diversity__alpha_phylogenetic
+      destination: tpv_dispatcher
+    - id: qiime2__diversity__alpha_rarefaction
+      destination: tpv_dispatcher
+    - id: qiime2__diversity__beta
+      destination: tpv_dispatcher
+    - id: qiime2__diversity__beta_correlation
+      destination: tpv_dispatcher
+    - id: qiime2__diversity__beta_group_significance
+      destination: tpv_dispatcher
+    - id: qiime2__diversity__beta_phylogenetic
+      destination: tpv_dispatcher
+    - id: qiime2__diversity__beta_rarefaction
+      destination: tpv_dispatcher
+    - id: qiime2__diversity__bioenv
+      destination: tpv_dispatcher
+    - id: qiime2__diversity__core_metrics
+      destination: tpv_dispatcher
+    - id: qiime2__diversity__core_metrics_phylogenetic
+      destination: tpv_dispatcher
+    - id: qiime2__diversity__filter_distance_matrix
+      destination: tpv_dispatcher
+    - id: qiime2__diversity__mantel
+      destination: tpv_dispatcher
+    - id: qiime2__diversity__pcoa
+      destination: tpv_dispatcher
+    - id: qiime2__diversity__pcoa_biplot
+      destination: tpv_dispatcher
+    - id: qiime2__diversity__procrustes_analysis
+      destination: tpv_dispatcher
+    - id: qiime2__diversity__tsne
+      destination: tpv_dispatcher
+    - id: qiime2__diversity__umap
+      destination: tpv_dispatcher
+    - id: qiime2__diversity_lib__alpha_passthrough
+      destination: tpv_dispatcher
+    - id: qiime2__diversity_lib__beta_passthrough
+      destination: tpv_dispatcher
+    - id: qiime2__diversity_lib__beta_phylogenetic_meta_passthrough
+      destination: tpv_dispatcher
+    - id: qiime2__diversity_lib__beta_phylogenetic_passthrough
+      destination: tpv_dispatcher
+    - id: qiime2__diversity_lib__bray_curtis
+      destination: tpv_dispatcher
+    - id: qiime2__diversity_lib__faith_pd
+      destination: tpv_dispatcher
+    - id: qiime2__diversity_lib__jaccard
+      destination: tpv_dispatcher
+    - id: qiime2__diversity_lib__observed_features
+      destination: tpv_dispatcher
+    - id: qiime2__diversity_lib__pielou_evenness
+      destination: tpv_dispatcher
+    - id: qiime2__diversity_lib__shannon_entropy
+      destination: tpv_dispatcher
+    - id: qiime2__diversity_lib__unweighted_unifrac
+      destination: tpv_dispatcher
+    - id: qiime2__diversity_lib__weighted_unifrac
+      destination: tpv_dispatcher
+    - id: qiime2__emperor__biplot
+      destination: tpv_dispatcher
+    - id: qiime2__emperor__plot
+      destination: tpv_dispatcher
+    - id: qiime2__emperor__procrustes_plot
+      destination: tpv_dispatcher
+    - id: qiime2__feature_classifier__blast
+      destination: tpv_dispatcher
+    - id: qiime2__feature_classifier__classify_consensus_blast
+      destination: tpv_dispatcher
+    - id: qiime2__feature_classifier__classify_consensus_vsearch
+      destination: tpv_dispatcher
+    - id: qiime2__feature_classifier__classify_hybrid_vsearch_sklearn
+      destination: tpv_dispatcher
+    - id: qiime2__feature_classifier__classify_sklearn
+      destination: tpv_dispatcher
+    - id: qiime2__feature_classifier__extract_reads
+      destination: tpv_dispatcher
+    - id: qiime2__feature_classifier__find_consensus_annotation
+      destination: tpv_dispatcher
+    - id: qiime2__feature_classifier__fit_classifier_naive_bayes
+      destination: tpv_dispatcher
+    - id: qiime2__feature_classifier__fit_classifier_sklearn
+      destination: tpv_dispatcher
+    - id: qiime2__feature_classifier__vsearch_global
+      destination: tpv_dispatcher
+    - id: qiime2__feature_table__core_features
+      destination: tpv_dispatcher
+    - id: qiime2__feature_table__filter_features
+      destination: tpv_dispatcher
+    - id: qiime2__feature_table__filter_features_conditionally
+      destination: tpv_dispatcher
+    - id: qiime2__feature_table__filter_samples
+      destination: tpv_dispatcher
+    - id: qiime2__feature_table__filter_seqs
+      destination: tpv_dispatcher
+    - id: qiime2__feature_table__group
+      destination: tpv_dispatcher
+    - id: qiime2__feature_table__heatmap
+      destination: tpv_dispatcher
+    - id: qiime2__feature_table__merge
+      destination: tpv_dispatcher
+    - id: qiime2__feature_table__merge_seqs
+      destination: tpv_dispatcher
+    - id: qiime2__feature_table__merge_taxa
+      destination: tpv_dispatcher
+    - id: qiime2__feature_table__presence_absence
+      destination: tpv_dispatcher
+    - id: qiime2__feature_table__rarefy
+      destination: tpv_dispatcher
+    - id: qiime2__feature_table__relative_frequency
+      destination: tpv_dispatcher
+    - id: qiime2__feature_table__rename_ids
+      destination: tpv_dispatcher
+    - id: qiime2__feature_table__subsample
+      destination: tpv_dispatcher
+    - id: qiime2__feature_table__summarize
+      destination: tpv_dispatcher
+    - id: qiime2__feature_table__tabulate_seqs
+      destination: tpv_dispatcher
+    - id: qiime2__feature_table__transpose
+      destination: tpv_dispatcher
+    - id: qiime2__fragment_insertion__classify_otus_experimental
+      destination: tpv_dispatcher
+    - id: qiime2__fragment_insertion__filter_features
+      destination: tpv_dispatcher
+    - id: qiime2__fragment_insertion__sepp
+      destination: tpv_dispatcher
+    - id: qiime2__gneiss__assign_ids
+      destination: tpv_dispatcher
+    - id: qiime2__gneiss__correlation_clustering
+      destination: tpv_dispatcher
+    - id: qiime2__gneiss__dendrogram_heatmap
+      destination: tpv_dispatcher
+    - id: qiime2__gneiss__gradient_clustering
+      destination: tpv_dispatcher
+    - id: qiime2__gneiss__ilr_hierarchical
+      destination: tpv_dispatcher
+    - id: qiime2__gneiss__ilr_phylogenetic
+      destination: tpv_dispatcher
+    - id: qiime2__gneiss__ilr_phylogenetic_differential
+      destination: tpv_dispatcher
+    - id: qiime2__gneiss__ilr_phylogenetic_ordination
+      destination: tpv_dispatcher
+    - id: qiime2__longitudinal__anova
+      destination: tpv_dispatcher
+    - id: qiime2__longitudinal__feature_volatility
+      destination: tpv_dispatcher
+    - id: qiime2__longitudinal__first_differences
+      destination: tpv_dispatcher
+    - id: qiime2__longitudinal__first_distances
+      destination: tpv_dispatcher
+    - id: qiime2__longitudinal__linear_mixed_effects
+      destination: tpv_dispatcher
+    - id: qiime2__longitudinal__maturity_index
+      destination: tpv_dispatcher
+    - id: qiime2__longitudinal__nmit
+      destination: tpv_dispatcher
+    - id: qiime2__longitudinal__pairwise_differences
+      destination: tpv_dispatcher
+    - id: qiime2__longitudinal__pairwise_distances
+      destination: tpv_dispatcher
+    - id: qiime2__longitudinal__plot_feature_volatility
+      destination: tpv_dispatcher
+    - id: qiime2__longitudinal__volatility
+      destination: tpv_dispatcher
+    - id: qiime2__metadata__distance_matrix
+      destination: tpv_dispatcher
+    - id: qiime2__metadata__shuffle_groups
+      destination: tpv_dispatcher
+    - id: qiime2__metadata__tabulate
+      destination: tpv_dispatcher
+    - id: qiime2__phylogeny__align_to_tree_mafft_fasttree
+      destination: tpv_dispatcher
+    - id: qiime2__phylogeny__align_to_tree_mafft_iqtree
+      destination: tpv_dispatcher
+    - id: qiime2__phylogeny__align_to_tree_mafft_raxml
+      destination: tpv_dispatcher
+    - id: qiime2__phylogeny__fasttree
+      destination: tpv_dispatcher
+    - id: qiime2__phylogeny__filter_table
+      destination: tpv_dispatcher
+    - id: qiime2__phylogeny__filter_tree
+      destination: tpv_dispatcher
+    - id: qiime2__phylogeny__iqtree
+      destination: tpv_dispatcher
+    - id: qiime2__phylogeny__iqtree_ultrafast_bootstrap
+      destination: tpv_dispatcher
+    - id: qiime2__phylogeny__midpoint_root
+      destination: tpv_dispatcher
+    - id: qiime2__phylogeny__raxml
+      destination: tpv_dispatcher
+    - id: qiime2__phylogeny__raxml_rapid_bootstrap
+      destination: tpv_dispatcher
+    - id: qiime2__phylogeny__robinson_foulds
+      destination: tpv_dispatcher
+    - id: qiime2__quality_control__bowtie2_build
+      destination: tpv_dispatcher
+    - id: qiime2__quality_control__evaluate_composition
+      destination: tpv_dispatcher
+    - id: qiime2__quality_control__evaluate_seqs
+      destination: tpv_dispatcher
+    - id: qiime2__quality_control__evaluate_taxonomy
+      destination: tpv_dispatcher
+    - id: qiime2__quality_control__exclude_seqs
+      destination: tpv_dispatcher
+    - id: qiime2__quality_control__filter_reads
+      destination: tpv_dispatcher
+    - id: qiime2__quality_filter__q_score
+      destination: tpv_dispatcher
+    - id: qiime2__sample_classifier__classify_samples
+      destination: tpv_dispatcher
+    - id: qiime2__sample_classifier__classify_samples_from_dist
+      destination: tpv_dispatcher
+    - id: qiime2__sample_classifier__classify_samples_ncv
+      destination: tpv_dispatcher
+    - id: qiime2__sample_classifier__confusion_matrix
+      destination: tpv_dispatcher
+    - id: qiime2__sample_classifier__fit_classifier
+      destination: tpv_dispatcher
+    - id: qiime2__sample_classifier__fit_regressor
+      destination: tpv_dispatcher
+    - id: qiime2__sample_classifier__heatmap
+      destination: tpv_dispatcher
+    - id: qiime2__sample_classifier__metatable
+      destination: tpv_dispatcher
+    - id: qiime2__sample_classifier__predict_classification
+      destination: tpv_dispatcher
+    - id: qiime2__sample_classifier__predict_regression
+      destination: tpv_dispatcher
+    - id: qiime2__sample_classifier__regress_samples
+      destination: tpv_dispatcher
+    - id: qiime2__sample_classifier__regress_samples_ncv
+      destination: tpv_dispatcher
+    - id: qiime2__sample_classifier__scatterplot
+      destination: tpv_dispatcher
+    - id: qiime2__sample_classifier__split_table
+      destination: tpv_dispatcher
+    - id: qiime2__sample_classifier__summarize
+      destination: tpv_dispatcher
+    - id: qiime2__taxa__barplot
+      destination: tpv_dispatcher
+    - id: qiime2__taxa__collapse
+      destination: tpv_dispatcher
+    - id: qiime2__taxa__filter_seqs
+      destination: tpv_dispatcher
+    - id: qiime2__taxa__filter_table
+      destination: tpv_dispatcher
+    - id: qiime2__vsearch__cluster_features_closed_reference
+      destination: tpv_dispatcher
+    - id: qiime2__vsearch__cluster_features_de_novo
+      destination: tpv_dispatcher
+    - id: qiime2__vsearch__cluster_features_open_reference
+      destination: tpv_dispatcher
+    - id: qiime2__vsearch__dereplicate_sequences
+      destination: tpv_dispatcher
+    - id: qiime2__vsearch__fastq_stats
+      destination: tpv_dispatcher
+    - id: qiime2__vsearch__merge_pairs
+      destination: tpv_dispatcher
+    - id: qiime2__vsearch__uchime_denovo
+      destination: tpv_dispatcher
+    - id: qiime2__vsearch__uchime_ref
+      destination: tpv_dispatcher
+    - id: qiime2_core__tools__export
+      destination: tpv_dispatcher
+    - id: qiime2_core__tools__import
+      destination: tpv_dispatcher
+
+  resources:
+    - id: usegpu
+      names: [gpu]
+  limits:
+    - type: "destination_user_concurrent_jobs"
+      id: "condor_upload"
+      value: "10"
+    - type: "walltime"
+      value: "'148:00:00'"
+    # Limited time for Interactive tools
+    - type: "destination_user_concurrent_jobs"
+      value: "4"
+      id: "interactive_pulsar"
+    - type: "destination_user_concurrent_jobs"
+      value: "4"
+      id: "interactive_pulsar_hi_mem"
+    - type: "output_size"
+      value: "'300GB'"
+    - type: "registered_user_concurrent_jobs"
+      value: "100"
+    - type: "anonymous_user_concurrent_jobs"
+      value: "3"
+    - type: "destination_user_concurrent_jobs"
+      id: "sh_fdid_condor_docker_ie"
+      value: "3"
+    - type: "destination_user_concurrent_jobs"
+      id: "sh_fdid_condor_docker_ie_interactive"
+      value: "3"
+    - type: "destination_user_concurrent_jobs"
+      id: "sh_fdid_condor_intensive_jobs"
+      value: "10"

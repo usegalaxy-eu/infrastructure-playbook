@@ -23,7 +23,7 @@ __SET_METADATA__:
   gpus: 0
   runner: condor
   params:
-    requirements: 'GalaxyTraining == false'
+    requirements: "GalaxyTraining == false"
     rank: 'GalaxyGroup == "metadata"'
 
 keras_train_and_eval:
@@ -67,6 +67,14 @@ interactive_tool_jupyter_notebook:
     HOME: /home/jovyan
   force_destination_id: true
 
+instagraal:
+  runner: condor_docker_gpu
+  force_destination_id: true
+  gpus: 1
+  cores: 1
+  mem: 30
+  docker_run_extra_arguments: " --gpus all"
+
 interactive_tool_pangeo_notebook:
   mem: 4
   runner: condor_docker_ie_interactive
@@ -87,7 +95,7 @@ interactive_tool_ml_jupyter_notebook:
   gpus: 1
   cores: 1
   mem: 8
-  docker_run_extra_arguments: ' --gpus all'
+  docker_run_extra_arguments: " --gpus all"
 
 # this tool is only used from within another Jupyter notebook
 run_jupyter_job:
@@ -95,38 +103,39 @@ run_jupyter_job:
   cores: 8
   mem: 32
 
-interactive_tool_rstudio: {mem: 8, cores: 2, runner: condor_docker_ie_interactive, force_destination_id: true}
-interactive_tool_pyiron: {mem: 8, cores: 1, runner: condor_docker_ie_interactive, force_destination_id: true}
-interactive_tool_guacamole_desktop: {mem: 8, cores: 2, runner: condor_docker_ie_interactive, force_destination_id: true}
-interactive_tool_panoply: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
-interactive_tool_vrm_editor: {mem: 4, cores: 1, runner: condor_docker_ie_interactive, force_destination_id: true}
-
-# These are not
-interactive_tool_openrefine: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
-interactive_tool_ethercalc: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
-interactive_tool_geoexplorer: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
-interactive_tool_radiant: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
-interactive_tool_higlass: {mem: 20, cores: 5, runner: condor_docker_ie, force_destination_id: true}
-interactive_tool_phinch: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
-interactive_tool_neo4j: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
-interactive_tool_hicbrowser: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
-interactive_tool_cellxgene: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
-interactive_tool_bam_iobio: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
-interactive_tool_vcf_iobio: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
-interactive_tool_askomics: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
-interactive_tool_wilson: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
-interactive_tool_wallace: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
-interactive_tool_paraview: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
-interactive_tool_simtext_app: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
-interactive_tool_isee: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
-interactive_tool_metashark: {mem: 4, cores: 1, runner: condor_docker_ie, force_destination_id: true}
-
+#interactive_tool_rstudio: {mem: 8, cores: 2, runner: condor_docker_ie_interactive, force_destination_id: true}
+#interactive_tool_pyiron: {mem: 8, cores: 1, runner: condor_docker_ie_interactive, force_destination_id: true}
+#interactive_tool_guacamole_desktop: {mem: 8, cores: 2, runner: condor_docker_ie_interactive, force_destination_id: true}
+#interactive_tool_panoply: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+#interactive_tool_vrm_editor: {mem: 4, cores: 1, runner: condor_docker_ie_interactive, force_destination_id: true}
+#
+## These are not
+#interactive_tool_openrefine: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+#interactive_tool_audiolabeler: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+#interactive_tool_ethercalc: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+#interactive_tool_geoexplorer: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+#interactive_tool_radiant: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+#interactive_tool_higlass: {mem: 20, cores: 5, runner: condor_docker_ie, force_destination_id: true}
+#interactive_tool_phinch: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+#interactive_tool_neo4j: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+#interactive_tool_hicbrowser: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+#interactive_tool_cellxgene: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+#interactive_tool_bam_iobio: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+#interactive_tool_vcf_iobio: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+#interactive_tool_askomics: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+#interactive_tool_wilson: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+#interactive_tool_wallace: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+#interactive_tool_paraview: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+#interactive_tool_simtext_app: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+#interactive_tool_isee: {mem: 4, runner: condor_docker_ie, force_destination_id: true}
+#interactive_tool_metashark: {mem: 4, cores: 1, runner: condor_docker_ie, force_destination_id: true}
 
 transdecoder: {cores: 8, mem: 8}
 zerone: {runner: remote_cluster_mq_it01}
 basil: {runner: remote_cluster_mq_it01}
 #goenrichment: {runner: remote_cluster_mq_be01}
-circos: {mem: 10, runner: remote_cluster_mq_pt01}
+#circos: {mem: 10, runner: remote_cluster_mq_pt01}
+circos: {mem: 10}
 
 # docking: {runner: remote_cluster_mq_uk01}
 # prepare_ligands_for_docking: {runner: remote_cluster_mq_it01}
@@ -136,7 +145,9 @@ stress_ng: {runner: condor_singularity_with_conda}
 fasterq_dump: {cores: 8}
 
 busco: {cores: 16, mem: 80}
-nanoplot: {cores: 12}
+filtlong: {mem: 50}
+orfipy: {cores: 8, mem: 8}
+nanoplot: {cores: 12, mem: 32}
 # roary	needs many many cpus if	the number of input files increase
 # a more specific function would ne neat
 roary: {cores: 24}
@@ -161,6 +172,7 @@ Heatmap: {mem: 12}
 mitos2: {mem: 12}
 feelnc: {mem: 12}
 merqury: {mem: 12}
+miniasm: {mem: 32}
 quast: {cores: 10, mem: 12}
 jellyfish: {mem: 12}
 medaka_consensus_pipeline: {cores: 12, mem: 12}
@@ -194,7 +206,6 @@ pcgr:
   cores: 8
   env:
     GALAXY_PCGR_DIR: "/data/db/databases/pcgr"
-
 
 RNAlien: {cores: 10}
 slamdunk: {cores: 10}
@@ -238,6 +249,7 @@ alphafold:
   runner: condor_singularity
   env:
     ALPHAFOLD_DB: /data/db/databases/alphafold_databases
+    ALPHAFOLD_USE_GPU: "False"
 
 cds_essential_variability:
   env:
@@ -320,7 +332,7 @@ DecoyDatabase: {cores: 4, mem: 8}
 Digestor: {cores: 4, mem: 8}
 DigestorMotif: {cores: 4, mem: 8}
 EICExtractor: {cores: 4, mem: 8}
-'EMBOSS: fuzztran39': {mem: 10}
+"EMBOSS: fuzztran39": {mem: 10}
 ERPairFinder: {cores: 4, mem: 8}
 FFEval: {cores: 4, mem: 8}
 FalseDiscoveryRate: {cores: 4, mem: 8}
@@ -359,10 +371,11 @@ LabeledEval: {cores: 4, mem: 8}
 #maker: {cores: 8, mem: 8, runner: remote_cluster_mq_fr01}
 maker: {cores: 12, mem: 12}
 funannotate_predict: {cores: 12, mem: 12}
-fastp: {cores: 2}
+fastp: {cores: 4}
 gmx_sim: {cores: 8, mem: 8, gpus: 1, runner: remote_cluster_mq_uk01}
 gmx_em: {cores: 16, mem: 8}
 gmx_fep: {cores: 16, mem: 8}
+gsc_scran_normalize: {cores:1: mem:20}
 
 # gmx_md: {runner: remote_cluster_mq_de02}
 # gmx_merge_topology_files: {runner: remote_cluster_mq_de02}
@@ -447,7 +460,8 @@ mothur_create_database: {cores: 1, mem: 20, env: {TERM: vt100}}
 mothur_degap_seqs: {cores: 1, mem: 20, env: {TERM: vt100}}
 mothur_deunique_seqs: {cores: 1, mem: 20, env: {TERM: vt100}}
 mothur_deunique_tree: {cores: 1, mem: 20, env: {TERM: vt100}}
-mothur_dist_seqs: {cores: 2, mem: 20, env: {TERM: vt100}, runner: condor_singularity}
+mothur_dist_seqs:
+  {cores: 2, mem: 20, env: {TERM: vt100}, runner: condor_singularity}
 mothur_dist_shared: {cores: 2, mem: 20, env: {TERM: vt100}}
 mothur_fastq_info: {cores: 1, mem: 20, env: {TERM: vt100}}
 mothur_filter_seqs: {cores: 2, mem: 20, env: {TERM: vt100}}
@@ -632,7 +646,7 @@ abims_xcms_retcor: {mem: 32}
 abims_CAMERA_annotateDiffreport: {mem: 32}
 abyss-pe: {cores: 20, mem: 70}
 anndata_export: {cores: 4}
-anndata_import: {cores: 4}
+anndata_import: {mem: 200}
 anndata_inspect: {cores: 4}
 anndata_manipulate: {cores: 4}
 antismash:
@@ -676,12 +690,14 @@ data_manager_funannotate: {cores: 1, mem: 64}
 data_manager_build_kraken2_database: {cores: 1, mem: 64}
 bwameth: {cores: 8, mem: 24}
 bwtool-lift: {mem: 80}
-cat_contigs: {mem: 24}  ## Diamond in the background
-cat_bins: {mem: 24}  ## Diamond in the background
+cat_contigs: {mem: 24} ## Diamond in the background
+cat_bins: {mem: 24} ## Diamond in the background
+cherri_eval: {cores: 1, mem: 20}
+cherri_train: {cores: 1, mem: 40}
 chira_map: {cores: 10, mem: 80, runner: condor_singularity_with_conda}
 chira_merge: {cores: 1, mem: 60, runner: condor_singularity_with_conda}
 chira_quantify: {cores: 1, mem: 60, runner: condor_singularity_with_conda}
-chira_extract: {cores: 24, mem: 60, runner: condor_singularity_with_conda}
+chira_extract: {cores: 24, mem: 100, runner: condor_singularity_with_conda}
 canu: {cores: 20, mem: 92}
 mass_spectrometry_imaging_preprocessing: {mem: 110}
 mass_spectrometry_imaging_ion_images: {mem: 20}
@@ -689,6 +705,21 @@ mass_spectrometry_imaging_qc: {mem: 110}
 mass_spectrometry_imaging_filtering: {mem: 20}
 metaspades: {cores: 10, mem: 250}
 megahit: {cores: 10, mem: 80}
+megan_daa_meganizer:
+  mem: 40
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx40G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+megan_daa2rma:
+  mem: 40
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx40G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+megan_sam2rma:
+  mem: 40
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx40G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+maxbin2: {cores: 10, mem: 48}
+metabat2: {cores: 10, mem: 48}
+concoct: {cores: 10, mem: 48}
 charts: {mem: 10}
 circgraph: {mem: 10}
 computeMatrix: {mem: 90}
@@ -740,9 +771,10 @@ deeptools_plot_profile: {mem: 20}
 deeptools_profiler: {mem: 20}
 deseq2: {mem: 8}
 dexseq_count: {mem: 25}
+dexseq: {cores: 8}
 diamond_database_builder: {cores: 10, mem: 90}
 dt_profiler: {mem: 10}
-eggnog_mapper: {cores: 8, mem: 4}
+eggnog_mapper: {cores: 8, mem: 12}
 eukaryotic_ncbi_submission: {cores: 24, mem: 24}
 fastq_dump: {mem: 20}
 fastqc: {cores: 8}
@@ -822,7 +854,7 @@ hicexplorer_hicfindtads: {mem: 20}
 hicexplorer_hicplotmatrix: {mem: 64}
 hicexplorer_hicplottads: {mem: 64}
 hicexplorer_hicsummatrices: {mem: 64}
-hicexplorer_hicpca: {cores: 10, mem: 60}
+hicexplorer_hicpca: {cores: 10, mem: 150}
 hicexplorer_hicmergematrixbins: {mem: 80}
 hicexplorer_hictransform: {cores: 10, mem: 60}
 hicexplorer_hicplotviewpoint: {mem: 12}
@@ -852,6 +884,7 @@ schicexplorer_schicplotclusterprofiles: {cores: 20, mem: 64}
 schicexplorer_schicplotconsensusmatrices: {cores: 10, mem: 32}
 schicexplorer_schicqualitycontrol: {cores: 20, mem: 64}
 
+gubbins: {cores: 6}
 hicup_mapper: {cores: 6, mem: 24}
 hifiasm: {cores: 20, mem: 120}
 hisat: {cores: 10, mem: 20}
@@ -880,13 +913,13 @@ hyphy_meme: {cores: 20, mem: 10}
 hyphy_slac: {cores: 20, mem: 10}
 hyphy_fel: {cores: 20, mem: 10}
 hyphy_prime: {cores: 20}
-
+hypo: {cores: 8}
 
 infernal_cmbuild: {cores: 10, mem: 20}
 infernal_cmsearch: {cores: 10, mem: 20}
 interproscan:
-  env:
-    PATH: $PATH:/data/0/interproscan/interproscan-5.36-75.0/
+  #env:
+  #  PATH: $PATH:/data/0/interproscan/interproscan-5.36-75.0/
   mem: 40
   cores: 6
 iqtree: {cores: 10}
@@ -934,7 +967,13 @@ morpheus:
   mem: 64
 msaboot: {mem: 6}
 naive_variant_caller: {mem: 20}
-ncbi_blastp_wrapper: {cores: 10, mem: 40, runner: condor_intensive_jobs, force_destination_id: true}
+ncbi_blastp_wrapper:
+  {
+    cores: 10,
+    mem: 40,
+    runner: condor_intensive_jobs,
+    force_destination_id: true,
+  }
 ncbi_blastn_wrapper: {cores: 10, mem: 40}
 ncbi_tblastn_wrapper: {cores: 10, mem: 40}
 ncbi_blastx_wrapper: {cores: 10, mem: 40}
@@ -991,6 +1030,10 @@ prokka:
     _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
   mem: 20
   cores: 8
+bbtools_callvariants:
+  mem: 15
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
 proteomics_search_msgfplus_1: {mem: 10}
 pyprophet_score: {mem: 400, cores: 1}
 pureclip: {mem: 32, cores: 2}
@@ -1012,7 +1055,7 @@ rgPicardMarkDups:
   env:
     _JAVA_OPTIONS: -Xmx12G -Xms1G
 rm_spurious_events.py: {mem: 4}
-rna_star: {cores: 10, mem: 90}
+rna_star: {cores: 10, mem: 50}
 rna_starsolo: {cores: 4, mem: 40}
 rna_star_index_builder_data_manager:
   cores: 10
@@ -1198,9 +1241,13 @@ velveth:
   name: _velveth
 vsearch_search: {mem: 80}
 vsearch_alignment: {cores: 16, mem: 24}
+yahs: {mem: 100}
 
 # Climate tool
 cesm: {cores: 16, mem: 128}
+
+# Ecology tools
+srs_preprocess_s2: {mem: 16}
 
 # Some admin tools
 echo_main_env:

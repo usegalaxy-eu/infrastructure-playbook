@@ -33,11 +33,13 @@ def per_host_tool_labels( context, label ):
         return label.id in valid_labels
     if "ecology.usegalaxy.eu" in host:
         return label.id in valid_labels
+    if "materials.usegalaxy.eu" in host:
+        return label.id in valid_labels
     return True
 
 
 BASE_SECTIONS = ["text_manipulation", "get_data", "collection_operations",
-        "convert_formats", "filter_and_sort", "join__subtract_and_group", "expression_tools"]
+        "convert_formats", "filter_and_sort", "join__subtract_and_group", "expression_tools", "send_data"]
 
 GENERAL_NGS_SECTIONS = ["deeptools", "bed", "sam_bam",
         "operate_on_genomic_intervals", "fasta_fastq_manipulation",
@@ -55,10 +57,11 @@ DOMAIN_SECTIONS = {
     'hicexplorer': GENERAL_NGS_SECTIONS + ["hicexplorer", "graph_display_data", "peak_calling"],
     'virology': GENERAL_NGS_SECTIONS + ["assembly", "annotation", "phylogenetics"],
     'nanopore': GENERAL_NGS_SECTIONS + ["nanopore", "ncbi_blast", "fasta_fastq", "assembly", "graph_display_data", "metagenomic_analysis"],
-    'ecology': ["join__subtract_and_group", "operate_on_genomic_intervals", "statistics", "graph_display_data", "machine_learning",
+    'ecology': ["join__subtract_and_group", "convert_formats", "operate_on_genomic_intervals", "statistics", "graph_display_data", "machine_learning",
         "ncbi_blast", "fasta_fastq", "fastq_quality_control", "assembly", "dna_metabarcoding", "metagenomic_analysis",
         "mothur", "qiime", "rad_seq", "animal_detection_on_acoustic_recordings","species_abundance","biodiversity_data_exploration",
-        "gis_data_handling", "climate_analysis", "interactivetools"],
+        "gis_data_handling", "climate_analysis", "interactivetools",
+        "compute_indicators_for_satellite_remote_sensing", "compute_indicators_for_turnover_boulders_fields"],
     'climate': ["climate_analysis", "gis_data_handling", "graph_display_data", "interactivetools"],
     'metagenomics': GENERAL_NGS_SECTIONS + ["fasta_fastq_manipulation",
         "multiple_alignments", "assembly", "annotation",
@@ -85,7 +88,7 @@ DOMAIN_SECTIONS = {
     'metabolomics': ['metabolomics'],
     'ml': ['machine_learning'],
     'annotation': GENERAL_NGS_SECTIONS + ['annotation', 'apollo', 'ncbi_blast', 'assembly', 'variant_calling', 'fetch_sequences___alignments', 'ontology', 'emboss', 'evolution', 'genome_diversity', 'multiple_alignments', 'graph_display_data'],
-
+    'materials': ['muon_spectroscopy'],
 }
 
 

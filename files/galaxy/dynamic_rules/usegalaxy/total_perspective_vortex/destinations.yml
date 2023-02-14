@@ -1,0 +1,93 @@
+---
+# ALL tags must be with dashes (-) instead of underscores (_)
+destinations:
+  interactive_pulsar:
+    runner: pulsar_embedded
+    cores: 24 # arbritrary max
+    mem: 128 # arbritrary max
+    params:
+      tmp_dir: true
+      docker_enabled: true
+      docker_sudo: false
+      docker_net: bridge
+      docker_auto_rm: true
+      docker_set_user: ""
+      require_container: true
+      outputs_to_working_directory: false
+      container_monitor_result: callback
+      submit_requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
+    scheduling:
+      prefer:
+        - docker
+        - interactive
+
+  embedded_pulsar_docker:
+    runner: pulsar_embedded
+    params:
+      tmp_dir: true
+      docker_enabled: true
+      #docker_volumes: $defaults
+      docker_sudo: false
+      docker_net: bridge
+      docker_auto_rm: true
+      docker_set_user: ""
+      require_container: true
+      outputs_to_working_directory: false
+      container_monitor_result: callback
+      submit_requirements: 'GalaxyDockerHack == True'
+    scheduling:
+      prefer:
+        - docker
+        - embedded-pulsar
+
+  condor_singularity:
+    runner: condor
+    cores: 24 # arbritrary max
+    mem: 128 # arbritrary max
+    params:
+      singularity_enabled: true
+      singularity_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      singularity_default_container_id: "/cvmfs/singularity.galaxyproject.org/all/centos:8.3.2011"
+      tmp_dir: true
+      requirements: 'GalaxyGroup == "compute"'
+      metadata_strategy: "extended"
+    scheduling:
+      prefer:
+        - singularity
+
+  condor_tpv:
+    runner: condor
+    cores: 64
+    mem: 1000
+    scheduling:
+      accept:
+        - condor-tpv
+
+  pulsar_mira_tpv:
+    cores: 2
+    mem: 4
+    scheduling:
+      require:
+        - mira-pulsar
+        - docker
+
+  pulsar_it_tpv:
+    cores: 16
+    mem: 31
+    scheduling:
+      require:
+        - pulsar
+
+  pulsar_be_tpv:
+    cores: 8
+    mem: 15
+    scheduling:
+      require:
+        - pulsar
+
+  condor_singularity_with_conda_python2:
+    cores: 64
+    mem: 1000
+    scheduling:
+      require:
+        - condor-singularity-with-conda-python2

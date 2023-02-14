@@ -1,17 +1,46 @@
 ---
 condor:
+  info:
+    remote: false
+    scheduler: 'condor'
   limits:
-    cores: 40
+    cores: 64
     mem: 1000
-  env: {}
+  env:
+    NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
   params:
     priority: -{PRIORITY}
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
+    requirements: 'GalaxyGroup == "compute"'
+    tmp_dir: 'True'
+    metadata_strategy: 'extended'
+
+# TBD
+condor_extended:
+  info:
+    remote: false
+    scheduler: 'condor'
+  limits:
+    cores: 64
+    mem: 1000
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+  params:
+    priority: -{PRIORITY}
+    request_cpus: '{PARALLELISATION}'
+    request_memory: '{MEMORY}'
+    requirements: 'GalaxyGroup == "compute"'
     tmp_dir: 'True'
     metadata_strategy: 'extended'
 
 condor_upload:
+  info:
+    remote: false
+    scheduler: 'condor'
   limits:
     cores: 20
     mem: 10
@@ -19,28 +48,61 @@ condor_upload:
     GALAXY_MEMORY_MB: '{MEMORY_MB}'
     GALAXY_SLOTS: '{PARALLELISATION}'
   params:
-    priority: -{PRIORITY}
+    priority: '{PRIORITY}'
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
+    requirements: 'GalaxyTraining == false'
+    rank: 'GalaxyGroup == "upload"'
     tmp_dir: 'True'
+    metadata_strategy: 'extended'
 
-condor_singularity:
+# needed because of this https://github.com/galaxyproject/tools-iuc/issues/3663
+condor_mothur:
+  info:
+    remote: false
+    scheduler: 'condor'
   limits:
-    cores: 40
-    mem: 1000
-  env: {}
+    cores: 64
+    mem: 400
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
   params:
     priority: -{PRIORITY}
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
-    singularity_enabled: true
-    # can and should be made stricter at some point
-    singularity_volumes: '/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/0/galaxy_import/galaxy_user_data/:ro,/data/1/galaxy_import/galaxy_user_data/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro'
-    singularity_default_container_id: '/data/0/cvmfs/singularity/ubuntu:18.04'
-    singularity_run_extra_arguments: '-H /usr/local/galaxy/'
+    requirements: 'GalaxyGroup == "compute_mothur"'
     tmp_dir: 'True'
+    metadata_strategy: 'extended'
 
-condor_singularity_with_conda:
+condor_gpu:
+  info:
+    remote: false
+    scheduler: 'condor'
+  limits:
+    cores: 8
+    mem: 16
+    gpus: 1
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    GPU_AVAILABLE: 1
+  params:
+    priority: -{PRIORITY}
+    request_cpus: '{PARALLELISATION}'
+    request_memory: '{MEMORY}'
+    requirements: 'GalaxyGroup == "compute_gpu"'
+    request_gpus: '{GPUS}'
+    tmp_dir: 'True'
+    metadata_strategy: 'extended'
+
+condor_singularity:
+  info:
+    remote: false
+    scheduler: 'condor'
+  limits:
+    cores: 64
+    mem: 1000
   env:
     GALAXY_MEMORY_MB: '{MEMORY_MB}'
     GALAXY_SLOTS: '{PARALLELISATION}'
@@ -49,36 +111,181 @@ condor_singularity_with_conda:
     priority: -{PRIORITY}
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
+    requirements: 'GalaxyGroup == "compute"'
+    tmp_dir: 'True'
+    metadata_strategy: 'extended'
+    singularity_enabled: true
+    # can and should be made stricter at some point
+    singularity_volumes: '$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro'
+    singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/all/centos:8.3.2011'
+
+
+condor_singularity_with_gpu:
+  info:
+    remote: false
+    scheduler: 'condor'
+  limits:
+    cores: 8
+    mem: 18
+    gpus: 1
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
+  params:
+    priority: -{PRIORITY}
+    request_cpus: '{PARALLELISATION}'
+    request_memory: '{MEMORY}'
+    request_gpus: '{GPUS}'
+    dependency_resolution: 'none'
+    require_container: true
+    requirements: 'GalaxyGroup == "compute_gpu"'
+    tmp_dir: 'True'
+    metadata_strategy: 'extended'
+    singularity_enabled: true
+    singularity_run_extra_arguments: '--nv'
+    # can and should be made stricter at some point
+    singularity_volumes: '$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro'
+    singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/all/centos:8.3.2011'
+
+
+condor_singularity_with_conda:
+  info:
+    remote: false
+    scheduler: 'condor'
+  limits:
+    cores: 64
+    mem: 1000
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
+  params:
+    priority: -{PRIORITY}
+    request_cpus: '{PARALLELISATION}'
+    request_memory: '{MEMORY}'
+    requirements: 'GalaxyGroup == "compute"'
+    tmp_dir: 'True'
+    metadata_strategy: 'extended'
     require_container: true
     singularity_enabled: true
     # can and should be made stricter at some point
-    singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro'
+    singularity_volumes: '$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro'
     container_override:
       - type: singularity
-        shell: '/bin/sh'
+        shell: '/bin/bash'
         resolve_dependencies: true
         identifier: '/cvmfs/singularity.galaxyproject.org/all/centos:8.3.2011'
 
-remote_cluster_mq_cz:
+condor_docker_ie:
+  info:
+    remote: false
+    scheduler: 'condor'
+  limits:
+    cores: 10
+    mem: 50
   env: {}
   params:
     priority: -{PRIORITY}
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
-    jobs_directory: '/storage/brno11-elixir/home/galaxyeu/galaxy-staging/'
-    dependency_resolution: 'remote'
-    submit_user: 'galaxy'
+    requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
+    tmp_dir: 'True'
+    metadata_strategy: 'extended'
+    docker_enabled: true
+    # can and should be made stricter at some point
+    docker_volumes: '/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_import/galaxy_user_data/:ro,/data/1/galaxy_import/galaxy_user_data/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro'
+    docker_memory: '{MEMORY}'
+    docker_auto_rm: true
+    docker_default_container_id: busybox:ubuntu-14.04
+    docker_sudo: false
+    docker_set_user: ''
 
-remote_cluster_mq_test:
+condor_docker_ie_interactive:
+  info:
+    remote: false
+    scheduler: 'condor'
+  limits:
+    cores: 10
+    mem: 50
   env: {}
   params:
     priority: -{PRIORITY}
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
-    jobs_directory: '/data/share/stage/'
-    dependency_resolution: 'remote'
+    requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
+    tmp_dir: 'True'
+    metadata_strategy: 'extended'
+    docker_enabled: true
+    # can and should be made stricter at some point
+    docker_volumes: '$working_directory:rw,$job_directory:rw,$tool_directory:ro'
+    docker_memory: '{MEMORY}'
+    docker_auto_rm: true
+    docker_default_container_id: busybox:ubuntu-14.04
+    docker_sudo: false
+    docker_set_user: ''
+
+condor_docker_ie_interactive_gpu:
+  info:
+    remote: false
+    scheduler: 'condor'
+  limits:
+    cores: 8
+    mem: 18
+    gpus: 1
+  env: {}
+  params:
+    priority: -{PRIORITY}
+    request_cpus: '{PARALLELISATION}'
+    request_memory: '{MEMORY}'
+    request_gpus: '{GPUS}'
+    requirements: 'GalaxyDockerHack == True && GalaxyGroup == "compute_gpu"'
+    tmp_dir: 'True'
+    metadata_strategy: 'extended'
+    docker_enabled: true
+    # can and should be made stricter at some point
+    docker_volumes: '$working_directory:rw,$job_directory:rw,$tool_directory:ro'
+    docker_memory: '{MEMORY}'
+    docker_auto_rm: true
+    docker_default_container_id: busybox:ubuntu-14.04
+    docker_sudo: false
+    docker_set_user: ''
 
 condor_docker:
+  info:
+    remote: false
+    scheduler: 'condor'
+  limits:
+    cores: 40
+    mem: 1000
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
+  params:
+    priority: -{PRIORITY}
+    request_cpus: '{PARALLELISATION}'
+    request_memory: '{MEMORY}'
+    requirements: 'GalaxyDockerHack == True && GalaxyGroup == "compute"'
+    tmp_dir: 'True'
+    metadata_strategy: 'extended'
+    docker_enabled: true
+    # can and should be made stricter at some point
+    docker_volumes: '/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_import/galaxy_user_data/:ro,/data/1/galaxy_import/galaxy_user_data/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro'
+    docker_memory: '{MEMORY}'
+    docker_auto_rm: true
+    docker_default_container_id: busybox:ubuntu-14.04
+    docker_sudo: false
+    docker_set_user: ''
+
+# TBD
+condor_docker_interactive:
+  info:
+    remote: false
+    scheduler: 'condor'
+  limits:
+    cores: 40
+    mem: 1000
   env:
     # this can be removed, as soon as we don't expose this env on cn029 anymore
     DOCKER_HOST: ''
@@ -86,57 +293,22 @@ condor_docker:
     priority: -{PRIORITY}
     request_cpus: '{PARALLELISATION}'
     request_memory: '{MEMORY}'
+    requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
+    tmp_dir: 'True'
+    metadata_strategy: 'extended'
     docker_enabled: true
     # can and should be made stricter at some point
-    docker_volumes: '/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/0/galaxy_import/galaxy_user_data/:ro,/data/1/galaxy_import/galaxy_user_data/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/db/:ro'
+    docker_volumes: '$working_directory:rw,$job_directory:rw,$tool_directory:ro'
     docker_memory: '{MEMORY}'
     docker_auto_rm: true
     docker_default_container_id: busybox:ubuntu-14.04
     docker_sudo: false
     docker_set_user: ''
-    tmp_dir: 'True'
-sge:
-  env: {}
-  params:
-    nativeSpecification: |
-        -p -{PRIORITY}
-        -l galaxy1_slots=1
-        -l h_vmem={MEMORY}
-        {NATIVE_SPEC_EXTRA}
-        {PARALLELISATION}
-        -v _JAVA_OPTIONS
-        -v TEMP
-        -v TMPDIR
-        -v PATH
-        -v PYTHONPATH
-        -v LD_LIBRARY_PATH
-        -v XAPPLRESDIR
-        -v GDFONTPATH
-        -v GNUPLOT_DEFAULT_GDFONT
-        -v MPLCONFIGDIR
-        -soft
-        -l galaxy1_dedicated=1
 
-remote_cluster_mq_be01:
-  limits:
-    cores: 8
-    mem: 15
-  env:
-    GALAXY_MEMORY_MB: '{MEMORY_MB}'
-    GALAXY_SLOTS: '{PARALLELISATION}'
-    LC_ALL: C
-  params:
-    priority: -{PRIORITY}
-    submit_request_cpus: '{PARALLELISATION}'
-    submit_request_memory: '{MEMORY}'
-    jobs_directory: '/data/share/staging'
-    default_file_action: 'remote_transfer'
-    dependency_resolution: 'remote'
-    outputs_to_working_directory: False
-    rewrite_parameters: True
-    transport: 'curl'
-
-remote_cluster_mq_de01:
+remote_cluster_mq_it01:
+  info:
+    remote: true
+    scheduler: 'condor'
   limits:
     cores: 16
     mem: 31
@@ -152,15 +324,89 @@ remote_cluster_mq_de01:
     jobs_directory: '/data/share/staging'
     default_file_action: 'remote_transfer'
     dependency_resolution: 'none'
-    outputs_to_working_directory: False
-    rewrite_parameters: True
+    outputs_to_working_directory: false
+    rewrite_parameters: true
     transport: 'curl'
     singularity_enabled: true
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
-    metadata_strategy: 'directory'
 
-remote_cluster_mq_de02:
-  ## our singularity test bed
+remote_cluster_mq_be01:
+  info:
+    remote: true
+    scheduler: 'condor'
+  limits:
+    cores: 8
+    mem: 15
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
+  params:
+    priority: -{PRIORITY}
+    submit_submit_request_cpus: '{PARALLELISATION}'
+    submit_submit_request_memory: '{MEMORY}'
+    jobs_directory: '/data/share/staging'
+    dependency_resolution: 'remote'
+    outputs_to_working_directory: false
+    rewrite_parameters: true
+    transport: 'curl'
+
+remote_cluster_mq_de01:
+  info:
+    remote: true
+    scheduler: 'condor'
+  limits:
+    cores: 16
+    mem: 31
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
+    SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
+  params:
+    priority: -{PRIORITY}
+    submit_request_cpus: '{PARALLELISATION}'
+    submit_request_memory: '{MEMORY}'
+    jobs_directory: '/data/share/staging'
+    default_file_action: 'remote_transfer'
+    dependency_resolution: 'none'
+    outputs_to_working_directory: false
+    rewrite_parameters: true
+    transport: 'curl'
+    singularity_enabled: true
+    singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
+    singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw'
+
+remote_cluster_mq_singularity_2wdtrue_de01:
+  info:
+    remote: true
+    scheduler: 'condor'
+  limits:
+    cores: 16
+    mem: 31
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
+    SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
+  params:
+    priority: -{PRIORITY}
+    submit_request_cpus: '{PARALLELISATION}'
+    submit_request_memory: '{MEMORY}'
+    jobs_directory: '/data/share/staging'
+    default_file_action: 'remote_transfer'
+    dependency_resolution: 'none'
+    outputs_to_working_directory: true
+    rewrite_parameters: true
+    transport: 'curl'
+    singularity_enabled: true
+    singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
+    singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw'
+
+remote_cluster_mq_docker_de01:
+  info:
+    remote: true
+    scheduler: 'condor'
   limits:
     cores: 16
     mem: 31
@@ -174,23 +420,51 @@ remote_cluster_mq_de02:
     submit_request_memory: '{MEMORY}'
     jobs_directory: '/data/share/staging'
     default_file_action: 'remote_transfer'
+    dependency_resolution: 'remote'
+    docker_enabled: true
+    outputs_to_working_directory: false
+    rewrite_parameters: true
+    transport: 'curl'
+    docker_volumes: '$job_directory:ro,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw'
+    docker_memory: '{MEMORY}'
+    docker_auto_rm: true
+    docker_default_container_id: busybox:glibc
+    docker_sudo: false
+    docker_set_user: ''
+    tmp_dir: 'True'
+
+remote_cluster_mq_de02:
+  ## our singularity test bed
+  info:
+    remote: true
+    scheduler: 'condor'
+  limits:
+    cores: 16
+    mem: 31
+  env: {}
+  params:
+    priority: -{PRIORITY}
+    submit_submit_request_cpus: '{PARALLELISATION}'
+    submit_submit_request_memory: '{MEMORY}'
+    jobs_directory: '/data/share/staging'
     # dependency_resolution: 'remote'  --> we should enable it and test the difference, I don't think it has an effect
     singularity_enabled: true
     singularity_default_container_id: '/data/0/singularity/ubuntu:18.04'
     tmp_dir: 'True'
-    outputs_to_working_directory: False
-    rewrite_parameters: True
-    transport: 'curl'
 
 remote_cluster_mq_de03:
+  info:
+    remote: true
+    scheduler: 'condor'
   limits:
     cores: 8
     mem: 19
-    gpu: 1
+    gpus: 1
   env:
     GALAXY_MEMORY_MB: '{MEMORY_MB}'
     GALAXY_SLOTS: '{PARALLELISATION}'
     LC_ALL: C
+    SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
   params:
     priority: -{PRIORITY}
     submit_request_cpus: '{PARALLELISATION}'
@@ -199,31 +473,51 @@ remote_cluster_mq_de03:
     jobs_directory: '/data/share/staging'
     default_file_action: 'remote_transfer'
     dependency_resolution: 'remote'
-    outputs_to_working_directory: False
-    rewrite_parameters: True
+    outputs_to_working_directory: false
+    rewrite_parameters: true
     transport: 'curl'
 
-remote_cluster_mq_it01:
+remote_cluster_mq_docker_de03:
+  info:
+    remote: true
+    scheduler: 'condor'
+  nodes: 18
   limits:
-    cores: 16
-    mem: 31
+    cores: 8
+    mem: 19
+    gpus: 1
   env:
     GALAXY_MEMORY_MB: '{MEMORY_MB}'
     GALAXY_SLOTS: '{PARALLELISATION}'
     LC_ALL: C
+    SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
   params:
     priority: -{PRIORITY}
     submit_request_cpus: '{PARALLELISATION}'
     submit_request_memory: '{MEMORY}'
+    submit_request_gpus: '{GPUS}'
     jobs_directory: '/data/share/staging'
     default_file_action: 'remote_transfer'
     dependency_resolution: 'remote'
-    outputs_to_working_directory: False
-    rewrite_parameters: True
+    docker_enabled: true
+    outputs_to_working_directory: false
+    rewrite_parameters: true
     transport: 'curl'
-    metadata_strategy: 'directory'
+    # can and should be made stricter at some point
+    docker_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/share/staging/:ro'
+    docker_memory: '{MEMORY}'
+    docker_auto_rm: true
+    docker_default_container_id: busybox:ubuntu-14.04
+    docker_sudo: false
+    docker_set_user: ''
+    docker_run_extra_arguments: '--gpus all'
+    tmp_dir: 'True'
+
 
 remote_cluster_mq_pt01:
+  info:
+    remote: true
+    scheduler: 'condor'
   limits:
     cores: 4
     mem: 15
@@ -238,14 +532,107 @@ remote_cluster_mq_pt01:
     jobs_directory: '/data/share/staging'
     default_file_action: 'remote_transfer'
     dependency_resolution: 'remote'
-    outputs_to_working_directory: False
-    rewrite_parameters: True
+    outputs_to_working_directory: true
+    rewrite_parameters: true
     transport: 'curl'
 
 remote_cluster_mq_uk01:
+  info:
+    remote: true
+    scheduler: 'condor'
+  nodes: 40
   limits:
     cores: 60
     mem: 300
+    gpus: 1
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
+    GPU_AVAILABLE: 1
+  params:
+    priority: -{PRIORITY}
+    submit_request_cpus: '{PARALLELISATION}'
+    submit_request_memory: '{MEMORY}'
+    submit_request_gpus: '{GPUS}'
+    jobs_directory: '/data/share/staging'
+    default_file_action: 'remote_transfer'
+    dependency_resolution: 'remote'
+    outputs_to_working_directory: true
+    rewrite_parameters: true
+    transport: 'curl'
+
+remote_cluster_mq_singularity_uk01:
+  info:
+    remote: true
+    scheduler: 'condor'
+  limits:
+    cores: 60
+    mem: 300
+    gpus: 1
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
+    GPU_AVAILABLE: 1
+    SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
+  params:
+    priority: -{PRIORITY}
+    submit_request_cpus: '{PARALLELISATION}'
+    submit_request_memory: '{MEMORY}'
+    submit_request_gpus: '{GPUS}'
+    jobs_directory: '/data/share/staging'
+    default_file_action: 'remote_transfer'
+    dependency_resolution: 'none'
+    outputs_to_working_directory: false
+    rewrite_parameters: true
+    transport: 'curl'
+    singularity_enabled: true
+    singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
+
+remote_cluster_mq_docker_uk01:
+  info:
+    remote: true
+    scheduler: 'condor'
+  nodes: 40
+  limits:
+    cores: 60
+    mem: 300
+    gpus: 1
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
+    GPU_AVAILABLE: 1
+  params:
+    priority: -{PRIORITY}
+    submit_request_cpus: '{PARALLELISATION}'
+    submit_request_memory: '{MEMORY}'
+    submit_request_gpus: '{GPUS}'
+    jobs_directory: '/data/share/staging'
+    default_file_action: 'remote_transfer'
+    dependency_resolution: 'none'
+    outputs_to_working_directory: false
+    rewrite_parameters: true
+    transport: 'curl'
+    docker_enabled: true
+ # can and should be made stricter at some point
+    docker_volumes: '$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,/data/share/staging/:ro'
+    docker_memory: '{MEMORY}'
+    docker_auto_rm: true
+    docker_default_container_id: busybox:glibc
+    docker_sudo: false
+    docker_set_user: ''
+    docker_run_extra_arguments: '--gpus all'
+    tmp_dir: 'True'
+
+remote_cluster_mq_it02:
+  info:
+    remote: true
+    scheduler: 'condor'
+  limits:
+    cores: 4
+    mem: 7
   env:
     GALAXY_MEMORY_MB: '{MEMORY_MB}'
     GALAXY_SLOTS: '{PARALLELISATION}'
@@ -258,26 +645,189 @@ remote_cluster_mq_uk01:
     jobs_directory: '/data/share/staging'
     default_file_action: 'remote_transfer'
     dependency_resolution: 'none'
-    outputs_to_working_directory: False
-    rewrite_parameters: True
+    outputs_to_working_directory: false
+    rewrite_parameters: true
     transport: 'curl'
     singularity_enabled: true
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
 
-remote_cluster_mq_au01:
+remote_cluster_mq_2wdfalse_it03:
+  info:
+    remote: true
+    scheduler: 'condor'
   limits:
-    cores: 16
-    mem: 64
+    cores: 8
+    mem: 15
   env:
     GALAXY_MEMORY_MB: '{MEMORY_MB}'
     GALAXY_SLOTS: '{PARALLELISATION}'
     LC_ALL: C
+    SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
   params:
-    nativeSpecification: |
-        --ntasks={PARALLELISATION}
-        --nodes=1
-        --ntasks-per-node={PARALLELISATION}
-        --mem={MEMORY}
-    dependency_resolution: 'remote'
-    jobs_directory: '/mnt/pulsar/files/staging'
+    priority: -{PRIORITY}
+    submit_request_cpus: '{PARALLELISATION}'
+    submit_request_memory: '{MEMORY}'
+    jobs_directory: '/data/share/staging'
     default_file_action: 'remote_transfer'
+    dependency_resolution: 'none'
+    outputs_to_working_directory: false
+    rewrite_parameters: true
+    transport: 'curl'
+    singularity_enabled: true
+    singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
+    singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw'
+
+remote_cluster_mq_2wdtrue_it03:
+  info:
+    remote: true
+    scheduler: 'condor'
+  limits:
+    cores: 8
+    mem: 15
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
+    SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
+  params:
+    priority: -{PRIORITY}
+    submit_request_cpus: '{PARALLELISATION}'
+    submit_request_memory: '{MEMORY}'
+    jobs_directory: '/data/share/staging'
+    default_file_action: 'remote_transfer'
+    dependency_resolution: 'none'
+    outputs_to_working_directory: true
+    rewrite_parameters: true
+    transport: 'curl'
+    singularity_enabled: true
+    singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
+    singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw'
+
+remote_cluster_mq_fr01:
+  info:
+    remote: true
+    scheduler: 'condor'
+  limits:
+    cores: 8
+    mem: 31
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
+    SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
+  params:
+    priority: -{PRIORITY}
+    submit_request_cpus: '{PARALLELISATION}'
+    submit_request_memory: '{MEMORY}'
+    jobs_directory: '/data/share/staging'
+    default_file_action: 'remote_transfer'
+    dependency_resolution: 'none'
+    outputs_to_working_directory: false
+    rewrite_parameters: true
+    transport: 'curl'
+    singularity_enabled: true
+    singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
+
+remote_cluster_mq_fi01:
+  info:
+    remote: true
+    scheduler: 'condor'
+  limits:
+    cores: 8
+    mem: 31
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
+    SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
+  params:
+    priority: -{PRIORITY}
+    submit_request_cpus: '{PARALLELISATION}'
+    submit_request_memory: '{MEMORY}'
+    jobs_directory: '/data/share/staging'
+    default_file_action: 'remote_transfer'
+    dependency_resolution: 'none'
+    outputs_to_working_directory: false
+    rewrite_parameters: true
+    transport: 'curl'
+    singularity_enabled: true
+    singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
+
+remote_cluster_mq_no01:
+  info:
+    remote: true
+    scheduler: 'condor'
+  limits:
+    cores: 4
+    mem: 15
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
+    SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
+  params:
+    priority: -{PRIORITY}
+    submit_request_cpus: '{PARALLELISATION}'
+    submit_request_memory: '{MEMORY}'
+    jobs_directory: '/data/share/staging'
+    default_file_action: 'remote_transfer'
+    dependency_resolution: 'none'
+    outputs_to_working_directory: true
+    rewrite_parameters: true
+    transport: 'curl'
+
+remote_cluster_mq_es01:
+  info:
+    remote: true
+    scheduler: 'condor'
+  limits:
+    cores: 4
+    mem: 16
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
+    SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
+  params:
+    priority: -{PRIORITY}
+    submit_request_cpus: '{PARALLELISATION}'
+    submit_request_memory: '{MEMORY}'
+    jobs_directory: '/data/share/staging'
+    default_file_action: 'remote_transfer'
+    dependency_resolution: 'none'
+    outputs_to_working_directory: false
+    rewrite_parameters: true
+    transport: 'curl'
+    singularity_enabled: true
+    singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
+    singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw'
+
+remote_cluster_mq_cz01:
+  info:
+    remote: true
+    scheduler: 'condor'
+  limits:
+    cores: 4
+    mem: 16
+  env:
+    GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    GALAXY_SLOTS: '{PARALLELISATION}'
+    LC_ALL: C
+    SINGULARITY_CACHEDIR: /storage/praha5-elixir/home/galaxyeu/pulsar/singularity_cache
+    SINGULARITY_TMPDIR: $SCRATCHDIR
+    TMPDIR: $SCRATCHDIR
+    TMP: $SCRATCHDIR
+    TEMP: $SCRATCHDIR
+  params:
+    priority: -{PRIORITY}
+    submit_request_cpus: '{PARALLELISATION}'
+    submit_request_memory: '{MEMORY}'
+    jobs_directory: '/storage/praha5-elixir/home/galaxyeu/pulsar/files/staging'
+    default_file_action: 'remote_transfer'
+    dependency_resolution: 'none'
+    outputs_to_working_directory: true
+    rewrite_parameters: true
+    transport: 'curl'
+    singularity_enabled: true
+    singularity_default_container_id: '/storage/praha5-elixir/home/galaxyeu/pulsar/ubuntu_20.04'
+    singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw'

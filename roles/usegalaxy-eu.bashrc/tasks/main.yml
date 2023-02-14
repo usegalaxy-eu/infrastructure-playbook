@@ -53,15 +53,16 @@
                       fi
       done
       JID=$1
-      WD=$(dirname `condor_q -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || dirname `condor_history -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || find "{{ galaxy_config['galaxy']['job_working_directory'] }}" -maxdepth 3 -type d -name ${JID})
+      WD=$(dirname `condor_q -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || dirname `condor_history -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || find "{{ galaxy_config['galaxy']['job_working_directory'] }}""/0"${JID:0:2}"/"${JID:2:3} -maxdepth 1 -type d -name ${JID})
       cd $WD
       }
 
       alias gl='journalctl  -f -u galaxy-*'
+      alias glg='journalctl -fu galaxy-gunicorn@* | grep -v -e "/api/upload/hooks" -e "/history/current_history_json"'
       alias glh='journalctl -f -u galaxy-handler@*'
-      alias glz='journalctl -f -u galaxy-zergpool -u galaxy-zergling@* | grep -v "/api/histories"'
       alias glw='journalctl -f -u galaxy-workflow-scheduler@*'
-      alias cu="sudo awk '{print $1}' /var/log/nginx/access.log | sort | uniq -c | sort -nr"
+      alias glc='journalctl -fu galaxy-celery@*'
+      alias cu='journalctl -u galaxy-gunicorn@*.service --since "10 minutes ago" | grep "/history/current_history_json"  | awk "{print \$11}" | sort -u | wc -l'
       alias chg2wd='change_to_wd'
 
 - name: Insert some export vars

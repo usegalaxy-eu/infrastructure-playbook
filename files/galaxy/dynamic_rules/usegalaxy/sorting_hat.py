@@ -143,6 +143,9 @@ def change_object_store_dependent_on_user(params, user_roles):
     """
     if 'dataplant' in user_roles:
         params['object_store_id'] = 'dataplant01'
+    # test new storage engines
+    if 'storage-test' in user_roles:
+        params['object_store_id'] = 's3_netapp01'
     return params
 
 
@@ -373,7 +376,7 @@ def _finalize_tool_spec(tool_id, user_roles, tools_spec=TOOL_DESTINATIONS, memor
             'requirements': 'GalaxyTraining == false',
         }
     # These we're running on a specific subset
-    elif tool in ('interactive_tool_ml_jupyter_notebook', 'gmx_sim'):
+    elif tool in ('interactive_tool_ml_jupyter_notebook', 'gmx_sim', 'instagraal'):
         tool_spec['requirements'] = 'GalaxyGroup == "compute_gpu"'
     elif 'interactive_tool_' in tool_id:
         tool_spec['requirements'] = 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'

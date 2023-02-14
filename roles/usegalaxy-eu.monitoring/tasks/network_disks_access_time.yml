@@ -3,15 +3,41 @@
     content: |
         #!/bin/bash
         TIMES=$(mktemp)
+        timeout 3m pssh -h /etc/pssh/cloud -l centos 'time timeout 1m  ls /data/jwd/' > $TIMES
+        cat $TIMES | awk 'v && /real/{print v,$2}/SUCCESS/{v=$4}' | sed 's/\([0-9]*\)m\([0-9.]*\)s/\1\t\2/g' | awk '{print $1,$2"\t"$2 * 60 + $3}' | sed 's/://g' | awk '{print "disk-access-time,server="$1",disk=jwd seconds="$3}'
+        
+        timeout 3m pssh -h /etc/pssh/cloud -l centos 'time timeout 1m  ls /data/jwd01/' > $TIMES
+        cat $TIMES | awk 'v && /real/{print v,$2}/SUCCESS/{v=$4}' | sed 's/\([0-9]*\)m\([0-9.]*\)s/\1\t\2/g' | awk '{print $1,$2"\t"$2 * 60 + $3}' | sed 's/://g' | awk '{print "disk-access-time,server="$1",disk=jwd01 seconds="$3}'
 
-        timeout 3m pdsh -g cloud -l centos 'time timeout 1m  ls /data/dnb03/galaxy_db/' 1>/dev/null 2> $TIMES
-        cat $TIMES | grep real | sed 's/\([0-9]*\)m\([0-9.]*\)s/\1\t\2/g' | awk '{print $1"\t"$3 * 60 + $4}' | sed 's/://g' | awk '{print "network-disk-access-time,server="$1",disk=Isilon_dnb03_from_cluster seconds="$2}'
+        timeout 3m pssh -h /etc/pssh/cloud -l centos 'time timeout 1m  ls /data/jwd02f/' > $TIMES
+        cat $TIMES | awk 'v && /real/{print v,$2}/SUCCESS/{v=$4}' | sed 's/\([0-9]*\)m\([0-9.]*\)s/\1\t\2/g' | awk '{print $1,$2"\t"$2 * 60 + $3}' | sed 's/://g' | awk '{print "disk-access-time,server="$1",disk=jwd02f seconds="$3}'
+        
+        timeout 3m pssh -h /etc/pssh/cloud -l centos 'time timeout 1m  ls /data/jwd03f/' > $TIMES
+        cat $TIMES | awk 'v && /real/{print v,$2}/SUCCESS/{v=$4}' | sed 's/\([0-9]*\)m\([0-9.]*\)s/\1\t\2/g' | awk '{print $1,$2"\t"$2 * 60 + $3}' | sed 's/://g' | awk '{print "disk-access-time,server="$1",disk=jwd03f seconds="$3}'
 
-        timeout 3m pdsh -g cloud -l centos 'time timeout 1m  ls /data/dnb05/galaxy_db/' 1>/dev/null 2> $TIMES
-        cat $TIMES | grep real | sed 's/\([0-9]*\)m\([0-9.]*\)s/\1\t\2/g' | awk '{print $1"\t"$3 * 60 + $4}' | sed 's/://g' | awk '{print "network-disk-access-time,server="$1",disk=AF400_dnb01_from_cluster seconds="$2}'
+        timeout 3m pssh -h /etc/pssh/cloud -l centos 'time timeout 1m  ls /data/db/' > $TIMES
+        cat $TIMES | awk 'v && /real/{print v,$2}/SUCCESS/{v=$4}' | sed 's/\([0-9]*\)m\([0-9.]*\)s/\1\t\2/g' | awk '{print $1,$2"\t"$2 * 60 + $3}' | sed 's/://g' | awk '{print "disk-access-time,server="$1",disk=db seconds="$3}'
 
-        timeout 3m pdsh -g cloud -l centos 'time timeout 1m  ls /data/gxkey/server/' 1>/dev/null 2> $TIMES
-        cat $TIMES | grep real | sed 's/\([0-9]*\)m\([0-9.]*\)s/\1\t\2/g' | awk '{print $1"\t"$3 * 60 + $4}' | sed 's/://g' | awk '{print "network-disk-access-time,server="$1",disk=AF400_ws01_from_cluster seconds="$2}'
+        timeout 3m pssh -h /etc/pssh/cloud -l centos 'time timeout 1m  ls /data/dnb02/galaxy_db/' > $TIMES
+        cat $TIMES | awk 'v && /real/{print v,$2}/SUCCESS/{v=$4}' | sed 's/\([0-9]*\)m\([0-9.]*\)s/\1\t\2/g' | awk '{print $1,$2"\t"$2 * 60 + $3}' | sed 's/://g' | awk '{print "disk-access-time,server="$1",disk=dnb02 seconds="$3}'
+
+        timeout 3m pssh -h /etc/pssh/cloud -l centos 'time timeout 1m  ls /data/dnb03/galaxy_db/' > $TIMES
+        cat $TIMES | awk 'v && /real/{print v,$2}/SUCCESS/{v=$4}' | sed 's/\([0-9]*\)m\([0-9.]*\)s/\1\t\2/g' | awk '{print $1,$2"\t"$2 * 60 + $3}' | sed 's/://g' | awk '{print "disk-access-time,server="$1",disk=Isilon_dnb03_cluster seconds="$3}'
+
+        timeout 3m pssh -h /etc/pssh/cloud -l centos 'time timeout 1m  ls /data/dnb05/galaxy_db/' > $TIMES
+        cat $TIMES | awk 'v && /real/{print v,$2}/SUCCESS/{v=$4}' | sed 's/\([0-9]*\)m\([0-9.]*\)s/\1\t\2/g' | awk '{print $1,$2"\t"$2 * 60 + $3}' | sed 's/://g' | awk '{print "disk-access-time,server="$1",disk=dnb05 seconds="$3}'
+
+        timeout 3m pssh -h /etc/pssh/cloud -l centos 'time timeout 1m  ls /data/dnb06/galaxy_db/' > $TIMES
+        cat $TIMES | awk 'v && /real/{print v,$2}/SUCCESS/{v=$4}' | sed 's/\([0-9]*\)m\([0-9.]*\)s/\1\t\2/g' | awk '{print $1,$2"\t"$2 * 60 + $3}' | sed 's/://g' | awk '{print "disk-access-time,server="$1",disk=dnb06 seconds="$3}'
+
+        timeout 3m pssh -h /etc/pssh/cloud -l centos 'time timeout 1m  ls /data/dnb07/galaxy_db/' > $TIMES
+        cat $TIMES | awk 'v && /real/{print v,$2}/SUCCESS/{v=$4}' | sed 's/\([0-9]*\)m\([0-9.]*\)s/\1\t\2/g' | awk '{print $1,$2"\t"$2 * 60 + $3}' | sed 's/://g' | awk '{print "disk-access-time,server="$1",disk=dnb07 seconds="$3}'
+
+        timeout 3m pssh -h /etc/pssh/cloud -l centos 'time timeout 1m  ls /data/gxkey/server/' > $TIMES
+        cat $TIMES | awk 'v && /real/{print v,$2}/SUCCESS/{v=$4}' | sed 's/\([0-9]*\)m\([0-9.]*\)s/\1\t\2/g' | awk '{print $1,$2"\t"$2 * 60 + $3}' | sed 's/://g' | awk '{print "disk-access-time,server="$1",disk=AF400_ws01_from_cluster seconds="$3}'
+        
+        timeout 3m pssh -h /etc/pssh/cloud -l centos 'time timeout 1m  ls /usr/local/tools/_conda/lib/python3.7/json/decoder.py' > $TIMES
+        cat $TIMES | awk 'v && /real/{print v,$2}/SUCCESS/{v=$4}' | sed 's/\([0-9]*\)m\([0-9.]*\)s/\1\t\2/g' | awk '{print $1,$2"\t"$2 * 60 + $3}' | sed 's/://g' | awk '{print "disk-access-time,server="$1",disk=sn03tools seconds="$3}'
 
         rm -f $TIMES
     dest: /usr/bin/monitor-network-disk-access-time

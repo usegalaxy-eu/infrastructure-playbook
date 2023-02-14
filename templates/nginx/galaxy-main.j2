@@ -3,6 +3,12 @@ map $http_upgrade $connection_upgrade {
 	''      close;
 }
 
+upstream galaxy {
+	{% for n in range(galaxy_systemd_gunicorns) %}
+    	server unix:{{ galaxy_mutable_data_dir }}/{{ galaxy_systemd_gunicorn_socket_name }}_{{ n }}.sock;
+	{% endfor %}
+}
+
 server {
 	listen 443 default_server;
 	listen [::]:443 default_server;
@@ -34,24 +40,17 @@ server {
 	client_body_buffer_size 1024m;
 
 	location / {
-		uwsgi_pass      127.0.0.1:4001;
+		# This is the backend to send the requests to.
+		proxy_pass http://galaxy;
+		proxy_set_header Host $http_host;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header Upgrade $http_upgrade;
 
-		# For testing, send data to the private zergling.
-		# if ( $remote_addr ~* 95.208.248.14  ) {
-		#     uwsgi_pass      127.0.0.1:4020;
-		# }
 		# Throttle downloads. First 100Mb are free, after that 5Mb/s.
 		# users can move to FTP if they need / we can sort that out.
 		limit_rate_after 100m;
 		limit_rate 5m;
-
-		include         uwsgi_params;
-		proxy_hide_header x-frame-options;
-		add_header X-Content-Type-Options nosniff;
-
-		include uwsgi_params;
-		uwsgi_param HTTPS on;
-		uwsgi_param REQUEST_SCHEME https;
 
 		# Temporarily break downloading :(
 		location /api/libraries/datasets/download/ {
@@ -60,13 +59,16 @@ server {
 		#location /history/export_archive {
 		#	return 302 https://usegalaxy.eu;
 		#}
-	}
 
+		add_header X-Clacks-Overhead 'GNU James Taylor (@jxtx) Simon Gladman (@slugger70)';
+	}
 	location ~ ^/api/dataset_collections/([^/]+)/download/?$ {
 		proxy_buffering off;
-		uwsgi_pass 127.0.0.1:4001;
-		uwsgi_param UWSGI_SCHEME $scheme;
-		include uwsgi_params;
+		proxy_pass http://galaxy;
+		proxy_set_header Host $http_host;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header Upgrade $http_upgrade;
 	}
 
 	location /_x_accel_redirect {
@@ -154,6 +156,10 @@ server {
 				autoindex on;
 				alias /data/dnb01/vgcn/;
 		}
+		location /static/share {
+				autoindex on;
+				alias /data/dnb01/share/;
+		}
 	}
 
 	location ~ /static/dist/base.css {
@@ -230,6 +236,15 @@ server {
 		proxy_pass http://apollo.internal.galaxyproject.eu/apollo_api/;
 	}
 
+	location /beacon {
+		rewrite ^/beacon/?(.*)$ /$1 break;
+		proxy_pass http://beacon.galaxyproject.eu;
+		proxy_http_version 1.1;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header Host beacon.galaxyproject.eu;
+	}
+
 	location /external/phdcomics/ {
 		proxy_pass http://phdcomics.com/;
 		# The comics are extremely cacheable. No sense waiting for a server from USA to respond.
@@ -242,22 +257,12 @@ server {
 		return 301 https://docs.google.com/forms/d/e/1FAIpQLSf9w2MOS6KOlu9XdhRSDqWnCDkzoVBqHJ3zH_My4p8D8ZgkIQ/viewform;
 	}
 
+	location /gpu-request {
+		return 301 https://docs.google.com/forms/d/e/1FAIpQLSd-isWRKIX9QVRNJAEBVfh4pLpR3NsOAdOSgKpZH9sKdJ0rBg/viewform;
+	}
+
 	# TIaaS 2
-	location /tiaas {
-		uwsgi_pass 127.0.0.1:5002;
-		uwsgi_param UWSGI_SCHEME $scheme;
-		include uwsgi_params;
-	}
-
-	location /tiaas/static {
-		alias /opt/tiaas2/static;
-	}
-
-	location /join-training {
-		uwsgi_pass 127.0.0.1:5002;
-		uwsgi_param UWSGI_SCHEME $scheme;
-		include uwsgi_params;
-	}
+	{{ tiaas_nginx_routes }}
 
 	# For GTN in Galaxy Webhook
 	location /training-material/ {
@@ -297,6 +302,4 @@ server {
 	add_header X-Robots-Tag none;
 
 	client_max_body_size 1G; # aka max upload size, defaults to 1M
-	uwsgi_read_timeout 2400;
-
 }

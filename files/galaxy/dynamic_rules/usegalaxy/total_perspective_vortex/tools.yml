@@ -1,0 +1,562 @@
+---
+# ALL tags must be with dashes (-) instead of underscores (_)
+global:
+  default_inherits: default
+tools:
+  default:
+    cores: 2
+    mem: cores * 3.8
+    gpus: 0
+    env: {}
+    params:
+      tmp_dir: true
+      request_cpus: "{cores}"
+      request_memory: "{mem}G"
+      submit_request_gpus: "{gpus or 0}"
+      docker_memory: "{mem}G"
+    scheduling:
+      reject:
+        - offline
+    rules:
+      - if: user is not None
+        execute: |
+          training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
+          training_expr = " || ".join(['(GalaxyGroup == "%s")' % role for role in training_roles])
+          training_labels = '"' + ", ".join(training_roles) + '"'
+          entity.params['requirements'] = '(GalaxyGroup == "compute") || (%s)' % training_expr if training_expr else '(GalaxyGroup == "compute")'
+          entity.params['+Group'] = training_labels
+    rank: |
+      final_destinations = helpers.weighted_random_sampling(candidate_destinations)
+      final_destinations
+
+  toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy/.*:
+    cores: 2
+    scheduling:
+      require:
+        - condor-tpv
+    rules:
+      - if: input_size >= 0.015
+        cores: 14
+
+  toolshed.g2.bx.psu.edu/repos/iuc/enasearch_search_data/enasearch_search_data/.*:
+    scheduling:
+      require:
+        - condor-singularity-with-conda-python2
+
+  toolshed.g2.bx.psu.edu/repos/rnateam/dewseq/dewseq/.*:
+    cores: 2
+    mem: 40
+    scheduling:
+      prefer:
+        - condor-tpv
+
+  toolshed.g2.bx.psu.edu/repos/iuc/fasta_stats/fasta-stats/.*:
+    rules:
+      - if: input_size >= 0.01
+        cores: 3
+
+  toolshed.g2.bx.psu.edu/repos/rnateam/htseq-clip/htseq-clip/.*:
+    cores: 4
+    mem: 16
+    scheduling:
+      prefer:
+        - condor-tpv
+
+  toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold/.*:
+    cores: 10
+    mem: 32
+    params:
+      singularity_run_extra_arguments: "--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases/2.2/,ALPHAFOLD_USE_GPU=False"
+    scheduling:
+      require:
+        - singularity
+  toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold/2.3.*:
+    inherits: toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold/.*
+    params:
+      singularity_run_extra_arguments: "--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases/2.3/,ALPHAFOLD_USE_GPU=False"
+
+
+  basic_docker_tool:
+    scheduling:
+      require:
+        - docker
+  basic_illumination:
+    inherits: basic_docker_tool
+  mesmer:
+    inherits: basic_docker_tool
+  quantification:
+    inherits: basic_docker_tool
+  s3segmenter:
+    inherits: basic_docker_tool
+  unet_coreograph:
+    inherits: basic_docker_tool
+  unmicst:
+    inherits: basic_docker_tool
+  ashlar:
+    inherits: basic_docker_tool
+  qiime2__alignment__mafft:
+    inherits: basic_docker_tool
+  qiime2__alignment__mafft_add:
+    inherits: basic_docker_tool
+  qiime2__alignment__mask:
+    inherits: basic_docker_tool
+  qiime2__composition__add_pseudocount:
+    inherits: basic_docker_tool
+  qiime2__composition__ancom:
+    inherits: basic_docker_tool
+  qiime2__composition__ancombc:
+    inherits: basic_docker_tool
+  qiime2__composition__tabulate:
+    inherits: basic_docker_tool
+  qiime2__cutadapt__demux_paired:
+    inherits: basic_docker_tool
+  qiime2__cutadapt__demux_single:
+    inherits: basic_docker_tool
+  qiime2__cutadapt__trim_paired:
+    inherits: basic_docker_tool
+  qiime2__cutadapt__trim_single:
+    inherits: basic_docker_tool
+  qiime2__dada2__denoise_ccs:
+    inherits: basic_docker_tool
+  qiime2__dada2__denoise_paired:
+    inherits: basic_docker_tool
+  qiime2__dada2__denoise_pyro:
+    inherits: basic_docker_tool
+  qiime2__dada2__denoise_single:
+    inherits: basic_docker_tool
+  qiime2__deblur__denoise_16S:
+    inherits: basic_docker_tool
+  qiime2__deblur__denoise_other:
+    inherits: basic_docker_tool
+  qiime2__deblur__visualize_stats:
+    inherits: basic_docker_tool
+  qiime2__demux__emp_paired:
+    inherits: basic_docker_tool
+  qiime2__demux__emp_single:
+    inherits: basic_docker_tool
+  qiime2__demux__filter_samples:
+    inherits: basic_docker_tool
+  qiime2__demux__subsample_paired:
+    inherits: basic_docker_tool
+  qiime2__demux__subsample_single:
+    inherits: basic_docker_tool
+  qiime2__demux__summarize:
+    inherits: basic_docker_tool
+  qiime2__diversity__adonis:
+    inherits: basic_docker_tool
+  qiime2__diversity__alpha:
+    inherits: basic_docker_tool
+  qiime2__diversity__alpha_correlation:
+    inherits: basic_docker_tool
+  qiime2__diversity__alpha_group_significance:
+    inherits: basic_docker_tool
+  qiime2__diversity__alpha_phylogenetic:
+    inherits: basic_docker_tool
+  qiime2__diversity__alpha_rarefaction:
+    inherits: basic_docker_tool
+  qiime2__diversity__beta:
+    inherits: basic_docker_tool
+  qiime2__diversity__beta_correlation:
+    inherits: basic_docker_tool
+  qiime2__diversity__beta_group_significance:
+    inherits: basic_docker_tool
+  qiime2__diversity__beta_phylogenetic:
+    inherits: basic_docker_tool
+  qiime2__diversity__beta_rarefaction:
+    inherits: basic_docker_tool
+  qiime2__diversity__bioenv:
+    inherits: basic_docker_tool
+  qiime2__diversity__core_metrics:
+    inherits: basic_docker_tool
+  qiime2__diversity__core_metrics_phylogenetic:
+    inherits: basic_docker_tool
+  qiime2__diversity__filter_distance_matrix:
+    inherits: basic_docker_tool
+  qiime2__diversity__mantel:
+    inherits: basic_docker_tool
+  qiime2__diversity__pcoa:
+    inherits: basic_docker_tool
+  qiime2__diversity__pcoa_biplot:
+    inherits: basic_docker_tool
+  qiime2__diversity__procrustes_analysis:
+    inherits: basic_docker_tool
+  qiime2__diversity__tsne:
+    inherits: basic_docker_tool
+  qiime2__diversity__umap:
+    inherits: basic_docker_tool
+  qiime2__diversity_lib__alpha_passthrough:
+    inherits: basic_docker_tool
+  qiime2__diversity_lib__beta_passthrough:
+    inherits: basic_docker_tool
+  qiime2__diversity_lib__beta_phylogenetic_meta_passthrough:
+    inherits: basic_docker_tool
+  qiime2__diversity_lib__beta_phylogenetic_passthrough:
+    inherits: basic_docker_tool
+  qiime2__diversity_lib__bray_curtis:
+    inherits: basic_docker_tool
+  qiime2__diversity_lib__faith_pd:
+    inherits: basic_docker_tool
+  qiime2__diversity_lib__jaccard:
+    inherits: basic_docker_tool
+  qiime2__diversity_lib__observed_features:
+    inherits: basic_docker_tool
+  qiime2__diversity_lib__pielou_evenness:
+    inherits: basic_docker_tool
+  qiime2__diversity_lib__shannon_entropy:
+    inherits: basic_docker_tool
+  qiime2__diversity_lib__unweighted_unifrac:
+    inherits: basic_docker_tool
+  qiime2__diversity_lib__weighted_unifrac:
+    inherits: basic_docker_tool
+  qiime2__emperor__biplot:
+    inherits: basic_docker_tool
+  qiime2__emperor__plot:
+    inherits: basic_docker_tool
+  qiime2__emperor__procrustes_plot:
+    inherits: basic_docker_tool
+  qiime2__feature_classifier__blast:
+    inherits: basic_docker_tool
+  qiime2__feature_classifier__classify_consensus_blast:
+    inherits: basic_docker_tool
+  qiime2__feature_classifier__classify_consensus_vsearch:
+    inherits: basic_docker_tool
+  qiime2__feature_classifier__classify_hybrid_vsearch_sklearn:
+    inherits: basic_docker_tool
+  qiime2__feature_classifier__classify_sklearn:
+    inherits: basic_docker_tool
+  qiime2__feature_classifier__extract_reads:
+    inherits: basic_docker_tool
+  qiime2__feature_classifier__find_consensus_annotation:
+    inherits: basic_docker_tool
+  qiime2__feature_classifier__fit_classifier_naive_bayes:
+    inherits: basic_docker_tool
+  qiime2__feature_classifier__fit_classifier_sklearn:
+    inherits: basic_docker_tool
+  qiime2__feature_classifier__vsearch_global:
+    inherits: basic_docker_tool
+  qiime2__feature_table__core_features:
+    inherits: basic_docker_tool
+  qiime2__feature_table__filter_features:
+    inherits: basic_docker_tool
+  qiime2__feature_table__filter_features_conditionally:
+    inherits: basic_docker_tool
+  qiime2__feature_table__filter_samples:
+    inherits: basic_docker_tool
+  qiime2__feature_table__filter_seqs:
+    inherits: basic_docker_tool
+  qiime2__feature_table__group:
+    inherits: basic_docker_tool
+  qiime2__feature_table__heatmap:
+    inherits: basic_docker_tool
+  qiime2__feature_table__merge:
+    inherits: basic_docker_tool
+  qiime2__feature_table__merge_seqs:
+    inherits: basic_docker_tool
+  qiime2__feature_table__merge_taxa:
+    inherits: basic_docker_tool
+  qiime2__feature_table__presence_absence:
+    inherits: basic_docker_tool
+  qiime2__feature_table__rarefy:
+    inherits: basic_docker_tool
+  qiime2__feature_table__relative_frequency:
+    inherits: basic_docker_tool
+  qiime2__feature_table__rename_ids:
+    inherits: basic_docker_tool
+  qiime2__feature_table__subsample:
+    inherits: basic_docker_tool
+  qiime2__feature_table__summarize:
+    inherits: basic_docker_tool
+  qiime2__feature_table__tabulate_seqs:
+    inherits: basic_docker_tool
+  qiime2__feature_table__transpose:
+    inherits: basic_docker_tool
+  qiime2__fragment_insertion__classify_otus_experimental:
+    inherits: basic_docker_tool
+  qiime2__fragment_insertion__filter_features:
+    inherits: basic_docker_tool
+  qiime2__fragment_insertion__sepp:
+    inherits: basic_docker_tool
+  qiime2__gneiss__assign_ids:
+    inherits: basic_docker_tool
+  qiime2__gneiss__correlation_clustering:
+    inherits: basic_docker_tool
+  qiime2__gneiss__dendrogram_heatmap:
+    inherits: basic_docker_tool
+  qiime2__gneiss__gradient_clustering:
+    inherits: basic_docker_tool
+  qiime2__gneiss__ilr_hierarchical:
+    inherits: basic_docker_tool
+  qiime2__gneiss__ilr_phylogenetic:
+    inherits: basic_docker_tool
+  qiime2__gneiss__ilr_phylogenetic_differential:
+    inherits: basic_docker_tool
+  qiime2__gneiss__ilr_phylogenetic_ordination:
+    inherits: basic_docker_tool
+  qiime2__longitudinal__anova:
+    inherits: basic_docker_tool
+  qiime2__longitudinal__feature_volatility:
+    inherits: basic_docker_tool
+  qiime2__longitudinal__first_differences:
+    inherits: basic_docker_tool
+  qiime2__longitudinal__first_distances:
+    inherits: basic_docker_tool
+  qiime2__longitudinal__linear_mixed_effects:
+    inherits: basic_docker_tool
+  qiime2__longitudinal__maturity_index:
+    inherits: basic_docker_tool
+  qiime2__longitudinal__nmit:
+    inherits: basic_docker_tool
+  qiime2__longitudinal__pairwise_differences:
+    inherits: basic_docker_tool
+  qiime2__longitudinal__pairwise_distances:
+    inherits: basic_docker_tool
+  qiime2__longitudinal__plot_feature_volatility:
+    inherits: basic_docker_tool
+  qiime2__longitudinal__volatility:
+    inherits: basic_docker_tool
+  qiime2__metadata__distance_matrix:
+    inherits: basic_docker_tool
+  qiime2__metadata__shuffle_groups:
+    inherits: basic_docker_tool
+  qiime2__metadata__tabulate:
+    inherits: basic_docker_tool
+  qiime2__phylogeny__align_to_tree_mafft_fasttree:
+    inherits: basic_docker_tool
+  qiime2__phylogeny__align_to_tree_mafft_iqtree:
+    inherits: basic_docker_tool
+  qiime2__phylogeny__align_to_tree_mafft_raxml:
+    inherits: basic_docker_tool
+  qiime2__phylogeny__fasttree:
+    inherits: basic_docker_tool
+  qiime2__phylogeny__filter_table:
+    inherits: basic_docker_tool
+  qiime2__phylogeny__filter_tree:
+    inherits: basic_docker_tool
+  qiime2__phylogeny__iqtree:
+    inherits: basic_docker_tool
+  qiime2__phylogeny__iqtree_ultrafast_bootstrap:
+    inherits: basic_docker_tool
+  qiime2__phylogeny__midpoint_root:
+    inherits: basic_docker_tool
+  qiime2__phylogeny__raxml:
+    inherits: basic_docker_tool
+  qiime2__phylogeny__raxml_rapid_bootstrap:
+    inherits: basic_docker_tool
+  qiime2__phylogeny__robinson_foulds:
+    inherits: basic_docker_tool
+  qiime2__quality_control__bowtie2_build:
+    inherits: basic_docker_tool
+  qiime2__quality_control__evaluate_composition:
+    inherits: basic_docker_tool
+  qiime2__quality_control__evaluate_seqs:
+    inherits: basic_docker_tool
+  qiime2__quality_control__evaluate_taxonomy:
+    inherits: basic_docker_tool
+  qiime2__quality_control__exclude_seqs:
+    inherits: basic_docker_tool
+  qiime2__quality_control__filter_reads:
+    inherits: basic_docker_tool
+  qiime2__quality_filter__q_score:
+    inherits: basic_docker_tool
+  qiime2__sample_classifier__classify_samples:
+    inherits: basic_docker_tool
+  qiime2__sample_classifier__classify_samples_from_dist:
+    inherits: basic_docker_tool
+  qiime2__sample_classifier__classify_samples_ncv:
+    inherits: basic_docker_tool
+  qiime2__sample_classifier__confusion_matrix:
+    inherits: basic_docker_tool
+  qiime2__sample_classifier__fit_classifier:
+    inherits: basic_docker_tool
+  qiime2__sample_classifier__fit_regressor:
+    inherits: basic_docker_tool
+  qiime2__sample_classifier__heatmap:
+    inherits: basic_docker_tool
+  qiime2__sample_classifier__metatable:
+    inherits: basic_docker_tool
+  qiime2__sample_classifier__predict_classification:
+    inherits: basic_docker_tool
+  qiime2__sample_classifier__predict_regression:
+    inherits: basic_docker_tool
+  qiime2__sample_classifier__regress_samples:
+    inherits: basic_docker_tool
+  qiime2__sample_classifier__regress_samples_ncv:
+    inherits: basic_docker_tool
+  qiime2__sample_classifier__scatterplot:
+    inherits: basic_docker_tool
+  qiime2__sample_classifier__split_table:
+    inherits: basic_docker_tool
+  qiime2__sample_classifier__summarize:
+    inherits: basic_docker_tool
+  qiime2__taxa__barplot:
+    inherits: basic_docker_tool
+  qiime2__taxa__collapse:
+    inherits: basic_docker_tool
+  qiime2__taxa__filter_seqs:
+    inherits: basic_docker_tool
+  qiime2__taxa__filter_table:
+    inherits: basic_docker_tool
+  qiime2__vsearch__cluster_features_closed_reference:
+    inherits: basic_docker_tool
+  qiime2__vsearch__cluster_features_de_novo:
+    inherits: basic_docker_tool
+  qiime2__vsearch__cluster_features_open_reference:
+    inherits: basic_docker_tool
+  qiime2__vsearch__dereplicate_sequences:
+    inherits: basic_docker_tool
+  qiime2__vsearch__fastq_stats:
+    inherits: basic_docker_tool
+  qiime2__vsearch__merge_pairs:
+    inherits: basic_docker_tool
+  qiime2__vsearch__uchime_denovo:
+    inherits: basic_docker_tool
+  qiime2__vsearch__uchime_ref:
+    inherits: basic_docker_tool
+  qiime2_core__tools__export:
+    inherits: basic_docker_tool
+  qiime2_core__tools__import:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/iuc/cherri_train/cherri_train/.*:
+    cores: 10
+    mem: 90
+    scheduling:
+      require:
+        - docker
+
+  toolshed.g2.bx.psu.edu/repos/iuc/cherri_eval/cherri_eval/.*:
+    cores: 1
+    mem: 20
+    scheduling:
+      require:
+        - docker
+
+  toolshed.g2.bx.psu.edu/repos/nml/metaspades/metaspades/.*:
+    cores: 2
+    scheduling:
+      accept:
+        - pulsar
+        - pulsar-training-large
+        - condor-tpv
+    rules:
+      - if: 0.05 <= input_size < 1
+        cores: 8
+        mem: 100
+      - if: 1 <= input_size < 60
+        cores: 16
+        mem: 350
+      - if: input_size >= 60
+        fail: Too much data, please don't use Spades for this
+
+  toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*:
+    cores: 2
+    rules:
+      - if: 0.005 <= input_size < 1
+        cores: 8
+        mem: 100
+      - if: 1 <= input_size < 2
+        cores: 12
+        mem: 200
+      - if: 2 <= input_size < 20
+        cores: 20
+        mem: 350
+        scheduling:
+          prefer:
+            - condor-tpv
+      - if: input_size >= 20
+        fail: Too much data, please don't use Spades for this
+
+  toolshed.g2.bx.psu.edu/repos/iuc/spades_rnaviralspades/spades_rnaviralspades/.*:
+    inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
+  toolshed.g2.bx.psu.edu/repos/iuc/rnaspades/rnaspades/.*:
+    inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
+  toolshed.g2.bx.psu.edu/repos/iuc/spades_plasmidspades/spades_plasmidspades/.*:
+    inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
+  toolshed.g2.bx.psu.edu/repos/iuc/spades_metaviralspades/spades_metaviralspades/.*:
+    inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
+  toolshed.g2.bx.psu.edu/repos/iuc/spades_metaplasmidspades/spades_metaplasmidspades/.*:
+    inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
+  toolshed.g2.bx.psu.edu/repos/iuc/spades_coronaspades/spades_coronaspades/.*:
+    inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
+  toolshed.g2.bx.psu.edu/repos/iuc/spades_biosyntheticspades/spades_biosyntheticspades/.*:
+    inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
+
+  # cactus suite
+  toolshed.g2.bx.psu.edu/repos/galaxy-australia/cactus_cactus/cactus_cactus/.*:
+    context:
+      test_cores: 4
+    cores: 20
+    mem: 256
+    scheduling:
+      prefer:
+        - condor-tpv
+    params:
+      singularity_enabled: true
+  toolshed.g2.bx.psu.edu/repos/galaxy-australia/cactus_export/cactus_export/.*:
+    params:
+      singularity_enabled: true
+
+  toolshed.g2.bx.psu.edu/repos/iuc/trinity/trinity/.*:
+    cores: 8
+    scheduling:
+      prefer:
+        - condor-tpv
+    rules:
+      - if: 0.1 <= input_size < 1
+        cores: 20
+        mem: 100
+      - if: 1 <= input_size < 2
+        cores: 30
+        mem: 200
+      - if: 2 <= input_size < 30
+        cores: 60
+        mem: 950
+      - if: input_size >= 30
+        fail:
+          Too much data, we cannot support such large Trinity assemblies with our
+          backend. Please use another server for your job.
+
+  'mothur_*':
+    cores: 1
+    mem: 90
+    params:
+      submit_requirements: 'GalaxyGroup == "compute_mothur"'
+      docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000000 --env TERM=vt100
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_default_container_id: centos:8.3.2011
+    scheduling:
+      require:
+        - docker
+        - embedded-pulsar
+
+  'mothur_classify_seqs*':
+    cores: 2
+    mem: 20
+    params:
+      submit_requirements: 'GalaxyGroup == "compute_mothur"'
+      docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000000 --env TERM=vt100
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_default_container_id: centos:8.3.2011
+    scheduling:
+      require:
+        - docker
+        - embedded-pulsar
+
+  'bioext_bam2msa':
+    params:
+      docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000000 --env TERM=vt100
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_default_container_id: centos:8.3.2011
+    scheduling:
+      require:
+        - docker
+        - embedded-pulsar
+
+  'last_*':
+    params:
+      docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000000 --env TERM=vt100
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_default_container_id: centos:8.3.2011
+    scheduling:
+      require:
+        - docker
+        - embedded-pulsar

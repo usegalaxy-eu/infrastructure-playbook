@@ -5,6 +5,7 @@ certbot_well_known_root: /srv/nginx/_well-known_root
 certbot_share_key_users:
   - nginx
 certbot_virtualenv_command: virtualenv-3.6
+certbot_virtualenv_package_name: python3-virtualenv
 certbot_post_renewal: |
     systemctl restart nginx || true
 
@@ -34,8 +35,7 @@ nginx_conf_ssl_certificate: /etc/ssl/certs/fullchain.pem
 nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
 
 # Grafana
-# TODO: add autofs role
-grafana_data_dir: /data_is/monitoring/grafana_data/
+grafana_data_dir: /data/monitoring/grafana_data
 grafana_instance: "{{ hostname }}"
 grafana_address: "127.0.0.1"
 grafana_url: "https://stats.galaxyproject.eu"

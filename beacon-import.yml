@@ -1,0 +1,13 @@
+---
+- name: Beacon Import
+  become: true
+  hosts:
+    - beacon_import
+  vars_files:
+    - secret_group_vars/beacon.yml
+  vars:
+    script_user: beacon
+    script_dir: /home/beacon/script
+    galaxy_api_url: https://usegalaxy.eu
+  roles:
+    - paprikant.beacon-importer

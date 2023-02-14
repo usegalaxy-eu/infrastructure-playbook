@@ -5,29 +5,9 @@ autofs_service.enable: true
 
 autofs_mount_points:
   - data
-
-autofs_conf_files:
-  data:
-    - 0       -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/depot/&
-    - 1       -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/depot/&
-    - 2       -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/depot/&
-    - 3       -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/depot/&
-    - 4       -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/depot/&
-    - 5       -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/depot/&
-    - 6       -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/depot/&
-    - 7       -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/depot/&
-    - dnb01   -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
-    - dnb02   -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
-    - dnb03   -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
-    - dnb04   -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
-    - dnb05   -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb01/&
-    - dnb06   -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb06
-    - dnb07   -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb07
-    - dnb08   -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/dnb08
-    - db      -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
-    - gxtst   -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/ws01/galaxy-sync/test
-    - gxkey   -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/ws01/galaxy-sync/main
-    - jwd     -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/ws01/&
+  - gxtest
+  - gxkey
+  - jwd
 
 # packages
 software_groups_to_install:
@@ -39,7 +19,7 @@ software_groups_to_install:
 
 # HTCondor
 condor_host: "condor-cm.galaxyproject.eu"
-condor_allow_write: "10.5.68.0/24, 132.230.68.0/24, 132.230.223.0/24, 132.230.153.0/28, *.bi.uni-freiburg.de"
+condor_allow_write: "10.5.68.0/24, 132.230.223.0/24, 132.230.153.0/28"
 condor_daemons:
   - COLLECTOR
   - MASTER
@@ -70,17 +50,23 @@ postgresql_conf:
   - checkpoint_completion_target: 0.9
   - random_page_cost: 1.0
   - effective_cache_size: "16GB"
-# log dirs not set up yet
-#  - log_directory: "'/export/backups/pgsql/pg_log'"
-#  - log_checkpoints: "on"
 #  - log_line_prefix: "'%t:%r:%u@%d:[%p]<%m>: '"
-#  - log_min_duration_statement: 100
+  - log_checkpoints: "on"
+  - log_min_duration_statement: 100
 postgresql_pg_hba_conf:
   - "host    postgres        galaxy          132.230.223.239/32      md5"
-  - "host    postgres        galaxy-test     132.230.223.239/32      md5"
+  - "host    postgres        galaxy          10.5.68.237/32          md5"
+  - "host    galaxy          galaxy          10.5.68.118/32          md5"
+  - "host    postgres        galaxy-test     10.5.68.154/32          md5"
   - "host    galaxy          galaxy          132.230.223.239/32      md5"
+  - "host    galaxy          galaxy          10.5.68.237/32          md5"
+  - "host    galaxy          galaxy          10.5.68.168/32          md5"
+  - "host    galaxy          galaxy          100.118.169.22/32       md5"
   - "host    galaxy          galaxy-readonly 132.230.223.239/32      md5"
+  - "host    galaxy          galaxy-readonly 10.5.68.237/32          md5"
+  - "host    galaxy          galaxy-readonly 10.5.68.118/32          md5"
   - "host    tiaas           tiaas           132.230.223.239/32      md5"
+  - "host    tiaas           tiaas           10.5.68.237/32          md5"
   - "host    galaxy-test     galaxy-test     132.230.223.239/32      md5"
   - "host    galaxy-test     galaxy-test     10.5.68.0/24            md5"
   - "host    galaxy          galaxyftp       132.230.223.213/32      md5"

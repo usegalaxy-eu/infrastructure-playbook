@@ -1,0 +1,12 @@
+#!/bin/sh
+DAY=86400
+. {{ galaxy_root }}/.bashrc
+for job in $(gxadmin query queue-details --all | grep running | grep interactive_tool | awk '{print $3}')
+do
+    chg2wd $job
+    ClusterID=$( head -n 1 job_condor.log | awk '{print $2}' | awk -F. '{print $1"."$2}' | sed 's/^(//' )
+    if [ $(expr $(date +"%s") - $(condor_q $ClusterID -autoformat JobStartDate)) -ge $DAY ]
+    then
+        condor_rm $ClusterID
+    fi
+done

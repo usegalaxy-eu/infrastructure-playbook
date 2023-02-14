@@ -1,0 +1,29 @@
+---
+- name: Celery cluster
+  hosts: celerycluster
+  become: true
+  become_user: root
+  vars_files:
+    - "secret_group_vars/all.yml"
+    - "secret_group_vars/pulsar.yml"
+  pre_tasks:
+    - name: Install Dependencies
+      package:
+        name: ["python38"]
+      become: true
+    - name: Set default version of Python
+      alternatives:
+        name: python
+        path: /usr/bin/python3
+  roles:
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        enable_remap_user: true
+        enable_create_user: true
+        enable_kernel_5: true
+        enable_install_software: true
+    - usegalaxy_eu.galaxy_systemd
+    - influxdata.chrony
+    ## Filesystems
+    - usegalaxy-eu.autofs # Set up the mount points which will be needed later
+    - usegalaxy_eu.flower

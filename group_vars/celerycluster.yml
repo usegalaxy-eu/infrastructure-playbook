@@ -1,0 +1,47 @@
+---
+# create_user task
+user_name: galaxy
+user_uid: 999
+user_comment: Galaxy service
+user_group_name: galaxy
+user_gid: 999
+
+galaxy_user:
+  name: "{{ user_name }}"
+__galaxy_user_group: "{{ user_group_name }}"
+galaxy_root: /opt/galaxy
+galaxy_server_dir: "{{ galaxy_root }}/server"
+galaxy_venv_dir: "{{ galaxy_root }}/venv"
+galaxy_config_dir: "{{ galaxy_root }}/config"
+galaxy_config_file: "{{ galaxy_config_dir }}/galaxy.yml"
+
+# Autofs
+autofs_service.install: true
+autofs_service.enable: true
+nfs_kernel_tuning: true
+
+autofs_mount_points:
+  - data
+  - gxtest
+  - gxkey
+  - jwd
+  - usrlocal_celerycluster
+
+# SystemD
+galaxy_systemd_mode: ""
+galaxy_systemd_celery: true
+galaxy_systemd_celery_beat_schedule_path: "/opt/galaxy/celery/celery-beat-schedule"
+galaxy_systemd_watchdog: true
+
+# Flower
+flower_python_version: python38
+flower_app_dir: /opt/galaxy
+flower_log_file: /var/log/flower
+flower_python_path: server/lib
+flower_venv_dir: /opt/galaxy/venv
+flower_app_name: galaxy.celery
+
+flower_persistent: true
+
+flower_broker_api: "https://flower:{{ rabbitmq_password_flower }}@{{ rabbitmq_url }}/api/"
+flower_broker_url: "amqp://flower:{{ rabbitmq_password_flower }}@{{ rabbitmq_url }}:5671/galaxy?ssl=true"

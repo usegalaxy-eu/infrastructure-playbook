@@ -36,9 +36,6 @@
   </section>
   <section id="send_data" name="Send Data">
     <tool file="data_export/send.xml" />
-    <!--tool file="/opt/galaxy/custom-tools/test/seek/send.xml" labels="beta" /-->
-    <!-- can be removed in 22.01 -->
-    <tool file="/opt/galaxy/custom-tools/test/export/export_to_directory.xml" labels="beta" />
     <tool file="data_export/export_remote.xml" />
   </section>
   <section id="collection_operations" name="Collection Operations">
@@ -83,7 +80,7 @@
     <tool file="/opt/galaxy/custom-tools/unix_tools/replace_text_in_column.xml" hidden="True" />
     <tool file="/opt/galaxy/custom-tools/unix_tools/replace_text_in_line.xml" hidden="True" />
   </section>
-    <section id="convert" name="Convert Formats">
+  <section id="convert" name="Convert Formats">
     <tool file="filters/bed2gff.xml" />
     <tool file="filters/gff2bed.xml" />
     <tool file="maf/maf_to_bed.xml" />
@@ -248,9 +245,6 @@
     <tool file="/opt/galaxy/custom-tools/test/p_clip_peaks/p_clip_peaks.xml" />
   </section>
   <section id="epigenetics" name="Epigenetics">
-    <tool file="/opt/galaxy/custom-tools/bismark/bismark_bowtie2_wrapper.xml" hidden="True" />
-    <tool file="/opt/galaxy/custom-tools/bismark/bismark_bowtie_wrapper.xml" hidden="True" />
-    <tool file="/opt/galaxy/custom-tools/bismark/bismark_methylation_extractor.xml" hidden="True" />
     <tool file="/opt/galaxy/custom-tools/dna_methylation/calling.xml" />
     <tool file="/opt/galaxy/custom-tools/dna_methylation/destrand.xml" />
     <tool file="/opt/galaxy/custom-tools/dna_methylation/dmr.xml" />
@@ -358,7 +352,7 @@
 
   <label id="stats_viz" text="Statistics and Visualisation" />
   <section id="statistics" name="Statistics">
-    <tool file="/opt/galaxy/custom-tools/test/statistical_hypothesis_testing.xml" />
+    <!--tool file="/opt/galaxy/custom-tools/test/statistical_hypothesis_testing.xml" /-->
     <tool file="stats/gsummary.xml" />
     <tool file="filters/uniq.xml" />
     <!--tool file="regVariation/linear_regression.xml" />
@@ -376,6 +370,8 @@
     <tool file="chromatra/chromatral.xml" />
     <tool file="chromatra/chromatrat.xml" />
     <tool file="plotting/foldchanges_heatmap.xml" />
+  </section>
+  <section id="muon_spectroscopy" name="Muon Spectroscopy">
   </section>
 
   <label id="other_and_toolsuites_label" text="Miscellaneous Tools" />
@@ -401,6 +397,7 @@
     <tool file="meme/fimo.xml" hidden="True" />
     </section>
   <section id="test_tools" name="Test Tools">
+    <tool file="/opt/galaxy/custom-tools/test/instagraal.xml" labels="alpha" />
     <tool file="/opt/galaxy/custom-tools/pyiron/pyiron.xml" labels="alpha" />
     <tool file="/opt/galaxy/custom-tools/test/pcgr.xml" labels="beta" />
     <!--tool file="/opt/galaxy/custom-tools/test/Galaxy-ML-master/galaxy_ml/estimator_attributes.xml" labels="alpha" />
@@ -499,6 +496,8 @@
 
   <section id="gis_data_handling" name="GIS Data Handling" />
   <section id="animal_detection_on_acoustic_recordings" name="Animal Detection on Acoustic Recordings" />
+  <section id="compute_indicators_for_satellite_remote_sensing" name="Compute indicators for satellite remote sensing" />
+  
   <section id="regional_variation" name="Regional Variation" >
   </section>
   <section id="genome_diversity" name="Genome Diversity" >
@@ -521,9 +520,13 @@
   <section id="apollo" name="Apollo" />
   <section id="imaging" name="Imaging" />
   <section id="species_abundance" name="Species abundance" />
+  <section id="compute_indicators_for_turnover_boulders_fields" name="Compute indicators for turnover boulders fields" />
 
   <section id="interactivetools" name="Interactive tools">
+        <tool file="interactive/interactivetool_pavian.xml" />
+        <tool file="interactive/interactivetool_mgnify_notebook.xml" />
 	<tool file="interactive/interactivetool_jupyter_notebook.xml" />
+	<tool file="interactive/interactivetool_jupyter_notebook_1.0.0.xml" />
 	<tool file="interactive/interactivetool_ml_jupyter_notebook.xml" />
 	<tool file="interactive/interactivetool_climate_notebook.xml" />
 	<tool file="interactive/interactivetool_pangeo_notebook.xml" />
@@ -550,7 +553,7 @@
 	<tool file="interactive/interactivetool_simtext_app.xml" />
 	<tool file="interactive/interactivetool_isee.xml" />
 	<tool file="interactive/interactivetool_metashark.xml" />
-	<!--tool file="interactive/codingSnps.xml" /-->
+	<tool file="interactive/interactivetool_audiolabeler.xml" />
   </section>
 
 </toolbox>

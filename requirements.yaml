@@ -17,11 +17,11 @@ collections:
     source: https://galaxy.ansible.com
     type: galaxy
   - name: devsec.hardening
-    version: 7.10.0
+    version: 8.3.0
     source: https://galaxy.ansible.com
     type: galaxy
   - name: usegalaxy_eu.handy
-    version: 2.7.7
+    version: 2.10.0
     source: https://galaxy.ansible.com
 
 roles:
@@ -41,6 +41,8 @@ roles:
     version: master
   - name: galaxyproject.proftpd
     version: 0.3.2
+  - name: usegalaxy_eu.ansible_nginx_upload_module
+    version: 1.0.0
   - name: usegalaxy-eu.nginx
     src: https://github.com/usegalaxy-eu/ansible-nginx
     version: master
@@ -58,7 +60,7 @@ roles:
   - name: geerlingguy.jenkins
     version: 4.3.0
   - name: geerlingguy.repo-epel
-    version: 1.3.0
+    version: 3.1.0
   - name: influxdata.chrony
     src: https://github.com/usegalaxy-eu/ansible-chrony
     version: 0.1.0
@@ -69,36 +71,43 @@ roles:
   - name: usegalaxy-eu.certbot
     src: https://github.com/usegalaxy-eu/ansible-certbot
     version: 0.1.5
-  - name: usegalaxy-eu.galaxy-systemd
-    src: https://github.com/usegalaxy-eu/ansible-galaxy-systemd
-    version: 0.1.4
+  - name: usegalaxy_eu.galaxy_systemd
+    version: 2.1.0
   - name: usegalaxy-eu.dynmotd
     src: https://github.com/usegalaxy-eu/ansible-dynmotd
     version: 0.0.1
   - name: cloudalchemy.grafana
     version: 0.16.2
-  - name: usegalaxy_eu.tiaas2
-    src: https://github.com/usegalaxy-eu/ansible-tiaas2
-    version: 0.0.9
+  - name: galaxyproject.tiaas2
+    version: 2.1.3
   - name: usegalaxy-eu.autoupdates
     src: https://github.com/usegalaxy-eu/ansible-autoupdates
     version: 0.0.1
-  - name: usegalaxy-eu.htcondor
-    src: https://github.com/usegalaxy-eu/ansible-htcondor
-    version: 0.0.5
+  - name: usegalaxy_eu.htcondor
+    version: 1.0.1
   - name: usegalaxy-eu.update-hosts
     src: https://github.com/usegalaxy-eu/ansible-update-hosts
-    version: 0.0.1
+    version: 0.2.0
   - name: usegalaxy_eu.gie_proxy
     version: 0.0.2
   - name: usegalaxy-eu.autofs
     src: https://github.com/usegalaxy-eu/ansible-autofs
-    version: 0.0.9
+    version: 1.0.0
   - name: usegalaxy_eu.fs_maintenance
     version: 0.0.5
   - name: galaxyproject.tusd
     version: 0.0.1
   - name: usegalaxy_eu.rabbitmqserver
-    version: 1.2.0
+    version: 1.4.1
   - name: usegalaxy_eu.influxdbserver
     version: 1.1.1
+  - name: usegalaxy_eu.flower
+    version: 0.3.1-alpha
+  - name: paprikant.beacon
+    src: https://github.com/Paprikant/ansible-role-beacon
+  - name: paprikant.beacon-importer
+    src: https://github.com/Paprikant/ansible-role-beacon_importer
+  - name: galaxyproject.miniconda
+    version: 0.3.1
+  - name: usegalaxy_eu.tpv_auto_lint
+    version: 0.2.1
