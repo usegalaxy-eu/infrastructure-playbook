@@ -37,6 +37,8 @@ condor_extended:
     tmp_dir: 'True'
     metadata_strategy: 'extended'
 
+# needs to be migrated, since we do not want to run upload jobs on celery
+# will have a dedicated VGCN image with tag
 condor_upload:
   info:
     remote: false
@@ -56,6 +58,7 @@ condor_upload:
     tmp_dir: 'True'
     metadata_strategy: 'extended'
 
+# can hopefully be removed, we run mothur now in docker and restrict it via limits
 # needed because of this https://github.com/galaxyproject/tools-iuc/issues/3663
 condor_mothur:
   info:
@@ -75,6 +78,7 @@ condor_mothur:
     tmp_dir: 'True'
     metadata_strategy: 'extended'
 
+# could be migrated, looks useful, but is not used
 condor_gpu:
   info:
     remote: false
@@ -96,6 +100,7 @@ condor_gpu:
     tmp_dir: 'True'
     metadata_strategy: 'extended'
 
+# should be migrated, is used by instagraal
 condor_docker_gpu:
   info:
     remote: false
@@ -125,7 +130,8 @@ condor_docker_gpu:
     docker_sudo: false
     docker_set_user: ''
 
-
+# could be migrated is used in a handful of tools, but is not essential, tools could also run in Docker
+# I would keep it for educational purpose and in case we want at some point prioritize Singularity above Docker
 condor_singularity:
   info:
     remote: false
@@ -149,7 +155,8 @@ condor_singularity:
     singularity_volumes: '$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro'
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/all/centos:8.3.2011'
 
-
+# not used, could go.
+# interesting would be to derive this destination from the normal condor_singularity one
 condor_singularity_with_gpu:
   info:
     remote: false
@@ -178,7 +185,8 @@ condor_singularity_with_gpu:
     singularity_volumes: '$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro'
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/all/centos:8.3.2011'
 
-
+# I think we have this one already, can go. Not essential.
+# This destination could be our default destination at some point instead of the conda one.
 condor_singularity_with_conda:
   info:
     remote: false
@@ -207,6 +215,7 @@ condor_singularity_with_conda:
         resolve_dependencies: true
         identifier: '/cvmfs/singularity.galaxyproject.org/all/centos:8.3.2011'
 
+# can be dropped, all ITs are running via TPV already
 condor_docker_ie:
   info:
     remote: false
@@ -231,6 +240,7 @@ condor_docker_ie:
     docker_sudo: false
     docker_set_user: ''
 
+# can be dropped, all ITs are running via TPV already
 condor_docker_ie_interactive:
   info:
     remote: false
@@ -255,6 +265,7 @@ condor_docker_ie_interactive:
     docker_sudo: false
     docker_set_user: ''
 
+# can be dropped, all ITs are running via TPV already
 condor_docker_ie_interactive_gpu:
   info:
     remote: false
@@ -281,6 +292,7 @@ condor_docker_ie_interactive_gpu:
     docker_sudo: false
     docker_set_user: ''
 
+# similar to condor_sigularity ... would be interesting to derive one from the other and just change the container engine.
 condor_docker:
   info:
     remote: false
@@ -308,7 +320,7 @@ condor_docker:
     docker_sudo: false
     docker_set_user: ''
 
-# TBD
+# drop
 condor_docker_interactive:
   info:
     remote: false
@@ -335,6 +347,7 @@ condor_docker_interactive:
     docker_sudo: false
     docker_set_user: ''
 
+# drop, we need a new stradegy for pulsar
 remote_cluster_mq_it01:
   info:
     remote: true
@@ -360,6 +373,8 @@ remote_cluster_mq_it01:
     singularity_enabled: true
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
 
+# drop, we need a new stradegy for pulsar
+
 remote_cluster_mq_be01:
   info:
     remote: true
@@ -381,6 +396,7 @@ remote_cluster_mq_be01:
     rewrite_parameters: true
     transport: 'curl'
 
+# drop, we need a new stradegy for pulsar
 remote_cluster_mq_de01:
   info:
     remote: true
@@ -407,6 +423,7 @@ remote_cluster_mq_de01:
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
     singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw'
 
+# drop, we need a new stradegy for pulsar
 remote_cluster_mq_singularity_2wdtrue_de01:
   info:
     remote: true
@@ -433,6 +450,7 @@ remote_cluster_mq_singularity_2wdtrue_de01:
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
     singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw'
 
+# drop, we need a new stradegy for pulsar
 remote_cluster_mq_docker_de01:
   info:
     remote: true
@@ -463,6 +481,7 @@ remote_cluster_mq_docker_de01:
     docker_set_user: ''
     tmp_dir: 'True'
 
+# drop, we need a new stradegy for pulsar
 remote_cluster_mq_de02:
   ## our singularity test bed
   info:
@@ -482,6 +501,7 @@ remote_cluster_mq_de02:
     singularity_default_container_id: '/data/0/singularity/ubuntu:18.04'
     tmp_dir: 'True'
 
+# drop, we need a new stradegy for pulsar
 remote_cluster_mq_de03:
   info:
     remote: true
@@ -507,6 +527,7 @@ remote_cluster_mq_de03:
     rewrite_parameters: true
     transport: 'curl'
 
+# drop, we need a new stradegy for pulsar
 remote_cluster_mq_docker_de03:
   info:
     remote: true
@@ -543,7 +564,7 @@ remote_cluster_mq_docker_de03:
     docker_run_extra_arguments: '--gpus all'
     tmp_dir: 'True'
 
-
+# drop, we need a new stradegy for pulsar
 remote_cluster_mq_pt01:
   info:
     remote: true
@@ -566,6 +587,7 @@ remote_cluster_mq_pt01:
     rewrite_parameters: true
     transport: 'curl'
 
+# drop, we need a new stradegy for pulsar
 remote_cluster_mq_uk01:
   info:
     remote: true
@@ -592,6 +614,7 @@ remote_cluster_mq_uk01:
     rewrite_parameters: true
     transport: 'curl'
 
+# drop, we need a new stradegy for pulsar
 remote_cluster_mq_singularity_uk01:
   info:
     remote: true
@@ -620,6 +643,7 @@ remote_cluster_mq_singularity_uk01:
     singularity_enabled: true
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
 
+# drop, we need a new stradegy for pulsar
 remote_cluster_mq_docker_uk01:
   info:
     remote: true
@@ -656,6 +680,7 @@ remote_cluster_mq_docker_uk01:
     docker_run_extra_arguments: '--gpus all'
     tmp_dir: 'True'
 
+# drop, we need a new stradegy for pulsar
 remote_cluster_mq_it02:
   info:
     remote: true
@@ -681,6 +706,7 @@ remote_cluster_mq_it02:
     singularity_enabled: true
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
 
+# drop, we need a new stradegy for pulsar
 remote_cluster_mq_2wdfalse_it03:
   info:
     remote: true
@@ -707,6 +733,7 @@ remote_cluster_mq_2wdfalse_it03:
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
     singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw'
 
+# drop, we need a new stradegy for pulsar
 remote_cluster_mq_2wdtrue_it03:
   info:
     remote: true
@@ -733,6 +760,7 @@ remote_cluster_mq_2wdtrue_it03:
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
     singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw'
 
+# drop, we need a new stradegy for pulsar
 remote_cluster_mq_fr01:
   info:
     remote: true
@@ -758,6 +786,7 @@ remote_cluster_mq_fr01:
     singularity_enabled: true
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
 
+# drop, we need a new stradegy for pulsar
 remote_cluster_mq_fi01:
   info:
     remote: true
@@ -783,6 +812,7 @@ remote_cluster_mq_fi01:
     singularity_enabled: true
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
 
+# drop, we need a new stradegy for pulsar
 remote_cluster_mq_no01:
   info:
     remote: true
@@ -806,6 +836,7 @@ remote_cluster_mq_no01:
     rewrite_parameters: true
     transport: 'curl'
 
+# drop, we need a new stradegy for pulsar
 remote_cluster_mq_es01:
   info:
     remote: true
@@ -832,6 +863,7 @@ remote_cluster_mq_es01:
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
     singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw'
 
+# drop, we need a new stradegy for pulsar
 remote_cluster_mq_cz01:
   info:
     remote: true
