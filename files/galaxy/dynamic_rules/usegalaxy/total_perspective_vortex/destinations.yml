@@ -121,12 +121,12 @@ destinations:
     max_accepted_mem: 15
     runner: pulsar_eu_be01
 
-  condor_singularity_with_conda_python2:
+  condor_singularity_with_conda_python:
     max_accepted_cores: 64
     max_accepted_mem: 1000
     scheduling:
       require:
-        - condor-singularity-with-conda-python2
+        - condor-singularity-with-conda-python
     runner: condor
     params:
       singularity_enabled: true
