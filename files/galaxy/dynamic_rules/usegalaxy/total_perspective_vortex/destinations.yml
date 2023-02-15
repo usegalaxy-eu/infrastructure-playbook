@@ -5,7 +5,7 @@ destinations:
     runner: pulsar_embedded
     max_accepted_cores: 24
     max_accepted_mem: 128
-    max_accepted_gpus: 8
+    max_accepted_gpus: 0
     params:
       tmp_dir: true
       docker_enabled: true
@@ -144,16 +144,31 @@ destinations:
     scheduling:
       require:
         - upload
-    cores: 20
-    mem: 10
+    max_accepted_cores: 20
+    max_accepted_mem: 10
     env:
       GALAXY_MEMORY_MB: '{MEMORY_MB}'
       GALAXY_SLOTS: '{PARALLELISATION}'
     params:
       priority: '{PRIORITY}'
-      request_cpus: '{PARALLELISATION}'
-      request_memory: '{MEMORY}'
+      request_cpus: '{cores}'
+      request_memory: '{mem}G'
       requirements: 'GalaxyTraining == false'
       rank: 'GalaxyGroup == "upload"'
       tmp_dir: 'True'
+      metadata_strategy: 'extended'
+
+  # could be migrated, looks useful, but is not used
+  condor_gpu:
+    runner: condor
+    max_accepted_cores: 8
+    max_accepted_mem: 16
+    max_accepted_gpus: 1
+    env:
+      GALAXY_MEMORY_MB: '{MEMORY_MB}'
+      GALAXY_SLOTS: '{PARALLELISATION}'
+      GPU_AVAILABLE: 1
+    params:
+      requirements: 'GalaxyGroup == "compute_gpu"'
+      tmp_dir: true
       metadata_strategy: 'extended'
