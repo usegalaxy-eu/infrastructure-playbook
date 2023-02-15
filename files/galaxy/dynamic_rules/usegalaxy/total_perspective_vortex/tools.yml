@@ -29,6 +29,17 @@ tools:
       final_destinations = helpers.weighted_random_sampling(candidate_destinations)
       final_destinations
 
+  __DATA_FETCH__:
+    cores: 1
+    mem: 3
+    gpus: 0
+    scheduling:
+      require:
+        - upload
+    env:
+      TEMP: /data/1/galaxy_db/tmp
+
+
   toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy/.*:
     cores: 2
     scheduling:
