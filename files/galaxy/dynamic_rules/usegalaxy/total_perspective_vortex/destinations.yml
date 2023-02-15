@@ -3,8 +3,9 @@
 destinations:
   interactive_pulsar:
     runner: pulsar_embedded
-    max_accepted_cores: 24 # arbritrary max
-    max_accepted_mem: 128 # arbritrary max
+    max_accepted_cores: 24
+    max_accepted_mem: 128
+    max_accepted_gpus: 8
     params:
       tmp_dir: true
       docker_enabled: true
@@ -15,7 +16,6 @@ destinations:
       require_container: true
       outputs_to_working_directory: false
       container_monitor_result: callback
-      submit_requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
     scheduling:
       prefer:
         - docker
@@ -137,3 +137,23 @@ destinations:
           shell: "/bin/bash"
           resolve_dependencies: true
           identifier: "/data/0/singularity_base_images/centos:8.3.2011"
+  # needs to be migrated, since we do not want to run upload jobs on celery
+  # will have a dedicated VGCN image with tag
+  condor_upload:
+    runner: condor
+    scheduling:
+      require:
+        - upload
+    cores: 20
+    mem: 10
+    env:
+      GALAXY_MEMORY_MB: '{MEMORY_MB}'
+      GALAXY_SLOTS: '{PARALLELISATION}'
+    params:
+      priority: '{PRIORITY}'
+      request_cpus: '{PARALLELISATION}'
+      request_memory: '{MEMORY}'
+      requirements: 'GalaxyTraining == false'
+      rank: 'GalaxyGroup == "upload"'
+      tmp_dir: 'True'
+      metadata_strategy: 'extended'
