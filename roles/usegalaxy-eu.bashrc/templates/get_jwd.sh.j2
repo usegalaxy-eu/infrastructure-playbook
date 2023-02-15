@@ -1,0 +1,61 @@
+#!/bin/bash
+# Description: Get the job working directory using the job id and the object store configuration XML file
+
+# Get the object_store_id of the job from the 'galaxy' postgres database table 'job'
+get_object_store_id() {
+    job_id=$1
+    object_store_id=$(psql -t -c "SELECT object_store_id FROM job WHERE id=$job_id AND object_store_id IS NOT NULL;")
+
+    # Check if object_store_id is empty
+    if [ -z "$object_store_id" ]; then
+        echo "ERROR: object_store_id not found for job_id '$job_id' in the 'galaxy' database"
+        exit 1
+    fi
+
+    echo $object_store_id
+}
+
+# Parse the object_store_conf.xml file and get the base path of the backend
+get_base_path() {
+    object_store_conf_file=$1
+    object_store_id=$2
+    base_path=$(sed -n "/<backend id=\"$object_store_id\"/,/<\/backend>/p" $object_store_conf_file | grep -e '<extra_dir type="job_work"' | sed 's/.*<extra_dir type="job_work" path="\([^"]*\)".*/\1/')
+
+    # Check if base_path is empty
+    if [ -z "$base_path" ]; then
+        echo "ERROR: job_work path not found for object_store_id '$object_store_id' in the object_store_conf.xml file '$object_store_conf_file'"
+        exit 1
+    fi
+
+    echo "$base_path"
+}
+
+# Deconstruct the job id and get the job working directory path
+get_jwd_path() {
+    job_id=$1
+    object_store_conf_file=$2
+    object_store_id=$(get_object_store_id $job_id)
+    base_path=$(get_base_path $object_store_conf_file $object_store_id)
+    jwd_path="$base_path/0${job_id:0:2}/${job_id:2:3}/$job_id"
+
+    # Check if jwd_path exists
+    if [ ! -d "$jwd_path" ]; then
+        echo "Job working directory (of $job_id) does not exist"
+        exit 1
+    fi
+
+    echo $jwd_path
+}
+
+# Main
+job_id=$1
+object_store_conf_file="{{ object_store_config_file }}"
+
+# Check if object_store_conf_file exists
+if [ ! -f "$object_store_conf_file" ]; then
+    echo "ERROR: Galaxy object store config file ($object_store_conf_file) does not exist"
+    exit 1
+fi
+
+jwd_path=$(get_jwd_path $job_id $object_store_conf_file)
+echo $jwd_path

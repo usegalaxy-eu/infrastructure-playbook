@@ -1,85 +1,129 @@
 ---
-- name: Check for bashrc
-  stat:
-    path: "{{ galaxy_user.home }}/.bashrc"
-  register: bashrc_stat_out
+- name: Get all users
+  getent:
+    database: passwd
+    split: ':'
 
-- name: Copy default bashrc when not existing
-  copy:
-    src: /etc/skel/.bashrc
-    dest: "{{ galaxy_user.home }}/.bashrc"
-    remote_src: yes
-    mode: 0640
-    owner: "{{ galaxy_user.name }}"
-    group: "{{ galaxy_group.name | default(galaxy_group) }}"
-  when: not bashrc_stat_out.stat.exists
+- name: Debug info when user does not exist
+  debug:
+    msg: "INFO: User {{ user_name }} does not exist"
+  when: (not user_name in getent_passwd.keys())
 
-- name: Check for bashprofile
-  stat:
-    path: "{{ galaxy_user.home }}/.bash_profile"
-  register: bashprofile_stat_out
+- name: Check and add/update bashrc when user user exists
+  block:
+    - name: Check for bashrc
+      stat:
+        path: "{{ user_home }}/.bashrc"
+      register: bashrc_stat_out
 
-- name: Check for profile
-  stat:
-    path: "{{ galaxy_user.home }}/.profile"
-  register: profile_stat_out
+    - name: Copy default bashrc when not existing
+      copy:
+        src: /etc/skel/.bashrc
+        dest: "{{ user_home }}/.bashrc"
+        remote_src: yes
+        mode: 0640
+        owner: "{{ user_name }}"
+        group: "{{ group_name }}"
+      when: not bashrc_stat_out.stat.exists
 
-- name: Copy default bashprofile when not existing
-  copy:
-    src: /etc/skel/.bash_profile
-    dest: "{{ galaxy_user.home }}/.bash_profile"
-    remote_src: yes
-    mode: 0640
-    owner: "{{ galaxy_user.name }}"
-    group: "{{ galaxy_group.name | default(galaxy_group) }}"
-  when: not bashprofile_stat_out.stat.exists and not profile_stat_out.stat.exists
+    - name: Check for bashprofile
+      stat:
+        path: "{{ user_home }}/.bash_profile"
+      register: bashprofile_stat_out
 
-- name: Insert some aliases
-  blockinfile:
-    path: "{{ galaxy_user.home }}/.bashrc"
-    marker: "# {mark} ANSIBLE MANAGED BLOCK"
-    content: |
-      # User specific aliases and functions
-      function change_to_wd() {
-      USAGE="Please provide a Galaxy job ID or a Condor job ID"
-      if (( $# == 0 )); then
+    - name: Check for profile
+      stat:
+        path: "{{ user_home }}/.profile"
+      register: profile_stat_out
+
+    - name: Copy default bashprofile when not existing
+      copy:
+        src: /etc/skel/.bash_profile
+        dest: "{{ user_home }}/.bash_profile"
+        remote_src: yes
+        mode: 0640
+        owner: "{{ user_name }}"
+        group: "{{ group_name }}"
+      when: not bashprofile_stat_out.stat.exists and not profile_stat_out.stat.exists
+
+    - name: Copy template get_jwd.sh bash script
+      template:
+        src: get_jwd.sh.j2
+        dest: /usr/local/bin/get_jwd
+        owner: galaxy
+        group: galaxy
+        mode: 0755
+
+    - name: Insert some aliases and functions
+      blockinfile:
+        path: "{{ user_home }}/.bashrc"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK"
+        content: |
+          # User specific aliases and functions
+          function change_to_wd() {
+          USAGE="Please provide a Galaxy job ID or a Condor job ID"
+          if (( $# == 0 )); then
+                  echo $USAGE
+                  return 0;
+          fi
+          for i in "$@"; do
+                          if [[ "$i" = --help || "$i" = -h ]]; then
+                                  echo $USAGE
+                                  return 0;
+                          fi
+          done
+          JID=$1
+          WD=$(dirname `condor_q -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || dirname `condor_history -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || find "{{ galaxy_config['galaxy']['job_working_directory'] }}""/0"${JID:0:2}"/"${JID:2:3} -maxdepth 1 -type d -name ${JID})
+          cd $WD
+          }
+
+          # Uses the /usr/local/bin/get_jwd bash script to change to the job working directory
+          function change_to_jwd() {
+          USAGE="Please provide a Galaxy job ID"
+          if (( $# == 0 )); then
               echo $USAGE
               return 0;
-      fi
-      for i in "$@"; do
-                      if [[ "$i" = --help || "$i" = -h ]]; then
-                              echo $USAGE
-                              return 0;
-                      fi
-      done
-      JID=$1
-      WD=$(dirname `condor_q -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || dirname `condor_history -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || find "{{ galaxy_config['galaxy']['job_working_directory'] }}""/0"${JID:0:2}"/"${JID:2:3} -maxdepth 1 -type d -name ${JID})
-      cd $WD
-      }
+          fi
 
-      alias gl='journalctl  -f -u galaxy-*'
-      alias glg='journalctl -fu galaxy-gunicorn@* | grep -v -e "/api/upload/hooks" -e "/history/current_history_json"'
-      alias glh='journalctl -f -u galaxy-handler@*'
-      alias glw='journalctl -f -u galaxy-workflow-scheduler@*'
-      alias glc='journalctl -fu galaxy-celery@*'
-      alias cu='journalctl -u galaxy-gunicorn@*.service --since "10 minutes ago" | grep "/history/current_history_json"  | awk "{print \$11}" | sort -u | wc -l'
-      alias chg2wd='change_to_wd'
+          JID=$1
+          JWD=$(/usr/local/bin/get_jwd $JID)
+          cd $JWD
+          }
 
-- name: Insert some export vars
-  lineinfile:
-    path: "{{ galaxy_user.home }}/.bashrc"
-    line: "export GALAXY_CONFIG_FILE={{ galaxy_config_file }}"
+          alias gl='journalctl  -f -u galaxy-*'
+          alias glg='journalctl -fu galaxy-gunicorn@* | grep -v -e "/api/upload/hooks" -e "/history/current_history_json"'
+          alias glh='journalctl -f -u galaxy-handler@*'
+          alias glw='journalctl -f -u galaxy-workflow-scheduler@*'
+          alias glc='journalctl -fu galaxy-celery@*'
+          alias cu='journalctl -u galaxy-gunicorn@*.service --since "10 minutes ago" | grep "/history/current_history_json"  | awk "{print \$11}" | sort -u | wc -l'
+          alias chg2wd='change_to_wd'
+          alias chg2jwd='change_to_jwd'
 
-- name: Check for bash_history
-  stat:
-    path: "{{ galaxy_user.home }}/.bash_history"
-  register: bashhistory_stat_out
+    - name: Insert some export vars
+      lineinfile:
+        path: "{{ user_home }}/.bashrc"
+        # line: "export GALAXY_CONFIG_FILE={{ galaxy_config_file }}"
+        line: "{{ item }}"
+      loop:
+        # ENV's for gxadmin
+        - "export GALAXY_CONFIG_DIR={{ galaxy_config_dir }}"
+        - "export GALAXY_CONFIG_FILE={{ galaxy_config_file }}"
+        - "export GALAXY_LOG_DIR={{ galaxy_log_dir }}"
+        - "export GALAXY_MUTABLE_CONFIG_DIR={{ galaxy_mutable_config_dir }}"
+        - "export GALAXY_ROOT={{ galaxy_server_dir }}"
+        - "export VIRTUAL_ENV={{ galaxy_venv_dir }}"
 
-- name: Create bash_history
-  file:
-    path: "{{ galaxy_user.home }}/.bash_history"
-    state: touch
-    mode: 0640
-    owner: "{{ galaxy_user.name }}"
-    group: "{{ galaxy_group.name | default(galaxy_group) }}"
-  when: not bashhistory_stat_out.stat.exists
+    - name: Check for bash_history
+      stat:
+        path: "{{ user_home }}/.bash_history"
+      register: bashhistory_stat_out
+
+    - name: Create bash_history
+      file:
+        path: "{{ user_home }}/.bash_history"
+        state: touch
+        mode: 0640
+        owner: "{{ user_name }}"
+        group: "{{ group_name }}"
+      when: not bashhistory_stat_out.stat.exists
+  when: (user_name in getent_passwd.keys())
