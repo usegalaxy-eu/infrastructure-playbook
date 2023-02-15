@@ -4,15 +4,7 @@ tools:
     cores: 1
     mem: 4
     params:
-      runner: pulsar_embedded
-      tmp_dir: true
-      docker_enabled: true
       docker_volumes: $defaults
-      docker_sudo: false
-      docker_net: bridge
-      docker_auto_rm: true
-      docker_set_user: ''
-      require_container: true
       container_monitor_result: callback
       submit_requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
     scheduling:
@@ -24,15 +16,7 @@ tools:
     cores: 1
     mem: 4
     params:
-      runner: pulsar_embedded
-      tmp_dir: true
-      docker_enabled: true
       docker_volumes: $defaults
-      docker_sudo: false
-      docker_net: bridge
-      docker_auto_rm: true
-      docker_set_user: ''
-      require_container: true
       container_monitor_result: callback
       submit_requirements: 'GalaxyDockerHack == True'
     rules:
