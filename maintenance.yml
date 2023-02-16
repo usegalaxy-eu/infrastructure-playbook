@@ -1,0 +1,180 @@
+---
+- name: UseGalaxy EU maintenance server
+  hosts: maintenance
+  become: true
+  become_user: root
+  vars:
+    # The full internal name.
+    hostname: maintenance.galaxyproject.eu
+  vars_files:
+    - group_vars/gxconfig.yml # The base galaxy configuration
+    - group_vars/toolbox.yml # User controlled toolbox
+    - secret_group_vars/sentry.yml # Sentry SDK init url
+    - secret_group_vars/aws.yml # AWS creds
+    - secret_group_vars/pulsar.yml # Pulsar + MQ Connections
+    - secret_group_vars/oidc.yml # OIDC credentials (ELIXIR, keycloak)
+    - secret_group_vars/object_store.yml # Object Store credentils (S3 etc ...)
+    - secret_group_vars/db-main.yml # DB URL + some postgres stuff
+    - secret_group_vars/file_sources.yml # file_sources_conf.yml creds
+    - secret_group_vars/all.yml # All of the other assorted secrets...
+    - templates/galaxy/config/job_conf.yml
+  handlers:
+    # Though this handler doesn't do anything (for now), galaxyproject.galaxy role
+    # will fail if it's not defined
+    - name: Restart Galaxy
+      shell: |
+        echo 'Manual web handler restart required' && cd /opt/galaxy/ && source /opt/galaxy/.bashrc
+  collections:
+    - devsec.hardening
+  pre_tasks:
+    - name: Install Dependencies
+      package:
+        name:
+          [
+            "git",
+            "postgresql",
+            "python3-psycopg2",
+            "python3-virtualenv",
+            "bc",
+            "python3",
+            "python3-devel",
+          ]
+      become: true
+  post_tasks:
+    - name: Append some users to the systemd-journal group
+      user:
+        name: "{{ item }}"
+        groups: systemd-journal
+        append: true
+      loop:
+        - "{{ galaxy_user.name }}"
+        - "telegraf"
+        - "stats" # special account to retrieve statistics from the server in read-only mode
+    - name: Set authorized SSH key (galaxy user)
+      ansible.posix.authorized_key:
+        user: "{{ galaxy_user.name }}"
+        state: present
+        key: "{{ item }}"
+      loop:
+        - "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBOBINXdjILF6x3WuppXyq6J2a2oSLR6waZ6txgjYJogHdIKPbI0TdReCv4EVxxYRY/NqGpHbjkqfRTsf2VgoU3U= mk@galaxy-mira"
+        - "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBACB5Q5blymkTIRSzVzXITOGvBuI7W0L9Ykwfz8LJGPraaGVPiezzFGvjhqwX+EyCqQPt7JprR5mimJRw/JN3nBXWAHjekvmB5FuILkk6m5fOiQJ5QhRMyQ5GfxODAvGbHpTuWHbYJLWD5fhcboKPxlXOWy4xY9kDZVuQvEKisNKYBsFLA== sanjay"
+    - name: Set authorized SSH key (stats user)
+      ansible.posix.authorized_key:
+        user: "stats"
+        state: present
+        key: "{{ item }}"
+      loop:
+        - "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAA6oD5Ps9h6pKokzaAcCI6R08CKm2aSVv86h/O2HTEQkzeJq/Uvu4gbrONAM0FK5R693mHggIwaROKf1Z1+q4YNtACtYjV1c+6a9lcrGMM31y5RzO6mAW+rHNEXgZ1n3wqDcBQhSXhSekSen0R2QKwvmB7xeP4XX9qE10azZuafIFU9hQ== sanjay"
+        - "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBADKblzzPBc3+dEfFvhJQHsHGkFFN6ORjfXo71P1OutwcKEMCIcNkZKJHhYkLLrfTDN5JJ5tK2L5AaSxdwETofwm4AG1xv3LuoYsXC6e3sjKi09BVmzef520pIMW+rvL+hESwSazZaUAC0wDcH4aNDTonZYcAY87rpMX7pNMkNPJvWilUA== mira"
+  roles:
+    ## Starting configuration of the operating system
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        enable_hostname: true
+        enable_powertools: true # geerlingguy.repo-epel role doesn't enable PowerTools repository
+        enable_remap_user: true
+        enable_exclude_packages: true
+        enable_pam_limits: true # Prevent out of control processes
+        enable_install_software: true # Some extra admin tools (*top, vim, etc)
+    - geerlingguy.repo-epel # Install EPEL repository
+
+    ## Istall miniconda, create a _galaxy_ environment and install Packages
+    ## Galaxy will use the virtualenv command from this conda environment (see
+    ## galaxy_virtualenv_command) in the group_vars/maintenance.yml
+    - role: galaxyproject.miniconda
+      vars:
+        miniconda_prefix: "{{ conda_prefix }}"
+        galaxy_conda_create_env: true
+        galaxy_conda_env_packages:
+          - python=3.8.8
+          - pip
+          - virtualenv
+
+    - usegalaxy-eu.autoupdates # keep all of our packages up to date
+    - influxdata.chrony # Keep our time in sync.
+
+    ## Filesystems
+    - usegalaxy-eu.autofs # Setup the mount points which will be needed later
+
+    ## Monitoring (Uncomment when in production)
+    # - hxr.monitor-cluster
+    # - hxr.monitor-email
+    # - usegalaxy-eu.monitoring
+
+    ## Setup Galaxy user
+    - role: galaxyproject.galaxy
+      vars:
+        galaxy_create_user: true
+        galaxy_manage_clone: false
+        galaxy_manage_download: false
+        galaxy_manage_existing: true
+        galaxy_manage_paths: true
+        galaxy_manage_static_setup: false
+        galaxy_manage_mutable_setup: false
+        galaxy_manage_database: false
+        galaxy_fetch_dependencies: false
+        galaxy_build_client: false
+
+    ## The bashrc needs to be created for several later features.
+    - role: usegalaxy-eu.bashrc
+      vars:
+        user_name: "{{ galaxy_user.name }}"
+        user_home: "{{ galaxy_user.home }}"
+        group_name: "{{ galaxy_group.name }}"
+
+    # HTCondor (Uncomment when in production and latest version is installed)
+    # - usegalaxy_eu.htcondor
+
+    # Misc.
+    - role: hxr.galaxy-nonreproducible-tools
+      become: true
+      become_user: galaxy
+    - usegalaxy-eu.dynmotd # nicer MOTD/welcome message
+    # - usegalaxy-eu.rsync-to-nfs # sync codebase to NFS (Uncomment when in production)
+    - role: usegalaxy-eu.webhooks # Clone webhook repository
+      become: true
+      become_user: galaxy
+    - role: usegalaxy-eu.tours # Clone tour repository
+      become: true
+      become_user: galaxy
+
+    ## SSL / Security
+    # https://en.wikipedia.org/wiki/Trust_on_first_use
+    - ssh-host-sign # Sign the server host key to prevent TOFU for SSH
+
+    ## GALAXY
+    - hxr.postgres-connection
+    - galaxyproject.gxadmin
+    # TODO move under monitoring + telegraf.
+    # Role that creates a cron to gather galaxy stats, needs to run only on one node (uncomment when in production)
+    # - usegalaxy-eu.galaxy-slurp
+
+    # The REAL galaxy role
+    - role: galaxyproject.galaxy
+      vars:
+        galaxy_create_user: true
+        galaxy_manage_clone: true
+        galaxy_manage_download: false
+        galaxy_manage_existing: false
+        galaxy_manage_static_setup: true
+        galaxy_manage_mutable_setup: true
+        galaxy_manage_database: true
+        galaxy_fetch_dependencies: true
+        galaxy_build_client: true
+
+    ## Extras!
+    - usegalaxy-eu.fix-galaxy-server-dir # Fix details into the galaxy server dirs
+    - hxr.install-to-venv # Some extra packages our site needs.
+    - usegalaxy_eu.gie_proxy # Setup the NodeJS proxy for GxIT (not IE anymore)
+    # - usegalaxy_eu.fs_maintenance # (Uncomment when in production)
+    # - usegalaxy-eu.htcondor_release # (Uncomment when in production and condor is installed)
+    # Various ugly fixes
+    # - usegalaxy-eu.fix-unscheduled-workflows (Uncomment when in production)
+    # - usegalaxy-eu.fix-ancient-ftp-data # Remove FTP data older than 3 months, create FTP user directories (Uncomment when in production)
+    # - usegalaxy-eu.fix-missing-api-keys # Workaround for IE users not have a key set. (Uncomment when in production)
+    # - usegalaxy-eu.fix-user-quotas # Automatically recalculate user quotas and attribute ELIXIR quota to ELIXIR AAI user on a regular basis (Uncomment when in production)
+    - usegalaxy_eu.tpv_auto_lint
+    - ssh_hardening #dev-sec.hardening collection
+    # - dj-wasabi.telegraf    # Uncomment when in production
+    - usegalaxy-eu.logrotate # Rotate logs
+    - usegalaxy-eu.fix-stop-ITs
