@@ -46,13 +46,13 @@
         group: "{{ group_name }}"
       when: not bashprofile_stat_out.stat.exists and not profile_stat_out.stat.exists
 
-    - name: Copy template get_jwd.sh bash script
-      template:
-        src: get_jwd.sh.j2
-        dest: /usr/local/bin/get_jwd
+    - name: Copy galaxy_jwd python script
+      copy:
+        src: galaxy_jwd.py
+        dest: /usr/local/bin/galaxy_jwd
+        mode: 0755
         owner: galaxy
         group: galaxy
-        mode: 0755
 
     - name: Insert some aliases and functions
       blockinfile:
@@ -77,7 +77,7 @@
           cd $WD
           }
 
-          # Uses the /usr/local/bin/get_jwd bash script to change to the job working directory
+          # Uses the /usr/local/bin/galaxy_jwd python script to change to the job working directory
           function change_to_jwd() {
           USAGE="Please provide a Galaxy job ID"
           if (( $# == 0 )); then
@@ -86,7 +86,7 @@
           fi
 
           JID=$1
-          JWD=$(/usr/local/bin/get_jwd $JID)
+          JWD=$(python /usr/local/bin/galaxy_jwd get_jwd $JID)
           cd $JWD
           }
 
@@ -112,6 +112,7 @@
         - "export GALAXY_MUTABLE_CONFIG_DIR={{ galaxy_mutable_config_dir }}"
         - "export GALAXY_ROOT={{ galaxy_server_dir }}"
         - "export VIRTUAL_ENV={{ galaxy_venv_dir }}"
+        - "export PGHOST={{ postgres_host }}"
 
     - name: Check for bash_history
       stat:
