@@ -1,20 +1,35 @@
 ---
-- name: Add env vars in bashrc
-  lineinfile:
-    path: "{{ pgc_user.home }}/.bashrc"
-    regexp: "^export {{ item.var }}"
-    line: "export {{ item.var }}='{{ item.val }}'"
-  with_items:
-    - var: PGUSER
-      val: "{{ postgres_user }}"
-    - var: PGHOST
-      val: "{{ postgres_host }}"
+- name: Get all users
+  getent:
+    database: passwd
+    split: ':'
 
-- name: Copy using the 'content' for inline data
-  copy:
-    content: |
-      {{ postgres_host }}:{{ postgres_port }}:*:{{ postgres_user }}:{{ postgres_pass }}
-    dest: "{{ pgc_user.home }}/.pgpass"
-    mode: 0600
-    owner: "{{ pgc_user.name }}"
-    group: "{{ pgc_user.group_name }}"
+- name: Debug info when user does not exist
+  debug:
+    msg: "INFO: User {{ pgc_user.name }} does not exist"
+  when: (not pgc_user.name in getent_passwd.keys())
+
+- name: Add postgres connection configuration
+  block:
+    - name: Add env vars in bashrc
+      lineinfile:
+        path: "{{ pgc_user.home }}/.bashrc"
+        regexp: "^export {{ item.var }}"
+        line: "export {{ item.var }}='{{ item.val }}'"
+      with_items:
+        - var: PGUSER
+          val: "{{ pguser }}"
+        - var: PGHOST
+          val: "{{ postgres_host }}"
+        - var: PGDATABASE
+          val: "{{ pgdatabase }}"
+
+    - name: Copy using the 'content' for inline data
+      copy:
+        content: |
+          {{ postgres_host }}:{{ postgres_port }}:*:{{ pguser }}:{{ pgpass }}
+        dest: "{{ pgc_user.home }}/.pgpass"
+        mode: 0600
+        owner: "{{ pgc_user.name }}"
+        group: "{{ pgc_user.group_name }}"
+  when: (pgc_user.name in getent_passwd.keys())
