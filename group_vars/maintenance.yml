@@ -24,6 +24,32 @@ autofs_mount_points:
 # Miniconda role variables (galaxyproject.miniconda)
 conda_prefix: /opt/miniconda
 
+# usegalaxy-eu.bashrc role variables
+bashrc_users:
+  - uname: "{{ galaxy_user.name }}"
+    uhome: "{{ galaxy_user.home }}"
+    gname: "{{ galaxy_group.name }}"
+
+  - uname: stats
+    uhome: /home/stats
+    gname: stats
+
+# hxr.postgres-connection role variables
+pgc_users:
+  - uname: "{{ galaxy_user.name }}"
+    uhome: "{{ galaxy_user.home }}"
+    gname: "{{ galaxy_group.name }}"
+    pguser: "{{ postgres_user }}"
+    pgpass: "{{ postgres_pass }}"
+    pgdatabase: galaxy
+
+  - uname: stats
+    uhome: /home/stats
+    gname: stats
+    pguser: "{{ galaxy_db_ro_user }}"
+    pgpass: "{{ galaxy_db_ro_pass }}"
+    pgdatabase: galaxy
+
 # fs-maintenance
 # Only on the maintenance node
 fsm_maintenance_dir: "/data/dnb01/maintenance"
