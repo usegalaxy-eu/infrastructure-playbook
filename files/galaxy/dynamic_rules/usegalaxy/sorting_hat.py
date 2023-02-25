@@ -382,9 +382,9 @@ def _finalize_tool_spec(tool_id, user_roles, tools_spec=TOOL_DESTINATIONS, memor
         tool_spec['requirements'] = 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
     elif tool in ('run_jupyter_job', 'deepvariant', 'msconvert', 'glassgo', 'bionano_scaffold', 'mitohifi'):
         tool_spec['requirements'] = 'GalaxyDockerHack == True && GalaxyGroup == "compute"'
-    elif 'mothur' in tool:
-        if len(get_training_roles(user_roles)) == 0:
-            tool_spec['requirements'] = 'GalaxyGroup == "compute_mothur"'
+    #elif 'mothur' in tool:
+    #    if len(get_training_roles(user_roles)) == 0:
+    #        tool_spec['requirements'] = 'GalaxyGroup == "compute_mothur"'
 
     return tool_spec
 
