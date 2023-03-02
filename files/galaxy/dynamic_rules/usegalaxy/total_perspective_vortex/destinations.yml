@@ -71,7 +71,7 @@ destinations:
       LC_ALL: C
       GALAXY_MEMORY_MB: "{mem}"
       GALAXY_SLOTS: "{cores}"
-      SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
+      SINGULARITY_CACHEDIR: /data/share/var/database/container_cache # On the NFS share on remote Pulsar side
     params:
       jobs_directory: /data/share/staging
       transport: curl
