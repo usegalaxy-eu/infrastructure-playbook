@@ -69,14 +69,22 @@ destinations:
     runner: pulsar_embedded
     env:
       LC_ALL: C
+      GALAXY_MEMORY_MB: "{mem}"
+      GALAXY_SLOTS: "{cores}"
+      SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
     params:
       jobs_directory: /data/share/staging
       transport: curl
       remote_metadata: "false"
       default_file_action: remote_transfer
-      dependency_resolution: remote
       rewrite_parameters: "true"
       persistence_directory: /data/share/persisted_data
+      outputs_to_working_directory: "false"
+      dependency_resolution: "none"
+      submit_request_cpus: "{cores}"
+      submit_request_memory: "{mem}"
+      singularity_enabled: true
+      singularity_default_container_id: "/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04"
     scheduling:
       require:
         - pulsar
@@ -86,27 +94,11 @@ destinations:
     runner: pulsar_mira_runner
     max_accepted_cores: 2
     max_accepted_mem: 4
+    inherits: pulsar_default
     scheduling:
       require:
         - mira-pulsar
-        - docker
-    env:
-      GALAXY_MEMORY_MB: "{MEMORY_MB}"
-      GALAXY_SLOTS: "{PARALLELISATION}"
-      LC_ALL: C
-      SINGULARITY_CACHEDIR: /data/share/var/database/container_cache
-    params:
-      jobs_directory: /data/share/staging
-      transport: curl
-      remote_metadata: "false"
-      submit_request_cpus: "{PARALLELISATION}"
-      submit_request_memory: "{MEMORY}"
-      outputs_to_working_directory: "false"
-      default_file_action: remote_transfer
-      dependency_resolution: "none"
-      rewrite_parameters: "true"
-      singularity_enabled: true
-      singularity_default_container_id: "/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04"
+
 
   pulsar_it_tpv:
     runner: pulsar_eu_it01
