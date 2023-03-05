@@ -2291,6 +2291,30 @@ base_app_main: &BASE_APP_MAIN
   #  task_routes:
   #    galaxy.fetch_data: galaxy.external
   #    galaxy.set_job_metadata: galaxy.external
+  # added by EU
+  #    galaxy.recalculate_user_disk_usage: galaxy.internal
+  #    galaxy.purge_hda: galaxy.internal
+  #    galaxy.materialize:
+  #    galaxy.set_job_metadata: galaxy.external
+  #    galaxy.change_datatype: galaxy.internal
+  #    galaxy.set_metadata:
+  #    galaxy.setup_fetch_data: galaxy.internal
+  #    galaxy.finish_job: galaxy.internal
+  #    galaxy.fetch_data: galaxy.external
+  #    galaxy.export_history: galaxy.internal
+  #    galaxy.prepare_dataset_collection_download:
+  #    galaxy.prepare_pdf_download: galaxy.internal
+  #    galaxy.prepare_history_download:
+  #    galaxy.prepare_history_content_download:
+  #    galaxy.prepare_invocation_download:
+  #    galaxy.write_invocation_to:
+  #    galaxy.write_history_to:
+  #    galaxy.write_history_content_to:
+  #    galaxy.import_model_store:
+  #    galaxy.compute_dataset_hash:
+  #    galaxy.import_data_bundle:
+  #    galaxy.prune_history_audit_table: galaxy.internal
+  #    galaxy.cleanup_short_term_storage: galaxy.internal
 
   # Offload long-running tasks to a Celery task queue. Activate this
   # only if you have setup a Celery worker for Galaxy. For details, see
