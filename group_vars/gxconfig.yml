@@ -2292,6 +2292,12 @@ base_app_main: &BASE_APP_MAIN
   #    galaxy.fetch_data: galaxy.external
   #    galaxy.set_job_metadata: galaxy.external
 
+  celery_conf:
+    result_backend: redis://celery-0.galaxyproject.eu:6379/0
+    task_routes:
+      galaxy.fetch_data: galaxy.external
+      galaxy.set_job_metadata: galaxy.external
+
   # Offload long-running tasks to a Celery task queue. Activate this
   # only if you have setup a Celery worker for Galaxy. For details, see
   # https://docs.galaxyproject.org/en/master/admin/production.html
