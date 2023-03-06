@@ -12,26 +12,26 @@
 #  login: ${user.preferences['b2drop|username']} 
 #  password: ${user.preferences['b2drop|password']}
 
-- type: webdav
-  id: generic_nextcloud
-  label: Nextcloud/ownCloud
-  doc: You personal Cloud files
-  writable: true
-  url: ${user.preferences['nextcloud|url']}
-  root: ${user.preferences['nextcloud|root']}
-  login: ${user.preferences['nextcloud|username']}
-  password: ${user.preferences['nextcloud|password']}
+#- type: webdav
+#  id: generic_nextcloud
+#  label: Nextcloud/ownCloud
+#  doc: You personal Cloud files
+#  writable: true
+#  url: ${user.preferences['nextcloud|url']}
+#  root: ${user.preferences['nextcloud|root']}
+#  login: ${user.preferences['nextcloud|username']}
+#  password: ${user.preferences['nextcloud|password']}
 
-- type: webdav
-  id: erga_nextcloud
-  label: ERGA Nextcloud
-  doc: ERGA Pilot storage provided by BSC
-  writable: true
-  url: 'https://ergapilot.bsc.es'
-  root: '/remote.php/webdav'
-  login: "{{ erga_nextcloud_login }}"
-  password: "{{ erga_nextcloud_password }}"
-  requires_groups: erga
+#- type: webdav
+#  id: erga_nextcloud
+#  label: ERGA Nextcloud
+#  doc: ERGA Pilot storage provided by BSC
+#  writable: true
+#  url: 'https://ergapilot.bsc.es'
+#  root: '/remote.php/webdav'
+#  login: "{{ erga_nextcloud_login }}"
+#  password: "{{ erga_nextcloud_password }}"
+#  requires_groups: erga
 
 - type: posix
   root: '/data/5/galaxy_import/galaxy_user_data/covid-19/data/sequences/'
