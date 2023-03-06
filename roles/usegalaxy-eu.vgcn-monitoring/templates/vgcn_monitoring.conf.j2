@@ -1,0 +1,6 @@
+### Managed by usegalaxy-eu.vgcn-monitoring ansible role ###
+[[inputs.exec]]
+    commands = ["{{ custom_vgcn_env }} /usr/local/bin/vgcn_monitoring.py"]
+    timeout = "60s"
+    data_format = "influx"
+    interval = "60m"
