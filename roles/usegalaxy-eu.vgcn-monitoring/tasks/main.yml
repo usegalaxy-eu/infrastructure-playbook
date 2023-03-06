@@ -1,0 +1,18 @@
+---
+# tasks file for usegalaxy-eu.vgcn-monitoring
+- name: copy vgcn_monitoring template
+  template:
+    src: vgcn_monitoring.py.j2
+    dest: /usr/local/bin/vgcn_monitoring.py
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Add VGCN monitoring Telegraf configuration
+  template:
+    src: vgcn_monitoring.conf.j2
+    dest: /etc/telegraf/telegraf.d/vgcn_monitoring.conf
+    owner: telegraf
+    group: telegraf
+    mode: 0640
+  notify: restart telegraf

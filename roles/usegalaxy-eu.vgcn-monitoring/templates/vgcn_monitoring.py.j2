@@ -1,0 +1,255 @@
+"""Telegraf VGCN nodes monitoring script"""
+#!/usr/bin/env python
+
+# Python requirements:
+#     - PyYAML
+#     - GitPython
+
+# System requirements:
+#     - openstack command
+#     - condor_status command
+
+# This script will clone the vgcn-infrastructure repo and parse the resources.yaml
+# file to get the list of VGCN nodes (resources and their counts). It will then
+# query the OpenStack cloud and HTCondor pool to get the list of active VGCN
+# nodes. It will then prepare the influxdb format output.
+
+import os
+import shutil
+import subprocess
+import sys
+
+import yaml
+from git import Repo
+
+
+def clone_vgcn_infrastructure_repo(repo_url, dest_dir):
+    """Clone the vgcn-infrastructure repo and return the path to the repo
+
+    Args:
+        repo_url (str): URL of the vgcn-infrastructure repo
+        dest_dir (str): Path to the directory where the repo will be cloned
+    """
+    if os.path.isdir(dest_dir):
+        if os.path.isdir(f"{dest_dir}/.git") and os.path.isfile(
+            f"{dest_dir}/reources.yml"
+        ):
+            remove_folder(dest_dir)
+
+    # Clone the repo
+    try:
+        Repo.clone_from(repo_url, dest_dir)
+    except Exception as err:
+        print(f"Error while cloning vgcn-infrastructure repo: {err}")
+        sys.exit(1)
+
+
+def get_vgcn_node_names(repo_path):
+    """Get the list of VGCN 'worker' nodes
+
+    Args:
+        repo_path (str): Path to the vgcn-infrastructure repo
+
+    Returns:
+        dict: Dictionary of VGCN worker nodes and their count
+    """
+    workers = {}
+
+    # Parse the resources.yaml file
+    with open(f"{repo_path}/resources.yaml") as infile:
+        resources = yaml.safe_load(infile)
+        for resource_id in resources["deployment"]:
+            if resource_id.startswith("worker"):
+                worker_name = f"vgcnbwc-{resource_id}"
+                resource = resources["deployment"][resource_id]
+                workers[worker_name] = resource["count"]
+
+    return workers
+
+
+def query_openstack_servers_list():
+    """Query the OpenStack servers list and return names of the
+    active worker nodes
+
+    Returns:
+        str: List of active worker nodes names
+    """
+    # Check if the openstack command is available or not
+    check_openstack_cmd()
+
+    try:
+        output = subprocess.run(
+            [
+                "openstack",
+                "server",
+                "list",
+                "--name",
+                "vgcnbwc-worker",
+                "--status",
+                "ACTIVE",
+                "-f",
+                "value",
+                "-c",
+                "Name",
+                "--sort-column",
+                "Name",
+            ],
+            check=True,
+            capture_output=True,
+        )
+    except Exception as err:
+        print(f"Error while querying OpenStack server list: {err}")
+        sys.exit(1)
+
+    return output.stdout.decode("utf-8").splitlines()
+
+
+def query_htcondor_status():
+    """Query the HTCondor status and return the machine names
+
+    Returns:
+        str: List of machine names
+    """
+    # Check if the openstack command is available or not
+    check_condor_status_cmd()
+
+    try:
+        output = subprocess.run(
+            ["condor_status", "-autoformat", "Machine"],
+            check=True,
+            capture_output=True,
+        )
+    except Exception as err:
+        print(f"Error while querying HTCondor status: {err}")
+        sys.exit(1)
+
+    return output.stdout.decode("utf-8").splitlines()
+
+
+def check_openstack_cmd():
+    """Check if the openstack command is available or not"""
+    try:
+        subprocess.run(
+            ["openstack", "--version"], check=True, stdout=subprocess.DEVNULL
+        )
+    except Exception as err:
+        print(f"Error while checking openstack command: {err}")
+        sys.exit(1)
+
+
+def check_condor_status_cmd():
+    """Check if the condor_status command is available or not"""
+    try:
+        subprocess.run(
+            ["condor_status", "--version"], check=True, stdout=subprocess.DEVNULL
+        )
+    except Exception as err:
+        print(f"Error while checking condor_status command: {err}")
+        sys.exit(1)
+
+
+def influxdb_format(node_name, resource_def, bwcloud, htcondor):
+    """Prepare the influxdb format output
+
+    Args:
+        node_name (str): Name of the node
+        resource_def (bool): Exists in the resource definition file or not
+        bwcloud (bool): Exists in the OpenStack cloud or not
+        htcondor (bool): Exists in the HTCondor pool or not
+    """
+    return f"vgcn_monitoring,resource={node_name} resource_def={resource_def},bwcloud={bwcloud},htcondor={htcondor}"
+
+
+def group_count(lst, pattern):
+    """Return the count of the elements in the list that match the pattern
+
+    Args:
+        lst (list): List of strings
+        pattern (str): Pattern to match
+
+    Returns:
+        int: Count of the elements in the list that match the pattern
+    """
+    return len([x for x in lst if x.startswith(pattern)])
+
+
+def remove_folder(path):
+    """Remove the folder and its contents
+
+    Args:
+        path (str): Path to the folder to be removed
+    """
+    try:
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+    except Exception as err:
+        print(f"Error while removing the folder: {err}")
+        sys.exit(1)
+
+
+def main():
+    """Parse, query, process and prepare the influxdb data for VGCN nodes"""
+    # Clone the vgcn-infrastructure repo
+    vgcn_infra_repo = "{{ vgcn_infra_repo }}"
+    repo_dest_dir = "{{ vgcn_repo_dest_dir }}"
+    clone_vgcn_infrastructure_repo(vgcn_infra_repo, repo_dest_dir)
+
+    # Get the list of VGCN nodes (resources and their counts from resources.yaml)
+    vgcn_nodes = get_vgcn_node_names(repo_dest_dir)
+
+    # Query the OpenStack servers list and collect the names of the active
+    # 'vgcnbwc-worker' nodes
+    active_workers = query_openstack_servers_list()
+
+    # Query the HTCondor status and collect the machine names
+    htcondor_machines = query_htcondor_status()
+
+    # Merge the data from OpenStack and HTCondor and get unique list of nodes
+    # and remove the ones that are not vgcnbwc-worker nodes
+    all_nodes = [
+        node
+        for node in list(set(active_workers + htcondor_machines))
+        if node.startswith("vgcnbwc-worker")
+    ]
+
+    # Create a dictionary where keys are node names and values are
+    # a dictionary with keys resource_def, bwcloud and htcondor with boolean values
+    nodes = {}
+    for node in all_nodes:
+        nodes[node] = {
+            "resource_def": node.rsplit("-", 1)[0] in vgcn_nodes,
+            "bwcloud": node in active_workers,
+            "htcondor": node in htcondor_machines,
+        }
+
+    # Check the count of the nodes and then compare it with the count mentioned
+    # in the resources.yaml file. If the count is less then add the missing nodes
+    # with the format: vgcnbwc-<resource_name>-XXXXX with values as resource_def True,
+    # bwcloud False and htcondor False
+    for resource_name, resource_count in vgcn_nodes.items():
+        nodes_count = group_count(all_nodes, resource_name)
+        if nodes_count < resource_count:
+            for num in range(1, resource_count - nodes_count + 1):
+                nodes[f"{resource_name}-{'X' * num}"] = {
+                    "resource_def": True,
+                    "bwcloud": False,
+                    "htcondor": False,
+                }
+
+    # Clean up the repo directory
+    remove_folder(repo_dest_dir)
+
+    # Print the influxdb format output
+    for node_name, node_data in nodes.items():
+        print(
+            influxdb_format(
+                node_name,
+                resource_def=node_data["resource_def"],
+                bwcloud=node_data["bwcloud"],
+                htcondor=node_data["htcondor"],
+            )
+        )
+
+
+if __name__ == "__main__":
+    main()
