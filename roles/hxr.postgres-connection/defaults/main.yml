@@ -1,4 +1,7 @@
-pgc_user:
-    name: "{{ galaxy_user.name }}"
-    home: "{{ galaxy_user.home }}"
-    group_name: "{{ galaxy_group.name | default(galaxy_group) }}"
+pgc_users:
+  - uname: "{{ galaxy_user.name }}"
+    uhome: "{{ galaxy_user.home }}"
+    gname: "{{ galaxy_group.name | default(galaxy_group) }}"
+    pguser: "{{ postgres_user }}"
+    pgpass: "{{ postgres_pass }}"
+    pgdatabase: galaxy
