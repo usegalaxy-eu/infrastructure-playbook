@@ -20,7 +20,6 @@ def main():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(
         dest="subcommand",
-        required=True,
         title="""
         Use one of the following subcommands:
             get_jwd: Get JWD path of a given Galaxy job id
