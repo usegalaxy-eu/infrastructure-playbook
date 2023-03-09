@@ -122,6 +122,15 @@ rabbitmq_container:
   image: rabbitmq:3.9.11
   hostname: "{{ inventory_hostname }}"
 
+# Redis
+redis_port: 6379
+redis_bind_interface: 0.0.0.0
+redis_rdbcompression: "yes"
+redis_dbfilename: dump.rdb
+redis_dbdir: /var/lib/redis
+redis_loglevel: "notice"
+redis_logfile: /var/log/redis/redis-server.log
+redis_conf_path: /etc/redis
 # Telegraf
 telegraf_plugins_extra:
   prometheus:

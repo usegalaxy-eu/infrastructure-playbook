@@ -23,6 +23,7 @@ nginx_selinux_allow_local_connections: true
 # Allow root login on all machines - TBD
 ssh_allow_root_with_key: true
 
+redis_connection_string: "redis://:{{ redis_requirepass }}@mq.galaxyproject.eu:6379/0"
 # Chrony
 chrony_server: 'time.ruf.uni-freiburg.de iburst'
 chrony_acquisitionport: 0
