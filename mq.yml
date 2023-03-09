@@ -27,30 +27,50 @@
         persistent: true
       loop:
         - httpd_can_network_connect
+    - name: Change the redis_t domain to permissive
+      community.general.selinux_permissive:
+        name: redis_t
+        permissive: true
     - name: Disable firewalld service
       ansible.builtin.service:
         name: firewalld
-        enabled: false
-        state: stopped
+        enabled: true
+        state: running
+    - name: Open ports for redis
+      ansible.posix.firewalld:
+        port: 6379/tcp
+        permanent: true
+        state: enabled
+    - name: Open ports for rabbitmq
+      ansible.posix.firewalld:
+        service: "{{ item }}"
+        permanent: true
+        state: enabled
+      loop:
+        - amqp
+        - amqps
+        - https
+        - http
+    
     - name: Create redis db dir
       ansible.builtin.file:
         path: /var/lib/redis
-        owner: centos
-        group: centos
+        owner: redis
+        group: redis
         state: directory
         mode: 755
     - name: Create redis log dir
       ansible.builtin.file:
         path: /var/log/redis
-        owner: root
-        group: root
+        owner: redis
+        group: redis
         state: directory
         mode: 755
     - name: Touches redis
       ansible.builtin.file:
         path: /var/log/redis/redis-server.log
-        owner: centos
-        group: centos
+        owner: redis
+        group: redis
         state: touch
         mode: 644
   roles:
