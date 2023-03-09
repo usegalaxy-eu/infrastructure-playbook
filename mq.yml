@@ -32,6 +32,26 @@
         name: firewalld
         enabled: false
         state: stopped
+      ansible.builtin.file:
+        path: /var/lib/redis
+        owner: centos
+        group: centos
+        state: directory
+        mode: 755
+    - name: Create redis log dir
+      ansible.builtin.file:
+        path: /var/log/redis
+        owner: root
+        group: root
+        state: directory
+        mode: 755
+    - name: Touches redis
+      ansible.builtin.file:
+        path: /var/log/redis/redis-server.log
+        owner: centos
+        group: centos
+        state: touch
+        mode: 644
   roles:
     ## Starting configuration of the operating system
     - role: usegalaxy_eu.handy.os_setup
@@ -47,6 +67,7 @@
     - geerlingguy.docker
     - galaxyproject.nginx
     - usegalaxy_eu.rabbitmqserver
+    - geerlingguy.redis
     - dj-wasabi.telegraf
     # hardening
     - os_hardening

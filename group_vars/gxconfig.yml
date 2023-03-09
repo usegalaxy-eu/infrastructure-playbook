@@ -2293,7 +2293,7 @@ base_app_main: &BASE_APP_MAIN
   #    galaxy.set_job_metadata: galaxy.external
 
   celery_conf:
-    result_backend: redis://celery-0.galaxyproject.eu:6379/0
+    result_backend: "{{ redis_connection_string }}"
     task_routes:
       galaxy.fetch_data: galaxy.external
       galaxy.set_job_metadata: galaxy.external
