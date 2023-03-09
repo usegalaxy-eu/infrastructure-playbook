@@ -83,7 +83,7 @@ destinations:
       submit_request_memory: "{mem}"
       singularity_enabled: true
       singularity_default_container_id: "/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:20.04"
-      singularity_volumes: "/etc/resolv.conf:/etc/resolv.conf:ro,$job_directory:rw,$tool_directory:ro,/cvmfs/data.galaxyproject.org:ro"
+      singularity_volumes: "$default,/etc/resolv.conf:/etc/resolv.conf:ro,$job_directory:rw,$tool_directory:ro,/cvmfs/data.galaxyproject.org:ro"
       docker_volumes: $default
     scheduling:
       require:
