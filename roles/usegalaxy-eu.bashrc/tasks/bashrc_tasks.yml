@@ -77,6 +77,13 @@
 
           JID=$1
           JWD=$(python /usr/local/bin/galaxy_jwd get_jwd $JID)
+
+          # Check the return code and whether the job working directory exists
+          if [[ $? -ne 0 || ! -d $JWD ]]; then
+              echo "INFO: Could not find the job working directory for job $JID"
+              return 1
+          fi
+
           cd $JWD
           }
 
