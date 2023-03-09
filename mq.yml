@@ -35,7 +35,7 @@
       ansible.builtin.service:
         name: firewalld
         enabled: true
-        state: running
+        state: started
     - name: Open ports for redis
       ansible.posix.firewalld:
         port: 6379/tcp
