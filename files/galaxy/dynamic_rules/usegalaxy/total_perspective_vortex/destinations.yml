@@ -135,6 +135,7 @@ destinations:
           shell: "/bin/bash"
           resolve_dependencies: true
           identifier: "/data/0/singularity_base_images/centos:8.3.2011"
+
   # needs to be migrated, since we do not want to run upload jobs on celery
   # will have a dedicated VGCN image with tag
   condor_upload:
@@ -144,9 +145,9 @@ destinations:
         - upload
     max_accepted_cores: 20
     max_accepted_mem: 10
-    env:
-      GALAXY_MEMORY_MB: '{MEMORY_MB}'
-      GALAXY_SLOTS: '{PARALLELISATION}'
+    #env:
+    #  GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    #  GALAXY_SLOTS: '{PARALLELISATION}'
     params:
       priority: '{PRIORITY}'
       request_cpus: '{cores}'
@@ -163,8 +164,8 @@ destinations:
     max_accepted_mem: 16
     max_accepted_gpus: 1
     env:
-      GALAXY_MEMORY_MB: '{MEMORY_MB}'
-      GALAXY_SLOTS: '{PARALLELISATION}'
+      #GALAXY_MEMORY_MB: '{MEMORY_MB}'
+      #GALAXY_SLOTS: '{PARALLELISATION}'
       GPU_AVAILABLE: 1
     params:
       requirements: 'GalaxyGroup == "compute_gpu"'
