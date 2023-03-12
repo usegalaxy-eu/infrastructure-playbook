@@ -3,6 +3,7 @@
 destinations:
   interactive_pulsar:
     runner: pulsar_embedded
+    destination_name_override: "embedded_pulsar_interactive_c{cores}-m{mem}"
     max_accepted_cores: 24
     max_accepted_mem: 128
     max_accepted_gpus: 0
@@ -27,6 +28,7 @@ destinations:
 
   embedded_pulsar_docker:
     runner: pulsar_embedded
+    destination_name_override: "embedded_pulsar_docker_c{cores}-m{mem}"
     params:
       tmp_dir: true
       docker_enabled: true
@@ -73,6 +75,7 @@ destinations:
 
   pulsar_default: # use for remote Pulsar nodes and ALWAYS overwrite the runner.
     runner: pulsar_embedded
+    destination_name_override: "embedded_pulsar_c{cores}-m{mem}"
     env:
       LC_ALL: C
       SINGULARITY_CACHEDIR: /data/share/var/database/container_cache # On the NFS share on remote Pulsar side
