@@ -7,6 +7,8 @@ destinations:
     max_accepted_mem: 128
     max_accepted_gpus: 0
     params:
+      request_cpus: '{cores}'
+      request_memory: '{mem}G'
       tmp_dir: true
       docker_enabled: true
       docker_sudo: false
@@ -25,6 +27,8 @@ destinations:
   embedded_pulsar_docker:
     runner: pulsar_embedded
     params:
+      request_cpus: '{cores}'
+      request_memory: '{mem}G'
       tmp_dir: true
       docker_enabled: true
       #docker_volumes: $defaults
@@ -46,6 +50,8 @@ destinations:
     max_accepted_cores: 24
     max_accepted_mem: 128
     params:
+      request_cpus: '{cores}'
+      request_memory: '{mem}G'
       singularity_enabled: true
       singularity_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
       singularity_default_container_id: "/cvmfs/singularity.galaxyproject.org/all/centos:8.3.2011"
@@ -65,6 +71,8 @@ destinations:
         - condor-tpv
     params:
       tmp_dir: true
+      request_cpus: '{cores}'
+      request_memory: '{mem}G'
 
   pulsar_default: # use for remote Pulsar nodes and ALWAYS overwrite the runner.
     runner: pulsar_embedded
@@ -81,7 +89,7 @@ destinations:
       outputs_to_working_directory: "false"
       dependency_resolution: "none"
       submit_request_cpus: "{cores}"
-      submit_request_memory: "{mem}"
+      submit_request_memory: "{mem}G"
       singularity_enabled: true
       singularity_default_container_id: "/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:20.04"
       singularity_volumes: "$default,$job_directory:rw,$tool_directory:ro,/etc/resolv.conf:/etc/resolv.conf:ro,/cvmfs/data.galaxyproject.org:ro"
@@ -170,4 +178,6 @@ destinations:
     params:
       requirements: 'GalaxyGroup == "compute_gpu"'
       tmp_dir: true
+      request_cpus: '{cores}'
+      request_memory: '{mem}G'
       metadata_strategy: 'extended'
