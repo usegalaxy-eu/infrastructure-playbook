@@ -3,6 +3,7 @@
 destinations:
   interactive_pulsar:
     runner: pulsar_embedded
+    destination_name_override: "embedded_pulsar_interactive_c{cores}-m{mem}"
     max_accepted_cores: 24
     max_accepted_mem: 128
     max_accepted_gpus: 0
@@ -14,8 +15,12 @@ destinations:
       docker_auto_rm: true
       docker_set_user: ""
       require_container: true
+      # submit_request_cpus its called in pulsar and in plain condor only request_cpus
+      submit_request_cpus: "{cores}"
+      submit_request_memory: "{mem}G"
       outputs_to_working_directory: false
       container_monitor_result: callback
+      submit_requirements: 'GalaxyDockerHack == True'
     scheduling:
       prefer:
         - docker
@@ -23,6 +28,7 @@ destinations:
 
   embedded_pulsar_docker:
     runner: pulsar_embedded
+    destination_name_override: "embedded_pulsar_docker_c{cores}-m{mem}"
     params:
       tmp_dir: true
       docker_enabled: true
@@ -32,6 +38,8 @@ destinations:
       docker_auto_rm: true
       docker_set_user: ""
       require_container: true
+      submit_request_cpus: "{cores}"
+      submit_request_memory: "{mem}"
       outputs_to_working_directory: false
       container_monitor_result: callback
       submit_requirements: 'GalaxyDockerHack == True'
@@ -67,10 +75,9 @@ destinations:
 
   pulsar_default: # use for remote Pulsar nodes and ALWAYS overwrite the runner.
     runner: pulsar_embedded
+    destination_name_override: "embedded_pulsar_c{cores}-m{mem}"
     env:
       LC_ALL: C
-      GALAXY_MEMORY_MB: "{mem}"
-      GALAXY_SLOTS: "{cores}"
       SINGULARITY_CACHEDIR: /data/share/var/database/container_cache # On the NFS share on remote Pulsar side
     params:
       jobs_directory: /data/share/staging
@@ -85,6 +92,8 @@ destinations:
       submit_request_memory: "{mem}"
       singularity_enabled: true
       singularity_default_container_id: "/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:20.04"
+      singularity_volumes: "$default,$job_directory:rw,$tool_directory:ro,/etc/resolv.conf:/etc/resolv.conf:ro,/cvmfs/data.galaxyproject.org:ro"
+      docker_volumes: "$default,$job_directory:rw,$tool_directory:ro,/cvmfs/data.galaxyproject.org:ro"
     scheduling:
       require:
         - pulsar
@@ -92,8 +101,8 @@ destinations:
 
   pulsar_mira_tpv:
     runner: pulsar_mira_runner
-    max_accepted_cores: 2
-    max_accepted_mem: 4
+    max_accepted_cores: 8
+    max_accepted_mem: 15
     inherits: pulsar_default
     scheduling:
       require:
@@ -134,6 +143,7 @@ destinations:
           shell: "/bin/bash"
           resolve_dependencies: true
           identifier: "/data/0/singularity_base_images/centos:8.3.2011"
+
   # needs to be migrated, since we do not want to run upload jobs on celery
   # will have a dedicated VGCN image with tag
   condor_upload:
@@ -143,9 +153,9 @@ destinations:
         - upload
     max_accepted_cores: 20
     max_accepted_mem: 10
-    env:
-      GALAXY_MEMORY_MB: '{MEMORY_MB}'
-      GALAXY_SLOTS: '{PARALLELISATION}'
+    #env:
+    #  GALAXY_MEMORY_MB: '{MEMORY_MB}'
+    #  GALAXY_SLOTS: '{PARALLELISATION}'
     params:
       priority: '{PRIORITY}'
       request_cpus: '{cores}'
@@ -162,8 +172,8 @@ destinations:
     max_accepted_mem: 16
     max_accepted_gpus: 1
     env:
-      GALAXY_MEMORY_MB: '{MEMORY_MB}'
-      GALAXY_SLOTS: '{PARALLELISATION}'
+      #GALAXY_MEMORY_MB: '{MEMORY_MB}'
+      #GALAXY_SLOTS: '{PARALLELISATION}'
       GPU_AVAILABLE: 1
     params:
       requirements: 'GalaxyGroup == "compute_gpu"'

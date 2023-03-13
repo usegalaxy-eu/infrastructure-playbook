@@ -314,13 +314,13 @@ base_app_main: &BASE_APP_MAIN
   # Monitor dynamic job rules. If changes are found, rules are
   # automatically reloaded. Takes the same values as the 'watch_tools'
   # option.
-  watch_job_rules: true
+  watch_job_rules: false
 
   # Monitor a subset of options in the core configuration file (See
   # RELOADABLE_CONFIG_OPTIONS in lib/galaxy/config/__init__.py).  If
   # changes are found, modified options are automatically reloaded.
   # Takes the same values as the 'watch_tools' option.
-  watch_core_config: true
+  watch_core_config: false
 
   # Monitor the interactive tours directory specified in the
   # 'tour_config_dir' option. If changes are found, modified tours are
@@ -338,7 +338,7 @@ base_app_main: &BASE_APP_MAIN
   # external tooling.
   # The value of this option will be resolved with respect to
   # <cache_dir>.
-  #short_term_storage_dir: short_term_web_storage
+  short_term_storage_dir: '/data/jwd04/short_term_web_storage'
 
   # Default duration before short term web storage files will be cleaned
   # up by Galaxy tasks (in seconds). The default duration is 1 day.
@@ -2292,6 +2292,12 @@ base_app_main: &BASE_APP_MAIN
   #    galaxy.fetch_data: galaxy.external
   #    galaxy.set_job_metadata: galaxy.external
 
+  celery_conf:
+    result_backend: "{{ redis_connection_string }}"
+    task_routes:
+      galaxy.fetch_data: galaxy.external
+      galaxy.set_job_metadata: galaxy.external
+
   # Offload long-running tasks to a Celery task queue. Activate this
   # only if you have setup a Celery worker for Galaxy. For details, see
   # https://docs.galaxyproject.org/en/master/admin/production.html
@@ -2375,7 +2381,7 @@ base_app_main: &BASE_APP_MAIN
   # client.
   # The value of this option will be resolved with respect to
   # <config_dir>.
-  themes_config_file: themes_conf.yml
+  themes_config_file: /opt/galaxy/config/themes_conf.yml
 
   # Enables user preferences and api endpoint for the beacon
   # integration.

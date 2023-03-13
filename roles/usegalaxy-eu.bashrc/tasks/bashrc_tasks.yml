@@ -1,0 +1,125 @@
+---
+- name: Check and add/update bashrc when user user exists
+  block:
+    - name: Check for bashrc
+      stat:
+        path: "{{ item.uhome }}/.bashrc"
+      register: bashrc_stat_out
+
+    - name: Copy default bashrc when not existing
+      copy:
+        src: /etc/skel/.bashrc
+        dest: "{{ item.uhome }}/.bashrc"
+        remote_src: yes
+        mode: 0640
+        owner: "{{ item.uname }}"
+        group: "{{ item.gname }}"
+      when: not bashrc_stat_out.stat.exists
+
+    - name: Check for bashprofile
+      stat:
+        path: "{{ item.uhome }}/.bash_profile"
+      register: bashprofile_stat_out
+
+    - name: Check for profile
+      stat:
+        path: "{{ item.uhome }}/.profile"
+      register: profile_stat_out
+
+    - name: Copy default bashprofile when not existing
+      copy:
+        src: /etc/skel/.bash_profile
+        dest: "{{ item.uhome }}/.bash_profile"
+        remote_src: yes
+        mode: 0640
+        owner: "{{ item.uname }}"
+        group: "{{ item.gname }}"
+      when: not bashprofile_stat_out.stat.exists and not profile_stat_out.stat.exists
+
+    - name: Copy galaxy_jwd python script
+      copy:
+        src: galaxy_jwd.py
+        dest: /usr/local/bin/galaxy_jwd
+        mode: 0755
+        owner: galaxy
+        group: galaxy
+
+    - name: Insert some aliases and functions
+      blockinfile:
+        path: "{{ item.uhome }}/.bashrc"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK"
+        content: |
+          # User specific aliases and functions
+          function change_to_wd() {
+          USAGE="Please provide a Galaxy job ID or a Condor job ID"
+          if (( $# == 0 )); then
+                  echo $USAGE
+                  return 0;
+          fi
+          for i in "$@"; do
+                          if [[ "$i" = --help || "$i" = -h ]]; then
+                                  echo $USAGE
+                                  return 0;
+                          fi
+          done
+          JID=$1
+          WD=$(dirname `condor_q -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || dirname `condor_history -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || find "{{ galaxy_config['galaxy']['job_working_directory'] }}""/0"${JID:0:2}"/"${JID:2:3} -maxdepth 1 -type d -name ${JID})
+          cd $WD
+          }
+
+          # Uses the /usr/local/bin/galaxy_jwd python script to change to the job working directory
+          function change_to_jwd() {
+          USAGE="Please provide a Galaxy job ID"
+          if (( $# == 0 )); then
+              echo $USAGE
+              return 0;
+          fi
+
+          JID=$1
+          JWD=$(python /usr/local/bin/galaxy_jwd get_jwd $JID)
+
+          # Check the return code and whether the job working directory exists
+          if [[ $? -ne 0 || ! -d $JWD ]]; then
+              echo "INFO: Could not find the job working directory for job $JID"
+              return 1
+          fi
+
+          cd $JWD
+          }
+
+          alias gl='journalctl  -f -u galaxy-*'
+          alias glg='journalctl -fu galaxy-gunicorn@* | grep -v -e "/api/upload/hooks" -e "/history/current_history_json"'
+          alias glh='journalctl -f -u galaxy-handler@*'
+          alias glw='journalctl -f -u galaxy-workflow-scheduler@*'
+          alias cu='journalctl -u galaxy-gunicorn@*.service --since "10 minutes ago" | grep "/history/current_history_json"  | awk "{print \$11}" | sort -u | wc -l'
+          alias chg2wd='change_to_wd'
+          alias chg2jwd='change_to_jwd'
+
+    - name: Insert some export vars
+      lineinfile:
+        path: "{{ item.uhome }}/.bashrc"
+        line: "{{ task_item }}"
+      loop:
+        # ENV's for gxadmin
+        - "export GALAXY_CONFIG_DIR={{ galaxy_config_dir }}"
+        - "export GALAXY_CONFIG_FILE={{ galaxy_config_file }}"
+        - "export GALAXY_LOG_DIR={{ galaxy_log_dir }}"
+        - "export GALAXY_MUTABLE_CONFIG_DIR={{ galaxy_mutable_config_dir }}"
+        - "export GALAXY_ROOT={{ galaxy_server_dir }}"
+        - "export VIRTUAL_ENV={{ galaxy_venv_dir }}"
+      loop_control:
+        loop_var: task_item
+
+    - name: Check for bash_history
+      stat:
+        path: "{{ item.uhome }}/.bash_history"
+      register: bashhistory_stat_out
+
+    - name: Create bash_history
+      file:
+        path: "{{ item.uhome }}/.bash_history"
+        state: touch
+        mode: 0640
+        owner: "{{ item.uname }}"
+        group: "{{ item.gname }}"
+      when: not bashhistory_stat_out.stat.exists

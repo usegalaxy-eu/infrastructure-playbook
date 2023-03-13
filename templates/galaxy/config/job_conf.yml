@@ -498,7 +498,10 @@ galaxy_jobconf:
   tools:
     # TODO(hxr): implement validation that checks that every destination
     # used here is defined above.
-
+    - id: "picard_MarkDuplicates"
+      destination: tpv_dispatcher
+    - id: "purge_dups"
+      destination: tpv_dispatcher
     - id: "cb_ivr"
       destination: tpv_dispatcher
     - id: "cactus_export"
