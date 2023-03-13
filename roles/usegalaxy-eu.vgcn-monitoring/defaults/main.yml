@@ -1,0 +1,8 @@
+---
+# defaults file for usegalaxy-eu.vgcn-monitoring
+vgcn_infra_repo: https://github.com/usegalaxy-eu/vgcn-infrastructure
+vgcn_repo_dest_dir: /tmp/vgcn-infrastructure-repo
+vgcn_ven_dir: "{{ galaxy_venv_dir }}"
+
+# Credentials are stored in the vault
+custom_vgcn_env: "/usr/bin/env OS_AUTH_TYPE={{ bwc_OS_AUTH_TYPE }} OS_AUTH_URL={{ bwc_OS_AUTH_URL }} OS_IDENTITY_API_VERSION={{ bwc_OS_IDENTITY_API_VERSION }} OS_REGION_NAME={{ bwc_OS_REGION_NAME }} OS_INTERFACE={{ bwc_OS_INTERFACE }} OS_APPLICATION_CREDENTIAL_ID={{ bwc_OS_APPLICATION_CREDENTIAL_ID }} OS_APPLICATION_CREDENTIAL_SECRET={{ bwc_OS_APPLICATION_CREDENTIAL_SECRET }} {{ vgcn_ven_dir }}/bin/python"
