@@ -33,6 +33,11 @@ chrony_keyfile: '/etc/chrony.keys'
 # Telegraf var
 dc: ufr-rz
 
+# OS Hardening
+os_auditd_max_log_file_action: rotate
+os_auditd_space_left: 500
+os_auditd_space_left_action: suspend
+
 # Telegraf
 telegraf_agent_package_state: latest
 telegraf_agent_output:
