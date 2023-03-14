@@ -2295,7 +2295,8 @@ base_app_main: &BASE_APP_MAIN
   celery_conf:
     result_backend: "{{ redis_connection_string }}"
     task_routes:
-      galaxy.fetch_data: galaxy.external
+      galaxy.fetch_data: disabled
+      # galaxy.fetch_data: galaxy.external
       galaxy.set_job_metadata: galaxy.external
 
   # Offload long-running tasks to a Celery task queue. Activate this
