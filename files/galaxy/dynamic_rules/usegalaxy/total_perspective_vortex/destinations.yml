@@ -83,6 +83,7 @@ destinations:
       jobs_directory: /data/share/staging
       transport: curl
       remote_metadata: "false"
+      metadata_strategy: directory
       default_file_action: remote_transfer
       rewrite_parameters: "true"
       persistence_directory: /data/share/persisted_data
@@ -92,7 +93,7 @@ destinations:
       submit_request_memory: "{mem}"
       singularity_enabled: true
       singularity_default_container_id: "/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:20.04"
-      singularity_volumes: "$default,$job_directory:rw,$tool_directory:ro,/etc/resolv.conf:/etc/resolv.conf:ro,/cvmfs/data.galaxyproject.org:ro"
+      singularity_volumes: "$default,$job_directory:rw,$tool_directory:ro,/cvmfs/data.galaxyproject.org:ro"
       docker_volumes: "$default,$job_directory:rw,$tool_directory:ro,/cvmfs/data.galaxyproject.org:ro"
     scheduling:
       require:
