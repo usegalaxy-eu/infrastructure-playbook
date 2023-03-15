@@ -160,6 +160,9 @@ tools:
     mem: 8
     params:
       docker_run_extra_arguments: " --gpus all"
+    scheduling:
+      require:
+        - condor-gpu
 
   #interactive_tool_jupyter_notebook:
   #  inherits: interactive_tool
