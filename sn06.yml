@@ -52,6 +52,7 @@
     - secret_group_vars/db-main.yml # DB URL + some postgres stuff
     - secret_group_vars/file_sources.yml # file_sources_conf.yml creds
     - secret_group_vars/all.yml # All of the other assorted secrets...
+    - secret_group_vars/keys.yml # SSH keys
     - templates/galaxy/config/job_conf.yml
   handlers:
     - name: Restart Galaxy
@@ -99,6 +100,7 @@
         - "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBACB5Q5blymkTIRSzVzXITOGvBuI7W0L9Ykwfz8LJGPraaGVPiezzFGvjhqwX+EyCqQPt7JprR5mimJRw/JN3nBXWAHjekvmB5FuILkk6m5fOiQJ5QhRMyQ5GfxODAvGbHpTuWHbYJLWD5fhcboKPxlXOWy4xY9kDZVuQvEKisNKYBsFLA== sanjay"
         - https://github.com/wm75.keys
         - https://github.com/gmauro.keys
+        - "{{ galaxy_user_public_key }}"
     - name: Set authorized SSH key (stats user)
       ansible.posix.authorized_key:
         user: "stats"
