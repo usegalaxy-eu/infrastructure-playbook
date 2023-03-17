@@ -114,6 +114,19 @@ destinations:
         - condor-tpv
         - singularity
 
+  pulsar_sanjay_tpv:
+    runner: pulsar_sanjay_runner
+    max_accepted_cores: 8
+    max_accepted_mem: 15
+    inherits: pulsar_default
+    scheduling:
+      require:
+        - sanjay-pulsar
+      accept:
+        - docker
+        - condor-singularity-with-conda-python
+        - condor-tpv
+        - singularity
 
   pulsar_sk01_tpv:
     runner: pulsar_eu_sk01
