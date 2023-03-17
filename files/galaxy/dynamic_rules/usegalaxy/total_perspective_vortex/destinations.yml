@@ -26,6 +26,24 @@ destinations:
         - docker
         - interactive
 
+  interactive_pulsar_gpu:
+    inherits: interactive_pulsar
+    destination_name_override: "e-pulsar_i_c{cores}-m{mem}-g{gpus}"
+    max_accepted_gpus: 1
+
+    env:
+      #GALAXY_MEMORY_MB: '{MEMORY_MB}'
+      #GALAXY_SLOTS: '{PARALLELISATION}'
+      GPU_AVAILABLE: '1'
+    params:
+      requirements: 'GalaxyGroup == "compute_gpu"'
+      tmp_dir: true
+      metadata_strategy: 'extended'
+    scheduling:
+      prefer:
+        - docker
+        - interactive
+
   embedded_pulsar_docker:
     runner: pulsar_embedded
     destination_name_override: "embedded_pulsar_docker_c{cores}-m{mem}"
