@@ -1,0 +1,65 @@
+---
+- name: Check if prsync is installed
+  command: prsync --version
+  register: prsync_installed
+  ignore_errors: true
+
+- name: Install prsync (part of pssh)
+  become: true
+  dnf:
+    name: pssh
+    state: present
+  when: not prsync_installed.stdout
+
+- name: Check if SSH key exists
+  stat:
+    path: "{{ galaxy_rsync_user_private_key_file }}"
+  register: ssh_key
+
+- name: Add SSH key
+  copy:
+    content: "{{ galaxy_user_private_key }}"
+    dest: "{{ galaxy_rsync_user_private_key_file }}"
+    owner: "{{ galaxy_user.name }}"
+    group: "{{ galaxy_user.name }}"
+    mode: 0600
+  when: not ssh_key.stat.exists
+
+# tasks file for usegalaxy-eu.rsync-galaxy-sync
+- name: "Deploy galaxy-sync script"
+  copy:
+    content: |
+        #!/bin/bash
+        cd {{ galaxy_root }};
+        for dir in {config,custom-tools,dynamic_rules,gie-proxy,mutable-config,mutable-data,server,venv,tool-data}; do
+            if [ -d $dir ]; then
+                echo "Syncing $dir"
+                # Sync to NFS server in background
+                rsync -avr --delete --exclude node_modules/ --exclude .git --exclude __pycache__ $dir/ {{ galaxy_nfs_location }}/$dir/ &
+
+                # Sync to head nodes in foreground (so we can see progress and wait until the sync is done before continuing with the next directory)
+                prsync -avr -H "{{ headnodes }}" --extra-arg='--delete' --extra-arg='--exclude=node_modules/' --extra-arg='--exclude=.git' --extra-arg='--exclude=__pycache__' --user "{{ galaxy_user.name }}" --ssh-args='-i "{{ galaxy_rsync_user_private_key_file }}"' $dir/ {{ headnodes_sync_location }}/$dir/
+            else
+                echo "Skipping $dir"
+            fi
+        done;
+        if [ -d shed_tools-local ]; then
+            echo "Syncing shed_tools-local"
+            # Sync to NFS server in background
+            rsync -avr --delete --exclude .hg shed_tools-local/ {{ galaxy_nfs_location }}/shed_tools/ &
+
+            # Sync to head nodes in foreground (so we can see progress and wait until the sync is done before continuing with the next directory)
+            prsync -avr -H "{{ headnodes }}" --extra-arg='--delete' --extra-arg='--exclude=.hg' --user "{{ galaxy_user.name }}" --ssh-args='-i "{{ galaxy_rsync_user_private_key_file }}"' shed_tools-local/ {{ headnodes_sync_location }}/shed_tools/
+        else
+            echo "Skipping shed_tools-local"
+        fi
+    dest: /usr/bin/galaxy-sync
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Execute the script. Syncing in progress."
+  command: /usr/bin/galaxy-sync
+  become: true
+  become_user: galaxy
+  when: execute_galaxy_sync

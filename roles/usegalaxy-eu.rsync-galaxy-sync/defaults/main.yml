@@ -1,0 +1,9 @@
+---
+execute_galaxy_sync: false
+galaxy_rsync_user_private_key_file: "{{ galaxy_user.home }}/.ssh/galaxy_rsync_key"
+
+# Uses the hostnames of the inventory group 'galaxyservers'
+# headnodes: "{{ groups['galaxyservers'] | join(', ') }}"
+headnodes: "sn07.galaxyproject.eu"
+headnodes_sync_location: "{{ galaxy_root }}"
+galaxy_nfs_location: ""

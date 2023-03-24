@@ -126,7 +126,7 @@
       become: true
       become_user: galaxy
     - usegalaxy-eu.dynmotd # nicer MOTD/welcome message
-    # - usegalaxy-eu.rsync-to-nfs # sync codebase to NFS (Uncomment when in production)
+    - usegalaxy-eu.rsync-galaxy-sync # syncs Galaxy codebase to NFS and to the headnodes
     - role: usegalaxy-eu.webhooks # Clone webhook repository
       become: true
       become_user: galaxy
