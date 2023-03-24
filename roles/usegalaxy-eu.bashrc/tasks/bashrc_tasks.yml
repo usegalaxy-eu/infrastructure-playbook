@@ -95,6 +95,14 @@
           alias chg2wd='change_to_wd'
           alias chg2jwd='change_to_jwd'
 
+          # finds big files somewhere ;)
+          function findbig () {
+          echo -e "$(find $1 -type f -size +$2M -exec ls -lh {} +)"
+          }
+
+          alias findbig=findbig
+
+
     - name: Insert some export vars
       lineinfile:
         path: "{{ item.uhome }}/.bashrc"
