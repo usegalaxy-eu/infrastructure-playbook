@@ -17,6 +17,7 @@
     - secret_group_vars/db-main.yml # DB URL + some postgres stuff
     - secret_group_vars/file_sources.yml # file_sources_conf.yml creds
     - secret_group_vars/all.yml # All of the other assorted secrets...
+    - secret_group_vars/keys.yml # SSH keys
     - templates/galaxy/config/job_conf.yml
   handlers:
     # Though this handler doesn't do anything (for now), galaxyproject.galaxy role
@@ -171,7 +172,7 @@
     # - usegalaxy-eu.fix-user-quotas # Automatically recalculate user quotas and attribute ELIXIR quota to ELIXIR AAI user on a regular basis (Uncomment when in production)
     - usegalaxy_eu.tpv_auto_lint
     - ssh_hardening #dev-sec.hardening collection
-    # - dj-wasabi.telegraf    # Uncomment when in production
+    - dj-wasabi.telegraf    # Uncomment when in production
     - usegalaxy-eu.logrotate # Rotate logs
     - usegalaxy-eu.fix-stop-ITs
     - usegalaxy-eu.vgcn-monitoring

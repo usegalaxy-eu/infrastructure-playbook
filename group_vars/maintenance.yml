@@ -120,117 +120,118 @@ fsm_htcondor_enable: true
 telegraf_agent_hostname: "{{ hostname }}"
 telegraf_agent_version: 1.17.2
 custom_telegraf_env: "/usr/bin/env GDPR_MODE=1 PGUSER={{ galaxy_user.name }} PGHOST={{ postgres_host }} GALAXY_ROOT={{ galaxy_server_dir }} GALAXY_CONFIG_FILE={{ galaxy_config_file }} GALAXY_LOG_DIR={{ galaxy_log_dir }} GXADMIN_PYTHON={{ galaxy_venv_dir }}/bin/python"
-telegraf_plugins_extra:
-  # Run only on the maintenance node
-  postgres:
-    plugin: "postgresql"
-    config:
-      - address = "{{ galaxy_db_connection }}"
-      - databases = ["galaxy", "galaxy-test", "apollo", "chado"]
+# Uncomment the outer block when the respective tasks are not run in the headnodes playbook anymore
+# telegraf_plugins_extra:
+#   # Run only on the maintenance node
+#   postgres:
+#     plugin: "postgresql"
+#     config:
+#       - address = "{{ galaxy_db_connection }}"
+#       - databases = ["galaxy", "galaxy-test", "apollo", "chado"]
 
-  # Run only on the headnodes
-  # Also when pushing it would be nice if they can have some sort of prefix
-  # to differentiate the headnodes data
-  # listen_galaxy_routes:
-  #   plugin: "statsd"
-  #   config:
-  #     - service_address = ":8125"
-  #     - percentiles = [90]
-  #     - metric_separator = "."
-  #     - allowed_pending_messages = 10000
-  #     - percentile_limit = 100
+#   # Run only on the headnodes
+#   # Also when pushing it would be nice if they can have some sort of prefix
+#   # to differentiate the headnodes data
+#   # listen_galaxy_routes:
+#   #   plugin: "statsd"
+#   #   config:
+#   #     - service_address = ":8125"
+#   #     - percentiles = [90]
+#   #     - metric_separator = "."
+#   #     - allowed_pending_messages = 10000
+#   #     - percentile_limit = 100
 
-  # Run only on the maintenance node
-  monitor_nfsstat:
-    plugin: "exec"
-    config:
-      - commands = ["/usr/bin/nfsstat-influx"]
-      - timeout = "10s"
-      - data_format = "influx"
-      - interval = "15s"
+#   # Run only on the maintenance node
+#   monitor_nfsstat:
+#     plugin: "exec"
+#     config:
+#       - commands = ["/usr/bin/nfsstat-influx"]
+#       - timeout = "10s"
+#       - data_format = "influx"
+#       - interval = "15s"
 
-  # Some custom galaxy monitoring stuff
-  galaxy_uploaded:
-    plugin: "exec"
-    config:
-      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery upload-gb-in-past-hour"]
-      - timeout = "120s"
-      - data_format = "influx"
-      - interval = "1h"
-  galaxy_lastlog:
-    plugin: "exec"
-    config:
-      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin uwsgi lastlog"]
-      - timeout = "15s"
-      - data_format = "influx"
-      - interval = "15s"
-  galaxy_jobs_queued:
-    plugin: "exec"
-    config:
-      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery jobs-queued"]
-      - timeout = "15s"
-      - data_format = "influx"
-      - interval = "1m"
-  galaxy_jobs_queued_internal:
-    plugin: "exec"
-    config:
-      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery jobs-queued-internal-by-handler"]
-      - timeout = "15s"
-      - data_format = "influx"
-      - interval = "1m"
-  galaxy_jobs_queue_overview:
-    plugin: "exec"
-    config:
-      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery queue-overview --short-tool-id"]
-      - timeout = "30s"
-      - data_format = "influx"
-      - interval = "1m"
-  galaxy_oidc:
-    plugin: "exec"
-    config:
-      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery users-with-oidc"]
-      - timeout = "15s"
-      - data_format = "influx"
-      - interval = "1m"
-  galaxy_workflow:
-    plugin: "exec"
-    config:
-      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery workflow-invocation-status"]
-      - timeout = "15s"
-      - data_format = "influx"
-      - interval = "1m"
-  galaxy_workflow_totals:
-    plugin: "exec"
-    config:
-      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery workflow-invocation-totals"]
-      - timeout = "15s"
-      - data_format = "influx"
-      - interval = "1m"
-  # Uses logs from /var/log/nginx/ so it should be run only on the headnode
-  # galaxy_active_users:
-  #   plugin: "exec"
-  #   config:
-  #     - commands = ["/usr/bin/gxadmin local cu"]
-  #     - timeout = "15s"
-  #     - data_format = "influx"
-  #     - interval = "1m"
-  postgres_extra:
-    plugin: "exec"
-    config:
-      - commands = [
-        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-cache-hit",
-        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-index-size",
-        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-index-usage",
-        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-table-bloat",
-        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-table-size",
-        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-unused-indexes",
-        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-vacuum-stats",
-        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-stat-bgwriter",
-        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-stat-user-tables",
-        ]
-      - timeout = "60s"
-      - data_format = "influx"
-      - interval = "2m"
+#   # Some custom galaxy monitoring stuff
+#   galaxy_uploaded:
+#     plugin: "exec"
+#     config:
+#       - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery upload-gb-in-past-hour"]
+#       - timeout = "120s"
+#       - data_format = "influx"
+#       - interval = "1h"
+#   galaxy_lastlog:
+#     plugin: "exec"
+#     config:
+#       - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin uwsgi lastlog"]
+#       - timeout = "15s"
+#       - data_format = "influx"
+#       - interval = "15s"
+#   galaxy_jobs_queued:
+#     plugin: "exec"
+#     config:
+#       - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery jobs-queued"]
+#       - timeout = "15s"
+#       - data_format = "influx"
+#       - interval = "1m"
+#   galaxy_jobs_queued_internal:
+#     plugin: "exec"
+#     config:
+#       - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery jobs-queued-internal-by-handler"]
+#       - timeout = "15s"
+#       - data_format = "influx"
+#       - interval = "1m"
+#   galaxy_jobs_queue_overview:
+#     plugin: "exec"
+#     config:
+#       - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery queue-overview --short-tool-id"]
+#       - timeout = "30s"
+#       - data_format = "influx"
+#       - interval = "1m"
+#   galaxy_oidc:
+#     plugin: "exec"
+#     config:
+#       - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery users-with-oidc"]
+#       - timeout = "15s"
+#       - data_format = "influx"
+#       - interval = "1m"
+#   galaxy_workflow:
+#     plugin: "exec"
+#     config:
+#       - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery workflow-invocation-status"]
+#       - timeout = "15s"
+#       - data_format = "influx"
+#       - interval = "1m"
+#   galaxy_workflow_totals:
+#     plugin: "exec"
+#     config:
+#       - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery workflow-invocation-totals"]
+#       - timeout = "15s"
+#       - data_format = "influx"
+#       - interval = "1m"
+#   # Uses logs from /var/log/nginx/ so it should be run only on the headnode
+#   # galaxy_active_users:
+#   #   plugin: "exec"
+#   #   config:
+#   #     - commands = ["/usr/bin/gxadmin local cu"]
+#   #     - timeout = "15s"
+#   #     - data_format = "influx"
+#   #     - interval = "1m"
+#   postgres_extra:
+#     plugin: "exec"
+#     config:
+#       - commands = [
+#         "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-cache-hit",
+#         "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-index-size",
+#         "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-index-usage",
+#         "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-table-bloat",
+#         "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-table-size",
+#         "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-unused-indexes",
+#         "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-vacuum-stats",
+#         "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-stat-bgwriter",
+#         "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-stat-user-tables",
+#         ]
+#       - timeout = "60s"
+#       - data_format = "influx"
+#       - interval = "2m"
 
 # Custom pip installer
 pip_venv_path: "{{ galaxy_venv_dir }}"
@@ -248,10 +249,6 @@ pip_install_dependencies:
   - WeasyPrint
   - nbconvert
   - gitlab-arc-fs
-  # Needed for usegalaxy-eu.vgcn-monitoring Telegraf role
-  - pyyaml
-  - GitPython
-  - python-openstackclient
 
 yum_exclude_repos:
   - condor*
