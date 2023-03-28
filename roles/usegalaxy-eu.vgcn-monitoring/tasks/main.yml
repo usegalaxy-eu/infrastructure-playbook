@@ -1,5 +1,14 @@
 ---
 # tasks file for usegalaxy-eu.vgcn-monitoring
+- name: Install pip Dependencies
+  pip:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - pyyaml
+    - GitPython
+    - python-openstackclient
+
 - name: copy vgcn_monitoring template
   template:
     src: vgcn_monitoring.py.j2

@@ -22,6 +22,8 @@ import sys
 import yaml
 from git import Repo
 
+# Append /usr/local/bin/ to the PATH
+os.environ["PATH"] = f"{os.environ['PATH']}:/usr/local/bin"
 
 def clone_vgcn_infrastructure_repo(repo_url, dest_dir):
     """Clone the vgcn-infrastructure repo and return the path to the repo
@@ -32,7 +34,7 @@ def clone_vgcn_infrastructure_repo(repo_url, dest_dir):
     """
     if os.path.isdir(dest_dir):
         if os.path.isdir(f"{dest_dir}/.git") and os.path.isfile(
-            f"{dest_dir}/reources.yml"
+            f"{dest_dir}/resources.yaml"
         ):
             remove_folder(dest_dir)
 
