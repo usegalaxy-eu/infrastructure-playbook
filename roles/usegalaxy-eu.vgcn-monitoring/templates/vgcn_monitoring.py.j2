@@ -22,8 +22,6 @@ import sys
 import yaml
 from git import Repo
 
-# Append /usr/local/bin/ to the PATH
-os.environ["PATH"] = f"{os.environ['PATH']}:/usr/local/bin"
 
 def clone_vgcn_infrastructure_repo(repo_url, dest_dir):
     """Clone the vgcn-infrastructure repo and return the path to the repo
@@ -82,7 +80,7 @@ def query_openstack_servers_list():
     try:
         output = subprocess.run(
             [
-                "openstack",
+                "{{ openstack_executable }}",
                 "server",
                 "list",
                 "--name",
@@ -132,7 +130,7 @@ def check_openstack_cmd():
     """Check if the openstack command is available or not"""
     try:
         subprocess.run(
-            ["openstack", "--version"], check=True, stdout=subprocess.DEVNULL
+            ["{{ openstack_executable }}", "--version"], check=True, stdout=subprocess.DEVNULL
         )
     except Exception as err:
         print(f"Error while checking openstack command: {err}")
