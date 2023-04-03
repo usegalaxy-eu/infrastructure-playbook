@@ -32,7 +32,7 @@ def clone_vgcn_infrastructure_repo(repo_url, dest_dir):
     """
     if os.path.isdir(dest_dir):
         if os.path.isdir(f"{dest_dir}/.git") and os.path.isfile(
-            f"{dest_dir}/reources.yml"
+            f"{dest_dir}/resources.yaml"
         ):
             remove_folder(dest_dir)
 
@@ -80,7 +80,7 @@ def query_openstack_servers_list():
     try:
         output = subprocess.run(
             [
-                "openstack",
+                "{{ openstack_executable }}",
                 "server",
                 "list",
                 "--name",
@@ -130,7 +130,7 @@ def check_openstack_cmd():
     """Check if the openstack command is available or not"""
     try:
         subprocess.run(
-            ["openstack", "--version"], check=True, stdout=subprocess.DEVNULL
+            ["{{ openstack_executable }}", "--version"], check=True, stdout=subprocess.DEVNULL
         )
     except Exception as err:
         print(f"Error while checking openstack command: {err}")
