@@ -35,24 +35,37 @@ def main():
             <pg_host>:5432:*:<pg_user>:<pg_password>
 
         Example:
-            python galaxy_jwd.py get_jwd 12345678
-            python galaxy_jwd.py clean_jwds --dry_run True --days 30
+            get_jwd:
+                python galaxy_jwd.py get_jwd 12345678
+            clean_jwds:
+                Dry run: python galaxy_jwd.py clean_jwds --dry_run --days 5
+                No dry run: python galaxy_jwd.py clean_jwds --no_dry_run --days 5
         """,
     )
 
     # Parser for the get_jwd subcommand
-    get_jwd_parser = subparsers.add_parser("get_jwd", help="Get JWD path of a given Galaxy job id")
+    get_jwd_parser = subparsers.add_parser(
+        "get_jwd", help="Get JWD path of a given Galaxy job id"
+    )
     get_jwd_parser.add_argument(
         "job_id",
         help="Galaxy job id",
     )
 
     # Parser for the clean_jwds subcommand
-    clean_jwds_parser = subparsers.add_parser("clean_jwds", help="Clean JWD's of jobs failed within last X days")
-    clean_jwds_parser.add_argument(
+    clean_jwds_parser = subparsers.add_parser(
+        "clean_jwds", help="Clean JWD's of jobs failed within last X days"
+    )
+    dry_run_group = clean_jwds_parser.add_mutually_exclusive_group(required=True)
+    dry_run_group.add_argument(
         "--dry_run",
-        help="If True, do NOT delete JWD's; only print them (default: True)",
-        default=True,
+        help="Dry run (Print's the JWD's that would be deleted)",
+        action="store_true",
+    )
+    dry_run_group.add_argument(
+        "--no_dry_run",
+        help="No dry run (Deletes the JWD's)",
+        action="store_true",
     )
     clean_jwds_parser.add_argument(
         "--days",
@@ -65,30 +78,42 @@ def main():
     # Check if environment variables are set
     if not os.environ.get("GALAXY_CONFIG_FILE"):
         raise ValueError("Please set ENV GALAXY_CONFIG_FILE")
-    if not os.environ.get("GALAXY_LOG_DIR"):
-        raise ValueError("Please set ENV GALAXY_LOG_DIR")
-    if not os.environ.get("PGDATABASE"):
-        raise ValueError("Please set ENV PGDATABASE")
-    if not os.environ.get("PGUSER"):
-        raise ValueError("Please set ENV PGUSER")
-    if not os.environ.get("PGHOST"):
-        raise ValueError("Please set ENV PGHOST")
-
-    # Check if ~/.pgpass file exists and is not empty
-    if not os.path.isfile(os.path.expanduser("~/.pgpass")) or os.stat(os.path.expanduser("~/.pgpass")).st_size == 0:
-        raise ValueError("Please create a ~/.pgpass file in format: <pg_host>:5432:*:<pg_user>:<pg_password>")
+    galaxy_config_file = os.environ.get("GALAXY_CONFIG_FILE").strip()
 
     # Check if the given galaxy.yml file exists
-    if not os.path.isfile(os.environ.get("GALAXY_CONFIG_FILE")):
-        raise ValueError(f"The given galaxy.yml file {os.environ.get('GALAXY_CONFIG_FILE')} does not exist")
+    if not os.path.isfile(galaxy_config_file):
+        raise ValueError(
+            f"The given galaxy.yml file {galaxy_config_file} does not exist"
+        )
 
-    # Set variables
-    galaxy_config_file = os.environ.get("GALAXY_CONFIG_FILE").strip()
+    if not os.environ.get("GALAXY_LOG_DIR"):
+        raise ValueError("Please set ENV GALAXY_LOG_DIR")
     galaxy_log_dir = os.environ.get("GALAXY_LOG_DIR").strip()
+
+    if not os.environ.get("PGDATABASE"):
+        raise ValueError("Please set ENV PGDATABASE")
     db_name = os.environ.get("PGDATABASE").strip()
+
+    if not os.environ.get("PGUSER"):
+        raise ValueError("Please set ENV PGUSER")
     db_user = os.environ.get("PGUSER").strip()
+
+    if not os.environ.get("PGHOST"):
+        raise ValueError("Please set ENV PGHOST")
     db_host = os.environ.get("PGHOST").strip()
-    db_password = extract_password_from_pgpass(pgpass_file=os.path.expanduser("~/.pgpass"))
+
+    # Check if ~/.pgpass file exists and is not empty
+    if (
+        not os.path.isfile(os.path.expanduser("~/.pgpass"))
+        or os.stat(os.path.expanduser("~/.pgpass")).st_size == 0
+    ):
+        raise ValueError(
+            "Please create a ~/.pgpass file in format: <pg_host>:5432:*:<pg_user>:<pg_password>"
+        )
+    db_password = extract_password_from_pgpass(
+        pgpass_file=os.path.expanduser("~/.pgpass")
+    )
+
     object_store_conf = get_object_store_conf_path(galaxy_config_file)
     backends = parse_object_store(object_store_conf)
 
@@ -117,12 +142,14 @@ def main():
     if args.subcommand == "clean_jwds":
         # Check if the given Galaxy log directory exists
         if not os.path.isdir(galaxy_log_dir):
-            raise ValueError(f"The given Galaxy log directory {galaxy_log_dir} does not exist")
+            raise ValueError(
+                f"The given Galaxy log directory {galaxy_log_dir} does not exist"
+            )
 
         # Set variables
         dry_run = args.dry_run
         days = args.days
-        jwd_cleanup_log = f"{galaxy_log_dir}/jwd_cleanup" f"_{datetime.now().strftime('%d_%m_%Y-%I_%M_%S')}.log"
+        jwd_cleanup_log = f"{galaxy_log_dir}/jwd_cleanup_{datetime.now().strftime('%d_%m_%Y-%I_%M_%S')}.log"
         failed_jobs = db.get_failed_jobs(days=days)
 
         # Delete JWD folders if dry_run is False
@@ -137,8 +164,8 @@ def main():
                     # Delete JWD folders older than X days
                     jwd_path = decode_path(job_id, metadata, backends)
                     if jwd_path:
-                        jwd_log.write(f"{job_id}: {jwd_path}")
                         delete_jwd(jwd_path)
+                        jwd_log.write(f"{job_id}: {jwd_path}\n")
         else:
             # Print JWD folders older than X days
             for job_id, metadata in failed_jobs.items():
@@ -228,7 +255,9 @@ def decode_path(job_id, metadata, backends_dict):
 
     # Check if object_store_id exists in our object store config
     if metadata[0] not in backends_dict.keys():
-        raise ValueError(f"Object store id '{metadata[0]}' does not exist in the object_store_conf.xml file")
+        raise ValueError(
+            f"Object store id '{metadata[0]}' does not exist in the object_store_conf.xml file"
+        )
 
     jwd_path = f"{backends_dict[metadata[0]]}/0{job_id[0:2]}/{job_id[2:5]}/{job_id}"
 
@@ -256,6 +285,7 @@ def delete_jwd(jwd_path):
         jwd_path (str): Path to the JWD folder
     """
     try:
+        print(f"Deleting JWD: {jwd_path}")
         shutil.rmtree(jwd_path)
     except OSError as e:
         print(f"Error deleting JWD: {jwd_path} : {e.strerror}")
@@ -273,7 +303,9 @@ class Database:
 
     def __init__(self, dbname, dbuser, dbhost, dbpassword):
         try:
-            self.conn = psycopg2.connect(dbname=dbname, user=dbuser, host=dbhost, password=dbpassword)
+            self.conn = psycopg2.connect(
+                dbname=dbname, user=dbuser, host=dbhost, password=dbpassword
+            )
         except psycopg2.OperationalError as e:
             print(f"Unable to connect to database: {e}")
 
