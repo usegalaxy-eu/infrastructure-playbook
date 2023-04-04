@@ -123,7 +123,8 @@ def query_htcondor_status():
         print(f"Error while querying HTCondor status: {err}")
         sys.exit(1)
 
-    return output.stdout.decode("utf-8").splitlines()
+    # Remove domain name from the machine names
+    return [node.rsplit('.')[0] for node in output.stdout.decode("utf-8").splitlines()]
 
 
 def check_openstack_cmd():
