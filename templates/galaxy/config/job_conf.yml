@@ -520,6 +520,8 @@ galaxy_jobconf:
   tools:
     # TODO(hxr): implement validation that checks that every destination
     # used here is defined above.
+    - id: bioext_bam2msa
+      destination: tpv_dispatcher
     - id: "picard_MarkDuplicates"
       destination: tpv_dispatcher
     - id: "purge_dups"
