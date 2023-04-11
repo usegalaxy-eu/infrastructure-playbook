@@ -36,17 +36,6 @@ galaxy_jobconf:
         amqp_consumer_timeout: 2.0
         amqp_publish_retry: "true"
         amqp_publish_retry_max_retries: 60
-    - id: pulsar_eu_fr01
-      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
-      params:
-        amqp_url: "pyamqp://galaxy_fr01:{{ rabbitmq_password_galaxy_fr01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_fr01?ssl=1"
-        galaxy_url: "https://usegalaxy.eu"
-        manager: production
-        amqp_acknowledge: "true"
-        amqp_ack_republish_time: 300
-        amqp_consumer_timeout: 2.0
-        amqp_publish_retry: "true"
-        amqp_publish_retry_max_retries: 60
     - id: pulsar_mira_runner
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
       params:
