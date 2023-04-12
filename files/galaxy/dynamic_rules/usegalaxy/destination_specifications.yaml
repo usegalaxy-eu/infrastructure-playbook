@@ -734,6 +734,7 @@ remote_cluster_mq_2wdfalse_it03:
     singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw'
 
 # drop, we need a new stradegy for pulsar
+# THIS IS NOT WORKING, DO NOT set `outputs_to_working_directory=True`
 remote_cluster_mq_2wdtrue_it03:
   info:
     remote: true
