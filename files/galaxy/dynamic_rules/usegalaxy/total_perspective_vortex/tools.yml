@@ -533,6 +533,23 @@ tools:
           Too much data, we cannot support such large Trinity assemblies with our
           backend. Please use another server for your job.
 
+  toolshed.g2.bx.psu.edu/repos/iuc/trinity/trinity/2.15.1+galaxy0:
+    cores: 8
+    scheduling:
+      prefer:
+        - condor-tpv
+    rules:
+      - if: 0.1 <= input_size < 1
+        cores: 20
+        mem: 50
+      - if: 1 <= input_size < 20
+        cores: 30
+        mem: 200
+      - if: input_size >= 30
+        fail:
+          Too much data, we cannot support such large Trinity assemblies with our
+          backend. Please use another server for your job.
+
   'mothur_*':
     cores: 1
     mem: 90
