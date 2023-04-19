@@ -687,7 +687,7 @@ remote_cluster_mq_it02:
     scheduler: 'condor'
   limits:
     cores: 4
-    mem: 7
+    mem: 30
   env:
     GALAXY_MEMORY_MB: '{MEMORY_MB}'
     GALAXY_SLOTS: '{PARALLELISATION}'
@@ -705,6 +705,7 @@ remote_cluster_mq_it02:
     transport: 'curl'
     singularity_enabled: true
     singularity_default_container_id: '/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04'
+    singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw'
 
 # drop, we need a new stradegy for pulsar
 remote_cluster_mq_2wdfalse_it03:
