@@ -48,6 +48,45 @@ tools:
   toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/2020.4+galaxy0:
     gpus: 1
 
+  toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.16.1+galaxy1:
+    # The memory requirement of Hifiasm depends on a wrapper's input
+    mem: |
+      from math import ceil
+
+      parameters = {p.name: p.value for p in job.parameters}
+      parameters = tool.params_from_strings(parameters, app)
+
+      advanced_options = parameters.get("advanced_options", dict())
+
+      kcov_default = 36
+      kcov = advanced_options.get("kcov", kcov_default)
+
+      hg_size = advanced_options.get("hg_size", "")
+
+      value = 0
+      if hg_size:
+          conversion_factors = {
+              "k": 1000000,
+              "M": 1000,
+              "G": 1,
+          }
+          conversion_factors = {
+              key.lower(): value for key, value in conversion_factors.items()
+          }
+          suffix = hg_size[-1:].lower()
+          value = hg_size[:len(hg_size) - 1]
+          value = value.replace(",", ".")
+          value = float(value)
+          # compute hg size in Gb
+          value = value / conversion_factors[suffix.lower()]
+          value = ceil(value * (kcov * 2) * 1.75)
+
+      # return the amount of memory needed
+      value
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.16.1+galaxy2:
+    inherits: toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.16.1+galaxy2
+
   toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy/.*:
     cores: 2
     scheduling:
