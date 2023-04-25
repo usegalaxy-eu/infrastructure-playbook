@@ -87,6 +87,18 @@ tools:
   toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.16.1+galaxy2:
     inherits: toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.16.1+galaxy2
 
+  keras_train_and_eval:
+    # Type of compute resource (CPU or GPU) for keras_train_eval tool depends on user's input from its wrapper.
+    # Default resource is CPU.
+    gpus: |
+      parameters = {p.name: p.value for p in job.parameters}
+      parameters = tool.params_from_strings(parameters, app)
+
+      gpus = int(
+         parameters.get("__job_resource", dict()).get("gpu", '0')
+      )
+      gpus
+
   toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy/.*:
     cores: 2
     scheduling:
