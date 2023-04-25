@@ -465,12 +465,9 @@ galaxy_jobconf:
         singularity_enabled: true
         singularity_default_container_id: "/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04"
 
-  tools:
+  tools: []
     # TODO(hxr): implement validation that checks that every destination
     # used here is defined above.
-    - id: keras_train_and_eval
-      destination: gateway_for_keras_train_eval
-      resources: usegpu
   resources:
     - id: usegpu
       names: [gpu]
