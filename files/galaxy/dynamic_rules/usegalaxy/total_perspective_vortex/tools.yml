@@ -48,7 +48,7 @@ tools:
   toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/2020.4+galaxy0:
     gpus: 1
 
-  toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.16.1+galaxy1:
+  toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/.*:
     # The memory requirement of Hifiasm depends on a wrapper's input
     mem: |
       from math import ceil
@@ -83,9 +83,6 @@ tools:
 
       # return the amount of memory needed
       value
-
-  toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.16.1+galaxy2:
-    inherits: toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.16.1+galaxy2
 
   keras_train_and_eval:
     # Type of compute resource (CPU or GPU) for keras_train_eval tool depends on user's input from its wrapper.
