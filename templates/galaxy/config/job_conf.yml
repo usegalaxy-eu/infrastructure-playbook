@@ -199,32 +199,6 @@ galaxy_jobconf:
       runner: condor
       params:
         tmp_dir: "true"
-    # Gateways
-    - id: gateway_singlerun
-      runner: dynamic
-      params:
-        type: python
-        function: gateway
-    - id: gateway_1x
-      runner: dynamic
-      params:
-        type: python
-        function: gateway_1x
-    - id: gateway_1_5x
-      runner: dynamic
-      params:
-        type: python
-        function: gateway_1_5x
-    - id: gateway_2x
-      runner: dynamic
-      params:
-        type: python
-        function: gateway_2x
-    - id: gateway_checkpoint
-      runner: dynamic
-      params:
-        type: python
-        function: gateway_checkpoint
 
     # Internal Pulsar runner for ITs
     # this can go once TPV 2.0 runs smoothly
