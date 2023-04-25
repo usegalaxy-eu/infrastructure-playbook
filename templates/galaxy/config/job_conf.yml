@@ -465,13 +465,9 @@ galaxy_jobconf:
         singularity_enabled: true
         singularity_default_container_id: "/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04"
 
-  tools:
+  tools: []
     # TODO(hxr): implement validation that checks that every destination
     # used here is defined above.
-    - id: "toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.16.1+galaxy2"
-      destination: gateway_for_hifiasm
-    - id: "toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.16.1+galaxy1"
-      destination: gateway_for_hifiasm
   resources:
     - id: usegpu
       names: [gpu]
