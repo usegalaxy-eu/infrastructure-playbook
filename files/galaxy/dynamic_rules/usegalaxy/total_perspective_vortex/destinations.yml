@@ -91,6 +91,14 @@ destinations:
     params:
       tmp_dir: true
 
+  condor_extended:
+    inherits: condor-tpv
+    params:
+      metadata_strategy: 'extended'
+    scheduling:
+      require:
+        - extended-metadata
+
   pulsar_default: # use for remote Pulsar nodes and ALWAYS overwrite the runner.
     runner: pulsar_embedded
     destination_name_override: "embedded_pulsar_c{cores}-m{mem}"
