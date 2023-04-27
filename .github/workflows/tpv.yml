@@ -43,6 +43,12 @@ jobs:
           # infrastructure-playbook repo.
           ANSIBLE_CORE_REQ=$(perl -pe 's/\\\n/ /' requirements.txt | grep ansible-core)
           pip3 install --use-feature=fast-deps ansible "$ANSIBLE_CORE_REQ"
+      - name: Save Ansible cache.
+        uses: actions/cache/save@v3
+        if: ${{ steps.cache-ansible.outputs.cache-hit != 'true' }}
+        with:
+          path: /opt/hostedtoolcache/Python/*/*/lib/python*/site-packages/ansible*
+          key: ${{ hashFiles('infrastructure-playbook/requirements.txt') }}
 
       # Total Perspective Vortex needs the Galaxy logic, which should be
       # installed automatically when running `pip3 install
@@ -81,6 +87,12 @@ jobs:
           export GALAXY_REPO="$(cat ./galaxy_repo)"
           # git clone -b $GALAXY_COMMIT_ID --single-branch --depth=1 $GALAXY_REPO galaxy  # does not work with commit hashes
           git clone $GALAXY_REPO galaxy && cd galaxy && git checkout $GALAXY_COMMIT_ID
+      - name: Save Galaxy cache.
+        uses: actions/cache/save@v3
+        if: ${{ steps.cache-galaxy.outputs.cache-hit != 'true' }}
+        with:
+          path: galaxy
+          key: ${{ hashFiles('galaxy_repo') }}-${{ hashFiles('galaxy_commit_id') }}
       - name: Install Galaxy requirements.
         working-directory: 'galaxy'
         run: pip install -r requirements.txt
