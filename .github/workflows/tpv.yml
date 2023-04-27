@@ -97,5 +97,6 @@ jobs:
         run: |
           export PYTHONPATH=$(realpath ./galaxy/lib)
           for file in $(ls infrastructure-playbook/files/galaxy/dynamic_rules/usegalaxy/total_perspective_vortex/*.{yml,yaml}); do
+            echo Running TPV linter on "$file"...
             tpv lint $file || exit 1
           done
