@@ -166,6 +166,19 @@ destinations:
     max_accepted_cores: 16
     max_accepted_mem: 31
 
+  pulsar_fr01_tpv:
+    runner: pulsar_eu_fr01
+    inherits: pulsar_default
+    max_accepted_cores: 8
+    max_accepted_mem: 15
+    scheduling:
+      require:
+        - fr-pulsar
+      accept:
+        - docker
+        - condor-singularity-with-conda-python
+        - condor-tpv
+        - singularity
 
   pulsar_be_tpv:
     runner: pulsar_eu_be01
