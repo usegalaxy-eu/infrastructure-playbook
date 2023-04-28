@@ -575,9 +575,12 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/iuc/trinity/trinity/.*:
     cores: 8
+    mem: 512
     scheduling:
       prefer:
         - condor-tpv
+    env:
+      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx{int(mem)}G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp        
     rules:
       - if: 0.1 <= input_size < 1
         cores: 20
@@ -696,7 +699,7 @@ tools:
     mem: 16
     cores: 8
     env:
-      GALAXY_PCGR_DIR: "/data/db/databases/pcgr"      
+      GALAXY_PCGR_DIR: "/data/db/databases/pcgr"
     scheduling:
       require:
         - docker
@@ -799,12 +802,6 @@ tools:
     env:
       _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
 
-  toolshed.g2.bx.psu.edu/repos/iuc/trinity/trinity/.*:
-    cores: 4
-    mem: 512
-    env:
-      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx170G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
-
   toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*:
     cores: 16
     mem: 90
@@ -815,7 +812,7 @@ tools:
   toolshed.g2.bx.psu.edu/repos/imgteam/unzip/unzip/.*:
     scheduling:
       require:
-      - singularity
+        - singularity
 
   # Also on add_to_tpv_shared_db.yml but without NUMBA_CACHE_DIR
   toolshed.g2.bx.psu.edu/repos/iuc/gemini_inheritance/gemini_inheritance/.*:
