@@ -669,3 +669,181 @@ tools:
     rules:
       - if: input_size >= 30
         cores: 12
+  toolshed.g2.bx.psu.edu/repos/bgruening/xchem_transfs_scoring/xchem_transfs_scoring/.*:
+    scheduling:
+      require:
+        - docker
+  toolshed.g2.bx.psu.edu/repos/bgruening/openduck_run_smd/openduck_run_smd/.*:
+    env:
+      docker_set_user: 1000
+      docker_run_extra_arguments: '-e "OPENDUCK_GPU_PARAM=$OPENDUCK_GPU_PARAM" --gpus all'
+    scheduling:
+      require:
+        - docker
+  toolshed.g2.bx.psu.edu/repos/bgruening-util/stress_ng/stress_ng/.*:
+    scheduling:
+      require:
+        - singularity
+        - conda
+  toolshed.g2.bx.psu.edu/repos/galaxyp/maxquant/maxquant/.*:
+    scheduling:
+      require:
+        - singularity
+  toolshed.g2.bx.psu.edu/repos/iuc/lumpy_prep/lumpy_prep/.*:
+    scheduling:
+      require:
+        - singularity
+        - conda
+  # is there a way to avoid this
+  "*.pcgr.*":
+    mem: 16
+    cores: 8
+    env:
+      GALAXY_PCGR_DIR: "/data/db/databases/pcgr"      
+    scheduling:
+      require:
+        - docker
+  toolshed.g2.bx.psu.edu/repos/iuc/vardict_java/vardict_java/.*:
+    scheduling:
+      require:
+        - singularity
+        - conda
+# Not for Pulsar, or is the file copied?
+  toolshed.g2.bx.psu.edu/repos/climate/cds_essential_variability/cds_essential_variability/.*:
+    env:
+      COPERNICUS_CDSAPIRC_KEY_FILE: /data/db/data_managers/COPERNICUS_CDSAPIRC_KEY_FILE
+  toolshed.g2.bx.psu.edu/repos/iuc/idr_download_by_ids/idr_download_by_ids/.*:
+    scheduling:
+      require:
+        - singularity
+        - conda
+  toolshed.g2.bx.psu.edu/repos/imgteam/overlay_moving_and_fixed_image/ip_viz_overlay_moving_and_fixed_image/.*:
+    cores: 8
+  basic_numba_tool:
+    env:
+      NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+      OMP_NUM_THREADS: 4
+      OPENBLAS_NUM_THREADS: 4
+      MKL_NUM_THREADS: 4
+      VECLIB_MAXIMUM_THREADS: 4
+      NUMEXPR_NUM_THREADS: 4
+      NUMBA_NUM_THREADS: 4
+  toolshed.g2.bx.psu.edu/repos/computational-metabolomics/dimspy_process_scans/dimspy_process_scans/.*:
+    inherits: basic_numba_tool
+  toolshed.g2.bx.psu.edu/repos/computational-metabolomics/dimspy_replicate_filter/dimspy_replicate_filter/.*:
+    inherits: basic_numba_tool
+  toolshed.g2.bx.psu.edu/repos/computational-metabolomics/dimspy_align_samples/dimspy_align_samples/.*:
+    inherits: basic_numba_tool
+  toolshed.g2.bx.psu.edu/repos/galaxyp/openms_msgfplusadapter/MSGFPlusAdapter/.*:
+    env:
+      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+  toolshed.g2.bx.psu.edu/repos/iracooke/msgfplus/msgfplus/.*:
+    env:
+      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+  toolshed.g2.bx.psu.edu/repos/bgruening/repeat_masker/repeatmasker_wrapper/.*:
+    env:
+      RM_LIB_PATH: "/data/db/databases/dfam/3.4/"
+
+toolshed.g2.bx.psu.edu/repos/galaxyp/reactome_pathwaymatcher/reactome_pathwaymatcher/.*:
+    env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx17G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+
+toolshed.g2.bx.psu.edu/repos/iuc/bbtools_callvariants/bbtools_callvariants/.*:
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+
+toolshed.g2.bx.psu.edu/repos/crs4/prokka/prokka/.*:
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+
+toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_SortSam/.*:
+  env:
+    _JAVA_OPTIONS: -Xmx4G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+
+toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicates/.*:
+  env:
+    _JAVA_OPTIONS: -Xmx12G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+
+toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/.*:
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=4G -Xmx120G -Xms4G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+
+toolshed.g2.bx.psu.edu/repos/iuc/migmap/migmap/.*:
+    env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=6G -Xmx14G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+
+toolshed.g2.bx.psu.edu/repos/iuc/scanpy_cluster_reduce_dimension/scanpy_cluster_reduce_dimension/.*:
+  inherits: basic_numba_tool
+
+toolshed.g2.bx.psu.edu/repos/iuc/scanpy_filter/scanpy_filter/.*:
+  inherits: basic_numba_tool
+
+toolshed.g2.bx.psu.edu/repos/iuc/scanpy_inspect/scanpy_inspect/.*:
+  inherits: basic_numba_tool
+
+toolshed.g2.bx.psu.edu/repos/iuc/scanpy_normalize/scanpy_normalize/.*:
+  inherits: basic_numba_tool
+
+toolshed.g2.bx.psu.edu/repos/iuc/scanpy_remove_confounders/scanpy_remove_confounders/.*:
+  inherits: basic_numba_tool
+
+toolshed.g2.bx.psu.edu/repos/iuc/scanpy_plot/scanpy_plot/.*:
+  inherits: basic_numba_tool
+
+toolshed.g2.bx.psu.edu/repos/devteam/sam_merge/sam_merge2/.*:
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
+
+toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/.*:
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+
+toolshed.g2.bx.psu.edu/repos/pjbriggs/trimmomatic/trimmomatic/.*:
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+
+toolshed.g2.bx.psu.edu/repos/iuc/trinity/trinity/.*:
+  cores: 4
+  mem: 512
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx170G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+
+toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*:
+  cores: 16
+  mem: 90
+  env:
+    _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+    TERM: vt100
+
+toolshed.g2.bx.psu.edu/repos/imgteam/unzip/unzip/.*:
+  scheduling:
+    require:
+    - singularity
+
+  # Also on add_to_tpv_shared_db.yml but without NUMBA_CACHE_DIR
+  toolshed.g2.bx.psu.edu/repos/iuc/gemini_inheritance/gemini_inheritance/.*:
+    inherits: basic_numba_tool
+
+  toolshed.g2.bx.psu.edu/repos/iuc/chira_map/chira_map/.*:
+    scheduling:
+      require:
+        - singularity
+        - conda
+
+  toolshed.g2.bx.psu.edu/repos/iuc/chira_merge/chira_merge/.*:
+    scheduling:
+      require:
+        - singularity
+        - conda
+
+  toolshed.g2.bx.psu.edu/repos/iuc/chira_quantify/chira_quantify/.*:
+    scheduling:
+      require:
+        - singularity
+        - conda
+
+  toolshed.g2.bx.psu.edu/repos/iuc/chira_extract/chira_extract/.*:
+    scheduling:
+      require:
+        - singularity
+        - conda
