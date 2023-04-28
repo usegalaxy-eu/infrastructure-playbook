@@ -185,8 +185,6 @@ destinations:
         - singularity
         - conda
 
-  # needs to be migrated, since we do not want to run upload jobs on celery
-  # will have a dedicated VGCN image with tag
   condor_upload:
     runner: condor
     max_accepted_cores: 20
