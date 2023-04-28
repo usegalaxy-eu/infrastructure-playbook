@@ -304,6 +304,8 @@ galaxy_jobconf:
     - id: pulsar_fr01_tpv
       runner: pulsar_eu_fr01
       env:
+        GALAXY_MEMORY_MB: "{MEMORY_MB}"
+        GALAXY_SLOTS: "{PARALLELISATION}"
         LC_ALL: C
       params:
         jobs_directory: /data/share/staging
