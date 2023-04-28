@@ -6,6 +6,7 @@ destinations:
   # BASIC DESTINATIONS #
   ######################
   basic_docker_destination:
+    abstract: true
     params:
       docker_enabled: true
       docker_sudo: false
@@ -20,6 +21,7 @@ destinations:
       submit_requirements: "GalaxyDockerHack == True"
 
   basic_singularity_destination:
+    abstract: true
     params:
       submit_request_cpus: "{cores}"
       submit_request_memory: "{mem}G"
@@ -82,6 +84,7 @@ destinations:
 
   pulsar_default: # use for remote Pulsar nodes and ALWAYS overwrite the runner.
     inherits: basic_singularity_destination
+    abstract: true
     runner: pulsar_embedded
     destination_name_override: "embedded_pulsar_c{cores}-m{mem}"
     env:
