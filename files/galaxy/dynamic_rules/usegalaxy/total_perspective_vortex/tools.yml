@@ -29,7 +29,7 @@ tools:
         if: gpus > 0
         scheduling:
           require:
-            - condor-gpu
+            - gpu
     rank: |
       final_destinations = helpers.weighted_random_sampling(candidate_destinations)
       final_destinations
