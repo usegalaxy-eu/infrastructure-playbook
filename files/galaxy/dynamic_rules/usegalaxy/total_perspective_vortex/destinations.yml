@@ -34,7 +34,6 @@ destinations:
   interactive_pulsar:
     inherits: basic_docker_destination
     runner: pulsar_embedded
-    destination_name_override: "embedded_pulsar_interactive_c{cores}-m{mem}"
     max_accepted_cores: 24
     max_accepted_mem: 128
     scheduling:
@@ -45,7 +44,6 @@ destinations:
 
   interactive_pulsar_gpu:
     inherits: interactive_pulsar
-    destination_name_override: "e-pulsar_i_c{cores}-m{mem}-g{gpus}"
     max_accepted_gpus: 1
     env:
       GPU_AVAILABLE: "1"
@@ -59,11 +57,24 @@ destinations:
   embedded_pulsar_docker:
     inherits: basic_docker_destination
     runner: pulsar_embedded
-    destination_name_override: "embedded_pulsar_docker_c{cores}-m{mem}"
+    max_accepted_cores: 24
+    max_accepted_mem: 128
     scheduling:
       prefer:
         - docker
         - embedded-pulsar
+
+  embedded_pulsar_docker_gpu:
+    inherits: embedded_pulsar_docker
+    max_accepted_gpus: 1
+    env:
+      GPU_AVAILABLE: "1"
+    params:
+      requirements: 'GalaxyGroup == "compute_gpu"'
+      metadata_strategy: "extended"
+    scheduling:
+      require:
+        - gpu
 
   #######################
   # PULSAR DESTINATIONS #
