@@ -499,18 +499,14 @@ tools:
   qiime2_core__tools__import:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_train/cherri_train/.*:
+    inherits: basic_docker_tool
     cores: 10
     mem: 90
-    scheduling:
-      require:
-        - docker
 
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_eval/cherri_eval/.*:
+    inherits: basic_docker_tool
     cores: 1
     mem: 20
-    scheduling:
-      require:
-        - docker
 
   toolshed.g2.bx.psu.edu/repos/nml/metaspades/metaspades/.*:
     cores: 2
