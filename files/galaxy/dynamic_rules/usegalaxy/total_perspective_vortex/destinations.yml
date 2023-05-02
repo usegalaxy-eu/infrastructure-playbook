@@ -86,7 +86,6 @@ destinations:
     inherits: basic_singularity_destination
     abstract: true
     runner: pulsar_embedded
-    destination_name_override: "embedded_pulsar_c{cores}-m{mem}"
     env:
       LC_ALL: C
       SINGULARITY_CACHEDIR: /data/share/var/database/container_cache # On the NFS share on remote Pulsar side
