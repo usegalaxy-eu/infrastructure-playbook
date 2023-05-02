@@ -301,20 +301,6 @@ galaxy_jobconf:
         dependency_resolution: remote
         rewrite_parameters: "true"
         persistence_directory: /data/share/persisted_data
-    - id: pulsar_fr01_tpv
-      runner: pulsar_eu_fr01
-      env:
-        GALAXY_MEMORY_MB: "{MEMORY_MB}"
-        GALAXY_SLOTS: "{PARALLELISATION}"
-        LC_ALL: C
-      params:
-        jobs_directory: /data/share/staging
-        transport: curl
-        remote_metadata: "false"
-        default_file_action: remote_transfer
-        dependency_resolution: remote
-        rewrite_parameters: "true"
-        persistence_directory: /data/share/persisted_data
     - id: remote_cluster_mq_de01
       runner: pulsar_eu_de01
       env:
