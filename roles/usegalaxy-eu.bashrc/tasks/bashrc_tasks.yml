@@ -108,13 +108,14 @@
         path: "{{ item.uhome }}/.bashrc"
         line: "{{ task_item }}"
       loop:
-        # ENV's for gxadmin
+        # ENV's for gxadmin and the galaxy_jwd python script
         - "export GALAXY_CONFIG_DIR={{ galaxy_config_dir }}"
         - "export GALAXY_CONFIG_FILE={{ galaxy_config_file }}"
         - "export GALAXY_LOG_DIR={{ galaxy_log_dir }}"
         - "export GALAXY_MUTABLE_CONFIG_DIR={{ galaxy_mutable_config_dir }}"
         - "export GALAXY_ROOT={{ galaxy_server_dir }}"
         - "export VIRTUAL_ENV={{ galaxy_venv_dir }}"
+        - "export GALAXY_PULSAR_APP_CONF={{ galaxy_pulsar_app_conf }}"
       loop_control:
         loop_var: task_item
 
