@@ -150,6 +150,13 @@ destinations:
     runner: pulsar_eu_it01
     max_accepted_cores: 16
     max_accepted_mem: 31
+    scheduling:
+      require:
+        - it-pulsar
+      accept:
+        - docker
+        - condor-tpv
+        - singularity
 
   pulsar_fr01_tpv:
     runner: pulsar_eu_fr01
