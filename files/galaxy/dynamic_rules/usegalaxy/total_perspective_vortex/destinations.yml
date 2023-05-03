@@ -176,6 +176,13 @@ destinations:
     runner: pulsar_eu_be01
     max_accepted_cores: 8
     max_accepted_mem: 15
+    scheduling:
+      require:
+        - be-pulsar
+      accept:
+        - docker
+        - condor-tpv
+        - singularity
 
   #############################
   # LOCAL CONDOR DESTINATIONS #
