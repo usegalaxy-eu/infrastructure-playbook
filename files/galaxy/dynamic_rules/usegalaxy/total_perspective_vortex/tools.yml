@@ -1,39 +1,6 @@
 ---
 # ALL tags must be with dashes (-) instead of underscores (_)
-global:
-  default_inherits: default
 tools:
-  default:
-    cores: 1
-    mem: cores * 3.8
-    gpus: 0
-    env: {}
-    params:
-      tmp_dir: true
-      request_cpus: "{cores}"
-      request_memory: "{mem}G"
-      submit_request_gpus: "{gpus or 0}"
-      docker_memory: "{mem}G"
-    scheduling:
-      reject:
-        - offline
-    rules:
-      - if: user is not None
-        execute: |
-          training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
-          training_expr = " || ".join(['(GalaxyGroup == "%s")' % role for role in training_roles])
-          training_labels = '"' + ", ".join(training_roles) + '"'
-          entity.params['requirements'] = '(GalaxyGroup == "compute") || (%s)' % training_expr if training_expr else '(GalaxyGroup == "compute")'
-          entity.params['+Group'] = training_labels
-      - id: gpu_tools_to_condor_gpu
-        if: entity.gpus > 0
-        scheduling:
-          require:
-            - gpu
-    rank: |
-      final_destinations = helpers.weighted_random_sampling(candidate_destinations)
-      final_destinations
-
   __DATA_FETCH__:
     cores: 1
     mem: 3
@@ -89,17 +56,17 @@ tools:
       # return the amount of memory needed
       value
 
-  keras_train_and_eval:
-    # Type of compute resource (CPU or GPU) for keras_train_eval tool depends on user's input from its wrapper.
-    # Default resource is CPU.
-    gpus: |
-      parameters = {p.name: p.value for p in job.parameters}
-      parameters = tool.params_from_strings(parameters, app)
-
-      gpus = int(
-         parameters.get("__job_resource", dict()).get("gpu", '0')
-      )
-      gpus
+  # keras_train_and_eval:
+  #  # Type of compute resource (CPU or GPU) for keras_train_eval tool depends on user's input from its wrapper.
+  #  # Default resource is CPU.
+  #  gpus: |
+  #    parameters = {p.name: p.value for p in job.parameters}
+  #    parameters = tool.params_from_strings(parameters, app)
+  #
+  #    gpus = int(
+  #       parameters.get("__job_resource", dict()).get("gpu", '0')
+  #    )
+  #    gpus
 
   toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy/.*:
     cores: 2
@@ -513,7 +480,6 @@ tools:
     scheduling:
       accept:
         - pulsar
-        - pulsar-training-large
         - condor-tpv
     rules:
       - if: 0.05 <= input_size < 1
