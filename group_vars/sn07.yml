@@ -354,18 +354,6 @@ galaxy_virtualenv_command: "{{ conda_prefix }}/envs/_galaxy_/bin/virtualenv"
 galaxy_nonrepro_tools: "{{ galaxy_root }}/custom-tools"
 galaxy_nonrepro_commit: master
 
-galaxy_dynamic_job_rules_src_dir: files/galaxy/dynamic_rules
-galaxy_dynamic_job_rules_dir: "{{ galaxy_root }}/dynamic_rules"
-galaxy_dynamic_job_rules:
-  - usegalaxy/joint_destinations.yaml
-  - usegalaxy/sorting_hat.py
-  - usegalaxy/destination_specifications.yaml
-  - usegalaxy/blast_destinations.py
-  - usegalaxy/tool_destinations.yaml
-  - usegalaxy/dexseq.py
-  - usegalaxy/wig2bigwig.py
-  - readme.txt
-
 # Custom override
 # Our galaxy_tool_dependency_dir is on NFS, and permissions are set in such a
 # way that they cannot be changed by the ansible connected user.
@@ -431,17 +419,17 @@ galaxy_config_files:
     dest: "{{ galaxy_config['galaxy']['ucsc_build_sites'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/echo_main_env.xml"
     dest: "{{ galaxy_config_dir }}/echo_main_env.xml"
-  - src: "{{ galaxy_config_file_src_dir }}/dynamic_rules/usegalaxy/total_perspective_vortex/tool_defaults.yml"
+  - src: "{{ galaxy_config_file_src_dir }}/tpv/tool_defaults.yml"
     dest: "{{ tpv_mutable_dir }}/tool_defaults.yml"
-  - src: "{{ galaxy_config_file_src_dir }}/dynamic_rules/usegalaxy/total_perspective_vortex/destinations.yml"
+  - src: "{{ galaxy_config_file_src_dir }}/tpv/destinations.yml"
     dest: "{{ tpv_mutable_dir }}/destinations.yml"
-  - src: "{{ galaxy_config_file_src_dir }}/dynamic_rules/usegalaxy/total_perspective_vortex/tools.yml"
+  - src: "{{ galaxy_config_file_src_dir }}/tpv/tools.yml"
     dest: "{{ tpv_mutable_dir }}/tools.yml"
-  - src: "{{ galaxy_config_file_src_dir }}/dynamic_rules/usegalaxy/total_perspective_vortex/roles.yml"
+  - src: "{{ galaxy_config_file_src_dir }}/tpv/roles.yml"
     dest: "{{ tpv_mutable_dir }}/roles.yml"
-  - src: "{{ galaxy_config_file_src_dir }}/dynamic_rules/usegalaxy/total_perspective_vortex/interactive_tools.yml"
+  - src: "{{ galaxy_config_file_src_dir }}/tpv/interactive_tools.yml"
     dest: "{{ tpv_mutable_dir }}/interactive_tools.yml"
-  - src: "{{ galaxy_config_file_src_dir }}/dynamic_rules/usegalaxy/total_perspective_vortex/users.yml"
+  - src: "{{ galaxy_config_file_src_dir }}/tpv/users.yml"
     dest: "{{ tpv_mutable_dir }}/users.yml"
 
   #- src: files/galaxy/config/job_resource_params_conf.xml
