@@ -51,7 +51,6 @@ destinations:
       GPU_AVAILABLE: "1"
     params:
       requirements: 'GalaxyGroup == "compute_gpu"'
-      metadata_strategy: "extended"
     scheduling:
       require:
         - gpu
@@ -73,7 +72,6 @@ destinations:
       GPU_AVAILABLE: "1"
     params:
       requirements: 'GalaxyGroup == "compute_gpu"'
-      metadata_strategy: "extended"
     scheduling:
       require:
         - gpu
@@ -194,7 +192,6 @@ destinations:
     max_accepted_cores: 24
     max_accepted_mem: 128
     params:
-      metadata_strategy: "extended"
     scheduling:
       prefer:
         - singularity
@@ -232,7 +229,6 @@ destinations:
     params:
       requirements: "GalaxyTraining == false"
       rank: 'GalaxyGroup == "upload"'
-      metadata_strategy: "extended"
     scheduling:
       require:
         - upload
@@ -246,7 +242,6 @@ destinations:
       GPU_AVAILABLE: 1
     params:
       requirements: 'GalaxyGroup == "compute_gpu"'
-      metadata_strategy: "extended"
     scheduling:
       require:
         - gpu
