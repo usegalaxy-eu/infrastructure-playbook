@@ -188,6 +188,15 @@ destinations:
   # LOCAL CONDOR DESTINATIONS #
   #############################
 
+  condor_docker:
+    inherits: basic_docker_destination
+    runner: condor
+    max_accepted_cores: 36
+    max_accepted_mem: 975
+    scheduling:
+      require:
+        - docker
+
   condor_singularity:
     inherits: basic_singularity_destination
     runner: condor
