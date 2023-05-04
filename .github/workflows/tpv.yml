@@ -4,12 +4,12 @@ name: Total Perspective Vortex
 'on':
   pull_request:
     paths:
-      - 'files/galaxy/dynamic_rules/usegalaxy/total_perspective_vortex/**'
+      - 'files/galaxy/tpv/**'
   push:
     branches:
       - master
     paths:
-      - 'files/galaxy/dynamic_rules/usegalaxy/total_perspective_vortex/**'
+      - 'files/galaxy/tpv/**'
 
 jobs:
   lint:
@@ -108,7 +108,7 @@ jobs:
       - name: Run Total Perspective Vortex linter.
         run: |
           export PYTHONPATH=$(realpath ./galaxy/lib)
-          for file in $(ls infrastructure-playbook/files/galaxy/dynamic_rules/usegalaxy/total_perspective_vortex/*.{yml,yaml}); do
+          for file in $(ls infrastructure-playbook/files/galaxy/tpv/*.{yml,yaml}); do
             echo Running TPV linter on "$file"...
             tpv lint $file || exit 1
           done
