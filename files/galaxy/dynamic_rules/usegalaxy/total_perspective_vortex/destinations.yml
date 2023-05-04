@@ -13,6 +13,7 @@ destinations:
       docker_net: bridge
       docker_auto_rm: true
       docker_set_user: ""
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$default,$job_directory:rw,$tool_directory:ro,/cvmfs/data.galaxyproject.org:ro"
       require_container: true
       submit_request_cpus: "{cores}"
       submit_request_memory: "{mem}G"
