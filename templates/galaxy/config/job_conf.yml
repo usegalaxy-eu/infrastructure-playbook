@@ -13,10 +13,6 @@ galaxy_jobconf:
     #- id: drmaa
     #load: galaxy.jobs.runners.drmaa:DRMAAJobRunner
     #workers: 3
-    # These live on the pythonpath
-    - id: dynamic
-      params:
-        rules_module: "usegalaxy"
     - id: condor
       load: galaxy.jobs.runners.condor:CondorJobRunner
     - id: local
