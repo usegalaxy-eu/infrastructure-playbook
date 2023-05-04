@@ -104,6 +104,11 @@ destinations:
     scheduling:
       require:
         - pulsar
+      accept:
+        - conda
+        - singularity
+        - docker
+        - condor-tpv
 
   pulsar_mira_tpv:
     inherits: pulsar_default
@@ -113,10 +118,6 @@ destinations:
     scheduling:
       require:
         - mira-pulsar
-      accept:
-        - docker
-        - condor-tpv
-        - singularity
 
   pulsar_sanjay_tpv:
     inherits: pulsar_default
@@ -126,10 +127,6 @@ destinations:
     scheduling:
       require:
         - sanjay-pulsar
-      accept:
-        - docker
-        - condor-tpv
-        - singularity
 
   pulsar_sk01_tpv:
     inherits: pulsar_default
@@ -139,10 +136,6 @@ destinations:
     scheduling:
       require:
         - sk-pulsar
-      accept:
-        - docker
-        - condor-tpv
-        - singularity
 
   pulsar_it_tpv:
     inherits: pulsar_default
@@ -152,10 +145,6 @@ destinations:
     scheduling:
       require:
         - it-pulsar
-      accept:
-        - docker
-        - condor-tpv
-        - singularity
 
   pulsar_fr01_tpv:
     runner: pulsar_eu_fr01
@@ -165,10 +154,6 @@ destinations:
     scheduling:
       require:
         - fr-pulsar
-      accept:
-        - docker
-        - condor-tpv
-        - singularity
 
   pulsar_be_tpv:
     inherits: pulsar_default
@@ -178,10 +163,6 @@ destinations:
     scheduling:
       require:
         - be-pulsar
-      accept:
-        - docker
-        - condor-tpv
-        - singularity
 
   #############################
   # LOCAL CONDOR DESTINATIONS #
