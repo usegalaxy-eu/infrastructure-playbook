@@ -61,7 +61,7 @@ destinations:
     max_accepted_cores: 24
     max_accepted_mem: 128
     scheduling:
-      prefer:
+      require:
         - docker
         - embedded-pulsar
 
@@ -185,6 +185,15 @@ destinations:
   #############################
   # LOCAL CONDOR DESTINATIONS #
   #############################
+
+  condor_docker:
+    inherits: basic_docker_destination
+    runner: condor
+    max_accepted_cores: 36
+    max_accepted_mem: 975
+    scheduling:
+      require:
+        - docker
 
   condor_singularity:
     inherits: basic_singularity_destination
