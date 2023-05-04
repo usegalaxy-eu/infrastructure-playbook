@@ -101,6 +101,7 @@ destinations:
       submit_request_cpus: "{cores}"
       submit_request_memory: "{mem}"
       docker_volumes: "$default,$job_directory:rw,$tool_directory:ro,/cvmfs/data.galaxyproject.org:ro"
+      singularity_volumes: "$default,$job_directory:rw,$tool_directory:ro,/cvmfs/data.galaxyproject.org:ro"
     scheduling:
       require:
         - pulsar
