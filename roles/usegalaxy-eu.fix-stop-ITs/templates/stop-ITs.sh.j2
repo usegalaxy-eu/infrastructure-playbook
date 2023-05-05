@@ -1,6 +1,6 @@
 #!/bin/sh
 DAY=86400
-. /opt/galaxy/.bashrc
+. {{ galaxy_root }}/.bashrc
 cd ~
 for job in $(gxadmin query queue-details --all | grep running | grep interactive_tool | awk '{print $3}')
 do
