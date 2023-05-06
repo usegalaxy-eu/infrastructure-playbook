@@ -627,6 +627,8 @@ tools:
     cores: 8
     mem: 20
     inherits: basic_docker_tool
+    params:
+      outputs_to_working_directory: true
     env:
       _JAVA_OPTIONS: -Xmx{int(mem)}G -Xms1G
 
