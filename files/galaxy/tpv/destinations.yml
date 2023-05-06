@@ -13,7 +13,8 @@ destinations:
       docker_net: bridge
       docker_auto_rm: true
       docker_set_user: ""
-      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$defaults,$job_directory:rw,$tool_directory:ro,/cvmfs/data.galaxyproject.org:ro"
+      # $defaults expands to "$galaxy_root:ro,$tool_directory:ro,$job_directory:ro,$working_directory:rw,$default_file_path:rw"
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$defaults,/cvmfs/data.galaxyproject.org:ro"
       require_container: true
       submit_request_cpus: "{cores}"
       submit_request_memory: "{mem}G"
@@ -100,8 +101,9 @@ destinations:
       dependency_resolution: "none"
       submit_request_cpus: "{cores}"
       submit_request_memory: "{mem}"
-      docker_volumes: "$defaults,$job_directory:rw,$tool_directory:ro,/cvmfs/data.galaxyproject.org:ro"
-      singularity_volumes: "$defaults,$job_directory:rw,$tool_directory:ro,/cvmfs/data.galaxyproject.org:ro"
+      # $defaults expands to "$galaxy_root:ro,$tool_directory:ro,$job_directory:ro,$working_directory:rw,$default_file_path:rw"
+      docker_volumes: "$defaults,/cvmfs/data.galaxyproject.org:ro"
+      singularity_volumes: "$defaults,/cvmfs/data.galaxyproject.org:ro"
     scheduling:
       require:
         - pulsar
