@@ -628,7 +628,7 @@ tools:
     mem: 20
     inherits: basic_docker_tool
     params:
-      outputs_to_working_directory: true
+      docker_run_extra_arguments: --user 999
     env:
       _JAVA_OPTIONS: -Xmx{int(mem)}G -Xms1G
 
