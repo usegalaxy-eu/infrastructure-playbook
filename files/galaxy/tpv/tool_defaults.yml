@@ -6,7 +6,8 @@ tools:
     cores: 1
     mem: cores * 3.8
     gpus: 0
-    env: {}
+    env:
+      GALAXY_MEMORY_MB: "{mem * 1024}"
     params:
       metadata_strategy: 'extended'
       tmp_dir: true
