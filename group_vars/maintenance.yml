@@ -67,6 +67,11 @@ fsm_scripts:
       - /data/dnb02/galaxy_db/tmp
       - /data/dnb03/galaxy_db/tmp
       - /data/jwd/tmp
+      - /data/1/galaxy_db/tmp
+      - /data/dnb05/galaxy_db/tmp
+      - /data/dnb06/galaxy_db/tmp
+      - /data/jwd02f/tmp
+      - /data/jwd04/tmp
     time: "{{ fsm_intervals.long }}"
   upload_dirs:
     enable: true
@@ -88,6 +93,11 @@ fsm_scripts:
       - "{{ galaxy_config['galaxy']['job_working_directory'] }}"
       - /data/dnb03/galaxy_db/job_working_directory
       - /data/jwd/main
+      - /data/jwd01/main
+      - /data/jwd02f/main
+      - /data/jwd03f/main
+      - /data/jwd04/main
+      - /data/jwd05e/main
     time: "{{ fsm_intervals.long }}"
 
 # Should run only on the headnode, because the gxadmin cron task uses galaxy's
@@ -155,16 +165,20 @@ custom_telegraf_env: "/usr/bin/env GDPR_MODE=1 PGUSER={{ galaxy_user.name }} PGH
 #     plugin: "exec"
 #     config:
 #       - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery upload-gb-in-past-hour"]
-#       - timeout = "120s"
+#       - timeout = "360s"
 #       - data_format = "influx"
 #       - interval = "1h"
+
+#   # Run only on the headnodes
 #   galaxy_lastlog:
 #     plugin: "exec"
 #     config:
-#       - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin uwsgi lastlog"]
+#       - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin gunicorn lastlog"]
 #       - timeout = "15s"
 #       - data_format = "influx"
 #       - interval = "15s"
+
+#  # Run on the maintenance node
 #   galaxy_jobs_queued:
 #     plugin: "exec"
 #     config:
@@ -274,6 +288,8 @@ monitor_condor_split_util: true
 # Rsync to NFS and to the headnodes
 # Role: usegalaxy-eu.rsync-galaxy-sync
 galaxy_nfs_location: /data/galaxy-sync
+# Whether to execute the sync script or not during the playbook run
+execute_galaxy_sync: false
 
 # Configure it only on the maintenance node
 # TPV Script
@@ -355,10 +371,7 @@ galaxy_system_group: galaxy
 galaxy_log_dir: "/var/log/galaxy"
 galaxy_layout: root-dir
 galaxy_separate_privileges: true
-galaxy_manage_paths: true
-galaxy_build_client: false
 galaxy_restart_handler_name: Restart Galaxy
-galaxy_create_user: true
 galaxy_user:
   name: galaxy
   create_home: true
