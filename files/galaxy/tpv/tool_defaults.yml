@@ -1,3 +1,4 @@
+---
 # ALL tags must be with dashes (-) instead of underscores (_)
 global:
   default_inherits: default
@@ -6,7 +7,8 @@ tools:
     cores: 1
     mem: cores * 3.8
     gpus: 0
-    env: {}
+    env:
+      GALAXY_MEMORY_MB: "{mem * 1024}" # set 5/2023 might be moved to runner or tool wrappers, related to Galaxy issue 15952
     params:
       metadata_strategy: 'extended'
       tmp_dir: true
