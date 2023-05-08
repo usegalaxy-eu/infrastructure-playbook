@@ -112,7 +112,9 @@ server {
 				rewrite "" /api/jobs/$arg_job_id/files last;
 		}
 		upload_store {{ galaxy_config['galaxy']['nginx_upload_job_files_store'] }};
-		upload_limit_rate 32k;
+                # the rate limit might be needed if we have many Pulsar jobs that are writing data back
+		# we need to limit it because the disc IO can be too large, ideally this happens on a different node
+                # upload_limit_rate 32k;
 		upload_store_access user:rw group:rw all:rw;
 		upload_pass_form_field "";
 		upload_set_form_field "__${upload_field_name}_path" "$upload_tmp_path";

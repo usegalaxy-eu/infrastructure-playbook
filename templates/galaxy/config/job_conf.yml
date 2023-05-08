@@ -13,10 +13,6 @@ galaxy_jobconf:
     #- id: drmaa
     #load: galaxy.jobs.runners.drmaa:DRMAAJobRunner
     #workers: 3
-    # These live on the pythonpath
-    - id: dynamic
-      params:
-        rules_module: "usegalaxy"
     - id: condor
       load: galaxy.jobs.runners.condor:CondorJobRunner
     - id: local
@@ -40,6 +36,28 @@ galaxy_jobconf:
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
       params:
         amqp_url: "pyamqp://galaxy_mira_pulsar:{{ rabbitmq_password_galaxy_mira_pulsar }}@mq.galaxyproject.eu:5671//pulsar/galaxy_mira_pulsar?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_sanjay_runner
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_sanjay_pulsar:{{ rabbitmq_password_galaxy_sanjay_pulsar }}@mq.galaxyproject.eu:5671//pulsar/galaxy_sanjay_pulsar?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_sk01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_sk01:{{ rabbitmq_password_galaxy_sk01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_sk01?ssl=1"
         galaxy_url: "https://usegalaxy.eu"
         manager: production
         amqp_acknowledge: "true"
@@ -157,7 +175,7 @@ galaxy_jobconf:
         amqp_consumer_timeout: 2.0
         amqp_publish_retry: "true"
         amqp_publish_retry_max_retries: 60
-  default_destination: gateway_singlerun
+  default_destination: tpv_dispatcher
   destinations:
     - id: local
       runner: local
@@ -167,6 +185,7 @@ galaxy_jobconf:
       function: map_tool_to_destination
       rules_module: tpv.rules
       tpv_config_files:
+        - "{{ galaxy_config_dir }}/total_perspective_vortex/tool_defaults.yml"
         - "https://raw.githubusercontent.com/galaxyproject/tpv-shared-database/main/tools.yml"
         - "{{ galaxy_config_dir }}/total_perspective_vortex/destinations.yml"
         - "{{ galaxy_config_dir }}/total_perspective_vortex/tools.yml"
@@ -177,44 +196,9 @@ galaxy_jobconf:
       runner: condor
       params:
         tmp_dir: "true"
-    # Gateways
-    - id: gateway_singlerun
-      runner: dynamic
-      params:
-        type: python
-        function: gateway
-    - id: gateway_1x
-      runner: dynamic
-      params:
-        type: python
-        function: gateway_1x
-    - id: gateway_1_5x
-      runner: dynamic
-      params:
-        type: python
-        function: gateway_1_5x
-    - id: gateway_2x
-      runner: dynamic
-      params:
-        type: python
-        function: gateway_2x
-    - id: gateway_checkpoint
-      runner: dynamic
-      params:
-        type: python
-        function: gateway_checkpoint
-    - id: gateway_for_hifiasm
-      runner: dynamic
-      params:
-        type: python
-        function: gateway_for_hifiasm
-    - id: gateway_for_keras_train_eval
-      runner: dynamic
-      params:
-        type: python
-        function: gateway_for_keras_train_eval
 
     # Internal Pulsar runner for ITs
+    # this can go once TPV 2.0 runs smoothly
     - id: interactive_pulsar
       runner: pulsar_embedded
       params:
@@ -233,6 +217,7 @@ galaxy_jobconf:
         #submit_rank: 'GalaxyGroup == "upload"'  # submit_rank: can look like that
         #docker_memory: 4
 
+    # this can be safely deleted once TPV 2.0 runs smoothly
     - id: embedded_pulsar_docker
       runner: pulsar_embedded
       params:
@@ -388,19 +373,6 @@ galaxy_jobconf:
             resolve_dependencies: "true"
             identifier: "/data/0/cvmfs/singularity/python:2.7.12--1"
 
-      # TPV conda singularity destination
-    - id: condor_singularity_with_conda_python2
-      runner: condor
-      params:
-        singularity_enabled: true
-        # can and should be made stricter at some point
-        singularity_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
-        container_override:
-          - type: singularity
-            shell: "/bin/bash"
-            resolve_dependencies: true
-            identifier: "/data/0/singularity_base_images/centos:8.3.2011"
-
     - id: condor_docker
       runner: condor
       params:
@@ -437,10 +409,12 @@ galaxy_jobconf:
         docker_auto_rm: "true"
         docker_sudo: "false"
         docker_set_user: ""
+    # this can be safely deleted once TPV 2.0 runs smoothly
     - id: condor_tpv
       runner: condor
       params:
         tmp_dir: "true"
+    # this can be safely deleted once TPV 2.0 runs smoothly
     - id: pulsar_it_tpv
       runner: pulsar_eu_it01
       env:
@@ -453,6 +427,7 @@ galaxy_jobconf:
         dependency_resolution: remote
         rewrite_parameters: "true"
         persistence_directory: /data/share/persisted_data
+    # this can be safely deleted once TPV 2.0 runs smoothly
     - id: pulsar_be_tpv
       runner: pulsar_eu_be01
       env:
@@ -465,6 +440,7 @@ galaxy_jobconf:
         dependency_resolution: remote
         rewrite_parameters: "true"
         persistence_directory: /data/share/persisted_data
+    # this can be safely deleted once TPV 2.0 runs smoothly
     - id: pulsar_mira_tpv
       runner: pulsar_mira_runner
       env:
@@ -486,164 +462,9 @@ galaxy_jobconf:
         singularity_enabled: true
         singularity_default_container_id: "/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04"
 
-    # TODO(hxr): check functionality
-    #- id: 24cores_15G_BLAST
-    #  runner: dynamic
-    #  params:
-    #      type: python
-    #      function: blast_destinations
-    #- id: wig_to_bigWig
-    #  runner: dynamic
-    #  params:
-    #      type: python
-    #      function: wig_to_bigwig
-    #- id: dexseq_dynamic
-    #  runner: dynamic
-    #  params:
-    #      type: python
-    #      function: dexseq
-  tools:
+  tools: []
     # TODO(hxr): implement validation that checks that every destination
     # used here is defined above.
-
-    - id: "cactus_export"
-      destination: tpv_dispatcher
-    - id: "cactus_export"
-      destination: tpv_dispatcher
-    - id: "mothur_cluster_split"
-      destination: tpv_dispatcher
-    - id: "basic_illumination"
-      destination: tpv_dispatcher
-    - id: "mesmer"
-      destination: tpv_dispatcher
-    - id: "quantification"
-      destination: tpv_dispatcher
-    - id: "s3segmenter"
-      destination: tpv_dispatcher
-    - id: "unet_coreograph"
-      destination: tpv_dispatcher
-    - id: "unmicst"
-      destination: tpv_dispatcher
-    - id: "ashlar"
-      destination: tpv_dispatcher
-    - id: "cherri_eval"
-      destination: tpv_dispatcher
-    - id: "cherri_train"
-      destination: tpv_dispatcher
-    - id: "enasearch_search_data"
-      destination: tpv_dispatcher
-    - id: "dewseq"
-      destination: tpv_dispatcher
-    - id: "htseq-clip"
-      destination: tpv_dispatcher
-   # - id: "metaspades"
-   #   destination: tpv_dispatcher
-   # - id: spades
-   #   destination: tpv_dispatcher
-   # - id: spades_rnaviralspades
-   #   destination: tpv_dispatcher
-   # - id: rnaspades
-   #   destination: tpv_dispatcher
-   # - id: spades_plasmidspades
-   #   destination: tpv_dispatcher
-   # - id: spades_metaviralspades
-   #   destination: tpv_dispatcher
-   # - id: spades_metaplasmidspades
-   #   destination: tpv_dispatcher
-   # - id: spades_coronaspades
-   #   destination: tpv_dispatcher
-   # - id: spades_biosyntheticspades
-   #   destination: tpv_dispatcher
-    - id: snippy
-      destination: tpv_dispatcher
-    - id: fasta-stats
-      destination: tpv_dispatcher
-    - id: alphafold
-      destination: tpv_dispatcher
-    - id: trinity
-      destination: tpv_dispatcher
-    - id: upload1
-      destination: gateway_singlerun
-    - id: "toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/2020.4+galaxy0"
-      destination: gateway_singlerun
-      resources: usegpu
-    - id: "toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/2019.1.5.1"
-      destination: gateway_singlerun
-      resources: usegpu
-    - id: gmx_sim
-      destination: gateway_singlerun
-      resources: usegpu
-    - id: "toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.16.1+galaxy2"
-      destination: gateway_for_hifiasm
-    - id: "toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.16.1+galaxy1"
-      destination: gateway_for_hifiasm
-    - id: keras_train_and_eval
-      destination: gateway_for_keras_train_eval
-      resources: usegpu
-    - id: interactive_tool_pavian
-      destination: tpv_dispatcher      
-    - id: interactive_tool_openrefine
-      destination: tpv_dispatcher
-    - id: interactive_tool_audiolabeler
-      destination: tpv_dispatcher
-    - id: interactive_tool_ethercalc
-      destination: tpv_dispatcher
-    - id: interactive_tool_geoexplorer
-      destination: tpv_dispatcher
-    - id: interactive_tool_radiant
-      destination: tpv_dispatcher
-    - id: interactive_tool_higlass
-      destination: tpv_dispatcher
-    - id: interactive_tool_phinch
-      destination: tpv_dispatcher
-    - id: interactive_tool_neo4j
-      destination: tpv_dispatcher
-    - id: interactive_tool_hicbrowser
-      destination: tpv_dispatcher
-    - id: interactive_tool_cellxgene
-      destination: tpv_dispatcher
-    - id: interactive_tool_bam_iobio
-      destination: tpv_dispatcher
-    - id: interactive_tool_vcf_iobio
-      destination: tpv_dispatcher
-    - id: interactive_tool_askomics
-      destination: tpv_dispatcher
-    - id: interactive_tool_wilson
-      destination: tpv_dispatcher
-    - id: interactive_tool_wallace
-      destination: tpv_dispatcher
-    - id: interactive_tool_paraview
-      destination: tpv_dispatcher
-    - id: interactive_tool_simtext_app
-      destination: tpv_dispatcher
-    - id: interactive_tool_isee
-      destination: tpv_dispatcher
-    - id: interactive_tool_metashark
-      destination: tpv_dispatcher
-    - id: interactive_tool_rstudio
-      destination: tpv_dispatcher
-    - id: interactive_tool_pyiron
-      destination: tpv_dispatcher
-    - id: interactive_tool_guacamole_desktop
-      destination: tpv_dispatcher
-    - id: interactive_tool_panoply
-      destination: tpv_dispatcher
-    - id: interactive_tool_vrm_editor
-      destination: tpv_dispatcher
-    - id: interactive_tool_jupyter_notebook
-      destination: tpv_dispatcher
-    - id: interactive_tool_pangeo_notebook
-      destination: tpv_dispatcher
-    - id: interactive_tool_climate_notebook
-      destination: tpv_dispatcher
-    - id: interactive_tool_ml_jupyter_notebook
-      destination: tpv_dispatcher
-    - id: interactive_tool_mgnify_notebook
-      destination: tpv_dispatcher
-
-  resources:
-    - id: usegpu
-      names: [gpu]
   limits:
     - type: "destination_user_concurrent_jobs"
       id: "condor_upload"
@@ -660,7 +481,7 @@ galaxy_jobconf:
     - type: "output_size"
       value: "'300GB'"
     - type: "registered_user_concurrent_jobs"
-      value: "100"
+      value: "30"
     - type: "anonymous_user_concurrent_jobs"
       value: "3"
     - type: "destination_user_concurrent_jobs"

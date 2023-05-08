@@ -53,6 +53,7 @@
     <tool file="${model_tools_path}/build_list.xml" />
     <tool file="${model_tools_path}/build_list_1.2.0.xml" />
     <tool file="${model_tools_path}/extract_dataset.xml" />
+    <tool file="${model_tools_path}/duplicate_file_to_collection.xml" />
   </section>
   <section id="expression_tools" name="Expression Tools">
     <tool file="expression_tools/parse_values_from_file.xml"/>
@@ -397,7 +398,6 @@
     <tool file="meme/fimo.xml" hidden="True" />
     </section>
   <section id="test_tools" name="Test Tools">
-    <tool file="/opt/galaxy/custom-tools/test/instagraal.xml" labels="alpha" />
     <tool file="/opt/galaxy/custom-tools/pyiron/pyiron.xml" labels="alpha" />
     <tool file="/opt/galaxy/custom-tools/test/pcgr.xml" labels="beta" />
     <!--tool file="/opt/galaxy/custom-tools/test/Galaxy-ML-master/galaxy_ml/estimator_attributes.xml" labels="alpha" />
@@ -492,6 +492,9 @@
     <tool file="/opt/galaxy/custom-tools/test/imaging/scale_image/scale_image.xml" />
     <tool file="/opt/galaxy/custom-tools/test/imaging/coordinates_of_roi/coordinates_of_roi.xml" />
     <tool file="/opt/galaxy/custom-tools/test/imaging/projective_transformation_points/projective_transformation_points.xml" /-->
+
+    <tool file="/opt/galaxy/custom-tools/cliniobio/cliniobio.xml" />
+    <tool file="/opt/galaxy/custom-tools/cliniobio/cliniobio-iframe.xml" />
   </section>
 
   <section id="gis_data_handling" name="GIS Data Handling" />
@@ -523,21 +526,24 @@
   <section id="compute_indicators_for_turnover_boulders_fields" name="Compute indicators for turnover boulders fields" />
 
   <section id="interactivetools" name="Interactive tools">
+        <tool file="interactive/interactivetool_blobtoolkit.xml" />
         <tool file="interactive/interactivetool_pavian.xml" />
         <tool file="interactive/interactivetool_mgnify_notebook.xml" />
-	<tool file="interactive/interactivetool_jupyter_notebook.xml" />
+        <tool file="interactive/interactivetool_jupyter_notebook.xml" />
 	<tool file="interactive/interactivetool_jupyter_notebook_1.0.0.xml" />
 	<tool file="interactive/interactivetool_ml_jupyter_notebook.xml" />
 	<tool file="interactive/interactivetool_climate_notebook.xml" />
 	<tool file="interactive/interactivetool_pangeo_notebook.xml" />
-	<tool file="interactive/interactivetool_rstudio.xml" />
+	<tool file="interactive/interactivetool_pangeo_ml_notebook.xml" />
+        <tool file="interactive/interactivetool_rstudio.xml" />
 	<tool file="interactive/interactivetool_pyiron.xml" />
 	<tool file="interactive/interactivetool_higlass.xml" /> 
 	<tool file="interactive/interactivetool_openrefine.xml" />
 	<tool file="interactive/interactivetool_guacamole_desktop.xml" />
-	<tool file="interactive/interactivetool_panoply.xml" />
+        <tool file="interactive/interactivetool_panoply.xml" />
 	<tool file="interactive/interactivetool_askomics.xml" />
 	<tool file="interactive/interactivetool_cellxgene.xml" />
+	<tool file="interactive/interactivetool_cellxgene_1.1.1.xml" />
 	<tool file="interactive/interactivetool_bam_iobio.xml" />
 	<tool file="interactive/interactivetool_vcf_iobio.xml" />	
 	<tool file="interactive/interactivetool_neo4j.xml" />

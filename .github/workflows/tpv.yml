@@ -1,0 +1,114 @@
+---
+name: Total Perspective Vortex
+
+'on':
+  pull_request:
+    paths:
+      - 'files/galaxy/tpv/**'
+  push:
+    branches:
+      - master
+    paths:
+      - 'files/galaxy/tpv/**'
+
+jobs:
+  lint:
+    name: Total Perspective Vortex linter
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check out the codebase.
+        uses: actions/checkout@v2
+        with:
+          path: 'infrastructure-playbook'
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+
+      # Install Ansible.
+      - name: Cache Ansible.
+        id: cache-ansible
+        uses: actions/cache@v3
+        with:
+          path: /opt/hostedtoolcache/Python/*/*/lib/python*/site-packages/ansible*
+          key: ${{ hashFiles('infrastructure-playbook/requirements.txt') }}
+      - name: Install Ansible (fast when an existing installation was already cached).
+        working-directory: 'infrastructure-playbook'
+        run: |
+          # Install an Ansible version compatible with the version of
+          # ansible-core specified in requirements.txt for the
+          # infrastructure-playbook repo.
+          ANSIBLE_CORE_REQ=$(perl -pe 's/\\\n/ /' requirements.txt | grep ansible-core)
+          pip3 install --use-feature=fast-deps ansible "$ANSIBLE_CORE_REQ"
+      - name: Save Ansible cache.
+        uses: actions/cache/save@v3
+        if: ${{ steps.cache-ansible.outputs.cache-hit != 'true' }}
+        with:
+          path: /opt/hostedtoolcache/Python/*/*/lib/python*/site-packages/ansible*
+          key: ${{ hashFiles('infrastructure-playbook/requirements.txt') }}
+
+      # Total Perspective Vortex needs the Galaxy logic, which should be
+      # installed automatically when running `pip3 install
+      # total-perspective-vortex[cli]` (the `galaxy-app` package).
+      # However:
+      # - `galaxy-app` package on PyPI is outdated (see issue #15999 on
+      #   the Galaxy repo: https://github.com/galaxyproject/galaxy/issues/15999)
+      # - Ideally the version of Galaxy should exactly match the one running on
+      #   usegalaxy.eu.
+      # Therefore, we clone Galaxy and add it to the PYTHONPATH.
+      - name: Get Galaxy repo and commit id.
+        working-directory: 'infrastructure-playbook'
+        run: |
+          # Get the Galaxy repository URL and commit from Ansible variables.
+          export TMP_FILE=`mktemp`
+          openssl rand -base64 24 > .vault_password
+          ansible localhost --connection local \
+            --inventory hosts --module-name copy \
+            --args "content={{hostvars['sn06.galaxyproject.eu']}} dest=${TMP_FILE}" \
+            > /dev/null
+          export GALAXY_COMMIT_ID=$(cat ${TMP_FILE} | jq -r .galaxy_commit_id)
+          export GALAXY_REPO=$(cat ${TMP_FILE} | jq -r .galaxy_repo)
+          rm ${TMP_FILE}
+          echo $GALAXY_COMMIT_ID > ../galaxy_commit_id
+          echo $GALAXY_REPO > ../galaxy_repo
+      - name: Cache Galaxy
+        id: cache-galaxy
+        uses: actions/cache@v3
+        with:
+          path: galaxy
+          key: ${{ hashFiles('galaxy_repo') }}-${{ hashFiles('galaxy_commit_id') }}
+      - name: Clone Galaxy
+        if: ${{ steps.cache-galaxy.outputs.cache-hit != 'true' }}
+        run: |
+          export GALAXY_COMMIT_ID="$(cat ./galaxy_commit_id)"
+          export GALAXY_REPO="$(cat ./galaxy_repo)"
+          # git clone -b $GALAXY_COMMIT_ID --single-branch --depth=1 $GALAXY_REPO galaxy  # does not work with commit hashes
+          git clone $GALAXY_REPO galaxy && cd galaxy && git checkout $GALAXY_COMMIT_ID
+      - name: Save Galaxy cache.
+        uses: actions/cache/save@v3
+        if: ${{ steps.cache-galaxy.outputs.cache-hit != 'true' }}
+        with:
+          path: galaxy
+          key: ${{ hashFiles('galaxy_repo') }}-${{ hashFiles('galaxy_commit_id') }}
+      - name: Install Galaxy requirements.
+        working-directory: 'galaxy'
+        run: pip install -r requirements.txt
+
+      # Install the Total Perspective Vortex version that should be running on
+      # usegalaxy.eu
+      - name: Install Total Perspective Vortex.
+        working-directory: 'galaxy'
+        run: |
+          TPV_REQ=$(perl -pe 's/\\\n/ /' lib/galaxy/dependencies/conditional-requirements.txt | grep total-perspective-vortex)
+          pip3 install --upgrade "$TPV_REQ"
+
+      - name: Run Total Perspective Vortex linter.
+        run: |
+          export PYTHONPATH=$(realpath ./galaxy/lib)
+          for file in $(ls infrastructure-playbook/files/galaxy/tpv/*.{yml,yaml}); do
+            echo Running TPV linter on "$file"...
+            tpv lint $file || exit 1
+          done
