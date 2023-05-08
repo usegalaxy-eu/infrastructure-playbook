@@ -3,6 +3,9 @@
 Ansible playbook for managing UseGalaxy.EU infrastructure. For the playbook
 managing Galaxy itself, see https://github.com/galaxyproject/usegalaxy-playbook/
 
+## Detailed documentation
+* Is available [here](https://github.com/usegalaxy-eu/operations/blob/main/infrastructure_playbook_repo.md)
+
 ## Running Notes
 
 This probably won't work for your infra. We require everything to run on
