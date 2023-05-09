@@ -31,6 +31,12 @@
           - "-upload-dir={{ upload_dir_main }}"
           - -hooks-http=https://usegalaxy.eu/api/upload/hooks
           - -hooks-http-forward-headers=X-Api-Key,Cookie
+  pre_tasks:
+    - ansible.posix.firewalld:
+        zone: public
+        port 1080-1081/tcp
+        permanent: true
+        state: enabled
 
   roles:
     - role: usegalaxy_eu.handy.os_setup
