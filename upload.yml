@@ -14,7 +14,7 @@
         group: "{{ user_group_name }}"
         # args passed to tusd
         args:
-          - -host=upload.galaxyproject.eu
+          - -host={{ inventory_hostname }}
           - -port=1080
           - "-upload-dir={{ upload_dir_test }}"
           - -hooks-http=https://test.usegalaxy.eu/api/upload/hooks
@@ -26,7 +26,7 @@
         group: "{{ user_group_name }}"
         # args passed to tusd
         args:
-          - -host=upload.galaxyproject.eu
+          - -host={{ inventory_hostname }}
           - -port=1081
           - "-upload-dir={{ upload_dir_main }}"
           - -hooks-http=https://usegalaxy.eu/api/upload/hooks
