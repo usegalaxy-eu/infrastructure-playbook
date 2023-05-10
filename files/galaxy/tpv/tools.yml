@@ -711,48 +711,11 @@ tools:
       _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
   toolshed.g2.bx.psu.edu/repos/bgruening/repeat_masker/repeatmasker_wrapper/.*:
     rules:
-      # version <  4.1.5: set environment variable RM_LIB_PATH to "data/db/databases/dfam/3.4/"
-      # version >= 4.1.5: set cores to 4
-      - if: "True"
-        execute: |
-          from itertools import zip_longest
-          from typing import Tuple
-
-          def parse_version(version: str) -> Tuple[int]:
-              """Parse a repeat_masker version string.
-
-              Parses a version string starting with integers separated by dots and continuing with a plus sign into a
-              tuple of integers. The part of the version string after the plus sign is ignored.
-              """
-              version: str = version.split("+")[0].split(".")
-              version: int = map(int, version)
-              return tuple(version)
-
-          def version_lt(version1: Tuple[int], version2: Tuple[int]) -> bool:
-            """Compare two version numbers.
-
-            Compare two version numbers expressed as lists of integers.
-            """
-            for i, j in zip_longest(version1, version2, fillvalue=0):
-              if i == j:
-                continue
-              return i < j
-            return False
-
-          version = parse_version(tool.version)
-
-          # version < 4.1.5 -> declare RM_LIB_PATH
-          reference = parse_version("4.1.5")
-          if version_lt(version, reference):
-              entity.env += [{
-                  "name": "RM_LIB_PATH",
-                  "value": "data/db/databases/dfam/3.4/"
-              }]
-
-          # version >= 4.1.5 -> set cores to 4
-          reference = parse_version("4.1.5")
-          if not version_lt(version, reference):
-              entity.cores = 4
+      - if: helpers.tool_version_lt(tool, '4.1.5')
+        env:
+          RM_LIB_PATH: "data/db/databases/dfam/3.4/"
+      - if: helpers.tool_version_gte(tool, '4.1.5')
+        cores: 4
   toolshed.g2.bx.psu.edu/repos/galaxyp/reactome_pathwaymatcher/reactome_pathwaymatcher/.*:
     env:
       _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx17G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
