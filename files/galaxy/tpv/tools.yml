@@ -528,9 +528,6 @@ tools:
       - if: 20 <= input_size < 25
         mem: 375
         cores: 16
-        scheduling:
-          prefer:
-            - condor-tpv
       - if: input_size >= 25
         fail: Too much data, please check if the input is correct.
 
