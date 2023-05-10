@@ -509,6 +509,28 @@ tools:
       - if: input_size >= 20
         fail: Too much data, please don't use Spades for this
 
+  toolshed.g2.bx.psu.edu/repos/galaxy-australia/smudgeplot/smudgeplot/.*:
+    cores: 8
+    rules:
+      - if: input_size < 1
+        mem: 15
+      - if: 1 <= input_size < 5
+        mem: 75
+      - if: 5 <= input_size < 10
+        cores: 12
+        mem: 150
+      - if: 10 <= input_size < 15
+        cores: 12
+        mem: 225
+      - if: 15 <= input_size < 20
+        cores: 12
+        mem: 300
+      - if: 20 <= input_size < 25
+        mem: 375
+        cores: 16
+      - if: input_size >= 25
+        fail: Too much data, please check if the input is correct.
+
   toolshed.g2.bx.psu.edu/repos/iuc/spades_rnaviralspades/spades_rnaviralspades/.*:
     cores: 10
     mem: 8
