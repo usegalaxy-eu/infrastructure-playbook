@@ -12,6 +12,11 @@
     galaxy_api_url: https://usegalaxy.eu
   roles:
     - role: usegalaxy_eu.handy.os_setup
+      vars:
+        enable_hostname: true
+        enable_powertools: true        # geerlingguy.repo-epel role doesn't enable PowerTools repository
+    - geerlingguy.repo-epel     # Install EPEL repository
+    - usegalaxy-eu.autoupdates  # keep all of our packages up to date
     - influxdata.chrony
     - dj-wasabi.telegraf
     - usegalaxy-eu.dynmotd # nicer MOTD/welcome message
