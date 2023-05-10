@@ -19,6 +19,15 @@
         group: root
         state: link
         force: true
+  post_tasks:
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+      register:
+        selinux_disabled
+    # - name: Reboot if SELinux was disabled
+    #   reboot:
+    #   when: selinux_disabled.reboot_required == true
   roles:
     # Starting configuration of the operating system
     - role: usegalaxy_eu.handy.os_setup
