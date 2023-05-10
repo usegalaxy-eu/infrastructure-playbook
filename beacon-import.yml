@@ -4,10 +4,17 @@
   hosts:
     - beacon_import
   vars_files:
+    - "secret_group_vars/all.yml"
     - secret_group_vars/beacon.yml
   vars:
     script_user: beacon
     script_dir: /home/beacon/script
     galaxy_api_url: https://usegalaxy.eu
   roles:
+    - role: usegalaxy_eu.handy.os_setup
+    - influxdata.chrony
+    - dj-wasabi.telegraf
+    - usegalaxy-eu.dynmotd # nicer MOTD/welcome message
     - paprikant.beacon-importer
+    - os_hardening
+    - ssh_hardening
