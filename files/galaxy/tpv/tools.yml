@@ -1,6 +1,16 @@
 ---
 # ALL tags must be with dashes (-) instead of underscores (_)
 tools:
+  basic_gpu_resource_param_tool:
+    # Type of compute resource (CPU or GPU) for the tool depends on user's input from its wrapper.
+    # Default resource is CPU.
+    rules:
+      - id: resource_params_gpu
+        if: |
+          param_dict = job.get_param_values(app)
+          param_dict.get('__job_resource', {}).get('__job_resource__select') == 'yes'
+        gpus: int(job.get_param_values(app)['__job_resource']['gpu'])
+
   __DATA_FETCH__:
     cores: 1
     mem: 3
@@ -12,13 +22,7 @@ tools:
       TEMP: /data/1/galaxy_db/tmp
 
   toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/.*:
-    gpus: 1
-
-  toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/2019.1.5.1:
-    gpus: 1
-
-  toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/2020.4+galaxy0:
-    gpus: 1
+    inherits: basic_gpu_resource_param_tool
 
   toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/.*:
     # The memory requirement of Hifiasm depends on a wrapper's input
@@ -57,16 +61,7 @@ tools:
       value
 
   keras_train_and_eval:
-    # Type of compute resource (CPU or GPU) for keras_train_eval tool depends on user's input from its wrapper.
-    # Default resource is CPU.
-    gpus: |
-      parameters = {p.name: p.value for p in job.parameters}
-      parameters = tool.params_from_strings(parameters, app)
-
-      gpus = int(
-          parameters.get("__job_resource", dict()).get("gpu", '0')
-      )
-      gpus
+    inherits: basic_gpu_resource_param_tool
 
   toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy/.*:
     cores: 2
