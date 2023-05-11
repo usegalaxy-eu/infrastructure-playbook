@@ -462,9 +462,16 @@ galaxy_jobconf:
         singularity_enabled: true
         singularity_default_container_id: "/cvmfs/singularity.galaxyproject.org/u/b/ubuntu:18.04"
 
-  tools: []
+  tools:
     # TODO(hxr): implement validation that checks that every destination
     # used here is defined above.
+    - id: "toolshed.g2.bx.psu.edu/repos/bgruening/keras_train_and_eval/keras_train_and_eval"
+      resources: usegpu
+    - id: "toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim"
+      resources: usegpu
+  resources:
+    - id: usegpu
+      names: [gpu]    
   limits:
     - type: "destination_user_concurrent_jobs"
       id: "condor_upload"

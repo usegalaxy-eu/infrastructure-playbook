@@ -29,6 +29,11 @@ tools:
           entity.params['requirements'] = '(GalaxyGroup == "compute") || (%s)' % training_expr if training_expr else '(GalaxyGroup == "compute")'
           entity.params['+Group'] = training_labels
           entity.params['accounting_group_user'] = str(user.id)
+      - id: resource_params_gpu
+        if: |
+          param_dict = job.get_param_values(app)
+          param_dict.get('__job_resource', {}).get('__job_resource__select') == 'yes'
+        gpus: int(job.get_param_values(app)['__job_resource']['gpu'])
       - id: gpu_tools_to_condor_gpu
         if: entity.gpus > 0
         scheduling:
