@@ -109,13 +109,14 @@ resources:
 #
 tools:
 {% for tool in galaxy_jobconf['tools'] %}
+{% if tool|length > 1 %}
+  - id: {{ tool['id'] }}
+{% if 'destination' in tool %}
+    environment: {{ tool['destination'] }}
+{% endif %}
 {% if 'resources' in tool %}
-  - id: {{ tool['id'] }}
-    environment: {{ tool['destination'] }}
     resources: {{ tool['resources'] }}
-{% else %}
-  - id: {{ tool['id'] }}
-    environment: {{ tool['destination'] }}
+{% endif %}
 {% endif %}
 {% endfor %}
 {% endif %}
