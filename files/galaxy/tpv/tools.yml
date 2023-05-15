@@ -106,6 +106,37 @@ tools:
     cores: 10
     mem: 32
     rules:
+        # Note: As of today, there is no `tool_version_eq` function in TPV.
+      - if: helpers.tool_version_gte(tool, '2.0.0+galaxy1') and helpers.tool_version_lt(tool, '2.0.0+galaxy2')
+        # meaning `helpers.tool_version_eq(tool, '2.0.0+galaxy1')`
+        # The version number of alphafold may not match the version number of the the tool in this case. The alphafold
+        # version number should in fact be newer than 2.1.0 and older than 2.1.1. Check the links below to verify this
+        # claim:
+        # - https://github.com/usegalaxy-au/tools-au/blob/fae57866fda74c85d405a2db03a82ebfdaed6070/tools/alphafold/docker/Dockerfile#L7
+        # - https://github.com/usegalaxy-au/tools-au/tree/fae57866fda74c85d405a2db03a82ebfdaed6070/tools/alphafold/docker
+        # - https://github.com/usegalaxy-au/tools-au/commit/aa7c146a02df64fcaa8ef03a89a76012227f35d6
+        # - https://github.com/deepmind/alphafold/blob/be37a41d6f83e4145bd4912cbe8bf6a24af80c29/setup.py#L21
+        # However neither, 2.1.0 nor 2.1.1 are still supposed to be able to use the GPU during the relaxation step, yet
+        # there are CUDA errors in the tool tests when no GPU is available. Verify the GPU use claim below:
+        # - https://github.com/deepmind/alphafold/blob/be37a41d6f83e4145bd4912cbe8bf6a24af80c29/alphafold/relax/amber_minimize.py#L93
+        # There seems indeed to have been a mishap when packaging this version of the tool. See the link below.
+        # - https://github.com/usegalaxy-au/tools-au/commit/06dd35df4064c0c3c1272957e46c0df59d24c7fe
+        # Regardless of how things came to be this way, this version of the tool needs a GPU, and the
+        # requirement cannot be disabled) because `ALPHAFOLD_USE_GPU` is not declared in alphafold.xml. Thus we set
+        # gpus to one.
+        gpus: 1
+      - if: helpers.tool_version_gte(tool, '2.0.0+galaxy2') and helpers.tool_version_lt(tool, '2.0.0+galaxy3')
+        # meaning `helpers.tool_version_eq(tool, '2.0.0+galaxy2')`
+        # The same story as above applies to this tool version.
+        # - https://github.com/usegalaxy-au/tools-au/blob/78302ce1d79058f37b24c7b395de450f42631260/tools/alphafold/alphafold.xml#L52
+        gpus: 1
+      - if: helpers.tool_version_gte(tool, '2.1.2+galaxy0') and helpers.tool_version_lt(tool, '2.1.2+galaxy1')
+        # meaning `helpers.tool_version_eq(tool, '2.1.2+galaxy0')`
+        # This version of alphafold already allows to control whether the GPU should be used during the relaxation
+        # step, but the tool developers added `ALPHAFOLD_USE_GPU` in the next tool revision (2.1.2+galaxy1). GPU use
+        # is still mandatory.
+        # - https://github.com/usegalaxy-au/tools-au/commit/6352c107873cf824d83bfe06b368523624746de7
+        gpus: 1
       - if: helpers.tool_version_lt(tool, '2.3')
         params:
           singularity_run_extra_arguments: "--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases/2.2/,ALPHAFOLD_USE_GPU=False"
