@@ -54,6 +54,7 @@
     - secret_group_vars/all.yml # All of the other assorted secrets...
     - secret_group_vars/keys.yml # SSH keys
     - templates/galaxy/config/job_conf.yml
+    - mounts/dest/all.yml
   handlers:
     - name: Restart Galaxy
       shell: |
