@@ -72,7 +72,7 @@ telegraf_plugins_extra:
   galaxy_lastlog:
     plugin: "exec"
     config:
-      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin uwsgi lastlog"]
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin gunicorn lastlog"]
       - timeout = "15s"
       - data_format = "influx"
       - interval = "15s"
