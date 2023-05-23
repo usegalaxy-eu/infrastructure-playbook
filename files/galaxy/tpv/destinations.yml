@@ -100,7 +100,7 @@ destinations:
       dependency_resolution: "none"
       submit_request_cpus: "{cores}"
       submit_request_memory: "{mem}"
-      docker_volumes: "$default,$job_directory:rw,$tool_directory:ro,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+      docker_volumes: "$defaults,$job_directory:rw,$tool_directory:ro,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
     scheduling:
       require:
         - pulsar
