@@ -1,0 +1,257 @@
+---
+# MISC/Generic variables
+hostname: "{{ inventory_hostname }}"
+galaxy_config: "{{ galaxy_config_hash }}"
+galaxy_root: /opt/galaxy
+galaxy_venv_dir: "{{ galaxy_root }}/venv"
+galaxy_server_dir: "{{ galaxy_root }}/server"
+galaxy_config_dir: "{{ galaxy_root }}/config"
+galaxy_config_file: "{{ galaxy_config_dir }}/galaxy.yml"
+galaxy_group:
+  name: galaxy
+  gid: 999
+galaxy_user:
+  name: galaxy
+  create_home: true
+  home: /opt/galaxy
+  uid: 999
+  shell: /bin/bash
+
+# Role: hxr.postgres-connection
+# Role: usegalaxy-eu.galaxy-slurp
+postgres_user: galaxy
+postgres_host: sn05.galaxyproject.eu
+postgres_port: 5432
+
+# Role: usegalaxy_eu.handy.os_setup
+enable_hostname: true
+enable_powertools: true
+enable_remap_user: true
+enable_exclude_packages: true
+enable_pam_limits: true
+enable_install_software: true
+enable_create_user: true
+software_groups_to_install:
+  - admin
+  - debug
+  - editors
+  - pdf_export_deps
+  - services
+  - terminals
+  - utils
+handy_users:
+  - user_name: "{{ galaxy_user.name }}"
+    user_uid: "{{ galaxy_user.uid }}"
+    user_group: "{{ galaxy_group.name }}"
+    user_comment: "Galaxy useraccount"
+    user_create_home: "{{ galaxy_user.create_home }}"
+    user_home: "{{ galaxy_user.home }}"
+    user_shell: "{{ galaxy_user.shell }}"
+handy_groups:
+  - group_name: "{{ galaxy_group.name }}"
+    group_gid: "{{ galaxy_group.gid }}"
+
+# Role: usegalaxy-eu.autofs
+autofs_service:
+  install: true
+  enable: true
+nfs_kernel_tuning: true
+autofs_mount_points:
+  - data
+  - gxtest
+  - gxkey
+  - jwd
+  - usrlocal
+
+# Role: usegalaxy-eu.bashrc
+bashrc_users:
+  - uname: "{{ galaxy_user.name }}"
+    uhome: "{{ galaxy_user.home }}"
+    gname: "{{ galaxy_group.name }}"
+
+# Role: hxr.postgres-connection
+pgc_users:
+  - uname: "{{ galaxy_user.name }}"
+    uhome: "{{ galaxy_user.home }}"
+    gname: "{{ galaxy_group.name }}"
+    pguser: "{{ postgres_user }}"
+    pgpass: "{{ postgres_pass }}"
+    pgdatabase: galaxy
+
+# Role: usegalaxy_eu.fs_maintenance
+fsm_maintenance_dir: "/data/dnb01/maintenance"
+fsm_intervals:
+  short: "3d"
+  medium: "7d"
+  long: "31d"
+fsm_scripts:
+  temporary_dirs:
+    enable: true
+    src: "temporary_dirs.sh.j2"
+    dst: "{{ fsm_maintenance_dir }}/temporary_dirs.sh"
+    user: "{{ fsm_galaxy_user.username }}"
+    group: "{{ fsm_galaxy_user.groupname }}"
+    paths:
+      - /data/1/galaxy_db/tmp
+      - /data/2/galaxy_db/tmp
+      - /data/dnb01/galaxy_db/tmp
+      - /data/dnb02/galaxy_db/tmp
+      - /data/dnb03/galaxy_db/tmp
+      - /data/dnb05/galaxy_db/tmp
+      - /data/dnb06/galaxy_db/tmp
+      - /data/jwd/tmp
+      - /data/jwd02f/tmp
+      - /data/jwd04/tmp
+    time: "{{ fsm_intervals.long }}"
+  upload_dirs:
+    enable: true
+    src: "uploads.sh.j2"
+    dst: "{{ fsm_maintenance_dir }}/uploads.sh"
+    user: "{{ fsm_galaxy_user.username }}"
+    group: "{{ fsm_galaxy_user.groupname }}"
+    paths:
+      - "{{ galaxy_config['galaxy']['nginx_upload_store'] }}"
+      - "{{ galaxy_config['galaxy']['nginx_upload_job_files_store'] }}"
+    time: "{{ fsm_intervals.medium }}"
+  job_working_dirs:
+    enable: true
+    src: "job_working_dir.sh.j2"
+    dst: "{{ fsm_maintenance_dir }}/job_working_dir.sh"
+    user: "{{ fsm_galaxy_user.username }}"
+    group: "{{ fsm_galaxy_user.groupname }}"
+    paths:
+      - "{{ galaxy_config['galaxy']['job_working_directory'] }}"
+      - /data/dnb03/galaxy_db/job_working_directory
+      - /data/jwd/main
+      - /data/jwd01/main
+      - /data/jwd02f/main
+      - /data/jwd03f/main
+      - /data/jwd04/main
+      - /data/jwd05e/main
+    time: "{{ fsm_intervals.long }}"
+fsm_htcondor_enable: true
+
+# Role: dj-wasabi.telegraf
+telegraf_agent_hostname: "{{ hostname }}"
+telegraf_agent_version: 1.17.2
+custom_telegraf_env: "/usr/bin/env GDPR_MODE=1 PGUSER={{ galaxy_user.name }} PGHOST={{ postgres_host }} GALAXY_ROOT={{ galaxy_server_dir }} GALAXY_CONFIG_FILE={{ galaxy_config_file }} GXADMIN_PYTHON={{ galaxy_venv_dir }}/bin/python"
+telegraf_plugins_extra:
+  postgres:
+    plugin: "postgresql"
+    config:
+      - address = "{{ galaxy_db_connection }}"
+      - databases = ["galaxy", "galaxy-test", "apollo", "chado"]
+  monitor_nfsstat:
+    plugin: "exec"
+    config:
+      - commands = ["/usr/bin/nfsstat-influx"]
+      - timeout = "10s"
+      - data_format = "influx"
+      - interval = "15s"
+  galaxy_uploaded:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery upload-gb-in-past-hour"]
+      - timeout = "360s"
+      - data_format = "influx"
+      - interval = "1h"
+  galaxy_jobs_queued:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery jobs-queued"]
+      - timeout = "15s"
+      - data_format = "influx"
+      - interval = "1m"
+  galaxy_jobs_queued_internal:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery jobs-queued-internal-by-handler"]
+      - timeout = "15s"
+      - data_format = "influx"
+      - interval = "1m"
+  galaxy_jobs_queue_overview:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery queue-overview --short-tool-id"]
+      - timeout = "30s"
+      - data_format = "influx"
+      - interval = "1m"
+  galaxy_oidc:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery users-with-oidc"]
+      - timeout = "15s"
+      - data_format = "influx"
+      - interval = "1m"
+  galaxy_workflow:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery workflow-invocation-status"]
+      - timeout = "15s"
+      - data_format = "influx"
+      - interval = "1m"
+  galaxy_workflow_totals:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery workflow-invocation-totals"]
+      - timeout = "15s"
+      - data_format = "influx"
+      - interval = "1m"
+  postgres_extra:
+    plugin: "exec"
+    config:
+      - commands = [
+        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-cache-hit",
+        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-index-size",
+        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-index-usage",
+        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-table-bloat",
+        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-table-size",
+        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-unused-indexes",
+        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-vacuum-stats",
+        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-stat-bgwriter",
+        "{{ custom_telegraf_env }} /usr/bin/gxadmin iquery pg-stat-user-tables",
+        ]
+      - timeout = "60s"
+      - data_format = "influx"
+      - interval = "2m"
+
+# Role: hxr.monitor-cluster
+monitor_condor: true
+monitor_condor_split_util: true
+
+# Role: usegalaxy-eu.dynmotd
+dynmotd_custom:
+  - name: Condor
+    command: "condor_q -totals | tail -n 2"
+
+# Role: usegalaxy_eu.htcondor
+condor_host: "condor-cm.galaxyproject.eu"
+condor_fs_domain: bi.uni-freiburg.de
+condor_uid_domain: bi.uni-freiburg.de
+condor_allow_write: "10.5.68.0/24, 132.230.223.0/24"
+condor_daemons:
+  # - MASTER
+  - SCHEDD
+condor_allow_negotiator: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }},$(CONDOR_HOST)"
+condor_allow_administrator: "$(ALLOW_NEGOTIATOR)"
+condor_system_periodic_hold: "{{ 30 * 24 * 60 * 60 }}"
+condor_system_periodic_remove: "{{ 2 * 24 * 60 * 60 }}"
+condor_network_interface: "{{ ansible_default_ipv4.interface }}"
+condor_extra: |
+  MASTER_UPDATE_INTERVAL = 150
+  SCHEDD_INTERVAL = 60
+  JOB_START_COUNT = 250
+  JOB_START_DELAY = 0
+  CLAIM_WORKLIFE = 120
+
+# Role: usegalaxy-eu.galaxy-slurp
+galaxy_slurper: galaxy
+galaxy_slurp_influx_pass: "{{ influxdb.node.password }}"
+galaxy_slurp_influx_user: "{{ influxdb.node.username }}"
+galaxy_slurp_influx_url: "{{ influxdb.url }}"
+
+# Role: galaxyproject.gxadmin
+gxadmin_commit: main
+gxadmin_dir: /opt/gxadmin
+gxadmin_bin_dir: /usr/bin
+gxadmin_force: true
