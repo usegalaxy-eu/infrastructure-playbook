@@ -25,6 +25,12 @@ tools:
           training_labels = '"' + ", ".join(training_roles) + '"'
           entity.params['requirements'] = '(GalaxyGroup == "compute") || (%s)' % training_expr if training_expr else '(GalaxyGroup == "compute")'
           entity.params['+Group'] = training_labels
+      - id: remote_resources
+        if: user is not None
+        execute: |
+          pulsar_tag = [{ 'require': user.extra_preferences }] if user.extra_preferences != 'None' else {}
+          entity.tpv_tags = entity.tpv_tags.combine(self.tpv_tags, TagSetManager.from_dict(pulsar_tag or {}))
+
       - id: gpu_tools_to_condor_gpu
         if: entity.gpus > 0
         scheduling:
