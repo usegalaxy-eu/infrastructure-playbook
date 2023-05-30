@@ -167,6 +167,17 @@ destinations:
       require:
         - be-pulsar
 
+  pulsar_cz01_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_cz01
+    max_accepted_cores: 32
+    max_accepted_mem: 128
+    scheduling:
+      require:
+        - cz-pulsar
+      accept:
+        - singularity
+
   #############################
   # LOCAL CONDOR DESTINATIONS #
   #############################
