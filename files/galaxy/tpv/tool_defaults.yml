@@ -10,7 +10,7 @@ tools:
     env:
       GALAXY_MEMORY_MB: "{int(mem * 1024)}" # set 5/2023 might be moved to runner or tool wrappers, related to Galaxy issue 15952
     params:
-      metadata_strategy: 'extended'
+      metadata_strategy: "extended"
       tmp_dir: true
       request_cpus: "{cores}"
       request_memory: "{mem}G"
@@ -29,6 +29,17 @@ tools:
           entity.params['requirements'] = '(GalaxyGroup == "compute") || (%s)' % training_expr if training_expr else '(GalaxyGroup == "compute")'
           entity.params['+Group'] = training_labels
           entity.params['accounting_group_user'] = str(user.id)
+      - id: remote_resources
+        if: user is not None
+        execute: |
+          user_preferences = user.extra_preferences
+          pulsar_tag = None
+          for data_item in user_preferences:
+            if "distributed_compute|remote_resources" in data_item:
+                if user_preferences[data_item] != "None":
+                    pulsar_tag = user_preferences[data_item]
+          new_tag = { 'require': [pulsar_tag] } if pulsar_tag else {}
+          entity.tpv_tags = entity.tpv_tags.combine(self.tpv_tags, TagSetManager.from_dict(new_tag or {}))
     rank: |
       final_destinations = helpers.weighted_random_sampling(candidate_destinations)
       final_destinations
