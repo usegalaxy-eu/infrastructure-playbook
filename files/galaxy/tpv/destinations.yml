@@ -40,6 +40,8 @@ destinations:
     runner: pulsar_embedded
     max_accepted_cores: 24
     max_accepted_mem: 128
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     scheduling:
       accept:
         - docker
@@ -48,20 +50,20 @@ destinations:
 
   interactive_pulsar_gpu:
     inherits: interactive_pulsar
+    min_accepted_gpus: 1
     max_accepted_gpus: 1
     env:
       GPU_AVAILABLE: "1"
     params:
       requirements: 'GalaxyGroup == "compute_gpu"'
-    scheduling:
-      require:
-        - gpu
 
   embedded_pulsar_docker:
     inherits: basic_docker_destination
     runner: pulsar_embedded
     max_accepted_cores: 24
     max_accepted_mem: 128
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     scheduling:
       require:
         - docker
@@ -69,14 +71,12 @@ destinations:
 
   embedded_pulsar_docker_gpu:
     inherits: embedded_pulsar_docker
+    min_accepted_gpus: 1
     max_accepted_gpus: 1
     env:
       GPU_AVAILABLE: "1"
     params:
       requirements: 'GalaxyGroup == "compute_gpu"'
-    scheduling:
-      require:
-        - gpu
 
   #######################
   # PULSAR DESTINATIONS #
@@ -118,6 +118,8 @@ destinations:
     runner: pulsar_mira_runner
     max_accepted_cores: 8
     max_accepted_mem: 15
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     scheduling:
       require:
         - mira-pulsar
@@ -127,6 +129,8 @@ destinations:
     runner: pulsar_sanjay_runner
     max_accepted_cores: 8
     max_accepted_mem: 15
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     scheduling:
       require:
         - sanjay-pulsar
@@ -136,6 +140,8 @@ destinations:
     runner: pulsar_eu_sk01
     max_accepted_cores: 8
     max_accepted_mem: 16
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     scheduling:
       require:
         - sk-pulsar
@@ -145,6 +151,8 @@ destinations:
     runner: pulsar_eu_it01
     max_accepted_cores: 16
     max_accepted_mem: 31
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     scheduling:
       require:
         - it-pulsar
@@ -154,6 +162,8 @@ destinations:
     inherits: pulsar_default
     max_accepted_cores: 8
     max_accepted_mem: 63
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     scheduling:
       require:
         - fr-pulsar
@@ -163,6 +173,8 @@ destinations:
     runner: pulsar_eu_be01
     max_accepted_cores: 8
     max_accepted_mem: 15
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     scheduling:
       require:
         - be-pulsar
@@ -187,6 +199,8 @@ destinations:
     runner: condor
     max_accepted_cores: 36
     max_accepted_mem: 975
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     scheduling:
       require:
         - docker
@@ -196,6 +210,8 @@ destinations:
     runner: condor
     max_accepted_cores: 24
     max_accepted_mem: 128
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     params:
     scheduling:
       require:
@@ -207,6 +223,8 @@ destinations:
     runner: condor
     max_accepted_cores: 64
     max_accepted_mem: 1000
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     scheduling:
       prefer:
         - condor-tpv
@@ -216,6 +234,8 @@ destinations:
     runner: condor
     max_accepted_cores: 64
     max_accepted_mem: 1000
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     params:
       container_override:
         - type: singularity
@@ -231,6 +251,8 @@ destinations:
     runner: condor
     max_accepted_cores: 20
     max_accepted_mem: 10
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     params:
       requirements: "GalaxyTraining == false"
       rank: 'GalaxyGroup == "upload"'
@@ -242,11 +264,9 @@ destinations:
     runner: condor
     max_accepted_cores: 8
     max_accepted_mem: 16
+    min_accepted_gpus: 1
     max_accepted_gpus: 1
     env:
       GPU_AVAILABLE: 1
     params:
       requirements: 'GalaxyGroup == "compute_gpu"'
-    scheduling:
-      require:
-        - gpu
