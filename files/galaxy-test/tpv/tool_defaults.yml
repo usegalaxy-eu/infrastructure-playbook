@@ -25,17 +25,6 @@ tools:
           training_labels = '"' + ", ".join(training_roles) + '"'
           entity.params['requirements'] = '(GalaxyGroup == "compute") || (%s)' % training_expr if training_expr else '(GalaxyGroup == "compute")'
           entity.params['+Group'] = training_labels
-      - id: remote_resources
-        if: user is not None
-        execute: |
-          user_preferences = user.extra_preferences
-          for data_item in user_preferences:
-            if "distributed_compute|remote_resources" in data_item:
-                if user_preferences[data_item] != "None":
-                    pulsar_tag = user_preferences[data_item]
-          new_tag = [{ 'require': pulsar_tag }] if pulsar_tag else []
-          entity.tpv_tags = entity.tpv_tags.combine(self.tpv_tags, TagSetManager.from_dict(new_tag or {}))
-
       - id: gpu_tools_to_condor_gpu
         if: entity.gpus > 0
         scheduling:
