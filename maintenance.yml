@@ -9,6 +9,11 @@
     - secret_group_vars/all.yml
   collections:
     - devsec.hardening
+  handlers:
+    - name: restart rsyslog
+      service:
+        name: rsyslog
+        state: restarted
   pre_tasks:
     - name: Install Dependencies
       package:
@@ -41,6 +46,24 @@
         - "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBOBINXdjILF6x3WuppXyq6J2a2oSLR6waZ6txgjYJogHdIKPbI0TdReCv4EVxxYRY/NqGpHbjkqfRTsf2VgoU3U= mk@galaxy-mira"
         - "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBACB5Q5blymkTIRSzVzXITOGvBuI7W0L9Ykwfz8LJGPraaGVPiezzFGvjhqwX+EyCqQPt7JprR5mimJRw/JN3nBXWAHjekvmB5FuILkk6m5fOiQJ5QhRMyQ5GfxODAvGbHpTuWHbYJLWD5fhcboKPxlXOWy4xY9kDZVuQvEKisNKYBsFLA== sanjay"
         - "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBABRaLHL8mgW86rbtdUh6TY4rs7/la8hAGeSQ3jBF7LMwYZnbS32YDMYvDq3KgNu5WqSMFvkxNm3vfTAbd8CXBfakwDBFBaD9kO0b2t4/p4VoFUsd3B2OvmTR7Bsg7OxTGJJ7aUP/SzTg+Z4NzsmHwQ9h31gfI7n/buZD4S1edQke19Y6w== dominguj@informatik.uni-freiburg.de"
+    - name: rsyslog configuration
+      copy:
+        content: |
+          # Accept logs on TCP port 514
+          module(load="imtcp")
+          input(type="imtcp" port="514")
+
+          # Create a template for log file naming
+          $template RemoteLogs,"/var/log/remote/%HOSTNAME%/%PROGRAMNAME%.log"
+
+          # Store logs from clients in their own directories
+          if $fromhost-ip != "127.0.0.1" then ?RemoteLogs
+      dest: /etc/rsyslog.d/remote.conf
+      owner: root
+      group: root
+      mode: '0644'
+      notify:
+      - restart rsyslog
   roles:
     - usegalaxy_eu.handy.os_setup
     - geerlingguy.repo-epel
@@ -67,3 +90,4 @@
     # - dj-wasabi.telegraf
     # - usegalaxy-eu.fix-stop-ITs
     # - usegalaxy-eu.vgcn-monitoring
+    - usegalaxy-eu.logrotate

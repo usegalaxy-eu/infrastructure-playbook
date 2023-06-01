@@ -255,3 +255,16 @@ gxadmin_commit: main
 gxadmin_dir: /opt/gxadmin
 gxadmin_bin_dir: /usr/bin
 gxadmin_force: true
+
+# Role: usegalaxy-eu.logrotate
+lp_logrotate_confd:
+  - path: rsyslog
+    conf: |
+      /var/log/remote/*/*.log {
+        weekly
+        rotate 5
+        missingok
+        dateext
+        notifempty
+        compress
+      }
