@@ -58,10 +58,10 @@
 
           # Store logs from clients in their own directories
           if $fromhost-ip != "127.0.0.1" then ?RemoteLogs
-      dest: /etc/rsyslog.d/remote.conf
-      owner: root
-      group: root
-      mode: '0644'
+        dest: /etc/rsyslog.d/remote.conf
+        owner: root
+        group: root
+        mode: '0644'
       notify:
       - restart rsyslog
   roles:
