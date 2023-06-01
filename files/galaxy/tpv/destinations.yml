@@ -172,6 +172,17 @@ destinations:
     runner: pulsar_eu_cz01
     max_accepted_cores: 32
     max_accepted_mem: 128
+    env:
+      LC_ALL: C
+      SINGULARITY_CACHEDIR: "/storage/praha5-elixir/home/galaxyeu/singularity"
+      SINGULARITY_TMPDIR: "/storage/praha5-elixir/home/galaxyeu/singularity/tmp"
+      TMPDIR: "$SCRATCHDIR"
+      TMP: "$SCRATCHDIR"
+      TEMP: "$SCRATCHDIR"
+    params:
+      jobs_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/staging"
+      persistence_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/persistent"
+      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu"
     scheduling:
       require:
         - cz-pulsar
