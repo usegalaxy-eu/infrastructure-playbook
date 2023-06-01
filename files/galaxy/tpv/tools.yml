@@ -25,40 +25,50 @@ tools:
     inherits: basic_gpu_resource_param_tool
 
   toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/.*:
-    # The memory requirement of Hifiasm depends on a wrapper's input
-    mem: |
-      from math import ceil
+    rules:
+      - id: hifiasm_memory
+        # The memory requirement of Hifiasm depends on a wrapper's input
+        if: |
+          parameters = {p.name: p.value for p in job.parameters}
+          parameters = tool.params_from_strings(parameters, app)
 
-      parameters = {p.name: p.value for p in job.parameters}
-      parameters = tool.params_from_strings(parameters, app)
+          advanced_options = parameters.get("advanced_options", dict())
+          hg_size = advanced_options.get("hg_size", "")
 
-      advanced_options = parameters.get("advanced_options", dict())
+          bool(hg_size)
+        mem: |
+          from math import ceil
 
-      kcov_default = 36
-      kcov = advanced_options.get("kcov", kcov_default)
+          parameters = {p.name: p.value for p in job.parameters}
+          parameters = tool.params_from_strings(parameters, app)
 
-      hg_size = advanced_options.get("hg_size", "")
+          advanced_options = parameters.get("advanced_options", dict())
 
-      value = 0
-      if hg_size:
-          conversion_factors = {
-              "k": 1000000,
-              "M": 1000,
-              "G": 1,
-          }
-          conversion_factors = {
-              key.lower(): value for key, value in conversion_factors.items()
-          }
-          suffix = hg_size[-1:].lower()
-          value = hg_size[:len(hg_size) - 1]
-          value = value.replace(",", ".")
-          value = float(value)
-          # compute hg size in Gb
-          value = value / conversion_factors[suffix.lower()]
-          value = ceil(value * (kcov * 2) * 1.75)
+          kcov_default = 36
+          kcov = advanced_options.get("kcov", kcov_default)
 
-      # return the amount of memory needed
-      value
+          hg_size = advanced_options.get("hg_size", "")
+
+          value = 0
+          if hg_size:
+              conversion_factors = {
+                  "k": 1000000,
+                  "M": 1000,
+                  "G": 1,
+              }
+              conversion_factors = {
+                  key.lower(): value for key, value in conversion_factors.items()
+              }
+              suffix = hg_size[-1:].lower()
+              value = hg_size[:len(hg_size) - 1]
+              value = value.replace(",", ".")
+              value = float(value)
+              # compute hg size in Gb
+              value = value / conversion_factors[suffix.lower()]
+              value = ceil(value * (kcov * 2) * 1.75)
+
+          # return the amount of memory needed
+          value
 
   toolshed.g2.bx.psu.edu/repos/bgruening/keras_train_and_eval/keras_train_and_eval/.*:
     inherits: basic_gpu_resource_param_tool
