@@ -47,7 +47,7 @@ destinations:
         {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
         {% endif %}
         {% endfor %}
-        {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.db.docker_perm }},
+        {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
         {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
         {{ tools.tools.path }}/:{{ tools.tools.docker_perm }}"
       singularity_default_container_id: "{{ cvmfs.singularity.path }}/all/centos:8.3.2011"
