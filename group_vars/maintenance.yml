@@ -1,12 +1,20 @@
 ---
 # MISC/Generic variables
 hostname: "{{ inventory_hostname }}"
-galaxy_config: "{{ galaxy_config_hash }}"
 galaxy_root: /opt/galaxy
 galaxy_venv_dir: "{{ galaxy_root }}/venv"
 galaxy_server_dir: "{{ galaxy_root }}/server"
 galaxy_config_dir: "{{ galaxy_root }}/config"
 galaxy_config_file: "{{ galaxy_config_dir }}/galaxy.yml"
+galaxy_mutable_config_dir: "{{ galaxy_root }}/mutable-config"
+galaxy_log_dir: "/var/log/galaxy"
+
+galaxy_config:
+  galaxy:
+    job_working_directory: /data/jwd04/main
+    nginx_upload_store: "/data/jwd04/nginx_upload/main/uploads"
+    nginx_upload_job_files_store: "/data/jwd04/nginx_upload/main/jobfiles"
+
 galaxy_group:
   name: galaxy
   gid: 999
@@ -64,6 +72,7 @@ autofs_mount_points:
   - usrlocal
 
 # Role: usegalaxy-eu.bashrc
+galaxy_pulsar_app_conf: "{{ galaxy_config_dir }}/pulsar_app.yml"
 bashrc_users:
   - uname: "{{ galaxy_user.name }}"
     uhome: "{{ galaxy_user.home }}"
@@ -230,7 +239,7 @@ condor_fs_domain: bi.uni-freiburg.de
 condor_uid_domain: bi.uni-freiburg.de
 condor_allow_write: "10.5.68.0/24, 132.230.223.0/24"
 condor_daemons:
-  # - MASTER
+  - MASTER
   - SCHEDD
 condor_allow_negotiator: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }},$(CONDOR_HOST)"
 condor_allow_administrator: "$(ALLOW_NEGOTIATOR)"
