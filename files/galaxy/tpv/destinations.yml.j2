@@ -1,3 +1,4 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
 ---
 # NOTE: Use dashes (-) exclusively for tags and underscores (_) exclusively for destinations.
 # submit_request_cpus its called in pulsar and in plain condor only request_cpus
@@ -13,7 +14,17 @@ destinations:
       docker_net: bridge
       docker_auto_rm: true
       docker_set_user: ""
-      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$default,$job_directory:rw,$tool_directory:ro,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+      # $defaults expands to "$galaxy_root:ro,$tool_directory:ro,$job_directory:ro,$working_directory:rw,$default_file_path:rw"
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,
+        $defaults,
+        {% for vol in dnb.values() %}
+        {% if vol.name not in ['db', 'dnb04', 'dnb-ds01', 'dnb-ds02', '5'] %}
+        {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
+        {% endif %}
+        {% endfor %}
+        {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.db.docker_perm }},
+        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
       require_container: true
       submit_request_cpus: "{cores}"
       submit_request_memory: "{mem}G"
@@ -27,7 +38,18 @@ destinations:
       submit_request_cpus: "{cores}"
       submit_request_memory: "{mem}G"
       singularity_enabled: true
-      singularity_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{% for vol in dnb.values() %}{{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},{% endfor %}{{ tools.tools.path }}:{{ tools.tools.docker_perm }}"
+      singularity_volumes: "$_CONDOR_SCRATCH_DIR:rw,
+        $job_directory:rw,
+        $tool_directory:ro,
+        $job_directory/outputs:rw,
+        $working_directory:rw,
+        {% for vol in dnb.values() %}{% if vol.name not in ['5', 'dnb04', 'dnb-ds01', 'dnb-ds02', 'db'] %}
+        {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
+        {% endif %}
+        {% endfor %}
+        {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.db.docker_perm }},
+        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
+        {{ tools.tools.path }}/:{{ tools.tools.docker_perm }}"
       singularity_default_container_id: "{{ cvmfs.singularity.path }}/all/centos:8.3.2011"
 
   ################################
@@ -39,6 +61,8 @@ destinations:
     runner: pulsar_embedded
     max_accepted_cores: 24
     max_accepted_mem: 128
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     scheduling:
       accept:
         - docker
@@ -47,20 +71,20 @@ destinations:
 
   interactive_pulsar_gpu:
     inherits: interactive_pulsar
+    min_accepted_gpus: 1
     max_accepted_gpus: 1
     env:
       GPU_AVAILABLE: "1"
     params:
       requirements: 'GalaxyGroup == "compute_gpu"'
-    scheduling:
-      require:
-        - gpu
 
   embedded_pulsar_docker:
     inherits: basic_docker_destination
     runner: pulsar_embedded
     max_accepted_cores: 24
     max_accepted_mem: 128
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     scheduling:
       require:
         - docker
@@ -68,14 +92,12 @@ destinations:
 
   embedded_pulsar_docker_gpu:
     inherits: embedded_pulsar_docker
+    min_accepted_gpus: 1
     max_accepted_gpus: 1
     env:
       GPU_AVAILABLE: "1"
     params:
       requirements: 'GalaxyGroup == "compute_gpu"'
-    scheduling:
-      require:
-        - gpu
 
   #######################
   # PULSAR DESTINATIONS #
@@ -100,7 +122,9 @@ destinations:
       dependency_resolution: "none"
       submit_request_cpus: "{cores}"
       submit_request_memory: "{mem}"
-      docker_volumes: "$defaults,$job_directory:rw,$tool_directory:ro,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+      # $defaults expands to "$galaxy_root:ro,$tool_directory:ro,$job_directory:ro,$working_directory:rw,$default_file_path:rw"
+      docker_volumes: "$defaults,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+      singularity_volumes: "$defaults,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
     scheduling:
       require:
         - pulsar
@@ -115,6 +139,8 @@ destinations:
     runner: pulsar_mira_runner
     max_accepted_cores: 8
     max_accepted_mem: 15
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     scheduling:
       require:
         - mira-pulsar
@@ -124,6 +150,8 @@ destinations:
     runner: pulsar_sanjay_runner
     max_accepted_cores: 8
     max_accepted_mem: 15
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     scheduling:
       require:
         - sanjay-pulsar
@@ -133,6 +161,8 @@ destinations:
     runner: pulsar_eu_sk01
     max_accepted_cores: 8
     max_accepted_mem: 16
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     scheduling:
       require:
         - sk-pulsar
@@ -142,6 +172,8 @@ destinations:
     runner: pulsar_eu_it01
     max_accepted_cores: 16
     max_accepted_mem: 31
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     scheduling:
       require:
         - it-pulsar
@@ -151,6 +183,8 @@ destinations:
     inherits: pulsar_default
     max_accepted_cores: 8
     max_accepted_mem: 63
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     scheduling:
       require:
         - fr-pulsar
@@ -160,9 +194,33 @@ destinations:
     runner: pulsar_eu_be01
     max_accepted_cores: 8
     max_accepted_mem: 15
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     scheduling:
       require:
         - be-pulsar
+
+  pulsar_cz01_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_cz01
+    max_accepted_cores: 32
+    max_accepted_mem: 128
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    env:
+      LC_ALL: C
+      SINGULARITY_CACHEDIR: "/storage/praha5-elixir/home/galaxyeu/singularity"
+      SINGULARITY_TMPDIR: "/storage/praha5-elixir/home/galaxyeu/singularity/tmp"
+      TMPDIR: "$SCRATCHDIR"
+      TMP: "$SCRATCHDIR"
+      TEMP: "$SCRATCHDIR"
+    params:
+      jobs_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/staging"
+      persistence_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/persistent"
+      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu"
+    scheduling:
+      require:
+        - cz-pulsar
 
   #############################
   # LOCAL CONDOR DESTINATIONS #
@@ -173,6 +231,8 @@ destinations:
     runner: condor
     max_accepted_cores: 36
     max_accepted_mem: 975
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     scheduling:
       require:
         - docker
@@ -182,6 +242,8 @@ destinations:
     runner: condor
     max_accepted_cores: 24
     max_accepted_mem: 128
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     params:
     scheduling:
       require:
@@ -193,6 +255,8 @@ destinations:
     runner: condor
     max_accepted_cores: 64
     max_accepted_mem: 1000
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     scheduling:
       prefer:
         - condor-tpv
@@ -202,12 +266,14 @@ destinations:
     runner: condor
     max_accepted_cores: 64
     max_accepted_mem: 1000
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     params:
       container_override:
         - type: singularity
           shell: "/bin/bash"
           resolve_dependencies: true
-          identifier: "/data/{{ dnb.0.path }}/singularity_base_images/centos:8.3.2011"
+          identifier: "{{ dnb.0.path }}/singularity_base_images/centos:8.3.2011"
     scheduling:
       require:
         - singularity
@@ -217,6 +283,8 @@ destinations:
     runner: condor
     max_accepted_cores: 20
     max_accepted_mem: 10
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
     params:
       requirements: "GalaxyTraining == false"
       rank: 'GalaxyGroup == "upload"'
@@ -228,11 +296,9 @@ destinations:
     runner: condor
     max_accepted_cores: 8
     max_accepted_mem: 16
+    min_accepted_gpus: 1
     max_accepted_gpus: 1
     env:
       GPU_AVAILABLE: 1
     params:
       requirements: 'GalaxyGroup == "compute_gpu"'
-    scheduling:
-      require:
-        - gpu
