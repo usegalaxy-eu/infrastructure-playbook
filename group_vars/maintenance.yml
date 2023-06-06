@@ -60,6 +60,11 @@ handy_groups:
     group_gid: "{{ galaxy_group.gid }}"
 
 # Role: usegalaxy-eu.autofs
+# Appending additional mounts to autofs_conf_files variable (var file: mounts/dest/all.yml)
+# This mounts the galaxy sync directory from the NFS server to /opt/galaxy
+galaxy_mount:
+  - "{{ sync.gxkey.path }}     -{{ sync.gxkey.nfs_options | join(',') }}      {{ sync.gxkey.export }}"
+
 autofs_service:
   install: true
   enable: true

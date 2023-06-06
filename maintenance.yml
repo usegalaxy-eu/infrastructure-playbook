@@ -6,6 +6,8 @@
   vars_files:
     - secret_group_vars/db-main.yml
     - secret_group_vars/all.yml
+    - mounts/dest/all.yml
+    - mounts/mountpoints.yml
   collections:
     - devsec.hardening
   handlers:
@@ -14,6 +16,9 @@
         name: rsyslog
         state: restarted
   pre_tasks:
+    - name: Set additional local mount point
+      set_fact:
+        autofs_conf_files: "{{ autofs_conf_files | combine({ 'usrlocal': autofs_conf_files['usrlocal'] + galaxy_mount }) }}"
     - name: Install Dependencies
       package:
         name:
