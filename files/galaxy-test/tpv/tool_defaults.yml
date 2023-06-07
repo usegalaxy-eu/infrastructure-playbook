@@ -25,7 +25,6 @@ tools:
           training_labels = '"' + ", ".join(training_roles) + '"'
           entity.params['requirements'] = '(GalaxyGroup == "compute") || (%s)' % training_expr if training_expr else '(GalaxyGroup == "compute")'
           entity.params['+Group'] = training_labels
-
       - id: gpu_tools_to_condor_gpu
         if: entity.gpus > 0
         scheduling:
