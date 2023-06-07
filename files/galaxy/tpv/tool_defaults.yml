@@ -32,7 +32,7 @@ tools:
       - id: remote_resources
         if: user is not None
         execute: |
-          import tpv.core.entities
+          from tpv.core.entities import TagSetManager
           pulsar_tag = None
           user_preferences = user.extra_preferences
           for data_item in user_preferences:
@@ -40,7 +40,7 @@ tools:
                 if user_preferences[data_item] != "None":
                     pulsar_tag = user_preferences[data_item]
           new_tag = {'require':[pulsar_tag]} if pulsar_tag else {}
-          entity.tpv_tags = entity.tpv_tags.combine(tpv.core.entities.TagSetManager.from_dict(new_tag))
+          entity.tpv_tags = entity.tpv_tags.combine(TagSetManager.from_dict(new_tag))
 
     rank: |
       final_destinations = helpers.weighted_random_sampling(candidate_destinations)
