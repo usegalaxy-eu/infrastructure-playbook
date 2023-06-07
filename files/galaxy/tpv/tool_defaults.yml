@@ -32,14 +32,16 @@ tools:
       - id: remote_resources
         if: user is not None
         execute: |
-          user_preferences = user.extra_preferences
+          import tpv.core.entities
           pulsar_tag = None
+          user_preferences = user.extra_preferences
           for data_item in user_preferences:
             if "distributed_compute|remote_resources" in data_item:
                 if user_preferences[data_item] != "None":
                     pulsar_tag = user_preferences[data_item]
-          new_tag = { 'require': [pulsar_tag] } if pulsar_tag else {}
-          entity.tpv_tags = entity.tpv_tags.combine(self.tpv_tags, TagSetManager.from_dict(new_tag or {}))
+          new_tag = {'require':[pulsar_tag]} if pulsar_tag else {[]}
+          entity.tpv_tags = entity.tpv_tags.combine(tpv.core.entities.TagSetManager.from_dict(new_tag))
+
     rank: |
       final_destinations = helpers.weighted_random_sampling(candidate_destinations)
       final_destinations
