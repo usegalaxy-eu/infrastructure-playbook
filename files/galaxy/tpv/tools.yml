@@ -102,6 +102,20 @@ tools:
       prefer:
         - condor-tpv
 
+  toolshed.g2.bx.psu.edu/repos/iuc/sleuth/sleuth/.*:
+    cores: 4
+    mem: 16
+    scheduling:
+      require:
+        - condor-tpv
+
+  tool_id=toolshed.g2.bx.psu.edu/repos/iuc/rnaquast/rna_quast/.*:
+    cores: 12
+    mem: 8
+    scheduling:
+      require:
+        - condor-tpv
+
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold/.*:
     cores: 10
     mem: 32
