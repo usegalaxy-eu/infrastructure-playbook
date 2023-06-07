@@ -39,7 +39,7 @@ tools:
             if "distributed_compute|remote_resources" in data_item:
                 if user_preferences[data_item] != "None":
                     pulsar_tag = user_preferences[data_item]
-          new_tag = {'require':[pulsar_tag]} if pulsar_tag else {[]}
+          new_tag = {'require':[pulsar_tag]} if pulsar_tag else {}
           entity.tpv_tags = entity.tpv_tags.combine(tpv.core.entities.TagSetManager.from_dict(new_tag))
 
     rank: |
