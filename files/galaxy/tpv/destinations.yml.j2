@@ -104,7 +104,6 @@ destinations:
   #######################
 
   pulsar_default: # use for remote Pulsar nodes and ALWAYS overwrite the runner.
-    inherits: basic_singularity_destination
     abstract: true
     runner: pulsar_embedded
     env:
@@ -125,10 +124,11 @@ destinations:
       # $defaults expands to "$galaxy_root:ro,$tool_directory:ro,$job_directory:ro,$working_directory:rw,$default_file_path:rw"
       docker_volumes: "$defaults,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
       singularity_volumes: "$defaults,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+      singularity_enabled: true
+      singularity_default_container_id: "{{ cvmfs.singularity.path }}/all/centos:8.3.2011"
     scheduling:
-      require:
-        - pulsar
       accept:
+        - pulsar
         - conda
         - singularity
         - docker
