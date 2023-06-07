@@ -126,9 +126,8 @@ destinations:
       docker_volumes: "$defaults,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
       singularity_volumes: "$defaults,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
     scheduling:
-      require:
-        - pulsar
       accept:
+        - pulsar
         - conda
         - singularity
         - docker
