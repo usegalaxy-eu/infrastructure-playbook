@@ -886,3 +886,10 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/iuc/semibin/semibin/.*:
     mem: 8
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/msconvert/msconvert/.*:
+    params:
+      docker_run_extra_arguments: --user 999
+    scheduling:
+      require:
+        - docker
