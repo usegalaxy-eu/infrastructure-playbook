@@ -1,5 +1,5 @@
 ---
-- name: HTCondor 8.8 Central Manager
+- name: Galaxy DB server
   hosts: sn05
   become: true
   vars:
@@ -11,32 +11,28 @@
   pre_tasks:
     - name: Install Dependencies
       package:
-        name: ['python36', 'rsync']
+        name: ['python3', 'rsync', 'perl', 'glibc-langpack-en']
       become: true
-    - name: Set default version of Python
-      alternatives:
-        name: python
-        path: /usr/bin/python3
     - name: Disable firewalld service
       ansible.builtin.service:
         name: firewalld
         enabled: false
         state: stopped
   roles:
+    - geerlingguy.repo-epel
     - role: usegalaxy_eu.handy.os_setup
       vars:
         enable_hostname: true
         enable_powertools: true        # geerlingguy.repo-epel role doesn't enable PowerTools repository
         enable_install_software: true  # Some extra admin tools (*top, vim, etc)
     - usegalaxy-eu.dynmotd
-    - geerlingguy.repo-epel
     - influxdata.chrony
     - hxr.monitor-email
     - usegalaxy-eu.autoupdates  # keep all of our packages up to date
     - usegalaxy-eu.autofs
     - ssh-host-sign
     # Applications
-    # - usegalaxy_eu.htcondor
+    #- usegalaxy_eu.htcondor
     - usegalaxy-eu.ansible-postgresql
     # End Applications
     - dj-wasabi.telegraf
