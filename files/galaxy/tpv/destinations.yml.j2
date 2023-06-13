@@ -163,6 +163,8 @@ destinations:
     max_accepted_mem: 16
     min_accepted_gpus: 0
     max_accepted_gpus: 0
+    params:
+      singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro'
     scheduling:
       require:
         - sk-pulsar
