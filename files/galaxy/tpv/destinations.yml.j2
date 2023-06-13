@@ -121,9 +121,16 @@ destinations:
       dependency_resolution: "none"
       submit_request_cpus: "{cores}"
       submit_request_memory: "{mem}"
-      # $defaults expands to "$galaxy_root:ro,$tool_directory:ro,$job_directory:ro,$working_directory:rw,$default_file_path:rw"
-      docker_volumes: "$defaults,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
-      singularity_volumes: "$defaults,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+      docker_volumes: "$job_directory:rw,
+        $tool_directory:ro,
+        $job_directory/outputs:rw,
+        $working_directory:rw,
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+      singularity_volumes: "$job_directory:rw,
+        $tool_directory:ro,
+        $job_directory/outputs:rw,
+        $working_directory:rw,
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
       singularity_enabled: true
       singularity_default_container_id: "{{ cvmfs.singularity.path }}/all/centos:8.3.2011"
     scheduling:
