@@ -559,7 +559,7 @@ tools:
           prefer:
             - condor-tpv
       - if: input_size >= 20
-        fail: Too much data, please don't use Spades for this
+        fail: Too much data, please don't use this tool for this.
 
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/smudgeplot/smudgeplot/.*:
     cores: 8
@@ -583,23 +583,7 @@ tools:
       - if: input_size >= 25
         fail: Too much data, please check if the input is correct.
 
-  toolshed.g2.bx.psu.edu/repos/iuc/shovill/shovill/.*:
-    cores: 2
-    rules:
-      - if: 0.005 <= input_size < 1
-        cores: 8
-        mem: 100
-      - if: 1 <= input_size < 2
-        cores: 12
-        mem: 200
-      - if: 2 <= input_size < 20
-        cores: 20
-        mem: 350
-        scheduling:
-          prefer:
-            - condor-tpv
-      - if: input_size >= 20
-        fail: Too much data, please don't use Shovill for this
+  inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
 
   toolshed.g2.bx.psu.edu/repos/iuc/spades_rnaviralspades/spades_rnaviralspades/.*:
     cores: 10
