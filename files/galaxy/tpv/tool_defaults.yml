@@ -41,6 +41,8 @@ tools:
                     pulsar_tag = user_preferences[data_item]
           new_tag = {'require':[pulsar_tag]} if pulsar_tag else {}
           entity.tpv_tags = entity.tpv_tags.combine(TagSetManager.from_dict(new_tag))
+          if pulsar_tag == 'cz-pulsar' and 'alphafold' in tool.id:
+            entity.gpus = 1
 
     rank: |
       final_destinations = helpers.weighted_random_sampling(candidate_destinations)
