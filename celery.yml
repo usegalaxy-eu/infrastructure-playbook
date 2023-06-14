@@ -6,6 +6,8 @@
   vars_files:
     - "secret_group_vars/all.yml"
     - "secret_group_vars/pulsar.yml"
+    - mounts/mountpoints.yml
+    - mounts/dest/all.yml
   pre_tasks:
     - name: Install Dependencies
       package:
