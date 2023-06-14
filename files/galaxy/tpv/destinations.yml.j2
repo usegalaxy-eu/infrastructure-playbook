@@ -242,6 +242,31 @@ destinations:
       require:
         - cz-pulsar
 
+  pulsar_cz02_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_cz02
+    max_accepted_cores: 32
+    max_accepted_mem: 128
+    min_accepted_gpus: 1
+    max_accepted_gpus: 1
+    env:
+      LC_ALL: C
+      SINGULARITY_CACHEDIR: "/storage/praha5-elixir/home/galaxyeu/singularity"
+      SINGULARITY_TMPDIR: "/storage/praha5-elixir/home/galaxyeu/singularity/tmp"
+      TMPDIR: "$SCRATCHDIR"
+      TMP: "$SCRATCHDIR"
+      TEMP: "$SCRATCHDIR"
+      ALPHAFOLD_DB: "/storage/brno11-elixir/projects/alphafold/alphafold.db"
+      GPU_AVAILABLE: "1"
+    params:
+      jobs_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/staging"
+      persistence_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/persistent"
+      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,$ALPHAFOLD_DB:/data:ro"
+      singularity_run_extra_arguments: "--nv"
+    scheduling:
+      require:
+        - cz-pulsar
+
   #############################
   # LOCAL CONDOR DESTINATIONS #
   #############################
