@@ -3,6 +3,9 @@
   hosts: upload
   become: true
   become_user: root
+  vars_files:
+    - mounts/mountpoints.yml
+    - mounts/dest/all.yml
   vars:
     upload_dir_test: /data/jwd04/tus_upload/test
     upload_dir_main: /data/jwd04/tus_upload/main
