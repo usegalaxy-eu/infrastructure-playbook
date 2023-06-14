@@ -41,7 +41,7 @@ tools:
                     pulsar_tag = user_preferences[data_item]
           new_tag = {'require':[pulsar_tag]} if pulsar_tag else {}
           entity.tpv_tags = entity.tpv_tags.combine(TagSetManager.from_dict(new_tag))
-          if pulsar_tag == 'cz-pulsar' and 'alphafold' in tool.id:
+          if pulsar_tag == 'cz-pulsar' and helpers.tool_version_gte(tool, '2.3.1') and 'alphafold2' in tool.id:
             entity.gpus = 1
 
     rank: |
