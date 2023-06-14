@@ -347,3 +347,19 @@ destinations:
       GPU_AVAILABLE: 1
     params:
       requirements: 'GalaxyGroup == "compute_gpu"'
+
+  condor_docker_gpu:
+    inherits: basic_docker_destination
+    # shorter than inheriting from condor_gpu
+    runner: condor
+    max_accepted_cores: 8
+    max_accepted_mem: 16
+    min_accepted_gpus: 1
+    max_accepted_gpus: 1
+    scheduling:
+      require:
+        - docker
+    env:
+      GPU_AVAILABLE: 1
+    params:
+      requirements: 'GalaxyGroup == "compute_gpu"'
