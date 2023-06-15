@@ -1,39 +1,50 @@
 ---
-- name: Install and configure tusd
+- name: Install and configure rustus
   hosts: upload
   become: true
   become_user: root
   vars_files:
+    - secret_group_vars/sentry.yml
     - mounts/mountpoints.yml
     - mounts/dest/all.yml
   vars:
     upload_dir_test: /data/jwd04/tus_upload/test
     upload_dir_main: /data/jwd04/tus_upload/main
-    tusd_instances:
+    rustus_instances:
       - name: test_uploads
-        # user that tusd will run as
+        # user that rustus will run as
         user: "{{ user_name }}"
-        # group that tusd will run as
+        # group that rustus will run as
         group: "{{ user_group_name }}"
-        # args passed to tusd
+        # args passed to rustus
         args:
-          - -host={{ inventory_hostname }}
-          - -port=1080
-          - "-upload-dir={{ upload_dir_test }}"
-          - -hooks-http=https://test.usegalaxy.eu/api/upload/hooks
-          - -hooks-http-forward-headers=X-Api-Key,Cookie
+          - --host "{{ inventory_hostname }}"
+          - --port 1080
+          - "--data-dir {{ upload_dir_test }}"
+          - --hooks-http-urls "https://test.usegalaxy.eu/api/upload/hooks"
+          - --hooks-http-proxy-headers "X-Api-Key,Cookie"
+          - --hooks "pre-create"
+          - --hooks-format tusd
+          - --url "/api/upload/resumable_upload"
+          - --max-body-size 20000000
+          - "--sentry-dsn {{ sentry_dsn.test }} --sentry-sample-rate 1.0"
       - name: main_uploads
-        # user that tusd will run as
+        # user that rustus will run as
         user: "{{ user_name }}"
-        # group that tusd will run as
+        # group that rustus will run as
         group: "{{ user_group_name }}"
-        # args passed to tusd
+        # args passed to rustus
         args:
-          - -host={{ inventory_hostname }}
-          - -port=1081
-          - "-upload-dir={{ upload_dir_main }}"
-          - -hooks-http=https://usegalaxy.eu/api/upload/hooks
-          - -hooks-http-forward-headers=X-Api-Key,Cookie
+          - --host "{{ inventory_hostname }}"
+          - --port 1081
+          - "--data-dir {{ upload_dir_main }}"
+          - --hooks-http-urls "https://usegalaxy.eu/api/upload/hooks"
+          - --hooks-http-proxy-headers "X-Api-Key,Cookie"
+          - --hooks "pre-create"
+          - --hooks-format tusd
+          - --url "/api/upload/resumable_upload"
+          - --max-body-size 20000000
+          - "--sentry-dsn {{ sentry_dsn.main }} --sentry-sample-rate 1.0"
   pre_tasks:
     - ansible.posix.firewalld:
         zone: public
@@ -52,4 +63,4 @@
     ## Filesystems
     - usegalaxy-eu.autofs     # Setup the mount points which will be needed later
 
-    - galaxyproject.tusd
+    - usegalaxy_eu.rustus
