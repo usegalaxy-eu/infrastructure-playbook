@@ -1,14 +1,17 @@
 ---
+user_name: galaxy
+user_group_name: galaxy
+
 # create_user task
 handy_groups:
-  - group_name: galaxy
+  - group_name: "{{ user_group_name }}"
     group_gid: 999
 
 handy_users:
-  - user_name: galaxy
+  - user_name: "{{ user_name }}"
     user_uid: 999
     user_comment: rustus Service-Acct
-    user_group: galaxy
+    user_group: "{{ user_group_name }}"
 
 # Autofs
 autofs_service:
