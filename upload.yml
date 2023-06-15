@@ -3,6 +3,8 @@
   hosts: upload
   become: true
   become_user: root
+  vars_files:
+    - secret_group_vars/sentry.yml
   vars:
     upload_dir_test: /data/jwd04/tus_upload/test
     upload_dir_main: /data/jwd04/tus_upload/main
@@ -23,6 +25,7 @@
           - --hooks-format tusd
           - --url "/api/upload/resumable_upload"
           - --max-body-size 20000000
+          - "--sentry-dsn {{ sentry_dsn.test }} --sentry-sample-rate 1.0"
       - name: main_uploads
         # user that rustus will run as
         user: "{{ user_name }}"
@@ -39,6 +42,7 @@
           - --hooks-format tusd
           - --url "/api/upload/resumable_upload"
           - --max-body-size 20000000
+          - "--sentry-dsn {{ sentry_dsn.main }} --sentry-sample-rate 1.0"
   pre_tasks:
     - ansible.posix.firewalld:
         zone: public
