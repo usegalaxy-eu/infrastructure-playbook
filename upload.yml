@@ -22,7 +22,7 @@
           - --hooks "pre-create"
           - --hooks-format tusd
           - --url "/api/upload/resumable_upload"
-          - --max-body-size 10000000
+          - --max-body-size 20000000
       - name: main_uploads
         # user that rustus will run as
         user: "{{ user_name }}"
@@ -38,7 +38,7 @@
           - --hooks "pre-create"
           - --hooks-format tusd
           - --url "/api/upload/resumable_upload"
-          - --max-body-size 10000000
+          - --max-body-size 20000000
   pre_tasks:
     - ansible.posix.firewalld:
         zone: public
