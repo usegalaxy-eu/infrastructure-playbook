@@ -112,6 +112,14 @@ tools:
       prefer:
         - condor-tpv
 
+  toolshed.g2.bx.psu.edu/repos/iuc/sleuth/sleuth/.*:
+    cores: 4
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/iuc/rnaquast/rna_quast/.*:
+    cores: 12
+    mem: 40
+
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold/.*:
     cores: 10
     mem: 32
@@ -551,7 +559,7 @@ tools:
           prefer:
             - condor-tpv
       - if: input_size >= 20
-        fail: Too much data, please don't use Spades for this
+        fail: Too much data, please don't use this tool for this.
 
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/smudgeplot/smudgeplot/.*:
     cores: 8
@@ -575,9 +583,12 @@ tools:
       - if: input_size >= 25
         fail: Too much data, please check if the input is correct.
 
+  toolshed.g2.bx.psu.edu/repos/iuc/shovill/shovill/.*:
+    inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
+
   toolshed.g2.bx.psu.edu/repos/iuc/spades_rnaviralspades/spades_rnaviralspades/.*:
-    cores: 10
-    mem: 8
+    inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
+
   toolshed.g2.bx.psu.edu/repos/iuc/rnaspades/rnaspades/.*:
     inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
   toolshed.g2.bx.psu.edu/repos/iuc/spades_plasmidspades/spades_plasmidspades/.*:
@@ -878,3 +889,12 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/iuc/semibin/semibin/.*:
     mem: 8
+
+  toolshed.g2.bx.psu.edu/repos/iuc/circos/circos/.*:
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/msconvert/msconvert/.*:
+    params:
+      docker_run_extra_arguments: --user 999
