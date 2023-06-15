@@ -16,6 +16,9 @@
         user: "{{ user_name }}"
         # group that rustus will run as
         group: "{{ user_group_name }}"
+        # rustus will refuse to work if it cannot write to its current working directory,
+        # just provide a directory that rustus has write access to
+        working_directory: "{{ upload_dir_test }}"
         # args passed to rustus
         args:
           - --host "{{ inventory_hostname }}"
@@ -33,6 +36,9 @@
         user: "{{ user_name }}"
         # group that rustus will run as
         group: "{{ user_group_name }}"
+        # rustus will refuse to work if it cannot write to its current working directory,
+        # just provide a directory that rustus has write access to
+        working_directory: "{{ upload_dir_main }}"
         # args passed to rustus
         args:
           - --host "{{ inventory_hostname }}"
