@@ -78,6 +78,14 @@ destinations:
     params:
       requirements: 'GalaxyGroup == "compute_gpu"'
 
+  interactive_pulsar_rstudio_poweruser:
+    inherits: interactive_pulsar
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    scheduling:
+      require:
+        - rstudio-poweruser
+
   embedded_pulsar_docker:
     inherits: basic_docker_destination
     runner: pulsar_embedded
