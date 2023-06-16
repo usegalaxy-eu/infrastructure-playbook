@@ -11,7 +11,7 @@ roles:
     rules:
       - id: rstudio_poweruser
         if: |
-          'rstudio' in tool.id
+          'rstudio' in tool.id and 'interactive' in tool.id
         scheduling:
           require:
             - docker
