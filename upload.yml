@@ -17,8 +17,9 @@
         user: "{{ user_name }}"
         # group that rustus will run as
         group: "{{ user_group_name }}"
-        # rustus will refuse to work if it cannot write to its current working directory,
-        # just provide a directory that rustus has write access to
+        # by default, rustus will refuse to work if it cannot write to its current working
+        # directory, read the documentation of the usegalaxy_eu.rustus role for more
+        # details
         working_directory: "{{ upload_dir_test }}"
         # args passed to rustus
         args:
@@ -32,13 +33,15 @@
           - --url "/api/upload/resumable_upload"
           - --max-body-size 20000000
           - "--sentry-dsn {{ sentry_dsn.test }} --sentry-sample-rate 1.0"
+          - --info-storage "file-info-storage" --info-dir "{{ upload_dir_test }}"
       - name: main_uploads
         # user that rustus will run as
         user: "{{ user_name }}"
         # group that rustus will run as
         group: "{{ user_group_name }}"
-        # rustus will refuse to work if it cannot write to its current working directory,
-        # just provide a directory that rustus has write access to
+        # by default, rustus will refuse to work if it cannot write to its current working
+        # directory, read the documentation of the usegalaxy_eu.rustus role for more
+        # details
         working_directory: "{{ upload_dir_main }}"
         # args passed to rustus
         args:
@@ -52,6 +55,7 @@
           - --url "/api/upload/resumable_upload"
           - --max-body-size 20000000
           - "--sentry-dsn {{ sentry_dsn.main }} --sentry-sample-rate 1.0"
+          - --info-storage "file-info-storage" --info-dir "{{ upload_dir_main }}"
   pre_tasks:
     - ansible.posix.firewalld:
         zone: public
