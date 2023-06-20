@@ -24,6 +24,93 @@ tools:
   toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/.*:
     inherits: basic_gpu_resource_param_tool
 
+  toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_.*/deeptools_.*/.*:
+    rules:
+      - id: deeptools_singularity
+        if: |
+          # versions without singularity container available
+          no_container = {
+              '2.0.1.0',
+              '2.1.0.0',
+              '2.2.2.0',  # a container is available but it is broken
+              '2.2.3.0',
+              '2.5.0.0',
+              '3.0.1.0',
+              '3.0.2.0',
+          }
+          all(not helpers.tool_version_eq(tool, version) for version in no_container)
+        scheduling:
+          require:
+            - singularity
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_compare/deeptools_bam_compare/.*:
+    rules:
+      - id: deeptools_singularity_bam_compare
+        if: |
+          # versions working in conda but not in singularity
+          versions = {
+              '2.4.1.0',
+          }
+          any(helpers.tool_version_eq(tool, version) for version in versions)
+        # remove singularity tag
+        execute: |
+          from tpv.core.entities import TagSetManager, TagType
+          entity.tpv_tags = TagSetManager([
+              tag for tag in entity.tpv_tags.tags
+              if not (tag.value == 'singularity' and tag.tag_type == TagType.REQUIRE)
+          ])
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_coverage/deeptools_bam_coverage/.*:
+    rules:
+      - id: deeptools_singularity_bam_coverage
+        if: |
+          # versions working in conda but not in singularity
+          versions = {
+              '2.4.1.0',
+          }
+          any(helpers.tool_version_eq(tool, version) for version in versions)
+        # remove singularity tag
+        execute: |
+          from tpv.core.entities import TagSetManager, TagType
+          entity.tpv_tags = TagSetManager([
+              tag for tag in entity.tpv_tags.tags
+              if not (tag.value == 'singularity' and tag.tag_type == TagType.REQUIRE)
+          ])
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_plot_coverage/deeptools_plot_coverage/.*:
+    rules:
+      - id: deeptools_singularity_plot_coverage
+        if: |
+          # versions working in conda but not in singularity
+          versions = {
+              '2.4.1.0',
+          }
+          any(helpers.tool_version_eq(tool, version) for version in versions)
+        # remove singularity tag
+        execute: |
+          from tpv.core.entities import TagSetManager, TagType
+          entity.tpv_tags = TagSetManager([
+              tag for tag in entity.tpv_tags.tags
+              if not (tag.value == 'singularity' and tag.tag_type == TagType.REQUIRE)
+          ])
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_plot_profile/deeptools_plot_profile/.*:
+    rules:
+      - id: deeptools_singularity_plot_profile
+        if: |
+          # versions working in conda but not in singularity
+          versions = {
+              '3.1.2.0.0',
+          }
+          any(helpers.tool_version_eq(tool, version) for version in versions)
+        # remove singularity tag
+        execute: |
+          from tpv.core.entities import TagSetManager, TagType
+          entity.tpv_tags = TagSetManager([
+              tag for tag in entity.tpv_tags.tags
+              if not (tag.value == 'singularity' and tag.tag_type == TagType.REQUIRE)
+          ])
+
   toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/.*:
     rules:
       - id: hifiasm_memory
