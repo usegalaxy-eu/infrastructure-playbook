@@ -245,7 +245,7 @@ destinations:
     params:
       jobs_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/staging"
       persistence_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/persistent"
-      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu"
+      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,/cvmfs/data.galaxyproject.org/managed/:/data/db/data_managers/:ro"
     scheduling:
       require:
         - cz-pulsar
@@ -266,6 +266,7 @@ destinations:
       TEMP: "$SCRATCHDIR"
       ALPHAFOLD_DB: "/storage/brno11-elixir/projects/alphafold/alphafold.db"
       GPU_AVAILABLE: "1"
+      ALPHAFOLD_USE_GPU: "True"
     params:
       jobs_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/staging"
       persistence_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/persistent"
