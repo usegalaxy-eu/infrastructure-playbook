@@ -8,8 +8,8 @@
     - mounts/mountpoints.yml
     - mounts/dest/all.yml
   vars:
-    upload_dir_test: /data/jwd04/tus_upload/test
-    upload_dir_main: /data/jwd04/tus_upload/main
+    upload_dir_test: "{{ jwd.jwd04.path }}/tus_upload/test"
+    upload_dir_main: "{{ jwd.jwd04.path }}/tus_upload/main"
     rustus_version: "0.7.3"
     rustus_instances:
       - name: test_uploads
