@@ -72,7 +72,7 @@ telegraf_plugins_extra:
   galaxy_lastlog:
     plugin: "exec"
     config:
-      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin uwsgi lastlog"]
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin gunicorn lastlog"]
       - timeout = "15s"
       - data_format = "influx"
       - interval = "15s"
@@ -289,19 +289,6 @@ galaxy_virtualenv_command: "/usr/bin/python3.8 -m venv"
 galaxy_nonrepro_tools: /data/dnb01/galaxy_db/test/custom-tools
 galaxy_nonrepro_commit: master
 
-galaxy_dynamic_job_rules_src_dir: files/galaxy-test/dynamic_rules
-galaxy_dynamic_job_rules_dir: "{{ galaxy_root }}/dynamic_rules"
-galaxy_dynamic_job_rules:
-  - usegalaxy/joint_destinations.yaml
-  - usegalaxy/sorting_hat.py
-  - usegalaxy/sorting_hat.yaml
-  - usegalaxy/destination_specifications.yaml
-  - usegalaxy/blast_destinations.py
-  - usegalaxy/tool_destinations.yaml
-  - usegalaxy/dexseq.py
-  - usegalaxy/wig2bigwig.py
-  - readme.txt
-
 # Custom override
 # Our galaxy_tool_dependency_dir is on NFS, and permissions are set in such a
 # way that they cannot be changed by the ansible connected user.
@@ -417,6 +404,17 @@ galaxy_jobconf:
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
       params:
         amqp_url: "pyamqp://galaxy_uk01:{{ rabbitmq_password_galaxy_uk01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_uk01?ssl=1"
+        galaxy_url: "https://test.usegalaxy.eu"
+        manager: test
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_fr01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_fr01:{{ rabbitmq_password_galaxy_fr01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_fr01?ssl=1"
         galaxy_url: "https://test.usegalaxy.eu"
         manager: test
         amqp_acknowledge: "true"

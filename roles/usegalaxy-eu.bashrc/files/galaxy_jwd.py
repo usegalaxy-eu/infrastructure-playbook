@@ -9,6 +9,7 @@ import sys
 from datetime import datetime
 from xml.dom.minidom import parse
 import psycopg2
+import yaml
 
 
 def main():
@@ -86,6 +87,11 @@ def main():
             f"The given galaxy.yml file {galaxy_config_file} does not exist"
         )
 
+    # pulsar_app.yml file path for pulsar_embedded runner
+    if not os.environ.get("GALAXY_PULSAR_APP_CONF"):
+        raise ValueError("Please set ENV GALAXY_PULSAR_APP_CONF")
+    galaxy_pulsar_app_conf = os.environ.get("GALAXY_PULSAR_APP_CONF").strip()
+
     if not os.environ.get("GALAXY_LOG_DIR"):
         raise ValueError("Please set ENV GALAXY_LOG_DIR")
     galaxy_log_dir = os.environ.get("GALAXY_LOG_DIR").strip()
@@ -117,6 +123,9 @@ def main():
     object_store_conf = get_object_store_conf_path(galaxy_config_file)
     backends = parse_object_store(object_store_conf)
 
+    # Add pulsar staging directory (runner: pulsar_embedded) to backends
+    backends["pulsar_embedded"] = get_pulsar_staging_dir(galaxy_pulsar_app_conf)
+
     # Connect to Galaxy database
     db = Database(
         dbname=db_name,
@@ -128,8 +137,8 @@ def main():
     # For the get_jwd subcommand
     if args.subcommand == "get_jwd":
         job_id = args.job_id
-        object_store_id = db.get_object_store_id(job_id)
-        jwd_path = decode_path(job_id, [object_store_id], backends)
+        object_store_id, job_runner_name = db.get_job_info(job_id)
+        jwd_path = decode_path(job_id, [object_store_id], backends, job_runner_name)
 
         # Check
         if jwd_path:
@@ -240,13 +249,37 @@ def parse_object_store(object_store_conf):
     return backends
 
 
-def decode_path(job_id, metadata, backends_dict):
+def get_pulsar_staging_dir(galaxy_pulsar_app_conf):
+    """Get the path to the pulsar staging directory
+
+    Args:
+        galaxy_pulsar_app_conf (str): Path to the pulsar_app.yml file
+
+    Returns:
+        str: Path to the pulsar staging directory
+    """
+    pulsar_staging_dir = ""
+    with open(galaxy_pulsar_app_conf, "r") as config:
+        yaml_config = yaml.safe_load(config)
+        pulsar_staging_dir = yaml_config["staging_directory"]
+
+    # Check if the pulsar staging directory exists
+    if not os.path.isdir(pulsar_staging_dir):
+        raise ValueError(
+            f"Pulsar staging directory '{pulsar_staging_dir}' does not exist"
+        )
+
+    return pulsar_staging_dir
+
+
+def decode_path(job_id, metadata, backends_dict, job_runner_name=None):
     """Decode the path of JWD's and check if the path exists
 
     Args:
         job_id (int): Job id
         metadata (list): List of object_store_id and update_time
         backends_dict (dict): Dictionary of backend id and path of type 'job_work'
+        job_runner_name (str, optional): Name of the job runner. Defaults to None.
 
     Returns:
         str: Path to the JWD
@@ -259,7 +292,11 @@ def decode_path(job_id, metadata, backends_dict):
             f"Object store id '{metadata[0]}' does not exist in the object_store_conf.xml file"
         )
 
-    jwd_path = f"{backends_dict[metadata[0]]}/0{job_id[0:2]}/{job_id[2:5]}/{job_id}"
+    # Pulsar embedded jobs uses the staging directory and this has a different path structure
+    if job_runner_name == "pulsar_embedded":
+        jwd_path = f"{backends_dict[job_runner_name]}/{job_id}"
+    else:
+        jwd_path = f"{backends_dict[metadata[0]]}/0{job_id[0:2]}/{job_id[2:5]}/{job_id}"
 
     # Validate that the path is a JWD
     # It is a JWD if the following conditions are true:
@@ -346,32 +383,35 @@ class Database:
 
         return failed_jobs_dict
 
-    def get_object_store_id(self, job_id):
-        """Get object_store_id for a job id
+    def get_job_info(self, job_id):
+        """Get object_store_id and job_runner_name for a given job id
 
         Args:
             job_id (int): Job id
 
         Returns:
             object_store_id (str): Object store id
+            job_runner_name (str): Job runner name
         """
         cur = self.conn.cursor()
         cur.execute(
             f"""
-            SELECT object_store_id
+            SELECT object_store_id, job_runner_name
             FROM job
-            WHERE id = '{job_id}' AND object_store_id IS NOT NULL
+            WHERE id = '{job_id}' AND object_store_id IS NOT NULL AND job_runner_name IS NOT NULL
             """
         )
-        object_store_id = cur.fetchone()[0]
+        object_store_id, job_runner_name = cur.fetchone()
         cur.close()
         self.conn.close()
 
         if not object_store_id:
-            print(f"Job id {job_id} not found in the database")
+            print(
+                f"Object store id and/or the job runner name for the job '{job_id}' was not found in the database"
+            )
             sys.exit(1)
 
-        return object_store_id
+        return object_store_id, job_runner_name
 
 
 if __name__ == "__main__":

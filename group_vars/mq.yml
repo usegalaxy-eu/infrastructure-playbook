@@ -2,10 +2,14 @@
 hostname: mq.galaxyproject.eu
 
 # create_user task
-user_name: rabbitmq
-user_uid: 999
-user_group_name: rabbitmq
-user_gid: 999
+handy_groups:
+  - group_name: rabbitmq
+    group_gid: 999
+
+handy_users:
+  - user_name: rabbitmq
+    user_uid: 999
+    user_group: rabbitmq
 
 # Certbot
 certbot_admin_email: security@usegalaxy.eu
@@ -119,6 +123,8 @@ rabbitmq_config:
     fail_if_no_peer_cert: "false"
   management_agent:
     disable_metrics_collector: "false"
+  management:
+    disable_stats: "false"
 
 rabbitmq_container:
   name: rabbit_hole

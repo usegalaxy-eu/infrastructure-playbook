@@ -86,8 +86,11 @@
 
           cd $JWD
           }
-
+          alias watchendqueue='watch -n 1 "gxadmin query queue-details --all | (head -n 2; tail -n 70)"' # show the end of queued state
+          alias watchendnew='watch -n 1 "gxadmin query queue-detail --all | (head -n 2; tail -n 70)"' # show the end of new state queue
+          alias highscore='gxadmin query queue-detail --all | awk -F\| '{print$5}' | sort | uniq -c | sort -sn' # show users with most jobs in queue
           alias gl='journalctl  -f -u galaxy-*'
+          alias notsubmitted='gxadmin query queue-details --all | awk -F\| '{print$3}' | grep -vc "\S"' # jobs that are queued but not submitted / not have condor id
           alias glg='journalctl -fu galaxy-gunicorn@* | grep -v -e "/api/upload/hooks" -e "/history/current_history_json"'
           alias glh='journalctl -f -u galaxy-handler@*'
           alias glw='journalctl -f -u galaxy-workflow-scheduler@*'
@@ -108,13 +111,14 @@
         path: "{{ item.uhome }}/.bashrc"
         line: "{{ task_item }}"
       loop:
-        # ENV's for gxadmin
+        # ENV's for gxadmin and the galaxy_jwd python script
         - "export GALAXY_CONFIG_DIR={{ galaxy_config_dir }}"
         - "export GALAXY_CONFIG_FILE={{ galaxy_config_file }}"
         - "export GALAXY_LOG_DIR={{ galaxy_log_dir }}"
         - "export GALAXY_MUTABLE_CONFIG_DIR={{ galaxy_mutable_config_dir }}"
         - "export GALAXY_ROOT={{ galaxy_server_dir }}"
         - "export VIRTUAL_ENV={{ galaxy_venv_dir }}"
+        - "export GALAXY_PULSAR_APP_CONF={{ galaxy_pulsar_app_conf }}"
       loop_control:
         loop_var: task_item
 

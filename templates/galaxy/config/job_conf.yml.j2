@@ -92,6 +92,7 @@ execution:
 {% endif %}
 {% endfor %}
 
+{% if 'resources' in galaxy_jobconf %}
 #
 # Job resource selector configuration
 #
@@ -100,21 +101,25 @@ resources:
 {% for resource in galaxy_jobconf['resources'] %}
     {{ resource['id'] }}: {{ resource['names'] }}
 {% endfor %}
+{% endif %}
 
+{% if galaxy_jobconf.tools is defined and galaxy_jobconf.tools|length > 0 %}
 #
 # Job mapping configuration
 #
 tools:
 {% for tool in galaxy_jobconf['tools'] %}
-{% if 'resources' in tool %}
+{% if tool|length > 1 %}
   - id: {{ tool['id'] }}
-    environment: {{ tool['destination'] }}
-    resources: {{ tool['resources'] }}
-{% else %}
-  - id: {{ tool['id'] }}
+{% if 'destination' in tool %}
     environment: {{ tool['destination'] }}
 {% endif %}
+{% if 'resources' in tool %}
+    resources: {{ tool['resources'] }}
+{% endif %}
+{% endif %}
 {% endfor %}
+{% endif %}
 
 #
 # Job limits configuration

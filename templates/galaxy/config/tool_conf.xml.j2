@@ -57,6 +57,7 @@
   </section>
   <section id="expression_tools" name="Expression Tools">
     <tool file="expression_tools/parse_values_from_file.xml"/>
+    <tool file="expression_tools/pick_value.xml"/>
   </section>
   <label id="general_text_label" text="General Text Tools" />
   <section id="text_manipulation" name="Text Manipulation">
@@ -319,7 +320,6 @@
   </section>
   <section id="mimodd" name="MiModD">
   </section>
-
   <label id="metagenomics_label" text="Metagenomics" />
   <section id="metagenomic_analysis" name="Metagenomic Analysis" />
   <section id="qiime" name="Qiime" />
@@ -398,6 +398,11 @@
     <tool file="meme/fimo.xml" hidden="True" />
     </section>
   <section id="test_tools" name="Test Tools">
+  
+    <tool file="/data/db/galaxy_user_data/climate_science/icenet/icenet_forecast.xml" labels="alpha" />
+    <tool file="/data/db/galaxy_user_data/climate_science/icenet/icenet_preprocess.xml" labels="alpha" />
+    <tool file="/data/db/galaxy_user_data/climate_science/icenet/icenet_visualize.xml" labels="alpha" />
+
     <tool file="/opt/galaxy/custom-tools/pyiron/pyiron.xml" labels="alpha" />
     <tool file="/opt/galaxy/custom-tools/test/pcgr.xml" labels="beta" />
     <!--tool file="/opt/galaxy/custom-tools/test/Galaxy-ML-master/galaxy_ml/estimator_attributes.xml" labels="alpha" />
@@ -422,7 +427,7 @@
     <tool file="/opt/galaxy/custom-tools/test/tpp/protein_prophet.xml"  />
     <tool file="/opt/galaxy/custom-tools/test/tpp/interprophet.xml" />
 
-    <tool file="/opt/galaxy/custom-tools/test/ml/discriminant.xml" />
+    <!--tool file="/opt/galaxy/custom-tools/test/ml/discriminant.xml" />
     <tool file="/opt/galaxy/custom-tools/test/ml/eden_converter.xml" />
     <tool file="/opt/galaxy/custom-tools/test/ml/eden_vectorizer.xml" />
     <tool file="/opt/galaxy/custom-tools/test/ml/nn_classifier.xml" />
@@ -434,7 +439,7 @@
     <tool file="/opt/galaxy/custom-tools/test/ml/sample_generator.xml" />
     <tool file="/opt/galaxy/custom-tools/test/ml/ensemble.xml" />
     <tool file="/opt/galaxy/custom-tools/test/ml/clf_metrics.xml" />
-    <tool file="/opt/galaxy/custom-tools/test/ml/proteasis/protease.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/ml/proteasis/protease.xml" /-->
     <!--<tool file="/opt/galaxy/custom-tools/test/moff/moff.xml" />-->
 
     <!--tool file="/opt/galaxy/custom-tools/test/bigwigCorrelate.xml" /-->
@@ -492,6 +497,8 @@
     <tool file="/opt/galaxy/custom-tools/test/imaging/scale_image/scale_image.xml" />
     <tool file="/opt/galaxy/custom-tools/test/imaging/coordinates_of_roi/coordinates_of_roi.xml" />
     <tool file="/opt/galaxy/custom-tools/test/imaging/projective_transformation_points/projective_transformation_points.xml" /-->
+
+    <tool file="/opt/galaxy/custom-tools/geneiobio/geneiobio-iframe.xml" />
   </section>
 
   <section id="gis_data_handling" name="GIS Data Handling" />
@@ -521,8 +528,14 @@
   <section id="imaging" name="Imaging" />
   <section id="species_abundance" name="Species abundance" />
   <section id="compute_indicators_for_turnover_boulders_fields" name="Compute indicators for turnover boulders fields" />
-
+  <section id="astronomy" name="Astronomy" />
   <section id="interactivetools" name="Interactive tools">
+    	<tool file="interactive/interactivetool_pampa.xml" />
+  	<tool file="interactive/interactivetool_odv.xml" />
+  	<tool file="interactive/interactivetool_metashrimps.xml" />
+  	<tool file="interactive/interactivetool_hdfview.xml" />
+        <tool file="interactive/interactivetool_scoop3.xml" />
+        <tool file="interactive/interactivetool_divand.xml" />
         <tool file="interactive/interactivetool_blobtoolkit.xml" />
         <tool file="interactive/interactivetool_pavian.xml" />
         <tool file="interactive/interactivetool_mgnify_notebook.xml" />
