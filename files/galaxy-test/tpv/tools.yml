@@ -547,13 +547,25 @@ tools:
     env:
       _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx{int(mem)}G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
     rules:
-      - if: 0.1 <= input_size < 1
+      # version < '2.15.1+galaxy0'
+      - if: helpers.tool_version_lt(tool, '2.15.1+galaxy0') and 0.1 <= input_size < 1
         cores: 20
         mem: 100
-      - if: 1 <= input_size < 2
+      - if: helpers.tool_version_lt(tool, '2.15.1+galaxy0') and 1 <= input_size < 2
         cores: 30
         mem: 200
-      - if: 2 <= input_size < 30
+      - if: helpers.tool_version_lt(tool, '2.15.1+galaxy0') and 2 <= input_size < 20
+        cores: 60
+        mem: 950
+      # version >= '2.15.1+galaxy0'
+      - if: helpers.tool_version_gte(tool, '2.15.1+galaxy0') and 0.1 <= input_size < 1
+        cores: 20
+        mem: 50
+      - if: helpers.tool_version_gte(tool, '2.15.1+galaxy0') and 1 <= input_size < 20
+        cores: 30
+        mem: 200
+      # all versions
+      - if: 20 <= input_size < 30
         cores: 60
         mem: 950
       - if: input_size >= 30
