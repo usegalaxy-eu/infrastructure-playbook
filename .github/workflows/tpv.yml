@@ -22,6 +22,11 @@ jobs:
         with:
           path: 'infrastructure-playbook'
 
+      - name: Update git submodules.
+        working-directory: 'infrastructure-playbook'
+        run: |
+          git submodule update --init --recursive --remote --checkout
+
       - name: Set up Python 3.
         uses: actions/setup-python@v2
         with:
@@ -105,10 +110,62 @@ jobs:
           TPV_REQ=$(perl -pe 's/\\\n/ /' lib/galaxy/dependencies/conditional-requirements.txt | grep total-perspective-vortex)
           pip3 install --upgrade "$TPV_REQ"
 
+      - name: Install port of Ansible filters for Jinja (required for the next step).
+        run: |
+          pip3 install jinja2-ansible-filters
+
+      - name: Create mounts vars file.
+        working-directory: 'infrastructure-playbook/mounts'
+        run: |
+          make dest/all.yml
+
+      - name: Create a playbook to template the TPV files.
+        shell: python -u {0}
+        working-directory: 'infrastructure-playbook'
+        run: |
+          import glob
+          import importlib
+          import sys
+
+          # import tpv.py
+          spec = importlib.util.spec_from_file_location('tpv_ci', '.github/workflows/tpv.py')
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          make_playbook = module.make_playbook
+
+          tpv_path = "files/galaxy/tpv/"
+          templates = tuple(
+              (file, '.'.join(file.split('.')[:-1]))  # remove j2 extension
+              for file in glob.glob(f"{tpv_path}/*.yaml.j2") + glob.glob(f"{tpv_path}/*.yml.j2")
+          )
+
+          playbook = make_playbook('sn06.yml', templates=templates)
+          with open('../playbook_path', 'w') as file:
+            file.write(str(playbook))
+
+      - name: Render TPV configuration files.
+        run: |
+          PLAYBOOK="$(cat playbook_path)"
+          BASENAME="$(basename $PLAYBOOK)"
+          DIRNAME="$(dirname $PLAYBOOK)"
+          cd "$DIRNAME"
+
+          shopt -s nullglob
+
+          ansible-playbook --connection=local "$BASENAME"
+
       - name: Run Total Perspective Vortex linter.
         run: |
           export PYTHONPATH=$(realpath ./galaxy/lib)
-          for file in $(ls infrastructure-playbook/files/galaxy/tpv/*.{yml,yaml}); do
+
+          PLAYBOOK="$(cat playbook_path)"
+          BASENAME="$(basename $PLAYBOOK)"
+          DIRNAME="$(dirname $PLAYBOOK)"
+          cd "$DIRNAME"
+
+          shopt -s nullglob
+
+          for file in files/galaxy/tpv/*.{yml,yaml}; do
             echo Running TPV linter on "$file"...
             tpv lint $file || exit 1
           done
