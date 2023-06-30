@@ -8,6 +8,7 @@ import shutil
 import sys
 from datetime import datetime
 from xml.dom.minidom import parse
+
 import psycopg2
 import yaml
 
