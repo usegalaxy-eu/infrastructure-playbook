@@ -58,7 +58,9 @@ def main():
     clean_jwds_parser = subparsers.add_parser(
         "clean_jwds", help="Clean JWD's of jobs failed within last X days"
     )
-    dry_run_group = clean_jwds_parser.add_mutually_exclusive_group(required=True)
+    dry_run_group = clean_jwds_parser.add_mutually_exclusive_group(
+        required=True
+    )
     dry_run_group.add_argument(
         "--dry_run",
         help="Dry run (Print's the JWD's that would be deleted)",
@@ -125,7 +127,9 @@ def main():
     backends = parse_object_store(object_store_conf)
 
     # Add pulsar staging directory (runner: pulsar_embedded) to backends
-    backends["pulsar_embedded"] = get_pulsar_staging_dir(galaxy_pulsar_app_conf)
+    backends["pulsar_embedded"] = get_pulsar_staging_dir(
+        galaxy_pulsar_app_conf
+    )
 
     # Connect to Galaxy database
     db = Database(
@@ -139,7 +143,9 @@ def main():
     if args.subcommand == "get_jwd":
         job_id = args.job_id
         object_store_id, job_runner_name = db.get_job_info(job_id)
-        jwd_path = decode_path(job_id, [object_store_id], backends, job_runner_name)
+        jwd_path = decode_path(
+            job_id, [object_store_id], backends, job_runner_name
+        )
 
         # Check
         if jwd_path:
