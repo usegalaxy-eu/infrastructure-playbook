@@ -9,11 +9,24 @@ import argparse
 import os
 import shutil
 import sys
+import textwrap
+from argparse import RawDescriptionHelpFormatter
 from datetime import datetime
 from xml.dom.minidom import parse
 
 import psycopg2
 import yaml
+
+
+class SubcommandHelpFormatter(RawDescriptionHelpFormatter):
+    """Custom help formatter to hide argparse metavars."""
+
+    def _format_action(self, action):
+        """Removes the first line from subparsers."""
+        parts = super(RawDescriptionHelpFormatter, self)._format_action(action)
+        if action.nargs == argparse.PARSER:
+            parts = "\n".join(parts.split("\n")[1:])
+        return parts
 
 
 def main():
@@ -22,62 +35,79 @@ def main():
     1. Can get you the path of a JWD
     2. Can delete JWD's of job failed within last X days
     """
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        prog="galaxy_jwd",
+        description=textwrap.dedent(
+            """
+            Get the JWD path of a given Galaxy job id or clean the JWDs of recently failed jobs.
+
+            The following ENVs (same as gxadmin's) should be set:
+                GALAXY_CONFIG_FILE: Path to the galaxy.yml file
+                GALAXY_LOG_DIR: Path to the Galaxy log directory
+                PGDATABASE: Name of the Galaxy database
+                PGUSER: Galaxy database user
+                PGHOST: Galaxy database host
+
+            We also need a ~/.pgpass file (same as gxadmin's) in format:
+                <pg_host>:5432:*:<pg_user>:<pg_password>
+        """  # noqa: E501
+        ),
+        formatter_class=SubcommandHelpFormatter,
+    )
     subparsers = parser.add_subparsers(
-        dest="subcommand",
-        title="""
-        Use one of the following subcommands:
-            get_jwd: Get JWD path of a given Galaxy job id
-            clean_jwds: Clean JWD's of jobs failed within last X days
-
-        The following ENVs (same as gxadmin's) should be set:
-            GALAXY_CONFIG_FILE: Path to the galaxy.yml file
-            GALAXY_LOG_DIR: Path to the Galaxy log directory
-            PGDATABASE: Name of the Galaxy database
-            PGUSER: Galaxy database user
-            PGHOST: Galaxy database host
-        We also need a ~/.pgpass file (same as gxadmin's) in format:
-            <pg_host>:5432:*:<pg_user>:<pg_password>
-
-        Example:
-            get_jwd:
-                python galaxy_jwd.py get_jwd 12345678
-            clean_jwds:
-                Dry run: python galaxy_jwd.py clean_jwds --dry_run --days 5
-                No dry run: python galaxy_jwd.py clean_jwds --no_dry_run --days 5
-        """,  # noqa: E501
+        title="operations",
+        required=True,
+        help=None,
+        metavar="",
     )
 
-    # Parser for the get_jwd subcommand
-    get_jwd_parser = subparsers.add_parser(
-        "get_jwd", help="Get JWD path of a given Galaxy job id"
+    # Parser for the get subcommand
+    get_parser = subparsers.add_parser(
+        "get",
+        help="Get the JWD path of a given Galaxy job id",
+        epilog=textwrap.dedent(
+            """
+            example:
+                python galaxy_jwd.py get 12345678
+        """  # noqa: E501
+        ),
+        formatter_class=RawDescriptionHelpFormatter,
     )
-    get_jwd_parser.add_argument(
+    get_parser.add_argument(
         "job_id",
         help="Galaxy job id",
     )
 
-    # Parser for the clean_jwds subcommand
-    clean_jwds_parser = subparsers.add_parser(
-        "clean_jwds", help="Clean JWD's of jobs failed within last X days"
+    # Parser for the clean subcommand
+    clean_parser = subparsers.add_parser(
+        "clean",
+        help="Clean JWDs of jobs failed within the last X days",
+        epilog=textwrap.dedent(
+            """
+            example (dry-run):
+                python galaxy_jwd.py clean --dry_run --days 5
+
+            example (no dry-run):
+                python galaxy_jwd.py clean --no_dry_run --days 5
+        """  # noqa: E501
+        ),
+        formatter_class=RawDescriptionHelpFormatter,
     )
-    dry_run_group = clean_jwds_parser.add_mutually_exclusive_group(
-        required=True
-    )
+    dry_run_group = clean_parser.add_mutually_exclusive_group(required=True)
     dry_run_group.add_argument(
         "--dry_run",
-        help="Dry run (Print's the JWD's that would be deleted)",
+        help="Dry run (prints the JWDs that would be deleted)",
         action="store_true",
     )
     dry_run_group.add_argument(
         "--no_dry_run",
-        help="No dry run (Deletes the JWD's)",
+        help="No dry run (deletes the JWD's)",
         action="store_true",
     )
-    clean_jwds_parser.add_argument(
+    clean_parser.add_argument(
         "--days",
         help=(
-            "Number of days within which the jobs were last updated to be"
+            "Number of days within which the jobs were last updated to be "
             "considered for deletion (default: 5)"
         ),
         default=5,
@@ -146,8 +176,8 @@ def main():
         dbpassword=db_password,
     )
 
-    # For the get_jwd subcommand
-    if args.subcommand == "get_jwd":
+    # For the get subcommand
+    if args.subcommand == "get":
         job_id = args.job_id
         object_store_id, job_runner_name = db.get_job_info(job_id)
         jwd_path = decode_path(
@@ -161,8 +191,8 @@ def main():
             print(f"INFO: Job working directory (of {job_id}) does not exist")
             sys.exit(1)
 
-    # For the clean_jwds subcommand
-    if args.subcommand == "clean_jwds":
+    # For the clean subcommand
+    if args.subcommand == "clean":
         # Check if the given Galaxy log directory exists
         if not os.path.isdir(galaxy_log_dir):
             raise ValueError(
