@@ -188,7 +188,10 @@ def main():
         if jwd_path:
             print(jwd_path)
         else:
-            print(f"INFO: Job working directory (of {job_id}) does not exist")
+            print(
+                f"ERROR: Job working directory (of {job_id}) does not exist",
+                file=sys.stderr,
+            )
             sys.exit(1)
 
     # For the clean subcommand
@@ -438,7 +441,10 @@ class Database:
             failed_jobs_dict[job_id] = [object_store_id, update_time]
 
         if not failed_jobs_dict:
-            print(f"No failed jobs found within the last {days} days")
+            print(
+                f"No failed jobs found within the last {days} days",
+                file=sys.stderr,
+            )
             sys.exit(1)
 
         return failed_jobs_dict
@@ -469,7 +475,8 @@ class Database:
         if not object_store_id:
             print(
                 f"Object store id and/or the job runner name for the job"
-                f"'{job_id}' was not found in the database"
+                f"'{job_id}' was not found in the database",
+                file=sys.stderr,
             )
             sys.exit(1)
 
