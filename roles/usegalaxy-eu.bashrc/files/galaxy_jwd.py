@@ -234,17 +234,20 @@ def main():
                     print(f"{job_id}: {jwd_path}")
 
 
-def extract_password_from_pgpass(pgpass_file):
+def extract_password_from_pgpass(pgpass_file: str) -> str:
     """Extract the password from the ~/.pgpass file.
 
     The ~/.pgpass file should have the following format:
     <pg_host>:5432:*:<pg_user>:<pg_password>
 
     Args:
-        pgpass_file (str): Path to the ~/.pgpass file
+        pgpass_file: Path to the ~/.pgpass file.
 
     Returns:
-        str: Password for the given pg_host
+        Password for the given pg_host.
+
+    Raises:
+        ValueError: The ~/.pgpass file cannot be parsed.
     """
     pgpass_format = "<pg_host>:5432:*:<pg_user>:<pg_password>"
     with open(pgpass_file, "r") as pgpass:
@@ -258,14 +261,18 @@ def extract_password_from_pgpass(pgpass_file):
                 )
 
 
-def get_object_store_conf_path(galaxy_config_file):
+def get_object_store_conf_path(galaxy_config_file: str) -> str:
     """Get the path to the object_store_conf.xml file.
 
     Args:
-        galaxy_config_file (str): Path to the galaxy.yml file
+        galaxy_config_file: Path to the galaxy.yml file.
 
     Returns:
-        str: Path to the object_store_conf.xml file
+        Path to the object_store_conf.xml file.
+
+    Raises:
+        ValueError: The object store configuration file specified in the
+            Galaxy configuration does not exist.
     """
     object_store_conf = ""
     with open(galaxy_config_file, "r") as config:
@@ -280,14 +287,14 @@ def get_object_store_conf_path(galaxy_config_file):
                 return object_store_conf
 
 
-def parse_object_store(object_store_conf):
+def parse_object_store(object_store_conf: str) -> dict:
     """Get the path of type 'job_work' from the extra_dir's for each backend.
 
     Args:
-        object_store_conf (str): Path to the object_store_conf.xml file
+        object_store_conf: Path to the object_store_conf.xml file.
 
     Returns:
-        dict: Dictionary of backend id and path of type 'job_work'
+        Dictionary of backend id and path of type 'job_work'.
     """
     dom = parse(object_store_conf)
     backends = {}
@@ -301,14 +308,17 @@ def parse_object_store(object_store_conf):
     return backends
 
 
-def get_pulsar_staging_dir(galaxy_pulsar_app_conf):
+def get_pulsar_staging_dir(galaxy_pulsar_app_conf: str) -> str:
     """Get the path to the pulsar staging directory.
 
     Args:
-        galaxy_pulsar_app_conf (str): Path to the pulsar_app.yml file
+        galaxy_pulsar_app_conf: Path to the pulsar_app.yml file.
 
     Returns:
-        str: Path to the pulsar staging directory
+        Path to the pulsar staging directory.
+
+    Raises:
+        ValueError: The Pulsar staging directory does not exist.
     """
     pulsar_staging_dir = ""
     with open(galaxy_pulsar_app_conf, "r") as config:
@@ -324,19 +334,22 @@ def get_pulsar_staging_dir(galaxy_pulsar_app_conf):
     return pulsar_staging_dir
 
 
-def decode_path(job_id, metadata, backends_dict, job_runner_name=None):
+def decode_path(
+    job_id: int,
+    metadata: list,
+    backends_dict: dict,
+    job_runner_name: str | None = None,
+) -> str:
     """Decode the path of JWD's and check if the path exists.
 
     Args:
-        job_id (int): Job id.
-        metadata (list): List of object_store_id and update_time.
-        backends_dict (dict): Dictionary of backend id and path of type
-            'job_work'.
-        job_runner_name (str, optional): Name of the job runner. Defaults to
-            None.
+        job_id: Job id.
+        metadata: List of object_store_id and update_time.
+        backends_dict: Dictionary of backend id and path of type 'job_work'.
+        job_runner_name: Name of the job runner. Defaults to None.
 
     Returns:
-        str: Path to the JWD
+        Path to the JWD.
     """
     job_id = str(job_id)
 
@@ -375,11 +388,11 @@ def decode_path(job_id, metadata, backends_dict, job_runner_name=None):
         return None
 
 
-def delete_jwd(jwd_path):
+def delete_jwd(jwd_path: str) -> None:
     """Delete JWD folder and all its contents.
 
     Args:
-        jwd_path (str): Path to the JWD folder
+        jwd_path: Path to the JWD folder.
     """
     try:
         print(f"Deleting JWD: {jwd_path}")
@@ -389,17 +402,23 @@ def delete_jwd(jwd_path):
 
 
 class Database:
-    """Class to connect to the database and query DB.
+    """Class to connect to the database and query DB."""
 
-    Args:
-        dbname (str): Name of the database.
-        dbuser (str): Name of the database user.
-        dbhost (str): Hostname of the database.
-        dbpassword (str): Password of the database user.
-    """
+    def __init__(
+        self,
+        dbname: str,
+        dbuser: str,
+        dbhost: str,
+        dbpassword: str,
+    ) -> None:
+        """Create a connection to the Galaxy database.
 
-    def __init__(self, dbname, dbuser, dbhost, dbpassword):
-        """Create a connection to the Galaxy database."""
+        Args:
+            dbname: Name of the database.
+            dbuser: Name of the database user.
+            dbhost: Hostname of the database.
+            dbpassword: Password of the database user.
+        """
         try:
             self.conn = psycopg2.connect(
                 dbname=dbname, user=dbuser, host=dbhost, password=dbpassword
@@ -407,17 +426,15 @@ class Database:
         except psycopg2.OperationalError as e:
             print(f"Unable to connect to database: {e}")
 
-    def get_failed_jobs(self, days):
+    def get_failed_jobs(self, days: int) -> dict:
         """Get failed jobs for DB.
 
         Args:
-            days (int): Number of days to look back for failed jobs.
+            days: Number of days to look back for failed jobs.
 
         Returns:
-            dict: Dictionary with job_id as key and object_store_id, and
-                update_time as list of values.
-
-
+            Dictionary with job_id as key and object_store_id, and update_time
+                as list of values.
         """
         cur = self.conn.cursor()
         cur.execute(
@@ -449,15 +466,15 @@ class Database:
 
         return failed_jobs_dict
 
-    def get_job_info(self, job_id):
+    def get_job_info(self, job_id: int) -> tuple[str, str]:
         """Get object_store_id and job_runner_name for a given job id.
 
         Args:
-            job_id (int): Job id
+            job_id: Job id.
 
         Returns:
-            object_store_id (str): Object store id
-            job_runner_name (str): Job runner name
+            object_store_id: Object store id.
+            job_runner_name: Job runner name.
         """
         cur = self.conn.cursor()
         cur.execute(
