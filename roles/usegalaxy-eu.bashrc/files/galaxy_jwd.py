@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Galaxy jobs's job working directory (JWD) script.
 
-Can get you the path of a JWD and can delete JWD's of job failed within last X
+Can get you the path of a JWD and can delete JWDs of failed jobs older than X
 days.
 """
 
@@ -33,13 +33,13 @@ def main():
     """Main function of the JWD script.
 
     1. Can get you the path of a JWD
-    2. Can delete JWD's of job failed within last X days
+    2. Can delete JWDs of failed jobs older than X days
     """
     parser = argparse.ArgumentParser(
         prog="galaxy_jwd",
         description=textwrap.dedent(
             """
-            Get the JWD path of a given Galaxy job id or clean the JWDs of recently failed jobs.
+            Get the JWD path of a given Galaxy job id or clean the JWDs of old failed jobs.
 
             The following ENVs (same as gxadmin's) should be set:
                 GALAXY_CONFIG_FILE: Path to the galaxy.yml file
@@ -81,7 +81,7 @@ def main():
     # Parser for the clean subcommand
     clean_parser = subparsers.add_parser(
         "clean",
-        help="Clean JWDs of jobs failed within the last X days",
+        help="Clean JWDs of failed jobs older than X days",
         epilog=textwrap.dedent(
             """
             example (dry-run):
@@ -101,14 +101,14 @@ def main():
     )
     dry_run_group.add_argument(
         "--no_dry_run",
-        help="No dry run (deletes the JWD's)",
+        help="No dry run (deletes the JWDs)",
         action="store_true",
     )
     clean_parser.add_argument(
         "--days",
         help=(
-            "Number of days within which the jobs were last updated to be "
-            "considered for deletion (default: 5)"
+            "Minimum age of jobs (in days) to be considered for deletion "
+            "(default: 5)"
         ),
         default=5,
     )
@@ -227,7 +227,7 @@ def main():
                         delete_jwd(jwd_path)
                         jwd_log.write(f"{job_id}: {jwd_path}\n")
         else:
-            # Print JWD folders older than X days
+            # Print folders of JWDs of failed jobs older than X days
             for job_id, metadata in failed_jobs.items():
                 jwd_path = decode_path(job_id, metadata, backends)
                 if jwd_path:
@@ -340,7 +340,7 @@ def decode_path(
     backends_dict: dict,
     job_runner_name: str | None = None,
 ) -> str:
-    """Decode the path of JWD's and check if the path exists.
+    """Decode the path of JWDs and check if the path exists.
 
     Args:
         job_id: Job id.
@@ -427,10 +427,10 @@ class Database:
             print(f"Unable to connect to database: {e}")
 
     def get_failed_jobs(self, days: int) -> dict:
-        """Get failed jobs for DB.
+        """Get failed jobs from DB.
 
         Args:
-            days: Number of days to look back for failed jobs.
+            days: Minimum age of failed jobs (in days).
 
         Returns:
             Dictionary with job_id as key and object_store_id, and update_time
@@ -444,7 +444,7 @@ class Database:
             WHERE state = 'error'
             AND update_time IS NOT NULL
             AND object_store_id IS NOT NULL
-            AND update_time > NOW() - INTERVAL '{days} days'
+            AND update_time <= NOW() - INTERVAL '{days} days'
             """
         )
         failed_jobs = cur.fetchall()
@@ -459,7 +459,7 @@ class Database:
 
         if not failed_jobs_dict:
             print(
-                f"No failed jobs found within the last {days} days",
+                f"No failed jobs older than {days} days found.",
                 file=sys.stderr,
             )
             sys.exit(1)
