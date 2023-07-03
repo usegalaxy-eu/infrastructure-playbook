@@ -124,9 +124,7 @@ tools:
     cores: 10
     mem: 32
     rules:
-        # Note: As of today, there is no `tool_version_eq` function in TPV.
-      - if: helpers.tool_version_gte(tool, '2.0.0+galaxy1') and helpers.tool_version_lt(tool, '2.0.0+galaxy2')
-        # meaning `helpers.tool_version_eq(tool, '2.0.0+galaxy1')`
+      - if: helpers.tool_version_eq(tool, '2.0.0+galaxy1')
         # The version number of alphafold may not match the version number of the the tool in this case. The alphafold
         # version number should in fact be newer than 2.1.0 and older than 2.1.1. Check the links below to verify this
         # claim:
@@ -143,13 +141,11 @@ tools:
         # requirement cannot be disabled) because `ALPHAFOLD_USE_GPU` is not declared in alphafold.xml. Thus we set
         # gpus to one.
         gpus: 1
-      - if: helpers.tool_version_gte(tool, '2.0.0+galaxy2') and helpers.tool_version_lt(tool, '2.0.0+galaxy3')
-        # meaning `helpers.tool_version_eq(tool, '2.0.0+galaxy2')`
+      - if: helpers.tool_version_eq(tool, '2.0.0+galaxy2')
         # The same story as above applies to this tool version.
         # - https://github.com/usegalaxy-au/tools-au/blob/78302ce1d79058f37b24c7b395de450f42631260/tools/alphafold/alphafold.xml#L52
         gpus: 1
-      - if: helpers.tool_version_gte(tool, '2.1.2+galaxy0') and helpers.tool_version_lt(tool, '2.1.2+galaxy1')
-        # meaning `helpers.tool_version_eq(tool, '2.1.2+galaxy0')`
+      - if: helpers.tool_version_eq(tool, '2.1.2+galaxy0')
         # This version of alphafold already allows to control whether the GPU should be used during the relaxation
         # step, but the tool developers added `ALPHAFOLD_USE_GPU` in the next tool revision (2.1.2+galaxy1). GPU use
         # is still mandatory.
@@ -645,7 +641,7 @@ tools:
     mem: 90
     params:
       submit_requirements: 'GalaxyGroup == "compute_mothur"'
-      docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100 --user 999
+      docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
       docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
       docker_default_container_id: centos:8.3.2011
     scheduling:
@@ -659,7 +655,7 @@ tools:
     mem: 20
     params:
       submit_requirements: 'GalaxyGroup == "compute_mothur"'
-      docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100 --user 999
+      docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
       docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
       docker_default_container_id: centos:8.3.2011
     scheduling:
@@ -851,8 +847,8 @@ tools:
     cores: 16
     mem: 90
     env:
-      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
       TERM: vt100
+      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
 
   toolshed.g2.bx.psu.edu/repos/imgteam/unzip/unzip/.*:
     scheduling:
@@ -894,7 +890,3 @@ tools:
     scheduling:
       require:
         - singularity
-
-  toolshed.g2.bx.psu.edu/repos/galaxyp/msconvert/msconvert/.*:
-    params:
-      docker_run_extra_arguments: --user 999
