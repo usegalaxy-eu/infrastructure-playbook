@@ -1,0 +1,27 @@
+[tool.isort]
+profile = "black"
+line_length = 79
+extend_skip = [
+    "collections",
+    "roles/htcondor",
+    "roles/hxr.monitor-galaxy",
+    "roles/hxr.monitor-squid",
+    "roles/hxr.simple-nagios",
+    "roles/jasonroyle.rabbitmq",    
+    "roles/usegalaxy-eu.bashrc",
+    "templates/encoder/yaml_converter.py",
+]
+
+[tool.black]
+line-length = 79
+target-version = ['py39']
+extend-exclude = """
+    collections|\
+    roles/htcondor|\
+    roles/hxr.monitor-galaxy|\
+    roles/hxr.monitor-squid|\
+    roles/hxr.simple-nagios|\
+    roles/jasonroyle.rabbitmq|\
+    roles/usegalaxy-eu.bashrc|\
+    templates/encoder/yaml_converter.py\
+"""

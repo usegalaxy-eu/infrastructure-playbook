@@ -1,0 +1,31 @@
+---
+name: Python formatting
+
+"on": pull_request
+
+jobs:
+  PEP8:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - run: pip install --upgrade pip
+
+      - id: pip_install
+        run: pip install --upgrade isort~=5.0 flake8~=6.0 flake8-docstrings~=1.0
+
+      - name: isort
+        run: isort . --check --diff
+        if: (success() || failure()) && steps.pip_install.conclusion == 'success'
+
+      - name: Black
+        uses: psf/black@stable
+        with:
+          version: "~=23.0"
+          options: "--check --diff"
+          src: "."
+        if: (success() || failure()) && steps.pip_install.conclusion == 'success'
+
+      - name: Flake8
+        run: flake8 .
+        if: (success() || failure()) && steps.pip_install.conclusion == 'success'
