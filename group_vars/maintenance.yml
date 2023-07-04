@@ -190,6 +190,13 @@ telegraf_plugins_extra:
       - timeout = "30s"
       - data_format = "influx"
       - interval = "1m"
+  galaxy_jobs_destination_overview:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery queue --by destination"]
+      - timeout = "30s"
+      - data_format = "influx"
+      - interval = "1m
   galaxy_oidc:
     plugin: "exec"
     config:
