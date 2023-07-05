@@ -891,4 +891,5 @@ tools:
     scheduling:
       require:
         - singularity
-    singularity_default_container_id: "{{ cvmfs.singularity.path }}/all/python:2.7.16"  
+    params:
+      singularity_default_container_id: "{{ cvmfs.singularity.path }}/all/python:2.7.16"  
