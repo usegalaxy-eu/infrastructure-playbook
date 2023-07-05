@@ -886,3 +886,9 @@ tools:
     scheduling:
       require:
         - singularity
+
+  ".*srma_wrapper.*":
+    scheduling:
+      require:
+        - singularity
+    singularity_default_container_id: "{{ cvmfs.singularity.path }}/all/python:2.7.16"  
