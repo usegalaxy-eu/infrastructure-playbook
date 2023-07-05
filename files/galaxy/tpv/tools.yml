@@ -48,10 +48,10 @@ tools:
       - id: deeptools_singularity_bam_compare
         if: |
           # versions working in conda but not in singularity
-          versions = {
+          conda_only_versions = {
               '2.4.1.0',
           }
-          any(helpers.tool_version_eq(tool, version) for version in versions)
+          any(helpers.tool_version_eq(tool, version) for version in conda_only_versions)
         # remove singularity tag
         execute: |
           from tpv.core.entities import TagSetManager, TagType
@@ -65,10 +65,10 @@ tools:
       - id: deeptools_singularity_bam_coverage
         if: |
           # versions working in conda but not in singularity
-          versions = {
+          conda_only_versions = {
               '2.4.1.0',
           }
-          any(helpers.tool_version_eq(tool, version) for version in versions)
+          any(helpers.tool_version_eq(tool, version) for version in conda_only_versions)
         # remove singularity tag
         execute: |
           from tpv.core.entities import TagSetManager, TagType
@@ -82,10 +82,10 @@ tools:
       - id: deeptools_singularity_plot_coverage
         if: |
           # versions working in conda but not in singularity
-          versions = {
+          conda_only_versions = {
               '2.4.1.0',
           }
-          any(helpers.tool_version_eq(tool, version) for version in versions)
+          any(helpers.tool_version_eq(tool, version) for version in conda_only_versions)
         # remove singularity tag
         execute: |
           from tpv.core.entities import TagSetManager, TagType
@@ -99,10 +99,10 @@ tools:
       - id: deeptools_singularity_plot_profile
         if: |
           # versions working in conda but not in singularity
-          versions = {
+          conda_only_versions = {
               '3.1.2.0.0',
           }
-          any(helpers.tool_version_eq(tool, version) for version in versions)
+          any(helpers.tool_version_eq(tool, version) for version in conda_only_versions)
         # remove singularity tag
         execute: |
           from tpv.core.entities import TagSetManager, TagType
