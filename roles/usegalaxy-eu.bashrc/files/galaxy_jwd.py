@@ -12,6 +12,7 @@ import sys
 import textwrap
 from argparse import RawDescriptionHelpFormatter
 from datetime import datetime
+from typing import Optional, Tuple
 from xml.dom.minidom import parse
 
 import psycopg2
@@ -55,8 +56,8 @@ def main():
         formatter_class=SubcommandHelpFormatter,
     )
     subparsers = parser.add_subparsers(
+        dest="operation",
         title="operations",
-        required=True,
         help=None,
         metavar="",
     )
@@ -177,7 +178,7 @@ def main():
     )
 
     # For the get subcommand
-    if args.subcommand == "get":
+    if args.operation == "get":
         job_id = args.job_id
         object_store_id, job_runner_name = db.get_job_info(job_id)
         jwd_path = decode_path(
@@ -195,7 +196,7 @@ def main():
             sys.exit(1)
 
     # For the clean subcommand
-    if args.subcommand == "clean":
+    if args.operation == "clean":
         # Check if the given Galaxy log directory exists
         if not os.path.isdir(galaxy_log_dir):
             raise ValueError(
@@ -338,7 +339,7 @@ def decode_path(
     job_id: int,
     metadata: list,
     backends_dict: dict,
-    job_runner_name: str | None = None,
+    job_runner_name: Optional[str] = None,
 ) -> str:
     """Decode the path of JWDs and check if the path exists.
 
@@ -466,7 +467,7 @@ class Database:
 
         return failed_jobs_dict
 
-    def get_job_info(self, job_id: int) -> tuple[str, str]:
+    def get_job_info(self, job_id: int) -> Tuple[str, str]:
         """Get object_store_id and job_runner_name for a given job id.
 
         Args:
