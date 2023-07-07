@@ -22,4 +22,4 @@
 # GalaxyGroup: Group name of the machine
 
 # Command:
-condor_status -af:l Name SlotType State Activity GalaxyGroup DetectedCpus Cpus TotalMemory Memory LoadAvg TotalLoadAvg -constraint 'SlotType == "Dynamic" || SlotType == "Partitionable"' | awk -F '[= ]+' '{printf("htcondor_cluster_usage,classad=\"slot\" %s=\"%s\",%s=\"%s\",%s=\"%s\",%s=\"%s\",%s=\"%s\",%s=%s,%s=%s,%s=%s,%s=%s,%s=%s,%s=%s\n", $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23)}'
+condor_status -af:l Name SlotType State Activity GalaxyGroup DetectedCpus Cpus TotalMemory Memory LoadAvg TotalLoadAvg -constraint 'SlotType == "Dynamic" || SlotType == "Partitionable"' | awk -F '[= ]+' '{printf("htcondor_cluster_usage,classad=\"slot\",%s=\"%s\",%s=\"%s\",%s=\"%s\",%s=\"%s\",%s=\"%s\",%s=%s,%s=%s,%s=%s,%s=%s,%s=%s,%s=%s %s=\"%s\",%s=\"%s\",%s=\"%s\",%s=\"%s\",%s=\"%s\",%s=%s,%s=%s,%s=%s,%s=%s,%s=%s,%s=%s\n", $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)}'
