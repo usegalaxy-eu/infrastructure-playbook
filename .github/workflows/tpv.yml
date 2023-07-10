@@ -303,6 +303,7 @@ jobs:
           import os
           import subprocess
           import sys
+          from pathlib import Path
 
           # import make_playbook from tpv.py
           spec = importlib.util.spec_from_file_location('tpv_ci', '.github/workflows/tpv.py')
@@ -328,6 +329,12 @@ jobs:
           # template files based on the old version
           subprocess.run(
             ["git", "checkout", "${{ steps.commits-infrastructure-playbook.outputs.before }}"]
+          )
+          # workaround for files that are converted into templates
+          templates = tuple(
+              (src, dest)
+              for src, dest in templates
+              if Path(src).exists()
           )
           playbook = make_playbook('sn06.yml', templates=templates)
           with open(os.environ["GITHUB_OUTPUT"], "a") as file:
