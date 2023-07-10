@@ -76,7 +76,7 @@
           fi
 
           JID=$1
-          JWD=$(python /usr/local/bin/galaxy_jwd get_jwd $JID)
+          JWD=$(python /usr/local/bin/galaxy_jwd get $JID)
 
           # Check the return code and whether the job working directory exists
           if [[ $? -ne 0 || ! -d $JWD ]]; then

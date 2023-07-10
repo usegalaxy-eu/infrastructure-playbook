@@ -4,7 +4,7 @@ DAY=86400
 cd ~
 for job in $(gxadmin query queue-details --all | grep running | grep interactive_tool | awk '{print $3}')
 do
-    JWD=$(python /usr/local/bin/galaxy_jwd get_jwd $job)
+    JWD=$(python /usr/local/bin/galaxy_jwd get $job)
     pushd $JWD
     ClusterID=$( head -n 1 job_condor.log | awk '{print $2}' | awk -F. '{print $1"."$2}' | sed 's/^(//' )
     if [ "$(condor_q $ClusterID -autoformat JobStartDate)" == "undefined" ] || [ "$(condor_q $ClusterID -autoformat JobStartDate)" == "" ]
