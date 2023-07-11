@@ -6,7 +6,6 @@
     owner: root
     group: root
     mode: 0755
-  when: monitor_condor_split_util
 
 - name: Allow telegraf to run monitor-condor-utilisation-split
   lineinfile:
@@ -15,7 +14,6 @@
     insertafter: EOF
     line: 'telegraf ALL=(ALL) NOPASSWD: /usr/bin/monitor-condor-utilisation-split'
     validate: 'visudo -cf %s'
-  when: monitor_condor_split_util
 
 - name: "Send condor cluster utilisation monitor"
   copy:
@@ -48,43 +46,3 @@
     insertafter: EOF
     line: 'telegraf ALL=(ALL) NOPASSWD: /usr/bin/monitor-condor-queue'
     validate: 'visudo -cf %s'
-
-#- set_fact:
-    #monitor_condor_queue:
-      #- plugin: exec
-        #disambiguation: monitor_condor_queue
-        #config:
-          #- commands = ["/usr/bin/monitor-condor-queue"]
-          #- timeout = "5s"
-          #- data_format = "influx"
-          #- interval = "10s"
-
-#- set_fact:
-    #telegraf_plugins_extra: "{{ telegraf_plugins_extra + monitor_condor_queue }}"
-
-#- set_fact:
-    #monitor_condor_util:
-      #- plugin: exec
-        #disambiguation: monitor_condor_util
-        #config:
-          #- commands = ["/usr/bin/monitor-condor-utilisation"]
-          #- timeout = "5s"
-          #- data_format = "influx"
-          #- interval = "10s"
-
-#- set_fact:
-    #telegraf_plugins_extra: "{{ telegraf_plugins_extra + monitor_condor_util }}"
-
-#- set_fact:
-    #monitor_condor_util_split:
-      #- plugin: exec
-        #disambiguation: monitor_condor_util_split
-        #config:
-          #- commands = ["/usr/bin/monitor-condor-utilisation-split"]
-          #- timeout = "5s"
-          #- data_format = "influx"
-          #- interval = "10s"
-
-#- set_fact:
-    #telegraf_plugins_extra: "{{ telegraf_plugins_extra + monitor_condor_util_split }}"
-  #when: "{{ monitor_condor_split_util }}"
