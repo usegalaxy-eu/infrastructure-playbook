@@ -232,6 +232,13 @@ telegraf_plugins_extra:
       - timeout = "10s"
       - data_format = "influx"
       - interval = "1m"
+  monitor_condor_util_split:
+    plugin: "exec"
+    config:
+      - commands = ["sudo /usr/bin/monitor-condor-utilisation-split"]
+      - timeout = "10s"
+      - data_format = "influx"
+      - interval = "1m"
   postgres_extra:
     plugin: "exec"
     config:
