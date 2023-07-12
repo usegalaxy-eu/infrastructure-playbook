@@ -1,2 +1,16 @@
 ---
+- name: "Send Galaxy job queue states stats"
+  copy:
+    src: "galaxy_job_queue_states.sh"
+    dest: "/usr/bin/galaxy_job_queue_states_stats"
+    owner: root
+    group: root
+    mode: 0755
 
+- name: "Send Galaxy jobs per handler stats"
+  copy:
+    src: "galaxy_jobs_per_handler.sh"
+    dest: "/usr/bin/galaxy_jobs_per_handler_stats"
+    owner: root
+    group: root
+    mode: 0755
