@@ -166,7 +166,7 @@ telegraf_plugins_extra:
     plugin: "exec"
     config:
       - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery upload-gb-in-past-hour"]
-      - timeout = "240s"
+      - timeout = "600s"
       - data_format = "influx"
       - interval = "1h"
   galaxy_jobs_queued:
@@ -215,6 +215,20 @@ telegraf_plugins_extra:
     plugin: "exec"
     config:
       - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery workflow-invocation-totals"]
+      - timeout = "15s"
+      - data_format = "influx"
+      - interval = "1m"
+  galaxy_job_queue_states_stats:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/galaxy_job_queue_states_stats"]
+      - timeout = "15s"
+      - data_format = "influx"
+      - interval = "1m"
+  galaxy_jobs_per_handler_stats:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/galaxy_jobs_per_handler_stats"]
       - timeout = "15s"
       - data_format = "influx"
       - interval = "1m"
