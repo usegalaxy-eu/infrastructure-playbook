@@ -86,11 +86,11 @@
 
           cd $JWD
           }
-          alias watchendqueue='watch -n 1 "gxadmin query queue-details --all | (head -n 2; tail -n 70)"' # show the end of queued state
+          alias watchendqueue='watch -n 1 "gxadmin query queue-detail | (head -n 2; tail -n 70)"' # show the end of queued state
           alias watchendnew='watch -n 1 "gxadmin query queue-detail --all | (head -n 2; tail -n 70)"' # show the end of new state queue
-          alias highscore='gxadmin query queue-detail --all | awk -F\| '{print$5}' | sort | uniq -c | sort -sn' # show users with most jobs in queue
+          alias highscore="gxadmin query queue-detail --all | awk -F\| '{print\$5}' | sort | uniq -c | sort -sn" # show users with most jobs in queue
           alias gl='journalctl  -f -u galaxy-*'
-          alias notsubmitted='gxadmin query queue-details --all | awk -F\| '{print$3}' | grep -vc "\S"' # jobs that are queued but not submitted / not have condor id
+          alias notsubmitted="gxadmin query queue-detail | awk -F\| '{print\$3}' | grep -vc \"\S\"" # jobs that are queued but not submitted / not have condor id
           alias glg='journalctl -fu galaxy-gunicorn@* | grep -v -e "/api/upload/hooks" -e "/history/current_history_json"'
           alias glh='journalctl -f -u galaxy-handler@*'
           alias glw='journalctl -f -u galaxy-workflow-scheduler@*'
