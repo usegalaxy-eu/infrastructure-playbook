@@ -348,8 +348,8 @@ destinations:
 
   condor_gpu:
     runner: condor
-    max_accepted_cores: 8
-    max_accepted_mem: 16
+    max_accepted_cores: 14
+    max_accepted_mem: 37
     min_accepted_gpus: 1
     max_accepted_gpus: 1
     env:
@@ -361,8 +361,8 @@ destinations:
     inherits: basic_docker_destination
     # shorter than inheriting from condor_gpu
     runner: condor
-    max_accepted_cores: 8
-    max_accepted_mem: 16
+    max_accepted_cores: 14
+    max_accepted_mem: 37
     min_accepted_gpus: 1
     max_accepted_gpus: 1
     scheduling:
