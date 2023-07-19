@@ -32,17 +32,24 @@ tools:
       - id: remote_resources
         if: user is not None
         execute: |
-          from tpv.core.entities import TagSetManager
-          pulsar_tag = None
+          from tpv.core.entities import Tag, TagSetManager, TagType
+
           user_preferences = user.extra_preferences
-          for data_item in user_preferences:
-            if "distributed_compute|remote_resources" in data_item:
-                if user_preferences[data_item] != "None":
-                    pulsar_tag = user_preferences[data_item]
-          new_tag = {'require':[pulsar_tag]} if pulsar_tag else {}
-          entity.tpv_tags = entity.tpv_tags.combine(TagSetManager.from_dict(new_tag))
-          if pulsar_tag == 'cz-pulsar' and helpers.tool_version_gte(tool, '2.3.1') and 'alphafold2' in tool.id:
-            entity.gpus = 1
+          pulsar_tag = user_preferences.get("distributed_compute|remote_resources", "None")
+          pulsar_tag = Tag("scheduling", pulsar_tag, TagType.REQUIRE) if pulsar_tag != "None" else None
+
+          if pulsar_tag:
+              entity.tpv_tags = entity.tpv_tags.combine(
+                  TagSetManager(tags=[pulsar_tag])
+              )
+      - id: cz-pulsar_alphafold
+        if: |
+          all((
+              "cz-pulsar" in {tag.value for tag in entity.tpv_tags.tags},
+              tool.id.startswith("toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold"),
+              helpers.tool_version_gte(tool, '2.3.1'),
+          ))
+        gpus: 1
 
     rank: |
       final_destinations = helpers.weighted_random_sampling(candidate_destinations)
