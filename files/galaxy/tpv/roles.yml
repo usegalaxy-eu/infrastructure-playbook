@@ -1,0 +1,21 @@
+---
+roles:
+  dataplant*:
+    params:
+      object_store_id: "dataplant01"
+  storage-test*:
+    params:
+      object_store_id: "s3_netapp01"
+
+  rstudio-poweruser*:
+    rules:
+      - id: rstudio_poweruser
+        if: |
+          'interactive_tool_rstudio' in tool.id
+        scheduling:
+          require:
+            - docker
+            - interactive
+            - rstudio-poweruser
+        mem: 100
+        cores: 2

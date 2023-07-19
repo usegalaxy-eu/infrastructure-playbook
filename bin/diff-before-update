@@ -19,6 +19,8 @@ fi
 
 if [[ $2 == "emacs" ]]; then
   difftool='emacs-ediff.sh'
+if [[ $2 == "meld" ]]; then
+  difftool='meld'
 else
   difftool='vimdiff'
 fi

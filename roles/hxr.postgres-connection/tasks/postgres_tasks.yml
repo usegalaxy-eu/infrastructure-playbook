@@ -1,0 +1,26 @@
+---
+- name: Add postgres connection configuration
+  block:
+    - name: Add env vars in bashrc
+      lineinfile:
+        path: "{{ item.uhome }}/.bashrc"
+        regexp: "^export {{ task_item.var }}"
+        line: "export {{ task_item.var }}='{{ task_item.val }}'"
+      with_items:
+        - var: PGUSER
+          val: "{{ item.pguser }}"
+        - var: PGHOST
+          val: "{{ postgres_host }}"
+        - var: PGDATABASE
+          val: "{{ item.pgdatabase }}"
+      loop_control:
+        loop_var: task_item
+
+    - name: Copy using the 'content' for inline data
+      copy:
+        content: |
+          {{ postgres_host }}:{{ postgres_port }}:*:{{ item.pguser }}:{{ item.pgpass }}
+        dest: "{{ item.uhome }}/.pgpass"
+        mode: 0600
+        owner: "{{ item.uname }}"
+        group: "{{ item.gname }}"

@@ -4,13 +4,15 @@
   doc: Your Dropbox files - configure an access token via the user preferences
   accessToken: ${user.preferences['dropbox|access_token']}
 
-#- type: webdav
-#  id: b2drop
-#  doc: B2Drop WebDAV server
-#  url: https://b2drop.eudat.eu
-#  root: /remote.php/dav/files/${user.preferences['b2drop|username']}/
-#  login: ${user.preferences['b2drop|username']} 
-#  password: ${user.preferences['b2drop|password']}
+- type: webdav
+  id: b2drop
+  doc: B2Drop WebDAV server
+  url: https://b2drop.eudat.eu
+  root: /remote.php/dav/files/${user.preferences['b2drop|username']}/
+  use_temp_files: true
+  temp_path: /data/jwd04/tmp
+  login: ${user.preferences['b2drop|username']} 
+  password: ${user.preferences['b2drop|password']}
 
 - type: webdav
   id: generic_nextcloud
@@ -19,6 +21,8 @@
   writable: true
   url: ${user.preferences['nextcloud|url']}
   root: ${user.preferences['nextcloud|root']}
+  use_temp_files: true
+  temp_path: /data/jwd04/tmp
   login: ${user.preferences['nextcloud|username']}
   password: ${user.preferences['nextcloud|password']}
 
@@ -29,6 +33,8 @@
   writable: true
   url: 'https://ergapilot.bsc.es'
   root: '/remote.php/webdav'
+  use_temp_files: true
+  temp_path: /data/jwd04/tmp
   login: "{{ erga_nextcloud_login }}"
   password: "{{ erga_nextcloud_password }}"
   requires_groups: erga
@@ -207,3 +213,9 @@
   bucket: mf-nwp-models
   anon: true
 
+- type: gitlabfs
+  id: gitlab_fs
+  label: DataPLANT ARC Gitlab
+  doc: Explore ARCs in the DataPLANT Gitlab repository
+  token: ${user.preferences['gitlabfs|read_access_token']}
+  server_url: "https://git.nfdi4plants.org"

@@ -1,0 +1,178 @@
+---
+tools:
+  interactive_tool:
+    cores: 1
+    mem: 4
+    params:
+      docker_volumes: $defaults
+      container_monitor_result: callback
+      submit_requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
+    scheduling:
+      require:
+        - docker
+        - interactive
+
+  interactive_tool_gpu:
+    cores: 1
+    mem: 4
+    params:
+      docker_volumes: $defaults
+      container_monitor_result: callback
+      submit_requirements: 'GalaxyDockerHack == True'
+    rules:
+      - if: user and 'gpu_access_validated' in [role.name for role in user.all_roles() if not role.deleted]
+        scheduling:
+          require:
+            - docker
+            - interactive
+      - if: |
+          not user or not any([ role for role in user.all_roles() if (role.name in ['gpu_access_validated'] and not role.deleted) ])
+        fail: |
+          This tool has restricted access. Please request access by visiting https://usegalaxy.eu/gpu-request.
+
+  interactive_tool_pavian:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_blobtoolkit:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+    env:
+      TEMP: /data/1/galaxy_db/tmp
+  interactive_tool_mgnify_notebook:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_openrefine:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_audiolabeler:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_ethercalc:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_geoexplorer:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_radiant:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_higlass:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_phinch:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_neo4j:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_hicbrowser:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_cellxgene:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_bam_iobio:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_vcf_iobio:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_askomics:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_wilson:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_wallace:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_paraview:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_simtext_app:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_isee:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_metashark:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_rstudio:
+    inherits: interactive_tool
+    cores: 2
+    mem: 8
+  interactive_tool_pyiron:
+    inherits: interactive_tool
+    cores: 1
+    mem: 8
+  interactive_tool_guacamole_desktop:
+    inherits: interactive_tool
+    cores: 2
+    mem: 8
+  interactive_tool_panoply:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_vrm_editor:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+
+  interactive_tool_jupyter_notebook:
+    inherits: interactive_tool
+    mem: 4
+    env:
+      HOME: /home/jovyan
+
+  interactive_tool_pangeo_notebook:
+    inherits: interactive_tool
+    mem: 4
+    env:
+      HOME: /home/jovyan
+
+  interactive_tool_climate_notebook:
+    inherits: interactive_tool
+    mem: 4
+    env:
+      HOME: /home/jovyan
+
+  interactive_tool_ml_jupyter_notebook:
+    inherits: interactive_tool_gpu
+    gpus: 1
+    cores: 1
+    mem: 18
+    params:
+      docker_run_extra_arguments: " --gpus all"
+    scheduling:
+      require:
+        - docker
+
+  #interactive_tool_jupyter_notebook:
+  #  inherits: interactive_tool
+  #  rules:
+  #    - if: |
+  #        not user or not 'trusted_for_ITs' in [role.name for role in user.all_roles() if not role.deleted]
+  #      fail: "Interactive tool jupyter not available for user"  # TODO: update placeholder text
