@@ -2,15 +2,15 @@
 DAY=86400
 . {{ galaxy_root }}/.bashrc
 cd ~
-for job in $(gxadmin query queue-details --all | grep running | grep interactive_tool | awk '{print $3}')
+for job in $(gxadmin query queue-detail --all | grep running | grep interactive_tool | awk '{print $3}')
 do
-    JWD=$(python /usr/local/bin/galaxy_jwd get $job)
+    JWD=$(python3 /usr/local/bin/galaxy_jwd get $job)
     pushd $JWD
     ClusterID=$( head -n 1 job_condor.log | awk '{print $2}' | awk -F. '{print $1"."$2}' | sed 's/^(//' )
-    if [ "$(condor_q $ClusterID -autoformat JobStartDate)" == "undefined" ] || [ "$(condor_q $ClusterID -autoformat JobStartDate)" == "" ]
+    if [ "$(condor_q -global $ClusterID -autoformat JobStartDate)" == "undefined" ] || [ "$(condor_q -global $ClusterID -autoformat JobStartDate)" == "" ]
     then
             condor_rm $ClusterID
-    elif [ $(($(date +"%s") - $(condor_q $ClusterID -autoformat JobStartDate))) -ge $DAY ]
+    elif [ $(($(date +"%s") - $(condor_q -global $ClusterID -autoformat JobStartDate))) -ge $DAY ]
     then
         condor_rm $ClusterID
     fi
