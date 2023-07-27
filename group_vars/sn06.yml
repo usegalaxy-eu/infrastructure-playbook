@@ -27,43 +27,6 @@ autofs_mount_points:
 
 # fs-maintenance
 fsm_maintenance_dir: "/data/dnb01/maintenance"
-
-fsm_scripts:
-  temporary_dirs:
-    enable: true
-    src: "temporary_dirs.sh.j2"
-    dst: "{{ fsm_maintenance_dir }}/temporary_dirs.sh"
-    user: "{{ fsm_galaxy_user.username }}"
-    group: "{{ fsm_galaxy_user.groupname }}"
-    paths:
-      - /data/2/galaxy_db/tmp
-      - /data/dnb01/galaxy_db/tmp
-      - /data/dnb02/galaxy_db/tmp
-      - /data/dnb03/galaxy_db/tmp
-      - /data/jwd/tmp
-    time: "{{ fsm_intervals.long }}"
-  upload_dirs:
-    enable: true
-    src: "uploads.sh.j2"
-    dst: "{{ fsm_maintenance_dir }}/uploads.sh"
-    user: "{{ fsm_galaxy_user.username }}"
-    group: "{{ fsm_galaxy_user.groupname }}"
-    paths:
-      - "{{ galaxy_config['galaxy']['nginx_upload_store'] }}"
-      - "{{ galaxy_config['galaxy']['nginx_upload_job_files_store'] }}"
-    time: "{{ fsm_intervals.medium }}"
-  job_working_dirs:
-    enable: true
-    src: "job_working_dir.sh.j2"
-    dst: "{{ fsm_maintenance_dir }}/job_working_dir.sh"
-    user: "{{ fsm_galaxy_user.username }}"
-    group: "{{ fsm_galaxy_user.groupname }}"
-    paths:
-      - "{{ galaxy_config['galaxy']['job_working_directory'] }}"
-      - /data/dnb03/galaxy_db/job_working_directory
-      - /data/jwd/main
-    time: "{{ fsm_intervals.long }}"
-
 fsm_cron_tasks:
   docker:
     enable: true
@@ -85,8 +48,6 @@ fsm_cron_tasks:
     dow: "*"
     job: "{{ custom_telegraf_env }} /usr/bin/gxadmin galaxy cleanup 60"
     user: "{{ fsm_galaxy_user.username }}"
-
-fsm_htcondor_enable: true
 
 # TIaaS
 tiaas_virtualenv_python: "python3.8"
@@ -298,12 +259,6 @@ gie_proxy_verbose: true
 postgres_user: galaxy
 postgres_host: sn05.galaxyproject.eu
 postgres_port: 5432
-
-# Slurp script
-galaxy_slurper: galaxy
-galaxy_slurp_influx_pass: "{{ influxdb.node.password }}"
-galaxy_slurp_influx_user: "{{ influxdb.node.username }}"
-galaxy_slurp_influx_url: "{{ influxdb.url }}"
 
 # GRT
 galaxy_grt_exporter: galaxy
