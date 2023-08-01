@@ -13,21 +13,21 @@
         echo "Created $LOG"
         fi
 
-        for j in $(condor_q -global -hold -autoformat ClusterId HoldReasonCode| awk '(($2-34) == 0){print $1}'| paste -s -d ' ')
+        for j in $(condor_q -hold -autoformat ClusterId HoldReasonCode| awk '(($2-34) == 0){print $1}'| paste -s -d ' ')
         do
           NUMBER_OF_TIMES_SUBMITTED=$(grep -c "$j" "$LOG")
           if [ $NUMBER_OF_TIMES_SUBMITTED -gt $RESUBMIT_CAP ]; then
             condor_rm -reason "This job was resubmitted $RESUBMIT_CAP times. Most likely because of running out of memory." "$j"
             continue
           fi
-          JOB_DESCRIPTION=$(condor_q "$j" -global -autoformat JobDescription)
-          MEMORY_PROVISIONED=$(condor_q "$j" -global -autoformat MemoryProvisioned)
+          JOB_DESCRIPTION=$(condor_q "$j" -autoformat JobDescription)
+          MEMORY_PROVISIONED=$(condor_q "$j" -autoformat MemoryProvisioned)
           if [ $(($MEMORY_PROVISIONED * $MULTIPLIER)) -gt $CAP ]; then
             REQUEST_MEMORY=$CAP
           else
             REQUEST_MEMORY=$(($MEMORY_PROVISIONED * $MULTIPLIER))
           fi
-          REMOTE_HOST=$(condor_q "$j" -global -autoformat LastRemoteHost|cut -f2 -d@|cut -f1 -d.)
+          REMOTE_HOST=$(condor_q "$j" -autoformat LastRemoteHost|cut -f2 -d@|cut -f1 -d.)
 
           DATE_WITH_TIME=$(date "+%d/%m/%Y-%H:%M:%S")
           /bin/cat <<EOM >>$LOG
