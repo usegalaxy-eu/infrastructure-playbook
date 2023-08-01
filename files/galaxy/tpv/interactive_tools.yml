@@ -11,6 +11,10 @@ tools:
       require:
         - docker
         - interactive
+    rules:
+      - if: not user
+        fail: |
+          Interactive tools require registration. Please log-in or register on https://usegalaxy.eu/login
 
   interactive_tool_gpu:
     cores: 1
@@ -20,6 +24,9 @@ tools:
       container_monitor_result: callback
       submit_requirements: 'GalaxyDockerHack == True'
     rules:
+      - if: not user
+        fail: |
+          Interactive tools require registration. Please log-in or register on https://usegalaxy.eu/login
       - if: user and 'gpu_access_validated' in [role.name for role in user.all_roles() if not role.deleted]
         scheduling:
           require:
