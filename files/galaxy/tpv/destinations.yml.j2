@@ -55,8 +55,9 @@ destinations:
   # EMBEDDED PULSAR DESTINATIONS #
   ################################
 
-  interactive_pulsar:
+  embedded_pulsar_docker_abstract:
     inherits: basic_docker_destination
+    abstract: true
     runner: pulsar_embedded
     max_accepted_cores: 24
     max_accepted_mem: 128
@@ -68,6 +69,9 @@ destinations:
         $job_directory/outputs:rw,
         $working_directory:rw,
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+
+  interactive_pulsar:
+    inherits: embedded_pulsar_docker_abstract
     scheduling:
       accept:
         - docker
@@ -85,25 +89,12 @@ destinations:
 
   interactive_pulsar_rstudio_poweruser:
     inherits: interactive_pulsar
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
     scheduling:
       require:
         - rstudio-poweruser
 
   embedded_pulsar_docker:
-    inherits: basic_docker_destination
-    runner: pulsar_embedded
-    max_accepted_cores: 24
-    max_accepted_mem: 128
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
-    params:
-      docker_volumes: "$job_directory:rw,
-        $tool_directory:ro,
-        $job_directory/outputs:rw,
-        $working_directory:rw,
-        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+    inherits: embedded_pulsar_docker_abstract
     scheduling:
       require:
         - docker
