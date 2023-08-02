@@ -63,6 +63,12 @@ destinations:
     max_accepted_mem: 128
     min_accepted_gpus: 0
     max_accepted_gpus: 0
+    params:
+      docker_volumes: "$job_directory:rw,
+        $tool_directory:ro,
+        $job_directory/outputs:rw,
+        $working_directory:rw,
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
     scheduling:
       accept:
         - docker
@@ -94,6 +100,12 @@ destinations:
     max_accepted_mem: 128
     min_accepted_gpus: 0
     max_accepted_gpus: 0
+    params:
+      docker_volumes: "$job_directory:rw,
+        $tool_directory:ro,
+        $job_directory/outputs:rw,
+        $working_directory:rw,
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
     scheduling:
       require:
         - docker
