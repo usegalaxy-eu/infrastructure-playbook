@@ -24,9 +24,6 @@ tools:
       container_monitor_result: callback
       submit_requirements: 'GalaxyDockerHack == True'
     rules:
-      - if: not user
-        fail: |
-          Interactive tools require registration. Please log-in or register on https://usegalaxy.eu/login
       - if: user and 'gpu_access_validated' in [role.name for role in user.all_roles() if not role.deleted]
         scheduling:
           require:
@@ -35,7 +32,7 @@ tools:
       - if: |
           not user or not any([ role for role in user.all_roles() if (role.name in ['gpu_access_validated'] and not role.deleted) ])
         fail: |
-          This tool has restricted access. Please request access by visiting https://usegalaxy.eu/gpu-request.
+          Interactive tools require registration. Moreover, this tool has restricted access even for registered users. Please log-in or register on https://usegalaxy.eu/login and then request access by visiting https://usegalaxy.eu/gpu-request.
 
 
   interactive_tool_divand:
@@ -45,6 +42,10 @@ tools:
     params:
       docker_run_extra_arguments: " --user 999 "
   interactive_zeppelin_notebook:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_qgis:
     inherits: interactive_tool
     cores: 1
     mem: 4
