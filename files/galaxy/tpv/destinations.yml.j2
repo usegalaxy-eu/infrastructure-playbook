@@ -65,6 +65,7 @@ destinations:
     max_accepted_gpus: 0
     params:
       docker_volumes: "$job_directory:rw,
+        $_CONDOR_SCRATCH_DIR:rw,
         $tool_directory:ro,
         $job_directory/outputs:rw,
         $working_directory:rw,
