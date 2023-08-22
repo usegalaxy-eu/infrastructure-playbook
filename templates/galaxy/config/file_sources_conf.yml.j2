@@ -213,9 +213,10 @@
   bucket: mf-nwp-models
   anon: true
 
-- type: gitlabfs
-  id: gitlab_fs
-  label: DataPLANT ARC Gitlab
-  doc: Explore ARCs in the DataPLANT Gitlab repository
+- type: arcfs
+  id: arcfs1
+  label: DataPLANT DataHUB ARCs
+  doc: Explore ARCs in the DataPLANT GitLab repository.
   token: ${user.preferences['gitlabfs|read_access_token']}
   server_url: "https://git.nfdi4plants.org"
+  writable: true
