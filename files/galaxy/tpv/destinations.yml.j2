@@ -326,11 +326,15 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     params:
+      require_container: true
       container:
         - type: singularity
           shell: "/bin/bash"
           resolve_dependencies: true
-          identifier: "{{ dnb.0.path }}/singularity_base_images/centos:8.3.2011"
+          # Use Centos 7 as a fallback container here
+          # Most times this fallback is needed for very old tools
+          # Centos 7 has libncurses.so.5.9 and python 2.7
+          identifier: "/data/0/singularity_base_images/centos:7.9.2009"
     scheduling:
       require:
         - singularity
