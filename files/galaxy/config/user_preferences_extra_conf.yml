@@ -106,6 +106,32 @@ preferences:
         type: password
         required: False
 
+  # Require to attach pulsar endpoint to the Pulsar Network
+  pulsar:
+    descritption: Your Personal Pulsar endpoint
+    inputs:
+      - name: username
+        label: RabbitMQ custom username (e.g. mypulsarendpoint).
+        type: text
+        required: True
+      - name: password
+        label: RabbitMQ custom alphanumerical password, at least 10 characters long (e.g. MyPulS4rP4ssw0rd).
+        type: password
+        required: True
+      - name: max_accepted_cores
+        label: Max number of cpu cores available
+        type: number
+      - name: max_accepted_mem
+        label: Max number of RAM available (GB)
+      - name: min_accepted_gpus
+        label: Minimum number of GPU available (set this to zero if you don't want to share GPUs)
+        type: number
+        required: True
+      - name: max_accepted_gpus
+        label: Maximumx number of GPU available  (set this to zero if you don't want to share GPUs)
+        type: number
+        required: True
+
   omero_account:
     description: Your OMERO instance connection details
     inputs:
