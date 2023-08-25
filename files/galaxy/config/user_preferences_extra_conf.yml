@@ -107,8 +107,8 @@ preferences:
         required: False
 
   # Require to attach pulsar endpoint to the Pulsar Network
-  pulsar:
-    descritption: Your Personal Pulsar endpoint
+  byoc_pulsar:
+    description: Bring your own Pulsar endpoint in Galaxy.
     inputs:
       - name: username
         label: RabbitMQ custom username (e.g. mypulsarendpoint).
@@ -119,19 +119,19 @@ preferences:
         type: password
         required: True
       - name: max_accepted_cores
-        label: Max number of cpu cores available
+        label: Max number of CPU cores available.
         type: number
         required: True
       - name: max_accepted_mem
-        label: Max number of RAM available (GB)
+        label: Maximum number of gigabytes (GB) of RAM available.
         type: number
         required: True
       - name: min_accepted_gpus
-        label: Minimum number of GPU available (set this to zero if you don't want to share GPUs)
+        label: Minimum number of GPU available (set this to zero if you don't want to share GPUs).
         type: number
         required: True
       - name: max_accepted_gpus
-        label: Maximumx number of GPU available  (set this to zero if you don't want to share GPUs)
+        label: Maximum number of GPU available (set this to zero if you don't want to share GPUs).
         type: number
         required: True
 
