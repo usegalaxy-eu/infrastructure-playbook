@@ -108,7 +108,7 @@ preferences:
 
   # Require to attach pulsar endpoint to the Pulsar Network
   byoc_pulsar:
-    description: Bring your own Pulsar endpoint in Galaxy.
+    description: Bring your own Pulsar endpoint in Galaxy. You can add here your Pulsar credentials and specifications. After 24h Galaxy job scheduling systems will take this into account and schedule appropriate jobs to your compute resources behind pulsar.
     inputs:
       - name: username
         label: RabbitMQ custom username (e.g. mypulsarendpoint).
@@ -123,7 +123,7 @@ preferences:
         type: number
         required: True
       - name: max_accepted_mem
-        label: Maximum number of gigabytes (GB) of RAM available.
+        label: Maximum number of RAM available (in GB).
         type: number
         required: True
       - name: min_accepted_gpus
