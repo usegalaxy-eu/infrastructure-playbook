@@ -108,7 +108,10 @@ preferences:
 
   # Require to attach pulsar endpoint to the Pulsar Network
   byoc_pulsar:
-    description: Bring your own Pulsar endpoint in Galaxy. You can add here your Pulsar credentials and specifications. After 24h Galaxy job scheduling systems will take this into account and schedule appropriate jobs to your compute resources behind pulsar.
+    description: >
+        Bring your own Pulsar endpoint to Galaxy. You can add here your Pulsar credentials and specifications.
+        After 24 hours Galaxy's job scheduling systems will take your Pulsar into account and schedule appropriate jobs to your compute resources.
+        This is an experimental feature. Contact us if you want to learn more about it.
     inputs:
       - name: username
         label: RabbitMQ custom username (e.g. mypulsarendpoint).
