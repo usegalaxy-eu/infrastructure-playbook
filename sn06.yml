@@ -134,6 +134,17 @@
         enable_install_software: true # Some extra admin tools (*top, vim, etc)
     - geerlingguy.repo-epel # Install EPEL repository
 
+    ## Install miniconda, create a _galaxy_ environment and install Packages
+    ## Galaxy will use the virtualenv from this conda environment (see
+    ## galaxy_virtualenv_command) in the group_vars/sn06.yml
+    - role: galaxyproject.miniconda
+      vars:
+        miniconda_prefix: "{{ conda_prefix }}"
+        galaxy_conda_create_env: true
+        galaxy_conda_env_packages:
+          - python=3.11
+          - pip
+
     - usegalaxy-eu.autoupdates # keep all of our packages up to date
     - influxdata.chrony # Keep our time in sync.
 
