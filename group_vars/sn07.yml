@@ -350,7 +350,7 @@ galaxy_venv_dir: "{{ galaxy_root }}/venv"
 galaxy_job_working_directory: "{{ galaxy_config['galaxy']['job_working_directory'] }}"
 ucsc_build_sites:
 
-galaxy_virtualenv_command: "python -m venv"
+galaxy_virtualenv_command: "python -m venv --copies "
 galaxy_nonrepro_tools: "{{ galaxy_root }}/custom-tools"
 galaxy_nonrepro_commit: master
 
