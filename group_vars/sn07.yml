@@ -279,7 +279,7 @@ condor_extra: |
 gie_proxy_dir: "{{ galaxy_root }}/gie-proxy/proxy"
 gie_proxy_git_version: main
 gie_proxy_setup_nodejs: nodeenv
-gie_proxy_virtualenv_command: /usr/bin/python3 -m venv #"{{ pip_virtualenv_command }}"
+gie_proxy_virtualenv_command: "{{ conda_prefix }}/envs/_galaxy_/bin/python -m venv" #"{{ pip_virtualenv_command }}"
 gie_proxy_nodejs_version: "10.13.0"
 gie_proxy_virtualenv: "{{ galaxy_root }}/gie-proxy/venv"
 gie_proxy_setup_service: systemd
