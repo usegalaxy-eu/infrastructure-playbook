@@ -66,8 +66,11 @@
         <columns>value, name, path</columns>
         <file path="/opt/galaxy/tool-data/lastz_seqs.loc" />
     </table>
-
-
+    <!-- Locations of DIAMOND reference databases -->
+    <table name="diamond_database" comment_char="#" allow_duplicate_entries="False">
+        <columns>value, name, db_path</columns>
+        <file path="/opt/galaxy/tool-data/diamond_database.loc" />
+    </table>
     <!-- Locations of 2bit sequence files for use in deepTools -->
     <table name="deepTools_seqs" comment_char="#">
         <columns>value, name, path</columns>
