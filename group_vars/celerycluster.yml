@@ -41,6 +41,9 @@ galaxy_systemd_celery_internal_max_tasks: 50
 galaxy_systemd_celery_beat_schedule_path: "/opt/galaxy/celery/celery-beat-schedule"
 galaxy_systemd_watchdog: true
 
+galaxy_systemd_celery_internal_workers: 10
+galaxy_systemd_celery_external_workers: 2
+
 # Flower
 flower_python_version: python38
 flower_app_dir: /opt/galaxy
