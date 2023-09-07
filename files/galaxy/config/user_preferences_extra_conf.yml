@@ -125,27 +125,27 @@ preferences:
       - name: username
         label: RabbitMQ custom username (e.g. mypulsarendpoint).
         type: text
-        required: True
+        required: False
       - name: password
         label: RabbitMQ custom alphanumerical password, at least 10 characters long (e.g. MyPulS4rP4ssw0rd).
         type: password
-        required: True
+        required: False
       - name: max_accepted_cores
         label: Maximum number of CPU cores available.
         type: number
-        required: True
+        required: False
       - name: max_accepted_mem
         label: Maximum number of RAM available (in GB).
         type: number
-        required: True
+        required: False
       - name: min_accepted_gpus
         label: Minimum number of GPU available (set this to zero if you don't want to share GPUs).
         type: number
-        required: True
+        required: False
       - name: max_accepted_gpus
         label: Maximum number of GPU available (set this to zero if you don't want to share GPUs).
         type: number
-        required: True
+        required: False
 
   omero_account:
     description: Your OMERO instance connection details
