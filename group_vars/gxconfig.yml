@@ -147,7 +147,7 @@ base_app_main: &BASE_APP_MAIN
   # Pulsar.
   # The value of this option will be resolved with respect to
   # <data_dir>.
-  new_file_path: /data/jwd04/tmp
+  new_file_path: "{{ jwd.jwd02f.path }}/tmp"
 
   # Maximum size of uploadable files, specified in bytes (default:
   # 100GB). This value is ignored if an external upload server is
@@ -337,7 +337,7 @@ base_app_main: &BASE_APP_MAIN
   # external tooling.
   # The value of this option will be resolved with respect to
   # <cache_dir>.
-  short_term_storage_dir: '/data/jwd04/short_term_web_storage'
+  short_term_storage_dir: "{{ jwd.jwd02f.path }}/short_term_web_storage"
 
   # Default duration before short term web storage files will be cleaned
   # up by Galaxy tasks (in seconds). The default duration is 1 day.
@@ -521,7 +521,7 @@ base_app_main: &BASE_APP_MAIN
   # directories will be created.
   # The value of this option will be resolved with respect to
   # <data_dir>.
-  job_working_directory: /data/jwd04/main
+  job_working_directory: "{{ jwd.jwd02f.path }}/main"
 
   # Mako templates are compiled as needed and cached for reuse, this
   # directory is used for the cache
@@ -1149,7 +1149,7 @@ base_app_main: &BASE_APP_MAIN
   # in detail in the documentation linked above.  The upload store is a
   # temporary directory in which files uploaded by the upload module
   # will be placed.
-  nginx_upload_store: "/data/jwd04/nginx_upload/main/uploads"
+  nginx_upload_store: "{{ jwd.jwd02f.path }}/nginx_upload/main/uploads"
 
   # This value overrides the action set on the file upload form, e.g.
   # the web path where the nginx_upload_module has been configured to
@@ -1160,7 +1160,7 @@ base_app_main: &BASE_APP_MAIN
   # upon job completion by remote job runners (i.e. Pulsar) that
   # initiate staging operations on the remote end.  See the Galaxy nginx
   # documentation for the corresponding nginx configuration.
-  nginx_upload_job_files_store: "/data/jwd04/nginx_upload/main/jobfiles"
+  nginx_upload_job_files_store: "{{ jwd.jwd02f.path }}/nginx_upload/main/jobfiles"
 
   # Galaxy can also use nginx_upload_module to receive files staged out
   # upon job completion by remote job runners (i.e. Pulsar) that
@@ -1171,7 +1171,7 @@ base_app_main: &BASE_APP_MAIN
   # The upload store is a temporary directory in which files uploaded by
   # the tus middleware or server will be placed. Defaults to
   # new_file_path if not set.
-  tus_upload_store: "/data/jwd04/tus_upload/main"
+  tus_upload_store: "{{ jwd.jwd02f.path }}/tus_upload/main"
 
   # Galaxy can upload user files in chunks without using nginx. Enable
   # the chunk uploader by specifying a chunk size larger than 0. The

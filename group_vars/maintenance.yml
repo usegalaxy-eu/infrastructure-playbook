@@ -11,9 +11,9 @@ galaxy_log_dir: "/var/log/galaxy"
 
 galaxy_config:
   galaxy:
-    job_working_directory: /data/jwd04/main
-    nginx_upload_store: "/data/jwd04/nginx_upload/main/uploads"
-    nginx_upload_job_files_store: "/data/jwd04/nginx_upload/main/jobfiles"
+    job_working_directory: "{{ jwd.jwd02f.path }}/main"
+    nginx_upload_store: "{{ jwd.jwd02f.path }}/nginx_upload/main/uploads"
+    nginx_upload_job_files_store: "{{ jwd.jwd02f.path }}/nginx_upload/main/jobfiles"
     ftp_upload_dir: /data/jwd01/incoming
 
 galaxy_group:
@@ -116,7 +116,6 @@ fsm_scripts:
       - /data/dnb06/galaxy_db/tmp
       - /data/jwd/tmp
       - /data/jwd02f/tmp
-      - /data/jwd04/tmp
     time: "{{ fsm_intervals.long }}"
   upload_dirs:
     enable: true
@@ -141,7 +140,6 @@ fsm_scripts:
       - /data/jwd01/main
       - /data/jwd02f/main
       - /data/jwd03f/main
-      - /data/jwd04/main
       - /data/jwd05e/main
     time: "{{ fsm_intervals.long }}"
 fsm_htcondor_enable: true

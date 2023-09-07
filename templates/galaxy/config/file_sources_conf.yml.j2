@@ -10,7 +10,7 @@
   url: https://b2drop.eudat.eu
   root: /remote.php/dav/files/${user.preferences['b2drop|username']}/
   use_temp_files: true
-  temp_path: /data/jwd04/tmp
+  temp_path: "{{ jwd.jwd02f.path }}/tmp"
   login: ${user.preferences['b2drop|username']} 
   password: ${user.preferences['b2drop|password']}
 
@@ -22,7 +22,7 @@
   url: ${user.preferences['nextcloud|url']}
   root: ${user.preferences['nextcloud|root']}
   use_temp_files: true
-  temp_path: /data/jwd04/tmp
+  temp_path: "{{ jwd.jwd02f.path }}/tmp"
   login: ${user.preferences['nextcloud|username']}
   password: ${user.preferences['nextcloud|password']}
 
@@ -34,7 +34,7 @@
   url: 'https://ergapilot.bsc.es'
   root: '/remote.php/webdav'
   use_temp_files: true
-  temp_path: /data/jwd04/tmp
+  temp_path: "{{ jwd.jwd02f.path }}/tmp"
   login: "{{ erga_nextcloud_login }}"
   password: "{{ erga_nextcloud_password }}"
   requires_groups: erga
