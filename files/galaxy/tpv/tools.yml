@@ -1005,3 +1005,12 @@ tools:
     scheduling:
       require:
         - singularity
+
+  toolshed.g2.bx.psu.edu/repos/galaxy-tools/braker3/braker3/.*:
+    mem: 4
+    cores: 6
+    params:
+      singularity_container_id_override: docker://teambraker/braker3:v.1.0.4
+    scheduling:
+      require:
+        - singularity
