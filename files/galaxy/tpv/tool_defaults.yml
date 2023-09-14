@@ -60,7 +60,10 @@ tools:
           strike_end = datetime(2023,9,15,19,0)
 
           training_roles = (
-              [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
+              [r.name for r in user.all_roles()
+               if not r.deleted and r.name in
+               ("training-bma231-ht23", "training-msc-tmr-ws23",
+                "training-bio00058m")]
               if user is not None else []
           )
 
