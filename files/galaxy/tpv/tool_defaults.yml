@@ -53,6 +53,7 @@ tools:
       - id: climate_strike
         # delay jobs using HTCondor's job deferral feature
         # https://htcondor.readthedocs.io/en/latest/users-manual/time-scheduling-for-job-execution.html
+        if: True
         execute: |
           from datetime import datetime
 
