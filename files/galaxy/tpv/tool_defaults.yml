@@ -50,29 +50,6 @@ tools:
               helpers.tool_version_gte(tool, '2.3.1'),
           ))
         gpus: 1
-      - id: climate_strike
-        # delay jobs using HTCondor's job deferral feature
-        # https://htcondor.readthedocs.io/en/latest/users-manual/time-scheduling-for-job-execution.html
-        if: True
-        execute: |
-          from datetime import datetime
-
-          strike_start = datetime(2023,9,15,7,0)
-          strike_end = datetime(2023,9,15,19,0)
-
-          training_roles = (
-              [r.name for r in user.all_roles()
-               if not r.deleted and r.name in
-               ("training-bma231-ht23", "training-msc-tmr-ws23",
-                "training-bio00058m")]
-              if user is not None else []
-          )
-
-          now = datetime.now()
-          if strike_start <= now < strike_end and not training_roles:
-              entity.params["deferral_time"] = f"{int(strike_end.timestamp())}"
-              entity.params["deferral_prep_time"] = "60"
-              entity.params["deferral_window"] = "864000"  # 10 days
 
     rank: |
       final_destinations = helpers.weighted_random_sampling(candidate_destinations)
