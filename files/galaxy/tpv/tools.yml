@@ -736,6 +736,10 @@ tools:
     env:
       _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx{int(mem)}G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
     rules:
+      - if: helpers.tool_version_gte(tool, '2.15.1')
+        # see usegalaxy-eu/issues#473: https://github.com/usegalaxy-eu/issues/issues/473
+        env:
+          _JAVA_OPTIONS: -Xmx{int(mem)}G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
       - if: 0.1 <= input_size < 1
         cores: 20
         mem: 100
