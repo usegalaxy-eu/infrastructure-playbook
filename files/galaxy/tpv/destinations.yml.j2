@@ -170,6 +170,11 @@ destinations:
     max_accepted_mem: 15
     min_accepted_gpus: 0
     max_accepted_gpus: 0
+    env:
+      SINGULARITY_CACHEDIR: "/pulsar_data/container_cache"
+    params:
+      jobs_directory: "/pulsar_data/staging/ps02"
+      persistence_directory: "/pulsar_data/persisted_data/ps02"
     scheduling:
       require:
         - sanjay-pulsar
