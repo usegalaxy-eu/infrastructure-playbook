@@ -274,12 +274,11 @@ destinations:
       TEMP: "$SCRATCHDIR"
       ALPHAFOLD_DB: "/storage/brno11-elixir/projects/alphafold/alphafold.db-2.3.1"
       GPU_AVAILABLE: "1"
-      ALPHAFOLD_USE_GPU: "True"
     params:
       jobs_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/staging"
       persistence_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/persistent"
       singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,$ALPHAFOLD_DB:/data:ro"
-      singularity_run_extra_arguments: "--nv"
+      singularity_run_extra_arguments: "--nv --env ALPHAFOLD_USE_GPU=True"
     scheduling:
       require:
         - cz-pulsar
