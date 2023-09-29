@@ -287,7 +287,7 @@ destinations:
         env:
           ALPHAFOLD_DB: "/storage/brno11-elixir/projects/alphafold/alphafold.db-2.2"
         params:
-          singularity_volumes: "$job_directory:ro,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,$ALPHAFOLD_DB:data/db/databases/alphafold_databases/2.2:ro"
+          singularity_volumes: "$job_directory:ro,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,$ALPHAFOLD_DB:/data/db/databases/alphafold_databases/2.2:ro"
       - if: tool.id.startswith("toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold") and helpers.tool_version_gte(tool, "2.3")
         params:
           singularity_volumes: "$job_directory:ro,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,$ALPHAFOLD_DB:/data/2.3:ro"
