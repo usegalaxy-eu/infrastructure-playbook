@@ -269,10 +269,7 @@ tools:
         mem: 69
       - id: cz-pulsar_alphafold
         if: |
-          (
-              "cz-pulsar" in {tag.value for tag in entity.tpv_tags.tags}
-              and helpers.tool_version_gte(tool, '2.3.1')
-          )
+          True
         gpus: 1
     scheduling:
       require:
