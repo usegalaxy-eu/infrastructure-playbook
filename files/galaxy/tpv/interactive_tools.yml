@@ -55,6 +55,12 @@ tools:
     inherits: interactive_tool
     cores: 1
     mem: 4
+    env:
+      # This is needed because the default TMPDIR is mounted to /var/lib/condor/execute/dir_NUMBERS
+      # which is not writable by the container "app" user
+      TEMP: /tmp
+      TMP: /tmp
+      TMPDIR: /tmp
   interactive_tool_tadviewer:
     inherits: interactive_tool
     cores: 1

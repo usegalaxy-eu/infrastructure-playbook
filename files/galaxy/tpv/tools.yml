@@ -267,6 +267,13 @@ tools:
       - id: model_preset_multimer
         if: job.get_param_values(app).get("model_preset") == "multimer"
         mem: 69
+      - id: cz-pulsar_alphafold
+        if: |
+          (
+              "cz-pulsar" in {tag.value for tag in entity.tpv_tags.tags}
+              and helpers.tool_version_gte(tool, '2.3.1')
+          )
+        gpus: 1
     scheduling:
       require:
         - singularity
@@ -623,6 +630,16 @@ tools:
     cores: 10
     mem: 90
 
+  toolshed.g2.bx.psu.edu/repos/genouest/helixer/helixer/.*:
+    cores: 4
+    mem: 30
+    gpus: 1
+    params:
+      singularity_run_extra_arguments: ' --nv '
+    scheduling:
+      require:
+        - singularity
+
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_eval/cherri_eval/.*:
     inherits: basic_docker_tool
     cores: 1
@@ -736,6 +753,10 @@ tools:
     env:
       _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx{int(mem)}G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
     rules:
+      - if: helpers.tool_version_gte(tool, '2.15.1')
+        # see usegalaxy-eu/issues#473: https://github.com/usegalaxy-eu/issues/issues/473
+        env:
+          _JAVA_OPTIONS: -Xmx{int(mem)}G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
       - if: 0.1 <= input_size < 1
         cores: 20
         mem: 100
