@@ -37,6 +37,8 @@ def per_host_tool_labels( context, label ):
         return label.id in valid_labels
     if "aqua.usegalaxy.eu" in host:
         return label.id in valid_labels
+    if "earth-system.usegalaxy.eu" in host:
+        return label.id in valid_labels
     return True
 
 
@@ -92,6 +94,7 @@ DOMAIN_SECTIONS = {
     'annotation': GENERAL_NGS_SECTIONS + ['annotation', 'apollo', 'ncbi_blast', 'assembly', 'variant_calling', 'fetch_sequences___alignments', 'ontology', 'emboss', 'evolution', 'genome_diversity', 'multiple_alignments', 'graph_display_data'],
     'materials': ['muon_spectroscopy'],
     'aqua': ["climate_analysis", "gis_data_handling", "graph_display_data", "interactivetools", "machine_learning"],
+    'earth-system': ["interactivetools"],
 }
 
 
