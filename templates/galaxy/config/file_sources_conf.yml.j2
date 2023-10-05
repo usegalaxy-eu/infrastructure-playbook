@@ -4,34 +4,40 @@
   doc: Your Dropbox files - configure an access token via the user preferences
   accessToken: ${user.preferences['dropbox|access_token']}
 
-#- type: webdav
-#  id: b2drop
-#  doc: B2Drop WebDAV server
-#  url: https://b2drop.eudat.eu
-#  root: /remote.php/dav/files/${user.preferences['b2drop|username']}/
-#  login: ${user.preferences['b2drop|username']} 
-#  password: ${user.preferences['b2drop|password']}
+- type: webdav
+  id: b2drop
+  doc: B2Drop WebDAV server
+  url: https://b2drop.eudat.eu
+  root: /remote.php/dav/files/${user.preferences['b2drop|username']}/
+  use_temp_files: true
+  temp_path: /data/jwd04/tmp
+  login: ${user.preferences['b2drop|username']} 
+  password: ${user.preferences['b2drop|password']}
 
-#- type: webdav
-#  id: generic_nextcloud
-#  label: Nextcloud/ownCloud
-#  doc: You personal Cloud files
-#  writable: true
-#  url: ${user.preferences['nextcloud|url']}
-#  root: ${user.preferences['nextcloud|root']}
-#  login: ${user.preferences['nextcloud|username']}
-#  password: ${user.preferences['nextcloud|password']}
+- type: webdav
+  id: generic_nextcloud
+  label: Nextcloud/ownCloud
+  doc: You personal Cloud files
+  writable: true
+  url: ${user.preferences['nextcloud|url']}
+  root: ${user.preferences['nextcloud|root']}
+  use_temp_files: true
+  temp_path: /data/jwd04/tmp
+  login: ${user.preferences['nextcloud|username']}
+  password: ${user.preferences['nextcloud|password']}
 
-#- type: webdav
-#  id: erga_nextcloud
-#  label: ERGA Nextcloud
-#  doc: ERGA Pilot storage provided by BSC
-#  writable: true
-#  url: 'https://ergapilot.bsc.es'
-#  root: '/remote.php/webdav'
-#  login: "{{ erga_nextcloud_login }}"
-#  password: "{{ erga_nextcloud_password }}"
-#  requires_groups: erga
+- type: webdav
+  id: erga_nextcloud
+  label: ERGA Nextcloud
+  doc: ERGA Pilot storage provided by BSC
+  writable: true
+  url: 'https://ergapilot.bsc.es'
+  root: '/remote.php/webdav'
+  use_temp_files: true
+  temp_path: /data/jwd04/tmp
+  login: "{{ erga_nextcloud_login }}"
+  password: "{{ erga_nextcloud_password }}"
+  requires_groups: erga
 
 - type: posix
   root: '/data/5/galaxy_import/galaxy_user_data/covid-19/data/sequences/'
@@ -106,15 +112,15 @@
   bucket: genomeark
   anon: true
 
-- type: s3
+- type: s3fs
   label: Genome Ark Test Instance
   id: genomeark_galaxy
   doc: Access to Genome Ark open data on AWS.
-  bucket_name: genomeark
+  bucket: genomeark
   requires_groups: vgp
   writable: true
-  aws_secret_access_key: "{{ genomeark_galaxy_aws_secret_access_key }}"
-  aws_access_key_id: "{{ genomeark_galaxy_aws_access_key_id }}"
+  secret: "{{ genomeark_galaxy_aws_secret_access_key }}"
+  key: "{{ genomeark_galaxy_aws_access_key_id }}"
 
 - type: s3fs
   label: "ONT open data"
@@ -207,3 +213,10 @@
   bucket: mf-nwp-models
   anon: true
 
+- type: arcfs
+  id: arcfs1
+  label: DataPLANT DataHUB ARCs
+  doc: Explore ARCs in the DataPLANT GitLab repository.
+  token: ${user.preferences['gitlabfs|read_access_token']}
+  server_url: "https://git.nfdi4plants.org"
+  writable: true

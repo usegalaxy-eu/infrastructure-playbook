@@ -1,0 +1,96 @@
+---
+- name: UseGalaxy EU maintenance server
+  hosts: maintenance
+  become: true
+  become_user: root
+  vars_files:
+    - secret_group_vars/db-main.yml
+    - secret_group_vars/all.yml
+    - mounts/dest/all.yml
+    - mounts/mountpoints.yml
+  collections:
+    - devsec.hardening
+  handlers:
+    - name: restart rsyslog
+      service:
+        name: rsyslog
+        state: restarted
+  pre_tasks:
+    - name: Set additional local mount point
+      set_fact:
+        autofs_conf_files: "{{ autofs_conf_files | combine({ 'usrlocal': autofs_conf_files['usrlocal'] + galaxy_mount }) }}"
+    - name: Install Dependencies
+      package:
+        name:
+          [
+            'git',
+            'postgresql',
+            'python3-psycopg2',
+            'python3-virtualenv',
+            'bc',
+            'python3',
+            'python3-devel',
+          ]
+      become: true
+  post_tasks:
+    - name: Append some users to the systemd-journal group
+      user:
+        name: '{{ item }}'
+        groups: systemd-journal
+        append: true
+      loop:
+        - '{{ galaxy_user.name }}'
+        - 'telegraf'
+    - name: Set authorized SSH key (galaxy user)
+      ansible.posix.authorized_key:
+        user: '{{ galaxy_user.name }}'
+        state: present
+        key: '{{ item }}'
+      loop:
+        - 'ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBOBINXdjILF6x3WuppXyq6J2a2oSLR6waZ6txgjYJogHdIKPbI0TdReCv4EVxxYRY/NqGpHbjkqfRTsf2VgoU3U= mk@galaxy-mira'
+        - 'ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBACB5Q5blymkTIRSzVzXITOGvBuI7W0L9Ykwfz8LJGPraaGVPiezzFGvjhqwX+EyCqQPt7JprR5mimJRw/JN3nBXWAHjekvmB5FuILkk6m5fOiQJ5QhRMyQ5GfxODAvGbHpTuWHbYJLWD5fhcboKPxlXOWy4xY9kDZVuQvEKisNKYBsFLA== sanjay'
+        - 'ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBABRaLHL8mgW86rbtdUh6TY4rs7/la8hAGeSQ3jBF7LMwYZnbS32YDMYvDq3KgNu5WqSMFvkxNm3vfTAbd8CXBfakwDBFBaD9kO0b2t4/p4VoFUsd3B2OvmTR7Bsg7OxTGJJ7aUP/SzTg+Z4NzsmHwQ9h31gfI7n/buZD4S1edQke19Y6w== dominguj@informatik.uni-freiburg.de'
+    - name: rsyslog configuration
+      copy:
+        content: |
+          # Accept logs on TCP port 514
+          module(load="imtcp")
+          input(type="imtcp" port="514")
+
+          # Create a template for log file naming
+          $template RemoteLogs,"/var/log/remote/%HOSTNAME%/%PROGRAMNAME%.log"
+
+          # Store logs from clients in their own directories
+          if $fromhost-ip != "127.0.0.1" then ?RemoteLogs
+        dest: /etc/rsyslog.d/remote.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        - restart rsyslog
+  roles:
+    - usegalaxy_eu.handy.os_setup
+    - geerlingguy.repo-epel
+    - usegalaxy-eu.autoupdates
+    - influxdata.chrony
+    - usegalaxy-eu.autofs
+    - hxr.monitor-cluster
+    - hxr.monitor-galaxy
+    - usegalaxy-eu.monitoring
+    - usegalaxy-eu.bashrc
+    - usegalaxy_eu.htcondor
+    - usegalaxy-eu.dynmotd
+    - ssh-host-sign
+    - hxr.postgres-connection
+    - galaxyproject.gxadmin
+    - usegalaxy-eu.galaxy-slurp
+    - usegalaxy_eu.fs_maintenance
+    # - usegalaxy-eu.htcondor_release
+    - usegalaxy-eu.fix-unscheduled-workflows
+    - usegalaxy-eu.fix-ancient-ftp-data
+    - usegalaxy-eu.fix-user-quotas
+    - ssh_hardening
+    - dj-wasabi.telegraf
+    # - usegalaxy-eu.fix-stop-ITs
+    - usegalaxy-eu.vgcn-monitoring
+    - usegalaxy-eu.logrotate

@@ -7,6 +7,8 @@
     proftpd_modules_config_file: /etc/proftpd/modules.conf
   vars_files:
     - secret_group_vars/all.yml
+    - mounts/mountpoints.yml
+    - mounts/dest/all.yml
   collections:
     - devsec.hardening
   pre_tasks:

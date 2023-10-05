@@ -7,19 +7,26 @@
     group: root
     mode: 0755
 
-- name: Create logfile
+- name: Create cron log directory
   file:
     state: directory
-    path: /var/log/cron/stop-ITs.log
+    path: /var/log/stop-ITs-cron
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Create logfile
+  file:
+    state: touch
+    path: /var/log/stop-ITs-cron/stop-ITs.log
     mode: 0664
     owner: "{{ galaxy_user.name }}"
     group: "{{ galaxy_group.name }}"
-    state: touch
 
 - name: Setup logrotate
   copy:
     content: |
-      /var/log/stop-ITs.log
+      /var/log/stop-ITs-cron/stop-ITs.log
       {
           rotate 6
           daily
@@ -41,4 +48,4 @@
     hour: "*/1"
     minute: "0"
     user: "{{ galaxy_user.name }}"
-    job: /usr/bin/stop-ITs >> /var/log/cron/stop-ITs.log 2>&1
+    job: /usr/bin/stop-ITs >> /var/log/stop-ITs-cron/stop-ITs.log 2>&1

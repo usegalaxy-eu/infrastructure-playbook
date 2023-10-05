@@ -2,10 +2,14 @@
 hostname: mq.galaxyproject.eu
 
 # create_user task
-user_name: rabbitmq
-user_uid: 999
-user_group_name: rabbitmq
-user_gid: 999
+handy_groups:
+  - group_name: rabbitmq
+    group_gid: 999
+
+handy_users:
+  - user_name: rabbitmq
+    user_uid: 999
+    user_group: rabbitmq
 
 # Certbot
 certbot_admin_email: security@usegalaxy.eu
@@ -98,6 +102,12 @@ rabbitmq_users:
   - user: galaxy_mira_pulsar
     password: "{{ rabbitmq_password_galaxy_mira_pulsar }}"
     vhost: /pulsar/galaxy_mira_pulsar
+  - user: galaxy_sk01
+    password: "{{ rabbitmq_password_galaxy_sk01 }}"
+    vhost: /pulsar/galaxy_sk01
+  - user: galaxy_egi01
+    password: "{{ rabbitmq_password_galaxy_egi01 }}"
+    vhost: /pulsar/galaxy_egi01
 
 rabbitmq_plugins:
   - rabbitmq_management
@@ -116,12 +126,23 @@ rabbitmq_config:
     fail_if_no_peer_cert: "false"
   management_agent:
     disable_metrics_collector: "false"
+  management:
+    disable_stats: "false"
 
 rabbitmq_container:
   name: rabbit_hole
   image: rabbitmq:3.9.11
   hostname: "{{ inventory_hostname }}"
 
+# Redis
+redis_port: 6379
+redis_bind_interface: 0.0.0.0
+redis_rdbcompression: "yes"
+redis_dbfilename: dump.rdb
+redis_dbdir: /var/lib/redis
+redis_loglevel: "notice"
+redis_logfile: /var/log/redis/redis-server.log
+redis_conf_path: /etc/redis
 # Telegraf
 telegraf_plugins_extra:
   prometheus:

@@ -21,7 +21,7 @@
             continue
           fi
           JOB_DESCRIPTION=$(condor_q "$j" -autoformat JobDescription)
-          MEMORY_PROVISIONED=$(condor_q "$j" -autoformat MemoryProvisioned)          
+          MEMORY_PROVISIONED=$(condor_q "$j" -autoformat MemoryProvisioned)
           if [ $(($MEMORY_PROVISIONED * $MULTIPLIER)) -gt $CAP ]; then
             REQUEST_MEMORY=$CAP
           else
