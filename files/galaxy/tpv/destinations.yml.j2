@@ -253,7 +253,7 @@ destinations:
     params:
       jobs_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/staging"
       persistence_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/persistent"
-      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,/cvmfs/data.galaxyproject.org/managed/:/data/db/data_managers/:ro"
+      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro,$SCRATCHDIR:rw,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu:rw,/cvmfs/data.galaxyproject.org/managed/:/data/db/data_managers/:ro,$SCRATCHDIR:/tmp:rw"
     scheduling:
       require:
         - cz-pulsar
