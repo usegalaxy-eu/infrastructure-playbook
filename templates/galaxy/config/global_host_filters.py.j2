@@ -77,8 +77,26 @@ DOMAIN_SECTIONS = {
         "biom_manipulation"],
     'rna': GENERAL_NGS_SECTIONS + ["rna_seq", "annotation", "rna_analysis",
         "graph_display_data"],
-    'singlecell': GENERAL_NGS_SECTIONS + ["rna_seq", "annotation", "rna_analysis",
-        "graph_display_data", "single-cell", "interactivetools"],
+    'singlecell': [
+        "sam_bam",
+        "fasta_fastq_manipulation",
+        "fasta_fastq",
+        "fastq_quality_control",
+        "sam_bam_manipulation",
+        "graph_display_data",
+        "single-cell",
+        "single-cell-section-scdata",
+        "single-cell-section-scanpy",
+        "single-cell-section-seurat",
+        "single-cell-section-raceid",
+        "single-cell-section-cell-annotation",
+        "single-cell-section-cell-multiomics",
+        "single-cell-section-cell-inference",
+        "single-cell-section-cell-spatial",
+        "single-cell-section-hca-scanpy",
+        "single-cell-section-hca-seurat",
+        "single-cell-section-interactivetools"
+    ],
     'humancellatlas': GENERAL_NGS_SECTIONS + ["rna_seq", "annotation", "rna_analysis",
         "graph_display_data", "single-cell", "interactivetools"] + human_cell_atlas_sections,
     'clipseq': GENERAL_NGS_SECTIONS + ["rna_seq", "peak_calling", "rna_analysis",
@@ -117,6 +135,10 @@ def per_host_tool_sections( context, section ):
             return True
         else:
             return False
+
+    # show single cell interactive tools only in that subdomain
+    if section.id.startswith("single-cell-section") and subdomain != "singlecell":
+        return False
 
     # Core tools used by all virtual hosts.
     # HiCtools mode: published in NAR 2018
