@@ -13,9 +13,20 @@ def per_host_tool_labels( context, label ):
         tool_label_filters = examples:per_host_tool_labels
     """
     host = context.trans.request.host
+    subdomain = host.replace('.usegalaxy.eu', '')
+
+    # show single cell labels tools only in that subdomain
+    if label.id.startswith("single-cell-label") and subdomain != "singlecell":
+        return False
+
+    # hide genomics label in the single cell subdomain
+    if label.id == "genomics_label" and subdomain == "singlecell":
+        return False
+
     # Core tools used by all virtual hosts.
     valid_labels = [ "file_meta_label", "general_text_label"]
     general_ngs_labels = [ "genomics_label" ]
+
     # HiCtools mode: published in NAR 2018
     if "assembly.usegalaxy.eu" in host or "humancellatlas.usegalaxy.eu" in host or "nanopore.usegalaxy.eu" in host or "plants.usegalaxy.eu" in host or "hicexplorer.usegalaxy.eu" in host or "singlecell.usegalaxy.eu" in host or "metagenomics.usegalaxy.eu" in host or "rna.usegalaxy.eu" in host or "clipseq.usegalaxy.eu" in host or "graphclust.usegalaxy.eu" in host or "annotation.usegalaxy.eu" in host or "virology.usegalaxy.eu" in host:
         valid_labels += general_ngs_labels
