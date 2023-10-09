@@ -13,9 +13,20 @@ def per_host_tool_labels( context, label ):
         tool_label_filters = examples:per_host_tool_labels
     """
     host = context.trans.request.host
+    subdomain = host.replace('.usegalaxy.eu', '')
+
+    # show single cell labels tools only in that subdomain
+    if label.id.startswith("single-cell-label") and subdomain != "singlecell":
+        return False
+
+    # hide genomics label in the single cell subdomain
+    if label.id == "genomics_label" and subdomain == "singlecell":
+        return False
+
     # Core tools used by all virtual hosts.
     valid_labels = [ "file_meta_label", "general_text_label"]
     general_ngs_labels = [ "genomics_label" ]
+
     # HiCtools mode: published in NAR 2018
     if "assembly.usegalaxy.eu" in host or "humancellatlas.usegalaxy.eu" in host or "nanopore.usegalaxy.eu" in host or "plants.usegalaxy.eu" in host or "hicexplorer.usegalaxy.eu" in host or "singlecell.usegalaxy.eu" in host or "metagenomics.usegalaxy.eu" in host or "rna.usegalaxy.eu" in host or "clipseq.usegalaxy.eu" in host or "graphclust.usegalaxy.eu" in host or "annotation.usegalaxy.eu" in host or "virology.usegalaxy.eu" in host:
         valid_labels += general_ngs_labels
@@ -84,15 +95,23 @@ DOMAIN_SECTIONS = {
         "fastq_quality_control",
         "sam_bam_manipulation",
         "graph_display_data",
+        "hca_sc_monocle3_tools",
+        "hca_sc_garnett_tools",
+        "hca_sc_label_analysis_tools",
+        "hca_sc_scpred_tools",
+        "hca_sc_scmap_tools",
+        "hca_sc_scanpy_tools",
+        "hca_sc_sc3_tools",
+        "hca_sc_sccaf_tools",
+        "hca_sc_scater_tools",
+        "hicexplorer",
         "single-cell",
         "single-cell-section-scdata",
         "single-cell-section-scanpy",
         "single-cell-section-raceid",
-        "single-cell-section-cell-annotation",
         "single-cell-section-cell-multiomics",
         "single-cell-section-cell-inference",
         "single-cell-section-cell-spatial",
-        "single-cell-section-hca-scanpy",
         "single-cell-section-hca-seurat",
         "single-cell-section-interactivetools"
     ],
