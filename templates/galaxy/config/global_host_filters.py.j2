@@ -15,9 +15,9 @@ def per_host_tool_labels( context, label ):
     host = context.trans.request.host
     subdomain = host.replace('.usegalaxy.eu', '')
 
-    # show single cell labels tools only in that subdomain
-    if label.id.startswith("single-cell-label") and subdomain != "singlecell":
-        return False
+    # show single cell labels only in that subdomain
+    if label.id.startswith("single-cell-label"):
+        return subdomain == "singlecell"
 
     # hide genomics label in the single cell subdomain
     if label.id == "genomics_label" and subdomain == "singlecell":
@@ -154,9 +154,9 @@ def per_host_tool_sections( context, section ):
         else:
             return False
 
-    # show single cell interactive tools only in that subdomain
-    if section.id.startswith("single-cell-section") and subdomain != "singlecell":
-        return False
+    # show single cell tools only in that subdomain
+    if section.id.startswith("single-cell-section"):
+        return subdomain == "singlecell"
 
     # Core tools used by all virtual hosts.
     # HiCtools mode: published in NAR 2018
