@@ -305,3 +305,12 @@ server {
 
 	client_max_body_size 1G; # aka max upload size, defaults to 1M
 }
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    server_name humancellatlas.usegalaxy.eu;
+
+    return 302 $scheme://singlecell.usegalaxy.eu$request_uri;
+}
