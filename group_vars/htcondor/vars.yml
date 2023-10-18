@@ -1,0 +1,53 @@
+# Configure nodes in the HTCondor cluster.
+---
+htcondor_server: "condor-cm.galaxyproject.eu"
+htcondor_domain: bi.uni-freiburg.de
+htcondor_port: 9618
+htcondor_version: 23.0
+htcondor_channel: 23.0
+htcondor_firewall_condor: "{{ true if htcondor_port == 9618 else false }}"
+htcondor_firewall_nfs: false
+htcondor_role_execute: false
+htcondor_role_manager: false
+htcondor_role_submit: false
+htcondor_password: "{{ vault_htcondor_password }}"
+
+# Settings specific to the `condor_config.local.j2` configuration file.
+htcondor_allow_write: "10.5.68.0/24, 132.230.223.0/24,132.230.153.0/28"
+htcondor_allow_negotiator: "132.230.223.239,$(CONDOR_HOST),$(ALLOW_WRITE)"
+htcondor_allow_administrator: "$(ALLOW_NEGOTIATOR)"
+htcondor_system_periodic_hold: "{{ 30 * 24 * 60 * 60 }}"
+htcondor_system_periodic_remove: "{{ 2 * 24 * 60 * 60 }}"
+# htcondor_network_interface -> Defined per-host in host_vars.
+htcondor_master_update_interval: 150
+htcondor_classad_lifetime: 300
+htcondor_negotiator_interval: 15
+htcondor_negotiator_update_interval: 100
+htcondor_schedd_interval: 60
+htcondor_job_start_count: 250
+htcondor_job_start_delay: 0
+htcondor_claim_worklife: 120
+htcondor_negotiator_post_job_rank: "isUndefined(RemoteOwner) * (10000 - TotalLoadAvg)"
+
+# Settings specific to the `usegalaxy_eu.htcondor` role (to be replaced with
+# `grycap.htcondor`).
+condor_host: "{{ htcondor_server }}"
+condor_fs_domain: "{{ htcondor_domain }}"
+condor_uid_domain: "{{ htcondor_domain }}"
+condor_allow_write: "{{ htcondor_allow_write }}"
+# condor_daemons -> Defined per-host in host_vars.
+condor_allow_negotiator: "{{ htcondor_allow_negotiator }}"
+condor_allow_administrator: "{{ htcondor_allow_administrator }}"
+condor_system_periodic_hold: "{{ htcondor_system_periodic_hold }}"
+condor_system_periodic_remove: "{{ htcondor_system_periodic_remove }}"
+condor_network_interface: "{{ htcondor_network_interface }}"
+condor_extra: |
+  MASTER_UPDATE_INTERVAL = {{ htcondor_master_update_interval }}
+  CLASSAD_LIFETIME = {{ htcondor_classad_lifetime }}
+  NEGOTIATOR_INTERVAL = {{ htcondor_negotiator_interval }}
+  NEGOTIATOR_UPDATE_INTERVAL = {{ htcondor_negotiator_update_interval }}
+  SCHEDD_INTERVAL = {{ htcondor_schedd_interval }}
+  JOB_START_COUNT = {{ htcondor_job_start_count }}
+  JOB_START_DELAY = {{ htcondor_job_start_delay }}
+  CLAIM_WORKLIFE = {{ htcondor_claim_worklife }}
+  NEGOTIATOR_POST_JOB_RANK = {{ htcondor_negotiator_post_job_rank }}

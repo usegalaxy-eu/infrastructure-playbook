@@ -1,0 +1,36 @@
+---
+- name: HTCondor cluster.
+  hosts: htcondor:!sn06.galaxyproject.eu
+  handlers:
+    - name: Reload HTCondor
+      when: "'condor_service' in service_facts.ansible_facts.services and \
+        service_facts.ansible_facts.services['condor.service'].state == 'running'"
+      become: true
+      ansible.builtin.service:
+        name: condor
+        state: reloaded
+  pre_tasks:
+    - name: Ensure the HTCondor configuration directory exists.
+      become: true
+      ansible.builtin.file:
+        path: /etc/condor
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Template HTCondor configuration.
+      become: true
+      ansible.builtin.template:
+        src: htcondor/condor_config.local.j2
+        dest: /etc/condor/condor_config.local
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Reload HTCondor
+
+    - name: Check if HTCondor is running.
+      ansible.builtin.service_facts:
+      register: service_facts
+  roles:
+    - grycap.htcondor
