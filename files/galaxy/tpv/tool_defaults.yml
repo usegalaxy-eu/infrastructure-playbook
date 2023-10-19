@@ -10,7 +10,7 @@ tools:
     env:
       GALAXY_MEMORY_MB: "{int(mem * 1024)}" # set 5/2023 might be moved to runner or tool wrappers, related to Galaxy issue 15952
     params:
-      metadata_strategy: 'extended'
+      metadata_strategy: "extended"
       tmp_dir: true
       request_cpus: "{cores}"
       request_memory: "{mem}G"
@@ -45,8 +45,12 @@ tools:
       - if: |
           # This rule will apply when users have non-exsisting remote resources selected or recorded in Galaxy DB
           retval = False
-          user_preferences = user.extra_preferences
-          remote_resource_tag = user_preferences.get("distributed_compute|remote_resources", "None")
+          remote_resource_tag = None
+          try:
+              user_preferences = user.extra_preferences
+              remote_resource_tag = user_preferences.get("distributed_compute|remote_resources", "None")
+          except AttributeError:
+              pass
           remote_resource_destination = [d.dest_name for d in mapper.destinations.values() if any(d.tpv_dest_tags.filter(tag_value=remote_resource_tag))]
           if not remote_resource_destination:
               retval = True
