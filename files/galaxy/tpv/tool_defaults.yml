@@ -50,7 +50,7 @@ tools:
           if user is not None:
               try:
                   user_preferences = user.extra_preferences
-                  remote_resource_tag = user_preferences.get("distributed_compute|remote_resources", "None")
+                  remote_resource_tag = user_preferences.get("distributed_compute|remote_resources")
               except AttributeError:
                   pass
               remote_resource_destination = [d.dest_name for d in mapper.destinations.values() if any(d.tpv_dest_tags.filter(tag_value=remote_resource_tag))]
