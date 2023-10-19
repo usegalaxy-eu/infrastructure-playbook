@@ -42,6 +42,17 @@ tools:
               entity.tpv_tags = entity.tpv_tags.combine(
                   TagSetManager(tags=[pulsar_tag])
               )
+      - if: |
+          # This rule will apply when users have non-exsisting remote resources selected or recorded in Galaxy DB
+          retval = False
+          user_preferences = user.extra_preferences
+          remote_resource_tag = user_preferences.get("distributed_compute|remote_resources", "None")
+          remote_resource_destination = [d.dest_name for d in mapper.destinations.values() if any(d.tpv_dest_tags.filter(tag_value=remote_resource_tag))]
+          if not remote_resource_destination:
+              retval = True
+          retval
+        fail: |
+          Invalid 'Remote resources id' selected in the config menu under 'User -> Preferences -> Manage Information'. Please reselect either 'default' or appropriate remote resource
 
     rank: |
       final_destinations = helpers.weighted_random_sampling(candidate_destinations)
