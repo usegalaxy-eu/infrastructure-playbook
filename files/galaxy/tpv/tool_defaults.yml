@@ -55,8 +55,8 @@ tools:
                   pass
               remote_resource_destination = [d.dest_name for d in mapper.destinations.values() if any(d.tpv_dest_tags.filter(tag_value=remote_resource_tag))]
 
-          user is not None and not remote_resource_destination:
-              retval = True
+              if not remote_resource_destination:
+                  retval = True
           retval
         fail: |
           Invalid 'Remote resources id' selected in the config menu under 'User -> Preferences -> Manage Information'. Please reselect either 'default' or an appropriate remote resource.
