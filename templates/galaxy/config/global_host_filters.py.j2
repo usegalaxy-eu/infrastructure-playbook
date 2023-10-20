@@ -22,7 +22,11 @@ def per_host_tool_labels( context, label ):
     # hide genomics label in the single cell subdomain
     if label.id == "genomics_label" and subdomain == "singlecell":
         return False
-
+        
+    # show earth-system labels only in that subdomain
+    if label.id.startswith("earth-system-label"):
+        return subdomain == "earth-system"
+        
     # Core tools used by all virtual hosts.
     valid_labels = [ "file_meta_label", "general_text_label"]
     general_ngs_labels = [ "genomics_label" ]
@@ -131,7 +135,14 @@ DOMAIN_SECTIONS = {
     'annotation': GENERAL_NGS_SECTIONS + ['annotation', 'apollo', 'ncbi_blast', 'assembly', 'variant_calling', 'fetch_sequences___alignments', 'ontology', 'emboss', 'evolution', 'genome_diversity', 'multiple_alignments', 'graph_display_data'],
     'materials': ['muon_spectroscopy'],
     'aqua': ["climate_analysis", "gis_data_handling", "graph_display_data", "interactivetools", "machine_learning"],
-    'earth-system': ["interactivetools"],
+    'earth-system': [
+        "earth-system-section-watercoastal", 
+        "earth-system-section-earthcritical", 
+        "earth-system-section-volcano", 
+        "earth-system-section-biogeo", 
+        "earth-system-section-marineomics", 
+        "earth-system-section-interactivetools"
+        ],
 }
 
 
@@ -159,6 +170,10 @@ def per_host_tool_sections( context, section ):
     # show single cell tools only in that subdomain
     if section.id.startswith("single-cell-section"):
         return subdomain == "singlecell"
+
+    # show earth-system tools only in that subdomain
+    if section.id.startswith("earth-system-section"):
+        return subdomain == "earth-system"
 
     # Core tools used by all virtual hosts.
     # HiCtools mode: published in NAR 2018
