@@ -78,3 +78,9 @@ ansible_ssh_user=centos
 
 [central-manager]
 manager.vgcn.galaxyproject.eu ansible_ssh_user=root
+
+[central-manager-secondary]
+manager-secondary.galaxyproject.eu ansible_host=127.0.0.1 ansible_port=2222 ansible_ssh_user=root ansible_ssh_common_args='-o HostKeyAlias=manager-secondary.galaxyproject.eu -o ProxyCommand="ssh -W %h:%p -q root@sn06.galaxyproject.eu"'
+
+[central-manager-secondary-host]
+sn06.galaxyproject.eu ansible_ssh_user=root
