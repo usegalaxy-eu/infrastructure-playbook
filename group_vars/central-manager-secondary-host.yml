@@ -17,7 +17,7 @@ nspawn_packages:
 
 nspawn_config: |
   [Files]
-  {% for mount in jwd.values() %}
+  {% for mount in jwd.values() if mount.name != "birna01" %}
   Bind={{ mount.path }}
   {% endfor %}
 
