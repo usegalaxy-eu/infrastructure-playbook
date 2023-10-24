@@ -42,24 +42,24 @@ tools:
               entity.tpv_tags = entity.tpv_tags.combine(
                   TagSetManager(tags=[pulsar_tag])
               )
-      # - id: removed_remote_resources
-      #   # This rule displays a meaningful error message when users that have selected remote resources that are no longer available (e.g. because they have been removed) attempt to send jobs to them.
-      #   if: |
-      #     retval = False
-      #     remote_resource_tag = None
-      #     if user is not None:
-      #         try:
-      #             user_preferences = user.extra_preferences
-      #             remote_resource_tag = user_preferences.get("distributed_compute|remote_resources")
-      #         except AttributeError:
-      #             pass
-      #         remote_resource_destination = [d.dest_name for d in mapper.destinations.values() if any(d.tpv_dest_tags.filter(tag_value=remote_resource_tag))]
+      - id: removed_remote_resources
+        # This rule displays a meaningful error message when users that have selected remote resources that are no longer available (e.g. because they have been removed) attempt to send jobs to them.
+        if: |
+          retval = False
+          remote_resource_tag = None
+          if user is not None:
+              try:
+                  user_preferences = user.extra_preferences
+                  remote_resource_tag = None if user_preferences.get("distributed_compute|remote_resources") == "None" else user_preferences.get("distributed_compute|remote_resources")
+              except AttributeError:
+                  pass
+              remote_resource_destination = [d.dest_name for d in mapper.destinations.values() if any(d.tpv_dest_tags.filter(tag_value=remote_resource_tag))]
 
-      #         if not remote_resource_destination:
-      #             retval = True
-      #     retval
-      #   fail: |
-      #     Invalid 'Remote resources id' selected in the config menu under 'User -> Preferences -> Manage Information'. Please reselect either 'default' or an appropriate remote resource.
+              if not remote_resource_destination:
+                  retval = True
+          retval
+        fail: |
+          Invalid 'Remote resources id' selected in the config menu under 'User -> Preferences -> Manage Information -> Use distributed compute resources'. Please reselect either 'default' or an appropriate remote resource then save and rerun your job.
 
     rank: |
       final_destinations = helpers.weighted_random_sampling(candidate_destinations)
