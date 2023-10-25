@@ -117,3 +117,9 @@ nspawn-htcondor.sn06.galaxyproject.eu ansible_host=127.0.0.1 ansible_port=2222 a
 
 [htcondor-secondary-submit:vars]
 ansible_group_priority=4
+
+[htcondor-secondary-submit-host]
+sn06.galaxyproject.eu
+
+[htcondor-secondary-submit-host:vars]
+ansible_group_priority=2

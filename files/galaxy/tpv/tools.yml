@@ -282,6 +282,8 @@ tools:
     scheduling:
       require:
         - docker
+  toolshed.g2.bx.psu.edu/repos/galaxyp/diann/diann/.*:
+    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/instagraal/instagraal/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/ecology/cb_ivr/cb_ivr/.*:
@@ -1028,7 +1030,7 @@ tools:
     mem: 4
     cores: 6
     params:
-      singularity_container_id_override: docker://teambraker/braker3:v.1.0.4
+      singularity_container_id_override: docker://quay.io/bgruening/braker3:v.1.0.4
     scheduling:
       require:
         - singularity
@@ -1046,3 +1048,8 @@ tools:
     mem: 24
     env:
       EGGNOG_DBMEM: "--dbmem"
+
+  ## is in the shared DB - we need to test it here a bit
+  toolshed.g2.bx.psu.edu/repos/galaxyp/openms_featurefindermultiplex/FeatureFinderMultiplex/.*:
+    cores: 8
+    mem: 32

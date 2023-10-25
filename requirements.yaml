@@ -109,6 +109,13 @@ roles:
     version: 1.1.1
   - name: usegalaxy_eu.flower
     version: 0.3.1-alpha
+  # `geerlingguy.pip` is here only because it is a dependency of
+  # `paprikant.beacon` and because no version has been pinned when declaring
+  # the dependency, the role is affected by this bug:
+  # https://forum.ansible.com/t/role-import-from-github-results-in-master-release-not-the-tag-release-breaking-installs/1856
+  # Remove `geerlingguy.pip` from this list when the bug above has been fixed.
+  - name: geerlingguy.pip
+    version: 2.2.0
   - name: paprikant.beacon
     src: https://github.com/Paprikant/ansible-role-beacon
   - name: paprikant.beacon-importer

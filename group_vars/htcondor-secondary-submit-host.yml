@@ -1,0 +1,66 @@
+---
+nspawn_name: htcondor
+nspawn_distro: "rocky"
+nspawn_release: "8"
+nspawn_packages:
+  - dhcp-client
+  - dnf
+  - glibc-langpack-en
+  - iproute
+  - iputils
+  - less
+  - passwd
+  - systemd
+  - dbus
+  - vim-minimal
+  - openssh-server
+
+nspawn_config: |
+  [Files]
+  {% for mount in jwd.values() if mount.name != "birna01" %}
+  Bind={{ mount.path }}
+  {% endfor %}
+
+  [Exec]
+  NotifyReady=yes
+  PrivateUsers=no
+
+  [Network]
+  VirtualEthernet=no
+
+nspawn_enable: false
+nspawn_start: false
+
+nspawn_ssh: yes
+nspawn_ssh_config_path: /etc/ssh/sshd_config
+nspawn_ssh_config:
+  Port: "2222"
+  ListenAddress: "127.0.0.1"
+  PermitRootLogin: "yes"
+  PubkeyAuthentication: "yes"
+  AuthenticationMethods: "publickey"
+  PasswordAuthentication: "no"
+  PermitEmptyPasswords: "no"
+  ChallengeResponseAuthentication: "no"
+  PermitTunnel: "no"
+  AllowTcpForwarding: "no"
+  AllowAgentForwarding: "no"
+  GatewayPorts: "no"
+nspawn_ssh_host_keys:
+  ecdsa: "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBF9MMtDEfPPSaHSNUFz3b1BBtasjGT1XB2my45Lhtp4NLJv/jPxpVQ8sxRSS3+8fc9+1EZXF0AGj4D1NjqpabmQ="
+  ed25519: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHMTH60CkuT9moO66XVEaUP1YelPv/aOQdqSImNNiQFh"
+  rsa: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDxIgnu5/BIIzVbWM442uzwyuXPQx0jqaVfffjexwewfc2mMNnVAG7mRzcWcgr+o/lFiogkqGulkvO/a+EARs5WsWrsq5bGFcHx9DPgaT+7smu+K3t0WNiqPEykXUJppyMtaYftZSWaCSl51pg3QT29pvl95sjC3URFrQhoaLHJ2fESYJI4WuMBig/rCLaRsF6xaR38LIVfrZdA7UjG5Ncr+FXF6cpNtdvDvJXkGyuYft2p9LMh7vycdiSUL/CluC6tptgQ82JGxgyHDaxwJvyzzDukjKTUkR59ctuGthq9M/M384sCn8Z3PsGE4hkRGdL/HJZhasPIkkwJK8ekucnBR2LzlCqiTrn7HFbndqgePhJWHq0tBN53o2Vmczrbq6UVROAFDCpPKeaWa6hcdqzp0fpHrgSZEyKmMxThV8sj69E/mCh2PEgWjCXsPoJLwrW9TuPUMeXx2+Cwf4/JaFSvLBT19ADFKkzgAPeEVdJg2ZkjWZVO+xxb9e6Ahux+g7E="
+nspawn_ssh_host_certs:
+  # valid from 2023-10-12T14:46:00 to 2033-09-29T14:47:45
+  ecdsa: "ecdsa-sha2-nistp256-cert-v01@openssh.com AAAAKGVjZHNhLXNoYTItbmlzdHAyNTYtY2VydC12MDFAb3BlbnNzaC5jb20AAAAgIkfzNxdybaCbJ+rziM3zQy/grFSitfDOJWQS2zH4I4MAAAAIbmlzdHAyNTYAAABBBF9MMtDEfPPSaHSNUFz3b1BBtasjGT1XB2my45Lhtp4NLJv/jPxpVQ8sxRSS3+8fc9+1EZXF0AGj4D1NjqpabmQAAAAAAAAAAAAAAAIAAAAXbWFuYWdlci1zZWNvbmRhcnktZWNkc2EAAAAAAAAAAGUoBqgAAAAAd+bbEQAAAAAAAAAAAAAAAAAAARcAAAAHc3NoLXJzYQAAAAMBAAEAAAEBAMtAPp8bfy7AWP3UZJ7pidGcG5ONdZk3o9yTUlEJNa25/ApXRJk1zMP6pR2cV9msLH/AFUrxHrMvZVZL2FwUrUu4Twcrzp/yob+BwHrIW3/Qj89ahKNxtQw9BPMUjLzLG90ig9OWP8/r642DB5O8wUjj5Q64IjvUiEH+WJMefX/Z1dAz3hIV3hVB6D7dNzqAPESpFJLp0sirS69Hz/+W4imhbfzKHajPAeaMwpO8edt24aoeURLirP1xT2JmRag/NKn6qjEI6KMe/DMvm8PT+TiFn+InJPMMdAsOtrcpprzKRZ0RELGOkynXL11VDbeVXGn5RQC3dEc4JTX8q40z0+sAAAEUAAAADHJzYS1zaGEyLTUxMgAAAQBbd3PNc1Ezs5BDCF/Ca02Oea4hL/L3Z1G4PO1W7y3IHAVW2hFmHBmJTd2r5tO/G+n/o03j+wr59ZfKYr4sj9c99oMXA19IRl+3a7ECnG6xpnepVA8FMo8qatcTyeOlECDbS8VI8Kc+cBuSu4UZjdCIZCFGzIj9dupK22id7D/UdeqDNTZ0b+KB0NOQM6lzyLaXD75U9kOFFzWmJqRYtkFns71dhzzr1i04V+ZaPlmSz2QZ20WIqt2hX6ecU+w3U2fK0PkFy/cy3YtSzhnNRiKnmJk1U4MOCbxWQ3rFOTopX514elUZAUCw3HCU+vBIOwwDIrVlbNuCEecuMtQUfLyW /etc/ssh/ssh_host_ecdsa_key.pub"
+  # valid from 2023-10-12T14:46:00 to 2033-09-29T14:47:55
+  ed25519: "ssh-ed25519-cert-v01@openssh.com AAAAIHNzaC1lZDI1NTE5LWNlcnQtdjAxQG9wZW5zc2guY29tAAAAILMcMkZV0MfVGEZghy0DD2dOMTtpjE5z0Hj6Cus/C8mjAAAAIHMTH60CkuT9moO66XVEaUP1YelPv/aOQdqSImNNiQFhAAAAAAAAAAAAAAACAAAAGW1hbmFnZXItc2Vjb25kYXJ5LWVjMjU1MTkAAAAAAAAAAGUoBqgAAAAAd+bbGwAAAAAAAAAAAAAAAAAAARcAAAAHc3NoLXJzYQAAAAMBAAEAAAEBAMtAPp8bfy7AWP3UZJ7pidGcG5ONdZk3o9yTUlEJNa25/ApXRJk1zMP6pR2cV9msLH/AFUrxHrMvZVZL2FwUrUu4Twcrzp/yob+BwHrIW3/Qj89ahKNxtQw9BPMUjLzLG90ig9OWP8/r642DB5O8wUjj5Q64IjvUiEH+WJMefX/Z1dAz3hIV3hVB6D7dNzqAPESpFJLp0sirS69Hz/+W4imhbfzKHajPAeaMwpO8edt24aoeURLirP1xT2JmRag/NKn6qjEI6KMe/DMvm8PT+TiFn+InJPMMdAsOtrcpprzKRZ0RELGOkynXL11VDbeVXGn5RQC3dEc4JTX8q40z0+sAAAEUAAAADHJzYS1zaGEyLTUxMgAAAQAno9IlnZ6TLhK83xx1+qjTL2+DjYsFTVeH0D97P7QdvZ3l4VnOWJH62V79VSNA4VQ7MRgoUZkeVY6Y2OBBItGGNxn0Z/9O/yE8csoqKE0L0LJNWoEU8Xbw/rs7rr4gIUqTNqzT42dSt7p6chht8+9iCSku8bKHmmnokQOnC/tF29zC5Iq4FQoVYDMgm0YO2MN9mJ6R9zEzkcu/cPWTjPM0FY9qs/RlK7yGQXcINAxaW4a5xdlMp85LWygGRLBn+gKiCwUATW1EPx7MkuHUx+vHzeKwRDsc904KxYD9TWsrSygFAfesLY2Xh6TDVdrPCnw096K7l9EcovgSCVWPV1mM /etc/ssh/ssh_host_ed25519_key.pub"
+  # valid from 2023-10-12T14:47:00 to 2033-09-29T14:48:11
+  rsa: "ssh-rsa-cert-v01@openssh.com AAAAHHNzaC1yc2EtY2VydC12MDFAb3BlbnNzaC5jb20AAAAgQuoZdMdY7Boli6KRlNmUk2zQar66du6kmLR4PkWoHI8AAAADAQABAAABgQDxIgnu5/BIIzVbWM442uzwyuXPQx0jqaVfffjexwewfc2mMNnVAG7mRzcWcgr+o/lFiogkqGulkvO/a+EARs5WsWrsq5bGFcHx9DPgaT+7smu+K3t0WNiqPEykXUJppyMtaYftZSWaCSl51pg3QT29pvl95sjC3URFrQhoaLHJ2fESYJI4WuMBig/rCLaRsF6xaR38LIVfrZdA7UjG5Ncr+FXF6cpNtdvDvJXkGyuYft2p9LMh7vycdiSUL/CluC6tptgQ82JGxgyHDaxwJvyzzDukjKTUkR59ctuGthq9M/M384sCn8Z3PsGE4hkRGdL/HJZhasPIkkwJK8ekucnBR2LzlCqiTrn7HFbndqgePhJWHq0tBN53o2Vmczrbq6UVROAFDCpPKeaWa6hcdqzp0fpHrgSZEyKmMxThV8sj69E/mCh2PEgWjCXsPoJLwrW9TuPUMeXx2+Cwf4/JaFSvLBT19ADFKkzgAPeEVdJg2ZkjWZVO+xxb9e6Ahux+g7EAAAAAAAAAAAAAAAIAAAAVbWFuYWdlci1zZWNvbmRhcnktcnNhAAAAAAAAAABlKAbkAAAAAHfm2ysAAAAAAAAAAAAAAAAAAAEXAAAAB3NzaC1yc2EAAAADAQABAAABAQDLQD6fG38uwFj91GSe6YnRnBuTjXWZN6Pck1JRCTWtufwKV0SZNczD+qUdnFfZrCx/wBVK8R6zL2VWS9hcFK1LuE8HK86f8qG/gcB6yFt/0I/PWoSjcbUMPQTzFIy8yxvdIoPTlj/P6+uNgweTvMFI4+UOuCI71IhB/liTHn1/2dXQM94SFd4VQeg+3Tc6gDxEqRSS6dLIq0uvR8//luIpoW38yh2ozwHmjMKTvHnbduGqHlES4qz9cU9iZkWoPzSp+qoxCOijHvwzL5vD0/k4hZ/iJyTzDHQLDra3Kaa8ykWdERCxjpMp1y9dVQ23lVxp+UUAt3RHOCU1/KuNM9PrAAABFAAAAAxyc2Etc2hhMi01MTIAAAEAOXRiZFs14HScCvi+9Hp51z310t0r3SHtHhE50vEjdAsnej+/yHUtlmaYJ1l4B8SWYHHUV94KxZbQP79D8PYQextXoYldA4Vp29ow33sYF8Mr4p7Jbjyyr4GVP9RAymiZz9cuiiRqjs8qwn/UCOw4A6yaix4k0EYTJa9bpbD3MsCxJbKEdZxxL72kIKf4sGuDrd77hEtRwJFUSqz+XD96TYG+BIomnrk35Oy+oyMGhoIlSM0//cS0pHUW8fpGnRIJJbBjDETwOmaMEF5yynRSeJyWnEBPpjcA+1i7wILSxYxZb5ckGxCABYxNvlIhF8Bvdcyb4eo7B/WeEdzr5C+Pzg== /etc/ssh/ssh_host_rsa_key.pub"
+nspawn_ssh_authorized_keys:
+  - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDV7gfNbNN5O8vH6/tM/iOFXKBP2YKRHXOmdfV8ogvu9BdVV0IPmDzk2EooVpThDE1VMv1hz3811tvBhHRJ6IgNhVIV/61w/+RazQD/AU27X8bX+Hb9EQ/bP4DW+6ySd/z5vdDLzpH5dbiMhzPEDkXVsylUT+hkQnas6cHspDhHmtKQ5MWOgDe3D/IEudTDJQe8hxxaU4TaZUmFzn7eYp9HvuK8qW0yCy4NWOxJJHA+G5wSCyLuKnaKo4AitUIzSKF1AB94oq7b96KONhPxgRptAk4OYIUTdNFbrI5HDaSNzHLnF5FbjQvG+Eu6m5nY5yvJMogE+jiuWeIXCZTCFljg287FUo0ohmbZpd802L6VXun14VumRC+rRgPrvBALo/CsyCsPIoBSTKhVElxKVOcRjmTLNfrUZM0GQxqJhIvah8BV+JTExkipPwkrKTdMAWIXvCoehxV+WMpBWqtEEzAzEoqJpaiec7HfriwsHTGESZWAPYEbFjzbHXQZtqBkbOvtokPMRmTWfWKxaplCMN6ddJeeY6faorD0w/e6lszWES1Q1ieajiPKDy37UvybKKvPTk4o3MzyzYOS4c8HQj+jnGeR5Q3ETuyz4psLyOfuBtIrfOeuxV42rFDmkYM3IrrRR+F9oklFG6Ig8DVfgQEzSG36NkgvpF4OdFvigYqXvw== cloud@vgcn"
+nspawn_ssh_host_trust_container: yes
+
+ssh_allow_tcp_forwarding: "local"
+sshd_custom_options:
+  - "PermitOpen 127.0.0.1:{{ nspawn_ssh_config.Port }}"
