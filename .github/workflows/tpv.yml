@@ -28,9 +28,9 @@ jobs:
           git submodule update --init --recursive --remote --checkout
 
       - name: Set up Python 3.
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: '3.11'
           cache: 'pip'
 
       # Install Ansible.
@@ -124,7 +124,7 @@ jobs:
         working-directory: 'infrastructure-playbook'
         run: |
           import glob
-          import importlib
+          import importlib.util
           import sys
 
           # import tpv.py
@@ -187,9 +187,9 @@ jobs:
           git submodule update --init --recursive --remote --checkout
 
       - name: Set up Python 3.
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: '3.11'
           cache: 'pip'
 
       # Install Ansible.
@@ -299,7 +299,7 @@ jobs:
         working-directory: 'infrastructure-playbook'
         run: |
           import glob
-          import importlib
+          import importlib.util
           import os
           import subprocess
           import sys
