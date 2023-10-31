@@ -76,14 +76,50 @@ maintenance.galaxyproject.eu
 [all:vars]
 ansible_ssh_user=centos
 
-[central-manager]
-manager.vgcn.galaxyproject.eu ansible_ssh_user=root
+[htcondor:children]
+htcondor-manager
+htcondor-submit
+htcondor-secondary
 
-[central-manager-secondary]
-manager-secondary.galaxyproject.eu ansible_host=127.0.0.1 ansible_port=2222 ansible_ssh_user=root ansible_ssh_common_args='-o HostKeyAlias=manager-secondary.galaxyproject.eu -o ProxyCommand="ssh -W %h:%p -q root@sn06.galaxyproject.eu"'
+[htcondor-manager]
+sn06.galaxyproject.eu
 
-[central-manager-secondary-host]
-sn06.galaxyproject.eu ansible_ssh_user=root
+[htcondor-manager:children]
+htcondor-secondary-manager
 
-[central-manager-secondary-host:vars]
+[htcondor-manager:vars]
+ansible_group_priority=2
+
+[htcondor-submit]
+sn06.galaxyproject.eu
+
+[htcondor-submit:children]
+htcondor-secondary-submit
+
+[htcondor-submit:vars]
+ansible_group_priority=2
+
+[htcondor-secondary:children]
+htcondor-secondary-manager
+htcondor-secondary-submit
+
+[htcondor-secondary:vars]
+ansible_group_priority=3
+
+[htcondor-secondary-manager]
+build.galaxyproject.eu ansible_ssh_user=root
+
+[htcondor-secondary-manager:vars]
+ansible_group_priority=4
+
+[htcondor-secondary-submit]
+nspawn-htcondor.sn06.galaxyproject.eu ansible_host=127.0.0.1 ansible_port=2222 ansible_ssh_user=root ansible_ssh_common_args='-o HostKeyAlias=nspawn-htcondor.sn06.galaxyproject.eu -o ProxyCommand="ssh -W %h:%p -q centos@sn06.galaxyproject.eu"'
+
+[htcondor-secondary-submit:vars]
+ansible_group_priority=4
+
+[htcondor-secondary-submit-host]
+sn06.galaxyproject.eu
+
+[htcondor-secondary-submit-host:vars]
 ansible_group_priority=2

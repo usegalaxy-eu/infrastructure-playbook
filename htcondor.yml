@@ -1,6 +1,6 @@
 ---
 - name: Systemd-nspawn container aimed at running a second HTCondor installation.
-  hosts: central-manager-secondary-host
+  hosts: htcondor-secondary-submit-host
   handlers:
     - name: Reload sshd  # (in the container)
       when: nspawn_ssh | default(no)
@@ -11,7 +11,7 @@
       changed_when: true
   vars_files:
     - mounts/mountpoints.yml
-    - secret_group_vars/central-manager-secondary-host.yml
+    - secret_group_vars/htcondor-secondary-submit-host.yml
   pre_tasks:
     # Because it is already disabled for sn06 and this setup is needed just
     # temporarily.
@@ -177,5 +177,38 @@
         key: "[127.0.0.1]:{{ nspawn_ssh_config.Port }} {{ nspawn_ssh_host_key.content | b64decode }}"
       when: nspawn_ssh_host_trust_container
 
-- name: Secondary HTCondor 10 cluster.
-  hosts: central-manager-secondary
+- name: HTCondor cluster.
+  hosts: htcondor:!sn06.galaxyproject.eu
+  handlers:
+    - name: Reload HTCondor
+      when: "'condor_service' in service_facts.ansible_facts.services and \
+        service_facts.ansible_facts.services['condor.service'].state == 'running'"
+      become: true
+      ansible.builtin.service:
+        name: condor
+        state: reloaded
+  pre_tasks:
+    - name: Ensure the HTCondor configuration directory exists.
+      become: true
+      ansible.builtin.file:
+        path: /etc/condor
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Template HTCondor configuration.
+      become: true
+      ansible.builtin.template:
+        src: htcondor/condor_config.local.j2
+        dest: /etc/condor/condor_config.local
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Reload HTCondor
+
+    - name: Check if HTCondor is running.
+      ansible.builtin.service_facts:
+      register: service_facts
+  roles:
+    - grycap.htcondor
