@@ -46,3 +46,19 @@
     insertafter: EOF
     line: 'telegraf ALL=(ALL) NOPASSWD: /usr/bin/monitor-condor-queue'
     validate: 'visudo -cf %s'
+
+- name: "Add condor queue jobs status script"
+  copy:
+    src: "cluster_queue-condor-jobs.sh"
+    dest: "/usr/bin/monitor-condor-queue-jobs"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Allow telegraf to run monitor-condor-queue-jobs
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    insertafter: EOF
+    line: 'telegraf ALL=(ALL) NOPASSWD: /usr/bin/monitor-condor-queue-jobs'
+    validate: 'visudo -cf %s'
