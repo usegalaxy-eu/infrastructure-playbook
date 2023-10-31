@@ -78,7 +78,7 @@ server {
 		add_header X-Content-Type-Options nosniff;
 
 		# CORS
-		if ($http_origin ~ "^https?://(covid19map\.elixir-luxembourg\.org|www\.bx\.psu\.edu)$") {
+                if ($http_origin ~ "^https?://(covid19map\.elixir-luxembourg\.org|avivator\.gehlenborglab\.org|www\.bx\.psu\.edu)$") {
 			add_header Access-Control-Allow-Origin $http_origin;
 			add_header Access-Control-Allow-Methods 'GET';
 			add_header Access-Control-Expose-Headers 'Content-Length,Content-Range';
