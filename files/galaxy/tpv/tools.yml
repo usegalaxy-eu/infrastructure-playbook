@@ -1045,6 +1045,13 @@ tools:
     mem: 16
     cores: 16
 
+  # we need this here because we need to set the GENEMARK_PATH
+  toolshed.g2.bx.psu.edu/repos/iuc/funannotate_predict/funannotate_predict/.*:
+    cores: 12
+    mem: 12
+    env:
+      GENEMARK_PATH: /usr/local/tools/genemark/etp.for_braker/bin/
+
   toolshed.g2.bx.psu.edu/repos/galaxyp/eggnog_mapper/eggnog_mapper/.*:
     cores: 8
     mem: 24
