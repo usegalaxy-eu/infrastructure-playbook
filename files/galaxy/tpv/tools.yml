@@ -1039,6 +1039,14 @@ tools:
       require:
         - singularity
 
+  # GeneMark is a pain and needs special casing
+  toolshed.g2.bx.psu.edu/repos/genouest/braker/braker/.*:
+    mem: 4
+    cores: 6
+    env:
+      GENEMARK_PATH: "/usr/local/tools/genemark/etp.for_braker/bin/gmes/"
+      PROTHINT_PATH: "/usr/local/tools/genemark/etp.for_braker/bin/gmes/ProtHint/bin/"
+
   toolshed.g2.bx.psu.edu/repos/iuc/checkm_taxonomy_wf/checkm_taxonomy_wf/.*:
     mem: 8
     cores: 8
