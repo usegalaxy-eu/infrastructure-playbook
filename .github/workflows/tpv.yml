@@ -22,6 +22,12 @@ jobs:
         with:
           path: 'infrastructure-playbook'
 
+      - name: Workaround Ansible vault password not being available to GitHub.
+        working-directory: 'infrastructure-playbook'
+        run: |
+          rm -f group_vars/htcondor/vault.yml
+          rm -f group_vars/htcondor-secondary/vault.yml
+
       - name: Update git submodules.
         working-directory: 'infrastructure-playbook'
         run: |
@@ -180,6 +186,12 @@ jobs:
         with:
           fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 0 }}
           path: 'infrastructure-playbook'
+
+      - name: Workaround Ansible vault password not being available to GitHub.
+        working-directory: 'infrastructure-playbook'
+        run: |
+          rm -f group_vars/htcondor/vault.yml
+          rm -f group_vars/htcondor-secondary/vault.yml
 
       - name: Update git submodules.
         working-directory: 'infrastructure-playbook'
