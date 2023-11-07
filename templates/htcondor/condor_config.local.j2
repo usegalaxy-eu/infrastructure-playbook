@@ -20,8 +20,8 @@ ALLOW_ADMINISTRATOR = {{ htcondor_allow_administrator }}
 {% endif %}
 ALLOW_OWNER = $(ALLOW_ADMINISTRATOR)
 ALLOW_CLIENT = *
-FILESYSTEM_DOMAIN = {{ htcondor_fs_domain }}
-UID_DOMAIN = {{ htcondor_uid_domain }}
+FILESYSTEM_DOMAIN = {{ htcondor_domain }}
+UID_DOMAIN = {{ htcondor_domain }}
 TRUST_UID_DOMAIN = True
 SOFT_UID_DOMAIN = True
 SEC_CLIENT_AUTHENTICATION_METHODS = IDTOKENS, FS
@@ -33,7 +33,7 @@ SYSTEM_PERIODIC_HOLD = \
   (JobStatus == 1 || JobStatus == 2) && \
   ((time() - JobStartDate) >= ({{ htcondor_system_periodic_hold }}))
 SYSTEM_PERIODIC_HOLD_REASON = \
-  ifThenElse(((time() - JobStartDate) >= ({{ hcondor_system_periodic_hold }}), \
+  ifThenElse(((time() - JobStartDate) >= ({{ htcondor_system_periodic_hold }}), \
              "Maximum wallclock time exceeded", \
 		 "Unspecified reason")
 SYSTEM_PERIODIC_REMOVE = \
