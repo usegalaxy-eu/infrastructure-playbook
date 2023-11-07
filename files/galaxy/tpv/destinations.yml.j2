@@ -318,6 +318,8 @@ destinations:
   # LOCAL CONDOR DESTINATIONS #
   #############################
 
+{# Save condor destinations to replicate them in the secondary cluster. #}
+{% set condor %}
   condor_docker:
     inherits: basic_docker_destination
     runner: condor
@@ -430,3 +432,17 @@ destinations:
       GPU_AVAILABLE: 1
     params:
       requirements: 'GalaxyGroup == "compute_gpu"'
+{%- endset %}{{ condor }}
+
+{# Generate secondary cluster destinations. #}
+{% for name, destination in (condor | from_yaml).items() %}
+  {% if destination.runner is defined and destination.runner == "condor" %}
+  secondary_{{ name }}:
+    inherits: {{ name }}
+    runner: condor_secondary
+    scheduling:
+      require:
+        - condor-secondary
+
+  {% endif %}
+{% endfor %}
