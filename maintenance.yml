@@ -68,6 +68,44 @@
         mode: '0644'
       notify:
         - restart rsyslog
+    - name: Configure OpenStack credentials.
+      become: true
+      block:
+        - name: Get $XDG_CONFIG_HOME for root.
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: "set -u; (echo $XDG_CONFIG_HOME) 2> /dev/null || echo $HOME/.config"
+          changed_when: false
+          register: root_config
+        - name: Ensure $XDG_CONFIG_HOME exists.
+          become: true
+          ansible.builtin.file:
+            path: "{{ root_config.stdout }}"
+            state: directory
+            owner: root
+            group: root
+        - name: Ensure OpenStack configuration directory exists.
+          become: true
+          ansible.builtin.file:
+            path: "{{ root_config.stdout }}/openstack"
+            state: directory
+            owner: root
+            group: root
+            mode: "0700"
+        - name: Copy OpenStack credentials.
+          ansible.builtin.copy:
+            src: clouds.yaml
+            dest: "{{ root_config.stdout }}/openstack/clouds.yaml"
+            owner: root
+            group: root
+            mode: "0600"
+    - name: Copy script to manage VMs.
+      ansible.builtin.copy:
+        src: manage_vms
+        dest: /usr/local/bin/manage_vms
+        owner: root
+        group: root
+        mode: "0555"
   roles:
     - usegalaxy_eu.handy.os_setup
     - geerlingguy.repo-epel
