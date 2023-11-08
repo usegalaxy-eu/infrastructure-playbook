@@ -13,7 +13,7 @@ OPENSTACK_CLOUD="freiburg_galaxy"
 OPENSTACK_CMD="/opt/galaxy/venv/bin/openstack --os-cloud=$OPENSTACK_CLOUD"
 
 get_list_of_stuck_vms(){
-    non_htcondor_node_names="$(/opt/galaxy/venv/bin/python /usr/local/bin/vgcn_monitoring.py | grep 'bwcloud=True,htcondor=False' | awk '{print $1}' | cut -d '=' -f2 | tr '\n' ' ')"
+    non_htcondor_node_names="$(/usr/bin/env OS_CLOUD=$OPENSTACK_CLOUD /opt/galaxy/venv/bin/python /usr/local/bin/vgcn_monitoring.py | grep 'bwcloud=True,htcondor=False' | awk '{print $1}' | cut -d '=' -f2 | tr '\n' ' ')"
     echo -e "$non_htcondor_node_names"
 }
 
