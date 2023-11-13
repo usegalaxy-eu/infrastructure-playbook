@@ -1074,3 +1074,14 @@ tools:
   toolshed.g2.bx.psu.edu/repos/galaxyp/openms_featurefindermultiplex/FeatureFinderMultiplex/.*:
     cores: 8
     mem: 64
+
+  srma_wrapper:
+    mem: 4
+    cores: 1
+    env:
+      GALAXY_DATA_INDEX_DIR: "/opt/galaxy/tool-data/"
+    params:
+      singularity_container_id_override: "quay.io/biocontainers/mulled-v2-56685ecbcd8a92192501538ce5a05b1be490b742:1f13308a8260334d826a999ba1f77b563eccd8a5-0"
+    scheduling:
+      require:
+        - singularity
