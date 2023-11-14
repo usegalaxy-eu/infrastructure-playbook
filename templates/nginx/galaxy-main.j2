@@ -309,8 +309,9 @@ server {
 	location /federated_analysis_data {
 		alias /data/dnb01/federated_analysis_demo_data/;
 		allow 10.5.68.0/24;
-		allow 193.190.80.5;
-		allow 193.190.80.4;
+		# BE instance IPs
+		allow 10.113.3.8;
+		allow 10.113.3.13;
 		deny all;
 	}
 }
