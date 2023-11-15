@@ -1,5 +1,5 @@
 ---
-- name: Systemd-nspawn container aimed at running a second HTCondor installation.
+- name: Create a systemd-nspawn container aimed at running a second HTCondor installation.
   hosts: htcondor-secondary-submit-host
   handlers:
     - name: Reload sshd  # (in the container)
@@ -203,6 +203,12 @@
         name: condor
         state: reloaded
   pre_tasks:
+    - name: Ensure findutils is installed.
+      become: true
+      ansible.builtin.package:
+        name: findutils
+        state: installed
+
     - name: Ensure the HTCondor configuration directory exists.
       become: true
       ansible.builtin.file:
@@ -226,4 +232,5 @@
       ansible.builtin.service_facts:
       register: service_facts
   roles:
+    - usegalaxy_eu.handy.os_setup
     - grycap.htcondor
