@@ -13,8 +13,29 @@ OPENSTACK_CLOUD="freiburg_galaxy"
 OPENSTACK_CMD="/opt/galaxy/venv/bin/openstack --os-cloud=$OPENSTACK_CLOUD"
 
 get_list_of_stuck_vms(){
-    non_htcondor_node_names="$(/usr/bin/env OS_CLOUD=$OPENSTACK_CLOUD /opt/galaxy/venv/bin/python /usr/local/bin/vgcn_monitoring.py | grep 'bwcloud=True,htcondor=False' | awk '{print $1}' | cut -d '=' -f2 | tr '\n' ' ')"
-    echo -e "$non_htcondor_node_names"
+    addresses_and_names="$($OPENSTACK_CMD server list --status='ACTIVE' --name 'vgcnbwc-worker-*' -c Networks -c Name -f json | jq -r '.[] | "\(.Networks.bioinf[0]) \(.Name)"')"
+    mapfile -t addresses < <(echo "$addresses_and_names" | cut -d' ' -f1)
+    mapfile -t names < <(echo "$addresses_and_names" | cut -d' ' -f2)
+
+    pids=()
+    for address in "${addresses[@]}"; do
+        ping -w 5 -c 1 "$address" 2>&1 > /dev/null & pids+=($!)
+    done
+
+    return_codes=()
+    for pid in "${pids[@]}"; do
+        wait "$pid"
+        return_codes+=($?)
+    done
+
+    stuck_workers=()
+    for i in "${!names[@]}"; do
+        if [ "${return_codes[$i]}" -eq 1 ]; then
+            stuck_workers+=("${names[$i]}")
+        fi
+    done
+
+    printf '%s\n' "${stuck_workers[@]}"
 }
 
 get_list_of_errored_vms(){
