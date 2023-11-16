@@ -19,7 +19,7 @@ get_list_of_stuck_vms(){
 
     pids=()
     for address in "${addresses[@]}"; do
-        ping -w 2 -c 1 "$address" 2>&1 > /dev/null & pids+=($!)
+        ping -w 5 -c 1 "$address" 2>&1 > /dev/null & pids+=($!)
     done
 
     return_codes=()
