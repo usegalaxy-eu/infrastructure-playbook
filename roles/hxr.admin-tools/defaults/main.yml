@@ -15,11 +15,10 @@ admin_packages:
   - net-tools
   - unzip
   - mutt
-  - "{{ byobu if ansible_distribution_major_version < '9' | default(omit) }}"
+  - "{{ byobu if ansible_distribution_major_version < '9' else default(omit) }}"
   - tmpwatch
   - rclone
   # centos specific
   - setools-console
   - yum-utils
   - bind-utils
-
