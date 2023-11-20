@@ -1,7 +1,7 @@
 ---
 - name: Install useful tools
   yum:
-    name: "{{ admin_packages | select | list }}"
+    name: "{{ admin_packages  }}"
     state: installed
 
 - name: Start atop
