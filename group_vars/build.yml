@@ -1,4 +1,29 @@
 ---
+# Admin Tools
+admin_packages:
+  - nano
+  - vim
+  - htop
+  - strace
+  - jq
+  - iftop
+  - wget
+  - curl
+  - tmux
+  - git
+  - nmap
+  - tcpdump
+  - net-tools
+  - unzip
+  - tmpwatch
+  - rclone
+  - "{{ 'byobu' if ansible_distribution_major_version < '9' else omit }}"
+  # centos specific
+  - setools-console
+  - yum-utils
+  - bind-utils
+  - nfs-utils
+
 # Jenkins
 jenkins_home: /opt/jenkins/jenkins
 jenkins_prefer_lts: true
@@ -8,7 +33,7 @@ jenkins_admin_token: "{{ jenkins_admin_token_secret }}"
 
 # runSetupWizard=false is default
 # Add the CSP so we can embed galaxy on WF testing pages / display HTML
-jenkins_java_options: "--enable-future-java -Dhudson.model.ParametersAction.keepUndefinedParameters=true -Djenkins.install.runSetupWizard=false -Dhudson.model.DirectoryBrowserSupport.CSP=\\\"default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'unsafe-inline'; frame-src *;\\\""
+jenkins_java_options: "-Dhudson.model.ParametersAction.keepUndefinedParameters=true -Djenkins.install.runSetupWizard=false -Dhudson.model.DirectoryBrowserSupport.CSP=\\\"default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'unsafe-inline'; frame-src *;\\\""
 
 # Certbot
 certbot_auth_method: --webroot
@@ -17,10 +42,12 @@ certbot_share_key_users:
   - nginx
 
 certbot_post_renewal: |
-    systemctl restart nginx || true
+  systemctl restart nginx || true
 
 # NGINX
 nginx_enable_default_server: false
+nginx_servers:
+  - redirect-ssl
 nginx_ssl_servers:
   - build
 nginx_conf_http:
