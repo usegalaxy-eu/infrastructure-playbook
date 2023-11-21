@@ -1,0 +1,9 @@
+private_token: {{ pulsar_private_token }}
+staging_directory: /data/jwd01/pulsar_staging/
+tool_dependency_dir: /data/dnb01/galaxy_db/pulsar_dependencies/
+
+managers:
+  _default_:
+    type: queued_condor
+    condor_rm_cmd: "sudo {{ nspawn_condor_rm_command }}"
+    condor_submit_cmd: "sudo {{ nspawn_condor_submit_command }}"

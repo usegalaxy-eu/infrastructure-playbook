@@ -26,6 +26,9 @@ galaxy_jobconf:
     - id: pulsar_embedded
       load: galaxy.jobs.runners.pulsar:PulsarEmbeddedJobRunner
       pulsar_config: "{{ galaxy_config_dir }}/pulsar_app.yml"
+    - id: pulsar_embedded_secondary
+      load: galaxy.jobs.runners.pulsar:PulsarEmbeddedJobRunner
+      pulsar_config: "{{ galaxy_config_dir }}/pulsar_app_secondary.yml"
 
     - id: pulsar_eu_it01
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
