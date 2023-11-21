@@ -28,6 +28,17 @@ nspawn_config: |
   [Network]
   VirtualEthernet=no
 
+nspawn_galaxy_environment_file: "/etc/profile.d/galaxy.sh"
+nspawn_galaxy_environment_vars: |
+  HOME={{ galaxy_root }}
+  VIRTUAL_ENV={{ galaxy_venv_dir }}
+  PATH={{ galaxy_venv_dir }}/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin
+  DOCUTILSCONFIG=''
+  PYTHONPATH={{ galaxy_server_dir }}/lib/galaxy/jobs/rules
+  {% for var in galaxy_systemd_handler_env | split %}
+  {{ var }}
+  {% endfor %}
+
 nspawn_enable: false
 nspawn_start: false
 
@@ -61,7 +72,7 @@ nspawn_ssh_authorized_keys:
   - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDV7gfNbNN5O8vH6/tM/iOFXKBP2YKRHXOmdfV8ogvu9BdVV0IPmDzk2EooVpThDE1VMv1hz3811tvBhHRJ6IgNhVIV/61w/+RazQD/AU27X8bX+Hb9EQ/bP4DW+6ySd/z5vdDLzpH5dbiMhzPEDkXVsylUT+hkQnas6cHspDhHmtKQ5MWOgDe3D/IEudTDJQe8hxxaU4TaZUmFzn7eYp9HvuK8qW0yCy4NWOxJJHA+G5wSCyLuKnaKo4AitUIzSKF1AB94oq7b96KONhPxgRptAk4OYIUTdNFbrI5HDaSNzHLnF5FbjQvG+Eu6m5nY5yvJMogE+jiuWeIXCZTCFljg287FUo0ohmbZpd802L6VXun14VumRC+rRgPrvBALo/CsyCsPIoBSTKhVElxKVOcRjmTLNfrUZM0GQxqJhIvah8BV+JTExkipPwkrKTdMAWIXvCoehxV+WMpBWqtEEzAzEoqJpaiec7HfriwsHTGESZWAPYEbFjzbHXQZtqBkbOvtokPMRmTWfWKxaplCMN6ddJeeY6faorD0w/e6lszWES1Q1ieajiPKDy37UvybKKvPTk4o3MzyzYOS4c8HQj+jnGeR5Q3ETuyz4psLyOfuBtIrfOeuxV42rFDmkYM3IrrRR+F9oklFG6Ig8DVfgQEzSG36NkgvpF4OdFvigYqXvw== cloud@vgcn"
 nspawn_ssh_host_trust_container: yes
 
-nspawn_condor_systemd_run: "/usr/bin/systemd-run --uid={{ galaxy_user.uid }} --gid={{ galaxy_group.gid }} --pipe --quiet --machine {{ nspawn_name }}"
+nspawn_condor_systemd_run: "/usr/bin/systemd-run -p EnvironmentFile={{ nspawn_galaxy_environment_file }} --uid={{ galaxy_user.uid }} --gid={{ galaxy_group.gid }} --pipe --quiet --machine {{ nspawn_name }}"
 nspawn_condor_rm_command: "{{ nspawn_condor_systemd_run }} /usr/bin/condor_rm"
 nspawn_condor_ssh_to_job_command: "{{ nspawn_condor_systemd_run }} /usr/bin/condor_ssh_to_job"
 nspawn_condor_submit_command: "{{ nspawn_condor_systemd_run }} /usr/bin/condor_submit"
