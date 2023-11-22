@@ -28,7 +28,7 @@ nspawn_config: |
   [Network]
   VirtualEthernet=no
 
-nspawn_galaxy_environment_file: "/etc/profile.d/galaxy.sh"
+nspawn_galaxy_environment_file: "{{ galaxy_user.home }}/env"
 nspawn_galaxy_environment_vars: |
   HOME={{ galaxy_root }}
   VIRTUAL_ENV={{ galaxy_venv_dir }}

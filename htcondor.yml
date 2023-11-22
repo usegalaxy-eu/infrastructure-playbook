@@ -197,7 +197,7 @@
       ansible.builtin.copy:
         content: "{{ nspawn_galaxy_environment_vars }}"
         dest: "{{ (nspawn_image.stdout, nspawn_galaxy_environment_file | regex_replace('(\\/*)?(.*)', '\\2')) | path_join }}"
-        owner: root
+        owner: "{{ galaxy_user.name }}"
         group: "{{ galaxy_group.name }}"
         mode: "0440"
 
