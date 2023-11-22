@@ -11,6 +11,7 @@
       changed_when: true
   vars_files:
     - mounts/mountpoints.yml
+    - secret_group_vars/all.yml
     - secret_group_vars/htcondor-secondary-submit-host.yml
   pre_tasks:
     # Because it is already disabled for sn06 and this setup is needed just
@@ -22,19 +23,19 @@
   roles:
     - kysrpex.systemd_nspawn
   post_tasks:
+    - name: Get the location of the container image.
+      ansible.builtin.shell:
+        executable: /bin/bash
+        cmd: |
+          set -o pipefail
+          machinectl image-status htcondor | grep "Path: " | awk '{$1=$1};1' | cut -d' ' -f2
+      register: nspawn_image
+      changed_when: false
+
     - name: Configure the container's sshd.
       when: nspawn_ssh and (nspawn_ssh_config is defined or nspawn_ssh_config_path is defined)
       become: true
       block:
-        - name: Get the location of the container image.
-          ansible.builtin.shell:
-            executable: /bin/bash
-            cmd: |
-              set -o pipefail
-              machinectl image-status htcondor | grep "Path: " | awk '{$1=$1};1' | cut -d' ' -f2
-          register: nspawn_image
-          changed_when: false
-
         - name: Write the sshd configuration to sshd_config.
           ansible.builtin.lineinfile:
             path: "{{ (nspawn_image.stdout, nspawn_ssh_config_path | regex_replace('(\\/*)?(.*)', '\\2')) | path_join }}"
@@ -191,6 +192,14 @@
           - "{{ nspawn_condor_rm_command }} *"
           - "{{ nspawn_condor_ssh_to_job_command }} *"
           - "{{ nspawn_condor_submit_command }} *"
+
+    - name: Make the environment variables available to the Galaxy handlers also available to the container.
+      ansible.builtin.copy:
+        content: "{{ nspawn_galaxy_environment_vars }}"
+        dest: "{{ (nspawn_image.stdout, nspawn_galaxy_environment_file | regex_replace('(\\/*)?(.*)', '\\2')) | path_join }}"
+        owner: "{{ galaxy_user.name }}"
+        group: "{{ galaxy_group.name }}"
+        mode: "0440"
 
 - name: HTCondor cluster.
   hosts: htcondor:!sn06.galaxyproject.eu
