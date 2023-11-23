@@ -211,12 +211,48 @@
       ansible.builtin.service:
         name: condor
         state: reloaded
+  vars_files:
+    - secret_group_vars/db-main.yml  # PostgreSQL password (galaxyproject.gxadmin)
   pre_tasks:
     - name: Ensure findutils is installed.
       become: true
       ansible.builtin.package:
         name: findutils
         state: installed
+
+    - name: Ensure gxadmin dependencies are installed. (galaxyproject.gxadmin)
+      become: true
+      ansible.builtin.package:
+        name:
+          - git
+          - make
+          - postgresql
+        state: installed
+      when: htcondor_role_submit
+
+    - name: Ensure galaxy_jwd script dependencies are installed. (usegalaxy-eu.bashrc)
+      become: true
+      ansible.builtin.package:
+        name:
+          - python3-psycopg2
+          - python3-pyyaml
+        state: installed
+      when: htcondor_role_submit
+
+    - name: Ensure cron is installed.
+      become: true
+      ansible.builtin.package:
+        name:
+          - crontabs
+          - cronie-anacron
+      when: htcondor_role_submit
+
+    - name: Ensure crond is enabled and started.
+      ansible.builtin.service:
+        name: crond
+        enabled: true
+        state: started
+      when: htcondor_role_submit
 
     - name: Ensure the HTCondor configuration directory exists.
       become: true
@@ -250,4 +286,53 @@
       register: service_facts
   roles:
     - usegalaxy_eu.handy.os_setup
+    - name: usegalaxy-eu.bashrc
+      when: htcondor_role_submit
+    - name: hxr.postgres-connection
+      when: htcondor_role_submit
+    - name: galaxyproject.gxadmin
+      when: htcondor_role_submit
     - grycap.htcondor
+    - name: usegalaxy-eu.htcondor_release
+      when: htcondor_role_submit
+    - name: usegalaxy-eu.fix-stop-ITs
+      when: htcondor_role_submit
+  post_tasks:
+    - name: Add /usr/local/bin to Galaxy's PATH in bashrc file. (usegalaxy-eu.fix-stop-ITs)
+      when: htcondor_role_submit
+      lineinfile:
+        path: "{{ galaxy_user.home }}/.bashrc"
+        line: 'export PATH="/usr/local/bin:$PATH"'
+
+    - name: Issue HTCondor token for the Galaxy user. (usegalaxy-eu.fix-stop-ITs)
+      become: true
+      when: htcondor_role_submit
+      block:
+        - name: Ensure tokens directory exists.
+          ansible.builtin.file:
+            path: "{{ galaxy_user.home }}/.condor/tokens.d"
+            state: directory
+            owner: "{{ galaxy_user.name }}"
+            group: "{{ galaxy_group.name }}"
+            mode: "0700"
+
+        - name: Check if token already exists.
+          ansible.builtin.stat:
+            path: "{{ galaxy_user.home }}/.condor/tokens.d/{{ galaxy_user.name }}@{{ htcondor_server }}"
+          register: htcondor_token
+
+        - name: Issue token.
+          when: not htcondor_token.stat.exists
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: 'condor_token_create -identity {{ galaxy_user.name }}@{{ htcondor_server }}
+              > "{{ galaxy_user.home }}/.condor/tokens.d/{{ galaxy_user.name }}@{{ htcondor_server }}"'
+            creates: "{{ galaxy_user.home }}/.condor/tokens.d/{{ galaxy_user.name }}@{{ htcondor_server }}"
+
+        - name: Configure token permissions.
+          when: not htcondor_token.stat.exists
+          ansible.builtin.file:
+            path: "{{ galaxy_user.home }}/.condor/tokens.d/{{ galaxy_user.name }}@{{ htcondor_server }}"
+            owner: "{{ galaxy_user.name }}"
+            group: "{{ galaxy_group.name }}"
+            mode: "0400"
