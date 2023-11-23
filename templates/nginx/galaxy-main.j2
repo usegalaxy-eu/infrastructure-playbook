@@ -147,39 +147,18 @@ server {
 		root /opt;
 	}
 
-	location /static/welcome.html {
-		alias /opt/multisite-css/$host.html;
-	}
 
-	location /static {
-		alias {{ galaxy_server_dir }}/static;
+	location /static/vgcn {
 		expires 24h;
-		location /static/vgcn {
-				autoindex on;
-				alias /data/dnb01/vgcn/;
-		}
-		location /static/share {
-				autoindex on;
-				alias /data/dnb01/share/;
-		}
+		autoindex on;
+		alias /data/dnb01/vgcn/;
+	}
+	location /static/share {
+		expires 24h;
+		autoindex on;
+		alias /data/dnb01/share/;
 	}
 
-	location ~ /static/dist/base.css {
-		root /opt/multisite-css/;
-		try_files /$host.css /usegalaxy.eu.css =404;
-	}
-
-	location ~ /static/dist/hicexplorer.png {
-		alias /opt/multisite-css/hicexplorer.png;
-	}
-
-	location ~ /static/dist/annotation.png {
-		alias /opt/multisite-css/annotation.png;
-	}
-
-	location /robots.txt {
-		alias {{ galaxy_server_dir }}/static/robots.txt;
-	}
 
 	location ~ ^/plugins/(?<plug_type>[^/]+?)/((?<vis_d>[^/_]*)_?)?(?<vis_name>[^/]*?)/static/(?<static_file>.*?)$ {
 		alias /opt/galaxy/config/plugins/$plug_type/;
@@ -200,10 +179,6 @@ server {
 		proxy_http_version 1.1;
 		proxy_set_header Upgrade $http_upgrade;
 		proxy_set_header Connection "upgrade";
-	}
-
-	location /favicon.ico {
-		alias {{ galaxy_server_dir }}/static/favicon.ico;
 	}
 
 
