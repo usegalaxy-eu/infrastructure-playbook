@@ -20,6 +20,9 @@ nspawn_config: |
   {% for mount in jwd.values() if mount.name != "birna01" %}
   Bind={{ mount.path }}
   {% endfor %}
+  Bind=/data/dnb01/maintenance
+  Bind={{ galaxy_log_dir }}
+  BindReadOnly={{ galaxy_config_dir }}
 
   [Exec]
   NotifyReady=yes
