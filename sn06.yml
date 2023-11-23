@@ -258,6 +258,9 @@
         galaxy_manage_static_setup: true
         galaxy_manage_mutable_setup: true
         galaxy_manage_database: true
+        galaxy_manage_themes: true
+        galaxy_manage_subdomain_static: true
+        galaxy_manage_host_filters: false # test when themes work
         galaxy_fetch_dependencies: true
         galaxy_build_client: true
 
@@ -267,7 +270,6 @@
     - usegalaxy_eu.galaxy_systemd # Manage the Galaxy processes with SystemD
     - usegalaxy-eu.update-hosts # Update hosts list
     - usegalaxy_eu.gie_proxy # Setup the NodeJS proxy for GxIT
-    - usegalaxy-eu.subdomain-themes # Custom subdomain themes
     - usegalaxy_eu.fs_maintenance # Filesystems maintenance
     - usegalaxy-eu.logrotate # Rotate logs
     - usegalaxy-eu.error-pages # Copy the NGINX error pages
