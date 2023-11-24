@@ -328,6 +328,17 @@ destinations:
       require:
         - bsc-pulsar
 
+  pulsar_tubitak01_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_tubitak01
+    max_accepted_cores: 16
+    max_accepted_mem: 95
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    scheduling:
+      require:
+        - tubitak-pulsar
+
   #############################
   # LOCAL CONDOR DESTINATIONS #
   #############################
