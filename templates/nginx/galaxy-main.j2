@@ -236,6 +236,7 @@ server {
 
 	location /apollo_api/ {
 		proxy_pass http://apollo.internal.galaxyproject.eu/apollo_api/;
+		proxy_read_timeout 300;
 	}
 
 	location /beacon {
