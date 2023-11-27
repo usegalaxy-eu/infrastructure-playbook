@@ -206,6 +206,7 @@
       vars:
         galaxy_create_user: true
         galaxy_manage_clone: false
+        galaxy_manage_cleanup: false # we should use this
         galaxy_manage_download: false
         galaxy_manage_existing: true
         galaxy_manage_paths: true
@@ -214,6 +215,8 @@
         galaxy_manage_database: false
         galaxy_fetch_dependencies: false
         galaxy_build_client: false
+        galaxy_manage_systemd: false # switch to gravity(?)
+        galaxy_manage_gravity: false
     # The bashrc needs to be created for several later features.
     - usegalaxy-eu.bashrc
 
@@ -253,6 +256,7 @@
       vars:
         galaxy_create_user: true
         galaxy_manage_clone: true
+        galaxy_manage_cleanup: false # we should use this
         galaxy_manage_download: false
         galaxy_manage_existing: false
         galaxy_manage_static_setup: true
@@ -261,6 +265,8 @@
         galaxy_manage_themes: true
         galaxy_manage_subdomain_static: true
         galaxy_manage_host_filters: false # test when themes work
+        galaxy_manage_systemd: false # switch to gravity(?)
+        galaxy_manage_gravity: false
         galaxy_fetch_dependencies: true
         galaxy_build_client: true
 
