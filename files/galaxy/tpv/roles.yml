@@ -6,10 +6,7 @@ roles:
   storage-test*:
     params:
       object_store_id: "s3_netapp01"
-  Backofen:
-    scheduling:
-      require:
-        - condor-secondary
+
   rstudio-poweruser*:
     rules:
       - id: rstudio_poweruser
