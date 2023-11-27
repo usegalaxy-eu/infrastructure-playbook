@@ -363,8 +363,8 @@ def decode_path(
 
     # Pulsar embedded jobs uses the staging directory and this has a different
     # path structure
-    if job_runner_name == "pulsar_embedded":
-        jwd_path = f"{backends_dict[job_runner_name]}/{job_id}"
+    if job_runner_name.startswith("pulsar_embedded"):
+        jwd_path = f"{backends_dict['pulsar_embedded']}/{job_id}"
     else:
         jwd_path = (
             f"{backends_dict[metadata[0]]}/"
