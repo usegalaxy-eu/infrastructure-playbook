@@ -7,17 +7,15 @@ preferences:
         type: text
         required: False
 
-  # Crashes Galaxy job handlers, see
-  # https://github.com/galaxyproject/galaxy/issues/17079
-  #use_cached_job:
-  #  description: Do you want to be able to re-use previously run jobs ?
-  #  inputs:
-  #    - name: use_cached_job_checkbox
-  #      label: Do you want to be able to re-use  equivalent jobs ?
-  #      type: boolean
-  #      checked: false
-  #      value: false
-  #      help: If you select yes, you will be able to select for each tool and workflow run if you would like to use this feature.
+  use_cached_job:
+    description: Do you want to be able to re-use previously run jobs ?
+    inputs:
+      - name: use_cached_job_checkbox
+        label: Do you want to be able to re-use  equivalent jobs ?
+        type: boolean
+        checked: false
+        value: false
+        help: If you select yes, you will be able to select for each tool and workflow run if you would like to use this feature.
 
   localization:
     description: Localization
