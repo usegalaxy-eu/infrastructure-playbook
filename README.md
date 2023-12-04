@@ -1,3 +1,6 @@
+Come down we are ready :)
+
+
 # usegalaxy.eu infrastructure playbook
 
 Ansible playbook for managing UseGalaxy.EU infrastructure. For the playbook
