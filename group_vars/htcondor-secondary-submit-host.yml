@@ -38,6 +38,7 @@ nspawn_galaxy_environment_vars: |
   PATH={{ galaxy_venv_dir }}/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin
   DOCUTILSCONFIG=''
   PYTHONPATH={{ galaxy_server_dir }}/lib/galaxy/jobs/rules
+  LANG=en_US.UTF-8
   {% for var in galaxy_systemd_handler_env | split %}
   {{ var }}
   {% endfor %}
