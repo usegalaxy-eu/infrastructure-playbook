@@ -297,6 +297,8 @@
       when: htcondor_role_submit
     - name: usegalaxy-eu.fix-stop-ITs
       when: htcondor_role_submit
+    - name: usegalaxy-eu.remove-orphan-condor-jobs
+      when: htcondor_role_submit
   post_tasks:
     - name: Add /usr/local/bin to Galaxy's PATH in bashrc file. (usegalaxy-eu.fix-stop-ITs)
       when: htcondor_role_submit
