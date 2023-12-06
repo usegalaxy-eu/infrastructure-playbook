@@ -3,10 +3,14 @@
 # e.g. because we removed the jobs with `gxadmin mutate fail-job`
 # use --dry-run to only print the Galaxy ID and the Condor ID of the jobs that would
 # be removed
-
+source ~/.bashrc
+date
 # Get running jobs from database
 galaxy_running_jobs=(`gxadmin query queue-detail | grep running | awk '{print$3}'`)
 
+if [ "${#galaxy_running_jobs[@]}" -eq 0 ]; then
+    exit
+fi
 
 # Check if each result from condor queue matches an entry from the galaxy_running_jobs list
 condor_q -autoformat Cmd ClusterId JobStatus | grep " 2$" | cut -d " " -f1,2 | awk '{n = split($1, arr, "/"); print arr[n-1], $2}' |
