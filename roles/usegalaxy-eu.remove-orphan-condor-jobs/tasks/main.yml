@@ -7,14 +7,6 @@
     group: root
     mode: 0755
 
-- name: Create cron log directory
-  ansible.builtin.file:
-    state: directory
-    path: "{{ remove_orphan_jobs_log }}"
-    mode: 0755
-    owner: root
-    group: root
-
 - name: Create logfile
   ansible.builtin.file:
     state: touch
