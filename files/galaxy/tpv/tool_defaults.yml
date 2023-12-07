@@ -61,22 +61,19 @@ tools:
         fail: |
           Invalid 'Remote resources id' selected in the config menu under 'User -> Preferences -> Manage Information -> Use distributed compute resources'. Please reselect either 'default' or an appropriate remote resource then click 'Save' and rerun your job.
       - id: secondary_cluster
-        # Send a fraction of jobs to the secondary HTCondor cluster.
+        # Send all jobs to the secondary HTCondor cluster.
         if: True
         execute: |
-          from random import SystemRandom
-
           from tpv.core.entities import Tag, TagSetManager, TagType
 
-          if SystemRandom().random() < 0.45:
-              pulsar_tag = Tag(
-                  "scheduling",
-                  "condor-secondary",
-                  TagType.REQUIRE,
-              )
-              entity.tpv_tags = entity.tpv_tags.combine(
-                  TagSetManager(tags=[pulsar_tag])
-              )
+          pulsar_tag = Tag(
+              "scheduling",
+              "condor-secondary",
+              TagType.REQUIRE,
+          )
+          entity.tpv_tags = entity.tpv_tags.combine(
+              TagSetManager(tags=[pulsar_tag])
+          )
 
     rank: |
       final_destinations = helpers.weighted_random_sampling(candidate_destinations)
