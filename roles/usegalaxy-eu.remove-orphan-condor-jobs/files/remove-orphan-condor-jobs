@@ -10,7 +10,7 @@ IFS=$'\n'
 # Get running jobs from the HTCondor queue
 condor_running_jobs=(`condor_q -autoformat Cmd ClusterId JobStatus | grep " 2$" | cut -d " " -f1,2 | awk '{n = split($1, arr, "/"); print arr[n-1], $2}'`)
 # Get running jobs from the Galaxy database
-galaxy_running_jobs=(`gxadmin query queue-detail | grep running | awk '{print$3}'`)
+galaxy_running_jobs=(`gxadmin query queue-detail | grep -E "queued|running" | awk '{print$3}'`)
 
 # Safeguard: abort if no jobs seem to be known to Galaxy
 if [ "${#galaxy_running_jobs[@]}" -eq 0 ]; then
