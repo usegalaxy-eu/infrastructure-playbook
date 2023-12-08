@@ -1,4 +1,9 @@
 ---
+- name: Install dependencies
+  ansible.builtin.package:
+    name: jq
+    state: present
+
 - name: "Deploy remove-orphan-condor-jobs script"
   ansible.builtin.copy:
     src: remove-orphan-condor-jobs
