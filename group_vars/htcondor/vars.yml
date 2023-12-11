@@ -51,3 +51,18 @@ condor_extra: |
   JOB_START_DELAY = {{ htcondor_job_start_delay }}
   CLAIM_WORKLIFE = {{ htcondor_claim_worklife }}
   NEGOTIATOR_POST_JOB_RANK = {{ htcondor_negotiator_post_job_rank }}
+
+# Configuration of `usegalaxy_eu.handy.os_setup`.
+enable_create_user: true
+enable_remap_user: true
+handy_users:
+  - user_name: "{{ galaxy_user.name }}"
+    user_uid: "{{ galaxy_user.uid }}"
+    user_group: "{{ galaxy_group.name }}"
+    user_comment: "Galaxy useraccount"
+    user_create_home: "{{ galaxy_user.create_home }}"
+    user_home: "{{ galaxy_user.home }}"
+    user_shell: "{{ galaxy_user.shell }}"
+handy_groups:
+  - group_name: "{{ galaxy_group.name }}"
+    group_gid: "{{ galaxy_group.gid }}"

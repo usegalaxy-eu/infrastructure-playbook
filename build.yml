@@ -10,8 +10,17 @@
   pre_tasks:
     - name: Install Dependencies
       package:
-        name: ['policycoreutils-python']
+        enablerepo: crb
+        name: ["policycoreutils-python-utils", "python3-wheel-wheel"]
       become: true
+    - name: permit traffic in default zone for http and https service
+      ansible.posix.firewalld:
+        service: "{{ item }}"
+        permanent: true
+        state: enabled
+      loop:
+        - http
+        - https
   collections:
     - devsec.hardening
   roles:
@@ -21,7 +30,7 @@
     - hxr.admin-tools
     - influxdata.chrony
     - hxr.monitor-email
-    - linuxhq.yum_cron
+    - usegalaxy-eu.autoupdates
     - galaxyproject.nginx
     - ssh-host-sign
     # - hxr.autofs-format-n-mount
@@ -31,6 +40,6 @@
     - usegalaxy-eu.jenkins-ssh-key
     ## END CUSTOM
     - dj-wasabi.telegraf
-    # - os_hardening
+    - os_hardening
     # - nginx_hardening
-    # - ssh_hardening
+    - ssh_hardening

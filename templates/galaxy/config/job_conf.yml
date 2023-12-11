@@ -26,6 +26,9 @@ galaxy_jobconf:
     - id: pulsar_embedded
       load: galaxy.jobs.runners.pulsar:PulsarEmbeddedJobRunner
       pulsar_config: "{{ galaxy_config_dir }}/pulsar_app.yml"
+    - id: pulsar_embedded_secondary
+      load: galaxy.jobs.runners.pulsar:PulsarEmbeddedJobRunner
+      pulsar_config: "{{ galaxy_config_dir }}/pulsar_app_secondary.yml"
 
     - id: pulsar_eu_it01
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
@@ -214,6 +217,17 @@ galaxy_jobconf:
         amqp_consumer_timeout: 2.0
         amqp_publish_retry: "true"
         amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_tubitak01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_tubitak01:{{ rabbitmq_password_galaxy_tubitak01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_tubitak01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
   default_destination: tpv_dispatcher
   destinations:
     - id: local
@@ -249,10 +263,10 @@ galaxy_jobconf:
       value: "'148:00:00'"
     # Limited time for Interactive tools
     - type: "destination_user_concurrent_jobs"
-      value: "4"
+      value: "2"
       id: "interactive_pulsar"
     - type: "destination_user_concurrent_jobs"
-      value: "4"
+      value: "2"
       id: "interactive_pulsar_hi_mem"
     - type: "output_size"
       value: "'300GB'"
