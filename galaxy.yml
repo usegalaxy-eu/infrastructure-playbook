@@ -28,16 +28,15 @@
     - name: Install Dependencies
       package:
         name:
-          [
-            "git",
-            "postgresql",
-            "python3-psycopg2",
-            "python3-virtualenv",
-            "bc",
-            "python38",
-            "python38-devel",
-          ]
-      become: true
+          - git
+          - postgresql
+          - python3-psycopg2
+          - python3-virtualenv
+          - bc
+          - python38
+          - python38-devel
+        state: present
+
     - name: Set default version of Python
       alternatives:
         name: python
