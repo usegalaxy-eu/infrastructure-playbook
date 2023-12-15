@@ -33,6 +33,7 @@
   pre_tasks:
     # TODO: Use usegalaxy_eu.packages to manage role dependencies.
     - name: Install dependencies.
+      become: true
       ansible.builtin.package:
         name:
           - git
