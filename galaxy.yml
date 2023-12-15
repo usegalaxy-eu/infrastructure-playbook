@@ -31,6 +31,7 @@
             systemctl restart galaxy-workflow-scheduler@*
       listen: "restart galaxy"
   pre_tasks:
+    # TODO: Use usegalaxy_eu.packages to manage role dependencies.
     - name: Install Dependencies
       package:
         name:
