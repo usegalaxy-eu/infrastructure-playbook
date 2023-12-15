@@ -21,8 +21,14 @@
     - mounts/mountpoints.yml
   handlers:
     - name: Restart Galaxy
-      shell: |
-        cd /opt/galaxy/ && source /opt/galaxy/.bashrc  && /usr/bin/gxadmin gunicorn handler-restart && sudo -u galaxy /usr/bin/galaxy-sync-to-nfs && systemctl restart galaxy-handler@* && systemctl restart galaxy-workflow-scheduler@*
+      shell:
+        chdir: /opt/galaxy
+        cmd: |
+          source /opt/galaxy/.bashrc && \
+            /usr/bin/gxadmin gunicorn handler-restart && \
+            sudo -u galaxy /usr/bin/galaxy-sync-to-nfs && \
+            systemctl restart galaxy-handler@* && \
+            systemctl restart galaxy-workflow-scheduler@*
       listen: "restart galaxy"
   pre_tasks:
     - name: Install Dependencies
