@@ -64,7 +64,7 @@
         - "telegraf"
         - "stats" # special account to retrieve statistics from the server in read-only mode
 
-    - name: Set authorized SSH key (galaxy user)
+    - name: Set authorized SSH keys (galaxy user)
       ansible.posix.authorized_key:
         user: "{{ galaxy_user.name }}"
         state: present
@@ -78,7 +78,7 @@
         - https://github.com/gmauro.keys
         - "{{ galaxy_user_public_key }}"
 
-    - name: Set authorized SSH key (stats user)
+    - name: Set authorized SSH keys (stats user)
       ansible.posix.authorized_key:
         user: "stats"
         state: present
