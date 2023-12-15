@@ -48,9 +48,11 @@
       alternatives:
         name: python
         path: /usr/bin/python3
+
     - name: Disable SELinux
       selinux:
         state: disabled
+
   post_tasks:
     - name: Append some users to the systemd-journal group
       user:
@@ -61,6 +63,7 @@
         - "{{ galaxy_user.name }}"
         - "telegraf"
         - "stats" # special account to retrieve statistics from the server in read-only mode
+
     - name: Set authorized SSH key (galaxy user)
       ansible.posix.authorized_key:
         user: "{{ galaxy_user.name }}"
@@ -74,6 +77,7 @@
         - https://github.com/wm75.keys
         - https://github.com/gmauro.keys
         - "{{ galaxy_user_public_key }}"
+
     - name: Set authorized SSH key (stats user)
       ansible.posix.authorized_key:
         user: "stats"
