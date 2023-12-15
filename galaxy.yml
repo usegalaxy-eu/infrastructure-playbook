@@ -32,8 +32,8 @@
       listen: "restart galaxy"
   pre_tasks:
     # TODO: Use usegalaxy_eu.packages to manage role dependencies.
-    - name: Install Dependencies
-      package:
+    - name: Install dependencies.
+      ansible.builtin.package:
         name:
           - git
           - postgresql
