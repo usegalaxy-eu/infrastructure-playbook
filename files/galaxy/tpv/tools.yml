@@ -294,6 +294,13 @@ tools:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/instagraal/instagraal/.*:
     inherits: basic_docker_tool
+    gpus: 1
+    cores: 1
+    mem: 30
+    params:
+      docker_run_extra_arguments: ' --gpus all '
+    env:
+      GPU_AVAILABLE: 1
   toolshed.g2.bx.psu.edu/repos/ecology/cb_ivr/cb_ivr/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/perssond/basic_illumination/basic_illumination/.*:
