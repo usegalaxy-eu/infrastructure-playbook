@@ -1043,7 +1043,14 @@ tools:
       require:
         - singularity
 
-  toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/.*:
+  toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.6+galaxy2:
+    mem: 4
+    cores: 6
+    env:
+      GENEMARK_PATH: "/usr/local/tools/_conda/envs/__braker3@3.0.6/bin/genemark/bin/"
+      PROTHINT_PATH: "/usr/local/tools/_conda/envs/__braker3@3.0.6/bin/genemark/bin/gmes/ProtHint/bin/"
+
+  toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.3.*:   
     mem: 4
     cores: 6
     params:
