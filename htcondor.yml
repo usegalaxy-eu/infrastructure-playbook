@@ -182,6 +182,7 @@
       # Uses /etc/sudoers. Ideally this would be solved using what is requested
       # in this issue https://github.com/systemd/systemd/issues/10997, but the
       # issue is still open.
+      become: true
       community.general.sudoers:
         name: htcondor-nspawn
         user: "{{ galaxy_user.name }}"
@@ -194,6 +195,7 @@
           - "{{ nspawn_condor_submit_command }} *"
 
     - name: Make the environment variables available to the Galaxy handlers also available to the container.
+      become: true
       ansible.builtin.copy:
         content: "{{ nspawn_galaxy_environment_vars }}"
         dest: "{{ (nspawn_image.stdout, nspawn_galaxy_environment_file | regex_replace('(\\/*)?(.*)', '\\2')) | path_join }}"
