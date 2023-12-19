@@ -14,11 +14,12 @@ htcondor_password: "{{ vault_htcondor_password }}"
 
 # Settings specific to the `condor_config.local.j2` configuration file.
 htcondor_allow_write: "10.5.68.0/24, 132.230.223.0/24,132.230.153.0/28"
-htcondor_allow_negotiator: "132.230.223.239,$(CONDOR_HOST),$(ALLOW_WRITE)"
+htcondor_allow_negotiator: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }},$(CONDOR_HOST),$(ALLOW_WRITE)"
 htcondor_allow_administrator: "$(ALLOW_NEGOTIATOR)"
 htcondor_system_periodic_hold: "{{ 30 * 24 * 60 * 60 }}"
 htcondor_system_periodic_remove: "{{ 2 * 24 * 60 * 60 }}"
-# htcondor_network_interface -> Defined per-host in host_vars.
+htcondor_network_interface: "{{ ansible_default_ipv4.interface }}"
+# htcondor_network_interface -> Override it per-host in host_vars if necessary.
 htcondor_master_update_interval: 150
 htcondor_classad_lifetime: 300
 htcondor_negotiator_interval: 15
