@@ -114,6 +114,7 @@ ansible_group_priority=4
 
 [htcondor-secondary-submit]
 nspawn-htcondor.sn06.galaxyproject.eu ansible_host=127.0.0.1 ansible_port=2222 ansible_ssh_user=root ansible_ssh_common_args='-o HostKeyAlias=nspawn-htcondor.sn06.galaxyproject.eu -o ProxyCommand="ssh -W %h:%p -q centos@sn06.galaxyproject.eu"'
+maintenance.galaxyproject.eu
 
 [htcondor-secondary-submit:vars]
 ansible_group_priority=4
