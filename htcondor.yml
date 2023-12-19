@@ -279,7 +279,7 @@
         state: enabled
         permanent: true
         immediate: true
-      when: inventory_hostname != "nspawn-htcondor.sn06.galaxyproject.eu"
+      when: htcondor_role_manager
 
     - name: Check if HTCondor is running.
       ansible.builtin.service_facts:
