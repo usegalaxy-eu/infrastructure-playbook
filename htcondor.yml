@@ -214,7 +214,7 @@
   vars_files:
     - secret_group_vars/db-main.yml  # PostgreSQL password (galaxyproject.gxadmin)
   pre_tasks:
-    - name: Ensure findutils is installed.
+    - name: Ensure findutils is installed. (handy.os_setup)
       become: true
       ansible.builtin.package:
         name: findutils
