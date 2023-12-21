@@ -251,6 +251,7 @@
       when: htcondor_role_submit
 
     - name: Ensure crond is enabled and started.
+      become: true
       ansible.builtin.service:
         name: crond
         enabled: true
@@ -277,6 +278,7 @@
       notify: Reload HTCondor
 
     - name: Open HTCondor shared port in the firewall.
+      become: true
       ansible.posix.firewalld:
         port: "{{ htcondor_port }}/tcp"
         state: enabled
@@ -304,6 +306,7 @@
       when: htcondor_role_submit and inventory_hostname != "maintenance.galaxyproject.eu"
   post_tasks:
     - name: Add /usr/local/bin to Galaxy's PATH in bashrc file. (usegalaxy-eu.fix-stop-ITs)
+      become: true
       when: htcondor_role_submit
       lineinfile:
         path: "{{ galaxy_user.home }}/.bashrc"
