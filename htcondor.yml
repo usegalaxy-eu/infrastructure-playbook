@@ -297,11 +297,11 @@
       when: htcondor_role_submit
     - grycap.htcondor
     - name: usegalaxy-eu.htcondor_release
-      when: htcondor_role_submit
+      when: htcondor_role_submit and inventory_hostname != "maintenance.galaxyproject.eu"
     - name: usegalaxy-eu.fix-stop-ITs
-      when: htcondor_role_submit
+      when: htcondor_role_submit and inventory_hostname != "maintenance.galaxyproject.eu"
     - name: usegalaxy-eu.remove-orphan-condor-jobs
-      when: htcondor_role_submit
+      when: htcondor_role_submit and inventory_hostname != "maintenance.galaxyproject.eu"
   post_tasks:
     - name: Add /usr/local/bin to Galaxy's PATH in bashrc file. (usegalaxy-eu.fix-stop-ITs)
       when: htcondor_role_submit
