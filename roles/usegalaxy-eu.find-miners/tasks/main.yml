@@ -1,0 +1,74 @@
+---
+- name: Deploy Find Miners script
+  ansible.builtin.template:
+    src: find-miners.py
+    dest: /usr/local/bin/find-miners.py
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Create directories (find-miners)
+  ansible.builtin.file:
+    state: directory
+    path: "{{ item }}"
+    mode: 0755
+    owner: root
+    group: root
+  with_items:
+    - /var/log/find-miners
+    - /etc/find-miners
+
+- name: Read checksum files
+  ansible.builtin.set_fact:
+    crc_files: "{{ lookup('fileglob', 'files/find-miners/*.crc').split(',') | list }}"
+    sha_files: "{{ lookup('fileglob', 'files/find-miners/*.sha').split(',') | list }}"
+
+- name: Copy checksum files
+  ansible.builtin.copy:
+    mode: 0664
+    owner: root
+    group: root
+    src: "{{ item }}"
+    dest: /etc/find-miners
+  with_items:
+    - crc_files
+    - sha_files
+    
+
+- name: Create logfile (find-miners)
+  ansible.builtin.file:
+    state: touch
+    path: /var/log/find-miners/miners.log
+    mode: 0664
+    owner: "{{ galaxy_user.name }}"
+    group: "{{ galaxy_group.name }}"
+
+- name: Setup logrotate (find-miners)
+  ansible.builtin.copy:
+    content: |
+      /var/log/find-miners/miners.log
+      {
+          rotate 6
+          daily
+          missingok
+          dateext
+          copytruncate
+          notifempty
+          compress
+      }
+    dest: /etc/logrotate.d/find-miners
+    mode: 0664
+    owner: root
+    group: root
+
+- name: Add to cron (find-miners)
+  ansible.builtin.cron:
+    name: "Find Miners"
+    day: "*"
+    hour: "*/1"
+    minute: "0"
+    user: "{{ galaxy_user.name }}"
+    job: /usr/bin/python /usr/local/bin/find-miners.py --min-size 1 --max-size 10 \
+      --since 2 {% for crc in crc_files %} --crc32 {{ crc }} {% end for %} \
+      {% for sha in sha_files %} --sha1 {{ sha }} {% end for %} >> \
+      /var/log/find-miners/miners.log 2>&1
