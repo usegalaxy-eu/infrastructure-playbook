@@ -1,8 +1,8 @@
 ---
 - name: Deploy Find Miners script
   ansible.builtin.template:
-    src: find-miners.py
-    dest: /usr/local/bin/find-miners.py
+    src: find_miners.py
+    dest: /usr/local/bin/find_miners.py
     owner: root
     group: root
     mode: 0755
@@ -68,7 +68,8 @@
     hour: "*/1"
     minute: "0"
     user: "{{ galaxy_user.name }}"
-    job: /usr/bin/python /usr/local/bin/find-miners.py --min-size 1 --max-size 10 \
+    job: "source /home/{{ galaxy_user.home }}/.bashrc; /usr/bin/python \
+      /usr/local/bin/find-miners.py --min-size 1 --max-size 10 \
       --since 2 {% for crc in crc_files %} --crc32 {{ crc }} {% end for %} \
       {% for sha in sha_files %} --sha1 {{ sha }} {% end for %} >> \
       /var/log/find-miners/miners.log 2>&1
