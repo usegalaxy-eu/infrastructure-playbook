@@ -34,7 +34,10 @@ tools:
         fail: |
           Interactive tools require registration. Moreover, this tool has restricted access even for registered users. Please log-in or register on https://usegalaxy.eu/login and then request access by visiting https://usegalaxy.eu/gpu-request.
 
-
+  interactive_tool_napari:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
   interactive_tool_divand:
     inherits: interactive_tool
     cores: 1
