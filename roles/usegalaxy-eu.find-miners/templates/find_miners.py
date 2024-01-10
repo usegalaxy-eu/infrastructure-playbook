@@ -2,12 +2,16 @@
 # A command line script that iterates over the currently running jobs and stops them as well as logs the user,
 # when a file in the JWD matches to a list of hashes
 
-import galaxy_jwd as jwd
 import argparse
-import pathlib
-from tqdm import tqdm
-import time
 import os
+import pathlib
+import sys
+import time
+
+import galaxy_jwd
+from tqdm import tqdm
+
+CHECKSUM_FILE_ENV = "MALWARE_CHECKSUM_FILE"
 
 
 def make_parser() -> argparse.ArgumentParser:
@@ -89,35 +93,89 @@ def make_parser() -> argparse.ArgumentParser:
     return my_parser
 
 
-# might deserve it's own function in galaxy_jwd.py
-def setup_db_connection() -> jwd.Database:
-    if not os.environ.get("PGDATABASE"):
-        raise ValueError("Please set ENV PGDATABASE")
-    db_name = os.environ.get("PGDATABASE").strip()
+class Job:
+    def __init__(
+        self,
+        galaxy_id: int,
+        object_store_id: int,
+        user_id: int,
+        tool_id: str,
+        job_runner_name: str,
+        jwd=None,
+    ) -> None:
+        self.galaxy_id = galaxy_id
+        self.object_store_id = object_store_id
+        self.jwd = jwd
+        self.user_id = user_id
+        self.tool_id = tool_id
+        self.job_runner_name = job_runner_name
 
-    if not os.environ.get("PGUSER"):
-        raise ValueError("Please set ENV PGUSER")
-    db_user = os.environ.get("PGUSER").strip()
 
-    if not os.environ.get("PGHOST"):
-        raise ValueError("Please set ENV PGHOST")
-    db_host = os.environ.get("PGHOST").strip()
+class Malware:
+    """
+    Loads a yaml with the following schema
+        ---
+        class:
+          name:
+            version:
+              severity: [high, medium, low]
+              description: "optional info"
+              checksums:
+                crc32: <checksum crc32>
+                sha1: <checksum sha1>
+    """
 
-    # Check if ~/.pgpass file exists and is not empty
-    if (
-        not os.path.isfile(os.path.expanduser("~/.pgpass"))
-        or os.stat(os.path.expanduser("~/.pgpass")).st_size == 0
-    ):
-        raise ValueError(
-            "Please create a ~/.pgpass file in format: "
-            "<pg_host>:5432:*:<pg_user>:<pg_password>"
-        )
-    db_password = jwd.extract_password_from_pgpass(
-        pgpass_file=os.path.expanduser("~/.pgpass")
-    )
-    return jwd.Database(
-        dbname=db_name, dbuser=db_user, dbhost=db_host, dbpassword=db_password
-    )
+    def __init__(
+        self,
+        malware_class: str,
+        name: str,
+        version: str,
+        severity: str,
+        description: str,
+        crc32: str,
+        sha1: str,
+    ) -> None:
+        self.malware_class = malware_class
+        self.name = name
+        self.version = version
+        self.severity = severity
+        self.description = description
+        self.crc32 = crc32
+        self.sha1 = sha1
+
+
+def load_malware_info_from_env(env=CHECKSUM_FILE_ENV) -> dict:
+    if not os.environ.get(env):
+        raise ValueError(env)
+    malware_info = os.environ.get(env).strip()
+    return malware_info
+
+
+def construct_malware_list(malware: dict) -> [Malware]:
+    malware_list = []
+    for malware_class in malware:
+        for pkg in malware[malware_class]:
+            for version in malware[malware_class][pkg]:
+                malware_list.append(
+                    Malware(
+                        malware_class=malware_class,
+                        name=pkg,
+                        version=version,
+                        severity=malware[malware_class][pkg][version][
+                            "severity"
+                        ],
+                        description=malware[malware_class][pkg][version][
+                            "description"
+                        ],
+                        crc32=malware[malware_class][pkg][version][
+                            "checksums"
+                        ]["crc32"],
+                        sha1=malware[malware_class][pkg][version]["checksums"][
+                            "sha1"
+                        ],
+                    )
+                )
+    return malware_list
 
 
 class JWDGetter:
@@ -145,72 +203,103 @@ class JWDGetter:
             "GALAXY_PULSAR_APP_CONF"
         ).strip()
 
-        object_store_conf = jwd.get_object_store_conf_path(galaxy_config_file)
-        backends = jwd.parse_object_store(object_store_conf)
+        object_store_conf = galaxy_jwd.get_object_store_conf_path(
+            galaxy_config_file
+        )
+        backends = galaxy_jwd.parse_object_store(object_store_conf)
 
         # Add pulsar staging directory (runner: pulsar_embedded) to backends
-        backends["pulsar_embedded"] = jwd.get_pulsar_staging_dir(
+        backends["pulsar_embedded"] = galaxy_jwd.get_pulsar_staging_dir(
             galaxy_pulsar_app_conf
         )
         self.backends = backends
 
     # might deserve it's own function in galaxy_jwd.py
-    def get_jwd_path(self, job_id: int, db: jwd.Database):
-        object_store_id, job_runner_name = db.get_job_info(job_id)
-        jwd_path = pathlib.Path(
-            jwd.decode_path(
-                job_id, [object_store_id], self.backends, job_runner_name
+    def get_jwd_path(self, job: Job):
+        jwd = galaxy_jwd.decode_path(
+            job.galaxy_id,
+            [job.object_store_id],
+            self.backends,
+            job.job_runner_name,
+        )
+        return jwd
+
+
+class RunningJobDatabase(galaxy_jwd.Database):
+    def __init__(self):
+        if not os.environ.get("PGDATABASE"):
+            raise ValueError("Please set ENV PGDATABASE")
+        db_name = os.environ.get("PGDATABASE").strip()
+
+        if not os.environ.get("PGUSER"):
+            raise ValueError("Please set ENV PGUSER")
+        db_user = os.environ.get("PGUSER").strip()
+
+        if not os.environ.get("PGHOST"):
+            raise ValueError("Please set ENV PGHOST")
+        db_host = os.environ.get("PGHOST").strip()
+
+        # Check if ~/.pgpass file exists and is not empty
+        if (
+            not os.path.isfile(os.path.expanduser("~/.pgpass"))
+            or os.stat(os.path.expanduser("~/.pgpass")).st_size == 0
+        ):
+            raise ValueError(
+                "Please create a ~/.pgpass file in format: "
+                "<pg_host>:5432:*:<pg_user>:<pg_password>"
             )
+        db_password = galaxy_jwd.extract_password_from_pgpass(
+            pgpass_file=os.path.expanduser("~/.pgpass")
         )
-        if pathlib.Path(jwd_path).exists():
-            return jwd_path
+        super().__init__(
+            db_name,
+            db_user,
+            db_host,
+            db_password,
+        )
 
-
-class Job:
-    def __init__(
-        self,
-        galaxy_id: int,
-        condor_id: int,
-        jwd: pathlib.Path,
-        owner: str,
-        owner_id: int,
-    ) -> None:
-        galaxy_id = galaxy_id
-        condor_id = condor_id
-        jwd = jwd
-        owner = owner
-        owner_id = owner_id
-
-
-def get_running_jobs(self, tool: str) -> [Job]:
-    cur = self.conn.cursor()
-    cur.execute(
-        f"""
-            SELECT id, object_store_id, user
-            FROM job
-            WHERE state = 'running'
-            AND tool_id LIKE '%{tool}%'
-            AND object_store_id IS NOT NULL
+    def get_running_jobs(self, tool=None) -> [Job]:
+        query = f"""
+                SELECT id, object_store_id, tool_id, user_id, job_runner_name
+                FROM job
+                WHERE state = 'running'
+                AND object_store_id IS NOT NULL
+                AND user_id IS NOT NULL
             """
-    )
-    failed_jobs = cur.fetchall()
-    cur.close()
-    self.conn.close()
-
-    # Create a dictionary with job_id as key and object_store_id, and
-    # update_time as values
-    failed_jobs_dict = {}
-    for job_id, object_store_id, update_time in failed_jobs:
-        failed_jobs_dict[job_id] = [object_store_id, update_time]
-
-    if not failed_jobs_dict:
-        print(
-            f"No failed jobs older than {days} days found.",
-            file=sys.stderr,
-        )
-        sys.exit(1)
-
-    return failed_jobs_dict
+        cur = self.conn.cursor()
+        if len(tool) > 0:
+            query += f"AND tool_id LIKE '%{tool}%'"
+        cur.execute(query + ";")
+        running_jobs = cur.fetchall()
+        cur.close()
+        self.conn.close()
+        print(running_jobs)
+        # Create a dictionary with job_id as key and object_store_id, and
+        # update_time as values
+        if not running_jobs:
+            print(
+                f"No running jobs with tool_id like {tool} found.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        running_jobs_list = []
+        for (
+            job_id,
+            object_store_id,
+            tool_id,
+            user_id,
+            job_runner_name,
+        ) in running_jobs:
+            running_jobs_list.append(
+                Job(
+                    galaxy_id=job_id,
+                    object_store_id=object_store_id,
+                    tool_id=tool_id,
+                    user_id=user_id,
+                    job_runner_name=job_runner_name,
+                )
+            )
+        return running_jobs_list
 
 
 def main():
@@ -218,13 +307,23 @@ def main():
     Miner Finder's main function. Shows a status bar while processing the jobs found in Galaxy
     """
     args = make_parser().parse_args()
-    jobs = 100
-    db = setup_db_connection()
-    db.get_running_jobs
+    print(args.tool + "1")
+    jwd_getter = JWDGetter()
+    db = RunningJobDatabase()
     jobs = db.get_running_jobs(args.tool)
-    for i in tqdm(range(jobs), desc="Processing jobs…", ascii=False, ncols=75):
+    for job in tqdm(jobs, desc="Processing jobs…", ascii=False, ncols=75):
         time.sleep(0.01)
         # print(f"processing Job{i} of ")
+
+        jwd_path = jwd_getter.get_jwd_path(job)
+        if pathlib.Path(jwd_path).exists():
+            jwd_path = pathlib.Path(jwd_path)
+
+        else:
+            print(
+                f"JWD for Job {job.galaxy_id} found but does not exist in FS",
+                file=sys.stderr,
+            )
 
     print("Complete.")
 
