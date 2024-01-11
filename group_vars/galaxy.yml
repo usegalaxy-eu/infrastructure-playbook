@@ -1,5 +1,8 @@
 ---
-# packages
+# (hostname)
+hostname: "{{ inventory_hostname }}"
+
+# (usegalaxy_eu.handy.os_setup)
 software_groups_to_install:
   - admin
   - debug
@@ -9,15 +12,15 @@ software_groups_to_install:
   - terminals
   - utils
 
-# Docker
+# (geerlingguy.docker)
 docker_users:
   - galaxy
 
-# Autofs
-autofs_service.install: true
-autofs_service.enable: true
+# (usegalaxy-eu.autofs)
+autofs_service:
+  install: true
+  enable: true
 nfs_kernel_tuning: true
-
 autofs_mount_points:
   - data
   - gxtest
@@ -25,10 +28,10 @@ autofs_mount_points:
   - jwd
   - usrlocal
 
-# Miniconda role variables (galaxyproject.miniconda)
+# (galaxyproject.miniconda)
 conda_prefix: /opt/miniconda
 
-# fs-maintenance
+# (usegalaxy_eu.fs_maintenance)
 fsm_maintenance_dir: "/data/dnb01/maintenance"
 fsm_cron_tasks:
   docker:
@@ -52,10 +55,10 @@ fsm_cron_tasks:
     job: "{{ custom_telegraf_env }} /usr/bin/gxadmin galaxy cleanup 60"
     user: "{{ fsm_galaxy_user.username }}"
 
-# TIaaS
+# Training infrastructure as a service (galaxyproject.tiaas2)
 tiaas_virtualenv_python: "python3.8"
 
-# Telegraf
+# (dj-wasabi.telegraf)
 telegraf_agent_hostname: "{{ hostname }}"
 telegraf_agent_version: 1.17.2
 custom_telegraf_env: "/usr/bin/env GDPR_MODE=1 PGUSER={{ galaxy_user.name }} PGHOST={{ postgres_host }} GALAXY_ROOT={{ galaxy_server_dir }} GALAXY_CONFIG_FILE={{ galaxy_config_file }} GALAXY_LOG_DIR={{ galaxy_log_dir }} GXADMIN_PYTHON={{ galaxy_venv_dir }}/bin/python"
@@ -68,8 +71,7 @@ telegraf_plugins_extra:
       - metric_separator = "."
       - allowed_pending_messages = 10000
       - percentile_limit = 100
-
-  # Some custom galaxy monitoring stuff that can only run on the Galaxy server
+  # Some custom galaxy monitoring stuff that can only run on the Galaxy server.
   galaxy_lastlog:
     plugin: "exec"
     config:
@@ -85,7 +87,7 @@ telegraf_plugins_extra:
       - data_format = "influx"
       - interval = "1m"
 
-# Custom pip installer
+# (hxr.install-to-venv)
 pip_venv_path: "{{ galaxy_venv_dir }}"
 pip_install_dependencies:
   # celery and flower
@@ -109,10 +111,12 @@ pip_install_dependencies:
   - GitPython
   - python-openstackclient
 
+# This role is not in use. (hxr.exclude-repo)
 yum_exclude_repos:
   - condor*
   - npm*
 
+# No role seems to be using this variable. (namespace.no_role)
 all_yum_repositories:
   - name: galaxy_gpel
     description: Galaxy Packages for Enterprise Linux $releasever - $basearch
@@ -122,7 +126,48 @@ all_yum_repositories:
     retries: 1
     timeout: 10
 
-# Certbot
+# (usegalaxy-eu.certbot)
+# Galaxy servers have multiple CNAMEs that are important. Additionally, they
+# provide proxying for many of the other services run by Galaxy Europe.
+# These server_names are passed to certbot. They generally should not need
+# to be updated unless you add a new domain. They *only* work with the
+# route53 provider, so if we want to do usegalaxy.xy, it may require
+# refactoring / multiple certbot runs.
+#
+# The best way to expand them is to run the playbook, it will leave a message
+# with the command it would have run (look for `skipped, since
+# /etc/letsencrypt/renewal/usegalaxy.eu.conf exists`)
+#
+# Then take this command to the command line (root@sn04) and run it with
+# `--expand`. E.g. (DO NOT COPY PASTE (in case the config changes))
+#
+# $ /opt/certbot/bin/certbot certonly \
+#     --non-interactive --dns-route53 \
+#     -m security@usegalaxy.eu --agree-tos \
+#     -d 'usegalaxy.eu,*.usegalaxy.eu,galaxyproject.eu,*.galaxyproject.eu,*.interactivetoolentrypoint.interactivetool.usegalaxy.eu,*.interactivetoolentrypoint.interactivetool.live.usegalaxy.eu,*.interactivetoolentrypoint.interactivetool.test.usegalaxy.eu' \
+#     --expand
+# Saving debug log to /var/log/letsencrypt/letsencrypt.log
+# Credentials found in config file: ~/.aws/config
+# ....
+# IMPORTANT NOTES:
+#  - Congratulations! Your certificate and chain have been saved at:
+#
+# And you're done expanding the certs.
+#
+server_names:
+  - "usegalaxy.eu"
+  - "*.usegalaxy.eu"
+  - "galaxyproject.eu"
+  - "*.galaxyproject.eu"
+  - "*.interactivetoolentrypoint.interactivetool.usegalaxy.eu"
+  - "*.interactivetoolentrypoint.interactivetool.live.usegalaxy.eu"
+  - "*.interactivetoolentrypoint.interactivetool.test.usegalaxy.eu"
+  - "*.aqua.usegalaxy.eu"
+  - "*.interactivetoolentrypoint.interactivetool.aqua.usegalaxy.eu"
+  - "*.ecology.usegalaxy.eu"
+  - "*.interactivetoolentrypoint.interactivetool.ecology.usegalaxy.eu"
+  - "*.earth-system.usegalaxy.eu"
+  - "*.interactivetoolentrypoint.interactivetool.earth-system.usegalaxy.eu"
 certbot_virtualenv_package_name: python3-virtualenv
 certbot_dns_provider: route53
 certbot_auth_method: --standalone
@@ -132,18 +177,10 @@ certbot_post_renewal: |
 certbot_share_key_users:
   - nginx
 
-# AWS Credentials for certbot-route53
-aws_cli_credentials:
-  - access_key: "{{ aws_credentials.certbot.AWS_ACCESS_KEY }}"
-    secret_key: "{{ aws_credentials.certbot.AWS_SECRET_KEY }}"
-    homedir: /root
-    owner: root
-    group: root
-
-# rsync to nfs
+# (usegalaxy-eu.rsync-to-nfs)
 galaxy_nfs_location: /data/gxkey
 
-# Nginx
+# (usegalaxy-eu.nginx)
 nginx_servers:
   - redirect-ssl
 nginx_ssl_servers:
@@ -152,6 +189,7 @@ nginx_ssl_servers:
   - galaxy-main
   - galaxy-ie-main
   - galaxy-test-proxy
+nginx_conf_user: galaxy
 nginx_conf_http:
   client_max_body_size: 1g
   proxy_cache_path: "/tmp/nginx-cache levels=1:2 keys_zone=STATIC:10m inactive=24h  max_size=1g"
@@ -183,46 +221,41 @@ nginx_conf_http:
   gzip_min_length: 128
 nginx_enable_default_server: false
 nginx_flavor: ""
-
 # Nginx Letsencrypt bindings
 nginx_ssl_role: usegalaxy-eu.certbot
 nginx_conf_ssl_certificate: /etc/ssl/certs/fullchain.pem
 nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
 
-# Dynmotd
+# (usegalaxy-eu.dynmotd)
 dynmotd_custom:
   - name: Condor
     command: "condor_q -totals | tail -n 2"
 
-# TPV Script
+# (usegalaxy_eu.tpv_auto_lint)
 tpv_config_dir_name: total_perspective_vortex
 
-# CVMFS
+# (galaxyproject.cvmfs)
 cvmfs_role: client
 galaxy_cvmfs_repos_enabled: config-repo
-
 galaxy_cvmfs_server_urls:
   - domain: galaxyproject.org
     urls:
       - "http://cvmfs1-ufr0.galaxyproject.eu/cvmfs/@fqrn@"
 
-# SystemD
-galaxy_systemd_mode: "gunicorn"
+# (usegalaxy_eu.galaxy_systemd)
 galaxy_systemd_gunicorns: 3
 galaxy_systemd_gunicorn_workers: 4
 galaxy_systemd_gunicorn_timeout: 600
 galaxy_systemd_handlers: 6
 galaxy_systemd_workflow_schedulers: 3
-
 galaxy_systemd_gunicorn_env: "{{ apollo_env }}"
 galaxy_systemd_handler_env: "{{ galaxy_systemd_gunicorn_env }}"
 galaxy_systemd_workflow_scheduler_env: "{{ galaxy_systemd_gunicorn_env }}"
-
 galaxy_systemd_memory_limit: 120
 galaxy_systemd_memory_limit_handler: 30
 galaxy_systemd_memory_limit_workflow: 15
 
-# gie_proxy
+# Proxy managing access to running Galaxy interactive tools (usegalaxy_eu.gie_proxy).
 gie_proxy_dir: "{{ galaxy_root }}/gie-proxy/proxy"
 gie_proxy_git_version: main
 gie_proxy_setup_nodejs: nodeenv
@@ -234,26 +267,26 @@ gie_proxy_sessions_path: "{{ galaxy_mutable_data_dir }}/interactivetools_map.sql
 gie_proxy_port: 8800
 gie_proxy_verbose: true
 
-# gxadmin
+# (galaxyproject.gxadmin)
 postgres_user: galaxy
 postgres_host: sn05.galaxyproject.eu
 postgres_port: 5432
-
-# GRT
-galaxy_grt_exporter: galaxy
-galaxy_grt_uploader: galaxy
-
-# Influx Notifier
-gxadmin_influx_task_notifier: true
-gxadmin_influx_task_notifier_db: notifications
-
 # postgres_pass defined in secret_group_vars/all.yml
 gxadmin_commit: main
 gxadmin_dir: /opt/gxadmin
 gxadmin_bin_dir: /usr/bin
 gxadmin_force: true
+# these Influx Notifier variables seem not to be used by any role anymore
+gxadmin_influx_task_notifier: true
+gxadmin_influx_task_notifier_db: notifications
 
-# GALAXY
+# (usegalaxy-eu.grt-client)
+# TODO: Remove, seems to be not in use.
+galaxy_grt_exporter: galaxy
+galaxy_grt_uploader: galaxy
+
+# (galaxyproject.galaxy)
+galaxy_systemd_mode: "gunicorn"
 galaxy_group:
   name: galaxy
   gid: 999
@@ -271,10 +304,9 @@ galaxy_user:
   home: /opt/galaxy
   uid: 999
   shell: /bin/bash
-
-# Galaxy configuration files will be written with these permissions (mode argument to Ansible copy/template module)
+# Galaxy configuration files will be written with these permissions (mode
+# argument to Ansible copy/template module).
 galaxy_config_perms: 0644
-
 galaxy_root: /opt/galaxy
 galaxy_workflow_scheduler_count: "{{ galaxy_systemd_workflow_schedulers }}"
 galaxy_home_dir: /opt/galaxy
@@ -284,19 +316,15 @@ galaxy_shed_tools_dir: "{{ galaxy_root }}/shed_tools"
 galaxy_tool_data_path: "{{ galaxy_root }}/tool-data"
 __galaxy_shed_tools_dir: "{{ galaxy_shed_tools_dir }}"
 galaxy_backup_configfiles: false
-
 galaxy_server_dir: "{{ galaxy_root }}/server"
 galaxy_config_dir: "{{ galaxy_root }}/config"
 galaxy_venv_dir: "{{ galaxy_root }}/venv"
 galaxy_job_working_directory: "{{ galaxy_config['galaxy']['job_working_directory'] }}"
 ucsc_build_sites:
-
 galaxy_virtualenv_command: "{{ conda_prefix }}/envs/_galaxy_/bin/python -m venv --copies"
 #galaxy_virtualenv_python: "python3.6"
 galaxy_nonrepro_tools: "{{ galaxy_root }}/custom-tools"
 galaxy_nonrepro_commit: master
-
-
 # Custom override
 # Our galaxy_tool_dependency_dir is on NFS, and permissions are set in such a
 # way that they cannot be changed by the ansible connected user.
@@ -315,19 +343,14 @@ galaxy_dirs:
   - "{{ galaxy_log_dir }}"
   - "{{ galaxy_config_dir }}/total_perspective_vortex"
   - "{{ tpv_mutable_dir }}"
-
 galaxy_instance_hostname: usegalaxy.eu
 galaxy_config_style: yaml
-
 galaxy_repo: "https://github.com/usegalaxy-eu/galaxy.git"
 galaxy_commit_id: "release_23.1_europe"
 galaxy_force_checkout: true # discard any modified files
 #galaxy_admin_email_from: 'noreply@usegalaxy.eu'
-
 galaxy_singularity_images_cvmfs_path: "/cvmfs/singularity.galaxyproject.org/all/"
-
 galaxy_config: "{{ galaxy_config_hash }}"
-
 # Galaxy Subdomains
 galaxy_themes_ansible_file_path: /scratch/workspace/usegalaxy-eu/playbooks/sn06/files/galaxy/subdomains
 galaxy_themes_conf_path: files/galaxy/config/themes_conf.yml
@@ -370,8 +393,6 @@ galaxy_themes_subdomains:
   - name: earth-system
   - name: cancer
   - name: aqua
-
-
 galaxy_config_file_src_dir: files/galaxy
 galaxy_config_files:
   # TODO(bgruening): sync this with cvmfs? can we have ours be just a small additional builds.txt?
@@ -418,7 +439,6 @@ galaxy_config_files:
     dest: "{{ tpv_mutable_dir }}/interactive_tools.yml"
   - src: "{{ galaxy_config_file_src_dir }}/tpv/users.yml"
     dest: "{{ tpv_mutable_dir }}/users.yml"
-
   #- src: files/galaxy/config/job_resource_params_conf.xml
   #dest: "{{ galaxy_config['app:main']['job_resource_params_file'] }}"
   #- src: files/galaxy/config/pulsar_stampede_actions.yml
@@ -429,7 +449,6 @@ galaxy_config_files:
   #dest: "{{ galaxy_config_dir }}/pulsar_jetstream.yml"
   #- src: files/galaxy/config/pulsar_jetstream_actions.yml
   #dest: "{{ galaxy_config_dir }}/pulsar_jetstream_actions.yml"
-
 galaxy_config_template_src_dir: templates/galaxy
 galaxy_config_templates:
   - src: "{{ galaxy_config_template_src_dir }}/config/build_sites.yml.j2"
