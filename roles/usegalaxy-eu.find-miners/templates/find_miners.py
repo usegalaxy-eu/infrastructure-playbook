@@ -3,7 +3,11 @@
 # when a file in the JWD matches to a list of hashes
 
 import argparse
+import zlib
+import datetime
+import hashlib
 import os
+import yaml
 import pathlib
 import sys
 import time
@@ -11,17 +15,28 @@ import time
 import galaxy_jwd
 from tqdm import tqdm
 
-CHECKSUM_FILE_ENV = "MALWARE_CHECKSUM_FILE"
+CHECKSUM_FILE_ENV = "MALWARE_LIB"
+
+
+def convert_arg_to_byte(mb: str) -> int:
+    return int(mb) * 1024 * 1024
 
 
 def make_parser() -> argparse.ArgumentParser:
     my_parser = argparse.ArgumentParser(
         prog="Miner Finder",
         description="""
-                Takes paths to CRC32 and (optionally) SHA1 hashfiles as arguments,
-                searches in currently used JWDs for matching files
-                and stops or reports the jobs and users.
-
+            Takes paths to CRC32 and (optionally) SHA1 hashfiles as arguments,
+            searches in currently used JWDs for matching files
+            and stops or reports the jobs and users.
+            
+            WARNING:
+            Be careful with how you generate the CRC32 hashes:
+            There are multiple algorithms, this script is using the following:
+            name: CRC-32/CKSUM width=32 poly=0x04c11db7 init=0x00000000
+            refin=false refout=false xorout=0xffffffff check=0x765e7680 
+            residue=0xc704dd7b
+            You should get this when using the cksum command on POSIX systems.
 
             The following ENVs (same as gxadmin's) should be set:
                 GALAXY_CONFIG_FILE: Path to the galaxy.yml file
@@ -35,19 +50,18 @@ def make_parser() -> argparse.ArgumentParser:
             """,
     )
 
-    my_parser.add_argument(
-        "crc32",
-        help="Path to a CRC32 checksum file",
-        nargs="+",
-        type=argparse.FileType("r"),
-    )
+    # my_parser.add_argument(
+    #     "malware-library",
+    #     help="Path to a malware library",
+    #     nargs="+",
+    #     type=argparse.FileType("r"),
+    # )
 
     my_parser.add_argument(
-        "--sha1",
-        help="Path to an additional SHA1 checksum file (optional for more precision). \
-            SHA1 is only calculated when CRC32 matches",
-        nargs="+",
-        type=argparse.FileType("r"),
+        "--chunksize",
+        help="Chunksize in MiB for hashing the files in JWDs, defaults to 100 MiB",
+        type=convert_arg_to_byte,
+        default=100,
     )
 
     my_parser.add_argument(
@@ -90,6 +104,13 @@ def make_parser() -> argparse.ArgumentParser:
         type=str,
         default="",
     )
+    my_parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Report not only the job and user ID that matched, but also Path of matched file and malware info. \
+            If set, the scanning process will quit after the first match in a JWD to save resources.",
+    )
     return my_parser
 
 
@@ -99,6 +120,7 @@ class Job:
         galaxy_id: int,
         object_store_id: int,
         user_id: int,
+        user_name: str,
         tool_id: str,
         job_runner_name: str,
         jwd=None,
@@ -107,8 +129,12 @@ class Job:
         self.object_store_id = object_store_id
         self.jwd = jwd
         self.user_id = user_id
+        self.user_name = user_name
         self.tool_id = tool_id
         self.job_runner_name = job_runner_name
+
+    def report_id_and_user_name(self) -> str:
+        return f"{self.galaxy_id} {self.user_name}"
 
 
 class Malware:
@@ -123,6 +149,7 @@ class Malware:
               checksums:
                 crc32: <checksum crc32>
                 sha1: <checksum sha1>
+    Can also hold a path to a matched file
     """
 
     def __init__(
@@ -144,35 +171,91 @@ class Malware:
         self.sha1 = sha1
 
 
-def load_malware_info_from_env(env=CHECKSUM_FILE_ENV) -> dict:
+def load_malware_lib_from_env(env=CHECKSUM_FILE_ENV) -> dict:
     if not os.environ.get(env):
         raise ValueError(env)
-    malware_info = os.environ.get(env).strip()
-    return malware_info
+    malware_lib_path = os.environ.get(env).strip()
+    with open(malware_lib_path, "r") as malware_yaml:
+        malware_lib = yaml.safe_load(malware_yaml)
+    return malware_lib
 
 
-def construct_malware_list(malware: dict) -> [Malware]:
+def digest_file_crc32(chunksize: int, path: pathlib.Path) -> int:
+    crc32 = 0
+    with open(path, "rb") as specimen:
+        while chunk := specimen.read(chunksize):
+            crc32 = zlib.crc32(chunk, crc32)
+    return crc32
+
+
+def digest_file_sha1(chunksize: int, path: pathlib.Path) -> str:
+    sha1 = hashlib.sha1()
+    with open(path, "rb") as specimen:
+        while chunk := specimen.read(chunksize):
+            sha1.update(chunk)
+    return sha1.hexdigest()
+
+
+def scan_file_for_malware(
+    chunksize: int, file: pathlib.Path, lib: [Malware]
+) -> [Malware]:
+    """
+    Returning a list of Malware, because
+    it could potentially happen (even if it should not),
+    that the same signature was added to the library more than once
+    under different names or, extrem unlikely,
+    a hash collision occurs.
+    Args:
+        chunksize: Chunksize in bytes
+        file: pathlib.Path to the file to be checked
+        lib: a list ob Malware objects with CRC32 and SHA-1 sums
+    Returns:
+        A list of Malware objects with matching CRC32 AND SHA-1 sums
+    """
+    matches = []
+    for malware in lib:
+        if malware.crc32 == digest_file_crc32(chunksize, file):
+            if malware.sha1 == digest_file_sha1(chunksize, file):
+                matches += malware
+    return matches
+
+
+def report_matching_malware(
+    job: Job, malware: Malware, path: pathlib.Path
+) -> str:
+    """
+    Create log line depending on verbosity
+    """
+    return f"{datetime.datetime.now()} {job.user_name} {job.galaxy_id} \
+        {malware.malware_class} {malware.name} {malware.version} {malware.path}"
+
+
+def construct_malware_list(malware_yaml: dict) -> [Malware]:
+    """
+    creates a flat list of malware objects, that hold all info
+    The nested structure in yaml is for better optical structuring
+    """
     malware_list = []
-    for malware_class in malware:
-        for pkg in malware[malware_class]:
-            for version in malware[malware_class][pkg]:
+    for malware_class in malware_yaml:
+        for pkg in malware_yaml[malware_class]:
+            for version in malware_yaml[malware_class][pkg]:
                 malware_list.append(
                     Malware(
                         malware_class=malware_class,
                         name=pkg,
                         version=version,
-                        severity=malware[malware_class][pkg][version][
+                        severity=malware_yaml[malware_class][pkg][version][
                             "severity"
                         ],
-                        description=malware[malware_class][pkg][version][
+                        description=malware_yaml[malware_class][pkg][version][
                             "description"
                         ],
-                        crc32=malware[malware_class][pkg][version][
+                        crc32=malware_yaml[malware_class][pkg][version][
                             "checksums"
                         ]["crc32"],
-                        sha1=malware[malware_class][pkg][version]["checksums"][
-                            "sha1"
-                        ],
+                        sha1=malware_yaml[malware_class][pkg][version][
+                            "checksums"
+                        ]["sha1"],
                     )
                 )
     return malware_list
@@ -260,7 +343,7 @@ class RunningJobDatabase(galaxy_jwd.Database):
 
     def get_running_jobs(self, tool=None) -> [Job]:
         query = f"""
-                SELECT id, object_store_id, tool_id, user_id, job_runner_name
+                SELECT id, object_store_id, tool_id, user_id, user, job_runner_name
                 FROM job
                 WHERE state = 'running'
                 AND object_store_id IS NOT NULL
@@ -288,6 +371,7 @@ class RunningJobDatabase(galaxy_jwd.Database):
             object_store_id,
             tool_id,
             user_id,
+            user_name,
             job_runner_name,
         ) in running_jobs:
             running_jobs_list.append(
@@ -296,6 +380,7 @@ class RunningJobDatabase(galaxy_jwd.Database):
                     object_store_id=object_store_id,
                     tool_id=tool_id,
                     user_id=user_id,
+                    user_name=user_name,
                     job_runner_name=job_runner_name,
                 )
             )
@@ -307,9 +392,9 @@ def main():
     Miner Finder's main function. Shows a status bar while processing the jobs found in Galaxy
     """
     args = make_parser().parse_args()
-    print(args.tool + "1")
     jwd_getter = JWDGetter()
     db = RunningJobDatabase()
+    malware_library = construct_malware_list(load_malware_lib_from_env())
     jobs = db.get_running_jobs(args.tool)
     for job in tqdm(jobs, desc="Processing jobs…", ascii=False, ncols=75):
         time.sleep(0.01)
@@ -317,7 +402,24 @@ def main():
 
         jwd_path = jwd_getter.get_jwd_path(job)
         if pathlib.Path(jwd_path).exists():
-            jwd_path = pathlib.Path(jwd_path)
+            job.jwd = pathlib.Path(jwd_path)
+            for file in job.jwd.rglob("*", recursive=True):
+                matching_malware = scan_file_for_malware(
+                    chunksize=args.chunksize, file=file, lib=malware_library
+                )
+                if len(matching_malware) > 0:
+                    if args.verbose:
+                        for malware in matching_malware:
+                            print(
+                                report_matching_malware(
+                                    job=job,
+                                    malware=malware,
+                                    path=file,
+                                )
+                            )
+                    else:
+                        print(job.report_id_and_user_name())
+                        break
 
         else:
             print(
