@@ -171,6 +171,14 @@ class Malware:
         self.sha1 = sha1
 
 
+def all_files_in_dir(dir: pathlib.Path) -> [pathlib.Path]:
+    files = []
+    for root, _, filenames in os.walk(dir):
+        for filename in filenames:
+            files.append(os.path.join(root, filename))
+    return files
+
+
 def load_malware_lib_from_env(env=CHECKSUM_FILE_ENV) -> dict:
     if not os.environ.get(env):
         raise ValueError(env)
@@ -403,7 +411,7 @@ def main():
         jwd_path = jwd_getter.get_jwd_path(job)
         if pathlib.Path(jwd_path).exists():
             job.jwd = pathlib.Path(jwd_path)
-            for file in job.jwd.rglob("*", recursive=True):
+            for file in all_files_in_dir(job.jwd):
                 matching_malware = scan_file_for_malware(
                     chunksize=args.chunksize, file=file, lib=malware_library
                 )
