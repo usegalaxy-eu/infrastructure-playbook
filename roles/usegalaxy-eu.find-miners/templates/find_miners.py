@@ -3,16 +3,16 @@
 # when a file in the JWD matches to a list of hashes
 
 import argparse
-import zlib
 import datetime
 import hashlib
 import os
-import yaml
 import pathlib
 import sys
 import time
+import zlib
 
 import galaxy_jwd
+import yaml
 from tqdm import tqdm
 
 CHECKSUM_FILE_ENV = "MALWARE_LIB"
@@ -21,7 +21,7 @@ CURRENT_TIME = int(time.time())
 
 
 def convert_arg_to_byte(mb: str) -> int:
-    return int(mb) * 1024 * 1024
+    return int(mb) << 20
 
 
 def convert_arg_to_seconds(hours: str) -> int:
@@ -32,17 +32,24 @@ def make_parser() -> argparse.ArgumentParser:
     my_parser = argparse.ArgumentParser(
         prog="Miner Finder",
         description="""
-            Takes paths to CRC32 and (optionally) SHA1 hashfiles as arguments,
-            searches in currently used JWDs for matching files
-            and stops or reports the jobs and users.
-            
+            Loads a yaml malware library with CRC32 and SHA1 hashes as arguments
+            from the environment variable "MALWARE_LIB",
+            searches in JWDs of currently running jobs for matching files
+            and reports jobs, users and malware details if specified.
+            Malware library file has the following schema:
+                class:
+                    name:
+                        version:
+                            severity: [high, medium, low]
+                            description: "optional info"
+                            checksums:
+                                crc32: <checksum crc32, gzip algorithm, integer representation>
+                                sha1: <checksum sha1, hex representation>
             WARNING:
             Be careful with how you generate the CRC32 hashes:
-            There are multiple algorithms, this script is using the following:
-            name: CRC-32/CKSUM width=32 poly=0x04c11db7 init=0x00000000
-            refin=false refout=false xorout=0xffffffff check=0x765e7680 
-            residue=0xc704dd7b
-            You should get this when using the cksum command on POSIX systems.
+            There are multiple algorithms, this script is using the one specified by IEEE 802.3
+            You should get this when using the gzip command on POSIX systems
+            and convert it to integer representation.
 
             The following ENVs (same as gxadmin's) should be set:
                 GALAXY_CONFIG_FILE: Path to the galaxy.yml file
@@ -54,8 +61,10 @@ def make_parser() -> argparse.ArgumentParser:
             We also need a ~/.pgpass file (same as gxadmin's) in format:
                 <pg_host>:5432:*:<pg_user>:<pg_password>
             """,
+        formatter_class=argparse.RawTextHelpFormatter,
     )
 
+    # Could be added to override env
     # my_parser.add_argument(
     #     "malware-library",
     #     help="Path to a malware library",
@@ -70,19 +79,12 @@ def make_parser() -> argparse.ArgumentParser:
         default=100,
     )
 
-    my_parser.add_argument(
-        "--remove-jobs",
-        action="store_true",
-        help="Removes the jobs from condor and fails them in Galaxy",
-    )
-
-    my_parser.add_argument(
-        "--block-users",
-        help="CAUTION: \
-            This flag automatically removes users owning matching jobs using Bioblend!",
-        metavar="GALAXY_CRED_FILE",
-        type=argparse.FileType("r"),
-    )
+    # not yet implemented
+    #  my_parser.add_argument(
+    #      "--remove-jobs",
+    #      action="store_true",
+    #      help="Removes the jobs from condor and fails them in Galaxy",
+    #  )
 
     my_parser.add_argument(
         "--min-size",
@@ -119,6 +121,13 @@ def make_parser() -> argparse.ArgumentParser:
         help="Report not only the job and user ID that matched, but also Path of matched file and malware info. \
             If set, the scanning process will quit after the first match in a JWD to save resources.",
     )
+    my_parser.add_argument(
+        "-i",
+        "--interactive",
+        action="store_true",
+        help="Show progress bar. Leave unset for cleaner logs and slightly higher performance",
+    )
+
     return my_parser
 
 
@@ -278,7 +287,7 @@ def report_matching_malware(
     Create log line depending on verbosity
     """
     return f"{datetime.datetime.now()} {job.user_name} {job.galaxy_id} \
-        {malware.malware_class} {malware.name} {malware.version} {malware.path}"
+{malware.malware_class} {malware.name} {malware.version} {path}"
 
 
 def construct_malware_list(malware_yaml: dict) -> [Malware]:
@@ -407,7 +416,6 @@ class RunningJobDatabase(galaxy_jwd.Database):
         running_jobs = cur.fetchall()
         cur.close()
         self.conn.close()
-        print(running_jobs)
         # Create a dictionary with job_id as key and object_store_id, and
         # update_time as values
         if not running_jobs:
@@ -447,7 +455,21 @@ def main():
     db = RunningJobDatabase()
     malware_library = construct_malware_list(load_malware_lib_from_env())
     jobs = db.get_running_jobs(args.tool)
-    for job in tqdm(jobs, desc="Processing jobs…", ascii=False, ncols=75):
+    if args.interactive:
+        if args.verbose:
+            print(
+                "TIMESTAMP GALAXY_USER JOB_ID \
+MALWARE_CLASS MALWARE MALWARE_VERSION PATH"
+            )
+        else:
+            print("GALAXY_USER JOB_ID")
+    for job in tqdm(
+        jobs,
+        disable=(not args.interactive),
+        desc="Processing jobs…",
+        ascii=False,
+        ncols=75,
+    ):
         jwd_path = jwd_getter.get_jwd_path(job)
         if pathlib.Path(jwd_path).exists():
             job.jwd = pathlib.Path(jwd_path)
