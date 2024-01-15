@@ -7,15 +7,21 @@
 #       severity: [high, medium, low]
 #       description: "optional info"
 #       checksums:
-#         crc32: <checksum crc32>
-#         sha1: <checksum sha1>
+#         crc32: <checksum crc32, gzip algorithm, integer representation>
+#         sha1: <checksum sha1, hex representation>
+# Algorithm details for CRC32
+# width=32 poly=0x04c11db7 init=0x00000000 refin=false
+# refout=false xorout=0xffffffff check=0x765e7680
+# residue=0xc704dd7b name="CRC-32/CKSUM"
+# can be achieved using this bash command:
+# gzip -1 -c /path/to/file | tail -c8 | hexdump -n4 -e '"%u"'
 miner:
   sse:
     "2.1":
       severity: high
       description: ""
       checksums:
-        crc32: f4d28788
+        crc32: 4107437960
         sha1: a0e9300df55d96d41323767b9ca939c8d887d30e
 tunnel:
   ngrok:
@@ -23,13 +29,13 @@ tunnel:
       severity: high
       description: ""
       checksums:
-        crc32: 61a96a22
+        crc32: 1638492706
         sha1: e9201153b423ca7c5268afecb5487a1f9ed28081
 non_malicious_packages:
   chromium:
-    unknown:
+    beta_121.0.6167.57-1:
       severity: medium
       description: ""
       checksums:
-        crc32: 168c61ac
-        sha1: 47911f53b106f4e9c5f093ac08037bb9ab828b55
+        crc32: 1183689884
+        sha1: 2209fbdacaa937502b7aa9e4d5babec20e56dfa2
