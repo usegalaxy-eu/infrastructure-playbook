@@ -733,6 +733,10 @@ tools:
       - if: input_size >= 25
         fail: Too much data, please check if the input is correct.
 
+  toolshed.g2.bx.psu.edu/repos/iuc/quast/quast/.*:
+    cores: 10
+    mem: 80
+
   toolshed.g2.bx.psu.edu/repos/devteam/freebayes/freebayes/.*:
     # see https://github.com/usegalaxy-eu/infrastructure-playbook/pull/881 for some numbers
     cores: 10
