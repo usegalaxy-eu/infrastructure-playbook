@@ -17,9 +17,15 @@ from tqdm import tqdm
 
 CHECKSUM_FILE_ENV = "MALWARE_LIB"
 
+CURRENT_TIME = int(time.time())
+
 
 def convert_arg_to_byte(mb: str) -> int:
     return int(mb) * 1024 * 1024
+
+
+def convert_arg_to_seconds(hours: str) -> int:
+    return int(hours) * 60 * 60
 
 
 def make_parser() -> argparse.ArgumentParser:
@@ -82,7 +88,7 @@ def make_parser() -> argparse.ArgumentParser:
         "--min-size",
         metavar="MIN_SIZE_MB",
         help="Minimum filesize im MB to limit the files to scan.",
-        type=int,
+        type=convert_arg_to_byte,
     )
 
     my_parser.add_argument(
@@ -90,11 +96,13 @@ def make_parser() -> argparse.ArgumentParser:
         metavar="MAX_SIZE_MB",
         help="Maximum filesize im MB to limit the files to scan. \
             CAUTION: Not setting this value can lead to very long computation times",
-        type=int,
+        type=convert_arg_to_byte,
     )
 
     my_parser.add_argument(
-        "--since", help="Access time in hours backwards from now", type=int
+        "--since",
+        help="Access time in hours backwards from now",
+        type=convert_arg_to_seconds,
     )
 
     my_parser.add_argument(
@@ -171,11 +179,42 @@ class Malware:
         self.sha1 = sha1
 
 
-def all_files_in_dir(dir: pathlib.Path) -> [pathlib.Path]:
+def file_accessed_in_range(
+    file_stat: os.stat_result, since: int, now=CURRENT_TIME
+) -> bool:
+    if since is not None:
+        if now - since > file_stat.st_atime:
+            return False
+    return True
+
+
+def file_in_size_range(
+    file_stat: os.stat_result, min_size=None, max_size=None
+) -> bool:
+    if min_size is not None:
+        if file_stat.st_size < min_size:
+            return False
+    if max_size is not None:
+        if file_stat.st_size > max_size:
+            return False
+    return True
+
+
+def all_files_in_dir(dir: pathlib.Path, args) -> [pathlib.Path]:
+    """
+    Gets all files of given directory and its subdirectories and
+    appends file to a list of pathlib.Path objects, if atime
+    and the filesize is within the specified range.
+    """
     files = []
     for root, _, filenames in os.walk(dir):
         for filename in filenames:
-            files.append(os.path.join(root, filename))
+            file = pathlib.Path(os.path.join(root, filename))
+            file_stat = file.stat()
+            if file_in_size_range(
+                file_stat, args.min_size, args.max_size
+            ) and file_accessed_in_range(file_stat, args.since):
+                files.append(file)
     return files
 
 
@@ -221,10 +260,14 @@ def scan_file_for_malware(
         A list of Malware objects with matching CRC32 AND SHA-1 sums
     """
     matches = []
+    crc32 = digest_file_crc32(chunksize, file)
+    sha1 = None
     for malware in lib:
-        if malware.crc32 == digest_file_crc32(chunksize, file):
-            if malware.sha1 == digest_file_sha1(chunksize, file):
-                matches += malware
+        if malware.crc32 == crc32:
+            if sha1 is None:
+                sha1 = digest_file_sha1(chunksize, file)
+            if malware.sha1 == sha1:
+                matches.append(malware)
     return matches
 
 
@@ -405,17 +448,15 @@ def main():
     malware_library = construct_malware_list(load_malware_lib_from_env())
     jobs = db.get_running_jobs(args.tool)
     for job in tqdm(jobs, desc="Processing jobs…", ascii=False, ncols=75):
-        time.sleep(0.01)
-        # print(f"processing Job{i} of ")
-
         jwd_path = jwd_getter.get_jwd_path(job)
         if pathlib.Path(jwd_path).exists():
             job.jwd = pathlib.Path(jwd_path)
-            for file in all_files_in_dir(job.jwd):
+            for file in all_files_in_dir(job.jwd, args):
                 matching_malware = scan_file_for_malware(
                     chunksize=args.chunksize, file=file, lib=malware_library
                 )
                 if len(matching_malware) > 0:
+                    print("\n")
                     if args.verbose:
                         for malware in matching_malware:
                             print(
@@ -438,13 +479,13 @@ def main():
     print("Complete.")
 
 
-# get a list of Galaxy IDs of currently running interactive jobs
+# ✅ get a list of Galaxy IDs of currently running interactive jobs
 # for each job
-# get a list of all files (recursively) smaller than 10MB in that JWD using change_to_jwd.py
-# for each file
-# hash that file with crc32
-# compare hash to given list of hashes provided and if it matches,
-# also hash with md5 and if that matches
+# ✅ get a list of all files (recursively) smaller than 10MB in that JWD using change_to_jwd.py
+#  for each file
+# ✅ hash that file with crc32
+# ✅ compare hash to given list of hashes provided and if it matches,
+# ✅ also hash with md5 and if that matches
 # - extract the condor_id from file
 # - gxadmin mutate fail-job $job
 # - gxadmin report job-info $job
