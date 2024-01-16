@@ -116,6 +116,40 @@ preferences:
         type: password
         required: False
 
+  # Used in Qiskit interactive tool
+  ibmq_account:
+    description: IBMQ account information
+    inputs:
+      - name: token
+        label: IBMQ token (see https://quantum-computing.ibm.com/account)
+        type: password
+        required: False
+      - name: url
+        label: IBMQ URL (https://auth.quantum-computing.ibm.com/api)
+        type: text
+        required: False
+        value: https://auth.quantum-computing.ibm.com/api
+
+  generic_s3:
+    description: Your personal S3 account for data import
+    inputs:
+      - name: endpoint_url
+        label: Server Domain (e.g. byos.vm.fedcloud.eu)
+        type: text
+        required: False
+      - name: bucket
+        label: S3 Bucket (e.g. my-s3-bucket)
+        type: text
+        required: False
+      - name: secret
+        label: S3 secret (e.g. SuPerP4ssWord)
+        type: password
+        required: False
+      - name: key
+        label: S3 access key (e.g. project01)
+        type: password
+        required: False
+
   # Require to attach pulsar endpoint to the Pulsar Network
   byoc_pulsar:
     description: >
