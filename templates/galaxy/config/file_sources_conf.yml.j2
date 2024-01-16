@@ -112,6 +112,16 @@
   port: 2222
 
 - type: s3fs
+  label: Generic S3 instance
+  id: generic_s3
+  doc: Access to a generic S3 endpoint.
+  endpoint_url: ${user.preferences['generic_s3|endpoint_url']}
+  bucket: ${user.preferences['generic_s3|bucket']}
+  writable: true
+  secret: ${user.preferences['generic_s3|secret']}
+  key: ${user.preferences['generic_s3|key']}
+
+- type: s3fs
   label: Genome Ark
   id: genomeark
   doc: Access to Genome Ark open data on AWS.
