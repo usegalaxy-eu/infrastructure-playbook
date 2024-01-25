@@ -119,6 +119,8 @@
         - "export GALAXY_ROOT={{ galaxy_server_dir }}"
         - "export VIRTUAL_ENV={{ galaxy_venv_dir }}"
         - "export GALAXY_PULSAR_APP_CONF={{ galaxy_pulsar_app_conf }}"
+        - 'export MALWARE_LIB="{{ walle_malware_database_location }}/{{ walle_database_file }}"'
+        - 'export PGPASSFILE="{{ walle_pgpass_file }}"'
       loop_control:
         loop_var: task_item
 

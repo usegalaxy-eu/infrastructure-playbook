@@ -157,6 +157,17 @@ ssh_client_alive_interval: 600
 # Apollo env vars
 apollo_env: "GALAXY_WEBAPOLLO_URL={{ GALAXY_WEBAPOLLO_URL }} GALAXY_WEBAPOLLO_USER={{ GALAXY_WEBAPOLLO_USER }} GALAXY_WEBAPOLLO_PASSWORD={{ GALAXY_WEBAPOLLO_PASSWORD }} GALAXY_WEBAPOLLO_EXT_URL={{ GALAXY_WEBAPOLLO_EXT_URL }} GALAXY_SHARED_DIR={{ GALAXY_SHARED_DIR }} GALAXY_APOLLO_ORG_SUFFIX=id"
 
+# WallE
+walle_verbose: true
+walle_tool: interactive
+walle_user_name: "{{ galaxy_user.name }}"
+walle_user_group: "{{ galaxy_group.name }}"
+walle_virtualenv: "{{ galaxy_venv_dir }}"
+walle_bashrc: "{{ galaxy_user.home }}/.bashrc"
+walle_pgpass_file: "{{ galaxy_user.home }}/.pgpass"
+walle_malware_database_location: "/data/dnb01/maintenance"
+walle_database_file: checksums.yml
+
 # 03/11/2022: Autofs configuration for mounting NFS volumes
 # usegalaxy-eu.autofs role uses this variable
 # gxtest, gxkey, and jwd will also mount under /data as before
