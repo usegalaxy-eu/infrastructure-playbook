@@ -108,6 +108,8 @@ pip_install_dependencies:
   - pyyaml
   - GitPython
   - python-openstackclient
+  # WallE
+  - tqdm # progress bar, has no dependencies
 
 yum_exclude_repos:
   - condor*
@@ -196,6 +198,16 @@ dynmotd_custom:
 
 # TPV Script
 tpv_config_dir_name: total_perspective_vortex
+
+# WallE
+walle_verbose: true
+walle_tool: interactive
+walle_user_name: "{{ galaxy_user.name }}"
+walle_user_group: "{{ galaxy_group.name }}"
+walle_virtualenv: "{{ galaxy_venv_dir }}"
+walle_malware_database_location: "{{ galaxy_config_dir }}"
+walle_bashrc: "{{ galaxy_user.home }}/.bashrc"
+walle_pgpass_file: "{{ galaxy_user.home }}/.pgpass"
 
 # CVMFS
 cvmfs_role: client
