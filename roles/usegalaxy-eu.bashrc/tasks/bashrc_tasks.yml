@@ -44,6 +44,14 @@
         owner: galaxy
         group: galaxy
 
+    - name: Create a symlink (for WallE)
+      file:
+        src: /usr/local/bin/galaxy_jwd
+        dest: /usr/local/bin/galaxy_jwd.py
+        state: link
+        owner: galaxy
+        group: galaxy
+
     - name: Insert some aliases and functions
       blockinfile:
         path: "{{ item.uhome }}/.bashrc"
