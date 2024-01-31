@@ -1060,21 +1060,21 @@ tools:
       require:
         - singularity
 
-  toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.6.*:
+  toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/.*:
+    cores : 6
     mem: 4
-    cores: 6
-    env:
-      GENEMARK_PATH: "/usr/local/tools/_conda/envs/__braker3@3.0.6/bin/genemark/bin/"
-      PROTHINT_PATH: "/usr/local/tools/_conda/envs/__braker3@3.0.6/bin/genemark/bin/gmes/ProtHint/bin/"
-
-  toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.3.*:
-    mem: 4
-    cores: 6
     params:
-      singularity_container_id_override: docker://quay.io/bgruening/braker3:v.1.0.4
-    scheduling:
-      require:
-        - singularity
+          singularity_enabled: true
+      rules:
+        - if: helpers.tool_version_eq(tool, '3.0.3'):
+          params:
+            singularity_container_id_override: docker://teambraker/braker3:v.1.0.4
+        - if: helpers.tool_version_eq(tool, '3.0.6'):
+          params:
+            singularity_container_id_override: docker://teambraker/braker3:v1.0.6
+        - if: helpers.tool_version_eq(tool, '3.0.7'):
+          params:
+            singularity_container_id_override: docker://teambraker/braker3:v3.0.7.1
 
   # GeneMark is a pain and needs special casing
   toolshed.g2.bx.psu.edu/repos/genouest/braker/braker/.*:
