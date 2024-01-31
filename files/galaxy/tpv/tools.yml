@@ -737,10 +737,10 @@ tools:
     cores: 10
     mem: 12
     rules:
-    - id: metagenome
-      if: helpers.job_args_match(job, app, {'assembly': {'type': 'Metagenome'}})
-      cores: 20
-      mem: 80
+      - id: metagenome
+        if: helpers.job_args_match(job, app, {'assembly': {'type': 'Metagenome'}})
+        cores: 20
+        mem: 80
 
   toolshed.g2.bx.psu.edu/repos/devteam/freebayes/freebayes/.*:
     # see https://github.com/usegalaxy-eu/infrastructure-playbook/pull/881 for some numbers
