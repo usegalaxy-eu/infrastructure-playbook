@@ -734,6 +734,8 @@ tools:
         fail: Too much data, please check if the input is correct.
 
   toolshed.g2.bx.psu.edu/repos/iuc/quast/quast/.*:
+    cores: 10
+    mem: 12
     rules:
     - id: metagenome
       if: helpers.job_args_match(job, app, {'assembly': {'type': 'Metagenome'}})
