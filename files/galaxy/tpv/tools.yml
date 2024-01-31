@@ -734,11 +734,11 @@ tools:
         fail: Too much data, please check if the input is correct.
 
   toolshed.g2.bx.psu.edu/repos/iuc/quast/quast/.*:
-      rules:
-        if: |
-          helpers.job_args_match(job, app, {'assembly': {'type': 'Metagenome'}})
-        cores: 20
-        mem: 80
+    rules:
+      if: |
+        helpers.job_args_match(job, app, {'assembly': {'type': 'Metagenome'}})
+      cores: 20
+      mem: 80
 
   toolshed.g2.bx.psu.edu/repos/devteam/freebayes/freebayes/.*:
     # see https://github.com/usegalaxy-eu/infrastructure-playbook/pull/881 for some numbers
