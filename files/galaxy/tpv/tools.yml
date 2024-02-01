@@ -738,7 +738,8 @@ tools:
     mem: 12
     rules:
       - id: metagenome
-        if: helpers.job_args_match(job, app, {'assembly': {'type': 'Metagenome'}})
+        if: |
+          helpers.job_args_match(job, app, {'assembly': {'type': 'Metagenome'}})
         cores: 20
         mem: 80
 
