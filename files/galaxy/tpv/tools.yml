@@ -1066,13 +1066,13 @@ tools:
     params:
       singularity_enabled: true
       rules:
-        - if: helpers.tool_version_eq(tool, '3.0.3')
+        - if: any(helpers.tool_version_eq(tool, version) for version in ['3.0.3+galaxy0', '3.0.3+galaxy1', '3.0.3+galaxy2'])
           execute: |
             entity.params['singularity_container_id_override']="docker://teambraker/braker3:v.1.0.4"
-        - if: helpers.tool_version_eq(tool, '3.0.6')
+        - if: helpers.tool_version_eq(tool, '3.0.6+galaxy2')
           execute: |
             entity.params['singularity_container_id_override']="docker://teambraker/braker3:v1.0.6"
-        - if: helpers.tool_version_eq(tool, '3.0.7')
+        - if: helpers.tool_version_eq(tool, '3.0.7+galaxy2')
           execute: |
             entity.params['singularity_container_id_override']="docker://teambraker/braker3:v3.0.7.1"
 
