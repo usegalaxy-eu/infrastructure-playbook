@@ -1074,7 +1074,7 @@ tools:
             entity.params['singularity_container_id_override']="docker://teambraker/braker3:v1.0.6"
           env:
             GENEMARK_PATH: "/usr/local/tools/_conda/envs/__braker3@3.0.6/bin/genemark/bin/"
-            PROTHINT_PATH: "/usr/local/tools/_conda/envs/__braker3@3.0.6/bin/genemark/bin/gmes/ProtHint/bin/"            
+            PROTHINT_PATH: "/usr/local/tools/_conda/envs/__braker3@3.0.6/bin/genemark/bin/gmes/ProtHint/bin/"
         - if: helpers.tool_version_eq(tool, '3.0.7+galaxy2')
           execute: |
             entity.params['singularity_container_id_override']="docker://teambraker/braker3:v3.0.7.1"
