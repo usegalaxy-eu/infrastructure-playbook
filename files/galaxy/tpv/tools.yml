@@ -719,6 +719,10 @@ tools:
       - if: input_size >= 20
         fail: Too much data, please don't use this tool for this.
 
+  toolshed.g2.bx.psu.edu/repos/bgruening/flye/flye/.*:
+    cores: 20
+    mem: min(input_size*1.2, 256)
+
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/smudgeplot/smudgeplot/.*:
     cores: 8
     rules:
