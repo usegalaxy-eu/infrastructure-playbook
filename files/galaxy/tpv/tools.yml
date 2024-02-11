@@ -1132,3 +1132,14 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/.*:
     cores: 20
+
+  ## bag things 40 is enough for most of the jobs, a better rule is needed
+  toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*:
+    cores: 16
+    mem: 40
+    env:
+      TERM: vt100
+      _JAVA_OPTIONS: -Xmx{int(mem)}G -Xms1G
+    scheduling:
+      accept:
+      - pulsar
