@@ -107,6 +107,14 @@
         owner: root
         group: root
         mode: "0555"
+    - name: Configure firewalld to open ports
+      firewalld:
+        port: "{{ item }}"
+        immediate: true
+        permanent: true
+        state: enabled
+      with_items:
+        - 9628/tcp # HTCondor shared port
   roles:
     - usegalaxy_eu.handy.os_setup
     - geerlingguy.repo-epel
