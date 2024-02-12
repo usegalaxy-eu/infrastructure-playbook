@@ -1016,12 +1016,16 @@ tools:
     env:
       _JAVA_OPTIONS: -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
 
+  ## bag things 40 is enough for most of the jobs, a better rule is needed
   toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*:
     cores: 16
-    mem: 90
+    mem: 40
     env:
       TERM: vt100
-      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xmx{int(mem)}G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+    scheduling:
+      accept:
+        - pulsar
 
   toolshed.g2.bx.psu.edu/repos/imgteam/unzip/unzip/.*:
     scheduling:
@@ -1143,14 +1147,3 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/.*:
     cores: 20
-
-  ## bag things 40 is enough for most of the jobs, a better rule is needed
-  toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*:
-    cores: 16
-    mem: 40
-    env:
-      TERM: vt100
-      _JAVA_OPTIONS: -Xmx{int(mem)}G -Xms1G
-    scheduling:
-      accept:
-      - pulsar
