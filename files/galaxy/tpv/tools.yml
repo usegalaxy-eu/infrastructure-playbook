@@ -1016,12 +1016,16 @@ tools:
     env:
       _JAVA_OPTIONS: -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
 
+  ## bag things 40 is enough for most of the jobs, a better rule is needed
   toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*:
     cores: 16
-    mem: 90
+    mem: 40
     env:
       TERM: vt100
-      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xmx{int(mem)}G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+    scheduling:
+      accept:
+        - pulsar
 
   toolshed.g2.bx.psu.edu/repos/imgteam/unzip/unzip/.*:
     scheduling:
@@ -1072,15 +1076,26 @@ tools:
   toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.6.*:
     mem: 4
     cores: 6
-    env:
-      GENEMARK_PATH: "/usr/local/tools/_conda/envs/__braker3@3.0.6/bin/genemark/bin/"
-      PROTHINT_PATH: "/usr/local/tools/_conda/envs/__braker3@3.0.6/bin/genemark/bin/gmes/ProtHint/bin/"
+    params:
+      singularity_container_id_override: "docker://teambraker/braker3:v1.0.6"
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.7.*:
+    mem: 4
+    cores: 6
+    params:
+      singularity_container_id_override: "docker://teambraker/braker3:v3.0.7.1"
+    scheduling:
+      require:
+        - singularity
 
   toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.3.*:
     mem: 4
     cores: 6
     params:
-      singularity_container_id_override: docker://quay.io/bgruening/braker3:v.1.0.4
+      singularity_container_id_override: "docker://teambraker/braker3:v.1.0.4"
     scheduling:
       require:
         - singularity
@@ -1132,14 +1147,3 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/.*:
     cores: 20
-
-  ## bag things 40 is enough for most of the jobs, a better rule is needed
-  toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*:
-    cores: 16
-    mem: 40
-    env:
-      TERM: vt100
-      _JAVA_OPTIONS: -Xmx{int(mem)}G -Xms1G
-    scheduling:
-      accept:
-      - pulsar
