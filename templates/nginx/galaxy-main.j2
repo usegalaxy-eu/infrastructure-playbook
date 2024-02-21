@@ -147,6 +147,10 @@ server {
 		root /opt;
 	}
 
+	location /ebp-jbrowse {
+                alias /data/jwd/jbrowse2;
+                autoindex on;
+        }
 
 	location /static/vgcn {
 		expires 24h;
