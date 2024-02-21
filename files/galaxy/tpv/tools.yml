@@ -283,6 +283,8 @@ tools:
       require:
         - docker
 
+  toolshed.g2.bx.psu.edu/repos/recetox/recetox_msfinder/recetox_msfinder/v3.5.2+galaxy4:
+    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/imgteam/bioformats2raw/bf2raw/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/biomodels_biomd0000001066/biomodels_biomd0000001066/.*:
@@ -304,6 +306,9 @@ tools:
       docker_run_extra_arguments: ' --gpus all '
     env:
       GPU_AVAILABLE: 1
+  toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc/.*:
+    # 8 (from the shared TPV) seems to high for me
+    cores: 3
   toolshed.g2.bx.psu.edu/repos/ecology/cb_ivr/cb_ivr/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/ecology/taxo_cov_template/taxo_cov_template/.*:
@@ -714,6 +719,10 @@ tools:
       - if: input_size >= 20
         fail: Too much data, please don't use this tool for this.
 
+  toolshed.g2.bx.psu.edu/repos/bgruening/flye/flye/.*:
+    cores: 20
+    mem: min(input_size*1.2, 256)
+
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/smudgeplot/smudgeplot/.*:
     cores: 8
     rules:
@@ -1007,12 +1016,16 @@ tools:
     env:
       _JAVA_OPTIONS: -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
 
+  ## bag things 40 is enough for most of the jobs, a better rule is needed
   toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*:
     cores: 16
-    mem: 90
+    mem: 40
     env:
       TERM: vt100
-      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xmx{int(mem)}G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+    scheduling:
+      accept:
+        - pulsar
 
   toolshed.g2.bx.psu.edu/repos/imgteam/unzip/unzip/.*:
     scheduling:
@@ -1060,21 +1073,32 @@ tools:
       require:
         - singularity
 
-  toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/.*:
-    cores: 6
+  toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.6.*:
     mem: 4
+    cores: 6
     params:
-      singularity_enabled: true
-      rules:
-        - if: helpers.tool_version_eq(tool, '3.0.3')
-          execute: |
-            entity.params['singularity_container_id_override']="docker://teambraker/braker3:v.1.0.4"
-        - if: helpers.tool_version_eq(tool, '3.0.6')
-          execute: |
-            entity.params['singularity_container_id_override']="docker://teambraker/braker3:v1.0.6"
-        - if: helpers.tool_version_eq(tool, '3.0.7')
-          execute: |
-            entity.params['singularity_container_id_override']="docker://teambraker/braker3:v3.0.7.1"
+      singularity_container_id_override: "docker://teambraker/braker3:v1.0.6"
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.7.*:
+    mem: 4
+    cores: 6
+    params:
+      singularity_container_id_override: "docker://teambraker/braker3:v3.0.7.3"
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.3.*:
+    mem: 4
+    cores: 6
+    params:
+      singularity_container_id_override: "docker://teambraker/braker3:v.1.0.4"
+    scheduling:
+      require:
+        - singularity
 
   # GeneMark is a pain and needs special casing
   toolshed.g2.bx.psu.edu/repos/genouest/braker/braker/.*:
@@ -1123,3 +1147,7 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/.*:
     cores: 20
+
+  toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/.*:
+    cores: 1
+    mem: 4
