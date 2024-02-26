@@ -1089,6 +1089,8 @@ tools:
       AUGUSTUS_CONFIG_PATH: "/opt/Augustus/config/"
     params:
       singularity_container_id_override: "docker://teambraker/braker3:v3.0.7.1"
+      ## This should not be needed. Why are ENVs not passed into the container?
+      singularity_cleanenv: true
     scheduling:
       require:
         - singularity
@@ -1100,6 +1102,8 @@ tools:
       AUGUSTUS_CONFIG_PATH: "/opt/Augustus/config/"
     params:
       singularity_container_id_override: "docker://teambraker/braker3:v3.0.7.3"
+      ## This should not be needed. Why are ENVs not passed into the container?
+      singularity_cleanenv: true
     scheduling:
       require:
         - singularity
