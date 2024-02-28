@@ -681,10 +681,6 @@ tools:
     cores: 1
     mem: 20
 
-  toolshed.g2.bx.psu.edu/repos/iuc/kraken2/kraken2/.*:
-    cores: 2
-    mem: 70
-
   toolshed.g2.bx.psu.edu/repos/nml/metaspades/metaspades/.*:
     cores: 2
     scheduling:
@@ -718,10 +714,6 @@ tools:
             - condor-tpv
       - if: input_size >= 20
         fail: Too much data, please don't use this tool for this.
-
-  toolshed.g2.bx.psu.edu/repos/bgruening/flye/flye/.*:
-    cores: 20
-    mem: min(input_size*1.2, 256)
 
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/smudgeplot/smudgeplot/.*:
     cores: 8
@@ -1133,19 +1125,6 @@ tools:
     mem: 16
     cores: 16
 
-  toolshed.g2.bx.psu.edu/repos/iuc/funannotate_predict/funannotate_predict/.*:
-    # we need this here because we need to set the GENEMARK_PATH
-    cores: 12
-    mem: 12
-    env:
-      GENEMARK_PATH: /usr/local/tools/genemark/etp.for_braker/bin/
-
-  toolshed.g2.bx.psu.edu/repos/galaxyp/eggnog_mapper/eggnog_mapper/.*:
-    cores: 8
-    mem: 24
-    env:
-      EGGNOG_DBMEM: "--dbmem"
-
   ## is in the shared DB - we need to test it here a bit
   toolshed.g2.bx.psu.edu/repos/galaxyp/openms_featurefindermultiplex/FeatureFinderMultiplex/.*:
     cores: 8
@@ -1168,3 +1147,108 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/.*:
     cores: 1
     mem: 4
+
+  # 27:02:2024: We seem to have issues with the tools when loaded from the conda envs.
+  # For whatever reason they seem to get stuck in the D state and never finish.
+  # The below is an attempt to test whether by running the tools in a singularity container
+  # we can avoid the issue.
+  toolshed.g2.bx.psu.edu/repos/iuc/abricate/abricate/.*:
+    mem: 30.4
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/eggnog_mapper/eggnog_mapper/.*:
+    cores: 8
+    mem: 24
+    env:
+      EGGNOG_DBMEM: "--dbmem"
+    params:
+      singularity_run_extra_arguments: "--env EGGNOG_DBMEM=--dbmem"
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/flye/flye/.*:
+    cores: 20
+    mem: min(input_size*1.2, 256)
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/iuc/funannotate_annotate/funannotate_annotate/.*:
+    cores: 8
+    mem: 40
+    rules:
+      - id: funannotate_annotate_large_input
+        if: input_size > 3.2
+        mem: 62
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/iuc/funannotate_clean/funannotate_clean/.*:
+    cores: 8
+    mem: 40
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/iuc/funannotate_predict/funannotate_predict/.*:
+    # we need this here because we need to set the GENEMARK_PATH
+    cores: 12
+    mem: 12
+    env:
+      GENEMARK_PATH: /usr/local/tools/genemark/etp.for_braker/bin/
+    params:
+      singularity_run_extra_arguments: "--env GENEMARK_PATH=/usr/local/tools/genemark/etp.for_braker/bin/"
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/iuc/kraken2/kraken2/.*:
+    cores: 2
+    mem: 70
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_compute_graph/scanpy_compute_graph/.*:
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_filter_cells/scanpy_filter_cells/.*:
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_find_cluster/scanpy_find_cluster/.*:
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_find_variable_genes/scanpy_find_variable_genes/.*:
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_multiplet_scrublet/scanpy_multiplet_scrublet/.*:
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_normalise_data/scanpy_normalise_data/.*:
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_plot_embed/scanpy_plot_embed/.*:
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_run_dpt/scanpy_run_dpt/.*:
+    scheduling:
+      require:
+        - singularity
