@@ -1090,10 +1090,8 @@ tools:
   toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.8.*:
     cores: 6
     mem: 4
-    env:
-      AUGUSTUS_CONFIG_PATH: "/opt/Augustus/config/"
     params:
-      singularity_container_id_override: "docker://teambraker/braker3:v3.0.7.3"
+      singularity_container_id_override: "docker://teambraker/braker3:v3.0.7.4"
       ## This should not be needed. Why are ENVs not passed into the container?
       singularity_cleanenv: true
     scheduling:
