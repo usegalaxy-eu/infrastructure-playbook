@@ -1169,7 +1169,7 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/bgruening/flye/flye/.*:
     cores: 20
-    mem: 3.8 if min(input_size*1.2, 256) < 3.8 else min(input_size*1.2, 256)
+    mem: min(max(input_size*1.2, 3.8), 256)
     scheduling:
       require:
         - singularity
