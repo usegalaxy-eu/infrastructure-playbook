@@ -48,6 +48,8 @@ tools:
     inherits: interactive_tool
     cores: 1
     mem: 4
+    params:
+      docker_run_extra_arguments: "--user $UID:$GID"
 
   interactive_tool_qiskit_jupyter_notebook:
     inherits: interactive_tool
