@@ -60,4 +60,6 @@ tools:
           retval
         fail: |
           Invalid 'Remote resources id' selected in the config menu under 'User -> Preferences -> Manage Information -> Use distributed compute resources'. Please reselect either 'default' or an appropriate remote resource then click 'Save' and rerun your job.
-
+    rank: |
+      final_destinations = helpers.weighted_random_sampling(candidate_destinations)
+      final_destinations
