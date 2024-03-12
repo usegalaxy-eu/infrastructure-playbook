@@ -486,6 +486,19 @@ destinations:
       requirements: 'GalaxyGroup == "compute_gpu"'
 {%- endset %}{{ condor }}
 
+  condor_tpv_native:
+    runner: condor
+    inherits: condor_tpv
+    max_accepted_cores: 64
+    max_accepted_mem: 1000
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    scheduling:
+      prefer:
+        - condor-tpv
+      require:
+        - condor-native
+
 {# Generate secondary cluster destinations. #}
 {% for name, destination in (condor | from_yaml).items() %}
   {% if destination.runner is defined and destination.runner == "condor" %}
