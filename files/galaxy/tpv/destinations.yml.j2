@@ -71,6 +71,8 @@ destinations:
         $working_directory:rw,
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
 
+{# Save embedded Pulsar destinations to replicate them in the secondary cluster. #}
+{% set embedded_pulsar %}
   interactive_pulsar:
     inherits: embedded_pulsar_docker_abstract
     scheduling:
@@ -109,6 +111,18 @@ destinations:
       GPU_AVAILABLE: "1"
     params:
       requirements: 'GalaxyGroup == "compute_gpu"'
+{%- endset %}{{ embedded_pulsar }}
+
+{# Generate secondary cluster destinations. #}
+{% for name, destination in (embedded_pulsar | from_yaml).items() %}
+  secondary_{{ name }}:
+    inherits: {{ name }}
+    runner: pulsar_embedded_secondary
+    scheduling:
+      require:
+        - condor-secondary
+
+{% endfor %}
 
   #######################
   # PULSAR DESTINATIONS #
@@ -151,6 +165,7 @@ destinations:
         - singularity
         - docker
         - condor-tpv
+        - condor-secondary
 
   pulsar_mira_tpv:
     inherits: pulsar_default
@@ -355,6 +370,8 @@ destinations:
   # LOCAL CONDOR DESTINATIONS #
   #############################
 
+{# Save condor destinations to replicate them in the secondary cluster. #}
+{% set condor %}
   condor_docker:
     inherits: basic_docker_destination
     runner: condor
@@ -467,3 +484,17 @@ destinations:
       GPU_AVAILABLE: 1
     params:
       requirements: 'GalaxyGroup == "compute_gpu"'
+{%- endset %}{{ condor }}
+
+{# Generate secondary cluster destinations. #}
+{% for name, destination in (condor | from_yaml).items() %}
+  {% if destination.runner is defined and destination.runner == "condor" %}
+  secondary_{{ name }}:
+    inherits: {{ name }}
+    runner: condor_secondary
+    scheduling:
+      require:
+        - condor-secondary
+
+  {% endif %}
+{% endfor %}
