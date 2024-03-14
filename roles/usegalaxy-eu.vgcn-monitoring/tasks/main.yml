@@ -12,7 +12,8 @@
     name: vgcn-monitoring
     user: telegraf
     commands:
-      - "{{ custom_vgcn_env }} /usr/local/bin/vgcn_monitoring.py"
+      - "{{ vgcn_ven_dir }}/bin/python /usr/local/bin/vgcn_monitoring.py"
+      - "/usr/bin/env"
   notify: restart telegraf
 
 - name: Add VGCN monitoring Telegraf configuration
