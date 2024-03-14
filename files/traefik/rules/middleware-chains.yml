@@ -1,0 +1,19 @@
+http:
+  middlewares:
+   # chain-basic-auth:
+   #   chain:
+   #     middlewares:
+   #       - basic-auth
+   #       - redirect-scheme
+   #       - redirect-to-non-www
+    chain-redirect:
+      chain:
+        middlewares:
+          - redirect-scheme
+          - redirect-to-non-www
+    chain-authelia:
+      chain:
+        middlewares:
+          - rate-limit
+          - secure-headers
+          - authelia

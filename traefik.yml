@@ -1,0 +1,47 @@
+---
+- name: Traefik
+  become: true
+  hosts: traefik
+  vars_files:
+    - secret_group_vars/all.yml
+    - secret_group_vars/traefik.yml
+    - group_vars/all.yml
+  pre_tasks:
+    - name: Install ansible dependencies
+      ansible.builtin.package:
+        name:
+          - python3-policycoreutils
+          - python3-libselinux
+          - policycoreutils-python-utils
+          - python3-pip
+
+    - name: Install python docker
+      become: true
+      ansible.builtin.pip:
+        name: "{{ item }}"
+        virtualenv_command: "python3 -m venv"
+      loop:
+        - docker
+        - selinux
+   # - name: Set Python Interpreter
+   #   set_fact:
+   #     ansible_python_interpreter: /ansible/bin/python
+
+  roles:
+    - geerlingguy.repo-epel # Install EPEL repository
+    - usegalaxy-eu.autoupdates # keep all of our packages up to date
+    - influxdata.chrony # Keep our time in sync.
+    - dj-wasabi.telegraf
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        enable_hostname: true
+        enable_powertools: true # geerlingguy.repo-epel role doesn't enable PowerTools repository
+        enable_remap_user: false
+        enable_exclude_packages: true
+        enable_pam_limits: true # Prevent out of control processes
+        enable_install_software: true # Some extra admin tools (*top, vim, etc)
+    - usegalaxy-eu.dynmotd
+    - artis3n.tailscale
+    - usegalaxy_eu.traefik
+    - devsec.hardening.ssh_hardening
+    - devsec.hardening.os_hardening

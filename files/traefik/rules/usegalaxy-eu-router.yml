@@ -1,0 +1,8 @@
+http:
+  routers:
+    usegalaxy-eu-rtr:
+      rule: "Host(`usegalaxy-eu.traefik.flyingrabb.it`)"
+      service: "usegalaxy-eu"
+      tls: {}
+      middlewares:
+        - secure-headers

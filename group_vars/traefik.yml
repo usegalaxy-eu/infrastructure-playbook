@@ -1,0 +1,223 @@
+---
+hostname: traefik.flyingrabb.it
+
+telegraf_plugins_extra:
+  listen_galaxy_routes:
+    plugin: "prometheus"
+    config:
+      - urls = ["http://127.0.0.1:8082"]
+      - metric_version = 2
+      - name_override = "traefik"
+
+traefik_force_validation: true
+traefik_no_service_log: true
+
+traefik_log_dir: /var/log/traefik
+traefik_dir: /etc/traefik
+traefik_user: centos
+traefik_group: centos
+lp_logrotate_confd:
+  - path: traefik
+    conf: |
+      {{ traefik_log_dir }}/*.log {
+        compress
+        copytruncate
+        daily
+        notifempty
+        missingok
+        rotate 1
+      }
+
+tailscale_tags: ['critical']
+
+traefik_copy_rules: true
+
+traefik_domain: "{{ hostname }}"
+tailscale_domain: springhare-dinosaur.ts.net
+
+traefik_networks:
+  traefik:
+    internal: false
+    driver: overlay
+traefik_containers:
+  - name: traefik
+    image: traefik:v3.0
+    url: "https://traefik.{{ tailscale_domain }}/dashboard/#/"
+    state: started
+    replicas: 1
+    restart_policy: on-failure
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    environment:
+      CF_API_EMAIL_FILE: "/run/secrets/cloudflare_email"
+      # CF_API_KEY_FILE: "/run/secrets/cloudflare_api_key"
+      CLOUDFLARE_DNS_API_TOKEN_FILE: "/run/secrets/cloudflare_zone_token"
+    networks:
+      - traefik
+    command:
+      - --ping
+      - --ping.entryPoint=websecure
+      - --api=true
+      - "--providers.swarm.exposedByDefault=false"
+      - "--providers.swarm.endpoint=unix:///var/run/docker.sock"
+      #- "--providers.docker.network={{ traefik_networks[0]['name'] }}"
+      - --api.dashboard=true
+      - --api.insecure=false
+      - --global.sendAnonymousUsage=false
+      - --global.checkNewVersion=false
+      - --entryPoints.web.address=:80
+      - --entryPoints.websecure.address=:443
+      - --entryPoints.metrics.address=:8082
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - "--entryPoints.websecure.http.tls.domains[0].main={{ traefik_domain }}"
+      - --entryPoints.https.http.tls.certresolver=dns-cloudflare
+      - "--entryPoints.websecure.http.tls.domains[0].sans=*.{{ traefik_domain }}"
+
+      # Prometheus Metrics
+      - --metrics.prometheus=true
+      - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
+      - --metrics.prometheus.addEntryPointsLabels=true
+      - --metrics.prometheus.addrouterslabels=true
+      - --metrics.prometheus.addServicesLabels=true
+      - --metrics.prometheus.entryPoint=metrics
+      - --metrics.prometheus.headerlabels.origin=Origin
+
+
+      # Influx Metrics - Deprecated in v3
+     # - --metrics.influxdb=true
+     # - --metrics.influxdb.pushinterval=10s
+     # - --metrics.influxdb.address={{ influxdb.url }}
+     # - --metrics.influxdb.protocol=http
+     # - --metrics.influxdb.database={{ influxdb.node.database }}
+     # - --metrics.influxdb.username={{ influxdb.node.username }}
+     # - --metrics.influxdb.password={{ influxdb.node.password }}
+
+
+
+      - "--providers.file.directory=/rules"
+      - "--providers.file.watch=true"
+      ## DNS Challenge
+      - --certificatesResolvers.ts.tailscale=true
+      - --certificatesResolvers.dns-cloudflare.acme.storage=/letsencrypt/acme.json
+      - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.provider=cloudflare
+      - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.resolvers=1.1.1.1:53,1.0.0.1:53
+      - --certificatesresolvers.dns-cloudflare.acme.caserver=https://acme-v02.api.letsencrypt.org/directory #enable metricsa
+
+      # Enable Logging
+      - "--log=true"
+      - --log.filePath={{ traefik_log_dir }}/traefik.log
+      - "--log.level=DEBUG" # DEBUG, PANIC, FATAL, ERROR, WARN, INFO
+      #- "--serversTransport.insecureSkipVerify=true"
+      - --accesslog=true
+      - --accesslog.filepath={{ traefik_log_dir }}/access.log
+    labels:
+      "traefik.enable": "true"
+      #"traefik.http.routers.traefik.rule": "Host(`{{ traefik_domain }}`) || Host(`www.{{ traefik_domain }}`)"
+      "traefik.http.routers.traefik.rule": "Host(`traefik.{{ tailscale_domain }}`)"
+      "traefik.http.routers.traefik.entrypoints": "websecure,web"
+      "traefik.http.routers.traefik.tls": "true"
+      "traefik.http.routers.traefik.tls.certresolver": "ts"
+      "traefik.http.routers.traefik.tls.domains[0].main": "traefik.{{ tailscale_domain }}"
+      "traefik.http.routers.traefik.service": "api@internal"
+      "traefik.http.services.dummy-svc.loadbalancer.server.port": "9999"
+
+    security_opts:
+      - "label:type:container_runtime_t"
+
+    mode: replicated
+
+    mounts:
+      - source: "/var/run/docker.sock"
+        target: "/var/run/docker.sock"
+        type: bind
+        readonly: true
+      - source: "/var/run/tailscale"
+        target: "/var/run/tailscale"
+        type: bind
+        readonly: true
+      - source: "/etc/traefik/rules/"
+        target: "/rules"
+        type: bind
+        readonly: true
+      - source: "/etc/traefik/acme.json"
+        target: "/letsencrypt/acme.json"
+        type: bind
+        readonly: false
+      - source: "{{ traefik_log_dir }}/"
+        target: "{{ traefik_log_dir }}"
+        type: bind
+        readonly: false
+
+    publish:
+      - target_port: 80
+        published_port: 80
+        protocol: tcp
+      - target_port: 443
+        published_port: 443
+        protocol: tcp
+      - target_port: 8080
+        published_port: 8080
+        protocol: tcp
+      - target_port: 8082
+        published_port: 8082
+        protocol: tcp
+
+
+    secrets:
+     # - secret_name: cloudflare_email
+     # - secret_name: cloudflare_api_key
+      - secret_name: cloudflare_zone_token
+
+#  - name: tailscale
+#    hostname: traefik
+#    image: tailscale/tailscale:latest
+#    url: "https://traefik.{{ tailscale_domain }}/dashboard/#/"
+#    state: started
+#    replicas: 1
+#    restart_policy: on-failure
+#    network_mode: host
+#    volumes:
+#    environment:
+#      TS_AUTHKEY: "{{ traefik_docker_secrets.tailscale_auth_key }}"
+#      TS_STATE_DIR: "/var/run/tailscale"
+#      TS_AUTH_ONCE: "true"
+#      TS_SOCKET: "/var/run/tailscale/tailscaled.sock"
+#    #secrets:
+#     # - secret_name: tailscale_auth_key
+#      # create ephemeral single use key in tailscale interface
+#    cap_add:
+#      - net_admin
+#      - sys_module
+#    restart: unless-stopped
+#    networks:
+#      - traefik
+#    mounts:
+#      - source: /var/run/tailscale
+#        target: /var/run/tailscale
+#        type: bind
+#        readonly: false
+#      - source: /dev/net/tun
+#        target: /dev/net/tun
+#        type: bind
+#        readonly: false
+###############
+##   whoami   #
+###############
+  - name: whoami
+    image: "traefik/whoami"
+    url: "https://traefik.{{ tailscale_domain }}/whoami"
+    replicas: 1
+    labels:
+      "traefik.enable": "true"
+      "traefik.http.routers.whoami.rule": "Host(`traefik.{{ tailscale_domain }}`) && PathPrefix(`/whoami`)"
+      "traefik.http.routers.whoami.entrypoints": "websecure,web"
+      "traefik.http.routers.whoami.service": "whoami-app"
+      "traefik.http.services.whoami-app.loadbalancer.server.port": "80"
+      "traefik.http.routers.whoami.tls.domains[0].main": "traefik.{{ tailscale_domain }}"
+      "traefik.http.routers.whoami.tls.certresolver": "ts"
+    networks:
+      - traefik
+

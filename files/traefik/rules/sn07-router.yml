@@ -1,0 +1,8 @@
+
+http:
+  routers:
+    sn07-rtr:
+      rule: "Host(`sn07.traefik.flyingrabb.it`)"
+      service: "sn07"
+      middlewares:
+        - secure-headers
