@@ -7,6 +7,14 @@
     group: root
     mode: 0755
 
+- name: Add command to sudoers to ensure condor permissions
+  community.general.sudoers:
+    name: vgcn-monitoring
+    user: telegraf
+    commands:
+      - "{{ custom_vgcn_env }} /usr/local/bin/vgcn_monitoring.py"
+  notify: restart telegraf
+
 - name: Add VGCN monitoring Telegraf configuration
   template:
     src: vgcn_monitoring.conf.j2
