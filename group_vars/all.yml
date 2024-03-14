@@ -58,7 +58,7 @@ telegraf_agent_output:
       - database = "{{ influxdb.node.database }}"
       - username = "{{ influxdb.node.username }}"
       - password = "{{ influxdb.node.password }}"
-
+      - timeout = "10s"
 telegraf_plugins_default:
   - plugin: cpu
     config:
