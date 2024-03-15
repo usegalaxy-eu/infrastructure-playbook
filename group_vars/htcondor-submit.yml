@@ -2,6 +2,19 @@
 ---
 htcondor_role_submit: true
 
+# Role: hxr.postgres-connection
 postgres_user: galaxy
 postgres_host: sn05.galaxyproject.eu
 postgres_port: 5432
+
+# MISC
+galaxy_root: /opt/galaxy
+galaxy_venv_dir: "{{ galaxy_root }}/venv"
+galaxy_server_dir: "{{ galaxy_root }}/server"
+galaxy_config_dir: "{{ galaxy_root }}/config"
+galaxy_config_file: "{{ galaxy_config_dir }}/galaxy.yml"
+galaxy_mutable_config_dir: "{{ galaxy_root }}/mutable-config"
+galaxy_log_dir: "/var/log/galaxy"
+galaxy_config:
+  galaxy:
+    job_working_directory: /data/jwd04/main
