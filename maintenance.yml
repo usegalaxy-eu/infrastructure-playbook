@@ -9,6 +9,7 @@
     - mounts/dest/all.yml
     - mounts/mountpoints.yml
     - group_vars/maintenance.yml
+    - group_vars/upload.yml
   collections:
     - devsec.hardening
   handlers:
@@ -116,6 +117,7 @@
       with_items:
         - 9628/tcp # HTCondor shared port
   roles:
+    - usegalaxy-eu.vgcn-monitoring
     - usegalaxy_eu.handy.os_setup
     - geerlingguy.repo-epel
     - usegalaxy-eu.autoupdates
@@ -139,6 +141,5 @@
     - ssh_hardening
     - dj-wasabi.telegraf
     # - usegalaxy-eu.fix-stop-ITs
-    - usegalaxy-eu.vgcn-monitoring
     - usegalaxy-eu.logrotate
     - usegalaxy_eu.walle

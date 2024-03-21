@@ -117,6 +117,8 @@ fsm_scripts:
       - /data/jwd/tmp
       - /data/jwd02f/tmp
       - /data/jwd04/tmp
+      - "{{ upload_dir_main }}"
+      - "{{ upload_dir_test }}"
     time: "{{ fsm_intervals.long }}"
   upload_dirs:
     enable: true
