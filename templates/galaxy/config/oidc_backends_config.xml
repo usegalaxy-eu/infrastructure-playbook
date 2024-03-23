@@ -74,10 +74,16 @@ Please mind `http` and `https`.
         <prompt>consent</prompt>
         <icon>https://galaxyproject.eu/assets/media/DataPLANT_logo.png</icon>
     </provider>
-    <provider name="EGI">
+    <!-- Documentation: https://docs.egi.eu/providers/check-in/sp -->
+    <provider name="egi_checkin">
+       <!-- Client id and secret can be obtained by registering your client at EGI Check-in
+	        Federation Registry: https://aai.egi.eu/federation -->
         <client_id>{{ egi_checkin.usegalaxy_eu.client_id }}</client_id>
         <client_secret>{{ egi_checkin.usegalaxy_eu.client_secret }}</client_secret>
-        <redirect_uri>https://usegalaxy.eu/authnz/egi/callback</redirect_uri>
+        <redirect_uri>https://usegalaxy.eu/authnz/egi_checkin/callback</redirect_uri>
+        <icon>https://im.egi.eu/im-dashboard/static/images/egicheckin.png</icon>
         <prompt>consent</prompt>
+        <!-- (Optional) Which Check-in environment to use (prod, demo, dev), default is prod -->
+	    <!-- <checkin_env>dev</checkin_env> -->
     </provider>
 </OIDC>
