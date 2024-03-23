@@ -562,11 +562,6 @@ base_app_main: &BASE_APP_MAIN
   # this option will be resolved with respect to <data_dir>.
   #tool_search_index_dir: tool_search_index
 
-  # Set this to true to delay parsing of tool inputs and outputs until
-  # they are needed. This results in faster startup times but uses more
-  # memory when using forked Galaxy processes.
-  #delay_tool_initialization: false
-
   # Point Galaxy at a repository consisting of a copy of the bio.tools
   # database (e.g. https://github.com/bio-tools/content/) to resolve
   # bio.tools data for tool metadata.
@@ -687,6 +682,16 @@ base_app_main: &BASE_APP_MAIN
   # <config_dir>.
   object_store_config_file: "{{ galaxy_config_dir }}/object_store_conf.xml"
 
+  # Rather than specifying an object_store_config_file, the object store
+  # configuration can be embedded into Galaxy's config with this option.
+  # This option has no effect if the file specified by
+  # object_store_config_file exists. Otherwise, if this option is set,
+  # it overrides any other objectstore settings.
+  # The syntax, available instrumenters, and documentation of their
+  # options is explained in detail in the object store sample
+  # configuration file, `object_store_conf.sample.yml`
+  #object_store_config: null
+
   # Specify where cache monitoring is driven for caching object stores
   # such as S3, Azure, and iRODS. This option has no affect on disk
   # object stores. For production instances, the cache should be
@@ -784,10 +789,16 @@ base_app_main: &BASE_APP_MAIN
   # message, before the 'Your Galaxy Team' signature.
   #custom_activation_email_message: null
 
-  # URL of the support resource for the galaxy instance.  Used in
-  # activation emails.
+  # URL of the support resource for the galaxy instance.  Used outside
+  # of web contexts such as in activation emails and in Galaxy markdown
+  # report generation.
   # Example value 'https://galaxyproject.org/'
   instance_resource_url: "https://galaxyproject.org/support"
+
+  # URL used to access this Galaxy server. Used outside of web contexts
+  # such as in Galaxy markdown report generation.
+  # Example value 'https://usegalaxy.org'
+  instance_access_url: https://usegalaxy.eu
 
   # E-mail domains blocklist is used for filtering out users that are
   # using disposable email addresses at registration.  If their
@@ -903,6 +914,33 @@ base_app_main: &BASE_APP_MAIN
   # pricing table. Please note, that those numbers are only estimates.
   aws_estimate: true
 
+  # This flag enables carbon emissions estimates for every job based on
+  # its runtime metrics. CPU and RAM usage and the total job runtime are
+  # used to determine an estimate value. These estimates and are based
+  # off of the work of the Green Algorithms Project and the United
+  # States Environmental Protection Agency (EPA). Visit
+  # https://www.green-algorithms.org/ and
+  # https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator.
+  # for more detals.
+  #carbon_emission_estimates: true
+
+  # The estimated geographical location of the server hosting your
+  # galaxy instance given as an ISO 3166 code. This is used to make
+  # carbon emissions estimates more accurate as the location effects the
+  # carbon intensity values used in the estimate calculation. This
+  # defaults to "GLOBAL" if not set or the
+  # `geographical_server_location_code` value is invalid or unsupported.
+  # To see a full list of supported locations, visit
+  # https://galaxyproject.org/admin/carbon_emissions
+  #geographical_server_location_code: GLOBAL
+
+  # The estimated power usage effectiveness of the data centre housing
+  # the server your galaxy instance is running on. This can make carbon
+  # emissions estimates more accurate. For more information on how to
+  # calculate a PUE value, visit
+  # https://en.wikipedia.org/wiki/Power_usage_effectiveness
+  #power_usage_effectiveness: 1.67
+
   # Enable InteractiveTools.
   interactivetools_enable: true
 
@@ -927,11 +965,6 @@ base_app_main: &BASE_APP_MAIN
   # Prefix to use in the formation of the subdomain or path for
   # interactive tools
   #interactivetools_prefix: interactivetool
-
-  # Shorten the uuid portion of the subdomain or path for interactive
-  # tools. Especially useful for avoiding the need for wildcard
-  # certificates by keeping subdomain under 63 chars
-  #interactivetools_shorten_url: false
 
   # Galaxy Interactive Tools (GxITs) can be stopped from within the
   # Galaxy interface, killing the GxIT job without completing its
@@ -1410,7 +1443,7 @@ base_app_main: &BASE_APP_MAIN
   # and which can cause job errors if not shut down cleanly. If using
   # supervisord, consider also increasing the value of `stopwaitsecs`.
   # See the Galaxy Admin Documentation for more.
-  monitor_thread_join_timeout: 30
+  #monitor_thread_join_timeout: 30
 
   # Write thread status periodically to 'heartbeat.log',  (careful, uses
   # disk space rapidly!).  Useful to determine why your processes may be
@@ -1850,6 +1883,15 @@ base_app_main: &BASE_APP_MAIN
   # <config_dir>.
   oidc_backends_config_file: "{{ galaxy_config_dir }}/oidc_backends_config.xml"
 
+  # Sets the prefix for OIDC scopes specific to this Galaxy instance.
+  # If an API call is made against this Galaxy instance using an OIDC bearer token,
+  # any scopes must be prefixed with this value e.g. https://galaxyproject.org/api.
+  # More concretely, to request all permissions that the user has, the scope
+  # would have to be specified as "<prefix>:*". e.g "https://galaxyproject.org/api:*".
+  # Currently, only * is recognised as a valid scope, and future iterations may
+  # provide more fine-grained scopes.
+  #oidc_scope_prefix: https://galaxyproject.org/api
+
   # XML config file that allows the use of different authentication
   # providers (e.g. LDAP) instead or in addition to local authentication
   # (.sample is used if default does not exist).
@@ -1868,6 +1910,28 @@ base_app_main: &BASE_APP_MAIN
   # production server.
   #bootstrap_admin_api_key: null
 
+  # The name of the organization that operates this Galaxy instance.
+  # Serves as the default for the GA4GH service organization name and
+  # can be exposed through Galaxy markdown for reports and such. For
+  # instance, "Not Evil Corporation".
+  # For GA4GH APIs, this is exposed via the service-info endpoint for
+  # the Galaxy DRS API. If unset, one will be generated using
+  # ga4gh_service_id (but only in the context of GA4GH APIs).
+  # For more information on GA4GH service definitions - check out
+  # https://github.com/ga4gh-discovery/ga4gh-service-registry and
+  # https://editor.swagger.io/?url=https://raw.githubusercontent.com/ga4gh-discovery/ga4gh-service-registry/develop/service-registry.yaml
+  #organization_name: null
+
+  # The URL of the organization that operates this Galaxy instance.
+  # Serves as the default for the GA4GH service organization name and
+  # can be exposed through Galaxy markdown for reports and such. For
+  # instance, "notevilcorp.com".
+  # For GA4GH APIs, this is exposed via the service-info endpoint.
+  # For more information on GA4GH service definitions - check out
+  # https://github.com/ga4gh-discovery/ga4gh-service-registry and
+  # https://editor.swagger.io/?url=https://raw.githubusercontent.com/ga4gh-discovery/ga4gh-service-registry/develop/service-registry.yaml
+  #organization_url: null
+
   # Service ID for GA4GH services (exposed via the service-info endpoint
   # for the Galaxy DRS API). If unset, one will be generated using the
   # URL the target API requests are made against.
@@ -1881,22 +1945,6 @@ base_app_main: &BASE_APP_MAIN
   # (available via the DRS API) for the above configuration value would
   # be org.usegalaxy.drs.
   #ga4gh_service_id: null
-
-  # Service name for host organization (exposed via the service-info
-  # endpoint for the Galaxy DRS API). If unset, one will be generated
-  # using ga4gh_service_id.
-  # For more information on GA4GH service definitions - check out
-  # https://github.com/ga4gh-discovery/ga4gh-service-registry and
-  # https://editor.swagger.io/?url=https://raw.githubusercontent.com/ga4gh-discovery/ga4gh-service-registry/develop/service-registry.yaml
-  #ga4gh_service_organization_name: null
-
-  # Organization URL for host organization (exposed via the service-info
-  # endpoint for the Galaxy DRS API). If unset, one will be generated
-  # using the URL the target API requests are made against.
-  # For more information on GA4GH service definitions - check out
-  # https://github.com/ga4gh-discovery/ga4gh-service-registry and
-  # https://editor.swagger.io/?url=https://raw.githubusercontent.com/ga4gh-discovery/ga4gh-service-registry/develop/service-registry.yaml
-  #ga4gh_service_organization_url: null
 
   # Service environment (exposed via the service-info endpoint for the
   # Galaxy DRS API) for implemented GA4GH services.
@@ -1999,6 +2047,20 @@ base_app_main: &BASE_APP_MAIN
   # This option allows users to see the job metrics (except for
   # environment variables).
   expose_potentially_sensitive_job_metrics: true
+
+  # Rather than specifying a job_metrics_config_file, the definition of
+  # the metrics to enable can be embedded into Galaxy's config with this
+  # option. This has no effect if a job_metrics_config_file is used.
+  # The syntax, available instrumenters, and documentation of their
+  # options is explained in detail in the documentation:
+  # https://docs.galaxyproject.org/en/master/admin/job_metrics.html
+  # By default, the core plugin is enabled. Setting this option to false
+  # or an empty list disables metrics entirely.
+  #job_metrics: null
+
+  # This option allows users to see the job metrics (except for
+  # environment variables).
+  #expose_potentially_sensitive_job_metrics: false
 
   # Enable the API for sample tracking
   #enable_legacy_sample_tracking_api: false
@@ -2411,6 +2473,10 @@ base_app_main: &BASE_APP_MAIN
   # https://docs.galaxyproject.org/en/master/admin/production.html
   enable_celery_tasks: true
 
+  # If set to a non-0 value, upper limit on number of tasks that can be
+  # executed per user per second.
+  #celery_user_rate_limit: 0.0
+
   # Allow disabling pbkdf2 hashing of passwords for legacy situations.
   # This should normally be left enabled unless there is a specific
   # reason to disable it.
@@ -2529,6 +2595,14 @@ base_app_main: &BASE_APP_MAIN
   # notifications from the database (every 24 hours by default). Runs in
   # a Celery task.
   #expired_notifications_cleanup_interval: 86400
+
+  # The URL pointing to the Galaxy Help Forum API base URL. The API must
+  # be compatible with Discourse API (https://docs.discourse.org/).
+  #help_forum_api_url: https://help.galaxyproject.org/
+
+  # Enable the integration of the Galaxy Help Forum in the tool panel.
+  # This requires the help_forum_api_url to be set.
+  enable_help_forum_tool_panel_integration: true
 
   # TODO(hxr): UNDOCUMENTED
   ucsc_build_sites: "{{ galaxy_config_dir }}/ucsc_build_sites.txt"
