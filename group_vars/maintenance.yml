@@ -127,6 +127,8 @@ fsm_scripts:
     paths:
       - "{{ galaxy_config['galaxy']['nginx_upload_store'] }}"
       - "{{ galaxy_config['galaxy']['nginx_upload_job_files_store'] }}"
+      - "{{ upload_dir_main }}"
+      - "{{ upload_dir_test }}"
     time: "{{ fsm_intervals.medium }}"
   job_working_dirs:
     enable: true

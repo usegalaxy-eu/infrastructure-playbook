@@ -1,4 +1,7 @@
 ---
+# Upload dirs
+upload_dir_test: "{{ jwd.jwd04.path }}/tus_upload/test"
+upload_dir_main: "{{ jwd.jwd04.path }}/tus_upload/main"
 # Galaxy user and group
 galaxy_user:
   name: galaxy
@@ -58,7 +61,7 @@ telegraf_agent_output:
       - database = "{{ influxdb.node.database }}"
       - username = "{{ influxdb.node.username }}"
       - password = "{{ influxdb.node.password }}"
-
+      - timeout = "10s"
 telegraf_plugins_default:
   - plugin: cpu
     config:
@@ -66,11 +69,11 @@ telegraf_plugins_default:
   - plugin: disk
   - plugin: kernel
   - plugin: processes
-  - plugin: io
+  - plugin: diskio
   - plugin: mem
   - plugin: system
   - plugin: swap
-  - plugin: net
+  - plugin: nstat
   - plugin: netstat
   - plugin: chrony
 

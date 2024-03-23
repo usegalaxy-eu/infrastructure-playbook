@@ -139,6 +139,16 @@
   key: "{{ genomeark_galaxy_aws_access_key_id }}"
 
 - type: s3fs
+  label: Gilsbach S3 ElementBio
+  id: gilsback_element_bio
+  doc: Access to an ElementBio S3 bucket
+  bucket: elembio-macro-galaxy
+  requires_groups: gilsbach
+  writable: true
+  secret: "{{ gilsback_element_bio_aws_secret_access_key }}"
+  key: "{{ gilsback_element_bio_aws_access_key_id }}"
+
+- type: s3fs
   label: "ONT open data"
   id: gm24385_q20_2021.10
   doc: "simplex nanopore sequencing from the Genome in a Bottle sample GM24385"

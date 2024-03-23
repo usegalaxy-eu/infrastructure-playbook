@@ -275,6 +275,8 @@
         galaxy_fetch_dependencies: true
         galaxy_build_client: true
 
+
+    - usegalaxy_eu.tpv_auto_lint
     ## Extras!
     - usegalaxy-eu.fix-galaxy-server-dir # Fix details into the galaxy server dirs
     - hxr.install-to-venv # Some extra packages our site needs.
@@ -290,7 +292,6 @@
     - usegalaxy-eu.fix-stuck-handlers # Restart handlers to prevent several classes of issues
     - usegalaxy-eu.log-cleaner # do not retain journalctl logs, they are unnecessary/risky under GDPR
     - usegalaxy-eu.galaxy-procstat # Some custom telegraf monitoring that's templated
-    - usegalaxy_eu.tpv_auto_lint
     # Some of our 'cleanups' also generate telegraf format so this goes at end.
     - dj-wasabi.telegraf
     # - dev-sec.os-hardening
