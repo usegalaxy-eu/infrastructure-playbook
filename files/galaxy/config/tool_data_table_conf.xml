@@ -1,4 +1,3 @@
-<!-- Use the file tool_data_table_conf.xml.oldlocstyle if you don't want to update your loc files as changed in revision 4550:535d276c92bc-->
 <!-- Paths are relative to the value of `tool_data_path` in galaxy.ini -->
 <tables>
     <!-- TODO(hxr): test if we can remove path since specified in galaxy.yml -->
@@ -67,15 +66,16 @@
         <columns>value, name, path</columns>
         <file path="/opt/galaxy/tool-data/lastz_seqs.loc" />
     </table>
-
-
+    <!-- Locations of DIAMOND reference databases -->
+    <table name="diamond_database" comment_char="#" allow_duplicate_entries="False">
+        <columns>value, name, db_path</columns>
+        <file path="/opt/galaxy/tool-data/diamond_database.loc" />
+    </table>
     <!-- Locations of 2bit sequence files for use in deepTools -->
     <table name="deepTools_seqs" comment_char="#">
         <columns>value, name, path</columns>
         <file path="/opt/galaxy/tool-data/deepTools_seqs.loc" />
     </table>
-
-
     <!-- Locations of PerM base index files -->
     <table name="perm_base_indexes" comment_char="#" allow_duplicate_entries="False">
         <columns>value, name, path</columns>

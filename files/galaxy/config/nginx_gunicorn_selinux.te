@@ -1,0 +1,17 @@
+module nginx_gunicorn_selinux 1.0;
+
+require {
+        type httpd_t;
+        type usr_t;
+        type unconfined_service_t;
+        type unconfined_t;
+        class unix_stream_socket connectto;
+        class sock_file { relabelto write };
+}
+
+#============= httpd_t ==============
+allow httpd_t unconfined_service_t:unix_stream_socket connectto;
+allow httpd_t usr_t:sock_file write;
+
+#============= unconfined_t ==============
+allow unconfined_t httpd_t:sock_file relabelto;

@@ -1,0 +1,13 @@
+---
+# NGINX
+nginx_enable_default_server: false
+nginx_servers:
+  - proxy
+nginx_conf_http:
+  client_max_body_size: 1g
+nginx_remove_default_vhost: true
+
+certbot_well_known_root: /srv/nginx/_well-known_root
+
+# Autoupdates
+au_apply_updates: true

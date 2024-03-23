@@ -19,6 +19,8 @@ fi
 
 if [[ $2 == "emacs" ]]; then
   difftool='emacs-ediff.sh'
+elif [[ $2 == "meld" ]]; then
+  difftool='meld'
 else
   difftool='vimdiff'
 fi
@@ -48,4 +50,4 @@ compare files/$folder/config/ucsc_build_sites.txt	$GALAXY/config/ucsc_build_site
 compare files/$folder/config/user_preferences_extra_conf.yml	$GALAXY/config/user_preferences_extra_conf.yml.sample
 #compare templates/$folder/config/build_sites.yml.j2	$GALAXY/config/build_sites.yml.sample.sample
 
-compare group_vars/gxconfig${ext}.yml $GALAXY/config/galaxy.yml.sample
+compare group_vars/gxconfig${ext}.yml	$GALAXY/config/galaxy.yml.sample

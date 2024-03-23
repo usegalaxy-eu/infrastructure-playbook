@@ -1,0 +1,160 @@
+---
+hostname: mq.galaxyproject.eu
+
+# create_user task
+handy_groups:
+  - group_name: rabbitmq
+    group_gid: 999
+
+handy_users:
+  - user_name: rabbitmq
+    user_uid: 999
+    user_group: rabbitmq
+
+# Certbot
+certbot_admin_email: security@usegalaxy.eu
+certbot_agree_tos: --agree-tos
+certbot_auth_method: --webroot
+certbot_auto_renew: true
+certbot_auto_renew_user: root
+certbot_auto_renew_hour: "{{ 23 |random(seed=inventory_hostname)  }}"
+certbot_auto_renew_minute: "{{ 59 |random(seed=inventory_hostname)  }}"
+certbot_domains:
+  - "{{ hostname }}"
+certbot_environment: "production" # change to production when ready to go
+certbot_install_method: virtualenv
+certbot_share_key_users:
+  - nginx
+  - rabbitmq
+
+certbot_post_renewal: |
+  systemctl restart nginx || true
+  systemctl restart docker || true
+certbot_virtualenv_package_name: python3-virtualenv
+certbot_virtualenv_command: virtualenv
+certbot_well_known_root: /srv/nginx/_well-known_root
+
+# NGINX
+nginx_enable_default_server: false
+nginx_servers:
+  - redirect-ssl
+nginx_ssl_servers:
+  - mq-ssl
+nginx_remove_default_vhost: true
+
+# Nginx Letsencrypt bindings
+nginx_ssl_role: usegalaxy-eu.certbot
+nginx_conf_ssl_certificate: /etc/ssl/certs/fullchain.pem
+nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
+
+# RabbitMQ
+rabbitmq_users:
+  - user: mqadmin
+    password: "{{ rabbitmq_password_admin }}"
+    tags: administrator
+    vhost: /
+  - user: flower
+    password: "{{ rabbitmq_password_flower }}"
+    tags: administrator
+    vhost: galaxy
+  - user: galaxy
+    password: "{{ rabbitmq_password_galaxy }}"
+    vhost: galaxy
+  - user: galaxy_be01
+    password: "{{ rabbitmq_password_galaxy_be01 }}"
+    vhost: /pulsar/galaxy_be01
+  - user: galaxy_it01
+    password: "{{ rabbitmq_password_galaxy_it01 }}"
+    vhost: /pulsar/galaxy_it01
+  - user: galaxy_pt01
+    password: "{{ rabbitmq_password_galaxy_pt01 }}"
+    vhost: /pulsar/galaxy_pt01
+  - user: galaxy_uk01
+    password: "{{ rabbitmq_password_galaxy_uk01 }}"
+    vhost: /pulsar/galaxy_uk01
+  - user: galaxy_au01
+    password: "{{ rabbitmq_password_galaxy_au01 }}"
+    vhost: /pulsar/galaxy_au01
+  - user: galaxy_no01
+    password: "{{ rabbitmq_password_galaxy_no01 }}"
+    vhost: /pulsar/galaxy_no01
+  - user: galaxy_it02
+    password: "{{ rabbitmq_password_galaxy_it02 }}"
+    vhost: /pulsar/galaxy_it02
+  - user: galaxy_it03
+    password: "{{ rabbitmq_password_galaxy_it03 }}"
+    vhost: /pulsar/galaxy_it03
+  - user: galaxy_fr01
+    password: "{{ rabbitmq_password_galaxy_fr01 }}"
+    vhost: /pulsar/galaxy_fr01
+  - user: galaxy_es01
+    password: "{{ rabbitmq_password_galaxy_es01 }}"
+    vhost: /pulsar/galaxy_es01
+  - user: galaxy_fi01
+    password: "{{ rabbitmq_password_galaxy_fi01 }}"
+    vhost: /pulsar/galaxy_fi01
+  - user: galaxy_cz01
+    password: "{{ rabbitmq_password_galaxy_cz01 }}"
+    vhost: /pulsar/galaxy_cz01
+  - user: galaxy_sanjay_pulsar
+    password: "{{ rabbitmq_password_galaxy_sanjay_pulsar }}"
+    vhost: /pulsar/galaxy_sanjay_pulsar
+  - user: galaxy_mira_pulsar
+    password: "{{ rabbitmq_password_galaxy_mira_pulsar }}"
+    vhost: /pulsar/galaxy_mira_pulsar
+  - user: galaxy_sk01
+    password: "{{ rabbitmq_password_galaxy_sk01 }}"
+    vhost: /pulsar/galaxy_sk01
+  - user: galaxy_egi01
+    password: "{{ rabbitmq_password_galaxy_egi01 }}"
+    vhost: /pulsar/galaxy_egi01
+  - user: galaxy_bsc01
+    password: "{{ rabbitmq_password_galaxy_bsc01 }}"
+    vhost: /pulsar/galaxy_bsc01
+  - user: galaxy_cyf01
+    password: "{{ rabbitmq_password_galaxy_cyf01 }}"
+    vhost: /pulsar/galaxy_cyf01
+  - user: galaxy_hcmr01
+    password: "{{ rabbitmq_password_galaxy_hcmr01 }}"
+    vhost: /pulsar/galaxy_hcmr01
+
+rabbitmq_plugins:
+  - rabbitmq_management
+
+rabbitmq_config:
+  consumer_timeout: 21600000 # 6 hours in milliseconds
+  listeners:
+    tcp: none
+  ssl_listeners:
+    default: 5671
+  ssl_options:
+    cacertfile: /etc/ssl/certs/fullchain.pem
+    certfile: /etc/ssl/certs/cert.pem
+    keyfile: /etc/ssl/user/privkey-rabbitmq.pem
+    verify: verify_peer
+    fail_if_no_peer_cert: "false"
+  management_agent:
+    disable_metrics_collector: "false"
+  management:
+    disable_stats: "false"
+
+rabbitmq_container:
+  name: rabbit_hole
+  image: rabbitmq:3.9.11
+  hostname: "{{ inventory_hostname }}"
+
+# Redis
+redis_port: 6379
+redis_bind_interface: 0.0.0.0
+redis_rdbcompression: "yes"
+redis_dbfilename: dump.rdb
+redis_dbdir: /var/lib/redis
+redis_loglevel: "notice"
+redis_logfile: /var/log/redis/redis-server.log
+redis_conf_path: /etc/redis
+# Telegraf
+telegraf_plugins_extra:
+  prometheus:
+    plugin: prometheus
+    config:
+      - urls = ["http://172.17.0.2:15692/metrics"]

@@ -3,6 +3,12 @@ map $http_upgrade $connection_upgrade {
 	''      close;
 }
 
+upstream galaxy {
+	{% for n in range(galaxy_systemd_gunicorns) %}
+    	server unix:{{ galaxy_mutable_data_dir }}/{{ galaxy_systemd_gunicorn_socket_name }}_{{ n }}.sock;
+	{% endfor %}
+}
+
 server {
 	listen 443 default_server;
 	listen [::]:443 default_server;
@@ -34,24 +40,17 @@ server {
 	client_body_buffer_size 1024m;
 
 	location / {
-		uwsgi_pass      127.0.0.1:4001;
+		# This is the backend to send the requests to.
+		proxy_pass http://galaxy;
+		proxy_set_header Host $http_host;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header Upgrade $http_upgrade;
 
-		# For testing, send data to the private zergling.
-		# if ( $remote_addr ~* 95.208.248.14  ) {
-		#     uwsgi_pass      127.0.0.1:4020;
-		# }
 		# Throttle downloads. First 100Mb are free, after that 5Mb/s.
 		# users can move to FTP if they need / we can sort that out.
 		limit_rate_after 100m;
 		limit_rate 5m;
-
-		include         uwsgi_params;
-		proxy_hide_header x-frame-options;
-		add_header X-Content-Type-Options nosniff;
-
-		include uwsgi_params;
-		uwsgi_param HTTPS on;
-		uwsgi_param REQUEST_SCHEME https;
 
 		# Temporarily break downloading :(
 		location /api/libraries/datasets/download/ {
@@ -60,13 +59,16 @@ server {
 		#location /history/export_archive {
 		#	return 302 https://usegalaxy.eu;
 		#}
-	}
 
+		add_header X-Clacks-Overhead 'GNU James Taylor (@jxtx) Simon Gladman (@slugger70) Jim Johnson (@jj-umn)';
+	}
 	location ~ ^/api/dataset_collections/([^/]+)/download/?$ {
 		proxy_buffering off;
-		uwsgi_pass 127.0.0.1:4001;
-		uwsgi_param UWSGI_SCHEME $scheme;
-		include uwsgi_params;
+		proxy_pass http://galaxy;
+		proxy_set_header Host $http_host;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header Upgrade $http_upgrade;
 	}
 
 	location /_x_accel_redirect {
@@ -76,7 +78,7 @@ server {
 		add_header X-Content-Type-Options nosniff;
 
 		# CORS
-		if ($http_origin ~ "^https?://(covid19map\.elixir-luxembourg\.org|www\.bx\.psu\.edu)$") {
+                if ($http_origin ~ "^https?://(covid19map\.elixir-luxembourg\.org|avivator\.gehlenborglab\.org|www\.bx\.psu\.edu)$") {
 			add_header Access-Control-Allow-Origin $http_origin;
 			add_header Access-Control-Allow-Methods 'GET';
 			add_header Access-Control-Expose-Headers 'Content-Length,Content-Range';
@@ -85,7 +87,7 @@ server {
 	}
 
 	location /_upload {
-		upload_store {{ galaxy_config['app:main']['nginx_upload_store'] }};
+		upload_store {{ galaxy_config['galaxy']['nginx_upload_store'] }};
 		upload_limit_rate 32k;
 		upload_store_access user:rw group:rw all:rw;
 		upload_pass_form_field "";
@@ -109,8 +111,10 @@ server {
 		if ($request_method != POST) {
 				rewrite "" /api/jobs/$arg_job_id/files last;
 		}
-		upload_store {{ galaxy_config['app:main']['nginx_upload_job_files_store'] }};
-		upload_limit_rate 32k;
+		upload_store {{ galaxy_config['galaxy']['nginx_upload_job_files_store'] }};
+                # the rate limit might be needed if we have many Pulsar jobs that are writing data back
+		# we need to limit it because the disc IO can be too large, ideally this happens on a different node
+                # upload_limit_rate 32k;
 		upload_store_access user:rw group:rw all:rw;
 		upload_pass_form_field "";
 		upload_set_form_field "__${upload_field_name}_path" "$upload_tmp_path";
@@ -123,39 +127,38 @@ server {
 		rewrite "" /api/jobs/$arg_job_id/files;
 	}
 
+	location /api/upload/resumable_upload {
+		# Disable request and response buffering
+		proxy_request_buffering  off;
+		proxy_buffering          off;
+		proxy_http_version       1.1;
+
+		# Add X-Forwarded-* headers
+		proxy_set_header X-Forwarded-Host $host;
+		proxy_set_header X-Forwarded-Proto $scheme;
+
+		proxy_set_header         Upgrade $http_upgrade;
+		proxy_set_header         Connection "upgrade";
+		client_max_body_size     0;
+		proxy_pass http://upload.galaxyproject.eu:1081/api/upload/resumable_upload;
+	}
+
 	location /phinch {
 		root /opt;
 	}
 
-	location /static/welcome.html {
-		alias /opt/multisite-css/$host.html;
-	}
 
-	location /static {
-		alias {{ galaxy_server_dir }}/static;
+	location /static/vgcn {
 		expires 24h;
-		location /static/vgcn {
-				autoindex on;
-				alias /data/dnb01/vgcn/;
-		}
+		autoindex on;
+		alias /data/dnb01/vgcn/;
+	}
+	location /static/share {
+		expires 24h;
+		autoindex on;
+		alias /data/dnb01/share/;
 	}
 
-	location ~ /static/dist/base.css {
-		root /opt/multisite-css/;
-		try_files /$host.css /usegalaxy.eu.css =404;
-	}
-
-	location ~ /static/dist/hicexplorer.png {
-		alias /opt/multisite-css/hicexplorer.png;
-	}
-
-	location ~ /static/dist/annotation.png {
-		alias /opt/multisite-css/annotation.png;
-	}
-
-	location /robots.txt {
-		alias {{ galaxy_server_dir }}/static/robots.txt;
-	}
 
 	location ~ ^/plugins/(?<plug_type>[^/]+?)/((?<vis_d>[^/_]*)_?)?(?<vis_name>[^/]*?)/static/(?<static_file>.*?)$ {
 		alias /opt/galaxy/config/plugins/$plug_type/;
@@ -176,10 +179,6 @@ server {
 		proxy_http_version 1.1;
 		proxy_set_header Upgrade $http_upgrade;
 		proxy_set_header Connection "upgrade";
-	}
-
-	location /favicon.ico {
-		alias {{ galaxy_server_dir }}/static/favicon.ico;
 	}
 
 
@@ -212,6 +211,16 @@ server {
 
 	location /apollo_api/ {
 		proxy_pass http://apollo.internal.galaxyproject.eu/apollo_api/;
+		proxy_read_timeout 300;
+	}
+
+	location /beacon {
+		rewrite ^/beacon/?(.*)$ /$1 break;
+		proxy_pass http://beacon.galaxyproject.eu;
+		proxy_http_version 1.1;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header Host beacon.galaxyproject.eu;
 	}
 
 	location /external/phdcomics/ {
@@ -226,22 +235,12 @@ server {
 		return 301 https://docs.google.com/forms/d/e/1FAIpQLSf9w2MOS6KOlu9XdhRSDqWnCDkzoVBqHJ3zH_My4p8D8ZgkIQ/viewform;
 	}
 
+	location /gpu-request {
+		return 301 https://docs.google.com/forms/d/e/1FAIpQLSd-isWRKIX9QVRNJAEBVfh4pLpR3NsOAdOSgKpZH9sKdJ0rBg/viewform;
+	}
+
 	# TIaaS 2
-	location /tiaas {
-		uwsgi_pass 127.0.0.1:5002;
-		uwsgi_param UWSGI_SCHEME $scheme;
-		include uwsgi_params;
-	}
-
-	location /tiaas/static {
-		alias /opt/tiaas2/static;
-	}
-
-	location /join-training {
-		uwsgi_pass 127.0.0.1:5002;
-		uwsgi_param UWSGI_SCHEME $scheme;
-		include uwsgi_params;
-	}
+	{{ tiaas_nginx_routes }}
 
 	# For GTN in Galaxy Webhook
 	location /training-material/ {
@@ -281,6 +280,23 @@ server {
 	add_header X-Robots-Tag none;
 
 	client_max_body_size 1G; # aka max upload size, defaults to 1M
-	uwsgi_read_timeout 2400;
 
+	# BY-COVID federated analysis demonstration data (restricted access demo)
+	location /federated_analysis_data {
+		alias /data/dnb01/federated_analysis_demo_data/;
+		allow 10.5.68.0/24;
+		# BE instance IPs
+		allow 10.113.3.8;
+		allow 10.113.3.13;
+		deny all;
+	}
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    server_name humancellatlas.usegalaxy.eu;
+
+    return 302 $scheme://singlecell.usegalaxy.eu$request_uri;
 }

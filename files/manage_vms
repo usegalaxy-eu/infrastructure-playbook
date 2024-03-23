@@ -1,0 +1,146 @@
+#!/bin/bash
+# Description: This script can be used to do the following actions:
+# 1. Get stuck VMs names and IP addresses
+# 2. Get errored VMs names and IP addresses
+# 3. Restart stuck VMs
+# 4. Remove errored VMs
+# 5. Remove stuck VMs
+# 6. Remove drained VMs
+# 7. Remove a list of VMs
+# 8. Get the list of VMs with a specific flavor
+
+OPENSTACK_CLOUD="freiburg_galaxy"
+OPENSTACK_CMD="/opt/galaxy/venv/bin/openstack --os-cloud=$OPENSTACK_CLOUD"
+
+get_list_of_stuck_vms(){
+    addresses_and_names="$($OPENSTACK_CMD server list --status='ACTIVE' --name 'vgcnbwc-worker-*' -c Networks -c Name -f json | jq -r '.[] | "\(.Networks.bioinf[0]) \(.Name)"')"
+    mapfile -t addresses < <(echo "$addresses_and_names" | cut -d' ' -f1)
+    mapfile -t names < <(echo "$addresses_and_names" | cut -d' ' -f2)
+
+    pids=()
+    for address in "${addresses[@]}"; do
+        ping -w 5 -c 1 "$address" 2>&1 > /dev/null & pids+=($!)
+    done
+
+    return_codes=()
+    for pid in "${pids[@]}"; do
+        wait "$pid"
+        return_codes+=($?)
+    done
+
+    stuck_workers=()
+    for i in "${!names[@]}"; do
+        if [ "${return_codes[$i]}" -eq 1 ]; then
+            stuck_workers+=("${names[$i]}")
+        fi
+    done
+
+    printf '%s\n' "${stuck_workers[@]}"
+}
+
+get_list_of_errored_vms(){
+    errored_vms="$($OPENSTACK_CMD server list --status='ERROR' -f json -c Name | jq -r '.[] | "\(.Name)"')"
+    echo -e "$errored_vms"
+}
+
+get_list_of_drained_vms(){
+    drained_vms="$(condor_status -any -af Name State Activity | grep 'Drained' | awk '{print $1}' | sed -e 's/slot.*@//' -e 's/\.novalocal//')"
+    echo -e "$drained_vms"
+}
+
+get_stuck_vms(){
+    VGCNBWC_WORKERS="$($OPENSTACK_CMD server list --name 'vgcnbwc-worker-*' -c Networks -c Name -f json | jq -r '.[] | "\(.Networks.bioinf[0]) \(.Name)"')"
+    non_htcondor_node_names=$(get_list_of_stuck_vms)
+    for i in $non_htcondor_node_names; do
+        echo -e "$VGCNBWC_WORKERS" | grep "$i"
+    done
+}
+
+get_errored_vms(){
+    VGCNBWC_WORKERS="$($OPENSTACK_CMD server list --name 'vgcnbwc-worker-*' -c Networks -c Name -f json | jq -r '.[] | "\(.Networks.bioinf[0]) \(.Name)"')"
+    errored_vms=$(get_list_of_errored_vms)
+    for i in $errored_vms; do
+        echo -e "$VGCNBWC_WORKERS" | grep "$i"
+    done
+}
+
+get_flavored_vms(){
+    $OPENSTACK_CMD server list --flavor $1 -c Networks  -c Name -f json | jq -r '.[] | "\(.Networks.bioinf[0]) \(.Name)"'
+}
+
+hard_restart_stuck_vms(){
+    non_htcondor_node_names=$(get_list_of_stuck_vms)
+    for i in $non_htcondor_node_names; do
+        echo "===>Hard rebooting host: $i<==="
+        $OPENSTACK_CMD server reboot $i --hard
+    done
+}
+
+remove_errored_vms(){
+    errored_vms=$(get_list_of_errored_vms)
+    for i in $errored_vms; do
+        echo "===>Deleting errored host: $i<==="
+        $OPENSTACK_CMD server delete $i
+    done
+}
+
+remove_stuck_vms(){
+    non_htcondor_node_names=$(get_list_of_stuck_vms)
+    for i in $non_htcondor_node_names; do
+        echo "===>Deleting stuck host: $i<==="
+        $OPENSTACK_CMD server delete $i
+    done
+}
+
+remove_drained_vms(){
+    drained_vms=$(get_list_of_drained_vms)
+    for i in $drained_vms; do
+        echo "===>Deleting drained host: $i<==="
+        $OPENSTACK_CMD server delete $i
+    done
+}
+
+remove_list_of_vms(){
+    for i in $1; do
+        echo "===>Deleting host: $i<==="
+        $OPENSTACK_CMD server delete $i
+    done
+}
+
+# Parse command line argument and execute the appropriate function
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 [--get-stuck-vms|--get-errored-vms|--hard-restart-stuck-vms|--remove-errored-vms|--remove-stuck-vms]"
+    exit 1
+else
+    case "$1" in
+        --get-stuck-vms)
+            get_stuck_vms
+            ;;
+        --get-errored-vms)
+            get_errored_vms
+            ;;
+        --get-flavored-vms)
+            get_flavored_vms "$2"
+            ;;
+        --hard-restart-stuck-vms)
+            hard_restart_stuck_vms
+            ;;
+        --remove-errored-vms)
+            remove_errored_vms
+            ;;
+        --remove-stuck-vms)
+            remove_stuck_vms
+            ;;
+        --remove-drained-vms)
+            remove_drained_vms
+            ;;
+        --remove-list-of-vms)
+            remove_list_of_vms "$2"
+            ;;
+        *)
+            echo "Invalid option: $1"
+            echo "Usage: $0 [--get-stuck-vms|--get-errored-vms|--hard-restart-stuck-vms|--remove-errored-vms|--remove-stuck-vms]"
+            exit 1
+            ;;
+    esac
+fi

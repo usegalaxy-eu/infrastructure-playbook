@@ -1,0 +1,346 @@
+---
+- name: Create a systemd-nspawn container aimed at running a second HTCondor installation.
+  hosts: htcondor-secondary-submit-host
+  handlers:
+    - name: Reload sshd  # (in the container)
+      when: nspawn_ssh | default(no)
+      become: true
+      ansible.builtin.shell:
+        executable: /bin/bash
+        cmd: "systemd-run --pipe --machine {{ nspawn_name }} /bin/systemctl reload sshd"
+      changed_when: true
+  vars_files:
+    - mounts/mountpoints.yml
+    - secret_group_vars/all.yml
+    - secret_group_vars/htcondor-secondary-submit-host.yml
+  pre_tasks:
+    # Because it is already disabled for sn06 and this setup is needed just
+    # temporarily.
+    - name: Disable SELinux.
+      become: true
+      ansible.posix.selinux:
+        state: disabled
+  roles:
+    - kysrpex.systemd_nspawn
+  post_tasks:
+    - name: Get the location of the container image.
+      ansible.builtin.shell:
+        executable: /bin/bash
+        cmd: |
+          set -o pipefail
+          machinectl image-status htcondor | grep "Path: " | awk '{$1=$1};1' | cut -d' ' -f2
+      register: nspawn_image
+      changed_when: false
+
+    - name: Configure the container's sshd.
+      when: nspawn_ssh and (nspawn_ssh_config is defined or nspawn_ssh_config_path is defined)
+      become: true
+      block:
+        - name: Write the sshd configuration to sshd_config.
+          ansible.builtin.lineinfile:
+            path: "{{ (nspawn_image.stdout, nspawn_ssh_config_path | regex_replace('(\\/*)?(.*)', '\\2')) | path_join }}"
+            regexp: '^\s*(?:#)?\s*{{ item.key | regex_escape() }}'
+            line: "{{ item.key }} {{ item.value }}"
+          with_dict: "{{ nspawn_ssh_config }}"
+          notify: Reload sshd
+
+        - name: Replace ssh host keys (private).
+          when: nspawn_ssh_host_keys is defined and nspawn_ssh_host_keys_private is defined
+          ansible.builtin.copy:
+            dest: "{{ (nspawn_image.stdout, nspawn_ssh_config_path | regex_replace('(\\/*)?(.*)', '\\2') | dirname, 'ssh_host_' + item.key + '_key') | path_join }}"
+            content: "{{ item.value }}"
+            mode: "0600"
+          with_dict: "{{ nspawn_ssh_host_keys_private }}"
+          notify: Reload sshd
+
+        - name: Replace ssh host keys (public).
+          when: nspawn_ssh_host_keys is defined and nspawn_ssh_host_keys_private is defined
+          ansible.builtin.copy:
+            dest: "{{ (nspawn_image.stdout, nspawn_ssh_config_path | regex_replace('(\\/*)?(.*)', '\\2') | dirname, 'ssh_host_' + item.key + '_key.pub') | path_join }}"
+            content: "{{ item.value }}"
+            mode: "0644"
+          with_dict: "{{ nspawn_ssh_host_keys }}"
+          notify: Reload sshd
+
+        - name: Replace ssh host keys (certs).
+          when: nspawn_ssh_host_keys is defined and nspawn_ssh_host_keys_private is defined and nspawn_ssh_host_certs is defined
+          ansible.builtin.copy:
+            dest: "{{ (nspawn_image.stdout, nspawn_ssh_config_path | regex_replace('(\\/*)?(.*)', '\\2') | dirname, 'ssh_host_' + item.key + '_key-cert.pub') | path_join }}"
+            content: "{{ item.value }}"
+            mode: "0644"
+          with_dict: "{{ nspawn_ssh_host_certs }}"
+          notify: Reload sshd
+
+        - name: Add certs to sshd_config.
+          when: nspawn_ssh_host_keys is defined and nspawn_ssh_host_keys_private is defined and nspawn_ssh_host_certs is defined
+          ansible.builtin.lineinfile:
+            path: "{{ (nspawn_image.stdout, nspawn_ssh_config_path | regex_replace('(\\/*)?(.*)', '\\2')) | path_join }}"
+            regexp: '^\s*(?:#)?\s*HostCertificate\s+.*ssh_host_{{ item.key }}_key-cert.pub'
+            line: "HostCertificate {{ nspawn_ssh_config_path | dirname }}/ssh_host_{{ item.key }}_key-cert.pub"
+          with_dict: "{{ nspawn_ssh_host_certs }}"
+          notify: Reload sshd
+
+        - name: Ensure the ssh configuration directory exists (for root).
+          when: nspawn_ssh_authorized_keys is defined
+          ansible.builtin.file:
+            path: "{{ (nspawn_image.stdout, '/root/.ssh' | regex_replace('(\\/*)?(.*)', '\\2')) | path_join }}"
+            state: directory
+            owner: root
+            group: root
+            mode: "0700"
+
+        - name: Ensure the authorized_keys file exists (for root).
+          when: nspawn_ssh_authorized_keys is defined
+          ansible.builtin.file:
+            path: "{{ (nspawn_image.stdout, '/root/.ssh/authorized_keys' | regex_replace('(\\/*)?(.*)', '\\2')) | path_join }}"
+            state: touch
+            owner: root
+            group: root
+            mode: "0600"
+
+        - name: Authorize specific users log-in as root.
+          when: nspawn_ssh_authorized_keys is defined
+          ansible.builtin.lineinfile:
+            path: "{{ (nspawn_image.stdout, '/root/.ssh/authorized_keys' | regex_replace('(\\/*)?(.*)', '\\2')) | path_join }}"
+            regexp: '^\s*(?:#)?\s*{{ item | regex_escape() }}'
+            line: "{{ item }}"
+          loop: "{{ nspawn_ssh_authorized_keys }}"
+
+    - name: Enable and start the container.
+      become: true
+      block:
+        - name: Enable the container.
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: "machinectl enable {{ nspawn_name }}"
+          register: nspawn_container_enable
+          changed_when: nspawn_container_enable.rc == 0 and nspawn_container_enable.stderr != ''
+
+        - name: Check if the container is already running.
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: "machinectl show {{ nspawn_name }} -p State --value"
+          register: nspawn_status
+          changed_when: false
+          failed_when: false
+
+        - name: Start the container.
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: "machinectl start {{ nspawn_name }}"
+          register: nspawn_container_enable
+          changed_when: nspawn_status.stdout != 'running'
+
+    - name: Enable and start sshd in the container.
+      when: nspawn_ssh | default(no)
+      become: true
+      block:
+        - name: Check if sshd is enabled in the container.
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: "systemd-run --pipe --machine {{ nspawn_name }} /bin/systemctl is-enabled sshd"
+          register: nspawn_ssh_enabled
+          changed_when: false
+          failed_when: false
+
+        - name: Enable sshd in the container.
+          become: true
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: "systemd-run --pipe --machine {{ nspawn_name }} /bin/systemctl enable sshd"
+          changed_when: nspawn_ssh_enabled.rc != 0
+
+        - name: Check if sshd is active in the container.
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: "systemd-run --pipe --machine {{ nspawn_name }} /bin/systemctl is-active sshd"
+          register: nspawn_ssh_active
+          changed_when: false
+          failed_when: false
+
+        - name: Start sshd in the container.
+          become: true
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: "systemd-run --pipe --machine {{ nspawn_name }} /bin/systemctl start sshd"
+          changed_when: nspawn_ssh_active.rc != 0
+
+    - name: Read the container's host key.
+      become: true
+      ansible.builtin.slurp:
+        src: "{{ (nspawn_image.stdout, '/etc/ssh/ssh_host_ecdsa_key.pub' | regex_replace('(\\/*)?(.*)', '\\2')) | path_join }}"
+      register: nspawn_ssh_host_key
+      when: nspawn_ssh_host_trust_container
+
+    - name: Trust the container's host key.
+      ansible.builtin.known_hosts:
+        name: "[127.0.0.1]:{{ nspawn_ssh_config.Port }}"
+        key: "[127.0.0.1]:{{ nspawn_ssh_config.Port }} {{ nspawn_ssh_host_key.content | b64decode }}"
+      when: nspawn_ssh_host_trust_container
+
+    - name: Allow the Galaxy user to run HTCondor commands in the container.
+      # Uses /etc/sudoers. Ideally this would be solved using what is requested
+      # in this issue https://github.com/systemd/systemd/issues/10997, but the
+      # issue is still open.
+      become: true
+      community.general.sudoers:
+        name: htcondor-nspawn
+        user: "{{ galaxy_user.name }}"
+        nopassword: true
+        validation: required
+        setenv: true
+        commands:
+          - "{{ nspawn_condor_rm_command }} *"
+          - "{{ nspawn_condor_ssh_to_job_command }} *"
+          - "{{ nspawn_condor_submit_command }} *"
+
+    - name: Make the environment variables available to the Galaxy handlers also available to the container.
+      become: true
+      ansible.builtin.copy:
+        content: "{{ nspawn_galaxy_environment_vars }}"
+        dest: "{{ (nspawn_image.stdout, nspawn_galaxy_environment_file | regex_replace('(\\/*)?(.*)', '\\2')) | path_join }}"
+        owner: "{{ galaxy_user.name }}"
+        group: "{{ galaxy_group.name }}"
+        mode: "0440"
+
+- name: HTCondor cluster.
+  hosts: htcondor:!sn06.galaxyproject.eu
+  become: true
+  handlers:
+    - name: Reload HTCondor
+      when: "'condor_service' in service_facts.ansible_facts.services and \
+        service_facts.ansible_facts.services['condor.service'].state == 'running'"
+      become: true
+      ansible.builtin.service:
+        name: condor
+        state: reloaded
+  vars_files:
+    - secret_group_vars/db-main.yml  # PostgreSQL password (galaxyproject.gxadmin)
+  pre_tasks:
+    - name: Ensure findutils is installed. (handy.os_setup)
+      become: true
+      ansible.builtin.package:
+        name: findutils
+        state: installed
+
+    - name: Ensure gxadmin dependencies are installed. (galaxyproject.gxadmin)
+      become: true
+      ansible.builtin.package:
+        name:
+          - git
+          - make
+          - postgresql
+        state: installed
+      when: htcondor_role_submit
+
+    - name: Ensure galaxy_jwd script dependencies are installed. (usegalaxy-eu.bashrc)
+      become: true
+      ansible.builtin.package:
+        name:
+          - python3-psycopg2
+          - python3-pyyaml
+        state: installed
+      when: htcondor_role_submit
+
+    - name: Ensure cron is installed.
+      become: true
+      ansible.builtin.package:
+        name:
+          - crontabs
+          - cronie-anacron
+      when: htcondor_role_submit
+
+    - name: Ensure crond is enabled and started.
+      become: true
+      ansible.builtin.service:
+        name: crond
+        enabled: true
+        state: started
+      when: htcondor_role_submit
+
+    - name: Ensure the HTCondor configuration directory exists.
+      become: true
+      ansible.builtin.file:
+        path: /etc/condor
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Template HTCondor configuration.
+      become: true
+      ansible.builtin.template:
+        src: htcondor/condor_config.local.j2
+        dest: /etc/condor/condor_config.local
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Reload HTCondor
+
+    - name: Open HTCondor shared port in the firewall.
+      become: true
+      ansible.posix.firewalld:
+        port: "{{ htcondor_port }}/tcp"
+        state: enabled
+        permanent: true
+        immediate: true
+      when: htcondor_role_manager
+
+    - name: Check if HTCondor is running.
+      ansible.builtin.service_facts:
+      register: service_facts
+  roles:
+    - usegalaxy_eu.handy.os_setup
+    - name: usegalaxy-eu.bashrc
+      when: htcondor_role_submit
+    - name: hxr.postgres-connection
+      when: htcondor_role_submit
+    - name: galaxyproject.gxadmin
+      when: htcondor_role_submit
+    - grycap.htcondor
+    - name: usegalaxy-eu.htcondor_release
+      when: htcondor_role_submit and inventory_hostname != "maintenance.galaxyproject.eu"
+    - name: usegalaxy-eu.fix-stop-ITs
+      when: htcondor_role_submit and inventory_hostname != "maintenance.galaxyproject.eu"
+    - name: usegalaxy-eu.remove-orphan-condor-jobs
+      when: htcondor_role_submit and inventory_hostname != "maintenance.galaxyproject.eu"
+  post_tasks:
+    - name: Add /usr/local/bin to Galaxy's PATH in bashrc file. (usegalaxy-eu.fix-stop-ITs)
+      become: true
+      when: htcondor_role_submit
+      lineinfile:
+        path: "{{ galaxy_user.home }}/.bashrc"
+        line: 'export PATH="/usr/local/bin:$PATH"'
+
+    - name: Issue HTCondor token for the Galaxy user. (usegalaxy-eu.fix-stop-ITs)
+      become: true
+      when: htcondor_role_submit
+      block:
+        - name: Ensure tokens directory exists.
+          ansible.builtin.file:
+            path: "{{ galaxy_user.home }}/.condor/tokens.d"
+            state: directory
+            owner: "{{ galaxy_user.name }}"
+            group: "{{ galaxy_group.name }}"
+            mode: "0700"
+
+        - name: Check if token already exists.
+          ansible.builtin.stat:
+            path: "{{ galaxy_user.home }}/.condor/tokens.d/{{ galaxy_user.name }}@{{ htcondor_server }}"
+          register: htcondor_token
+
+        - name: Issue token.
+          when: not htcondor_token.stat.exists
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: 'condor_token_create -identity {{ galaxy_user.name }}@{{ htcondor_server }}
+              > "{{ galaxy_user.home }}/.condor/tokens.d/{{ galaxy_user.name }}@{{ htcondor_server }}"'
+            creates: "{{ galaxy_user.home }}/.condor/tokens.d/{{ galaxy_user.name }}@{{ htcondor_server }}"
+
+        - name: Configure token permissions.
+          when: not htcondor_token.stat.exists
+          ansible.builtin.file:
+            path: "{{ galaxy_user.home }}/.condor/tokens.d/{{ galaxy_user.name }}@{{ htcondor_server }}"
+            owner: "{{ galaxy_user.name }}"
+            group: "{{ galaxy_group.name }}"
+            mode: "0400"

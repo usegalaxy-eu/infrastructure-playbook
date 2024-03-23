@@ -6,7 +6,7 @@
     hour: 1
     user: "{{ galaxy_user.name }}"
     job: |
-      cd "{{ galaxy_config['app:main']['ftp_upload_dir'] }}" && find . -type f -not -newermt "3 months ago" -exec rm '{}' +
+      cd "{{ galaxy_config['galaxy']['ftp_upload_dir'] }}" && find . -type f -not -newermt "3 months ago" -exec rm '{}' +
 
 - name: Copy script to create FTP users
   ansible.builtin.template:

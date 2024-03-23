@@ -5,17 +5,26 @@ stats.galaxyproject.eu
 [build]
 build.galaxyproject.eu ansible_ssh_user=root
 
+[beacon]
+beacon.galaxyproject.eu ansible_ssh_user=rocky
+
+[beacon_import]
+beacon-import.galaxyproject.eu
+
 [influxdb]
 influxdb.galaxyproject.eu
 
-[proxy-internal]
-proxy.internal.galaxyproject.eu
+[mq]
+mq.galaxyproject.eu
 
 [incoming]
 incoming.galaxyproject.eu
 
 [upload]
-10.5.68.181
+upload.galaxyproject.eu
+
+[proxy]
+proxy.galaxyproject.eu
 
 #[ftp]
 #ftp.usegalaxy.eu
@@ -27,8 +36,7 @@ apollo.internal.galaxyproject.eu
 #sentry.galaxyproject.eu
 
 [cvmfsstratum1servers]
-10.5.68.209
-#cvmfs1-ufr0.galaxyproject.eu
+cvmfs1-ufr0.internal.galaxyproject.eu
 
 [cvmfs-stratum0]
 cvmfs-stratum0.galaxyproject.eu
@@ -36,11 +44,8 @@ cvmfs-stratum0.galaxyproject.eu
 [telescope]
 telescope.internal.galaxyproject.eu
 
-[hicbrowser]
-192.52.32.160
-
 [galaxy-test]
-test.internal.usegalaxy.eu
+test.internal.usegalaxy.eu ansible_ssh_user=rocky
 
 [denbistratum0]
 cvmfs-stratum0-test.galaxyproject.eu
@@ -48,32 +53,74 @@ cvmfs-stratum0-test.galaxyproject.eu
 [plausible]
 plausible.galaxyproject.eu
 
-#[job-working-dir]
-#10.5.68.72
-#job-working-dir.internal.galaxyproject.eu
+[celerycluster]
+celery-0.galaxyproject.eu
 
 # Baremetal
 [galaxyservers]
-sn04.bi.uni-freiburg.de ansible_ssh_user=root
-sn06.galaxyproject.eu ansible_ssh_user=centos
-
-[galaxy]
-sn04.bi.uni-freiburg.de ansible_ssh_user=root
+sn06.galaxyproject.eu
+sn07.galaxyproject.eu
 
 [sn06]
-sn06.galaxyproject.eu ansible_ssh_user=centos
+sn06.galaxyproject.eu
+
+[sn07]
+sn07.galaxyproject.eu
 
 [sn05]
 sn05.galaxyproject.eu ansible_ssh_user=root
 
-#[build01]
-#build01.bwcloud.uni-freiburg.de ansible_ssh_user=root
-
-#[cvmfspreload]
-#10.19.1.201 ansible_ssh_user=root #ssds1.rz.privat
+[maintenance]
+maintenance.galaxyproject.eu
 
 [all:vars]
 ansible_ssh_user=centos
 
-[central-manager]
-manager.vgcn.galaxyproject.eu ansible_ssh_user=root
+[htcondor:children]
+htcondor-manager
+htcondor-submit
+htcondor-secondary
+
+[htcondor-manager]
+sn06.galaxyproject.eu
+
+[htcondor-manager:children]
+htcondor-secondary-manager
+
+[htcondor-manager:vars]
+ansible_group_priority=2
+
+[htcondor-submit]
+sn06.galaxyproject.eu
+
+[htcondor-submit:children]
+htcondor-secondary-submit
+
+[htcondor-submit:vars]
+ansible_group_priority=2
+
+[htcondor-secondary:children]
+htcondor-secondary-manager
+htcondor-secondary-submit
+
+[htcondor-secondary:vars]
+ansible_group_priority=3
+
+[htcondor-secondary-manager]
+build.galaxyproject.eu ansible_ssh_user=root
+
+[htcondor-secondary-manager:vars]
+ansible_group_priority=4
+
+[htcondor-secondary-submit]
+nspawn-htcondor.sn06.galaxyproject.eu ansible_host=127.0.0.1 ansible_port=2222 ansible_ssh_user=root ansible_ssh_common_args='-o HostKeyAlias=nspawn-htcondor.sn06.galaxyproject.eu -o ProxyCommand="ssh -W %h:%p -q centos@sn06.galaxyproject.eu"'
+maintenance.galaxyproject.eu
+
+[htcondor-secondary-submit:vars]
+ansible_group_priority=4
+
+[htcondor-secondary-submit-host]
+sn06.galaxyproject.eu
+
+[htcondor-secondary-submit-host:vars]
+ansible_group_priority=2

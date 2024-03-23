@@ -2,10 +2,12 @@
 # Autofs
 autofs_mount_points:
   - data
+  - jwd
 
 autofs_conf_files:
   data:
     - jwd     -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/ws01/&
+    - jwd01   -rw,hard,nosuid       zfs1.galaxyproject.eu:/export/&
 
 autofs_service.install: true
 autofs_service.enable: true
@@ -26,7 +28,7 @@ galaxy_user:
 
 galaxy_config:
   galaxy:
-    ftp_upload_dir: /data/jwd/incoming
+    ftp_upload_dir: /data/jwd01/incoming
 
 
 # Certbot
@@ -62,6 +64,7 @@ nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
 
 
 # Proftpd:
+proftpd_modules_config_file: /etc/proftpd/modules.conf
 proftpd_galaxy_auth: true
 galaxy_ftp_upload_dir: "{{ galaxy_config.galaxy.ftp_upload_dir }}"
 proftpd_display_connect: |

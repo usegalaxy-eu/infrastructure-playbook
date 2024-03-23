@@ -1,7 +1,13 @@
 ---
 # Autofs
-usegalaxy_eu_autofs_mounts:
+autofs_service.install: true
+autofs_service.enable: true
+
+autofs_mount_points:
   - data
+  - gxtest
+  - gxkey
+  - jwd
 
 # packages
 software_groups_to_install:
@@ -12,23 +18,23 @@ software_groups_to_install:
   - utils
 
 # HTCondor
-condor_host: "condor-cm.galaxyproject.eu"
-condor_allow_write: "10.5.68.0/24, 132.230.68.0/24, 132.230.223.0/24, 132.230.153.0/28, *.bi.uni-freiburg.de"
-condor_daemons:
-  - COLLECTOR
-  - MASTER
-  - NEGOTIATOR
-condor_allow_negotiator: $(ALLOW_WRITE)
-condor_allow_administrator: "$(ALLOW_NEGOTIATOR)"
-condor_network_interface: ens802f0.2368
-condor_extra: |
-  MASTER_UPDATE_INTERVAL = 150
-  CLASSAD_LIFETIME = 300
-  NEGOTIATOR_INTERVAL = 15
-  NEGOTIATOR_UPDATE_INTERVAL = 100
-  JOB_START_COUNT = 250
-  JOB_START_DELAY = 0
-  NEGOTIATOR_POST_JOB_RANK = isUndefined(RemoteOwner) * (10000 - TotalLoadAvg)
+# condor_host: "condor-cm.galaxyproject.eu"
+# condor_allow_write: "10.5.68.0/24, 132.230.223.0/24, 132.230.153.0/28"
+# condor_daemons:
+#   - COLLECTOR
+#   - MASTER
+#   - NEGOTIATOR
+# condor_allow_negotiator: $(ALLOW_WRITE)
+# condor_allow_administrator: "$(ALLOW_NEGOTIATOR)"
+# condor_network_interface: ens802f0.2368
+# condor_extra: |
+#   MASTER_UPDATE_INTERVAL = 150
+#   CLASSAD_LIFETIME = 300
+#   NEGOTIATOR_INTERVAL = 15
+#   NEGOTIATOR_UPDATE_INTERVAL = 100
+#   JOB_START_COUNT = 250
+#   JOB_START_DELAY = 0
+#   NEGOTIATOR_POST_JOB_RANK = isUndefined(RemoteOwner) * (10000 - TotalLoadAvg)
 
 # PostgreSQL
 postgresql_conf:
@@ -44,21 +50,33 @@ postgresql_conf:
   - checkpoint_completion_target: 0.9
   - random_page_cost: 1.0
   - effective_cache_size: "16GB"
-# log dirs not set up yet
-#  - log_directory: "'/export/backups/pgsql/pg_log'"
-#  - log_checkpoints: "on"
 #  - log_line_prefix: "'%t:%r:%u@%d:[%p]<%m>: '"
-#  - log_min_duration_statement: 100
+  - log_checkpoints: "on"
+  - log_min_duration_statement: 500
 postgresql_pg_hba_conf:
+  - "host    postgres        galaxy          132.230.223.239/32      md5"
+  - "host    postgres        galaxy          10.5.68.237/32          md5"
+  - "host    postgres        galaxy-test     10.5.68.154/32          md5"
   - "host    galaxy          galaxy          132.230.223.239/32      md5"
+  - "host    galaxy          galaxy          132.230.223.238/32      md5"
+  - "host    galaxy          galaxy          10.5.68.237/32          md5"
+  - "host    galaxy          galaxy          10.5.68.126/32          md5"
+  - "host    galaxy          galaxy          10.5.68.158/32          md5"
+  - "host    galaxy          galaxy          10.5.68.168/32          md5"
+  - "host    galaxy          galaxy          100.118.169.22/32       md5"
   - "host    galaxy          galaxy-readonly 132.230.223.239/32      md5"
+  - "host    galaxy          galaxy-readonly 10.5.68.237/32          md5"
+  - "host    galaxy          galaxy-readonly 10.5.68.158/32          md5"
+  - "host    galaxy          galaxy-readonly 132.230.223.238/32      md5"
   - "host    tiaas           tiaas           132.230.223.239/32      md5"
+  - "host    tiaas           tiaas           132.230.223.238/32      md5"
+  - "host    tiaas           tiaas           10.5.68.237/32          md5"
   - "host    galaxy-test     galaxy-test     132.230.223.239/32      md5"
   - "host    galaxy-test     galaxy-test     10.5.68.0/24            md5"
-  - "host    galaxy          galaxyftp       132.230.223.103/32      md5"
+  - "host    galaxy          galaxyftp       132.230.223.213/32      md5"
   - "host    galaxy          galaxyftp       10.5.68.0/24            md5"
   - "host    galaxy          galaxy-apollo   10.5.68.0/24            md5"
   - "host    apollo          apollo          10.5.68.0/24            md5"
   - "host    chado           apollo          10.5.68.0/24            md5"
   - "host    grt             grt             10.5.68.0/24            md5"
-postgresql_pgdump_dir: "/var/lib/pgsql/pgdump"
+postgresql_pgdump_dir: "/var/lib/pgsql/pgdump2"

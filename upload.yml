@@ -1,43 +1,29 @@
 ---
-- name: Install and configure tusd
+- name: Install and configure rustus
   hosts: upload
   become: true
   become_user: root
-  vars:
-    tusd_instances:
-      - name: test_uploads
-        # user that tusd will run as
-        user: "{{ galaxy_user.name }}"
-        # group that tusd will run as
-        group: "{{ galaxy_group.name }}"
-        # args passed to tusd
-        args:
-          - -host=upload.galaxyproject.eu
-          - -port=1080
-          - -upload-dir=/data/dnb01/galaxy_db/tmp
-          - -hooks-http=https://test.usegalaxy.eu/api/upload/hooks
-          - -hooks-http-forward-headers=X-Api-Key,Cookie
-      - name: main_uploads
-        # user that tusd will run as
-        user: "{{ galaxy_user.name }}"
-        # group that tusd will run as
-        group: "{{ galaxy_group.name }}"
-        # args passed to tusd
-        args:
-          - -host=upload.galaxyproject.eu
-          - -port=1081
-          - -upload-dir=/data/jwd/tmp
-          - -hooks-http=https://usegalaxy.eu/api/upload/hooks
-          - -hooks-http-forward-headers=X-Api-Key,Cookie
+  vars_files:
+    - group_vars/all.yml
+    - secret_group_vars/sentry.yml
+    - mounts/mountpoints.yml
+    - mounts/dest/all.yml
+  pre_tasks:
+    - ansible.posix.firewalld:
+        zone: public
+        port: 1080-1081/tcp
+        permanent: true
+        state: enabled
 
   roles:
     - role: usegalaxy_eu.handy.os_setup
       vars:
         enable_remap_user: true
+        enable_create_user: true
         enable_kernel_5: true
         enable_install_software: true
-    - usegalaxy-eu.create-user
+    - influxdata.chrony
     ## Filesystems
     - usegalaxy-eu.autofs     # Setup the mount points which will be needed later
 
-    - galaxyproject.tusd
+    - usegalaxy_eu.rustus

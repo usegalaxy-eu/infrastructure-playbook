@@ -4,13 +4,15 @@
   doc: Your Dropbox files - configure an access token via the user preferences
   accessToken: ${user.preferences['dropbox|access_token']}
 
-#- type: webdav
-#  id: b2drop
-#  doc: B2Drop WebDAV server
-#  url: https://b2drop.eudat.eu
-#  root: /remote.php/dav/files/${user.preferences['b2drop|username']}/
-#  login: ${user.preferences['b2drop|username']} 
-#  password: ${user.preferences['b2drop|password']}
+- type: webdav
+  id: b2drop
+  doc: B2Drop WebDAV server
+  url: https://b2drop.eudat.eu
+  root: /remote.php/dav/files/${user.preferences['b2drop|username']}/
+  use_temp_files: true
+  temp_path: /data/jwd04/tmp
+  login: ${user.preferences['b2drop|username']} 
+  password: ${user.preferences['b2drop|password']}
 
 - type: webdav
   id: generic_nextcloud
@@ -19,16 +21,20 @@
   writable: true
   url: ${user.preferences['nextcloud|url']}
   root: ${user.preferences['nextcloud|root']}
+  use_temp_files: true
+  temp_path: /data/jwd04/tmp
   login: ${user.preferences['nextcloud|username']}
   password: ${user.preferences['nextcloud|password']}
 
 - type: webdav
-  id: ergo_nextcloud
+  id: erga_nextcloud
   label: ERGA Nextcloud
   doc: ERGA Pilot storage provided by BSC
   writable: true
   url: 'https://ergapilot.bsc.es'
   root: '/remote.php/webdav'
+  use_temp_files: true
+  temp_path: /data/jwd04/tmp
   login: "{{ erga_nextcloud_login }}"
   password: "{{ erga_nextcloud_password }}"
   requires_groups: erga
@@ -44,6 +50,12 @@
   id: pdb-gzip             
   doc: Protein Data Bank (PDB)
   label: PDB
+
+- type: posix
+  root: '/data/db/models/'
+  id: ml-models
+  doc: ML/AI models for PyTorch, TensorFlow, Keras ...
+  label: ML models
 
 - type: ftp
   id: ebi-ftp
@@ -100,21 +112,41 @@
   port: 2222
 
 - type: s3fs
+  label: Generic S3 instance
+  id: generic_s3
+  doc: Access to a generic S3 endpoint.
+  endpoint_url: ${user.preferences['generic_s3|endpoint_url']}
+  bucket: ${user.preferences['generic_s3|bucket']}
+  writable: true
+  secret: ${user.preferences['generic_s3|secret']}
+  key: ${user.preferences['generic_s3|key']}
+
+- type: s3fs
   label: Genome Ark
   id: genomeark
   doc: Access to Genome Ark open data on AWS.
   bucket: genomeark
   anon: true
 
-- type: s3
+- type: s3fs
   label: Genome Ark Test Instance
   id: genomeark_galaxy
   doc: Access to Genome Ark open data on AWS.
-  bucket_name: genomeark
+  bucket: genomeark
   requires_groups: vgp
   writable: true
-  aws_secret_access_key: "{{ genomeark_galaxy_aws_secret_access_key }}"
-  aws_access_key_id: "{{ genomeark_galaxy_aws_access_key_id }}"
+  secret: "{{ genomeark_galaxy_aws_secret_access_key }}"
+  key: "{{ genomeark_galaxy_aws_access_key_id }}"
+
+- type: s3fs
+  label: Gilsbach S3 ElementBio
+  id: gilsback_element_bio
+  doc: Access to an ElementBio S3 bucket
+  bucket: elembio-macro-galaxy
+  requires_groups: gilsbach
+  writable: true
+  secret: "{{ gilsback_element_bio_aws_secret_access_key }}"
+  key: "{{ gilsback_element_bio_aws_access_key_id }}"
 
 - type: s3fs
   label: "ONT open data"
@@ -149,6 +181,20 @@
   id: encode-public
   doc: The Encyclopedia of DNA Elements (ENCODE) Consortium is an international collaboration of research groups funded by the National Human Genome Research Institute (NHGRI)
   bucket: encode-public
+  anon: true
+
+- type: s3fs
+  label: Sentinel-3
+  id: meeo-s3-nrt
+  doc: European Commission’s Copernicus Earth Observation Programme. Sentinel-3 is a polar orbiting satellite that completes 14 orbits of the Earth a day.
+  bucket: meeo-s3/NRT/
+  anon: true
+
+- type: s3fs
+  label: Sentinel-5P Level 2
+  id: meeo-s5p-nrti
+  doc: Observations from the Sentinel-5 Precursor satellite of the Copernicus Earth Observation Programme. It contains a polar orbiting satellite that completes 14 orbits of the Earth a day.
+  bucket: meeo-s5p/RPRO/
   anon: true
 
 - type: s3fs
@@ -207,3 +253,23 @@
   bucket: mf-nwp-models
   anon: true
 
+- type: arcfs
+  id: arcfs1
+  label: DataPLANT DataHUB ARCs
+  doc: Explore ARCs in the DataPLANT GitLab repository.
+  token: ${user.preferences['gitlabfs|read_access_token']}
+  server_url: "https://git.nfdi4plants.org"
+  writable: true
+
+- type: inveniordm
+  id: invenio
+  doc: Invenio RDM turn-key research data management repository
+  label: Invenio RDM Demo Repository
+  url: https://inveniordm.web.cern.ch/
+
+- type: onedata
+  id: onedata1
+  label: Onedata
+  doc: Your Onedata files - configure an access token via user preferences
+  accessToken: ${user.preferences['onedata|access_token']}
+  onezoneDomain: ${user.preferences['onedata|onezone_domain']}
