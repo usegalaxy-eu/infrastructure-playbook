@@ -64,7 +64,6 @@ Please mind `http` and `https`.
         <icon>https://lifescience-ri.eu/fileadmin/lifescience-ri/media/Images/button-login-small.png</icon>
         <!-- (Optional) Extra scopes you need to request for your implementation -->
         <!-- <extra_scopes>offline_access,something-else</extra_scopes> -->
-
     </provider>
     <provider name="Keycloak">
         <url>https://auth.nfdi4plants.org/realms/dataplant</url>
@@ -76,9 +75,9 @@ Please mind `http` and `https`.
         <icon>https://galaxyproject.eu/assets/media/DataPLANT_logo.png</icon>
     </provider>
     <provider name="EGI">
-		    <client_id>{{ egi_checkin.usegalaxy_eu.client_id }}</client_id>
-		    <client_secret>{{ egi_checkin.usegalaxy_eu.client_secret }}</client_secret>
-		    <redirect_uri>https://usegalaxy.eu/authnz/egi/callback</redirect_uri>
-		    <prompt>consent</prompt>
-	  </provider>
+        <client_id>{{ egi_checkin.usegalaxy_eu.client_id }}</client_id>
+        <client_secret>{{ egi_checkin.usegalaxy_eu.client_secret }}</client_secret>
+        <redirect_uri>https://usegalaxy.eu/authnz/egi/callback</redirect_uri>
+        <prompt>consent</prompt>
+    </provider>
 </OIDC>
