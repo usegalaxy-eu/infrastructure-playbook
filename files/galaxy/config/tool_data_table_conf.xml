@@ -2,6 +2,10 @@
 <tables>
     <!-- TODO(hxr): test if we can remove path since specified in galaxy.yml -->
     <!-- Locations of all fasta files under genome directory -->
+    <table comment_char="#" name="__dbkeys__">
+        <columns>value, name, len_path</columns>
+        <file path="/opt/galaxy/tool-data/dbkeys.loc"/>
+    </table>
     <table name="all_fasta" comment_char="#" allow_duplicate_entries="False">
         <columns>value, dbkey, name, path</columns>
         <file path="/opt/galaxy/tool-data/all_fasta.loc" />
