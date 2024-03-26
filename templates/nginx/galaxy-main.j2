@@ -79,7 +79,7 @@ server {
 
 		# Add upstream response headers that would otherwise be omitted
 		add_header Access-Control-Allow-Origin $upstream_http_access_control_allow_origin;
-        add_header Access-Control-Allow-Methods $upstream_http_access_control_allow_methods;
+		add_header Access-Control-Allow-Methods $upstream_http_access_control_allow_methods;
 
 		# CORS
                 if ($http_origin ~ "^https?://(covid19map\.elixir-luxembourg\.org|avivator\.gehlenborglab\.org|www\.bx\.psu\.edu)$") {
