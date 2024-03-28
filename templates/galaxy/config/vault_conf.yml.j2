@@ -6,6 +6,6 @@ path_prefix: /galaxy
 # Use the ascii string value as a key
 # For more details, see: https://cryptography.io/en/latest/fernet/#
 encryption_keys:
-  {% for encryption_key in galaxy_vault_encryption_keys %}
+{% for encryption_key in galaxy_vault_encryption_keys %}
   - {{ encryption_key }}
-  {% endfor %}
+{% endfor %}
