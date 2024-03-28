@@ -465,5 +465,5 @@ galaxy_config_templates:
     dest: "{{ galaxy_config['galaxy']['object_store_config_file'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/tpv/destinations.yml.j2"
     dest: "{{ tpv_mutable_dir }}/destinations.yml"
-  - src: '{{ galaxy_config_file_src_dir }}/config/vault_conf.yml.j2'
+  - src: '{{ galaxy_config_template_src_dir }}/config/vault_conf.yml.j2'
     dest: '{{ galaxy_config_dir }}/vault_conf.yml'
