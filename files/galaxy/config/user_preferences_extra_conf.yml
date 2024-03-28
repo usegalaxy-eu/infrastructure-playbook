@@ -70,7 +70,7 @@ preferences:
             - name: token
               label: Personal Token used to create draft records and to upload files
               type: secret
-              # store: vault # Requires setting up vault_config_file in your galaxy.yml
+              store: vault # Requires setting up vault_config_file in your galaxy.yml
               required: False
             - name: public_name
               label: Creator name to associate with new records (formatted as "Last name, First name"). If left blank "Anonymous Galaxy User" will be used. You can always change this by editing your record directly.
