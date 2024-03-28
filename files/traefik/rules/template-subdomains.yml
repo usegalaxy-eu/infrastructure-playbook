@@ -1,0 +1,24 @@
+{{define "subdomain"}}
+    prox-{{ . }}:
+      rule: Host(`{{ . }}.flyingrabb.it`)
+      middlewares:
+        - secure-headers
+      service: sn07
+      tls:
+        certResolver: "dns-cloudflare"
+        domains:
+          - main: "{{ . }}.flyingrabb.it"
+            sans:
+              - "*.ep.interactivetool.{{ . }}.flyingrabb.it"
+              - "*.{{ . }}.flyingrabb.it"
+{{end}}
+
+http:
+  routers:
+{{template "subdomain" "live"}}
+{{template "subdomain" "imaging"}}
+{{template "subdomain" "hicexplorer"}}
+{{template "subdomain" "assembly"}}
+{{template "subdomain" "annotation"}}
+{{template "subdomain" "ecology"}}
+{{template "subdomain" "climate"}}
