@@ -347,6 +347,10 @@ destinations:
     max_accepted_mem: 30
     min_accepted_gpus: 0
     max_accepted_gpus: 0
+    env:
+      TMP: $_GALAXY_JOB_TMP_DIR
+      TEMP: $_GALAXY_JOB_TMP_DIR
+      TMPDIR: $_GALAXY_JOB_TMP_DIR
     scheduling:
       require:
         - hcmr-gr-pulsar
