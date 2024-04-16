@@ -271,6 +271,16 @@
   public_name: ${user.preferences['zenodo|public_name']}
   writable: true
 
+- type: inveniordm
+  id: zenodo_sandbox
+  doc: This is the Sandbox instance of Zenodo. It is used for testing purposes only, content is NOT preserved. DOIs created in this instance are not real and will not resolve.
+  label: Zenodo Sandbox (TESTING ONLY)
+  url: https://sandbox.zenodo.org
+  token: ${user.user_vault.read_secret('preferences/zenodo_sandbox/token')}
+  # token: ${user.preferences['zenodo_sandbox|token']} # Alternatively use this for retrieving the token from user preferences instead of the Vault
+  public_name: ${user.preferences['zenodo_sandbox|public_name']}
+  writable: true
+
 - type: onedata
   id: onedata1
   label: Onedata
