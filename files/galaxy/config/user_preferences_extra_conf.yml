@@ -64,11 +64,11 @@ preferences:
               # store: vault
               required: False
 
-    invenio_sandbox:
-        description: Your Invenio RDM Integration Settings
+    zenodo:
+        description: Your Zenodo Integration Settings
         inputs:
             - name: token
-              label: Personal Token used to create draft records and to upload files
+              label: Personal Access Token used to create draft records and to upload files. You can manage your tokens at https://zenodo.org/account/settings/applications/
               type: secret
               store: vault # Requires setting up vault_config_file in your galaxy.yml
               required: False
