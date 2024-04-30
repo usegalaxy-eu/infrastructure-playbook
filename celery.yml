@@ -17,7 +17,15 @@
       alternatives:
         name: python
         path: /usr/bin/python3
+    - name: Increase fs.inotify.max_user_watches # see https://github.com/usegalaxy-eu/issues/issues/544
+      ansible.posix.sysctl:
+        name: fs.inotify.max_user_watches
+        value: '524288'
+        sysctl_set: true
+        state: present
+        reload: true
   roles:
+    - artis3n.tailscale
     - role: usegalaxy_eu.handy.os_setup
       vars:
         enable_remap_user: true
