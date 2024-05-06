@@ -15,6 +15,14 @@
     group: root
     mode: '0640'
 
+- name: Template config for mail
+  template:
+    src: plausible-mail.j2
+    dest: "{{ plausible_dir }}/plausible-mail-conf.env"
+    owner: root
+    group: root
+    mode: '0640'
+
 - name: Create and start services
   docker_compose:
     project_src: "{{ plausible_dir }}"
