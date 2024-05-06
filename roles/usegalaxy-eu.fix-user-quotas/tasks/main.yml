@@ -1,23 +1,23 @@
 ---
-- name: "Deploy script to recalculate user quotas "
-  copy:
-    content: |
-        #!/bin/bash
-        cd {{ galaxy_server_dir }}
-        . {{ galaxy_root }}/.bashrc
-        python scripts/set_user_disk_usage.py -c {{ galaxy_config_file }}
-    dest: /usr/bin/galaxy-fix-user-quotas
-    owner: root
-    group: root
-    mode: 0755
+#- name: "Deploy script to recalculate user quotas "
+#  copy:
+#    content: |
+#        #!/bin/bash
+#        cd {{ galaxy_server_dir }}
+#        . {{ galaxy_root }}/.bashrc
+#        python scripts/set_user_disk_usage.py -c {{ galaxy_config_file }}
+#    dest: /usr/bin/galaxy-fix-user-quotas
+#    owner: root
+#    group: root
+#    mode: 0755
 
-- name: "Add it to cron"
-  cron:
-    name: "Recalculate user quotas"
-    minute: 15
-    hour: 22
-    job: /usr/bin/galaxy-fix-user-quotas
-    user: "{{ galaxy_user.name }}"
+#- name: "Add it to cron"
+#  cron:
+#    name: "Recalculate user quotas"
+#    minute: 15
+#    hour: 22
+#    job: /usr/bin/galaxy-fix-user-quotas
+#    user: "{{ galaxy_user.name }}"
 
 # The gxadmin script has the following syntax: mutate set-quota-for-oidc-user <provider_name> <quota_name>
 
