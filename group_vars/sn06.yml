@@ -45,8 +45,8 @@ fsm_cron_tasks:
     enable: true
     name: "Gxadmin Galaxy clean up"
     minute: 0
-    hour: "*/6"
-    dom: "*"
+    hour: 0
+    dom: "*/2"
     month: "*"
     dow: "*"
     job: "{{ custom_telegraf_env }} /usr/bin/gxadmin galaxy cleanup 60"
