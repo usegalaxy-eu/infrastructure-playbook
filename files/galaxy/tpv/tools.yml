@@ -282,8 +282,6 @@ tools:
         params:
           singularity_run_extra_arguments: "--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases/2.3/,ALPHAFOLD_USE_GPU=False"
       - if: helpers.tool_version_gte(tool, '2.3.1+galaxy2')
-        params:
-          singularity_run_extra_arguments: "--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases,ALPHAFOLD_USE_GPU=False"
         execute: |
           from random import SystemRandom
           if SystemRandom().random() < 0.10:
