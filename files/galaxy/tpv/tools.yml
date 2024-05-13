@@ -287,8 +287,10 @@ tools:
         execute: |
           from random import SystemRandom
           if SystemRandom().random() < 0.10:
-              entity.gpus = 1
-              entity.params['singularity_run_extra_arguments'] = '--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases,ALPHAFOLD_USE_GPU=True'
+            entity.gpus = 1
+            entity.params['singularity_run_extra_arguments'] = '--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases,ALPHAFOLD_USE_GPU=True'
+          else:
+            entity.params['singularity_run_extra_arguments'] = '--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases,ALPHAFOLD_USE_GPU=False'
         # tweak amount of requested memory depending on the AlphaFold model to be run
       - id: model_preset_multimer
         if: job.get_param_values(app).get("model_preset") == "multimer"
