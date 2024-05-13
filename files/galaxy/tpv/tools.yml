@@ -288,6 +288,9 @@ tools:
           from random import SystemRandom
           if SystemRandom().random() < 0.10:
             entity.gpus = 1
+            entity.cpus = 8 
+            # We are currently utilizing a whole GPU VM (cores 8 mem 40 gpus 1)
+            entity.mem = 32 
             entity.params['singularity_run_extra_arguments'] = '--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases,ALPHAFOLD_USE_GPU=True'
           else:
             entity.params['singularity_run_extra_arguments'] = '--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases,ALPHAFOLD_USE_GPU=False'
