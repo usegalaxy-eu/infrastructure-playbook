@@ -284,7 +284,7 @@ tools:
       - if: helpers.tool_version_gte(tool, '2.3.1+galaxy2')
         execute: |
           from random import SystemRandom
-          if SystemRandom().random() < 0.10 and not job.get_param_values(app).get("model_preset") == "multimer":
+          if SystemRandom().random() < 0.10 and not job.get_param_values(app).get("model_preset") == "multimer": # Multimer needs more memory than we can currently provide on GPU nodes
             entity.gpus = 1
             entity.cores = 8
             # We are currently utilizing a whole GPU VM (cores 8 mem 40 gpus 1)
