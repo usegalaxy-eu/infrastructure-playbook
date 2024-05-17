@@ -250,10 +250,11 @@ destinations:
     env:
       LC_ALL: C
       SINGULARITY_CACHEDIR: "/storage/praha5-elixir/home/galaxyeu/singularity"
-      SINGULARITY_TMPDIR: "/storage/praha5-elixir/home/galaxyeu/singularity/tmp"
+      SINGULARITY_TMPDIR: "$SCRATCHDIR"
       TMPDIR: "$SCRATCHDIR"
       TMP: "$SCRATCHDIR"
       TEMP: "$SCRATCHDIR"
+      XDG_CACHE_HOME: "$SCRATCHDIR"
     params:
       jobs_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/staging"
       persistence_directory: "/opt/pulsar/files/persistent"
@@ -273,10 +274,11 @@ destinations:
     env:
       LC_ALL: C
       SINGULARITY_CACHEDIR: "/storage/praha5-elixir/home/galaxyeu/singularity"
-      SINGULARITY_TMPDIR: "/storage/praha5-elixir/home/galaxyeu/singularity/tmp"
+      SINGULARITY_TMPDIR: "$SCRATCHDIR"
       TMPDIR: "$SCRATCHDIR"
       TMP: "$SCRATCHDIR"
       TEMP: "$SCRATCHDIR"
+      XDG_CACHE_HOME: "$SCRATCHDIR"
       ALPHAFOLD_DB: "/storage/brno11-elixir/projects/alphafold/alphafold.db-2.3.1"
       GPU_AVAILABLE: "1"
     params:
