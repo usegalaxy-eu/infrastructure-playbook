@@ -136,17 +136,3 @@ limits:
     window: {{ limit['window'] }}
 {% endif %}
 {% endfor %}
-{# Replicate destination limits for the secondary HTCondor cluster #}
-{% for limit in galaxy_jobconf['limits'] | sort(attribute='type') %}
-{% if limit['type'].startswith('destination_') and 'id' in limit
-and (limit['id'].startswith('condor_') or limit['id'].startswith('interactive_pulsar')) %}
-  - type: {{ limit['type'] }}
-    value: {{ limit['value'] }}
-    id: secondary_{{ limit['id'] }}
-{% if 'tag' in limit %}
-    tag: {{ limit['tag'] }}
-{% elif 'window' in limit %}
-    window: {{ limit['window'] }}
-{% endif %}
-{% endif %}
-{% endfor %}

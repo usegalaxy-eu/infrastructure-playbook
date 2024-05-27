@@ -17,7 +17,7 @@ admin_packages:
   - unzip
   - tmpwatch
   - rclone
-  - "{{ 'byobu' if ansible_distribution_major_version < '9' else omit }}"
+  - byobu
   # centos specific
   - setools-console
   - yum-utils
@@ -43,6 +43,9 @@ certbot_share_key_users:
 
 certbot_post_renewal: |
   systemctl restart nginx || true
+
+# Miniconda
+miniconda_prefix: /scratch/miniconda
 
 # NGINX
 nginx_enable_default_server: false

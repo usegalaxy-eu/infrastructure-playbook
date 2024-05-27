@@ -112,6 +112,16 @@
   port: 2222
 
 - type: s3fs
+  label: Generic S3 instance
+  id: generic_s3
+  doc: Access to a generic S3 endpoint.
+  endpoint_url: ${user.preferences['generic_s3|endpoint_url']}
+  bucket: ${user.preferences['generic_s3|bucket']}
+  writable: true
+  secret: ${user.preferences['generic_s3|secret']}
+  key: ${user.preferences['generic_s3|key']}
+
+- type: s3fs
   label: Genome Ark
   id: genomeark
   doc: Access to Genome Ark open data on AWS.
@@ -127,6 +137,16 @@
   writable: true
   secret: "{{ genomeark_galaxy_aws_secret_access_key }}"
   key: "{{ genomeark_galaxy_aws_access_key_id }}"
+
+- type: s3fs
+  label: Gilsbach S3 ElementBio
+  id: gilsback_element_bio
+  doc: Access to an ElementBio S3 bucket
+  bucket: elembio-macro-galaxy
+  requires_groups: gilsbach
+  writable: true
+  secret: "{{ gilsback_element_bio_aws_secret_access_key }}"
+  key: "{{ gilsback_element_bio_aws_access_key_id }}"
 
 - type: s3fs
   label: "ONT open data"
@@ -161,6 +181,20 @@
   id: encode-public
   doc: The Encyclopedia of DNA Elements (ENCODE) Consortium is an international collaboration of research groups funded by the National Human Genome Research Institute (NHGRI)
   bucket: encode-public
+  anon: true
+
+- type: s3fs
+  label: Sentinel-3
+  id: meeo-s3-nrt
+  doc: European Commission’s Copernicus Earth Observation Programme. Sentinel-3 is a polar orbiting satellite that completes 14 orbits of the Earth a day.
+  bucket: meeo-s3/NRT/
+  anon: true
+
+- type: s3fs
+  label: Sentinel-5P Level 2
+  id: meeo-s5p-nrti
+  doc: Observations from the Sentinel-5 Precursor satellite of the Copernicus Earth Observation Programme. It contains a polar orbiting satellite that completes 14 orbits of the Earth a day.
+  bucket: meeo-s5p/RPRO/
   anon: true
 
 - type: s3fs
@@ -226,3 +260,38 @@
   token: ${user.preferences['gitlabfs|read_access_token']}
   server_url: "https://git.nfdi4plants.org"
   writable: true
+
+- type: inveniordm
+  id: zenodo
+  doc: Zenodo is an open-access digital repository created by CERN (the European Organization for Nuclear Research) to enable researchers to share, preserve, and cite research outputs across various disciplines.
+  label: Zenodo
+  url: https://zenodo.org
+  token: ${user.user_vault.read_secret('preferences/zenodo/token')}
+  # token: ${user.preferences['zenodo|token']} # Alternatively use this for retrieving the token from user preferences instead of the Vault
+  public_name: ${user.preferences['zenodo|public_name']}
+  writable: true
+
+- type: inveniordm
+  id: zenodo_sandbox
+  doc: This is the Sandbox instance of Zenodo. It is used for testing purposes only, content is NOT preserved. DOIs created in this instance are not real and will not resolve.
+  label: Zenodo Sandbox (TESTING ONLY)
+  url: https://sandbox.zenodo.org
+  token: ${user.user_vault.read_secret('preferences/zenodo_sandbox/token')}
+  # token: ${user.preferences['zenodo_sandbox|token']} # Alternatively use this for retrieving the token from user preferences instead of the Vault
+  public_name: ${user.preferences['zenodo_sandbox|public_name']}
+  writable: true
+
+- type: onedata
+  id: onedata1
+  label: Onedata
+  doc: Your Onedata files - configure an access token via user preferences
+  accessToken: ${user.preferences['onedata|access_token']}
+  onezoneDomain: ${user.preferences['onedata|onezone_domain']}
+
+- type: onedata
+  id: gtn_public_onedata
+  label: GTN training data
+  doc: Training data from the Galaxy Training Network (powered by Onedata)
+  # The access Token is public and can be shared
+  accessToken: "MDAxY2xvY2F00aW9uIGRhdGFodWIuZWdpLmV1CjAwNmJpZGVudGlmaWVyIDIvbm1kL3Vzci00yNmI4ZTZiMDlkNDdjNGFkN2E3NTU00YzgzOGE3MjgyY2NoNTNhNS9hY3QvMGJiZmY1NWU4NDRiMWJjZGEwNmFlODViM2JmYmRhNjRjaDU00YjYKMDAxNmNpZCBkYXRhLnJlYWRvbmx5CjAwNDljaWQgZGF00YS5wYXRoID00gTHpaa1pUTTROMkl4WmpjMllXVmpOMlU00WWpreU5XWmtNV00ZpT1RKbU1ETXlZMmhoWTJReAowMDJmc2lnbmF00dXJlIIQvnXp01Oey02LnaNwEkFJAyArzhHN8SlXSYFsBbSkqdqCg"
+  onezoneDomain: "datahub.egi.eu"

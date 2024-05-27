@@ -1,9 +1,9 @@
 ---
 htcondor_network_interface: ens802f0.223
 
-# Settings specific to the `usegalaxy_eu.htcondor` role.
-condor_daemons:
-  - COLLECTOR
-  - NEGOTIATOR
-  - MASTER
-  - SCHEDD
+# 15/03/2024: On sn06 HTCondor conf was manually adjusted to use port 9618 since the
+# HTCondor container was using 9628. Changing this now will require a restart of the
+# HTCondor service on sn06. So this needs to be combined with a maintenance window in the
+# future. Rest of the schedulers are using 9628 including the manager.
+# Adding it to the host_vars for the dedicated host sn06 thus it has the higher precedence.
+htcondor_shared_port: 9618

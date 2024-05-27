@@ -6,8 +6,13 @@ docker_service_state: started
 docker_service_enabled: true
 
 # Plausible
-plausible_lock_register: true
+plausible_lock_register: invite_only
+plausible_from_mail: galaxy-no-reply@informatik.uni-freiburg.de
 
+plausible_smtp_host: smtp.informatik.uni-freiburg.de
+plausible_smtp_username: "{{ smtp_username }}"
+plausible_smtp_password: "{{ smtp_password }}"
+plausible_smtp_port: 587
 # Certbot
 certbot_auth_method: --webroot
 certbot_well_known_root: /srv/nginx/_well-known_root

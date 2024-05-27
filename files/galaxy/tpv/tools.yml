@@ -128,6 +128,7 @@ tools:
           ])
 
   toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/.*:
+    cores: 10
     rules:
       - id: hifiasm_memory
         # The memory requirement of Hifiasm depends on a wrapper's input
@@ -208,6 +209,10 @@ tools:
       - if: input_size >= 0.01
         cores: 3
 
+  toolshed.g2.bx.psu.edu/repos/computational-metabolomics/sirius_csifingerid/sirius_csifingerid/.*:
+    cores: 8
+    mem: 8
+
   toolshed.g2.bx.psu.edu/repos/rnateam/htseq-clip/htseq-clip/.*:
     cores: 4
     mem: 16
@@ -218,10 +223,26 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/sleuth/sleuth/.*:
     cores: 4
     mem: 16
+    scheduling:
+      require:
+        - conda
+        - singularity
 
   toolshed.g2.bx.psu.edu/repos/iuc/rnaquast/rna_quast/.*:
     cores: 12
     mem: 40
+    scheduling:
+      require:
+        - conda
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/iuc/mashmap/mashmap/.*:
+    cores: 8
+    mem: 32
+    scheduling:
+      require:
+        - conda
+        - singularity
 
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold/.*:
     cores: 10
@@ -261,8 +282,16 @@ tools:
         params:
           singularity_run_extra_arguments: "--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases/2.3/,ALPHAFOLD_USE_GPU=False"
       - if: helpers.tool_version_gte(tool, '2.3.1+galaxy2')
-        params:
-          singularity_run_extra_arguments: "--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases,ALPHAFOLD_USE_GPU=False"
+        execute: |
+          from random import SystemRandom
+          if SystemRandom().random() < 0.10 and not job.get_param_values(app).get("model_preset") == "multimer": # Multimer needs more memory than we can currently provide on GPU nodes
+            entity.gpus = 1
+            entity.cores = 8
+            # We are currently utilizing a whole GPU VM (cores 8 mem 40 gpus 1)
+            entity.mem = 32
+            entity.params['singularity_run_extra_arguments'] = '--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases,ALPHAFOLD_USE_GPU=True'
+          else:
+            entity.params['singularity_run_extra_arguments'] = '--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases,ALPHAFOLD_USE_GPU=False'
         # tweak amount of requested memory depending on the AlphaFold model to be run
       - id: model_preset_multimer
         if: job.get_param_values(app).get("model_preset") == "multimer"
@@ -282,7 +311,28 @@ tools:
       require:
         - docker
 
+  toolshed.g2.bx.psu.edu/repos/bgruening/mgnify_seqprep/mgnify_seqprep/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/bgruening/cellpose/cellpose/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/iuc/fgsea/fgsea/.*:
+    # any container should work
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/iuc/chewbbaca.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/recetox/recetox_msfinder/recetox_msfinder/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/recetox/qcxms_getres/qcxms_getres/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/recetox/qcxms_neutral_run/qcxms_neutral_run/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/recetox/qcxms_production_run/qcxms_production_run/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/imgteam/bioformats2raw/bf2raw/.*:
+    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/biomodels_biomd0000001066/biomodels_biomd0000001066/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/bgruening/biomodels_biomd0000001076/biomodels_biomd0000001076/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/imgteam/rfove/rfove/.*:
     inherits: basic_docker_tool
@@ -294,7 +344,40 @@ tools:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/instagraal/instagraal/.*:
     inherits: basic_docker_tool
+    gpus: 1
+    cores: 1
+    mem: 30
+    params:
+      docker_run_extra_arguments: ' --gpus all '
+    env:
+      GPU_AVAILABLE: 1
+  toolshed.g2.bx.psu.edu/repos/bgruening/whisper/whisper/.*:
+    inherits: basic_docker_tool
+    cores: 1
+    mem: 5
+    env:
+      OPENAI_WHISPER_MODEL_DIR: "/data/db/models/openai_whisper/"
+  toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc/.*:
+    # 8 (from the shared TPV) seems to high for me
+    cores: 3
+
+  toolshed.g2.bx.psu.edu/repos/iuc/pairtools_parse/pairtools_parse/.*:
+    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/ecology/cb_ivr/cb_ivr/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/ecology/taxo_cov_template/taxo_cov_template/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/ecology/makeeml/makeeml/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/ecology/entities_template/entities_template/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/ecology/eal_templates/eal_templates/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/ecology/eal_table_template/eal_table_template/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/ecology/raster_template/raster_template/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/ecology/vector_template/vector_template/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/perssond/basic_illumination/basic_illumination/.*:
     inherits: basic_docker_tool
@@ -652,10 +735,6 @@ tools:
     cores: 1
     mem: 20
 
-  toolshed.g2.bx.psu.edu/repos/iuc/kraken2/kraken2/.*:
-    cores: 2
-    mem: 70
-
   toolshed.g2.bx.psu.edu/repos/nml/metaspades/metaspades/.*:
     cores: 2
     scheduling:
@@ -753,7 +832,8 @@ tools:
       singularity_enabled: true
 
   toolshed.g2.bx.psu.edu/repos/iuc/trinity/trinity/.*:
-    cores: 8
+    cores: 24
+    mem: 250
     scheduling:
       prefer:
         - condor-tpv
@@ -764,17 +844,21 @@ tools:
         # see usegalaxy-eu/issues#473: https://github.com/usegalaxy-eu/issues/issues/473
         env:
           _JAVA_OPTIONS: -Xmx{int(mem)}G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+
+      - if: input_size < 0.1
+        cores: 1
+        mem: 4
       - if: 0.1 <= input_size < 1
+        cores: 12
+        mem: 92
+      - if: 1 <= input_size < 4
+        cores: 16
+        mem: 128
+      - if: 4 <= input_size < 8
         cores: 20
-        mem: 100
-      - if: 1 <= input_size < 2
-        cores: 30
-        mem: 200
-      - if: 2 <= input_size < 30
-        cores: 60
-        mem: 950
-      - if: input_size >= 30
-        fail:
+        mem: 190
+      - if: input_size >= 80
+        fail: |
           Too much data, we cannot support such large Trinity assemblies with our
           backend. Please use another server for your job.
 
@@ -984,11 +1068,23 @@ tools:
       _JAVA_OPTIONS: -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
 
   toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*:
-    cores: 16
-    mem: 90
+    cores: 24
+    mem: 80
     env:
       TERM: vt100
-      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xmx{int(mem)}G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
+    scheduling:
+      accept:
+        - pulsar
+    rules:
+      - id: unicycler_small_input_rule
+        if: input_size < 0.05
+        cores: 1
+        mem: 3.8
+      - id: unicycler_medium_input_rule
+        if: 0.05 <= input_size < 2
+        cores: 8
+        mem: 28
 
   toolshed.g2.bx.psu.edu/repos/imgteam/unzip/unzip/.*:
     scheduling:
@@ -1031,16 +1127,57 @@ tools:
     mem: 128
     cores: 24
 
+  toolshed.g2.bx.psu.edu/repos/iuc/windowmasker/windowmasker_mkcounts/.*:
+    mem: 64
+    cores: 1
+
+  jbrowse2:
+    mem: 6
+    cores: 1
+
   toolshed.g2.bx.psu.edu/repos/iuc/circos/circos/.*:
     scheduling:
       require:
         - singularity
 
-  toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/.*:
+  toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.6.*:
     mem: 4
     cores: 6
     params:
-      singularity_container_id_override: docker://quay.io/bgruening/braker3:v.1.0.4
+      singularity_container_id_override: "docker://teambraker/braker3:v1.0.6"
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.7.*:
+    mem: 4
+    cores: 6
+    env:
+      AUGUSTUS_CONFIG_PATH: "/opt/Augustus/config/"
+    params:
+      singularity_container_id_override: "docker://teambraker/braker3:v3.0.7.1"
+      ## This should not be needed. Why are ENVs not passed into the container?
+      singularity_cleanenv: true
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.8.*:
+    cores: 6
+    mem: 4
+    params:
+      singularity_container_id_override: "docker://teambraker/braker3:v3.0.7.4"
+      ## This should not be needed. Why are ENVs not passed into the container?
+      singularity_cleanenv: true
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.3.*:
+    mem: 4
+    cores: 6
+    params:
+      singularity_container_id_override: "docker://teambraker/braker3:v.1.0.4"
     scheduling:
       require:
         - singularity
@@ -1061,19 +1198,6 @@ tools:
     mem: 16
     cores: 16
 
-  toolshed.g2.bx.psu.edu/repos/iuc/funannotate_predict/funannotate_predict/.*:
-    # we need this here because we need to set the GENEMARK_PATH
-    cores: 12
-    mem: 12
-    env:
-      GENEMARK_PATH: /usr/local/tools/genemark/etp.for_braker/bin/
-
-  toolshed.g2.bx.psu.edu/repos/galaxyp/eggnog_mapper/eggnog_mapper/.*:
-    cores: 8
-    mem: 24
-    env:
-      EGGNOG_DBMEM: "--dbmem"
-
   ## is in the shared DB - we need to test it here a bit
   toolshed.g2.bx.psu.edu/repos/galaxyp/openms_featurefindermultiplex/FeatureFinderMultiplex/.*:
     cores: 8
@@ -1089,3 +1213,164 @@ tools:
     scheduling:
       require:
         - singularity
+
+  toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/.*:
+    cores: 8
+    memory: 24
+    scheduling:
+      require:
+        - conda
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/.*:
+    cores: 1
+    mem: 40
+    scheduling:
+      require:
+        - conda
+        - singularity
+
+  # 27:02:2024: We seem to have issues with the tools when loaded from the conda envs.
+  # For whatever reason they seem to get stuck in the D state and never finish.
+  # The below is an attempt to test whether by running the tools in a singularity container
+  # we can avoid the issue.
+  toolshed.g2.bx.psu.edu/repos/iuc/abricate/abricate/.*:
+    mem: 30.4
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/eggnog_mapper/eggnog_mapper/.*:
+    cores: 8
+    mem: 24
+    env:
+      EGGNOG_DBMEM: "--dbmem"
+    params:
+      singularity_run_extra_arguments: "--env EGGNOG_DBMEM=--dbmem"
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2/.*:
+    cores: 32
+    mem: 244
+    rules:
+      - id: bwa_mem2_small_input_rule
+        if: input_size < 0.25
+        cores: 2
+        mem: 7.6
+      - id: bwa_mem2_medium_input_rule
+        if: 0.25 <= input_size < 16
+        cores: 8
+        mem: 28
+      - id: bwa_mem2_large_input_rule
+        if: 16 <= input_size < 32
+        cores: 16
+        mem: 58
+      - id: bwa_mem2_xlarge_input_rule
+        if: 32 <= input_size < 64
+        cores: 24
+        mem: 120
+      - id: bwa_mem2_history_reference_rule
+        if: |
+          helpers.job_args_match(job, app, {"reference_source": {"reference_source_selector": "history"}})
+        # per https://github.com/bwa-mem2/bwa-mem2/issues/41 it's 28 * reference
+        mem: |
+          options = job.get_param_values(app)
+          size = options["reference_source"]["ref_file"].get_size()
+          min(max(float(size/1024**3) * 28, (input_size - float(size/1024**3)) * 2, 7.6), 120)
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/flye/flye/.*:
+    cores: 20
+    mem: min(max(input_size*1.2, 3.8), 256)
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/iuc/funannotate_annotate/funannotate_annotate/.*:
+    cores: 8
+    mem: 40
+    rules:
+      - id: funannotate_annotate_large_input
+        if: input_size > 3.2
+        mem: 62
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/iuc/funannotate_clean/funannotate_clean/.*:
+    cores: 8
+    mem: 40
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/iuc/funannotate_predict/funannotate_predict/.*:
+    # we need this here because we need to set the GENEMARK_PATH
+    cores: 12
+    mem: 12
+    env:
+      GENEMARK_PATH: /usr/local/tools/genemark/etp.for_braker/bin/
+    params:
+      singularity_run_extra_arguments: "--env GENEMARK_PATH=/usr/local/tools/genemark/etp.for_braker/bin/"
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/iuc/kraken2/kraken2/.*:
+    cores: 2
+    mem: 70
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_compute_graph/scanpy_compute_graph/.*:
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_filter_cells/scanpy_filter_cells/.*:
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_find_cluster/scanpy_find_cluster/.*:
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_find_variable_genes/scanpy_find_variable_genes/.*:
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_multiplet_scrublet/scanpy_multiplet_scrublet/.*:
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_normalise_data/scanpy_normalise_data/.*:
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_plot_embed/scanpy_plot_embed/.*:
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_run_dpt/scanpy_run_dpt/.*:
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/omark/omark/.*:
+    cores: 8
+    mem: 4
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/iuc/red/red/.*:
+    cores: 1
+    mem: 35

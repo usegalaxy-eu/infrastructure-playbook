@@ -34,7 +34,34 @@ tools:
         fail: |
           Interactive tools require registration. Moreover, this tool has restricted access even for registered users. Please log-in or register on https://usegalaxy.eu/login and then request access by visiting https://usegalaxy.eu/gpu-request.
 
+  interactive_tool_napari:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
 
+  interactive_tool_cellprofiler:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+
+  interactive_tool_ideal:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+    params:
+      docker_run_extra_arguments: "--user $UID:$GID"
+
+  interactive_tool_phyloseq:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+    params:
+      docker_run_extra_arguments: "--user $UID:$GID"
+
+  interactive_tool_qiskit_jupyter_notebook:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
   interactive_tool_divand:
     inherits: interactive_tool
     cores: 1
@@ -44,6 +71,10 @@ tools:
     cores: 3
     mem: 10
   interactive_tool_source:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_stac:
     inherits: interactive_tool
     cores: 1
     mem: 4
@@ -100,6 +131,10 @@ tools:
     env:
       TEMP: /data/1/galaxy_db/tmp
   interactive_tool_mgnify_notebook:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_copernicus_notebook:
     inherits: interactive_tool
     cores: 1
     mem: 4
@@ -231,6 +266,8 @@ tools:
     gpus: 1
     cores: 1
     mem: 8
+    env:
+      XLA_FLAGS: "--xla_gpu_cuda_data_dir=/op/conda/"
     params:
       docker_run_extra_arguments: " --gpus all"
     scheduling:

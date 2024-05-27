@@ -36,16 +36,19 @@
       - "*.usegalaxy.eu"
       - "galaxyproject.eu"
       - "*.galaxyproject.eu"
-      - "*.interactivetoolentrypoint.interactivetool.usegalaxy.eu"
-      - "*.interactivetoolentrypoint.interactivetool.live.usegalaxy.eu"
-      - "*.interactivetoolentrypoint.interactivetool.test.usegalaxy.eu"
+      - "*.ep.interactivetool.usegalaxy.eu"
+      - "*.ep.interactivetool.live.usegalaxy.eu"
+      - "*.ep.interactivetool.test.usegalaxy.eu"
       - "*.aqua.usegalaxy.eu"
-      - "*.interactivetoolentrypoint.interactivetool.aqua.usegalaxy.eu"
+      - "*.ep.interactivetool.aqua.usegalaxy.eu"
       - "*.ecology.usegalaxy.eu"
-      - "*.interactivetoolentrypoint.interactivetool.ecology.usegalaxy.eu"
+      - "*.ep.interactivetool.ecology.usegalaxy.eu"
       - "*.earth-system.usegalaxy.eu"
-      - "*.interactivetoolentrypoint.interactivetool.earth-system.usegalaxy.eu"
+      - "*.ep.interactivetool.earth-system.usegalaxy.eu"
+      - "*.eirene.usegalaxy.eu"
+      - "*.ep.interactivetool.eirene.usegalaxy.eu"
   vars_files:
+    - group_vars/sn06.yml
     - group_vars/tiaas.yml # All of the training infrastructure
     - group_vars/gxconfig.yml # The base galaxy configuration
     - group_vars/toolbox.yml # User controlled toolbox
@@ -154,6 +157,7 @@
         state: present
         key: "{{ item }}"
       loop:
+        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCtMvCQL1Xw/DrzO/U4nfyIL6CE63apSXHjQByWK+vWpfNkBjMh4uwQl6SzWvCn6y7tlMko1P6BG9bVDkWLLjC/kL+ds+FXDwUyLmRcfyhkortBVMWrZO3ZSSimpFugPDcfUeh+iim/Jg2CY1geVmlA9bybY8k0hGTKa5rn9KzbLCoZdsR1c9627PAefV9lr7xTHMamWsG0cIYjkOBqZM85Yw9huftUGZi1SAALjiG3k57XFswZcHrvZkE/L5Q5uU9NC0KYVapzG9PYmgU+O40Oi82PB4C6SWoOM0MG39AIS4DU7DstF3mrl2M/6crbcHIfVTB+GCQI2U9CzfvlhA6qQu+xlAc4ZX/rXeYZvNW6QtU1vvUcL95wSrPyXlqlSA6o/0T0EP8e2LG2JpNtzorcLrj010fWdpH1jY/c9ZACYNmCPuUTD/ASt5FXCqPR0WJnf4Mle10ALmghsbm7vLXQUKDcQSC4bJKpgzdFT2ocmk9jiGqCq3hivSVmR6OvHok= paul@paul-LIFEBOOK-U7410"
         - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDC6kanRFWmhjkV8pkwOYtHoCNDIP/nj2umigbSylMFmiXm2rwnqi1qhDeJqd53PTrT4RWynT7Gqg7/HSITPAZA4wdGNcDLHD7QvexBDhIhUJCERmMZa6EWPvOPgDACbJDjrwLxd8oF65UhQU+meVrkBmpod6YDSuVIfmZXHUheK7NuZfvfNx3ruQNU5MRbI3p6vuY++B4GYRXrxM68+GWYEOEa6zz142Nl1PNnvDMkiobro0k6P5bXv4LDYMW3YyDXu69okJgPqEKjE/IsI4/2JKfzduEZMQyPZDQswyuNQwMAfKQjvDQ0gvQiVE0eM2gdR7qi/jOqFXrzkOwYWQd00Cy9EtSWqhDlpu9KrIfs8T2HTn9p/XU+Bwg4anyMh//gb+EOctpvptqoBhjNxoRTX/bwNLFq/ARFAtFDn+qX8w9HWeB5/vNvdOkH7fSMTTFmFkDZ8U/Hrg5vhcwy2Hid2K7j9peixB/41d7/O08qL99qH9362L8ZmhyT9aNeOKQ0MUEEhAasYkKO7AQcChDpkgW635mkvI5EOZGsqCRPiX8P8iTH5neH6ZI4H21JoON5E0raMJlwznNq3D4as12kZBtw198DHFAMQXlfMR24NTcv0nFnS6JmxlwCKu+Uzyt3Xlyj/wEzKYnr71vfShb3/vUgYbzIEdDQmGV8DXEJBw== anup"
         - "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEApcUIRRUHl0wVVXz5GX1QnHSq9+nThIKKH3fYM21LfW1n6gGvC7UiCCaDZQUbejJTq3EITbH3J6/Tji2jGAIJ6Xzn0Jf7sQ1yON/dO/75To32Jdo8YWS7XQeA7lU9heSc7FM5yKIBJN7PrpnYAveCsOE/1kkfUSsBZsqj9yyoFe/tquoVm5Y3nFZfKJv7/gszSVkzNxhHvn+0ccClRLpnFUHjqXgXHIQCm7P/9Lf7unSoYRd9Iefwgp52Lcm6AIncQvz5tdAFD2WciP4J15EFPMTKPdc6tfT5Tis/+/oNfYlsnaIGrbV5Hc2909KiYnvuvqKcrSFloXWzAdXJOxhszw== videmp@cn001.bi.uni-freiburg.de"
         - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC8/9GdD96Xfc0MavIJQEuNSIrOlaBSYkH4s5RyGhNnc8Al7x3hC7KXt/mcqyNoI1JTvrXp23aDpTr67e3Dnrp6Me7z8nyY9oIy5WHOgwG2ra1Ga8oi89MVgXPhtxvcYnk8hVfuPDmhWkgwS5ILH/7V/1hEKHcS0H7Q0pJp8EGCBDFWrxNfUWqJJuVcXb11CMnaSJX/VhD+S4g4rG01lMr696+k8eKs9y2sq9JpuUD1TNN16RYu1uVlVz8nhIPbEBsnFeKV+EYKLcSRQnjDTNjWqZHHM9NMWfK3wGvr5pfla158ZdsYQTmQtcchTsEoB+7eAQaER3XsEtuo8yQj4zbL videmp@work"
@@ -226,7 +230,7 @@
     - geerlingguy.docker
 
     # HTCondor Cluster setup
-    - usegalaxy_eu.htcondor
+    # - usegalaxy_eu.htcondor
 
     # Misc.
     - role: hxr.galaxy-nonreproducible-tools
@@ -272,6 +276,8 @@
         galaxy_fetch_dependencies: true
         galaxy_build_client: true
 
+
+    - usegalaxy_eu.tpv_auto_lint
     ## Extras!
     - usegalaxy-eu.fix-galaxy-server-dir # Fix details into the galaxy server dirs
     - hxr.install-to-venv # Some extra packages our site needs.
@@ -283,12 +289,10 @@
     - usegalaxy-eu.error-pages # Copy the NGINX error pages
     - usegalaxy-eu.htcondor_release
     # Various ugly fixes
-    - usegalaxy-eu.fix-unscheduled-jobs # Workaround for ???
-    - usegalaxy-eu.remove-orphan-condor-jobs
+    # - usegalaxy-eu.fix-unscheduled-jobs # Workaround for ???
     - usegalaxy-eu.fix-stuck-handlers # Restart handlers to prevent several classes of issues
     - usegalaxy-eu.log-cleaner # do not retain journalctl logs, they are unnecessary/risky under GDPR
     - usegalaxy-eu.galaxy-procstat # Some custom telegraf monitoring that's templated
-    - usegalaxy_eu.tpv_auto_lint
     # Some of our 'cleanups' also generate telegraf format so this goes at end.
     - dj-wasabi.telegraf
     # - dev-sec.os-hardening
