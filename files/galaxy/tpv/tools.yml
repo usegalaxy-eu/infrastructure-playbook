@@ -1376,4 +1376,27 @@ tools:
     mem: 35
 
   toolshed.g2.bx.psu.edu/repos/iuc/anndata_manipulate/anndata_manipulate/.*:
-    mem: input_size * 4
+    cores: 1
+    mem: 4
+    rules:
+      - id: large_anndata_input
+        if: input_size > 2
+        cores: 1
+        mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/iuc/anndata_import/anndata_manipulate/.*:
+    cores: 1
+    mem: 4
+
+  toolshed.g2.bx.psu.edu/repos/iuc/anndata_export/anndata_manipulate/.*:
+    cores: 1
+    mem: 4
+
+  toolshed.g2.bx.psu.edu/repos/iuc/anndata_inspect/anndata_manipulate/.*:
+    cores: 1
+    mem: 4
+
+  toolshed.g2.bx.psu.edu/repos/iuc/modify_loom/anndata_manipulate/.*:
+    cores: 1
+    mem: 4
+    
