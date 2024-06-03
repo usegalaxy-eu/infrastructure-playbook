@@ -1383,25 +1383,26 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/iuc/anndata_manipulate/anndata_manipulate/.*:
     cores: 1
-    mem: 4
+    mem: 16
     rules:
-      - id: large_anndata_input
-        if: input_size > 2
-        cores: 1
-        mem: 20
+      - id: anndata_concat
+        if: |
+          param_dict = job.get_param_values(app)
+          param_dict.get('manipulate', {}).get('function') == 'concatenate'
+        mem: 60
 
   toolshed.g2.bx.psu.edu/repos/iuc/anndata_import/anndata_import/.*:
     cores: 1
-    mem: 4
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/anndata_export/anndata_export/.*:
     cores: 1
-    mem: 4
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/anndata_inspect/anndata_inspect/.*:
     cores: 1
-    mem: 4
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/modify_loom/modify_loom/.*:
     cores: 1
-    mem: 4
+    mem: 16
