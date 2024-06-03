@@ -1386,7 +1386,9 @@ tools:
     mem: 16
     rules:
       - id: anndata_concat
-        if: job.get_param_values(app).get("manipulate").get("function") == "concatenate"
+        if: |
+          param_dict = job.get_param_values(app)
+          param_dict.get('manipulate', {}).get('function') == 'concatenate'
         mem: 60
 
   toolshed.g2.bx.psu.edu/repos/iuc/anndata_import/anndata_import/.*:
