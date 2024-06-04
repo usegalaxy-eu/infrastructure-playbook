@@ -262,10 +262,24 @@
   writable: true
 
 - type: inveniordm
-  id: invenio
-  doc: Invenio RDM turn-key research data management repository
-  label: Invenio RDM Demo Repository
-  url: https://inveniordm.web.cern.ch/
+  id: zenodo
+  doc: Zenodo is an open-access digital repository created by CERN (the European Organization for Nuclear Research) to enable researchers to share, preserve, and cite research outputs across various disciplines.
+  label: Zenodo
+  url: https://zenodo.org
+  token: ${user.user_vault.read_secret('preferences/zenodo/token')}
+  # token: ${user.preferences['zenodo|token']} # Alternatively use this for retrieving the token from user preferences instead of the Vault
+  public_name: ${user.preferences['zenodo|public_name']}
+  writable: true
+
+- type: inveniordm
+  id: zenodo_sandbox
+  doc: This is the Sandbox instance of Zenodo. It is used for testing purposes only, content is NOT preserved. DOIs created in this instance are not real and will not resolve.
+  label: Zenodo Sandbox (TESTING ONLY)
+  url: https://sandbox.zenodo.org
+  token: ${user.user_vault.read_secret('preferences/zenodo_sandbox/token')}
+  # token: ${user.preferences['zenodo_sandbox|token']} # Alternatively use this for retrieving the token from user preferences instead of the Vault
+  public_name: ${user.preferences['zenodo_sandbox|public_name']}
+  writable: true
 
 - type: onedata
   id: onedata1
@@ -273,3 +287,11 @@
   doc: Your Onedata files - configure an access token via user preferences
   accessToken: ${user.preferences['onedata|access_token']}
   onezoneDomain: ${user.preferences['onedata|onezone_domain']}
+
+- type: onedata
+  id: gtn_public_onedata
+  label: GTN training data
+  doc: Training data from the Galaxy Training Network (powered by Onedata)
+  # The access Token is public and can be shared
+  accessToken: "MDAxY2xvY2F00aW9uIGRhdGFodWIuZWdpLmV1CjAwNmJpZGVudGlmaWVyIDIvbm1kL3Vzci00yNmI4ZTZiMDlkNDdjNGFkN2E3NTU00YzgzOGE3MjgyY2NoNTNhNS9hY3QvMGJiZmY1NWU4NDRiMWJjZGEwNmFlODViM2JmYmRhNjRjaDU00YjYKMDAxNmNpZCBkYXRhLnJlYWRvbmx5CjAwNDljaWQgZGF00YS5wYXRoID00gTHpaa1pUTTROMkl4WmpjMllXVmpOMlU00WWpreU5XWmtNV00ZpT1RKbU1ETXlZMmhoWTJReAowMDJmc2lnbmF00dXJlIIQvnXp01Oey02LnaNwEkFJAyArzhHN8SlXSYFsBbSkqdqCg"
+  onezoneDomain: "datahub.egi.eu"

@@ -36,18 +36,19 @@
       - "*.usegalaxy.eu"
       - "galaxyproject.eu"
       - "*.galaxyproject.eu"
-      - "*.interactivetoolentrypoint.interactivetool.usegalaxy.eu"
-      - "*.interactivetoolentrypoint.interactivetool.live.usegalaxy.eu"
-      - "*.interactivetoolentrypoint.interactivetool.test.usegalaxy.eu"
+      - "*.ep.interactivetool.usegalaxy.eu"
+      - "*.ep.interactivetool.live.usegalaxy.eu"
+      - "*.ep.interactivetool.test.usegalaxy.eu"
       - "*.aqua.usegalaxy.eu"
-      - "*.interactivetoolentrypoint.interactivetool.aqua.usegalaxy.eu"
+      - "*.ep.interactivetool.aqua.usegalaxy.eu"
       - "*.ecology.usegalaxy.eu"
-      - "*.interactivetoolentrypoint.interactivetool.ecology.usegalaxy.eu"
+      - "*.ep.interactivetool.ecology.usegalaxy.eu"
       - "*.earth-system.usegalaxy.eu"
-      - "*.interactivetoolentrypoint.interactivetool.earth-system.usegalaxy.eu"
+      - "*.ep.interactivetool.earth-system.usegalaxy.eu"
       - "*.eirene.usegalaxy.eu"
-      - "*.interactivetoolentrypoint.interactivetool.eirene.usegalaxy.eu"
+      - "*.ep.interactivetool.eirene.usegalaxy.eu"
   vars_files:
+    - group_vars/sn06.yml
     - group_vars/tiaas.yml # All of the training infrastructure
     - group_vars/gxconfig.yml # The base galaxy configuration
     - group_vars/toolbox.yml # User controlled toolbox
@@ -288,7 +289,7 @@
     - usegalaxy-eu.error-pages # Copy the NGINX error pages
     - usegalaxy-eu.htcondor_release
     # Various ugly fixes
-    - usegalaxy-eu.fix-unscheduled-jobs # Workaround for ???
+    # - usegalaxy-eu.fix-unscheduled-jobs # Workaround for ???
     - usegalaxy-eu.fix-stuck-handlers # Restart handlers to prevent several classes of issues
     - usegalaxy-eu.log-cleaner # do not retain journalctl logs, they are unnecessary/risky under GDPR
     - usegalaxy-eu.galaxy-procstat # Some custom telegraf monitoring that's templated

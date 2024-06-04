@@ -221,6 +221,13 @@ telegraf_plugins_extra:
       - timeout = "15s"
       - data_format = "influx"
       - interval = "1m"
+  galaxy_tool_usage:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery tool-usage"]
+      - timeout = "360s"
+      - data_format = "influx"
+      - interval = "24h"
   galaxy_job_queue_states_stats:
     plugin: "exec"
     config:

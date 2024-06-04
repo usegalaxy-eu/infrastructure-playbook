@@ -52,12 +52,12 @@ base_app_main: &BASE_APP_MAIN
   # If the server logs errors about not having enough database pool
   # connections, you will want to increase these values, or consider
   # running more Galaxy processes.
-  database_engine_option_pool_size: 20
+  database_engine_option_pool_size: 30
 
   # If the server logs errors about not having enough database pool
   # connections, you will want to increase these values, or consider
   # running more Galaxy processes.
-  database_engine_option_max_overflow: 20
+  database_engine_option_max_overflow: 40
 
   # If using MySQL and the server logs the error "MySQL server has gone
   # away", you will want to set this to some positive value (7200 should
@@ -131,7 +131,7 @@ base_app_main: &BASE_APP_MAIN
 
   # Time (in seconds) between attempts to remove old rows from the
   # history_audit database table. Set to 0 to disable pruning.
-  #history_audit_table_prune_interval: 3600
+  history_audit_table_prune_interval: 7200
 
   # Where dataset files are stored. It must be accessible at the same
   # path on any cluster nodes that will run Galaxy jobs, unless using
@@ -987,14 +987,14 @@ base_app_main: &BASE_APP_MAIN
   # `geographical_server_location_code` value is invalid or unsupported.
   # To see a full list of supported locations, visit
   # https://docs.galaxyproject.org/en/master/admin/carbon_emissions.html
-  #geographical_server_location_code: GLOBAL
+  geographical_server_location_code: DE-BW
 
   # The estimated power usage effectiveness of the data centre housing
   # the server your galaxy instance is running on. This can make carbon
   # emissions estimates more accurate. For more information on how to
   # calculate a PUE value, visit
   # https://en.wikipedia.org/wiki/Power_usage_effectiveness
-  #power_usage_effectiveness: 1.67
+  power_usage_effectiveness: 1.3
 
   # Enable InteractiveTools.
   interactivetools_enable: true
@@ -1763,7 +1763,7 @@ base_app_main: &BASE_APP_MAIN
   # Admin section of the server, and will have access to create users,
   # groups, roles, libraries, and more.  For more information, see:
   # https://galaxyproject.org/admin/
-  admin_users: "hxr@informatik.uni-freiburg.de,bjoern.gruening@gmail.com,kuntzm@informatik.uni-freiburg.de,maierw@informatik.uni-freiburg.de,berenice.batut@gmail.com,srikakus@informatik.uni-freiburg.de,dominguj@informatik.uni-freiburg.de"
+  admin_users: "{{ galaxy_admin_users }}"
 
   # Force everyone to log in (disable anonymous access).
   #require_login: false
@@ -2619,7 +2619,7 @@ base_app_main: &BASE_APP_MAIN
   # Vault config file.
   # The value of this option will be resolved with respect to
   # <config_dir>.
-  #vault_config_file: vault_conf.yml
+  vault_config_file: vault_conf.yml
 
   # Display built-in converters in the tool panel.
   #display_builtin_converters: true

@@ -1,11 +1,12 @@
 # Configure nodes in the HTCondor cluster.
 ---
-htcondor_server: "condor-cm.galaxyproject.eu"
+htcondor_server: "build.galaxyproject.eu"
 htcondor_domain: bi.uni-freiburg.de
-htcondor_port: 9618
+htcondor_server_port: 9628
+htcondor_shared_port: 9628
 htcondor_version: 23.0
 htcondor_channel: 23.0
-htcondor_firewall_condor: "{{ true if htcondor_port == 9618 else false }}"
+htcondor_firewall_condor: false
 htcondor_firewall_nfs: false
 htcondor_role_execute: false
 htcondor_role_manager: false
@@ -29,29 +30,6 @@ htcondor_job_start_count: 250
 htcondor_job_start_delay: 0
 htcondor_claim_worklife: 120
 htcondor_negotiator_post_job_rank: "isUndefined(RemoteOwner) * (10000 - TotalLoadAvg)"
-
-# Settings specific to the `usegalaxy_eu.htcondor` role (to be replaced with
-# `grycap.htcondor`).
-condor_host: "{{ htcondor_server }}"
-condor_fs_domain: "{{ htcondor_domain }}"
-condor_uid_domain: "{{ htcondor_domain }}"
-condor_allow_write: "{{ htcondor_allow_write }}"
-# condor_daemons -> Defined per-host in host_vars.
-condor_allow_negotiator: "{{ htcondor_allow_negotiator }}"
-condor_allow_administrator: "{{ htcondor_allow_administrator }}"
-condor_system_periodic_hold: "{{ htcondor_system_periodic_hold }}"
-condor_system_periodic_remove: "{{ htcondor_system_periodic_remove }}"
-condor_network_interface: "{{ htcondor_network_interface }}"
-condor_extra: |
-  MASTER_UPDATE_INTERVAL = {{ htcondor_master_update_interval }}
-  CLASSAD_LIFETIME = {{ htcondor_classad_lifetime }}
-  NEGOTIATOR_INTERVAL = {{ htcondor_negotiator_interval }}
-  NEGOTIATOR_UPDATE_INTERVAL = {{ htcondor_negotiator_update_interval }}
-  SCHEDD_INTERVAL = {{ htcondor_schedd_interval }}
-  JOB_START_COUNT = {{ htcondor_job_start_count }}
-  JOB_START_DELAY = {{ htcondor_job_start_delay }}
-  CLAIM_WORKLIFE = {{ htcondor_claim_worklife }}
-  NEGOTIATOR_POST_JOB_RANK = {{ htcondor_negotiator_post_job_rank }}
 
 # Configuration of `usegalaxy_eu.handy.os_setup`.
 enable_create_user: true
