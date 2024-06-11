@@ -14,3 +14,11 @@
     owner: root
     group: root
     mode: 0755
+
+- name: Copy the galaxy tool-usage script
+  copy:
+    src: "galaxy_tool_usage.sh"
+    dest: "/usr/bin/galaxy_tool_usage"
+    owner: root
+    group: root
+    mode: 0755
