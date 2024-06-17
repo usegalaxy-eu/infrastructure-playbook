@@ -11,10 +11,29 @@ collections:
     version: 1.9.0
     source: https://galaxy.ansible.com
     type: galaxy
-  - name: community.grafana
-    version: 1.2.1
+  - name: grafana.grafana
+    # This collection has dependencies
+    # (https://github.com/grafana/grafana-ansible-collection/blob/5.2.0/requirements.yml)
+    # that have not been defined as they should
+    # (https://docs.ansible.com/ansible/latest/dev_guide/developing_collections_shared.html#listing-collection-dependencies).
+    # Therefore, they have to be included in this file. @kysrpex opened an issue on the repository of the Grafana Ansible collection
+    # https://github.com/grafana/grafana-ansible-collection/issues/222
+    # notifying the developers of this issue.
+    version: 5.2.0
     source: https://galaxy.ansible.com
     type: galaxy
+  # - name: community.general  # required by `grafana.grafana` (already specified above)
+  #   source: https://github.com/ansible-collections/community.general.git
+  #   version: 9.0.1
+  #   type: git
+  - name: community.grafana  # required by `grafana.grafana`
+    source: https://github.com/ansible-collections/community.grafana.git
+    version: 2.0.0
+    type: git
+  - name: ansible.posix  # required by `grafana.grafana`
+    source: https://github.com/ansible-collections/ansible.posix.git
+    version: 1.5.2
+    type: git
   - name: community.rabbitmq
     version: 1.1.0
     source: https://galaxy.ansible.com
@@ -82,8 +101,6 @@ roles:
   - name: usegalaxy-eu.dynmotd
     src: https://github.com/usegalaxy-eu/ansible-dynmotd
     version: 0.0.1
-  - name: cloudalchemy.grafana
-    version: 0.16.2
   - name: galaxyproject.tiaas2
     version: 2.1.3
   - name: usegalaxy-eu.autoupdates
@@ -130,7 +147,7 @@ roles:
   - name: usegalaxy_eu.tpv_auto_lint
     version: 0.2.1
   - name: usegalaxy_eu.grafana_matrix_forwarder
-    version: 1.0.0
+    version: 2.0.0
   - name: geerlingguy.redis
     version: 1.8.0
   - name: artis3n.tailscale

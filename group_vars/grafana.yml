@@ -35,13 +35,10 @@ nginx_conf_ssl_certificate: /etc/ssl/certs/fullchain.pem
 nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
 
 # Grafana
-grafana_data_dir: /data/monitoring/grafana_data
-grafana_instance: "{{ hostname }}"
+grafana_version: 11.0.0
+
 grafana_address: "127.0.0.1"
-grafana_url: "https://stats.galaxyproject.eu"
-grafana_server:
-  domain: "{{ hostname }}"
-  root_url: "https://%(domain)s/"
+grafana_url: "https://{{ grafana_domain }}"
 
 grafana_users:
   default_theme: "light"
@@ -72,13 +69,35 @@ grafana_auth:
 grafana_image_storage:
   provider: local
 
-grafana_environment:
-  GF_PANELS_DISABLE_SANITIZE_HTML: 'true'
+grafana_panels:
+  disable_sanitize_html: "true"
+
+# This setting is not yet used by the role `grafana.grafana.grafana`. It will
+# be when PR [1] is merged.
+#
+# References:
+# - [1] https://github.com/grafana/grafana-ansible-collection/pull/215
+grafana_unified_alerting:
+  enabled: "true"
+  execute_alerts: "true"
+
+# Legacy alerting was removed in Grafana 11 [1]. However, the Ansible role
+# `grafana.grafana.grafana` still populates the [alerting] section [2] unless
+# `grafana_alerting` is empty. The setting can be removed from this file as
+# soon as PR [3] is merged.
+#
+# References:
+# - [1] https://grafana.com/blog/2024/04/04/legacy-alerting-removal-what-you-need-to-know-about-upgrading-to-grafana-alerting/
+# - [2] https://github.com/grafana/grafana-ansible-collection/blob/2e7fd0591d8ad1700186174213b8142047525b88/roles/grafana/templates/grafana.ini.j2#L116-L127
+# - [3] https://github.com/grafana/grafana-ansible-collection/pull/215
+grafana_alerting: {}
 
 grafana_plugins:
   - grafana-worldmap-panel
   - grafana-piechart-panel
   - natel-discrete-panel
+
+grafana_dashboards_dir: "files/grafana"
 
 grafana_datasources:
   - name: Galaxy
@@ -219,4 +238,15 @@ galaxy_nagios_urls:
       url: "https://usegalaxy.eu/phinch/index.html"
       code: 200
 
-matrix_forwarder_resolve_mode: reaction
+
+# Grafana Gitter Bridge
+ggb_create_user: true
+ggb_create_group: true
+
+# Grafana Matrix Forwarder
+grafana_matrix_forwarder_version: "0.6.0"
+grafana_matrix_forwarder_user: centos
+grafana_matrix_forwarder_group: centos
+grafana_matrix_forwarder_homeserver: https://matrix-client.matrix.org
+grafana_matrix_forwarder_port: 6000
+grafana_matrix_forwarder_resolve_mode: reaction
