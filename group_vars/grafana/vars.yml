@@ -45,9 +45,10 @@ grafana_users:
 
 grafana_security:
   admin_user: admin
-  admin_password: "{{ grafana_auth_admin_password }}"
+  admin_password: "{{ vault_grafana_auth_admin_password }}"
   allow_embedding: "true"
   cookie_secure: "true"
+grafana_security_secret_key: "{{ vault_grafana_security_secret_key }}"
 
 grafana_auth:
   anonymous:
@@ -58,13 +59,14 @@ grafana_auth:
   github:
     enabled: "true"
     allow_sign_up: "true"
-    client_id: "{{ grafana_auth__github_client_id }}"
-    client_secret: "{{ grafana_auth__github_client_secret }}"
+    client_id: "{{ vault_grafana_auth__github_client_id }}"
+    client_secret: "{{ vault_grafana_auth__github_client_secret }}"
     scopes: "user:email,read:org"
     auth_url: "https://github.com/login/oauth/authorize"
     token_url: "https://github.com/login/oauth/access_token"
     api_url: "https://api.github.com/user"
     allowed_organisations: "usegalaxy.eu galaxyproject"
+grafana_auth_admin_password: "{{ vault_grafana_auth_admin_password }}"
 
 grafana_image_storage:
   provider: local
@@ -191,9 +193,9 @@ telegraf_plugins_extra:
 
 #galaxy_test_url: https://usegalaxy.eu
 #galaxy_test_user:
-    #api_key: "{{ galaxy_test_user__api_key }}"
+    #api_key: "{{ vault_galaxy_test_user__api_key }}"
     #username: bot@usegalaxy.eu
-    #password: "{{ galaxy_test_user__password }}"
+    #password: "{{ vault_galaxy_test_user__password }}"
     #handlers:
         #- "handler0"
         #- "handler1"
@@ -242,6 +244,9 @@ galaxy_nagios_urls:
 # Grafana Gitter Bridge
 ggb_create_user: true
 ggb_create_group: true
+bridge_token: "{{ vault_grafana_gitter_bridge_token }}"
+gitter_auth_token: "{{ vault_grafana_gitter_bridge_auth_token }}"
+gitter_room_id: "{{ vault_grafana_gitter_room_id }}"
 
 # Grafana Matrix Forwarder
 grafana_matrix_forwarder_version: "0.6.0"
@@ -249,4 +254,6 @@ grafana_matrix_forwarder_user: centos
 grafana_matrix_forwarder_group: centos
 grafana_matrix_forwarder_homeserver: https://matrix-client.matrix.org
 grafana_matrix_forwarder_port: 6000
+grafana_matrix_forwarder_username: "{{ vault_grafana_matrix_forwarder_username }}"
+grafana_matrix_forwarder_password: "{{ vault_grafana_matrix_forwarder_password }}"
 grafana_matrix_forwarder_resolve_mode: reaction
