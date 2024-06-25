@@ -298,7 +298,6 @@ galaxy_virtualenv_command: "{{ conda_prefix }}/envs/_galaxy_/bin/python -m venv 
 galaxy_nonrepro_tools: "{{ galaxy_root }}/custom-tools"
 galaxy_nonrepro_commit: master
 
-
 # Custom override
 # Our galaxy_tool_dependency_dir is on NFS, and permissions are set in such a
 # way that they cannot be changed by the ansible connected user.
@@ -373,7 +372,7 @@ galaxy_themes_subdomains:
   - name: cancer
   - name: aqua
   - name: eirene
-
+  - name: riboseq
 
 galaxy_config_file_src_dir: files/galaxy
 galaxy_config_files:
@@ -465,5 +464,5 @@ galaxy_config_templates:
     dest: "{{ galaxy_config['galaxy']['object_store_config_file'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/tpv/destinations.yml.j2"
     dest: "{{ tpv_mutable_dir }}/destinations.yml"
-  - src: '{{ galaxy_config_template_src_dir }}/config/vault_conf.yml.j2'
-    dest: '{{ galaxy_config_dir }}/vault_conf.yml'
+  - src: "{{ galaxy_config_template_src_dir }}/config/vault_conf.yml.j2"
+    dest: "{{ galaxy_config_dir }}/vault_conf.yml"
