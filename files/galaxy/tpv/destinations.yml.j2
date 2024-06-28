@@ -361,6 +361,17 @@ destinations:
       require:
         - hcmr-gr-pulsar
 
+pulsar_no_01_tpv:
+  inherits: pulsar_default
+  runner: pulsar_no_test01
+  max_accepted_cores: 3
+  max_accepted_mem: 16
+  min_accepted_gpus: 0
+  max_accepted_gpus: 0
+  scheduling:
+    require:
+      - no-elixir-pulsar
+
   #############################
   # LOCAL CONDOR DESTINATIONS #
   #############################
