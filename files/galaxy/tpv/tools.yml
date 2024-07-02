@@ -1298,6 +1298,8 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/funannotate_annotate/funannotate_annotate/.*:
     cores: 8
     mem: 40
+    env:
+      SINGULARITY_WRITABLE_TMPFS: 1
     rules:
       - id: funannotate_annotate_large_input
         if: input_size > 3.2
