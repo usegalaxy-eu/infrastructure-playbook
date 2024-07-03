@@ -121,6 +121,7 @@ grafana_datasources:
     database: galaxy
     user: "{{ influxdb.grafana.username }}"
     password: "{{ influxdb.grafana.password }}"
+    uid: P9B81C0353945995B
   - name: Galaxy Historical
     type: influxdb
     access: proxy
@@ -130,6 +131,7 @@ grafana_datasources:
     database: galaxy_stats
     user: "{{ influxdb.grafana.username }}"
     password: "{{ influxdb.grafana.password }}"
+    uid: PEBD82B4560F292BD
   - name: GRT Tool Usage
     type: influxdb
     access: proxy
@@ -139,6 +141,7 @@ grafana_datasources:
     database: grt
     user: "{{ influxdb.grafana.username }}"
     password: "{{ influxdb.grafana.password }}"
+    uid: PA4245ACF5D5D4D2B
   - name: InfluxDB - internal
     type: influxdb
     access: proxy
@@ -148,6 +151,7 @@ grafana_datasources:
     database: _internal
     user: "{{ influxdb.grafana.username }}"
     password: "{{ influxdb.grafana.password }}"
+    uid: P97EDD1499B7D2981
   - name: Notifications
     type: influxdb
     access: proxy
@@ -157,6 +161,7 @@ grafana_datasources:
     database: notifications
     user: "{{ influxdb.grafana.username }}"
     password: "{{ influxdb.grafana.password }}"
+    uid: P788011833A5A0F22
 
 hxr_monitor_ssl_expiry:
   # A couple of usegalaxy.eu subdomains.
