@@ -314,7 +314,12 @@ tools:
   toolshed.g2.bx.psu.edu/repos/bgruening/mgnify_seqprep/mgnify_seqprep/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/goeckslab/squidpy/squidpy_spatial/*:
-    inherits: basic_docker_tool
+    ##inherits: basic_docker_tool
+    env:
+      TEMP: '/tmp/'
+      TMPDIR: '/tmp/'
+      TMP: '/tmp/'
+    
   toolshed.g2.bx.psu.edu/repos/goeckslab/gate_finder/gate_finder/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/goeckslab/vitessce_spatial/vitessce_spatial/.*:
@@ -1300,6 +1305,9 @@ tools:
     mem: 40
     env:
       SINGULARITY_WRITABLE_TMPFS: 1
+      TEMP: '/tmp/'
+      TMPDIR: '/tmp/'
+      TMP: '/tmp/'
     rules:
       - id: funannotate_annotate_large_input
         if: input_size > 3.2
