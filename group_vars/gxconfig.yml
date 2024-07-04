@@ -958,10 +958,13 @@ base_app_main: &BASE_APP_MAIN
   # subdomain. Defaults to "/".
   #interactivetools_base_path: /
 
-  # Map for interactivetool proxy.
-  # The value of this option will be resolved with respect to
-  # <data_dir>.
-  interactivetools_map: "{{ galaxy_mutable_data_dir }}/interactivetools_map.sqlite"
+  # Map for interactivetool proxy. It may be either a path to a SQLite
+  # database or a SQLAlchemy database URL (see
+  # https://docs.sqlalchemy.org/en/20/core/engines.html#database-urls).
+  # In either case, mappings will be written to the table "gxitproxy" within the
+  # database. If it is a path, the value of this option will be resolved with
+  # respect to <data_dir>.
+  interactivetools_map: "{{ galaxy_db_connection }}"
 
   # Prefix to use in the formation of the subdomain or path for
   # interactive tools
