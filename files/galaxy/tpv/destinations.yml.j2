@@ -313,6 +313,17 @@ destinations:
       require:
         - egi-pulsar
 
+  pulsar_pt01_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_pt01
+    max_accepted_cores: 0 # please change
+    max_accepted_mem: 0 # please change
+    min_accepted_gpus: 0 # please change
+    max_accepted_gpus: 0
+    scheduling:
+      require:
+        - pt-pulsar
+
   pulsar_bsc01_tpv:
     inherits: pulsar_default
     runner: pulsar_eu_bsc01
