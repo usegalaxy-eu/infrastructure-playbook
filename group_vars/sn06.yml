@@ -493,7 +493,8 @@ galaxy_config_templates:
     dest: "{{ tpv_mutable_dir }}/destinations.yml"
   - src: '{{ galaxy_config_template_src_dir }}/config/vault_conf.yml.j2'
     dest: '{{ galaxy_config_dir }}/vault_conf.yml'
-  - src: "{{ galaxy_config_template_src_dir }}/config/file_source_templates.yml.j2"
-    dest: "{{ galaxy_config['galaxy']['file_source_templates_config_file'] }}"
-  - src: "{{ galaxy_config_template_src_dir }}/config/object_store_templates.yml.j2"
-    dest: "{{ galaxy_config['galaxy']['object_store_templates_config_file'] }}"
+    # 9/7/24: Uncomment these when deploying object store and update the galaxy config
+  # - src: "{{ galaxy_config_template_src_dir }}/config/file_source_templates.yml.j2"
+  #   dest: "{{ galaxy_config['galaxy']['file_source_templates_config_file'] }}"
+  # - src: "{{ galaxy_config_template_src_dir }}/config/object_store_templates.yml.j2"
+  #   dest: "{{ galaxy_config['galaxy']['object_store_templates_config_file'] }}"
