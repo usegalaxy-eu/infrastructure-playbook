@@ -326,8 +326,9 @@ tools:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/goeckslab/squidpy/squidpy_spatial/*:
     inherits: basic_docker_tool
+    mem: 6
     params:
-      docker_run_extra_arguments: "--mount type=tmpfs,destination=/tmp"
+      docker_run_extra_arguments: "--mount type=tmpfs,tmpfs-size=2147483648,destination=/tmp"
   toolshed.g2.bx.psu.edu/repos/goeckslab/gate_finder/gate_finder/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/goeckslab/vitessce_spatial/vitessce_spatial/.*:
@@ -1310,9 +1311,9 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/iuc/funannotate_annotate/funannotate_annotate/.*:
     cores: 8
-    mem: 40
+    mem: 42
     params:
-      docker_run_extra_arguments: "--mount type=tmpfs,destination=/tmp"
+      docker_run_extra_arguments: "--mount type=tmpfs,tmpfs-size=2147483648,destination=/tmp"
     env:
       SINGULARITY_WRITABLE_TMPFS: 1
     rules:
