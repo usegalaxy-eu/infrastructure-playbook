@@ -292,8 +292,6 @@ galaxy_config_dir: "{{ galaxy_root }}/config"
 galaxy_venv_dir: "{{ galaxy_root }}/venv"
 galaxy_job_working_directory: "{{ galaxy_config['galaxy']['job_working_directory'] }}"
 ucsc_build_sites:
-galaxy_file_source_templates_dir: "{{ galaxy_mutable_config_dir }}/file_source_templates"
-galaxy_object_store_templates_dir: "{{ galaxy_mutable_config_dir }}/object_store_templates"
 
 galaxy_virtualenv_command: "{{ conda_prefix }}/envs/_galaxy_/bin/python -m venv --copies"
 #galaxy_virtualenv_python: "python3.6"
@@ -319,8 +317,6 @@ galaxy_dirs:
   - "{{ galaxy_log_dir }}"
   - "{{ galaxy_config_dir }}/total_perspective_vortex"
   - "{{ tpv_mutable_dir }}"
-  - "{{ galaxy_file_source_templates_dir }}"
-  - "{{ galaxy_object_store_templates_dir }}"
 
 galaxy_instance_hostname: usegalaxy.eu
 galaxy_config_style: yaml
@@ -425,28 +421,6 @@ galaxy_config_files:
     dest: "{{ tpv_mutable_dir }}/interactive_tools.yml"
   - src: "{{ galaxy_config_file_src_dir }}/tpv/users.yml"
     dest: "{{ tpv_mutable_dir }}/users.yml"
-  - src: "{{ galaxy_config_file_src_dir }}/config/file_source_templates/production_aws_private_bucket.yml"
-    dest: "{{ galaxy_file_source_templates_dir }}/production_aws_private_bucket.yml"
-  - src: "{{ galaxy_config_file_src_dir }}/config/file_source_templates/production_aws_public_bucket.yml"
-    dest: "{{ galaxy_file_source_templates_dir }}/production_aws_public_bucket.yml"
-  - src: "{{ galaxy_config_file_src_dir }}/config/file_source_templates/production_azure.yml"
-    dest: "{{ galaxy_file_source_templates_dir }}/production_azure.yml"
-  - src: "{{ galaxy_config_file_src_dir }}/config/file_source_templates/production_ftp.yml"
-    dest: "{{ galaxy_file_source_templates_dir }}/production_ftp.yml"
-  - src: "{{ galaxy_config_file_src_dir }}/config/file_source_templates/production_s3fs.yml"
-    dest: "{{ galaxy_file_source_templates_dir }}/production_s3fs.yml"
-  - src: "{{ galaxy_config_file_src_dir }}/config/object_store_templates/production_aws_s3_legacy.yml"
-    dest: "{{ galaxy_object_store_templates_dir }}/production_aws_s3_legacy.yml"
-  - src: "{{ galaxy_config_file_src_dir }}/config/object_store_templates/production_aws_s3.yml"
-    dest: "{{ galaxy_object_store_templates_dir }}/production_aws_s3.yml"
-  - src: "{{ galaxy_config_file_src_dir }}/config/object_store_templates/production_azure_blob.yml"
-    dest: "{{ galaxy_object_store_templates_dir }}/production_azure_blob.yml"
-  - src: "{{ galaxy_config_file_src_dir }}/config/object_store_templates/production_gcp_s3.yml"
-    dest: "{{ galaxy_object_store_templates_dir }}/production_gcp_s3.yml"
-  - src: "{{ galaxy_config_file_src_dir }}/config/object_store_templates/production_generic_s3_legacy.yml"
-    dest: "{{ galaxy_object_store_templates_dir }}/production_generic_s3_legacy.yml"
-  - src: "{{ galaxy_config_file_src_dir }}/config/object_store_templates/production_generic_s3.yml"
-    dest: "{{ galaxy_object_store_templates_dir }}/production_generic_s3.yml"
 
   #- src: files/galaxy/config/job_resource_params_conf.xml
   #dest: "{{ galaxy_config['app:main']['job_resource_params_file'] }}"
@@ -493,8 +467,3 @@ galaxy_config_templates:
     dest: "{{ tpv_mutable_dir }}/destinations.yml"
   - src: '{{ galaxy_config_template_src_dir }}/config/vault_conf.yml.j2'
     dest: '{{ galaxy_config_dir }}/vault_conf.yml'
-    # 9/7/24: Uncomment these when deploying object store and update the galaxy config
-  # - src: "{{ galaxy_config_template_src_dir }}/config/file_source_templates.yml.j2"
-  #   dest: "{{ galaxy_config['galaxy']['file_source_templates_config_file'] }}"
-  # - src: "{{ galaxy_config_template_src_dir }}/config/object_store_templates.yml.j2"
-  #   dest: "{{ galaxy_config['galaxy']['object_store_templates_config_file'] }}"

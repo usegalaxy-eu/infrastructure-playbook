@@ -51,19 +51,3 @@ compare files/$folder/config/user_preferences_extra_conf.yml	$GALAXY/config/user
 #compare templates/$folder/config/build_sites.yml.j2	$GALAXY/config/build_sites.yml.sample.sample
 
 compare group_vars/gxconfig${ext}.yml	$GALAXY/config/galaxy.yml.sample
-
-# Compare file source templates
-compare files/$folder/config/file_source_templates/production_aws_private_bucket.yml	$GALAXY/files/templates/examples/production_aws_private_bucket.yml
-compare files/$folder/config/file_source_templates/production_aws_public_bucket.yml	$GALAXY/files/templates/examples/production_aws_public_bucket.yml
-compare files/$folder/config/file_source_templates/production_azure.yml	$GALAXY/files/templates/examples/production_azure.yml
-compare files/$folder/config/file_source_templates/production_ftp.yml	$GALAXY/files/templates/examples/production_ftp.yml
-compare files/$folder/config/file_source_templates/production_s3fs.yml	$GALAXY/files/templates/examples/production_s3fs.yml
-
-# Compare object store templates
-compare files/$folder/config/object_store_templates/production_aws_s3_legacy.yml	$GALAXY/objectstore/templates/examples/production_aws_s3_legacy.yml
-compare files/$folder/config/object_store_templates/production_aws_s3.yml	$GALAXY/objectstore/templates/examples/production_aws_s3.yml
-compare files/$folder/config/object_store_templates/production_azure_blob.yml	$GALAXY/objectstore/templates/examples/production_azure_blob.yml
-compare files/$folder/config/object_store_templates/production_gcp_s3.yml	$GALAXY/objectstore/templates/examples/production_gcp_s3.yml
-compare files/$folder/config/object_store_templates/production_generic_s3_legacy.yml	$GALAXY/objectstore/templates/examples/production_generic_s3_legacy.yml
-compare files/$folder/config/object_store_templates/production_generic_s3.yml	$GALAXY/objectstore/templates/examples/production_generic_s3.yml
-compare files/$folder/config/object_store_templates/minio_example.yml	$GALAXY/objectstore/templates/examples/minio_example.yml
