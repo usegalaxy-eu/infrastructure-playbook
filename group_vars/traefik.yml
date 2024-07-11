@@ -10,7 +10,9 @@ telegraf_plugins_extra:
       - name_override = "traefik"
 
 traefik_force_validation: true
-traefik_no_service_log: true
+traefik_manage_secrets: true
+
+traefik_no_service_log: false
 
 traefik_log_dir: /var/log/traefik
 traefik_dir: /etc/traefik
@@ -20,20 +22,28 @@ lp_logrotate_confd:
   - path: traefik
     conf: |
       {{ traefik_log_dir }}/*.log {
-        compress
-        copytruncate
         daily
-        notifempty
         missingok
         rotate 1
+        compress
+        delaycompress
+        notifempty
+        create 0600 {{ traefik_user }} {{ traefik_group }}
+        sharedscripts
+        postrotate
+           # kill & resstart container which contains "traefik" in name
+           docker kill --signal="USR1" $(docker ps | grep traefik | awk '{print $1}')
+        endscript
       }
 
-tailscale_tags: ['critical']
+tailscale_tags:
+  - "critical"
 
 traefik_copy_rules: true
 
 traefik_domain: "{{ hostname }}"
 tailscale_domain: springhare-dinosaur.ts.net
+tailscale_authkey: "{{ tailscale_auth_key_usegalaxy_eu }}"
 
 traefik_networks:
   traefik:
@@ -41,19 +51,19 @@ traefik_networks:
     driver: overlay
 traefik_containers:
   - name: traefik
+    replicas: 1
     image: traefik:v3.0
     url: "https://traefik.{{ tailscale_domain }}/dashboard/#/"
-    state: started
-    replicas: 1
+    state:
+      started
     restart_policy: on-failure
     ports:
       - "80:80"
       - "443:443"
       - "8080:8080"
     environment:
-      CF_API_EMAIL_FILE: "/run/secrets/cloudflare_email"
-      # CF_API_KEY_FILE: "/run/secrets/cloudflare_api_key"
-      CLOUDFLARE_DNS_API_TOKEN_FILE: "/run/secrets/cloudflare_zone_token"
+      AWS_SHARED_CREDENTIALS_FILE: "/run/secrets/aws_shared_credentials"
+      AWS_REGION: "us-east-1"
     networks:
       - traefik
     command:
@@ -62,7 +72,6 @@ traefik_containers:
       - --api=true
       - "--providers.swarm.exposedByDefault=false"
       - "--providers.swarm.endpoint=unix:///var/run/docker.sock"
-      #- "--providers.docker.network={{ traefik_networks[0]['name'] }}"
       - --api.dashboard=true
       - --api.insecure=false
       - --global.sendAnonymousUsage=false
@@ -73,7 +82,7 @@ traefik_containers:
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
       - "--entryPoints.websecure.http.tls.domains[0].main={{ traefik_domain }}"
-      - --entryPoints.https.http.tls.certresolver=dns-cloudflare
+      - --entryPoints.https.http.tls.certresolver=route53
       - "--entryPoints.websecure.http.tls.domains[0].sans=*.{{ traefik_domain }}"
 
       # Prometheus Metrics
@@ -85,49 +94,35 @@ traefik_containers:
       - --metrics.prometheus.entryPoint=metrics
       - --metrics.prometheus.headerlabels.origin=Origin
 
-
-      # Influx Metrics - Deprecated in v3
-     # - --metrics.influxdb=true
-     # - --metrics.influxdb.pushinterval=10s
-     # - --metrics.influxdb.address={{ influxdb.url }}
-     # - --metrics.influxdb.protocol=http
-     # - --metrics.influxdb.database={{ influxdb.node.database }}
-     # - --metrics.influxdb.username={{ influxdb.node.username }}
-     # - --metrics.influxdb.password={{ influxdb.node.password }}
-
-
-
       - "--providers.file.directory=/rules"
       - "--providers.file.watch=true"
       ## DNS Challenge
       - --certificatesResolvers.ts.tailscale=true
-      - --certificatesResolvers.dns-cloudflare.acme.storage=/letsencrypt/acme.json
-      - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.provider=cloudflare
-      - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.resolvers=1.1.1.1:53,1.0.0.1:53
-      - --certificatesresolvers.dns-cloudflare.acme.caserver=https://acme-v02.api.letsencrypt.org/directory #enable metricsa
-
+      - --certificatesResolvers.route53.acme.storage=/letsencrypt/acme.json
+      - --certificatesResolvers.route53.acme.dnsChallenge.provider=route53
+      - --certificatesresolvers.route53.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory #remove staging for real certs
+      - --certificatesresolvers.route53.acme.email="{{ traefik_letsencrypt_mail }}"
       # Enable Logging
       - "--log=true"
+      - "--log.format=json"
       - --log.filePath={{ traefik_log_dir }}/traefik.log
-      - "--log.level=DEBUG" # DEBUG, PANIC, FATAL, ERROR, WARN, INFO
-      #- "--serversTransport.insecureSkipVerify=true"
+      - "--log.level=INFO" # DEBUG, PANIC, FATAL, ERROR, WARN, INFO
       - --accesslog=true
       - --accesslog.filepath={{ traefik_log_dir }}/access.log
     labels:
       "traefik.enable": "true"
-      #"traefik.http.routers.traefik.rule": "Host(`{{ traefik_domain }}`) || Host(`www.{{ traefik_domain }}`)"
       "traefik.http.routers.traefik.rule": "Host(`traefik.{{ tailscale_domain }}`)"
       "traefik.http.routers.traefik.entrypoints": "websecure,web"
       "traefik.http.routers.traefik.tls": "true"
       "traefik.http.routers.traefik.tls.certresolver": "ts"
       "traefik.http.routers.traefik.tls.domains[0].main": "traefik.{{ tailscale_domain }}"
       "traefik.http.routers.traefik.service": "api@internal"
-      "traefik.http.services.dummy-svc.loadbalancer.server.port": "9999"
+      "traefik.http.services.dummy-svc.loadbalancer.server.port": "9999" # dummy needed by swarm
 
     security_opts:
       - "label:type:container_runtime_t"
 
-    mode: replicated
+    mode: global
 
     mounts:
       - source: "/var/run/docker.sock"
@@ -152,64 +147,20 @@ traefik_containers:
         readonly: false
 
     publish:
-      - target_port: 80
-        published_port: 80
-        protocol: tcp
       - target_port: 443
         published_port: 443
         protocol: tcp
-      - target_port: 8080
-        published_port: 8080
-        protocol: tcp
-      - target_port: 8082
-        published_port: 8082
-        protocol: tcp
-
+        mode: host
 
     secrets:
-     # - secret_name: cloudflare_email
-     # - secret_name: cloudflare_api_key
-      - secret_name: cloudflare_zone_token
+      - secret_name: aws_shared_credentials
 
-#  - name: tailscale
-#    hostname: traefik
-#    image: tailscale/tailscale:latest
-#    url: "https://traefik.{{ tailscale_domain }}/dashboard/#/"
-#    state: started
-#    replicas: 1
-#    restart_policy: on-failure
-#    network_mode: host
-#    volumes:
-#    environment:
-#      TS_AUTHKEY: "{{ traefik_docker_secrets.tailscale_auth_key }}"
-#      TS_STATE_DIR: "/var/run/tailscale"
-#      TS_AUTH_ONCE: "true"
-#      TS_SOCKET: "/var/run/tailscale/tailscaled.sock"
-#    #secrets:
-#     # - secret_name: tailscale_auth_key
-#      # create ephemeral single use key in tailscale interface
-#    cap_add:
-#      - net_admin
-#      - sys_module
-#    restart: unless-stopped
-#    networks:
-#      - traefik
-#    mounts:
-#      - source: /var/run/tailscale
-#        target: /var/run/tailscale
-#        type: bind
-#        readonly: false
-#      - source: /dev/net/tun
-#        target: /dev/net/tun
-#        type: bind
-#        readonly: false
-###############
-##   whoami   #
-###############
+# Leave for testing and example if more containers are added
   - name: whoami
     image: "traefik/whoami"
     url: "https://traefik.{{ tailscale_domain }}/whoami"
-    replicas: 1
+    replicas: 2
+    mode: replicated
     labels:
       "traefik.enable": "true"
       "traefik.http.routers.whoami.rule": "Host(`traefik.{{ tailscale_domain }}`) && PathPrefix(`/whoami`)"
