@@ -1,8 +1,6 @@
 {{define "subdomain"}}
     prox-{{ . }}:
       rule: HostRegexp(`^.+\\.{{ . }}\\.usegalaxy.eu`)
-      middlewares:
-        - secure-headers
       service: usegalaxy-eu
       tls:
         certResolver: "route53"
