@@ -71,8 +71,6 @@ destinations:
         $working_directory:rw,
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
 
-{# Save embedded Pulsar destinations to replicate them in the secondary cluster. #}
-{% set embedded_pulsar %}
   interactive_pulsar:
     inherits: embedded_pulsar_docker_abstract
     scheduling:
@@ -111,18 +109,6 @@ destinations:
       GPU_AVAILABLE: "1"
     params:
       requirements: 'GalaxyGroup == "compute_gpu"'
-{%- endset %}{{ embedded_pulsar }}
-
-{# Generate secondary cluster destinations. #}
-{% for name, destination in (embedded_pulsar | from_yaml).items() %}
-  secondary_{{ name }}:
-    inherits: {{ name }}
-    runner: pulsar_embedded_secondary
-    scheduling:
-      require:
-        - condor-secondary
-
-{% endfor %}
 
   #######################
   # PULSAR DESTINATIONS #
@@ -145,7 +131,7 @@ destinations:
       outputs_to_working_directory: "false"
       dependency_resolution: "none"
       submit_request_cpus: "{cores}"
-      submit_request_memory: "{mem}"
+      submit_request_memory: "{mem}G"
       docker_volumes: "$job_directory:rw,
         $tool_directory:ro,
         $job_directory/outputs:rw,
@@ -165,7 +151,6 @@ destinations:
         - singularity
         - docker
         - condor-tpv
-        - condor-secondary
 
   pulsar_mira_tpv:
     inherits: pulsar_default
@@ -198,7 +183,7 @@ destinations:
     inherits: pulsar_default
     runner: pulsar_eu_sk01
     max_accepted_cores: 8
-    max_accepted_mem: 16
+    max_accepted_mem: 31
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     scheduling:
@@ -259,39 +244,44 @@ destinations:
     inherits: pulsar_default
     runner: pulsar_eu_cz01
     max_accepted_cores: 32
-    max_accepted_mem: 128
+    max_accepted_mem: 256
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     env:
       LC_ALL: C
-      SINGULARITY_CACHEDIR: "/storage/praha5-elixir/home/galaxyeu/singularity"
-      SINGULARITY_TMPDIR: "/storage/praha5-elixir/home/galaxyeu/singularity/tmp"
+      #SINGULARITY_CACHEDIR: "/storage/praha5-elixir/home/galaxyeu/singularity"
+      SINGULARITY_CACHEDIR: "/cvmfs/singularity.galaxyproject.org/all/"
+      SINGULARITY_TMPDIR: "$SCRATCHDIR"
       TMPDIR: "$SCRATCHDIR"
       TMP: "$SCRATCHDIR"
       TEMP: "$SCRATCHDIR"
+      XDG_CACHE_HOME: "$SCRATCHDIR"
     params:
       jobs_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/staging"
       persistence_directory: "/opt/pulsar/files/persistent"
       singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,/cvmfs/data.galaxyproject.org/managed/:/data/db/data_managers/:ro"
       singularity_run_extra_arguments: --env "_JAVA_OPTIONS=\"-Djava.io.tmpdir=$SCRATCHDIR\""
+      submit_native_specification: "-l select=1:ncpus={int(cores)}:mem={int(mem)}gb:scratch_local=100gb -l walltime=24:00:00 -q galaxyeu@pbs-m1.metacentrum.cz -N pulsar_eu_j{job.id}__{tool.id if '/' not in tool.id else tool.id.split('/')[-2]+'_v'+tool.id.split('/')[-1]}__{user.username if user and hasattr(user, 'username') else 'anonymous'}"
     scheduling:
       require:
         - cz-pulsar
 
   pulsar_cz02_tpv:
     inherits: pulsar_default
-    runner: pulsar_eu_cz02
+    runner: pulsar_eu_cz01
     max_accepted_cores: 32
     max_accepted_mem: 128
     min_accepted_gpus: 1
     max_accepted_gpus: 1
     env:
       LC_ALL: C
-      SINGULARITY_CACHEDIR: "/storage/praha5-elixir/home/galaxyeu/singularity"
-      SINGULARITY_TMPDIR: "/storage/praha5-elixir/home/galaxyeu/singularity/tmp"
+      #SINGULARITY_CACHEDIR: "/storage/praha5-elixir/home/galaxyeu/singularity"
+      SINGULARITY_CACHEDIR: "/cvmfs/singularity.galaxyproject.org/all/"
+      SINGULARITY_TMPDIR: "$SCRATCHDIR"
       TMPDIR: "$SCRATCHDIR"
       TMP: "$SCRATCHDIR"
       TEMP: "$SCRATCHDIR"
+      XDG_CACHE_HOME: "$SCRATCHDIR"
       ALPHAFOLD_DB: "/storage/brno11-elixir/projects/alphafold/alphafold.db-2.3.1"
       GPU_AVAILABLE: "1"
     params:
@@ -299,6 +289,7 @@ destinations:
       persistence_directory: "/opt/pulsar/files/persistent"
       singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,$ALPHAFOLD_DB:/data:ro"
       singularity_run_extra_arguments: "--nv --env ALPHAFOLD_USE_GPU=True"
+      submit_native_specification: "-l select=1:ncpus=1:mem={int(mem)}gb:scratch_local=100gb:ngpus=1:gpu_mem=8gb -l walltime=24:00:00 -q gpu@pbs-m1.metacentrum.cz -N pulsar_eu_j{job.id}__{tool.id if '/' not in tool.id else tool.id.split('/')[-2]+'_v'+tool.id.split('/')[-1]}__{user.username if user and hasattr(user, 'username') else 'anonymous'}"
     scheduling:
       require:
         - cz-pulsar
@@ -362,6 +353,10 @@ destinations:
     max_accepted_mem: 30
     min_accepted_gpus: 0
     max_accepted_gpus: 0
+    env:
+      TMP: $_GALAXY_JOB_TMP_DIR
+      TEMP: $_GALAXY_JOB_TMP_DIR
+      TMPDIR: $_GALAXY_JOB_TMP_DIR
     scheduling:
       require:
         - hcmr-gr-pulsar
@@ -370,8 +365,6 @@ destinations:
   # LOCAL CONDOR DESTINATIONS #
   #############################
 
-{# Save condor destinations to replicate them in the secondary cluster. #}
-{% set condor %}
   condor_docker:
     inherits: basic_docker_destination
     runner: condor
@@ -386,8 +379,8 @@ destinations:
   condor_singularity:
     inherits: basic_singularity_destination
     runner: condor
-    max_accepted_cores: 24
-    max_accepted_mem: 128
+    max_accepted_cores: 36
+    max_accepted_mem: 975
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     params:
@@ -484,17 +477,3 @@ destinations:
       GPU_AVAILABLE: 1
     params:
       requirements: 'GalaxyGroup == "compute_gpu"'
-{%- endset %}{{ condor }}
-
-{# Generate secondary cluster destinations. #}
-{% for name, destination in (condor | from_yaml).items() %}
-  {% if destination.runner is defined and destination.runner == "condor" %}
-  secondary_{{ name }}:
-    inherits: {{ name }}
-    runner: condor_secondary
-    scheduling:
-      require:
-        - condor-secondary
-
-  {% endif %}
-{% endfor %}

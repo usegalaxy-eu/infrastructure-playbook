@@ -9,6 +9,7 @@
     - mounts/dest/all.yml
     - mounts/mountpoints.yml
     - group_vars/maintenance.yml
+    - group_vars/all.yml
   collections:
     - devsec.hardening
   handlers:
@@ -115,7 +116,9 @@
         state: enabled
       with_items:
         - 9628/tcp # HTCondor shared port
+        - 514/tcp  # rsyslog
   roles:
+    - usegalaxy-eu.vgcn-monitoring
     - usegalaxy_eu.handy.os_setup
     - geerlingguy.repo-epel
     - usegalaxy-eu.autoupdates
@@ -132,13 +135,12 @@
     - usegalaxy-eu.galaxy-slurp
     - usegalaxy_eu.fs_maintenance
     # - usegalaxy-eu.htcondor_release
-    - usegalaxy-eu.fix-unscheduled-workflows
+    # - usegalaxy-eu.fix-unscheduled-workflows
     - usegalaxy-eu.fix-ancient-ftp-data
-    - usegalaxy-eu.fix-user-quotas
+    # - usegalaxy-eu.fix-user-quotas
     - usegalaxy-eu.remove-orphan-condor-jobs
     - ssh_hardening
     - dj-wasabi.telegraf
     # - usegalaxy-eu.fix-stop-ITs
-    - usegalaxy-eu.vgcn-monitoring
     - usegalaxy-eu.logrotate
     - usegalaxy_eu.walle

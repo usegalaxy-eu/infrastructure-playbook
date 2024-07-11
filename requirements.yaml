@@ -38,7 +38,7 @@ roles:
 #  - name: devops.tomcat7
 #    version: 1.0.0
   - name: dj-wasabi.telegraf
-    version: 0.14.0
+    version: 0.14.1
   - name: galaxyproject.galaxy
     src: https://github.com/galaxyproject/ansible-galaxy
     version: 0.10.18
@@ -107,13 +107,13 @@ roles:
   - name: usegalaxy_eu.rustus
     version: 0.3.0
   - name: usegalaxy_eu.rabbitmqserver
-    version: 1.4.4
+    version: 1.4.5
   - name: usegalaxy_eu.influxdbserver
     version: 1.1.1
   - name: usegalaxy_eu.flower
     version: 2.0.0
   - name: usegalaxy_eu.walle
-    version: 0.0.1
+    version: 0.0.2
   # `geerlingguy.pip` is here only because it is a dependency of
   # `paprikant.beacon` and because no version has been pinned when declaring
   # the dependency, the role is affected by this bug:
@@ -135,7 +135,6 @@ roles:
     version: 1.8.0
   - name: artis3n.tailscale
     version: v4.5.0
-    src: https://github.com/artis3n/ansible-role-tailscale
   - src: https://github.com/usegalaxy-eu/ansible-traefik
     name: usegalaxy_eu.traefik
     version: 2.0.0

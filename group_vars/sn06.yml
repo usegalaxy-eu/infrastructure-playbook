@@ -45,8 +45,8 @@ fsm_cron_tasks:
     enable: true
     name: "Gxadmin Galaxy clean up"
     minute: 0
-    hour: "*/6"
-    dom: "*"
+    hour: 0
+    dom: "*/2"
     month: "*"
     dow: "*"
     job: "{{ custom_telegraf_env }} /usr/bin/gxadmin galaxy cleanup 60"
@@ -81,9 +81,9 @@ telegraf_plugins_extra:
     plugin: "exec"
     config:
       - commands = ["/usr/bin/gxadmin gunicorn active-users"]
-      - timeout = "15s"
+      - timeout = "90s"
       - data_format = "influx"
-      - interval = "1m"
+      - interval = "5m"
 
 # Custom pip installer
 pip_venv_path: "{{ galaxy_venv_dir }}"
@@ -210,7 +210,7 @@ galaxy_cvmfs_server_urls:
 
 # SystemD
 galaxy_systemd_mode: "gunicorn"
-galaxy_systemd_gunicorns: 3
+galaxy_systemd_gunicorns: 7
 galaxy_systemd_gunicorn_workers: 4
 galaxy_systemd_gunicorn_timeout: 600
 galaxy_systemd_handlers: 6
@@ -220,7 +220,7 @@ galaxy_systemd_gunicorn_env: "{{ apollo_env }}"
 galaxy_systemd_handler_env: "{{ galaxy_systemd_gunicorn_env }}"
 galaxy_systemd_workflow_scheduler_env: "{{ galaxy_systemd_gunicorn_env }}"
 
-galaxy_systemd_memory_limit: 120
+galaxy_systemd_memory_limit: 25
 galaxy_systemd_memory_limit_handler: 30
 galaxy_systemd_memory_limit_workflow: 15
 
@@ -322,7 +322,7 @@ galaxy_instance_hostname: usegalaxy.eu
 galaxy_config_style: yaml
 
 galaxy_repo: "https://github.com/usegalaxy-eu/galaxy.git"
-galaxy_commit_id: "release_23.1_europe"
+galaxy_commit_id: "release_24.1_europe"
 galaxy_force_checkout: true # discard any modified files
 #galaxy_admin_email_from: 'noreply@usegalaxy.eu'
 
@@ -455,8 +455,6 @@ galaxy_config_templates:
     dest: "{{ galaxy_config_dir }}/grt.yml"
   - src: "{{ galaxy_config_template_src_dir }}/config/pulsar_app.yml"
     dest: "{{ galaxy_config_dir }}/pulsar_app.yml"
-  - src: "{{ galaxy_config_template_src_dir }}/config/pulsar_app_secondary.yml"
-    dest: "{{ galaxy_config_dir }}/pulsar_app_secondary.yml"
   - src: "{{ galaxy_config_template_src_dir }}/config/tool_conf.xml.j2"
     dest: "{{ galaxy_config_dir }}/tool_conf.xml"
   - src: "{{ galaxy_config_template_src_dir }}/config/galaxy_workflow_scheduler.j2"
@@ -467,3 +465,5 @@ galaxy_config_templates:
     dest: "{{ galaxy_config['galaxy']['object_store_config_file'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/tpv/destinations.yml.j2"
     dest: "{{ tpv_mutable_dir }}/destinations.yml"
+  - src: '{{ galaxy_config_template_src_dir }}/config/vault_conf.yml.j2'
+    dest: '{{ galaxy_config_dir }}/vault_conf.yml'
