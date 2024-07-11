@@ -9,11 +9,12 @@
   pre_tasks:
     - name: Install ansible dependencies
       ansible.builtin.package:
-        name:
-          - python3-policycoreutils
-          - python3-libselinux
-          - policycoreutils-python-utils
-          - python3-pip
+        name: "{{ item }}"
+      with_items:
+        - python3-policycoreutils
+        - python3-libselinux
+        - policycoreutils-python-utils
+        - python3-pip
 
     - name: Install python docker
       become: true
@@ -23,9 +24,6 @@
       loop:
         - docker
         - selinux
-   # - name: Set Python Interpreter
-   #   set_fact:
-   #     ansible_python_interpreter: /ansible/bin/python
 
   roles:
     - geerlingguy.repo-epel # Install EPEL repository
