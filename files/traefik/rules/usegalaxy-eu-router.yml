@@ -1,8 +1,13 @@
 http:
   routers:
     usegalaxy-eu-rtr:
-      rule: "Host(`usegalaxy-eu.traefik.flyingrabb.it`)"
+      rule: "Host(`usegalaxy.eu`) || HostRegexp(`^.+\\.usegalaxy\\.eu`)"
       service: "usegalaxy-eu"
-      tls: {}
+      tls:
+        certResolver: "route53"
+        domains:
+          - main: "usegalaxy.eu"
+            sans:
+              - "*.ep.interactivetool.usegalaxy.eu"
       middlewares:
         - secure-headers

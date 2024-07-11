@@ -1,9 +1,4 @@
 http:
- # middlewares:
- #   set-usegalaxy:
- #     headers:
- #       customRequestHeaders:
- #         Host: "usegalaxy.eu" 
   services:
     usegalaxy-eu:
       loadBalancer:
@@ -12,4 +7,4 @@ http:
           cookie: {}
         servers:
           - url: "https://sn06.galaxyproject.eu/"
-          - url: "https://sn07.galaxyproject.eu/"
+        #  - url: "https://sn07.galaxyproject.eu/"
