@@ -1,24 +1,54 @@
 {{define "subdomain"}}
     prox-{{ . }}:
-      rule: Host(`{{ . }}.flyingrabb.it`)
+      rule: HostRegexp(`^.+\\.{{ . }}\\.usegalaxy.eu`)
       middlewares:
         - secure-headers
-      service: sn07
+      service: usegalaxy-eu
       tls:
-        certResolver: "dns-cloudflare"
+        certResolver: "route53"
         domains:
-          - main: "{{ . }}.flyingrabb.it"
+          - main: "{{ . }}.usegalaxy.eu"
             sans:
-              - "*.ep.interactivetool.{{ . }}.flyingrabb.it"
-              - "*.{{ . }}.flyingrabb.it"
+              - "*.ep.interactivetool.{{ . }}.usegalaxy.eu"
+              - "*.{{ . }}.usegalaxy.eu"
 {{end}}
 
 http:
   routers:
-{{template "subdomain" "live"}}
-{{template "subdomain" "imaging"}}
-{{template "subdomain" "hicexplorer"}}
 {{template "subdomain" "assembly"}}
-{{template "subdomain" "annotation"}}
-{{template "subdomain" "ecology"}}
+{{template "subdomain" "nanopore"}}
+{{template "subdomain" "erasmusmc"}}
 {{template "subdomain" "climate"}}
+{{template "subdomain" "hicexplorer"}}
+{{template "subdomain" "annotation"}}
+{{template "subdomain" "metabolomics"}}
+{{template "subdomain" "metagenomics"}}
+{{template "subdomain" "microbiome"}}
+{{template "subdomain" "microgalaxy"}}
+{{template "subdomain" "rna"}}
+{{template "subdomain" "graphclust"}}
+{{template "subdomain" "ecology"}}
+{{template "subdomain" "proteomics"}}
+{{template "subdomain" "clipseq"}}
+{{template "subdomain" "cheminformatics"}}
+{{template "subdomain" "imaging"}}
+{{template "subdomain" "test"}}
+{{template "subdomain" "beta"}}
+{{template "subdomain" "streetscience"}}
+{{template "subdomain" "singlecell"}}
+{{template "subdomain" "humancellatlas"}}
+{{template "subdomain" "ml"}}
+{{template "subdomain" "live"}}
+{{template "subdomain" "plants"}}
+{{template "subdomain" "virology"}}
+{{template "subdomain" "lite"}}
+{{template "subdomain" "covid19"}}
+{{template "subdomain" "africa"}}
+{{template "subdomain" "india"}}
+{{template "subdomain" "spatialomics"}}
+{{template "subdomain" "materials"}}
+{{template "subdomain" "phage"}}
+{{template "subdomain" "earth-system"}}
+{{template "subdomain" "cancer"}}
+{{template "subdomain" "aqua"}}
+{{template "subdomain" "eirene"}}
