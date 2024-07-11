@@ -3,6 +3,8 @@ http:
     usegalaxy-eu-rtr:
       rule: "Host(`usegalaxy.eu`) || HostRegexp(`^.+\\.usegalaxy\\.eu`)"
       service: "usegalaxy-eu"
+      entryPoints:
+        - websecure
       tls:
         certResolver: "route53"
         domains:
