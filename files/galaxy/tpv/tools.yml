@@ -1315,8 +1315,6 @@ tools:
     mem: 42
     params:
       docker_run_extra_arguments: "--mount type=tmpfs,tmpfs-size=2147483648,destination=/tmp"
-    env:
-      SINGULARITY_WRITABLE_TMPFS: 1
     rules:
       - id: funannotate_annotate_large_input
         if: input_size > 3.2
