@@ -28,10 +28,10 @@ lp_logrotate_confd:
         compress
         delaycompress
         notifempty
-        create 0600 {{ traefik_user }} {{ traefik_group }}
+        create 0644 root root
         sharedscripts
         postrotate
-           # kill & resstart container which contains "traefik" in name
+           # kill & restart container which contains "traefik" in name
            docker kill --signal="USR1" $(docker ps | grep traefik | awk '{print $1}')
         endscript
       }
