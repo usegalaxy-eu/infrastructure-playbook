@@ -82,7 +82,7 @@
 
     - name: Create DNAnalyzer postgres
       shell: dokku postgres:create dnanalyzer
-      changed_when: app_exists.rc == 1
+      changed_when: pg_exists.rc == 1
       when: pg_exists.rc == 1
 
     - name: Check if DNAnalyzer postgres link exists
@@ -95,6 +95,28 @@
       shell: dokku postgres:link dnanalyzer dnanalyzer
       changed_when: "'dnanalyzer' not in pg_link_exists.stdout"
       when: "'dnanalyzer' not in pg_link_exists.stdout"
+
+    - name: Check if gtn-slack-bot postgres exists
+      shell: dokku postgres:exists gtn-slack-bot
+      register: pg_exists
+      changed_when: false
+      ignore_errors: true
+
+    - name: Create gtn-slack-bot postgres
+      shell: dokku postgres:create gtn-slack-bot
+      changed_when: pg_exists.rc == 1
+      when: pg_exists.rc == 1
+
+    - name: Check if gtn-slack-bot postgres link exists
+      shell: dokku postgres:exists gtn-slack-bot
+      register: pg_link_exists
+      changed_when: false
+      failed_when: pg_link_exists.rc > 1
+
+    - name: Create gtn-slack-bot postgres link
+      shell: dokku postgres:link gtn-slack-bot gtn-slack-bot
+      changed_when: "'gtn-slack-bot' not in pg_link_exists.stdout"
+      when: "'gtn-slack-bot' not in pg_link_exists.stdout"
 
     - name: Set LE email
       command: dokku letsencrypt:set --global email helena.rasche@gmail.com
