@@ -28,6 +28,9 @@
       - name: github
         username: github
         ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG0UpPcbt0ytqZSRiqC38cgT1Ey2jWqc/oEgzTpUncA8"
+      - name: github2
+        username: github2
+        ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFGzr8JWnnCQo+565kzpXKYP12kLt2oyWzFCF/cueIvO"
       - name: oembed
         username: oembed
         ssh_key: "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBLkuOlVUXxCqABoQbTEvW3A8nSSici89C10lEg1F4Cmvv/q8YRGYaoDayuqifFJERWvRA8yVcIH7/XCPzmMrLM0="
@@ -70,6 +73,28 @@
           - "{{ item }}.apps.galaxyproject.eu"
         state: set
       with_items: "{{ apps }}"
+
+    - name: Check if DNAnalyzer postgres exists
+      shell: dokku postgres:exists dnanalyzer
+      register: pg_exists
+      changed_when: false
+      ignore_errors: true
+
+    - name: Create DNAnalyzer postgres
+      shell: dokku postgres:create dnanalyzer
+      changed_when: app_exists.rc == 1
+      when: pg_exists.rc == 1
+
+    - name: Check if DNAnalyzer postgres link exists
+      shell: dokku postgres:exists dnanalyzer
+      register: pg_link_exists
+      changed_when: false
+      failed_when: pg_link_exists.rc > 1
+
+    - name: Create DNAnalyzer postgres link
+      shell: dokku postgres:link dnanalyzer dnanalyzer
+      changed_when: "'dnanalyzer' not in pg_link_exists.stdout"
+      when: "'dnanalyzer' not in pg_link_exists.stdout"
 
     - name: Set LE email
       command: dokku letsencrypt:set --global email helena.rasche@gmail.com
