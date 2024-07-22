@@ -31,8 +31,8 @@ lp_logrotate_confd:
         create 0644 root root
         sharedscripts
         postrotate
-           # kill & restart container which contains "traefik" in name
-           docker kill --signal="USR1" $(docker ps | grep traefik | awk '{print $1}')
+          # kill & restart container which contains "traefik" in name
+          docker kill --signal="USR1" $(docker ps | grep traefik | awk '{print $1}')
         endscript
       }
 
