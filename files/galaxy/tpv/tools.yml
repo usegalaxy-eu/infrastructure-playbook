@@ -192,6 +192,9 @@ tools:
         - conda
         - singularity
 
+  toolshed.g2.bx.psu.edu/repos/iuc/mummer_mummer/mummer_mummer/.*:
+    mem: 8
+
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/hifiasm_meta/hifiasm_meta/.*:
     cores: 8
     params:
@@ -211,6 +214,10 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/computational-metabolomics/sirius_csifingerid/sirius_csifingerid/.*:
     cores: 8
+    mem: 8
+
+  ## a user exported 100 of files and memory was not enough
+  export_remote:
     mem: 8
 
   toolshed.g2.bx.psu.edu/repos/rnateam/htseq-clip/htseq-clip/.*:
@@ -311,10 +318,17 @@ tools:
       require:
         - docker
 
+  toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_point/ggplot2_point/.*:
+    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/mgnify_seqprep/mgnify_seqprep/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/artbio/manta/manta/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/goeckslab/squidpy/squidpy_spatial/*:
     inherits: basic_docker_tool
+    mem: 6
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
   toolshed.g2.bx.psu.edu/repos/goeckslab/gate_finder/gate_finder/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/goeckslab/vitessce_spatial/vitessce_spatial/.*:
@@ -1296,15 +1310,15 @@ tools:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/iuc/funannotate_annotate/funannotate_annotate/.*:
+    inherits: basic_docker_tool
     cores: 8
-    mem: 40
+    mem: 42
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
     rules:
       - id: funannotate_annotate_large_input
         if: input_size > 3.2
         mem: 62
-    scheduling:
-      require:
-        - singularity
 
   toolshed.g2.bx.psu.edu/repos/iuc/funannotate_clean/funannotate_clean/.*:
     cores: 8
@@ -1318,9 +1332,9 @@ tools:
     cores: 12
     mem: 12
     env:
-      GENEMARK_PATH: /usr/local/tools/genemark/etp.for_braker/bin/
+      GENEMARK_PATH: /usr/local/tools/genemark/etp.for_braker/bin/gmes/
     params:
-      singularity_run_extra_arguments: "--env GENEMARK_PATH=/usr/local/tools/genemark/etp.for_braker/bin/"
+      singularity_run_extra_arguments: "--env GENEMARK_PATH=/usr/local/tools/genemark/etp.for_braker/bin/gmes/"
     scheduling:
       require:
         - singularity
@@ -1411,3 +1425,22 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/iuc/humann/humann/.*:
     cores: 12
+
+  # Tool is same as fastqc so setting the same resources
+  toolshed.g2.bx.psu.edu/repos/iuc/falco/falco/.*:
+    cores: 3
+
+  toolshed.g2.bx.psu.edu/repos/peterjc/tmhmm_and_signalp/Psortb/.*:
+    scheduling:
+      require:
+        - conda
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/hicexplorer_hicinfo/hicexplorer_hicinfo/.*:
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/fragpipe/fragpipe/.*:
+    cores: 8
+    mem: 56

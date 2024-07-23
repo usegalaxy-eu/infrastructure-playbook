@@ -230,7 +230,7 @@ The storage consists of 16 Gen6 type A200 storage nodes and 16 Gen5 type X410 no
             <extra_dir type="job_work" path="/data/jwd/main"/>
         </backend>
 
-
+        <!--
         <backend type="generic_s3" id="s3_netapp01" allow_selection="false" weight="0" store_by="uuid" name="Short term storage for method development">
             <description>S3 based objetct storage matained by the compute center of the University of Freiburg.
                          This storage is purged weekly and so it is only appropriate for short term methods development and such.
@@ -245,11 +245,11 @@ The storage consists of 16 Gen6 type A200 storage nodes and 16 Gen5 type X410 no
             <auth access_key="{{ s3_netapp01.usegalaxy_eu.access_key }}" secret_key="{{ s3_netapp01.usegalaxy_eu.secret_key }}" />
             <bucket name="{{ s3_netapp01.usegalaxy_eu.bucket_name }}" use_reduced_redundancy="False" max_chunk_size="250" />
             <connection host="s3.bwsfs.uni-freiburg.de" port="443" is_secure="True" conn_path="" multipart="True"/>
-            <!-- size is in GB -->
             <cache path="/data/jwd02f/s3_object_store_cache" size="10000" />
             <extra_dir type="job_work" path="/data/jwd02f/main"/>
             <extra_dir type="temp" path="/data/jwd02f/tmp"/>
         </backend>
+
 
         <backend type="generic_s3" id="s3_cyfronet01" allow_selection="false" weight="0" store_by="uuid">
             <badges>
@@ -265,6 +265,7 @@ The storage consists of 16 Gen6 type A200 storage nodes and 16 Gen5 type X410 no
             <extra_dir type="job_work" path="/data/jwd02f/main"/>
             <extra_dir type="temp" path="/data/jwd02f/tmp"/>
         </backend>
+        -->
 
     </backends>
 </object_store>

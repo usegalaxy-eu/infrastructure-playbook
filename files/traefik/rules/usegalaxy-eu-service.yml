@@ -1,0 +1,10 @@
+http:
+  services:
+    usegalaxy-eu:
+      loadBalancer:
+        passHostHeader: true
+        sticky:
+          cookie: {}
+        servers:
+          - url: "https://sn06.galaxyproject.eu/"
+        #  - url: "https://sn07.galaxyproject.eu/"

@@ -90,44 +90,6 @@
     - name: Disable SELinux
       selinux:
         state: disabled
-    - name: Inject custom Pulsar build in the Galaxy requirements file (HTCondor migration).
-      # This Pulsar build makes the `condor_rm` and `condor_submit` commands configurable.
-      # See https://github.com/kysrpex/pulsar/commits/condor_manager_prefix_option for more details.
-      block:
-        - name: Allocate a temporary directory.
-          ansible.builtin.tempfile:
-            prefix: ansible.galaxyproject.galaxy_requirements_file
-            state: directory
-          changed_when: false
-          register: galaxy_requirements_file_directory
-        - name: Clone Galaxy.
-          git:
-            dest: "{{ galaxy_requirements_file_directory.path }}/galaxy"
-            depth: 1
-            repo: "{{ galaxy_repo }}"
-            version: "{{ galaxy_commit_id }}"
-            executable: "{{ git_executable | default(omit) }}"
-          changed_when: false
-        - name: Retrieve the requirements file.
-          ansible.builtin.copy:
-            remote_src: true
-            src: "{{ galaxy_requirements_file_directory.path }}/galaxy/lib/galaxy/dependencies/pinned-requirements.txt"
-            dest: "{{ galaxy_requirements_file_directory.path }}/requirements.txt"
-          changed_when: false
-        - name: Replace `pulsar-galaxy-lib` with a patched version in the requirements file.
-          ansible.builtin.lineinfile:
-            path: "{{ galaxy_requirements_file_directory.path }}/requirements.txt"
-            regexp: 'pulsar-galaxy-lib'
-            line: 'git+https://github.com/kysrpex/pulsar.git@condor_manager_prefix_option#egg=pulsar-galaxy-lib ; python_version >= "3.7" and python_version < "3.12"'
-        - name: Configure the Galaxy role to use the modified version of the requirements file.
-          ansible.builtin.set_fact:
-            galaxy_requirements_file: "{{ galaxy_requirements_file_directory.path }}/requirements.txt"
-      always:
-        - name: Remove the Galaxy clone.
-          changed_when: false
-          ansible.builtin.file:
-            path: "{{ galaxy_requirements_file_directory.path }}/galaxy"
-            state: absent
   post_tasks:
     - name: Append some users to the systemd-journal group
       user:
@@ -149,7 +111,6 @@
         - "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBACB5Q5blymkTIRSzVzXITOGvBuI7W0L9Ykwfz8LJGPraaGVPiezzFGvjhqwX+EyCqQPt7JprR5mimJRw/JN3nBXWAHjekvmB5FuILkk6m5fOiQJ5QhRMyQ5GfxODAvGbHpTuWHbYJLWD5fhcboKPxlXOWy4xY9kDZVuQvEKisNKYBsFLA== sanjay"
         - "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBABRaLHL8mgW86rbtdUh6TY4rs7/la8hAGeSQ3jBF7LMwYZnbS32YDMYvDq3KgNu5WqSMFvkxNm3vfTAbd8CXBfakwDBFBaD9kO0b2t4/p4VoFUsd3B2OvmTR7Bsg7OxTGJJ7aUP/SzTg+Z4NzsmHwQ9h31gfI7n/buZD4S1edQke19Y6w== dominguj@informatik.uni-freiburg.de"
         - https://github.com/wm75.keys
-        - https://github.com/gmauro.keys
         - "{{ galaxy_user_public_key }}"
     - name: Set authorized SSH key (stats user)
       ansible.posix.authorized_key:
@@ -170,6 +131,7 @@
         - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFH54+qZEBeU5uwIeWWOViLcC509qxoRW6oN0VHRQr4r nate"
         - "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBABRaLHL8mgW86rbtdUh6TY4rs7/la8hAGeSQ3jBF7LMwYZnbS32YDMYvDq3KgNu5WqSMFvkxNm3vfTAbd8CXBfakwDBFBaD9kO0b2t4/p4VoFUsd3B2OvmTR7Bsg7OxTGJJ7aUP/SzTg+Z4NzsmHwQ9h31gfI7n/buZD4S1edQke19Y6w== dominguj@informatik.uni-freiburg.de"
         - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC3UNEZrYCERrpZl/NzL9/q2dOyJJT0Ini6AEmFyPubh6yaVf4Iko+8MVYUx92RKuaY5bE8cC7JcLRZMKZ2lPVkP5tUUwILl2d2/sWlHnyZ1oGdOTfPB6b+boDansJcm3HnREO7umAqgbUErahWIDWOk3SPXOxirqsWrElNm5pKr8Ng8KWz9Ht9/J0oDxPxwYQcz64ogT7ERtCn3+UoEM/XQ4iVHvAk/rwLev8symd5SzrxFt6nI2vqduFBEMoA2VTISuI0rYVFqYpQ7I4QxOl5GbNHUeuvB5+YKh5P2QAi9mOPdp8MO2ZJnjtT+x7EgJKXHu2EBKDwW/93bPfL5SGFUK80HSyYG8sicSYpAUk1asE+T90QvpGUrXPaIabWXHvhj7vq7Y6l103o9T4N2qCpe8e4e3WthGzYu9Tfau7vko7pd+F7rnkvjvmj+WmSJPv+jadpMDyiUyYEIj4ncik89FOWIzt/IYYiC+po6nmD1del4s0Zenr2gEEsjyhvOiPLI7+Bw+w4m/xiHvlP1s40ZtIsUhwOYBEQUbfoHG0zR4jIgD8h/VA47oAvkNDGKJpkEbXpRpUtQxJLDNcnUFjEG86+NGWOuXzwllrH80TFueSFVg9dHu8d5Jx5m9LeZbf+vRnpSpIgQlVR/C4hFFYtK44/Daz+TqOXMgQqabypfQ== catherine.bromhead@unimelb.edu.au"
+        - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPzm/ZHp+16Oz/5TbQkJZMC5yvp/C3OfvgOlRWqEX/Fc jdavcs@gmail.com"
   roles:
     ## Starting configuration of the operating system
     - role: usegalaxy_eu.handy.os_setup

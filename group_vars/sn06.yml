@@ -233,6 +233,7 @@ gie_proxy_nodejs_version: "10.13.0"
 gie_proxy_virtualenv: "{{ galaxy_root }}/gie-proxy/venv"
 gie_proxy_setup_service: systemd
 gie_proxy_sessions_path: "{{ galaxy_mutable_data_dir }}/interactivetools_map.sqlite"
+gie_proxy_path_prefix: /interactivetool/ep
 gie_proxy_port: 8800
 gie_proxy_verbose: true
 
@@ -322,7 +323,7 @@ galaxy_instance_hostname: usegalaxy.eu
 galaxy_config_style: yaml
 
 galaxy_repo: "https://github.com/usegalaxy-eu/galaxy.git"
-galaxy_commit_id: "release_24.0_europe"
+galaxy_commit_id: "release_24.1_europe"
 galaxy_force_checkout: true # discard any modified files
 #galaxy_admin_email_from: 'noreply@usegalaxy.eu'
 
@@ -467,3 +468,7 @@ galaxy_config_templates:
     dest: "{{ tpv_mutable_dir }}/destinations.yml"
   - src: '{{ galaxy_config_template_src_dir }}/config/vault_conf.yml.j2'
     dest: '{{ galaxy_config_dir }}/vault_conf.yml'
+  - src: '{{ galaxy_config_template_src_dir }}/config/file_source_templates.yml.j2'
+    dest: "{{ galaxy_config['galaxy']['file_source_templates_config_file'] }}"
+  - src: '{{ galaxy_config_template_src_dir }}/config/object_store_templates.yml.j2'
+    dest: "{{ galaxy_config['galaxy']['object_store_templates_config_file'] }}"

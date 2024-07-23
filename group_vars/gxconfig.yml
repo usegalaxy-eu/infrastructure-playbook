@@ -361,6 +361,54 @@ base_app_main: &BASE_APP_MAIN
   # FileSource plugins described embedded into Galaxy's config.
   #file_sources: null
 
+  # Configured Object Store templates configuration file.
+  # The value of this option will be resolved with respect to
+  # <config_dir>.
+  object_store_templates_config_file: '{{ galaxy_config_dir }}/object_store_templates.yml'
+
+  # Configured Object Store templates embedded into Galaxy's config.
+  #object_store_templates: null
+
+  # Configured user file source templates configuration file.
+  # The value of this option will be resolved with respect to
+  # <config_dir>.
+  file_source_templates_config_file: '{{ galaxy_config_dir }}/file_source_templates.yml'
+
+  # Configured user file source templates embedded into Galaxy's config.
+  #file_source_templates: null
+
+  # Configure URIs for user object stores to use either the object ID
+  # ('id') or UUIDs ('uuid'). Either is fine really, Galaxy doesn't
+  # typically expose database objects by 'id' but there isn't any
+  # obvious disadvantage to doing it in this case and it keeps user
+  # exposed URIs much smaller. The default of UUID feels a little more
+  # like a typical way to do this within Galaxy though. Do not change
+  # this value once user object stores have been created.
+  #user_config_templates_index_by: uuid
+
+  # User defined object stores and file sources are saved in the
+  # database with their last valid configuration. It may be the case
+  # that the admin changes file source and object store templates over
+  # time such that the variables and secrets an instance is saved with
+  # no longer match the configuration's expected values. For this
+  # reason, admins should always add new versions of templates instead
+  # of just changing them - however people take shortcuts and
+  # divergences might happen. If a template is changed in such a way it
+  # breaks or if a template disappears from the library of templates
+  # this parameter controls how and if the database version will be
+  # used.
+  # By default, it will simply be used as a 'fallback' if a
+  # configuration cannot be resolved against the template version in the
+  # configuration file. Using 'preferred' instead will mean the stored
+  # database version is always used. This ensures a greater degree of
+  # reproducibility without effort on the part of the admin but also
+  # means that small issues are not easy to fix. Using 'never' instead
+  # will ensure the config templates are always only loaded from the
+  # template library files - this might make sense for admins who want
+  # to disable templates without worrying about the contents of the
+  # database.
+  #user_config_templates_use_saved_configuration: fallback
+
   # Enable Galaxy to fetch containers registered with quay.io generated
   # from tool requirements resolved through Conda. These containers
   # (when available) have been generated using mulled -
@@ -688,7 +736,7 @@ base_app_main: &BASE_APP_MAIN
   # This option has no effect if the file specified by
   # object_store_config_file exists. Otherwise, if this option is set,
   # it overrides any other objectstore settings.
-  # The syntax, available instrumenters, and documentation of their
+  # The syntax, available storage plugins, and documentation of their
   # options is explained in detail in the object store sample
   # configuration file, `object_store_conf.sample.yml`
   #object_store_config: null
@@ -719,11 +767,18 @@ base_app_main: &BASE_APP_MAIN
   # for that object store entry.
   # The value of this option will be resolved with respect to
   # <cache_dir>.
-  #object_store_cache_path: object_store_cache
+  object_store_cache_path: '/data/jwd02f/s3_object_store_cache'
 
   # Default cache size for caching object stores if cache not configured
   # for that object store entry.
-  #object_store_cache_size: -1
+  object_store_cache_size: 10000
+
+  # Set this to true to indicate in the UI that a user's object store
+  # selection isn't simply a "preference" that job destinations often
+  # respect but in fact will always be respected. This should be set to
+  # true to simplify the UI as long as job destinations never override
+  # 'object_store_id's for a jobs.
+  #object_store_always_respect_user_selection: false
 
   # What Dataset attribute is used to reference files in an ObjectStore
   # implementation, this can be 'uuid' or 'id'. The default will depend
@@ -869,11 +924,11 @@ base_app_main: &BASE_APP_MAIN
   # Please enter the URL for the Plausible server (including https) so
   # this can be used for tracking with Plausible
   # (https://plausible.io/).
-  #plausible_server: null
+  plausible_server: https://plausible.galaxyproject.eu
 
   # Please enter the URL for the Galaxy server so this can be used for
   # tracking with Plausible (https://plausible.io/).
-  #plausible_domain: null
+  plausible_domain: usegalaxy.eu
 
   # Please enter the URL for the Matomo server (including https) so this
   # can be used for tracking with Matomo (https://matomo.org/).
@@ -1046,7 +1101,7 @@ base_app_main: &BASE_APP_MAIN
   # Allow import of workflows from the TRS servers configured in the
   # specified YAML or JSON file. The file should be a list with 'id',
   # 'label', and 'api_url' for each entry. Optionally, 'link_url' and
-  # 'doc' may be be specified as well for each entry.
+  # 'doc' may be specified as well for each entry.
   # If this is null (the default), a simple configuration containing
   # just Dockstore will be used.
   # The value of this option will be resolved with respect to
@@ -1131,7 +1186,7 @@ base_app_main: &BASE_APP_MAIN
   # via a proxy server.  These options should be self explanatory and so
   # are not documented individually.  You can use these paths (or ones
   # in the proxy server) to point to your own styles.
-  static_enabled: true
+  #static_enabled: true
 
   # Serve static content, which must be enabled if you're not serving it
   # via a proxy server.  These options should be self explanatory and so
@@ -1242,9 +1297,14 @@ base_app_main: &BASE_APP_MAIN
   nginx_upload_job_files_path: "/_job_files"
 
   # The upload store is a temporary directory in which files uploaded by
-  # the tus middleware or server will be placed. Defaults to
-  # new_file_path if not set.
+  # the tus middleware or server for user uploads will be placed.
+  # Defaults to new_file_path if not set.
   tus_upload_store: "/data/jwd04/tus_upload/main"
+
+  # The upload store is a temporary directory in which files uploaded by
+  # the tus middleware or server for remote job files (Pulsar) will be
+  # placed. Defaults to tus_upload_store if not set.
+  #tus_upload_store_job_files: null
 
   # Galaxy can upload user files in chunks without using nginx. Enable
   # the chunk uploader by specifying a chunk size larger than 0. The
@@ -1427,6 +1487,10 @@ base_app_main: &BASE_APP_MAIN
   # job is complete.
   #debug: false
 
+  # Log request start as well as request end. Disables uvicorn access
+  # log handler.
+  #use_access_logging_middleware: false
+
   # Check for WSGI compliance.
   #use_lint: false
 
@@ -1449,12 +1513,12 @@ base_app_main: &BASE_APP_MAIN
   # Write thread status periodically to 'heartbeat.log',  (careful, uses
   # disk space rapidly!).  Useful to determine why your processes may be
   # consuming a lot of CPU.
-  use_heartbeat: true
+  #use_heartbeat: false
 
   # Control the period (in seconds) between dumps. Use -1 to disable.
   # Regardless of this setting, if use_heartbeat is enabled, you can
   # send a Galaxy process SIGUSR1 (`kill -USR1`) to force a dump.
-  heartbeat_interval: -1
+  #heartbeat_interval: 20
 
   # Heartbeat log filename. Can accept the template variables
   # {server_name} and {pid}
@@ -1884,12 +1948,13 @@ base_app_main: &BASE_APP_MAIN
   # <config_dir>.
   oidc_backends_config_file: "{{ galaxy_config_dir }}/oidc_backends_config.xml"
 
-  # Sets the prefix for OIDC scopes specific to this Galaxy instance.
-  # If an API call is made against this Galaxy instance using an OIDC bearer token,
-  # any scopes must be prefixed with this value e.g. https://galaxyproject.org/api.
-  # More concretely, to request all permissions that the user has, the scope
-  # would have to be specified as "<prefix>:*". e.g "https://galaxyproject.org/api:*".
-  # Currently, only * is recognised as a valid scope, and future iterations may
+  # Sets the prefix for OIDC scopes specific to this Galaxy instance. If
+  # an API call is made against this Galaxy instance using an OIDC
+  # bearer token, any scopes must be prefixed with this value e.g.
+  # https://galaxyproject.org/api. More concretely, to request all
+  # permissions that the user has, the scope would have to be specified
+  # as "<prefix>:*". e.g "https://galaxyproject.org/api:*". Currently,
+  # only * is recognised as a valid scope, and future iterations may
   # provide more fine-grained scopes.
   #oidc_scope_prefix: https://galaxyproject.org/api
 
@@ -2039,7 +2104,7 @@ base_app_main: &BASE_APP_MAIN
   # with Galaxy there you can enable this option.
   enable_tool_source_display: true
 
-  # XML config file that contains the job metric collection
+  # YAML or XML config file that contains the job metric collection
   # configuration.
   # The value of this option will be resolved with respect to
   # <config_dir>.
@@ -2445,19 +2510,33 @@ base_app_main: &BASE_APP_MAIN
   amqp_internal_connection: "pyamqp://galaxy:{{ rabbitmq_password_galaxy }}@mq.galaxyproject.eu:5671/galaxy?ssl=1"
   #amqp_internal_connection: "amqp://galaxy:{{ rabbitmq_password_galaxy }}@localhost:5672/galaxy"
 
+  # Offload long-running tasks to a Celery task queue. Activate this
+  # only if you have setup a Celery worker for Galaxy and you have
+  # configured the `celery_conf` option below. Specifically, you need to
+  # set the `result_backend` option in the `celery_conf` option to a
+  # valid Celery result backend URL. By default, Galaxy uses an SQLite
+  # database at '<data_dir>/results.sqlite' for storing task results.
+  # For details, see
+  # https://docs.galaxyproject.org/en/master/admin/production.html#use-celery-for-asynchronous-tasks
+  enable_celery_tasks: true
+
   # Configuration options passed to Celery.
   # To refer to a task by name, use the template `galaxy.foo` where
   # `foo` is the function name of the task defined in the
   # galaxy.celery.tasks module.
-  # The `broker_url` option, if unset, defaults to the value of
-  # `amqp_internal_connection`. The `result_backend` option must be set
-  # if the `enable_celery_tasks` option is set.
+  # The `broker_url` option, if unset or null, defaults to the value of
+  # `amqp_internal_connection`. The `result_backend` option, if unset or
+  # null, defaults to an SQLite database at '<data_dir>/results.sqlite'
+  # for storing task results. Please use a more robust backend (e.g.
+  # Redis) for production setups.
   # The galaxy.fetch_data task can be disabled by setting its route to
   # "disabled": `galaxy.fetch_data: disabled`. (Other tasks cannot be
   # disabled on a per-task basis at this time.)
   # For details, see Celery documentation at
   # https://docs.celeryq.dev/en/stable/userguide/configuration.html.
   #celery_conf:
+  #  broker_url: null
+  #  result_backend: null
   #  task_routes:
   #    galaxy.fetch_data: galaxy.external
   #    galaxy.set_job_metadata: galaxy.external
@@ -2468,11 +2547,6 @@ base_app_main: &BASE_APP_MAIN
       galaxy.fetch_data: disabled
       # galaxy.fetch_data: galaxy.external
       galaxy.set_job_metadata: galaxy.external
-
-  # Offload long-running tasks to a Celery task queue. Activate this
-  # only if you have setup a Celery worker for Galaxy. For details, see
-  # https://docs.galaxyproject.org/en/master/admin/production.html
-  enable_celery_tasks: true
 
   # If set to a non-0 value, upper limit on number of tasks that can be
   # executed per user per second.
@@ -2596,6 +2670,10 @@ base_app_main: &BASE_APP_MAIN
   # notifications from the database (every 24 hours by default). Runs in
   # a Celery task.
   #expired_notifications_cleanup_interval: 86400
+
+  # The interval in seconds between attempts to dispatch notifications
+  # to users (every 10 minutes by default). Runs in a Celery task.
+  #dispatch_notifications_interval: 600
 
   # The URL pointing to the Galaxy Help Forum API base URL. The API must
   # be compatible with Discourse API (https://docs.discourse.org/).
