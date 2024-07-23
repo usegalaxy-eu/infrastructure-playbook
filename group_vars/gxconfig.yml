@@ -364,7 +364,7 @@ base_app_main: &BASE_APP_MAIN
   # Configured Object Store templates configuration file.
   # The value of this option will be resolved with respect to
   # <config_dir>.
-  # object_store_templates_config_file: 'object_store_templates.yml'
+  object_store_templates_config_file: '{{ galaxy_config_dir }}/object_store_templates.yml'
 
   # Configured Object Store templates embedded into Galaxy's config.
   #object_store_templates: null
@@ -372,7 +372,7 @@ base_app_main: &BASE_APP_MAIN
   # Configured user file source templates configuration file.
   # The value of this option will be resolved with respect to
   # <config_dir>.
-  # file_source_templates_config_file: 'file_source_templates.yml'
+  file_source_templates_config_file: '{{ galaxy_config_dir }}/file_source_templates.yml'
 
   # Configured user file source templates embedded into Galaxy's config.
   #file_source_templates: null
@@ -767,11 +767,11 @@ base_app_main: &BASE_APP_MAIN
   # for that object store entry.
   # The value of this option will be resolved with respect to
   # <cache_dir>.
-  #object_store_cache_path: object_store_cache
+  object_store_cache_path: '/data/jwd02f/s3_object_store_cache'
 
   # Default cache size for caching object stores if cache not configured
   # for that object store entry.
-  #object_store_cache_size: -1
+  object_store_cache_size: 10000
 
   # Set this to true to indicate in the UI that a user's object store
   # selection isn't simply a "preference" that job destinations often

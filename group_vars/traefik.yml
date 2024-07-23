@@ -31,8 +31,8 @@ lp_logrotate_confd:
         create 0644 root root
         sharedscripts
         postrotate
-           # kill & restart container which contains "traefik" in name
-           docker kill --signal="USR1" $(docker ps | grep traefik | awk '{print $1}')
+          # kill & restart container which contains "traefik" in name
+          docker kill --signal="USR1" $(docker ps | grep traefik | awk '{print $1}')
         endscript
       }
 
@@ -69,7 +69,10 @@ traefik_containers:
       - --api.insecure=false
       - --global.sendAnonymousUsage=false
       - --global.checkNewVersion=false
+      - --entryPoints.web.address=:80
       - --entryPoints.websecure.address=:443
+      - --entryPoints.web.http.redirections.entryPoint.to=websecure
+      - --entryPoints.web.http.redirections.entryPoint.scheme=https
       - --entryPoints.metrics.address=:8082
       #- "--entryPoints.websecure.http.tls.domains[0].main={{ traefik_domain }}"
       #- --entryPoints.https.http.tls.certresolver=route53
@@ -137,6 +140,10 @@ traefik_containers:
         readonly: false
 
     publish:
+      - target_port: 80
+        published_port: 80
+        protocol: tcp
+        mode: host
       - target_port: 443
         published_port: 443
         protocol: tcp
