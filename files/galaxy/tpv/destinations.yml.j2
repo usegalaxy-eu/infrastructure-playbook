@@ -18,7 +18,7 @@ destinations:
       docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,
         $defaults,
         {% for vol in dnb.values() %}
-        {% if vol.name not in ['db', 'dnb04', 'dnb-ds01', 'dnb-ds02', '5'] %}
+        {% if vol.name not in ['db', 'dnb04', 'dnb-ds01', '5'] %}
         {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
         {% endif %}
         {% endfor %}
