@@ -143,7 +143,7 @@
             group: "{{ ansible_ssh_user }}"
             mode: "0600"
           no_log: true
-        - name: Spin up on-call
+        - name: Spin up OnCall
           community.docker.docker_compose_v2:
             project_src: "{{ grafana_on_call_path }}"
             pull: missing
