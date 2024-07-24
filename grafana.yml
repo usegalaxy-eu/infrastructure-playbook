@@ -1,54 +1,96 @@
 ---
 - name: Grafana
   hosts: grafana
-  become: true
-  vars:
-    hostname: stats.galaxyproject.eu
   vars_files:
-    - group_vars/grafana-gitter-bridge.yml
     - secret_group_vars/all.yml
-  # This shouldn't be necessary? but if certs fail, then do this. This is
-  # *supposed* to be properly handled by the nginx role, but the permission
-  # change is likely only applied if a change is detected since it can't figure
-  # out if the rule is there or not.
-  # TODO: make the nginx task check if the rule is in place, rather than a change in path.
-  # pre_tasks:
-  #   - name: Put SELinux in permissive mode, logging actions that would be blocked.
-  #     selinux:
-  #       policy: targeted
-  #       state: permissive
   pre_tasks:
+    #- name: Put SELinux in permissive mode, logging actions that would be blocked.
+    #  # Putting SELinux in permissive mode should not be necessary. But if
+    #  # certs fail, then do it. It is supposed to be properly handled by
+    #  # the `galaxyproject.nginx` role, but the permission change is likely
+    #  # only applied if a change is detected since it can't figure out if
+    #  # the rule is there or not.
+    #  # TODO: make the nginx task check if the rule is in place, rather than a change in path.
+    #  become: true
+    #  ansible.posix.selinux:
+    #    policy: targeted
+    #    state: permissive
     - name: Set default version of Python
-      alternatives:
+      become: true
+      community.general.alternatives:
         name: python
         path: /usr/bin/python3
     - name: Install Dependencies
-      package:
-        name: ['python3-virtualenv']
       become: true
-    - name: Disable firewalld service
-      ansible.builtin.service:
-        name: firewalld
-        enabled: false
-        state: stopped
+      ansible.builtin.package:
+        name: ['python3-virtualenv']
+    - name: Ensure git is installed. (hxr.monitor-ssl)
+      become: true
+      ansible.builtin.package:
+        name:
+          - git
   collections:
     - devsec.hardening
+    - grafana.grafana
   roles:
     ## Starting configuration of the operating system
     - role: usegalaxy_eu.handy.os_setup
+      become: true
       vars:
+        hostname: "{{ grafana_domain }}"
         enable_hostname: true
-        enable_powertools: true        # geerlingguy.repo-epel role doesn't enable PowerTools repository
-    - geerlingguy.repo-epel     # Install EPEL repository
-    - usegalaxy-eu.autoupdates  # keep all of our packages up to date
-    - influxdata.chrony         # Keep our time in sync.
-    ## Monitoring
-    - hxr.monitor-ssl
-    - hxr.monitor-email
+        enable_powertools: true         # geerlingguy.repo-epel role doesn't enable PowerTools repository
+    - role: geerlingguy.repo-epel     # Install EPEL repository
+      become: true
+    - role: usegalaxy-eu.autoupdates  # keep all of our packages up to date
+      become: true
+      vars:
+        hostname: "{{ grafana_domain }}"
+    - influxdata.chrony               # Keep our time in sync.
 
-    - galaxyproject.nginx
-    - cloudalchemy.grafana
-    - pgs
-    - hxr.grafana-gitter-bridge
-    - usegalaxy_eu.grafana_matrix_forwarder
+    ## Monitoring
     - dj-wasabi.telegraf
+    - role: hxr.monitor-ssl
+      become: true
+    - role: hxr.monitor-email
+      become: true
+
+    ## Grafana
+    - role: galaxyproject.nginx
+      become: true
+    - grafana
+    - role: pgs
+      become: true
+    - role: hxr.grafana-gitter-bridge
+      become: true
+    - usegalaxy_eu.grafana_matrix_forwarder
+
+  post_tasks:
+    # The `[unified_alerting]` section of grafana.ini is not populated by the
+    # `grafana.grafana.grafana` role yet. It will be when PR [1] is merged. In
+    # the meantime, it is populated with this post-task.
+    #
+    # References:
+    # - [1] https://github.com/grafana/grafana-ansible-collection/pull/215
+    - name: Write Grafana unified alerting settings to grafana.ini (grafana.grafana.grafana)
+      become: true
+      community.general.ini_file:
+        path: /etc/grafana/grafana.ini
+        section: unified_alerting
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        state: present
+        owner: "root"  # copied from `grafana.grafana.grafana` v5.2.0
+        group: "grafana"  # copied from `grafana.grafana.grafana` v5.2.0
+        mode: "0640"  # copied from `grafana.grafana.grafana` v5.2.0
+      loop: "{{ grafana_unified_alerting | default({}) | dict2items }}"
+
+    - name: Open nginx ports
+      become: true
+      ansible.posix.firewalld:
+        port: "{{ item }}"
+        permanent: true
+        state: enabled
+      with_items:
+        - 80/tcp
+        - 443/tcp

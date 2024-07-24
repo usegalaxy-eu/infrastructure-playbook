@@ -117,6 +117,9 @@ rabbitmq_users:
   - user: galaxy_hcmr01
     password: "{{ rabbitmq_password_galaxy_hcmr01 }}"
     vhost: /pulsar/galaxy_hcmr01
+  - user: galaxy_tubitak01
+    password: '{{ rabbitmq_password_galaxy_tubitak01 }}'
+    vhost: /pulsar/galaxy_tubitak01
 
 rabbitmq_plugins:
   - rabbitmq_management
@@ -133,6 +136,9 @@ rabbitmq_config:
     keyfile: /etc/ssl/user/privkey-rabbitmq.pem
     verify: verify_peer
     fail_if_no_peer_cert: "false"
+    versions:
+      - tlsv1.3
+      - tlsv1.2
   management_agent:
     disable_metrics_collector: "false"
   management:

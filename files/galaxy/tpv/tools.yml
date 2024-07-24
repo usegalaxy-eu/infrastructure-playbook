@@ -192,6 +192,9 @@ tools:
         - conda
         - singularity
 
+  toolshed.g2.bx.psu.edu/repos/iuc/mummer_mummer/mummer_mummer/.*:
+    mem: 8
+
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/hifiasm_meta/hifiasm_meta/.*:
     cores: 8
     params:
@@ -211,6 +214,10 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/computational-metabolomics/sirius_csifingerid/sirius_csifingerid/.*:
     cores: 8
+    mem: 8
+
+  ## a user exported 100 of files and memory was not enough
+  export_remote:
     mem: 8
 
   toolshed.g2.bx.psu.edu/repos/rnateam/htseq-clip/htseq-clip/.*:
@@ -282,13 +289,16 @@ tools:
         params:
           singularity_run_extra_arguments: "--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases/2.3/,ALPHAFOLD_USE_GPU=False"
       - if: helpers.tool_version_gte(tool, '2.3.1+galaxy2')
-        params:
-          singularity_run_extra_arguments: "--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases,ALPHAFOLD_USE_GPU=False"
         execute: |
           from random import SystemRandom
-          if SystemRandom().random() < 0.10:
-              entity.gpus = 1
-              entity.params.update({'singularity_run_extra_arguments': '--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases,ALPHAFOLD_USE_GPU=True'})
+          if SystemRandom().random() < 0.01 and not job.get_param_values(app).get("model_preset") == "multimer": # Multimer needs more memory than we can currently provide on GPU nodes
+            entity.gpus = 1
+            entity.cores = 8
+            # We are currently utilizing a whole GPU VM (cores 8 mem 40 gpus 1)
+            entity.mem = 32
+            entity.params['singularity_run_extra_arguments'] = '--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases,ALPHAFOLD_USE_GPU=True'
+          else:
+            entity.params['singularity_run_extra_arguments'] = '--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases,ALPHAFOLD_USE_GPU=False'
         # tweak amount of requested memory depending on the AlphaFold model to be run
       - id: model_preset_multimer
         if: job.get_param_values(app).get("model_preset") == "multimer"
@@ -308,6 +318,23 @@ tools:
       require:
         - docker
 
+  toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_point/ggplot2_point/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/bgruening/mgnify_seqprep/mgnify_seqprep/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/artbio/manta/manta/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/goeckslab/squidpy/squidpy_spatial/*:
+    inherits: basic_docker_tool
+    mem: 6
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
+  toolshed.g2.bx.psu.edu/repos/goeckslab/gate_finder/gate_finder/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/goeckslab/vitessce_spatial/vitessce_spatial/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/bgruening/cellpose/cellpose/.*:
+    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/fgsea/fgsea/.*:
     # any container should work
     inherits: basic_docker_tool
@@ -353,6 +380,9 @@ tools:
   toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc/.*:
     # 8 (from the shared TPV) seems to high for me
     cores: 3
+
+  toolshed.g2.bx.psu.edu/repos/iuc/pairtools_parse/pairtools_parse/.*:
+    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/ecology/cb_ivr/cb_ivr/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/ecology/taxo_cov_template/taxo_cov_template/.*:
@@ -394,6 +424,8 @@ tools:
   toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__composition__ancom/qiime2__composition__ancom/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__composition__ancombc/qiime2__composition__ancombc/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__filter_alpha_diversity/qiime2__diversity__filter_alpha_diversity/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__composition__tabulate/qiime2__composition__tabulate/.*:
     inherits: basic_docker_tool
@@ -1278,15 +1310,15 @@ tools:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/iuc/funannotate_annotate/funannotate_annotate/.*:
+    inherits: basic_docker_tool
     cores: 8
-    mem: 40
+    mem: 42
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
     rules:
       - id: funannotate_annotate_large_input
         if: input_size > 3.2
         mem: 62
-    scheduling:
-      require:
-        - singularity
 
   toolshed.g2.bx.psu.edu/repos/iuc/funannotate_clean/funannotate_clean/.*:
     cores: 8
@@ -1300,9 +1332,9 @@ tools:
     cores: 12
     mem: 12
     env:
-      GENEMARK_PATH: /usr/local/tools/genemark/etp.for_braker/bin/
+      GENEMARK_PATH: /usr/local/tools/genemark/etp.for_braker/bin/gmes/
     params:
-      singularity_run_extra_arguments: "--env GENEMARK_PATH=/usr/local/tools/genemark/etp.for_braker/bin/"
+      singularity_run_extra_arguments: "--env GENEMARK_PATH=/usr/local/tools/genemark/etp.for_braker/bin/gmes/"
     scheduling:
       require:
         - singularity
@@ -1364,3 +1396,51 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/red/red/.*:
     cores: 1
     mem: 35
+
+  toolshed.g2.bx.psu.edu/repos/iuc/anndata_manipulate/anndata_manipulate/.*:
+    cores: 1
+    mem: 16
+    rules:
+      - id: anndata_concat
+        if: |
+          param_dict = job.get_param_values(app)
+          param_dict.get('manipulate', {}).get('function') == 'concatenate'
+        mem: 60
+
+  toolshed.g2.bx.psu.edu/repos/iuc/anndata_import/anndata_import/.*:
+    cores: 1
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/iuc/anndata_export/anndata_export/.*:
+    cores: 1
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/iuc/anndata_inspect/anndata_inspect/.*:
+    cores: 1
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/iuc/modify_loom/modify_loom/.*:
+    cores: 1
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/iuc/humann/humann/.*:
+    cores: 12
+
+  # Tool is same as fastqc so setting the same resources
+  toolshed.g2.bx.psu.edu/repos/iuc/falco/falco/.*:
+    cores: 3
+
+  toolshed.g2.bx.psu.edu/repos/peterjc/tmhmm_and_signalp/Psortb/.*:
+    scheduling:
+      require:
+        - conda
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/hicexplorer_hicinfo/hicexplorer_hicinfo/.*:
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/fragpipe/fragpipe/.*:
+    cores: 8
+    mem: 56

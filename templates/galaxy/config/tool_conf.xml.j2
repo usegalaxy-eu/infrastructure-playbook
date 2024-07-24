@@ -10,6 +10,7 @@
     <tool file="/opt/galaxy/custom-tools/test/lftp.xml" />
     <tool file="data_source/ebi_sra.xml" />
     <tool file="data_source/sra.xml" />
+    <tool file="data_source/ebi_sra.xml" />
     <tool file="data_source/microbial_import.xml" />
     <tool file="data_source/biomart.xml" />
     <tool file="data_source/biomart_test.xml" />
@@ -49,6 +50,8 @@
     <tool file="${model_tools_path}/filter_from_file.xml" />
     <tool file="${model_tools_path}/sort_collection_list.xml" />
     <tool file="${model_tools_path}/harmonize_two_collections_list.xml" />
+    <tool file="${model_tools_path}/cross_product_flat.xml" />
+    <tool file="${model_tools_path}/cross_product_nested.xml" />
     <tool file="${model_tools_path}/tag_collection_from_file.xml" />
     <tool file="${model_tools_path}/apply_rules.xml" />
     <tool file="${model_tools_path}/build_list.xml" />
@@ -502,9 +505,9 @@
 
     <!--tool file="/opt/galaxy/custom-tools/test/chem/transfs.xml" hidden="True" /-->
 	  
-    <tool file="/opt/galaxy/custom-tools/jbrowse2/jbrowse2.xml" />
+    <tool file="/opt/galaxy/custom-tools/jbrowse2/jbrowse2.xml" hidden="True"/>
 	  
-    <tool file="/opt/galaxy/custom-tools/test/imaging/he_maldi_image_registration/he_maldi_image_registration.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/imaging/he_maldi_image_registration/he_maldi_image_registration.xml" hidden="True" />
     <!--tool file="/opt/galaxy/custom-tools/test/imaging/overlay_moving_and_fixed_image/overlay_moving_and_fixed_image.xml" />
     <tool file="/opt/galaxy/custom-tools/test/imaging/projective_transformation/projective_transformation.xml" />
     <tool file="/opt/galaxy/custom-tools/test/imaging/scale_image/scale_image.xml" />
