@@ -1,0 +1,133 @@
+---
+- name: Dokku App Server
+  hosts: dokku
+  become: true
+  vars:
+    hostname: apps.galaxyproject.eu
+    apps:
+      - ptdk
+      - pwdk
+      - oembed
+      - certificates
+      - gtn-slack-bot
+      - dnanalyzer
+      - cors
+    dokku_plugins:
+      - name: postgres
+        url: https://github.com/dokku/dokku-postgres.git
+      - name: letsencrypt
+        url: https://github.com/dokku/dokku-letsencrypt.git
+      - name: redis
+        url: https://github.com/dokku/dokku-redis.git
+      # - name: acl
+      #   url: https://github.com/dokku/dokku-acl.git
+    dokku_users:
+      - name: hexylena
+        username: hexylena
+        ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEEurxSQW4BrpP9FLXqiz/H6Ewclln68oc/oFAVqH5xu"
+      - name: github
+        username: github
+        ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG0UpPcbt0ytqZSRiqC38cgT1Ey2jWqc/oEgzTpUncA8"
+      - name: github2
+        username: github2
+        ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFGzr8JWnnCQo+565kzpXKYP12kLt2oyWzFCF/cueIvO"
+      - name: oembed
+        username: oembed
+        ssh_key: "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBLkuOlVUXxCqABoQbTEvW3A8nSSici89C10lEg1F4Cmvv/q8YRGYaoDayuqifFJERWvRA8yVcIH7/XCPzmMrLM0="
+  pre_tasks:
+    # make sure /data exists
+    - name: Ensure /data exists
+      file:
+        path: /data
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+    # Mount /dev/vdb1 to /data
+    - name: Mount /dev/vdb1 to /data
+      mount:
+        path: /data
+        src: /dev/vdb1
+        fstype: xfs
+        state: mounted
+        opts: defaults
+    # Create a symlink in /var/lib/docker to /data/docker
+    - name: Create a symlink in /var/lib/docker to /data/docker
+      file:
+        src: /data/docker
+        dest: /var/lib/docker
+        state: link
+  roles:
+    - hostname
+    - dokku_bot.ansible_dokku
+  post_tasks:
+    - name: Create our apps
+      dokku_app:
+        app: "{{ item }}"
+      with_items: "{{ apps }}"
+
+    - name: Setup domains
+      dokku_domains:
+        app: "{{ item }}"
+        domains:
+          - "{{ item }}.apps.galaxyproject.eu"
+        state: set
+      with_items: "{{ apps }}"
+
+    - name: Check if DNAnalyzer postgres exists
+      shell: dokku postgres:exists dnanalyzer
+      register: pg_exists
+      changed_when: false
+      ignore_errors: true
+
+    - name: Create DNAnalyzer postgres
+      shell: dokku postgres:create dnanalyzer
+      changed_when: pg_exists.rc == 1
+      when: pg_exists.rc == 1
+
+    - name: Check if DNAnalyzer postgres link exists
+      shell: dokku postgres:exists dnanalyzer
+      register: pg_link_exists
+      changed_when: false
+      failed_when: pg_link_exists.rc > 1
+
+    - name: Create DNAnalyzer postgres link
+      shell: dokku postgres:link dnanalyzer dnanalyzer
+      changed_when: "'dnanalyzer' not in pg_link_exists.stdout"
+      when: "'dnanalyzer' not in pg_link_exists.stdout"
+
+    - name: Check if gtn-slack-bot postgres exists
+      shell: dokku postgres:exists gtn-slack-bot
+      register: pg_exists
+      changed_when: false
+      ignore_errors: true
+
+    - name: Create gtn-slack-bot postgres
+      shell: dokku postgres:create gtn-slack-bot
+      changed_when: pg_exists.rc == 1
+      when: pg_exists.rc == 1
+
+    - name: Check if gtn-slack-bot postgres link exists
+      shell: dokku postgres:exists gtn-slack-bot
+      register: pg_link_exists
+      changed_when: false
+      failed_when: pg_link_exists.rc > 1
+
+    - name: Create gtn-slack-bot postgres link
+      shell: dokku postgres:link gtn-slack-bot gtn-slack-bot
+      changed_when: "'gtn-slack-bot' not in pg_link_exists.stdout"
+      when: "'gtn-slack-bot' not in pg_link_exists.stdout"
+
+    - name: Set LE email
+      command: dokku letsencrypt:set --global email helena.rasche@gmail.com
+
+    - name: Setup Certs
+      dokku_letsencrypt:
+        app: "{{ item }}"
+      with_items: "{{ apps }}"
+
+    # - name: Clones
+    #   dokku_clone:
+    #     app: oembed
+    #     repository: https://github.com/galaxyproject/oembed
+    #     version: main
