@@ -125,7 +125,12 @@
             mode: "0600"
           no_log: true
         - name: Spin up OnCall
-          community.docker.docker_compose_v2:
+          docker_compose:
             project_src: "{{ grafana_on_call_path }}"
-            pull: missing
-            remove_orphans: false
+          register: output
+        - name: Run `docker-compose up` again
+          docker_compose:
+            project_src: "{{ grafana_on_call_path }}"
+          register: output
+        - assert:
+            that: "not output.changed "
