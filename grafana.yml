@@ -88,25 +88,6 @@
           - "{{ ansible_ssh_user }}"
 
   post_tasks:
-    # The `[unified_alerting]` section of grafana.ini is not populated by the
-    # `grafana.grafana.grafana` role yet. It will be when PR [1] is merged. In
-    # the meantime, it is populated with this post-task.
-    #
-    # References:
-    # - [1] https://github.com/grafana/grafana-ansible-collection/pull/215
-    - name: Write Grafana unified alerting settings to grafana.ini (grafana.grafana.grafana)
-      become: true
-      community.general.ini_file:
-        path: /etc/grafana/grafana.ini
-        section: unified_alerting
-        option: "{{ item.key }}"
-        value: "{{ item.value }}"
-        state: present
-        owner: "root"  # copied from `grafana.grafana.grafana` v5.2.0
-        group: "grafana"  # copied from `grafana.grafana.grafana` v5.2.0
-        mode: "0640"  # copied from `grafana.grafana.grafana` v5.2.0
-      loop: "{{ grafana_unified_alerting | default({}) | dict2items }}"
-
     - name: Open nginx ports
       become: true
       ansible.posix.firewalld:
