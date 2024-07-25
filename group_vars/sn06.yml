@@ -292,6 +292,7 @@ galaxy_server_dir: "{{ galaxy_root }}/server"
 galaxy_config_dir: "{{ galaxy_root }}/config"
 galaxy_venv_dir: "{{ galaxy_root }}/venv"
 galaxy_job_working_directory: "{{ galaxy_config['galaxy']['job_working_directory'] }}"
+galaxy_file_source_templates_dir: "{{ galaxy_mutable_config_dir }}/file_source_templates"
 ucsc_build_sites:
 
 galaxy_virtualenv_command: "{{ conda_prefix }}/envs/_galaxy_/bin/python -m venv --copies"
@@ -318,6 +319,7 @@ galaxy_dirs:
   - "{{ galaxy_log_dir }}"
   - "{{ galaxy_config_dir }}/total_perspective_vortex"
   - "{{ tpv_mutable_dir }}"
+  - "{{ galaxy_file_source_templates_dir }}"
 
 galaxy_instance_hostname: usegalaxy.eu
 galaxy_config_style: yaml
@@ -422,6 +424,8 @@ galaxy_config_files:
     dest: "{{ tpv_mutable_dir }}/interactive_tools.yml"
   - src: "{{ galaxy_config_file_src_dir }}/tpv/users.yml"
     dest: "{{ tpv_mutable_dir }}/users.yml"
+  - src: "{{ galaxy_config_file_src_dir }}/config/file_source_templates/production_webdav.yml"
+    dest: "{{ galaxy_file_source_templates_dir }}/production_webdav.yml"
 
   #- src: files/galaxy/config/job_resource_params_conf.xml
   #dest: "{{ galaxy_config['app:main']['job_resource_params_file'] }}"
