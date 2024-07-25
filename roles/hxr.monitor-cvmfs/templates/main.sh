@@ -3,8 +3,8 @@ check_repo() {
 	host="$1"
 	repo="$2"
 
-	http_code="$(curl http://$host/cvmfs/$repo/.cvmfspublished -I --silent | head -n 1 | cut -f2 -d' ')"
-	header="$(curl http://$host/cvmfs/$repo/.cvmfspublished --silent | head -n 12)"
+	http_code="$(curl --max-time 20 http://$host/cvmfs/$repo/.cvmfspublished -I --silent | head -n 1 | cut -f2 -d' ')"
+	header="$(curl --max-time 20 http://$host/cvmfs/$repo/.cvmfspublished --silent | head -n 12)"
 
 	if [ "$http_code" -eq "200" ]; then
 		# https://cvmfs.readthedocs.io/en/stable/cpt-details.html#repository-manifest-cvmfspublished
@@ -21,6 +21,8 @@ check_repo() {
 
 {% for host in cvmfs_check_servers.hosts %}
 {% for repo in cvmfs_check_servers.repos %}
-check_repo {{ host }} {{ repo }}
+check_repo {{ host }} {{ repo }} &
 {% endfor %}
 {% endfor %}
+
+wait
