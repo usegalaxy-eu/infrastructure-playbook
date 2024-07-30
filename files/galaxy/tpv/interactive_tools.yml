@@ -244,6 +244,9 @@ tools:
   interactive_tool_jupyter_notebook:
     inherits: interactive_tool
     mem: 4
+    params:
+      # needed for > quay.io/bgruening/docker-jupyter-notebook:24.07, this image starts as root but drops privileges
+      docker_run_extra_arguments: "-e NB_UID=999"
     env:
       HOME: /home/jovyan
 
