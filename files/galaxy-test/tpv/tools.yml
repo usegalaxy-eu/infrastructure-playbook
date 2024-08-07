@@ -817,14 +817,5 @@ tools:
         - conda
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/fragpipe/fragpipe/.*:
-    cores: 8
-    mem: 56
-    rules:
-      - id: fragpipe_memory
-        if: |
-          parameters = {p.name: p.value for p in job.parameters}
-          parameters = tool.params_from_strings(parameters, app)
-          high_memory = parameters.get("high_memory", False)
-          high_memory
-        mem: 256
-        cores: 12
+    cores: 12
+    mem: 256
