@@ -23,7 +23,7 @@
     - name: Install Dependencies
       become: true
       ansible.builtin.package:
-        name: ['python3-virtualenv']
+        name: ['python3-virtualenv', 'python3-docker']
     - name: Ensure git is installed. (hxr.monitor-ssl)
       become: true
       ansible.builtin.package:
@@ -43,6 +43,7 @@
       ansible.posix.mount:
         path: /data
         src: /dev/vdb
+        fstype: xfs
         state: mounted
       become: true
 
@@ -75,6 +76,8 @@
     ## Grafana
     - role: galaxyproject.nginx
       become: true
+      vars:
+        hostname: "{{ grafana_domain }}"  
     - grafana
     - role: pgs
       become: true
@@ -106,13 +109,15 @@
             state: directory
             owner: "{{ ansible_ssh_user }}"
             group: "{{ ansible_ssh_user }}"
+            mode: "0755"
           become: true
         - name: Get docker compose
           ansible.builtin.get_url:
             url: https://raw.githubusercontent.com/grafana/oncall/49d20f1a7e40669e901db95443603138e1a1cde4/docker-compose.yml
-            dest: "{{ grafana_on_call_path }}/docker_compose.yml"
+            dest: "{{ grafana_on_call_path }}/docker-compose.yml"
             owner: "{{ ansible_ssh_user }}"
             group: "{{ ansible_ssh_user }}"
+            mode: "0600"
         - name: Create env
           copy:
             content: |
@@ -125,12 +130,12 @@
             mode: "0600"
           no_log: true
         - name: Spin up OnCall
-          docker_compose:
+          community.general.docker_compose:
             project_src: "{{ grafana_on_call_path }}"
-          register: output
-        - name: Run `docker-compose up` again
-          docker_compose:
+    - name: Remove OnCall
+      when: not grafana_on_call
+      block:
+        - name: Stop all services
+          community.general.docker_compose:
             project_src: "{{ grafana_on_call_path }}"
-          register: output
-        - assert:
-            that: "not output.changed "
+            state: absent
