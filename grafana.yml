@@ -15,11 +15,6 @@
     #  ansible.posix.selinux:
     #    policy: targeted
     #    state: permissive
-    - name: Set default version of Python
-      become: true
-      community.general.alternatives:
-        name: python
-        path: /usr/bin/python3
     - name: Install Dependencies
       become: true
       ansible.builtin.package:
