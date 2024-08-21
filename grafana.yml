@@ -15,10 +15,18 @@
     #  ansible.posix.selinux:
     #    policy: targeted
     #    state: permissive
+    - name: Open firewallD
+      ansible.posix.firewalld:
+        service: "{{ item }}"
+        permanent: true
+        state: enabled
+      with_items:
+        - https
+        - http
     - name: Install Dependencies
       become: true
       ansible.builtin.package:
-        name: ['python3-virtualenv', 'python3-docker']
+        name: ["python3-virtualenv", "python3-docker"]
     - name: Ensure git is installed. (hxr.monitor-ssl)
       become: true
       ansible.builtin.package:
@@ -47,19 +55,19 @@
     - grafana.grafana
   roles:
     ## Starting configuration of the operating system
+    - role: geerlingguy.repo-epel # Install EPEL repository
+      become: true
     - role: usegalaxy_eu.handy.os_setup
       become: true
       vars:
         hostname: "{{ grafana_domain }}"
         enable_hostname: true
-        enable_powertools: true         # geerlingguy.repo-epel role doesn't enable PowerTools repository
-    - role: geerlingguy.repo-epel     # Install EPEL repository
-      become: true
-    - role: usegalaxy-eu.autoupdates  # keep all of our packages up to date
+        enable_powertools: true # geerlingguy.repo-epel role doesn't enable PowerTools repository
+    - role: usegalaxy-eu.autoupdates # keep all of our packages up to date
       become: true
       vars:
         hostname: "{{ grafana_domain }}"
-    - influxdata.chrony               # Keep our time in sync.
+    - influxdata.chrony # Keep our time in sync.
 
     ## Monitoring
     - dj-wasabi.telegraf
@@ -114,7 +122,7 @@
             group: "{{ ansible_ssh_user }}"
             mode: "0600"
         - name: Create env
-          copy:
+          ansible.builtin.copy:
             content: |
               DOMAIN=http://localhost:8080
               SECRET_KEY={{ grafana_on_call_secret }}
@@ -134,3 +142,5 @@
           community.general.docker_compose:
             project_src: "{{ grafana_on_call_path }}"
             state: absent
+          failed_when: "output.services.engine.{{ grafana_on_call_path | basename }}_engine_1.state.running"
+
