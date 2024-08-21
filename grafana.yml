@@ -15,14 +15,6 @@
     #  ansible.posix.selinux:
     #    policy: targeted
     #    state: permissive
-    - name: Open firewallD
-      ansible.posix.firewalld:
-        service: "{{ item }}"
-        permanent: true
-        state: enabled
-      with_items:
-        - https
-        - http
     - name: Install Dependencies
       become: true
       ansible.builtin.package:
@@ -55,6 +47,8 @@
     - grafana.grafana
   roles:
     ## Starting configuration of the operating system
+    - role: usegalaxy_eu.fw_glxeu_generic
+      become: true
     - role: geerlingguy.repo-epel # Install EPEL repository
       become: true
     - role: usegalaxy_eu.handy.os_setup
