@@ -1338,6 +1338,7 @@ tools:
       _GALAXY_JOB_TMP_DIR: '/tmp'
     params:
       singularity_run_extra_arguments: "--env GENEMARK_PATH=/usr/local/tools/genemark/etp.for_braker/bin/gmes/"
+      singularity_no_mount: null
     scheduling:
       require:
         - singularity
