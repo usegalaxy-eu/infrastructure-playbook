@@ -79,3 +79,13 @@ nginx_remove_default_vhost: true
 nginx_ssl_role: usegalaxy-eu.certbot
 nginx_conf_ssl_certificate: /etc/ssl/certs/fullchain.pem
 nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
+
+firewall_public_services:
+  - http
+  - https
+  - d-s-n # name for port 8086
+firewall_internal_services:
+  - http
+  - https
+  - ssh
+  - d-s-n
