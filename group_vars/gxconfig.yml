@@ -2543,6 +2543,7 @@ base_app_main: &BASE_APP_MAIN
 
   celery_conf:
     result_backend: "{{ redis_connection_string }}"
+    result_expires: 259200 # in sec = 3 days, delete task runs at 4 am, see celery docs
     task_routes:
       galaxy.fetch_data: disabled
       # galaxy.fetch_data: galaxy.external
