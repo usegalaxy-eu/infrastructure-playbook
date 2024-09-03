@@ -23,11 +23,6 @@
         persistent: true
       loop:
         - httpd_can_network_connect
-    - name: Enable firewalld service
-      ansible.builtin.service:
-        name: firewalld
-        enabled: true
-        state: started
   collections:
     - devsec.hardening
   roles:
