@@ -23,15 +23,17 @@
         persistent: true
       loop:
         - httpd_can_network_connect
-    - name: Disable firewalld service
+    - name: Enable firewalld service
       ansible.builtin.service:
         name: firewalld
-        enabled: false
-        state: stopped
+        enabled: true
+        state: started
   collections:
     - devsec.hardening
   roles:
     ## Starting configuration of the operating system
+    - role: usegalaxy_eu.fw_glxeu_generic
+      become: true
     - role: usegalaxy_eu.handy.os_setup
       vars:
         enable_hostname: true
