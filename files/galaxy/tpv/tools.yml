@@ -1453,3 +1453,12 @@ tools:
   toolshed.g2.bx.psu.edu/repos/galaxyp/fragpipe/fragpipe/.*:
     cores: 12
     mem: 256
+
+  toolshed.g2.bx.psu.edu/repos/iuc/episcanpy_build_matrix/episcanpy_build_matrix/.*:
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
+    params:
+      singularity_no_mount: null
+    scheduling:
+      require:
+        - singularity
