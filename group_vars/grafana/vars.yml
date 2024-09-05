@@ -4,10 +4,12 @@ certbot_auth_method: --webroot
 certbot_well_known_root: /srv/nginx/_well-known_root
 certbot_share_key_users:
   - nginx
-certbot_virtualenv_command: virtualenv-3.6
 certbot_virtualenv_package_name: python3-virtualenv
 certbot_post_renewal: |
     systemctl restart nginx || true
+certbot_domains:
+  - "{{ grafana_domain }}"
+  - "{{ grafana_on_call_domain }}"
 #hostname: "{{ grafana_domain }}"
 # NGINX
 nginx_enable_default_server: false
@@ -35,7 +37,9 @@ nginx_conf_ssl_certificate: /etc/ssl/certs/fullchain.pem
 nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
 
 #setting this to false will remove the on call compose services and it's compose directory
-grafana_on_call: false
+grafana_on_call: true
+grafana_on_call_domain: oncall.galaxyproject.eu
+grafana_on_call_path: /data/grafana-on-call
 # Grafana
 grafana_version: 11.0.0
 
@@ -76,6 +80,7 @@ grafana_auth:
     token_url: "https://github.com/login/oauth/access_token"
     api_url: "https://api.github.com/user"
     allowed_organisations: "usegalaxy.eu galaxyproject"
+    role_attribute_path: contains(groups[*], '@usegalaxy-eu/admingrafana') && 'GrafanaAdmin' || 'Viewer'
 grafana_auth_admin_password: "{{ vault_grafana_auth_admin_password }}"
 
 grafana_image_storage:
@@ -257,5 +262,3 @@ ggb_create_group: true
 bridge_token: "{{ vault_grafana_gitter_bridge_token }}"
 gitter_auth_token: "{{ vault_grafana_gitter_bridge_auth_token }}"
 gitter_room_id: "{{ vault_grafana_gitter_room_id }}"
-
-grafana_on_call_path: /data/grafana-on-call
