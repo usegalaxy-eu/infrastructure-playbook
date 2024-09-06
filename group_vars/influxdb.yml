@@ -85,9 +85,9 @@ nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
 firewall_public_services:
   - http
   - https
-  - d-s-n # name for port 8086
+  - influxdb # must be created in playbook
 firewall_internal_services:
   - http
   - https
   - ssh
-  - d-s-n
+  - influxdb

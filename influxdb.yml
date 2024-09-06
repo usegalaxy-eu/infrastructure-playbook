@@ -18,6 +18,26 @@
         persistent: true
       loop:
         - httpd_can_network_connect
+    - name: Create influxdb firewalld service
+      ansible.builtin.copy:
+        dest: /etc/firewalld/services/influxdb.xml
+        content: |
+          <?xml version="1.0" encoding="utf-8"?>
+          <service>
+          <short>influxdb</short>
+            <description>Time-series database for storing metrics and analytics data</description>
+            <port protocol="tcp" port="8086"/>
+          </service>
+        mode: "0600"
+        owner: root
+        group: root
+      notify: copied_service
+  handlers:
+    - name: Reload Firewalld
+      listen: copied_service
+      ansible.builtin.service:
+        name: firewalld
+        state: reloaded
   collections:
     - devsec.hardening
   roles:
