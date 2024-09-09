@@ -15,6 +15,14 @@ tools:
       - if: not user
         fail: |
           Interactive tools require registration. Please log-in or register on https://usegalaxy.eu/login
+      - if: user is not None
+        execute: |
+          training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
+          training_expr = " || ".join(['(GalaxyGroup == "%s")' % role for role in training_roles])
+          training_labels = '"' + ", ".join(training_roles) + '"'
+          entity.params['requirements'] = '(GalaxyGroup == "compute") || (%s)' % training_expr if oubb in training_expr else '(GalaxyGroup == "interactive")'
+          entity.params['+Group'] = training_labels
+          entity.params['accounting_group_user'] = str(user.id)
 
   interactive_tool_gpu:
     cores: 1
