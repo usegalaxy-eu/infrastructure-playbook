@@ -6,7 +6,6 @@ tools:
     params:
       docker_volumes: $defaults
       container_monitor_result: callback
-      submit_requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
     scheduling:
       require:
         - docker
@@ -18,12 +17,11 @@ tools:
       - if: user is not None
         execute: |
           training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
-          training_expr = " || ".join(['(GalaxyGroup == "%s")' % role for role in training_roles])
-          training_labels = '"' + ", ".join(training_roles) + '"'
-          entity.params['requirements'] = '(GalaxyGroup == "compute") || (%s)' % training_expr if oubb in training_expr else '(GalaxyGroup == "interactive")'
-          entity.params['+Group'] = training_labels
-          entity.params['accounting_group_user'] = str(user.id)
-
+          oubb_roles = [r for r in training_roles if "oubb" in r]
+          if oubb_roles:
+              # If there is an 'oubb' role, set the submit requirements accordingly
+              training_expr = 'GalaxyGroup == "%s"' % oubb_roles[0]
+              params['submit_requirements'] = 'GalaxyDockerHack == True && GalaxyGroup == "interactive" || %s' % training_expr
   interactive_tool_gpu:
     cores: 1
     mem: 4
