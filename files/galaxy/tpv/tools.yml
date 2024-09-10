@@ -747,12 +747,14 @@ tools:
   toolshed.g2.bx.psu.edu/repos/genouest/helixer/helixer/.*:
     cores: 4
     mem: 30
-    gpus: 1
-    params:
-      singularity_run_extra_arguments: ' --nv '
     scheduling:
       require:
         - singularity
+    rules:
+      - if: input_size >= 0.2
+        gpus: 1
+        params:
+          singularity_run_extra_arguments: ' --nv '
 
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_eval/cherri_eval/.*:
     inherits: basic_docker_tool
