@@ -15,7 +15,14 @@ tools:
       - if: not user
         fail: |
           Interactive tools require registration. Please log-in or register on https://usegalaxy.eu/login
-
+      - if: user is not None
+        execute: |
+          training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
+          oubb_roles = [r for r in training_roles if "oubb" in r]
+          if oubb_roles:
+              # If there is an 'oubb' role, set the submit requirements accordingly
+              training_expr = 'GalaxyGroup == "%s"' % oubb_roles[0]
+              entity.params['submit_requirements'] = 'GalaxyDockerHack == True && GalaxyGroup == "interactive" || %s' % training_expr
   interactive_tool_gpu:
     cores: 1
     mem: 4
