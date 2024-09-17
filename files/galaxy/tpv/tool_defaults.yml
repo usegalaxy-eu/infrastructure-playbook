@@ -60,6 +60,23 @@ tools:
           retval
         fail: |
           Invalid 'Remote resources id' selected in the config menu under 'User -> Preferences -> Manage Information -> Use distributed compute resources'. Please reselect either 'default' or an appropriate remote resource then click 'Save' and rerun your job.
+      - id: climate_strike
+        if: True
+        execute: |
+          from datetime import datetime
+          strike_start = datetime(2024,9,20,7,0)
+          strike_end = datetime(2024,9,20,20,0)
+          training_roles = (
+              [role.name for role in user.all_roles()
+              if not role.deleted and role.name in
+              ("training-bma231-ht24", "training-oubb")]
+              if user is not None else []
+          )
+          now = datetime.now()
+          if strike_start <= now < strike_end and not training_roles:
+              entity.params["deferral_time"] = f"{int(strike_end.timestamp())}"
+              entity.params["deferral_prep_time"] = "60"
+              entity.params["deferral_window"] = "864000"  # 10 days
     rank: |
       final_destinations = helpers.weighted_random_sampling(candidate_destinations)
       final_destinations
