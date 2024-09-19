@@ -340,6 +340,12 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/fgsea/fgsea/.*:
     # any container should work
     inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/iuc/cat_bins/cat_bins/.*:
+    rules:
+      - if: input_size >= 0.03
+        mem: 48
+      - if: input_size >= 0.06
+        mem: 72
   toolshed.g2.bx.psu.edu/repos/iuc/chewbbaca.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/recetox/recetox_msfinder/recetox_msfinder/.*:
