@@ -1061,6 +1061,9 @@ tools:
       _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
   toolshed.g2.bx.psu.edu/repos/bgruening/repeat_masker/repeatmasker_wrapper/.*:
     rules:
+      - if: helpers.tool_version_gte(tool, '4.1.5')
+        env:
+          RM_LIB_PATH: "/data/db/databases/dfam/3.7/"
       - if: helpers.tool_version_lt(tool, '4.1.5')
         env:
           RM_LIB_PATH: "/data/db/databases/dfam/3.4/"
