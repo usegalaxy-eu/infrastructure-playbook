@@ -126,6 +126,15 @@
         app: "{{ item }}"
       with_items: "{{ apps }}"
 
+    - name: Auto Renew Certs
+      ansible.builtin.cron:
+        name: Dokku Cert Autorenew
+        user: ubuntu
+        job: /usr/bin/dokku letsencrypt:auto-renew
+        hour: 4
+        minute: 59
+        # random values
+
     # - name: Clones
     #   dokku_clone:
     #     app: oembed
