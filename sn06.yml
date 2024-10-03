@@ -137,7 +137,7 @@
         name: "Temporary docker cleanup – needs upstream fix see issue #584"
         minute: "0"
         hour: "4"
-        job: "/bin/docker system prune --all > /dev/null"
+        job: "/bin/docker system prune --all --force > /dev/null"
   roles:
     ## Starting configuration of the operating system
     - role: usegalaxy_eu.handy.os_setup
