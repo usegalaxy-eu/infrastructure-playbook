@@ -391,6 +391,12 @@ tools:
     # 8 (from the shared TPV) seems to high for me
     cores: 3
 
+  toolshed.g2.bx.psu.edu/repos/iuc/bbtools_tadpole/bbtools_tadpole/.*:
+    mem: 6
+    scheduling:
+      require:
+        - singularity
+
   toolshed.g2.bx.psu.edu/repos/iuc/pairtools_parse/pairtools_parse/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/ecology/cb_ivr/cb_ivr/.*:
