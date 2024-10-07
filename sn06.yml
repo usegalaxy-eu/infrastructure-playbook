@@ -136,7 +136,7 @@
       ansible.builtin.cron:
         name: "Temporary docker cleanup – needs upstream fix see issue #584"
         minute: "0"
-        hour: "4"
+        hour: "*/3"
         job: "/bin/docker system prune --all -f > /dev/null"
   roles:
     ## Starting configuration of the operating system
