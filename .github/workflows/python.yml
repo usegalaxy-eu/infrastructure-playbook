@@ -8,13 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Create venv
-        run: python3 -m venv .venv
-
-      - name: Activate virtualenv
-        run: |
-          . .venv/bin/activate
-          echo PATH=$PATH >> $GITHUB_ENV
+     - name: Setup Python
+       uses: actions/setup-python@v5
 
       - run: pip install --upgrade pip
 
