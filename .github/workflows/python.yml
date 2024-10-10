@@ -8,13 +8,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-     - name: Setup Python
-       uses: actions/setup-python@v5
-
-      - run: pip install --upgrade pip
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: '.github/requirements-python-lint.txt'
 
       - id: pip_install
-        run: pip install --upgrade isort~=5.0 flake8~=6.0 flake8-docstrings~=1.0
+        run: pip install -r '.github/requirements-python-lint.txt'
 
       - name: isort
         run: isort . --check --diff
