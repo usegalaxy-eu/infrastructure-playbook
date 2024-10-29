@@ -386,6 +386,16 @@ tools:
       docker_run_extra_arguments: ' --gpus all '
     env:
       GPU_AVAILABLE: 1
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/black_forest_labs_flux/black_forest_labs_flux/.*:
+    inherits: basic_docker_tool
+    gpus: 1
+    cores: 1
+    params:
+      docker_run_extra_arguments: ' --gpus all '
+    env:
+      GPU_AVAILABLE: 1
+
   toolshed.g2.bx.psu.edu/repos/bgruening/whisper/whisper/.*:
     inherits: basic_docker_tool
     cores: 1
