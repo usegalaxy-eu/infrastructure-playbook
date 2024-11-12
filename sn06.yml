@@ -48,7 +48,6 @@
       - "*.eirene.usegalaxy.eu"
       - "*.ep.interactivetool.eirene.usegalaxy.eu"
   vars_files:
-    - group_vars/sn06.yml
     - group_vars/tiaas.yml # All of the training infrastructure
     - group_vars/gxconfig.yml # The base galaxy configuration
     - group_vars/toolbox.yml # User controlled toolbox
@@ -186,7 +185,6 @@
         galaxy_manage_static_setup: false
         galaxy_manage_mutable_setup: false
         galaxy_manage_database: false
-        galaxy_manage_themes: false
         galaxy_manage_subdomain_static: false
         galaxy_fetch_dependencies: false
         galaxy_build_client: false
@@ -237,7 +235,6 @@
         galaxy_manage_static_setup: true
         galaxy_manage_mutable_setup: true
         galaxy_manage_database: true
-        galaxy_manage_themes: true
         galaxy_manage_subdomain_static: true
         galaxy_manage_host_filters: false # test when themes work
         galaxy_manage_systemd: false # switch to gravity(?)
