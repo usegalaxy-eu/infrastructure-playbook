@@ -318,6 +318,8 @@ tools:
       require:
         - docker
 
+  toolshed.g2.bx.psu.edu/repos/ecology/eml2eal/eml2eal/.*:
+    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_point/ggplot2_point/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/mgnify_seqprep/mgnify_seqprep/.*:
@@ -1180,6 +1182,9 @@ tools:
       require:
         - singularity
         - conda
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/custom_pro_db/custom_pro_db/.*:
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/semibin/semibin/.*:
     mem: 16
