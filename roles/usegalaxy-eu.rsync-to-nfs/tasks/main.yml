@@ -3,6 +3,10 @@
   copy:
     content: |
         #!/bin/bash
+        if [ "$(whoami)" != "galaxy" ]; then
+          exec sudo -u galaxy bash "$0" "$@"
+          exit
+        fi
         cd {{ galaxy_root }};
         for dir in {config,custom-tools,mutable-config,mutable-data,server,venv,tool-data}; do
             if [ -d $dir ]; then
