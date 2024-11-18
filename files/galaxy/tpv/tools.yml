@@ -320,6 +320,12 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/ecology/eml2eal/eml2eal/.*:
     inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/ecology/data_paper_from_eml/data_paper_from_EML/.*:
+    inherits: basic_docker_tool
+
+  # conda env not working, trying the container
+  toolshed.g2.bx.psu.edu/repos/imgteam/color_deconvolution/ip_color_deconvolution/.*:
+    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_point/ggplot2_point/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/mgnify_seqprep/mgnify_seqprep/.*:
@@ -383,6 +389,16 @@ tools:
       docker_run_extra_arguments: ' --gpus all '
     env:
       GPU_AVAILABLE: 1
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/black_forest_labs_flux/black_forest_labs_flux/.*:
+    inherits: basic_docker_tool
+    gpus: 1
+    cores: 1
+    params:
+      docker_run_extra_arguments: ' --gpus all '
+    env:
+      GPU_AVAILABLE: 1
+
   toolshed.g2.bx.psu.edu/repos/bgruening/whisper/whisper/.*:
     inherits: basic_docker_tool
     cores: 1
@@ -755,6 +771,8 @@ tools:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_core__tools__import/qiime2_core__tools__import/.*:
     inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_core__tools__import_fastq/qiime2_core__tools__import_fastq/.*:
+    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_train/cherri_train/.*:
     inherits: basic_docker_tool
     cores: 10
@@ -864,7 +882,21 @@ tools:
     inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
 
   toolshed.g2.bx.psu.edu/repos/iuc/rnaspades/rnaspades/.*:
-    inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
+    cores: 2
+    rules:
+      - if: 0.005 <= input_size < 1
+        cores: 8
+        mem: 100
+      - if: 1 <= input_size < 2
+        cores: 12
+        mem: 200
+      - if: input_size >= 2
+        cores: 20
+        mem: 350
+        scheduling:
+          prefer:
+            - condor-tpv
+
   toolshed.g2.bx.psu.edu/repos/iuc/spades_plasmidspades/spades_plasmidspades/.*:
     inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
   toolshed.g2.bx.psu.edu/repos/iuc/spades_metaviralspades/spades_metaviralspades/.*:
@@ -1185,6 +1217,9 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/custom_pro_db/custom_pro_db/.*:
     mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/iuc/data_manager_gtdbtk_database_installer/gtdbtk_database_installer/.*:
+    mem: 128
 
   toolshed.g2.bx.psu.edu/repos/iuc/semibin/semibin/.*:
     mem: 16

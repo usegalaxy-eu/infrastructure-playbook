@@ -226,7 +226,7 @@ galaxy_systemd_memory_limit_workflow: 15
 
 # gie_proxy
 gie_proxy_dir: "{{ galaxy_root }}/gie-proxy/proxy"
-gie_proxy_git_version: main
+gie_proxy_git_version: "v0.0.6"
 gie_proxy_setup_nodejs: nodeenv
 gie_proxy_virtualenv_command: "{{ conda_prefix }}/envs/_galaxy_/bin/python -m venv --copies" #"{{ pip_virtualenv_command }}"
 gie_proxy_nodejs_version: "10.13.0"
@@ -333,48 +333,8 @@ galaxy_config: "{{ galaxy_config_hash }}"
 
 # Galaxy Subdomains
 galaxy_themes_ansible_file_path: /scratch/workspace/usegalaxy-eu/playbooks/sn06/files/galaxy/subdomains
-galaxy_themes_conf_path: files/galaxy/config/themes_conf.yml
 galaxy_themes_default_welcome: https://galaxyproject.org/bare/eu/usegalaxy/main/
 galaxy_themes_welcome_url_prefix: https://usegalaxy-eu.github.io/index-
-galaxy_themes_subdomains:
-  - name: assembly
-  - name: nanopore
-  - name: erasmusmc
-  - name: climate
-  - name: hicexplorer
-  - name: annotation
-  - name: metabolomics
-  - name: metagenomics
-  - name: microbiome
-  - name: microgalaxy
-  - name: rna
-  - name: graphclust
-  - name: ecology
-  - name: proteomics
-  - name: clipseq
-  - name: cheminformatics
-  - name: imaging
-  - name: test
-  - name: beta
-  - name: streetscience
-  - name: singlecell
-  - name: humancellatlas
-  - name: ml
-  - name: live
-  - name: plants
-  - name: virology
-  - name: lite
-  - name: covid19
-  - name: africa
-  - name: india
-  - name: spatialomics
-  - name: materials
-  - name: phage
-  - name: earth-system
-  - name: cancer
-  - name: aqua
-  - name: eirene
-
 
 galaxy_config_file_src_dir: files/galaxy
 galaxy_config_files:
@@ -395,8 +355,6 @@ galaxy_config_files:
     dest: "{{ galaxy_config['galaxy']['job_resource_params_file'] }}"
   - src: "{{ galaxy_config_file_src_dir }}/config/trs_servers_conf.yml"
     dest: "{{ galaxy_config['galaxy']['trs_servers_config_file'] }}"
-  - src: "{{ galaxy_config_file_src_dir }}/config/themes_conf.yml"
-    dest: "{{ galaxy_config['galaxy']['themes_config_file'] }}"
   # test? Unknown if this works.
   - src: "{{ galaxy_config_file_src_dir }}/config/error_report.yml"
     dest: "{{ galaxy_config_dir }}/error_report.yml"
