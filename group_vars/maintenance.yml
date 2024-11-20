@@ -324,10 +324,10 @@ lp_logrotate_confd:
       }
 
 # WallE
-walle_verbose: true
+walle_verbose: false
 walle_script_location: /usr/local/sbin/walle.py
 walle_delete_threshold: HIGH
-walle_delete_users: false
+walle_delete_users: true
 walle_tool: interactive
 walle_user_name: "{{ galaxy_user.name }}"
 walle_user_group: "{{ galaxy_group.name }}"
@@ -336,35 +336,16 @@ walle_bashrc: "{{ galaxy_user.home }}/.bashrc"
 walle_pgpass_file: "{{ galaxy_user.home }}/.pgpass"
 walle_malware_database_location: "/data/dnb01/maintenance/walle"
 walle_database_file: checksums.yml
-walle_envs_database:
-  - key: GALAXY_CONFIG_DIR
-    value: /opt/galaxy/config
-  - key: GALAXY_CONFIG_FILE
-    value: /opt/galaxy/config/galaxy.yml
-  - key: GALAXY_PULSAR_APP_CONF
-    value: /opt/galaxy/config/pulsar_app.yml
-  - key: PGUSER
-    value: 'galaxy'
-  - key: PGHOST
-    value: 'sn05.galaxyproject.eu'
-  - key: PGDATABASE
-    value: 'galaxy'
-  - key: MALWARE_LIB
-    value: "{{ walle_malware_database_location }}/{{ walle_database_file }}"
-  - key: PGPASSFILE
-    value: "{{ walle_pgpass_file }}"
-walle_envs_user_deletion:
-  - key: GALAXY_API_KEY
-    value: "{{ admin_api_key_other }}"
-  - key: GALAXY_BASE_URL
-    value: "https://usegalaxy.eu"
-  - key: WALLE_USER_DELETION_MESSAGE
-    value: >
+walle_galaxy_url: "https://usegalaxy.eu"
+walle_api_key: "{{ admin_api_key_maintenance }}"
+walle_extra_env_vars:
+  PGHOST: sn05.galaxyproject.eu
+  WALLE_USER_DELETION_MESSAGE: >
       Our systems have detected activity related to your Galaxy account that most likely violate our terms of service.
       To prevent damage and in accordance with our terms of service, we automatically deleted your account.
       This means your jobs were terminated and you can not login anymore.
       However it is possible to restore the account and its data.
       If you think your account was deleted due to an error, please contact contact@usegalaxy.eu
 walle_cron_day: "*"
-walle_cron_hour: "14"
+walle_cron_hour: "*"
 walle_cron_minute: "0"
