@@ -93,6 +93,13 @@
       selinux:
         state: disabled
   post_tasks:
+    - name: Write Galaxy __galaxy_client_build_version and __galaxy_current_commit_id
+      delegate_to: 127.0.0.1
+      ansible.builtin.copy:
+        content: |
+          client_build_version={{ __galaxy_client_build_version }}
+          current_commit_id={{ __galaxy_current_commit_id }}
+        dest: "{{ playbook_dir }}/galaxy_update.properties"
     - name: Append some users to the systemd-journal group
       user:
         name: "{{ item }}"
@@ -238,7 +245,7 @@
         galaxy_manage_static_setup: true
         galaxy_manage_mutable_setup: true
         galaxy_manage_database: true
-        galaxy_manage_subdomain_static: false
+        galaxy_manage_subdomain_static: true
         galaxy_manage_host_filters: false # test when themes work
         galaxy_manage_systemd: false # switch to gravity(?)
         galaxy_manage_gravity: false
