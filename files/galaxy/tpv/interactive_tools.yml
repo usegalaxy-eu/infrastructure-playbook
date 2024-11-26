@@ -6,7 +6,7 @@ tools:
     params:
       docker_volumes: $defaults
       container_monitor_result: callback
-      submit_requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
+      submit_requirements: 'GalaxyDockerHack == True' # && GalaxyGroup == "interactive"'
     scheduling:
       require:
         - docker
@@ -22,7 +22,7 @@ tools:
           if oubb_roles:
               # If there is an 'oubb' role, set the submit requirements accordingly
               training_expr = 'GalaxyGroup == "%s"' % oubb_roles[0]
-              entity.params['submit_requirements'] = 'GalaxyDockerHack == True && GalaxyGroup == "interactive" || %s' % training_expr
+              entity.params['submit_requirements'] = 'GalaxyDockerHack == True || %s' % training_expr
   interactive_tool_gpu:
     cores: 1
     mem: 4
