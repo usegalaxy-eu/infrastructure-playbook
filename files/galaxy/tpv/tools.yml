@@ -206,6 +206,11 @@ tools:
     scheduling:
       prefer:
         - condor-tpv
+        
+  toolshed.g2.bx.psu.edu/repos/lldelisle/cooler_cload_tabix/cooler_cload_tabix/.*:
+    env:
+    - name: HDF5_USE_FILE_LOCKING
+      value: "FALSE"
 
   toolshed.g2.bx.psu.edu/repos/iuc/fasta_stats/fasta-stats/.*:
     rules:
