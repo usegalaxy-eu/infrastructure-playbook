@@ -3,3 +3,20 @@ users:
   dominguj@informatik.uni-freiburg.de:
   bjoern.gruening@gmail.com:
   kuntzm@informatik.uni-freiburg.de:
+  andreas.kalagasidis@gmail.com:
+    rules:
+      - if: 'interactive_tool_jupyter_notebook' in tool.id
+        cores: 1
+        mem: 15
+        params:
+          docker_volumes: $defaults
+          container_monitor_result: callback
+          submit_requirements: 'GalaxyDockerHack == True' # && GalaxyGroup == "interactive"'
+          # needed for > quay.io/bgruening/docker-jupyter-notebook:24.07, this image starts as root but drops privileges
+          docker_run_extra_arguments: "-e NB_UID=999"
+        scheduling:
+          require:
+            - docker
+            - interactive
+        env:
+          HOME: /home/jovyan
