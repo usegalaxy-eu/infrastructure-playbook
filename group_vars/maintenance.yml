@@ -347,6 +347,12 @@ walle_extra_env_vars:
       This means your jobs were terminated and you can not login anymore.
       However it is possible to restore the account and its data.
       If you think your account was deleted due to an error, please contact contact@usegalaxy.eu
+walle_envs_database:
+  MALWARE_LIB: "{{ walle_malware_database_location }}/{{ walle_database_file }}"
+  PGPASSFILE: "{{ walle_pgpass_file }}"
+  PGUSER: galaxy
+  PGDATABASE: galaxy
+  GXADMIN_PATH: /usr/local/bin/gxadmin
 walle_cron_day: "*"
 walle_cron_hour: "*"
 walle_cron_minute: "0"
