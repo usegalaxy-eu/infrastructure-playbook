@@ -1,0 +1,18 @@
+---
+postgres_data_dir: /data/postgresql/data
+postgres_init_dir: /data/postgresql/init
+bp_external_binding: 80
+postgres_user: "{{ beacon_db_user }}"
+postgres_pass: "{{ beacon_db_password }}"
+postgres_external_binding: "{{ beacon_db_port }}"
+hostname: beacon.galaxyproject.eu
+script_user: beacon
+script_dir: /home/beacon/script
+galaxy_api_url: https://usegalaxy.eu
+handy_groups:
+  - group_name: beacon
+    group_gid: 999
+handy_users:
+  - user_name: beacon
+    user_uid: 999
+    user_group: beacon
