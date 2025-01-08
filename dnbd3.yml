@@ -1,0 +1,55 @@
+---
+- hosts:
+    - dnbd3-primary
+    - dnbd3-proxy
+  become: true
+  pre_tasks:
+    - name: Create dnbd3 user
+      ansible.builtin.group:
+        name: "{{ dnbd3_group }}"
+        state: present
+    - name: Create dnbd3 user
+      ansible.builtin.user:
+        name: "{{ dnbd3_user }}"
+        group: "{{ dnbd3_group }}"
+        shell: /bin/false
+        create_home: false
+    - name: Grant access to dnbd3 root directory
+      ansible.builtin.file:
+        mode: "770"
+        path: "{{ dnbd3_base_path }}"
+        state: directory
+        owner: "{{ dnbd3_user }}"
+        group: "{{ dnbd3_group }}"
+    - name: Grant access to http directory
+      ansible.builtin.file:
+        mode: "770"
+        state: directory
+        path: "{{ tftpboot_path }}"
+        owner: "{{ dnbd3_user }}"
+        group: "{{ dnbd3_group }}"
+      when: "'dndb3_primary' in group_names"
+  roles:
+    #    - role: usegalaxy_eu.handy.os_setup
+    #      become: true
+    #      vars:
+    #        hostname: "{{ inventory_hostname }}"
+    #        enable_hostname: true
+    #        enable_powertools: true
+    #      when: "'dndb3_primary' in group_names"
+    - role: usegalaxy_eu.dnbd3
+    - role: usegalaxy_eu.tftp
+      when: "'dndb3_primary' in group_names"
+    - role: geerlingguy.apache
+      when: "'dndb3_primary' in group_names"
+
+
+  post_tasks:
+    - name: Grant access to http directory
+      ansible.builtin.file:
+        mode: "770"
+        path: "{{ apache_vhosts[0].documentroot }}"
+        state: directory
+        owner: "www-data"
+        group: "www-data"
+      when: "'dndb3_primary' in group_names"

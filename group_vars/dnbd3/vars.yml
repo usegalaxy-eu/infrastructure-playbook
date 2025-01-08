@@ -1,0 +1,37 @@
+---
+# --- dnbd3 setup vars ---
+#dnbd3_base_path: "/mnt/s3/dnbd3"
+dnbd3_log_file: "/tmp/dnbd3-server.log"
+dnbd3_config_path: "/usr/local/etc/dnbd3-server"
+dnbd3_user: "dnbd3"
+dnbd3_group: "dnbd3"
+dnbd3_server_conf: "{{ dnbd3_base_path }}/server.conf"
+dnbd3_alt_servers_conf: "{{ dnbd3_base_path }}/alt-servers"
+# --- dnbd3 repo vars ---
+dnbd3_git_tag: "master"
+dnbd3_git_repo: "git://git.openslx.org/dnbd3.git"
+# --- dnbd3 config vars ---
+dnbd3_listen_port: "5003"
+dnbd3_client_penalty: "100000"
+dnbd3_primary: "{{ hostvars[dnbd3_primary]['ansible_default_ipv4']['address'] }}"
+dnbd3_primary_comment: "Primary DNBD3 server, which replicates S3FS mounted QCOW2 images."
+# dnbd3_primary_backup: "10.20.56.174"
+# dnbd3_primary_backup_comment: "Secondary/backup DNBD3 server, which replicates S3FS mounted QCOW2 images."
+dnbd3_poxys:
+  - ip: "{{ hostvars[dnbd3_proxy]['ansible_default_ipv4']['address'] }}"
+    comment: "1st DNBD3 Proxy"
+
+
+# --- dnbd3 build vars ---
+dnbd3_src_dir: "/usr/local/src/dnbd3"
+dnbd3_build_dir: "{{ dnbd3_src_dir }}/build"
+dnbd3_server_binary: "/usr/local/sbin/dnbd3-server"
+dnbd3_new_binary: "{{ dnbd3_src_dir }}/dnbd3-server.new"
+dnbd3_old_binary: "{{ dnbd3_src_dir }}/dnbd3-server.old"
+
+# --- dnbd3 systemd vars ---
+dnbd3_systemd_dir: "/etc/systemd/system"
+dnbd3_service_dir: "{{ dnbd3_systemd_dir }}/dnbd3-server.service.d"
+dnbd3_service_file: "{{ dnbd3_systemd_dir }}/dnbd3-server.service"
+dnbd3_limits_file: "{{ dnbd3_service_dir }}/limits.conf"
+dnbd3_srv_mount_file: "{{ dnbd3_systemd_dir }}/srv.mount"

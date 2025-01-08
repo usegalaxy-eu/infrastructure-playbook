@@ -94,3 +94,13 @@ ansible_group_priority=4
 
 [dokku]
 apps.galaxyproject.eu ansible_ssh_user=ubuntu
+
+[dnbd3:children]
+dnbd3-primary
+dnbd3-proxy
+
+[dnbd3_primary]
+dnbd3-primary.galaxyproject.eu
+
+[dnbd3_proxy]
+dnbd3-proxy.galaxyproject.eu ansible_ssh_user=ubuntu
