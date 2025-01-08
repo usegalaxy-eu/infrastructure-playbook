@@ -28,7 +28,7 @@
         path: "{{ tftpboot_path }}"
         owner: "{{ dnbd3_user }}"
         group: "{{ dnbd3_group }}"
-      when: "'dndb3_primary' in group_names"
+      when: "'dnbd3_primary' in group_names"
   roles:
     #    - role: usegalaxy_eu.handy.os_setup
     #      become: true
@@ -36,12 +36,12 @@
     #        hostname: "{{ inventory_hostname }}"
     #        enable_hostname: true
     #        enable_powertools: true
-    #      when: "'dndb3_primary' in group_names"
+    #      when: "'dnbd3_primary' in group_names"
     - role: usegalaxy_eu.dnbd3
     - role: usegalaxy_eu.tftp
-      when: "'dndb3_primary' in group_names"
+      when: "'dnbd3_primary' in group_names"
     - role: geerlingguy.apache
-      when: "'dndb3_primary' in group_names"
+      when: "'dnbd3_primary' in group_names"
 
 
   post_tasks:
@@ -52,4 +52,4 @@
         state: directory
         owner: "www-data"
         group: "www-data"
-      when: "'dndb3_primary' in group_names"
+      when: "'dnbd3_primary' in group_names"
