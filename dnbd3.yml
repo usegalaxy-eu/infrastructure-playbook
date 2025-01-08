@@ -1,7 +1,5 @@
 ---
-- hosts:
-    - dnbd3-primary
-    - dnbd3-proxy
+- hosts: dnbd3-primary,dnbd3-proxy
   become: true
   pre_tasks:
     - name: Create dnbd3 user
