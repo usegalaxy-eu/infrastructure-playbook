@@ -2,6 +2,12 @@
 - hosts: dnbd3-primary,dnbd3-proxy
   become: true
   pre_tasks:
+    - name: Install dependencies
+      ansible.builtin.package:
+        name:
+          - git
+        state: present
+
     - name: Create dnbd3 user
       ansible.builtin.group:
         name: "{{ dnbd3_group }}"
