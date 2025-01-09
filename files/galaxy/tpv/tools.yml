@@ -318,6 +318,17 @@ tools:
       require:
         - docker
 
+  toolshed.g2.bx.psu.edu/repos/ecology/eml2eal/eml2eal/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/ecology/data_paper_from_eml/data_paper_from_EML/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/ecology/harmonize_insitu_to_netcdf/harmonize_insitu_to_netcdf/.*:
+    inherits: basic_docker_tool
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
+  # conda env not working, trying the container
+  toolshed.g2.bx.psu.edu/repos/imgteam/color_deconvolution/ip_color_deconvolution/.*:
+    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_point/ggplot2_point/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/mgnify_seqprep/mgnify_seqprep/.*:
@@ -340,6 +351,14 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/fgsea/fgsea/.*:
     # any container should work
     inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/iuc/cat_bins/cat_bins/.*:
+    rules:
+      - id: cat_bins_medium_input_rule
+        if: input_size >= 0.03
+        mem: 48
+      - id: cat_bins_large_input_rule
+        if: input_size >= 0.06
+        mem: 72
   toolshed.g2.bx.psu.edu/repos/iuc/chewbbaca.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/recetox/recetox_msfinder/recetox_msfinder/.*:
@@ -373,6 +392,16 @@ tools:
       docker_run_extra_arguments: ' --gpus all '
     env:
       GPU_AVAILABLE: 1
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/black_forest_labs_flux/black_forest_labs_flux/.*:
+    inherits: basic_docker_tool
+    gpus: 1
+    cores: 1
+    params:
+      docker_run_extra_arguments: ' --gpus all '
+    env:
+      GPU_AVAILABLE: 1
+
   toolshed.g2.bx.psu.edu/repos/bgruening/whisper/whisper/.*:
     inherits: basic_docker_tool
     cores: 1
@@ -382,6 +411,12 @@ tools:
   toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc/.*:
     # 8 (from the shared TPV) seems to high for me
     cores: 3
+
+  toolshed.g2.bx.psu.edu/repos/iuc/bbtools_tadpole/bbtools_tadpole/.*:
+    mem: 8
+    scheduling:
+      require:
+        - singularity
 
   toolshed.g2.bx.psu.edu/repos/iuc/pairtools_parse/pairtools_parse/.*:
     inherits: basic_docker_tool
@@ -414,6 +449,8 @@ tools:
   toolshed.g2.bx.psu.edu/repos/perssond/unmicst/unmicst/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/perssond/ashlar/ashlar/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__alignment__mafft/qiime2__alignment__mafft/.*:
     inherits: basic_docker_tool
@@ -739,20 +776,43 @@ tools:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_core__tools__import/qiime2_core__tools__import/.*:
     inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_core__tools__import_fastq/qiime2_core__tools__import_fastq/.*:
+    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_train/cherri_train/.*:
     inherits: basic_docker_tool
     cores: 10
     mem: 90
 
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastn_wrapper/.*:
+    env:
+      BLASTDB: "/data/db/databases/blast/taxdb"
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastp_wrapper/.*:
+    env:
+      BLASTDB: "/data/db/databases/blast/taxdb"
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastx_wrapper/.*:
+    env:
+      BLASTDB: "/data/db/databases/blast/taxdb"
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_makeblastdb/.*:
+    env:
+      BLASTDB: "/data/db/databases/blast/taxdb"
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_tblastn_wrapper/.*:
+    env:
+      BLASTDB: "/data/db/databases/blast/taxdb"
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_tblastx_wrapper/.*:
+    env:
+      BLASTDB: "/data/db/databases/blast/taxdb"
+
   toolshed.g2.bx.psu.edu/repos/genouest/helixer/helixer/.*:
     cores: 4
     mem: 30
-    gpus: 1
-    params:
-      singularity_run_extra_arguments: ' --nv '
     scheduling:
       require:
         - singularity
+    rules:
+      - if: input_size >= 0.2
+        gpus: 1
+        params:
+          singularity_run_extra_arguments: ' --nv '
 
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_eval/cherri_eval/.*:
     inherits: basic_docker_tool
@@ -827,7 +887,21 @@ tools:
     inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
 
   toolshed.g2.bx.psu.edu/repos/iuc/rnaspades/rnaspades/.*:
-    inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
+    cores: 2
+    rules:
+      - if: 0.005 <= input_size < 1
+        cores: 8
+        mem: 100
+      - if: 1 <= input_size < 2
+        cores: 12
+        mem: 200
+      - if: input_size >= 2
+        cores: 20
+        mem: 350
+        scheduling:
+          prefer:
+            - condor-tpv
+
   toolshed.g2.bx.psu.edu/repos/iuc/spades_plasmidspades/spades_plasmidspades/.*:
     inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
   toolshed.g2.bx.psu.edu/repos/iuc/spades_metaviralspades/spades_metaviralspades/.*:
@@ -1032,6 +1106,9 @@ tools:
       _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
   toolshed.g2.bx.psu.edu/repos/bgruening/repeat_masker/repeatmasker_wrapper/.*:
     rules:
+      - if: helpers.tool_version_gte(tool, '4.1.5')
+        env:
+          RM_LIB_PATH: "/data/db/databases/dfam/3.7/"
       - if: helpers.tool_version_lt(tool, '4.1.5')
         env:
           RM_LIB_PATH: "/data/db/databases/dfam/3.4/"
@@ -1143,6 +1220,12 @@ tools:
         - singularity
         - conda
 
+  toolshed.g2.bx.psu.edu/repos/galaxyp/custom_pro_db/custom_pro_db/.*:
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/iuc/data_manager_gtdbtk_database_installer/gtdbtk_database_installer/.*:
+    mem: 128
+
   toolshed.g2.bx.psu.edu/repos/iuc/semibin/semibin/.*:
     mem: 16
     cores: 16
@@ -1220,6 +1303,9 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/iuc/checkm_lineage_wf/checkm_lineage_wf/.*:
     mem: 16
+    cores: 16
+  toolshed.g2.bx.psu.edu/repos/iuc/maker/maker/.*:
+    mem: 64
     cores: 16
 
   ## is in the shared DB - we need to test it here a bit
@@ -1338,6 +1424,7 @@ tools:
       _GALAXY_JOB_TMP_DIR: '/tmp'
     params:
       singularity_run_extra_arguments: "--env GENEMARK_PATH=/usr/local/tools/genemark/etp.for_braker/bin/gmes/"
+      singularity_no_mount: null
     scheduling:
       require:
         - singularity
@@ -1447,14 +1534,18 @@ tools:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/fragpipe/fragpipe/.*:
-    cores: 8
-    mem: 56
-    rules:
-      - id: fragpipe_memory
-        if: |
-          parameters = {p.name: p.value for p in job.parameters}
-          parameters = tool.params_from_strings(parameters, app)
-          high_memory = parameters.get("high_memory", False)
-          high_memory
-        mem: 256
-        cores: 12
+    cores: 12
+    mem: 256
+
+  toolshed.g2.bx.psu.edu/repos/iuc/episcanpy_build_matrix/episcanpy_build_matrix/.*:
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
+    params:
+      singularity_no_mount: null
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/iuc/optitype/optitype/.*:
+    cores: 12
+    mem: 256

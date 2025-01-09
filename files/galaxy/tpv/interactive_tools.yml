@@ -6,7 +6,7 @@ tools:
     params:
       docker_volumes: $defaults
       container_monitor_result: callback
-      submit_requirements: 'GalaxyDockerHack == True && GalaxyGroup == "interactive"'
+      submit_requirements: 'GalaxyDockerHack == True' # && GalaxyGroup == "interactive"'
     scheduling:
       require:
         - docker
@@ -15,7 +15,14 @@ tools:
       - if: not user
         fail: |
           Interactive tools require registration. Please log-in or register on https://usegalaxy.eu/login
-
+      - if: user is not None
+        execute: |
+          training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
+          oubb_roles = [r for r in training_roles if "oubb" in r]
+          if oubb_roles:
+              # If there is an 'oubb' role, set the submit requirements accordingly
+              training_expr = 'GalaxyGroup == "%s"' % oubb_roles[0]
+              entity.params['submit_requirements'] = 'GalaxyDockerHack == True || %s' % training_expr
   interactive_tool_gpu:
     cores: 1
     mem: 4
@@ -44,6 +51,13 @@ tools:
     cores: 1
     mem: 4
 
+  interactive_tool_cellpose:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+    params:
+      docker_run_extra_arguments: "--user $UID:$GID"
+
   interactive_tool_ideal:
     inherits: interactive_tool
     cores: 1
@@ -59,6 +73,10 @@ tools:
       docker_run_extra_arguments: "--user $UID:$GID"
 
   interactive_tool_qiskit_jupyter_notebook:
+    inherits: interactive_tool
+    cores: 1
+    mem: 4
+  interactive_tool_jupytergis_notebook:
     inherits: interactive_tool
     cores: 1
     mem: 4
@@ -215,6 +233,10 @@ tools:
     cores: 1
     mem: 4
   interactive_tool_rstudio:
+    inherits: interactive_tool
+    cores: 2
+    mem: 8
+  interactive_tool_rstudio_askor:
     inherits: interactive_tool
     cores: 2
     mem: 8

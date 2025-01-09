@@ -15,15 +15,14 @@
     #  ansible.posix.selinux:
     #    policy: targeted
     #    state: permissive
-    - name: Set default version of Python
-      become: true
-      community.general.alternatives:
-        name: python
-        path: /usr/bin/python3
     - name: Install Dependencies
       become: true
       ansible.builtin.package:
-        name: ['python3-virtualenv']
+        name: ["python3-virtualenv", "python3-docker", "python3-pip"]
+    - name: Install docker compose python (no rpm available)
+      ansible.builtin.pip:
+        name: docker-compose
+        version: 1.29.2
     - name: Ensure git is installed. (hxr.monitor-ssl)
       become: true
       ansible.builtin.package:
@@ -43,6 +42,7 @@
       ansible.posix.mount:
         path: /data
         src: /dev/vdb
+        fstype: xfs
         state: mounted
       become: true
 
@@ -51,19 +51,21 @@
     - grafana.grafana
   roles:
     ## Starting configuration of the operating system
+    - role: usegalaxy_eu.firewall
+      become: true
+    - role: geerlingguy.repo-epel # Install EPEL repository
+      become: true
     - role: usegalaxy_eu.handy.os_setup
       become: true
       vars:
         hostname: "{{ grafana_domain }}"
         enable_hostname: true
-        enable_powertools: true         # geerlingguy.repo-epel role doesn't enable PowerTools repository
-    - role: geerlingguy.repo-epel     # Install EPEL repository
-      become: true
-    - role: usegalaxy-eu.autoupdates  # keep all of our packages up to date
+        enable_powertools: true # geerlingguy.repo-epel role doesn't enable PowerTools repository
+    - role: usegalaxy-eu.autoupdates # keep all of our packages up to date
       become: true
       vars:
         hostname: "{{ grafana_domain }}"
-    - influxdata.chrony               # Keep our time in sync.
+    - influxdata.chrony # Keep our time in sync.
 
     ## Monitoring
     - dj-wasabi.telegraf
@@ -75,10 +77,10 @@
     ## Grafana
     - role: galaxyproject.nginx
       become: true
+      vars:
+        hostname: "{{ grafana_domain }}"
     - grafana
     - role: pgs
-      become: true
-    - role: hxr.grafana-gitter-bridge
       become: true
     - role: geerlingguy.docker
       become: true
@@ -106,17 +108,19 @@
             state: directory
             owner: "{{ ansible_ssh_user }}"
             group: "{{ ansible_ssh_user }}"
+            mode: "0755"
           become: true
         - name: Get docker compose
           ansible.builtin.get_url:
             url: https://raw.githubusercontent.com/grafana/oncall/49d20f1a7e40669e901db95443603138e1a1cde4/docker-compose.yml
-            dest: "{{ grafana_on_call_path }}/docker_compose.yml"
+            dest: "{{ grafana_on_call_path }}/docker-compose.yml"
             owner: "{{ ansible_ssh_user }}"
             group: "{{ ansible_ssh_user }}"
+            mode: "0600"
         - name: Create env
-          copy:
+          ansible.builtin.copy:
             content: |
-              DOMAIN=http://localhost:8080
+              DOMAIN=https://{{ grafana_on_call_domain }}
               SECRET_KEY={{ grafana_on_call_secret }}
               COMPOSE_PROFILES=''
             dest: "{{ grafana_on_call_path }}/.env"
@@ -124,13 +128,7 @@
             group: "{{ ansible_ssh_user }}"
             mode: "0600"
           no_log: true
-        - name: Spin up OnCall
-          docker_compose:
+        - name: Start OnCall
+          community.docker.docker_compose_v2:
             project_src: "{{ grafana_on_call_path }}"
-          register: output
-        - name: Run `docker-compose up` again
-          docker_compose:
-            project_src: "{{ grafana_on_call_path }}"
-          register: output
-        - assert:
-            that: "not output.changed "
+            project_name: oncall

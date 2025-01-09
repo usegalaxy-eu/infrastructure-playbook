@@ -240,10 +240,10 @@
   anon: true
 
 - type: s3fs
-  label: ECMWF ERA5 Reanalysis
-  id: era5-pds
+  label: NSF NCAR Curated ECMWF Reanalysis 5 (ERA5)
+  id: nsf-ncar-era5
   doc: ERA5 is the fifth generation of ECMWF atmospheric reanalyses of the global climate created with the best available observation data from satellites, in-situ stations and ECMWF's Integrated Forecast System. The dataset provides atmospheric meteorological parameters.
-  bucket: era5-pds
+  bucket: nsf-ncar-era5
   anon: true
 
 - type: s3fs
@@ -251,6 +251,13 @@
   id: mf-nwp-models
   doc: Global and high-resolution regional atmospheric models from Météo-France.
   bucket: mf-nwp-models
+  anon: true
+  
+- type: s3fs
+  label: Argo marine floats data and metadata from Global Data Assembly Centre (Argo GDAC)
+  id: argo-gdac-sandbox
+  doc: Argo is an international program to observe the interior of the ocean with a fleet of profiling floats drifting in the deep ocean currents (https://argo.ucsd.edu). 
+  bucket: argo-gdac-sandbox
   anon: true
 
 - type: arcfs

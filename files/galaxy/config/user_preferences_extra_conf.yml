@@ -132,9 +132,8 @@ preferences:
                   # - ["Freiburg (Germany) - de.NBI cloud GPU - docker", remote_cluster_mq_docker_de03]
                   - ["Rennes (France) - GenOuest bioinformatics", fr-pulsar]
                   - ["Bari (Italy) - RECAS", it-pulsar]
-                  - ["Bari (Italy) - RECAS 2", it02-pulsar]
-                  # - ["Palermo (Italy) - GARR, 2wd true", remote_cluster_mq_2wdtrue_it03]
-                  # - ["Palermo (Italy) - GARR, 2wd falsef", remote_cluster_mq_2wdfalse_it03]
+                  - ["CINECA (Italy)", it02-pulsar]
+                  - ["GARR (Italy)", it03-pulsar]
                   # - ["Lisbon (Portugal) - Tecnico ULisboa", remote_cluster_mq_pt01]
                   # - ["Oxfordshire (UK) - Diamond Light Source", remote_cluster_mq_uk01]
                   # - ["Oxfordshire (UK) - Diamond Light Source - GPUs on docker", remote_cluster_mq_docker_uk01]
@@ -299,5 +298,13 @@ preferences:
         inputs:
             - name: read_access_token
               label: API Read Access Token
+              type: password
+              required: False
+
+    chatgpt:
+        description: Your OpenAI API key. This will be used for example for ChatGPT.
+        inputs:
+            - name: api_key
+              label: API Key
               type: password
               required: False

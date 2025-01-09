@@ -48,7 +48,9 @@
       - "*.eirene.usegalaxy.eu"
       - "*.ep.interactivetool.eirene.usegalaxy.eu"
   vars_files:
-    - group_vars/sn06.yml
+    - group_vars/sn06/sn06.yml
+    - group_vars/sn06/themes_conf.yml
+    - group_vars/sn06/subdomains.yml
     - group_vars/tiaas.yml # All of the training infrastructure
     - group_vars/gxconfig.yml # The base galaxy configuration
     - group_vars/toolbox.yml # User controlled toolbox
@@ -91,6 +93,13 @@
       selinux:
         state: disabled
   post_tasks:
+    - name: Write Galaxy __galaxy_client_build_version and __galaxy_current_commit_id
+      delegate_to: 127.0.0.1
+      ansible.builtin.copy:
+        content: |
+          client_build_version={{ __galaxy_client_build_version }}
+          current_commit_id={{ __galaxy_current_commit_id }}
+        dest: "{{ playbook_dir }}/galaxy_update.properties"
     - name: Append some users to the systemd-journal group
       user:
         name: "{{ item }}"
@@ -107,7 +116,7 @@
         key: "{{ item }}"
       loop:
         - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFH54+qZEBeU5uwIeWWOViLcC509qxoRW6oN0VHRQr4r nate@treehouse"
-        - "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBOBINXdjILF6x3WuppXyq6J2a2oSLR6waZ6txgjYJogHdIKPbI0TdReCv4EVxxYRY/NqGpHbjkqfRTsf2VgoU3U= mk@galaxy-mira"
+        - https://github.com/mira-miracoli.keys
         - "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBACB5Q5blymkTIRSzVzXITOGvBuI7W0L9Ykwfz8LJGPraaGVPiezzFGvjhqwX+EyCqQPt7JprR5mimJRw/JN3nBXWAHjekvmB5FuILkk6m5fOiQJ5QhRMyQ5GfxODAvGbHpTuWHbYJLWD5fhcboKPxlXOWy4xY9kDZVuQvEKisNKYBsFLA== sanjay"
         - "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBABRaLHL8mgW86rbtdUh6TY4rs7/la8hAGeSQ3jBF7LMwYZnbS32YDMYvDq3KgNu5WqSMFvkxNm3vfTAbd8CXBfakwDBFBaD9kO0b2t4/p4VoFUsd3B2OvmTR7Bsg7OxTGJJ7aUP/SzTg+Z4NzsmHwQ9h31gfI7n/buZD4S1edQke19Y6w== dominguj@informatik.uni-freiburg.de"
         - https://github.com/wm75.keys
@@ -127,11 +136,18 @@
         - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCoWkk57x20iE5Wf0cDX3QvkJf/XxO4wqIeZIPIosK7rFcvy/SvDF/mwQk4iQrQ7qDam35NFHrFden+5zoE5HJoRVeHYhqNaItmiMNBY9CqgITCXsD2j9/6NdzIcR66uzLHDVvLlXr2hJmrNoeGTzg94+EVtQ0/BARwffAq//2WzgG4oClgYE4RqahQRXbmBygf4g4BAbEb5JnsLJ3qqnhsAgcUYyXg7/dz36QVsvoTwChMMCXDJpPyNb1+PqOKAgl7+yZQiPD0yI5zZG+iF6dsvc6Dhscpmt0nOjr4h+o97wQk3sbvq9ysXPlARqgL950H+0LtSiWnC+KEBK4KOgc83g6NynCE7zGZ9LJiKoT0mmt8BKaJKFRDVob3nlYR3/DDLEq2AkCoxYF0JFUNVta/wEF/likB61Yhsv01gNVMNcCfK9nzZVyTGNwdsFPdi4WL+KfkMgEcA0xrCtLXhkxnU8f3H8a7XcwJWr3fuSK1ndFwNxmfKlA+sRRKYBHouU8rpnC/HCxYsxF/palYxHv8KNcfGIRUBIgfgugsigzFcB5yz4lY73NiEyVEY9ZnBbbXllyX3ICoI/IboMQVUDyccRZiDAeHJ/v29pIsIihkmWIT2I1VqppXuVYgTydPM42CDBaKE7ko3p0CuZDyB2sZaS4XYUQlkRpX9ZARtcC/AQ== david"
         - "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAA6oD5Ps9h6pKokzaAcCI6R08CKm2aSVv86h/O2HTEQkzeJq/Uvu4gbrONAM0FK5R693mHggIwaROKf1Z1+q4YNtACtYjV1c+6a9lcrGMM31y5RzO6mAW+rHNEXgZ1n3wqDcBQhSXhSekSen0R2QKwvmB7xeP4XX9qE10azZuafIFU9hQ== sanjay"
         - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC9itwmMTgcRCrwjO3RCke/NWJsRb3N5lUTF5fubw/V0PlSbFDuv7IMKp5hhFfhiOuVRMoXQBHnnOWWu1xd9jDqZKXmNGHg06JtnddQ/OVprZ6Dpu2g9pZ6uc4r1As94mvpICLVK9lNHPNA60sIwTsTRVFSb1VbXALI4iuLOxPLzIxhrZ1LouK19VWetJIQ/Uq8UalfTDr1KOyQQ/ZgjBeWdD5InSOl3sbPJZhGQLqSHIi0MVxH527CMnh1PQIxiD/vqX8SK7HaKvUZIHHzz5TFrUgrw7BkfRd04UIgr1OhnMf1E413yZdeQzJQV7C1CL9MbAThXX6Ruvs0Rg3ylazpYfwDifMWvqLeRoTCDUbGx94ySO/wzer/kcjpJ27iydNo+en/hImMYz7kktf6A3BzOYxFmOQvnQ9cChP+iuk7fTiQZS7Qtkz+axNIvwCkm7Hmgt7vYizHc+OAtKmzZFTHecozjxCXs9RwynnWpToheP3ZPYgOpKc7pkUngRSjXyc= bebatut@bebatut-ThinkPad-T14-Gen-1"
-        - "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBADKblzzPBc3+dEfFvhJQHsHGkFFN6ORjfXo71P1OutwcKEMCIcNkZKJHhYkLLrfTDN5JJ5tK2L5AaSxdwETofwm4AG1xv3LuoYsXC6e3sjKi09BVmzef520pIMW+rvL+hESwSazZaUAC0wDcH4aNDTonZYcAY87rpMX7pNMkNPJvWilUA== mira"
+        - https://github.com/mira-miracoli.keys
         - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFH54+qZEBeU5uwIeWWOViLcC509qxoRW6oN0VHRQr4r nate"
         - "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBABRaLHL8mgW86rbtdUh6TY4rs7/la8hAGeSQ3jBF7LMwYZnbS32YDMYvDq3KgNu5WqSMFvkxNm3vfTAbd8CXBfakwDBFBaD9kO0b2t4/p4VoFUsd3B2OvmTR7Bsg7OxTGJJ7aUP/SzTg+Z4NzsmHwQ9h31gfI7n/buZD4S1edQke19Y6w== dominguj@informatik.uni-freiburg.de"
         - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC3UNEZrYCERrpZl/NzL9/q2dOyJJT0Ini6AEmFyPubh6yaVf4Iko+8MVYUx92RKuaY5bE8cC7JcLRZMKZ2lPVkP5tUUwILl2d2/sWlHnyZ1oGdOTfPB6b+boDansJcm3HnREO7umAqgbUErahWIDWOk3SPXOxirqsWrElNm5pKr8Ng8KWz9Ht9/J0oDxPxwYQcz64ogT7ERtCn3+UoEM/XQ4iVHvAk/rwLev8symd5SzrxFt6nI2vqduFBEMoA2VTISuI0rYVFqYpQ7I4QxOl5GbNHUeuvB5+YKh5P2QAi9mOPdp8MO2ZJnjtT+x7EgJKXHu2EBKDwW/93bPfL5SGFUK80HSyYG8sicSYpAUk1asE+T90QvpGUrXPaIabWXHvhj7vq7Y6l103o9T4N2qCpe8e4e3WthGzYu9Tfau7vko7pd+F7rnkvjvmj+WmSJPv+jadpMDyiUyYEIj4ncik89FOWIzt/IYYiC+po6nmD1del4s0Zenr2gEEsjyhvOiPLI7+Bw+w4m/xiHvlP1s40ZtIsUhwOYBEQUbfoHG0zR4jIgD8h/VA47oAvkNDGKJpkEbXpRpUtQxJLDNcnUFjEG86+NGWOuXzwllrH80TFueSFVg9dHu8d5Jx5m9LeZbf+vRnpSpIgQlVR/C4hFFYtK44/Daz+TqOXMgQqabypfQ== catherine.bromhead@unimelb.edu.au"
         - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPzm/ZHp+16Oz/5TbQkJZMC5yvp/C3OfvgOlRWqEX/Fc jdavcs@gmail.com"
+        - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINGQxOm1ZlWT4k8+wK9QXSY4Obb/kz7CR7u89XWCJcqW marius@galaxyproject.org"
+    - name: Set temporary cron for cleaning docker images
+      ansible.builtin.cron:
+        name: "Temporary docker cleanup – needs upstream fix see issue #584"
+        minute: "0"
+        hour: "*/3"
+        job: "/bin/docker system prune --all -f > /dev/null"
   roles:
     ## Starting configuration of the operating system
     - role: usegalaxy_eu.handy.os_setup
@@ -179,7 +195,6 @@
         galaxy_manage_static_setup: false
         galaxy_manage_mutable_setup: false
         galaxy_manage_database: false
-        galaxy_manage_themes: false
         galaxy_manage_subdomain_static: false
         galaxy_fetch_dependencies: false
         galaxy_build_client: false
@@ -230,7 +245,6 @@
         galaxy_manage_static_setup: true
         galaxy_manage_mutable_setup: true
         galaxy_manage_database: true
-        galaxy_manage_themes: true
         galaxy_manage_subdomain_static: true
         galaxy_manage_host_filters: false # test when themes work
         galaxy_manage_systemd: false # switch to gravity(?)
