@@ -315,7 +315,7 @@ destinations:
       jobs_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/staging"
       persistence_directory: "/opt/pulsar/files/persistent"
       singularity_volumes: "$job_directory:ro,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,$ALPHAFOLD_DB:/data:ro"
-      singularity_run_extra_arguments: "--nv --env ALPHAFOLD_USE_GPU=True --env SCRATCHDIR="$SCRATCHDIR" --env SCRATCH=$SCRATCHDIR"
+      singularity_run_extra_arguments: "--nv --env ALPHAFOLD_USE_GPU=True --env SCRATCHDIR=$SCRATCHDIR --env SCRATCH=$SCRATCHDIR"
       submit_native_specification: "-l select=1:ncpus=8:mem={int(mem)}gb:scratch_local=100gb:ngpus=1:gpu_mem=16gb -l walltime=24:00:00 -q galaxy_gpu@pbs-m1.metacentrum.cz -N pulsar_eu_j{job.id}__{tool.id if '/' not in tool.id else tool.id.split('/')[-2]+'_v'+tool.id.split('/')[-1]}__{user.username if user and hasattr(user, 'username') else 'anonymous'}"
     scheduling:
       require:
