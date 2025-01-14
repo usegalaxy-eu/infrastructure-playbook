@@ -393,6 +393,14 @@ tools:
     env:
       GPU_AVAILABLE: 1
 
+  # picrust tries to remove TMP folders, on NFS this does not always work, so we run this tool in a container with internal (non-NFS) TMP
+  toolshed.g2.bx.psu.edu/repos/iuc/picrust.*:
+    inherits: basic_docker_tool
+    cores: 2
+    mem: 10
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
+
   toolshed.g2.bx.psu.edu/repos/bgruening/black_forest_labs_flux/black_forest_labs_flux/.*:
     inherits: basic_docker_tool
     gpus: 1
