@@ -297,7 +297,7 @@ destinations:
     inherits: pulsar_default
     runner: pulsar_eu_cz01
     max_accepted_cores: 32
-    max_accepted_mem: 128
+    max_accepted_mem: 256
     min_accepted_gpus: 1
     max_accepted_gpus: 1
     env:
@@ -307,15 +307,16 @@ destinations:
       TMPDIR: "$SCRATCHDIR"
       TMP: "$SCRATCHDIR"
       TEMP: "$SCRATCHDIR"
+      MPLCONFIGDIR: "$SCRATCHDIR"
+      ALPHAFOLD_DB: "/scratch.ssd/galaxyeu/permanent/alphafold.db"
       XDG_CACHE_HOME: "$SCRATCHDIR"
-      ALPHAFOLD_DB: "/storage/brno11-elixir/projects/alphafold/alphafold.db-2.3.1"
       GPU_AVAILABLE: "1"
     params:
       jobs_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/staging"
       persistence_directory: "/opt/pulsar/files/persistent"
-      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,$ALPHAFOLD_DB:/data:ro"
-      singularity_run_extra_arguments: "--nv --env ALPHAFOLD_USE_GPU=True"
-      submit_native_specification: "-l select=1:ncpus=1:mem={int(mem)}gb:scratch_local=100gb:ngpus=1:gpu_mem=8gb -l walltime=24:00:00 -q galaxy_gpu@pbs-m1.metacentrum.cz -N pulsar_eu_j{job.id}__{tool.id if '/' not in tool.id else tool.id.split('/')[-2]+'_v'+tool.id.split('/')[-1]}__{user.username if user and hasattr(user, 'username') else 'anonymous'}"
+      singularity_volumes: "$job_directory:ro,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,$ALPHAFOLD_DB:/data:ro"
+      singularity_run_extra_arguments: "--nv --env ALPHAFOLD_USE_GPU=True --env SCRATCHDIR=$SCRATCHDIR --env SCRATCH=$SCRATCHDIR"
+      submit_native_specification: "-l select=1:ncpus=8:mem={int(mem)}gb:scratch_local=100gb:ngpus=1:gpu_mem=16gb -l walltime=24:00:00 -q galaxy_gpu@pbs-m1.metacentrum.cz -N pulsar_eu_j{job.id}__{tool.id if '/' not in tool.id else tool.id.split('/')[-2]+'_v'+tool.id.split('/')[-1]}__{user.username if user and hasattr(user, 'username') else 'anonymous'}"
     scheduling:
       require:
         - cz-pulsar
@@ -325,7 +326,7 @@ destinations:
           ALPHAFOLD_DB: "/storage/brno11-elixir/projects/alphafold/alphafold.db-2.2"
       - if: tool.id.startswith("toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold") and helpers.tool_version_gte(tool, "2.3.1+galaxy2")
         params:
-          singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,$ALPHAFOLD_DB:/data/2.3:ro"
+          singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,$ALPHAFOLD_DB:/data/2.3:ro"
 
 
   pulsar_egi01_tpv:
