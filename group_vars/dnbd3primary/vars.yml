@@ -3,6 +3,8 @@ dnbd3_is_proxy: false
 dnbd3_base_path: "/export/dnbd3-cache/images"
 tftpboot_path: "/export/dnbd3-cache/boot"
 apache_listen_port: 80
+apache_remove_default_vhost: true
 apache_vhosts:
-  - servername: "example.com"
+  - servername: "dnbd3-primary.galaxyproject.eu"
+    serveralias: "{{ hostvars['dnbd3-primary.galaxyproject.eu']['ansible_default_ipv4']['address'] }}"
     documentroot: "/export/dnbd3-cache/http"

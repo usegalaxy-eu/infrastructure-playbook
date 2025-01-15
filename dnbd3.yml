@@ -1,5 +1,6 @@
 ---
-- hosts: dnbd3-primary,dnbd3-proxy
+- name: DNBD3 Infrastructure
+  hosts: dnbd3primary,dnbd3proxy
   become: true
   pre_tasks:
     - name: Install dependencies
@@ -25,14 +26,14 @@
         state: directory
         owner: "{{ dnbd3_user }}"
         group: "{{ dnbd3_group }}"
-    - name: Grant access to http directory
+    - name: Grant access to tftp root directory
       ansible.builtin.file:
         mode: "770"
-        state: directory
         path: "{{ tftpboot_path }}"
-        owner: "{{ dnbd3_user }}"
-        group: "{{ dnbd3_group }}"
-      when: "'dnbd3_primary' in group_names"
+        state: directory
+        owner: "{{ tftp_user }}"
+        group: "{{ tftp_group }}"
+      when: "'dnbd3primary' in group_names"
   roles:
     #    - role: usegalaxy_eu.handy.os_setup
     #      become: true
@@ -43,9 +44,9 @@
     #      when: "'dnbd3_primary' in group_names"
     - role: usegalaxy_eu.dnbd3
     - role: usegalaxy_eu.tftp
-      when: "'dnbd3_primary' in group_names"
+      when: "'dnbd3primary' in group_names"
     - role: geerlingguy.apache
-      when: "'dnbd3_primary' in group_names"
+      when: "'dnbd3primary' in group_names"
 
 
   post_tasks:
@@ -56,4 +57,4 @@
         state: directory
         owner: "www-data"
         group: "www-data"
-      when: "'dnbd3_primary' in group_names"
+      when: "'dnbd3primary' in group_names"
