@@ -1,54 +1,134 @@
 ---
 - name: Grafana
   hosts: grafana
-  become: true
-  vars:
-    hostname: stats.galaxyproject.eu
   vars_files:
-    - group_vars/grafana-gitter-bridge.yml
     - secret_group_vars/all.yml
-  # This shouldn't be necessary? but if certs fail, then do this. This is
-  # *supposed* to be properly handled by the nginx role, but the permission
-  # change is likely only applied if a change is detected since it can't figure
-  # out if the rule is there or not.
-  # TODO: make the nginx task check if the rule is in place, rather than a change in path.
-  # pre_tasks:
-  #   - name: Put SELinux in permissive mode, logging actions that would be blocked.
-  #     selinux:
-  #       policy: targeted
-  #       state: permissive
   pre_tasks:
-    - name: Set default version of Python
-      alternatives:
-        name: python
-        path: /usr/bin/python3
+    #- name: Put SELinux in permissive mode, logging actions that would be blocked.
+    #  # Putting SELinux in permissive mode should not be necessary. But if
+    #  # certs fail, then do it. It is supposed to be properly handled by
+    #  # the `galaxyproject.nginx` role, but the permission change is likely
+    #  # only applied if a change is detected since it can't figure out if
+    #  # the rule is there or not.
+    #  # TODO: make the nginx task check if the rule is in place, rather than a change in path.
+    #  become: true
+    #  ansible.posix.selinux:
+    #    policy: targeted
+    #    state: permissive
     - name: Install Dependencies
-      package:
-        name: ['python3-virtualenv']
       become: true
-    - name: Disable firewalld service
-      ansible.builtin.service:
-        name: firewalld
-        enabled: false
-        state: stopped
+      ansible.builtin.package:
+        name: ["python3-virtualenv", "python3-docker", "python3-pip"]
+    - name: Install docker compose python (no rpm available)
+      ansible.builtin.pip:
+        name: docker-compose
+        version: 1.29.2
+    - name: Ensure git is installed. (hxr.monitor-ssl)
+      become: true
+      ansible.builtin.package:
+        name:
+          - git
+    - name: Create data dir
+      ansible.builtin.file:
+        state: directory
+        path: /data
+      become: true
+    - name: Create FS
+      community.general.filesystem:
+        fstype: xfs
+        dev: /dev/vdb
+      become: true
+    - name: Mount data volume
+      ansible.posix.mount:
+        path: /data
+        src: /dev/vdb
+        fstype: xfs
+        state: mounted
+      become: true
+
   collections:
     - devsec.hardening
+    - grafana.grafana
   roles:
     ## Starting configuration of the operating system
+    - role: usegalaxy_eu.firewall
+      become: true
+    - role: geerlingguy.repo-epel # Install EPEL repository
+      become: true
     - role: usegalaxy_eu.handy.os_setup
+      become: true
       vars:
+        hostname: "{{ grafana_domain }}"
         enable_hostname: true
-        enable_powertools: true        # geerlingguy.repo-epel role doesn't enable PowerTools repository
-    - geerlingguy.repo-epel     # Install EPEL repository
-    - usegalaxy-eu.autoupdates  # keep all of our packages up to date
-    - influxdata.chrony         # Keep our time in sync.
-    ## Monitoring
-    - hxr.monitor-ssl
-    - hxr.monitor-email
+        enable_powertools: true # geerlingguy.repo-epel role doesn't enable PowerTools repository
+    - role: usegalaxy-eu.autoupdates # keep all of our packages up to date
+      become: true
+      vars:
+        hostname: "{{ grafana_domain }}"
+    - influxdata.chrony # Keep our time in sync.
 
-    - galaxyproject.nginx
-    - cloudalchemy.grafana
-    - pgs
-    - hxr.grafana-gitter-bridge
-    - usegalaxy_eu.grafana_matrix_forwarder
+    ## Monitoring
     - dj-wasabi.telegraf
+    - role: hxr.monitor-ssl
+      become: true
+    - role: hxr.monitor-email
+      become: true
+
+    ## Grafana
+    - role: galaxyproject.nginx
+      become: true
+      vars:
+        hostname: "{{ grafana_domain }}"
+    - grafana
+    - role: pgs
+      become: true
+    - role: geerlingguy.docker
+      become: true
+      vars:
+        docker_install_compose: true
+        docker_users:
+          - "{{ ansible_ssh_user }}"
+
+  post_tasks:
+    - name: Open nginx ports
+      become: true
+      ansible.posix.firewalld:
+        port: "{{ item }}"
+        permanent: true
+        state: enabled
+      with_items:
+        - 80/tcp
+        - 443/tcp
+    - name: Add on-call backend
+      when: grafana_on_call
+      block:
+        - name: Create dir
+          ansible.builtin.file:
+            path: "{{ grafana_on_call_path }}"
+            state: directory
+            owner: "{{ ansible_ssh_user }}"
+            group: "{{ ansible_ssh_user }}"
+            mode: "0755"
+          become: true
+        - name: Get docker compose
+          ansible.builtin.get_url:
+            url: https://raw.githubusercontent.com/grafana/oncall/49d20f1a7e40669e901db95443603138e1a1cde4/docker-compose.yml
+            dest: "{{ grafana_on_call_path }}/docker-compose.yml"
+            owner: "{{ ansible_ssh_user }}"
+            group: "{{ ansible_ssh_user }}"
+            mode: "0600"
+        - name: Create env
+          ansible.builtin.copy:
+            content: |
+              DOMAIN=https://{{ grafana_on_call_domain }}
+              SECRET_KEY={{ grafana_on_call_secret }}
+              COMPOSE_PROFILES=''
+            dest: "{{ grafana_on_call_path }}/.env"
+            owner: "{{ ansible_ssh_user }}"
+            group: "{{ ansible_ssh_user }}"
+            mode: "0600"
+          no_log: true
+        - name: Start OnCall
+          community.docker.docker_compose_v2:
+            project_src: "{{ grafana_on_call_path }}"
+            project_name: oncall

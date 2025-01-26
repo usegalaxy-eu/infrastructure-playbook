@@ -8,7 +8,12 @@ tools:
     mem: cores * 3.8
     gpus: 0
     env:
-      GALAXY_MEMORY_MB: "{int(mem * 1024)}" # set 5/2023 might be moved to runner or tool wrappers, related to Galaxy issue 15952
+      - name: GALAXY_MEMORY_MB
+        value: "{int(mem * 1024)}" # set 5/2023 might be moved to runner or tool wrappers, related to Galaxy issue 15952
+      - name: HDF5_USE_FILE_LOCKING
+        value: "FALSE"
+      - name: SINGULARITYENV_HDF5_USE_FILE_LOCKING
+        value: $HDF5_USE_FILE_LOCKING
     params:
       metadata_strategy: "extended"
       tmp_dir: true
@@ -60,21 +65,6 @@ tools:
           retval
         fail: |
           Invalid 'Remote resources id' selected in the config menu under 'User -> Preferences -> Manage Information -> Use distributed compute resources'. Please reselect either 'default' or an appropriate remote resource then click 'Save' and rerun your job.
-      - id: secondary_cluster
-        # Send all jobs to the secondary HTCondor cluster.
-        if: True
-        execute: |
-          from tpv.core.entities import Tag, TagSetManager, TagType
-
-          pulsar_tag = Tag(
-              "scheduling",
-              "condor-secondary",
-              TagType.REQUIRE,
-          )
-          entity.tpv_tags = entity.tpv_tags.combine(
-              TagSetManager(tags=[pulsar_tag])
-          )
-
     rank: |
       final_destinations = helpers.weighted_random_sampling(candidate_destinations)
       final_destinations

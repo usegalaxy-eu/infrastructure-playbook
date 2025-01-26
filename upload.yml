@@ -4,65 +4,24 @@
   become: true
   become_user: root
   vars_files:
+    - secret_group_vars/all.yml
+    - group_vars/all.yml
     - secret_group_vars/sentry.yml
     - mounts/mountpoints.yml
     - mounts/dest/all.yml
-  vars:
-    upload_dir_test: "{{ jwd.jwd04.path }}/tus_upload/test"
-    upload_dir_main: "{{ jwd.jwd04.path }}/tus_upload/main"
-    rustus_version: "0.7.4"
-    rustus_instances:
-      - name: test_uploads
-        # user that rustus will run as
-        user: "{{ user_name }}"
-        # group that rustus will run as
-        group: "{{ user_group_name }}"
-        # by default, rustus will refuse to work if it cannot write to its current working
-        # directory, read the documentation of the usegalaxy_eu.rustus role for more
-        # details
-        working_directory: "{{ upload_dir_test }}"
-        # args passed to rustus
-        args:
-          - --host "{{ inventory_hostname }}"
-          - --port 1080
-          - "--data-dir {{ upload_dir_test }}"
-          - --hooks-http-urls "https://test.usegalaxy.eu/api/upload/hooks"
-          - --hooks-http-proxy-headers "X-Api-Key,Cookie"
-          - --hooks "pre-create"
-          - --hooks-format tusd
-          - --url "/api/upload/resumable_upload"
-          - --max-body-size 20000000
-          - "--sentry-dsn {{ sentry_dsn.test }} --sentry-sample-rate 1.0"
-          - --info-storage "file-info-storage" --info-dir "{{ upload_dir_test }}"
-      - name: main_uploads
-        # user that rustus will run as
-        user: "{{ user_name }}"
-        # group that rustus will run as
-        group: "{{ user_group_name }}"
-        # by default, rustus will refuse to work if it cannot write to its current working
-        # directory, read the documentation of the usegalaxy_eu.rustus role for more
-        # details
-        working_directory: "{{ upload_dir_main }}"
-        # args passed to rustus
-        args:
-          - --host "{{ inventory_hostname }}"
-          - --port 1081
-          - "--data-dir {{ upload_dir_main }}"
-          - --hooks-http-urls "https://usegalaxy.eu/api/upload/hooks"
-          - --hooks-http-proxy-headers "X-Api-Key,Cookie"
-          - --hooks "pre-create"
-          - --hooks-format tusd
-          - --url "/api/upload/resumable_upload"
-          - --max-body-size 20000000
-          - "--sentry-dsn {{ sentry_dsn.main }} --sentry-sample-rate 1.0"
-          - --info-storage "file-info-storage" --info-dir "{{ upload_dir_main }}"
   pre_tasks:
     - ansible.posix.firewalld:
         zone: public
         port: 1080-1081/tcp
         permanent: true
         state: enabled
-
+    - name: Copy Rustus request monitoring script
+      ansible.builtin.copy:
+        content: "{{ rustus_monitor_requests }}"
+        dest: "{{ rustus_monitor_requests_path }}"
+        mode: "0755"
+        owner: root
+        group: root
   roles:
     - role: usegalaxy_eu.handy.os_setup
       vars:
@@ -71,7 +30,15 @@
         enable_kernel_5: true
         enable_install_software: true
     - influxdata.chrony
+    - dj-wasabi.telegraf
     ## Filesystems
     - usegalaxy-eu.autofs     # Setup the mount points which will be needed later
 
     - usegalaxy_eu.rustus
+  post_tasks:
+    - name: add telegraf to systemd-journal
+      ansible.builtin.user:
+        name: telegraf
+        groups:
+          - systemd-journal
+        append: true

@@ -10,6 +10,7 @@
     <tool file="/opt/galaxy/custom-tools/test/lftp.xml" />
     <tool file="data_source/ebi_sra.xml" />
     <tool file="data_source/sra.xml" />
+    <tool file="data_source/ebi_sra.xml" />
     <tool file="data_source/microbial_import.xml" />
     <tool file="data_source/biomart.xml" />
     <tool file="data_source/biomart_test.xml" />
@@ -48,6 +49,9 @@
     <tool file="${model_tools_path}/relabel_from_file.xml" />
     <tool file="${model_tools_path}/filter_from_file.xml" />
     <tool file="${model_tools_path}/sort_collection_list.xml" />
+    <tool file="${model_tools_path}/harmonize_two_collections_list.xml" />
+    <tool file="${model_tools_path}/cross_product_flat.xml" />
+    <tool file="${model_tools_path}/cross_product_nested.xml" />
     <tool file="${model_tools_path}/tag_collection_from_file.xml" />
     <tool file="${model_tools_path}/apply_rules.xml" />
     <tool file="${model_tools_path}/build_list.xml" />
@@ -57,7 +61,6 @@
   </section>
   <section id="expression_tools" name="Expression Tools">
     <tool file="expression_tools/parse_values_from_file.xml"/>
-    <tool file="expression_tools/pick_value.xml"/>
   </section>
   <label id="general_text_label" text="General Text Tools" />
   <section id="text_manipulation" name="Text Manipulation">
@@ -93,6 +96,7 @@
     <tool file="filters/bed_to_bigbed.xml" />
   </section>
   <section id="filter_and_sort" name="Filter and Sort">
+    <tool file="stats/filtering_1_1_0.xml" />
     <tool file="stats/filtering.xml" />
     <tool file="filters/sorter.xml" />
     <tool file="filters/grep.xml" />
@@ -290,7 +294,7 @@
   </section>
   <section id="single-cell-section-cell-spatial" name="Spatial">
   </section>
-  <section id="spatial_omics" name="Spatial Omics" />  
+  <section id="spatial_omics" name="Spatial Omics" />
   <!-- HCA Single Cell tools -->
   <section id="hca_sc_get-scrna" name="Get scRNAseq data">
   </section>
@@ -381,8 +385,10 @@
   <section id="single-cell-section-interactivetools" name="Interactive tools">
     <tool file="interactive/interactivetool_jupyter_notebook.xml" />
     <tool file="interactive/interactivetool_jupyter_notebook_1.0.0.xml" />
+    <tool file="interactive/interactivetool_jupyter_notebook_1.0.1.xml" />
     <tool file="interactive/interactivetool_rstudio.xml" />
     <tool file="interactive/interactivetool_rstudio_0_3.xml" />
+    <tool file="interactive/interactivetool_rstudio_24.1.xml" />
     <tool file="interactive/interactivetool_cellxgene.xml" />
     <tool file="interactive/interactivetool_cellxgene_1.1.1.xml" />
     <tool file="interactive/interactivetool_isee.xml" />
@@ -397,6 +403,8 @@
   <section id="hca_sc_label_analysis_tools" name="CellTypeScan">
   </section>
   <section id="muon_spectroscopy" name="Muon Spectroscopy">
+  </section>
+  <section id="xas" name="XAS (X-ray Absorption Spectroscopy)">
   </section>
 
   <label id="other_and_toolsuites_label" text="Miscellaneous Tools" />
@@ -500,10 +508,10 @@
     <tool file="/opt/galaxy/custom-tools/test/lfoldz/rnalfoldz.xml" />
 
     <!--tool file="/opt/galaxy/custom-tools/test/chem/transfs.xml" hidden="True" /-->
-	  
-    <tool file="/opt/galaxy/custom-tools/jbrowse2/jbrowse2.xml" />
-	  
-    <tool file="/opt/galaxy/custom-tools/test/imaging/he_maldi_image_registration/he_maldi_image_registration.xml" />
+
+    <tool file="/opt/galaxy/custom-tools/jbrowse2/jbrowse2.xml" hidden="True"/>
+
+    <tool file="/opt/galaxy/custom-tools/test/imaging/he_maldi_image_registration/he_maldi_image_registration.xml" hidden="True" />
     <!--tool file="/opt/galaxy/custom-tools/test/imaging/overlay_moving_and_fixed_image/overlay_moving_and_fixed_image.xml" />
     <tool file="/opt/galaxy/custom-tools/test/imaging/projective_transformation/projective_transformation.xml" />
     <tool file="/opt/galaxy/custom-tools/test/imaging/scale_image/scale_image.xml" />
@@ -511,10 +519,12 @@
     <tool file="/opt/galaxy/custom-tools/test/imaging/projective_transformation_points/projective_transformation_points.xml" /-->
   </section>
 
-  <section id="gis_data_handling" name="GIS Data Handling" />
+  <section id="gis_data_handling" name="GIS Data Handling">
+      <tool file="/opt/galaxy/custom-tools/test/ogc/terrabyte_ogc_api_process_wrapper.xml" />
+  </section>
   <section id="animal_detection_on_acoustic_recordings" name="Animal Detection on Acoustic Recordings" />
   <section id="compute_indicators_for_satellite_remote_sensing" name="Compute indicators for satellite remote sensing" />
-  
+
   <section id="regional_variation" name="Regional Variation" >
   </section>
   <section id="genome_diversity" name="Genome Diversity" >
@@ -544,38 +554,44 @@
   <section id="interactivetools" name="Interactive tools">
         <tool file="interactive/interactivetool_source.xml" />
         <tool file="interactive/interactivetool_napari.xml" />
+        <tool file="interactive/interactivetool_cellprofiler.xml" />
         <tool file="interactive/interactivetool_tadviewer.xml" />
         <tool file="interactive/interactivetool_qgis.xml" />
         <tool file="interactive/interactivetool_qupath.xml" />
         <tool file="interactive/interactivetool_pampa.xml" />
-        <tool file="interactive/interactivetool_odv.xml" />
+        <tool file="interactive/interactivetool_odv.xml" labels="ocean" />
         <tool file="interactive/interactivetool_ilastik.xml" />
         <tool file="interactive/interactivetool_metashrimps.xml" />
         <tool file="interactive/interactivetool_hdfview.xml" />
         <tool file="interactive/interactivetool_scoop3.xml" />
         <tool file="interactive/interactivetool_divand.xml" />
+    	<tool file="interactive/interactivetool_rstudio_askor.xml" />
         <tool file="interactive/interactivetool_blobtoolkit.xml" />
         <tool file="interactive/interactivetool_pavian.xml" />
+        <tool file="interactive/interactivetool_pcstudio.xml" />
+        <tool file="interactive/interactivetool_copasi.xml" />
         <tool file="interactive/interactivetool_mgnify_notebook.xml" />
         <tool file="interactive/interactivetool_mgnify_notebook_1.2.2.xml" />
         <tool file="interactive/interactivetool_jupyter_notebook.xml" />
         <tool file="interactive/interactivetool_jupyter_notebook_1.0.0.xml" />
+        <tool file="interactive/interactivetool_jupytergis_notebook.xml" />
         <tool file="interactive/interactivetool_ml_jupyter_notebook.xml" />
         <tool file="interactive/interactivetool_ml_jupyter_notebook_0.2.xml" />
         <tool file="interactive/interactivetool_climate_notebook.xml" />
         <tool file="interactive/interactivetool_pangeo_notebook.xml" />
         <tool file="interactive/interactivetool_pangeo_ml_notebook.xml" />
+        <tool file="interactive/interactivetool_cellpose.xml" />
         <tool file="interactive/interactivetool_rstudio.xml" />
         <tool file="interactive/interactivetool_rstudio_0_3.xml" />
         <tool file="interactive/interactivetool_pyiron.xml" />
-        <tool file="interactive/interactivetool_higlass.xml" /> 
+        <tool file="interactive/interactivetool_higlass.xml" />
         <tool file="interactive/interactivetool_openrefine.xml" />
         <tool file="interactive/interactivetool_panoply.xml" />
         <tool file="interactive/interactivetool_askomics.xml" />
         <tool file="interactive/interactivetool_cellxgene.xml" />
         <tool file="interactive/interactivetool_cellxgene_1.1.1.xml" />
         <tool file="interactive/interactivetool_bam_iobio.xml" />
-        <tool file="interactive/interactivetool_vcf_iobio.xml" />	
+        <tool file="interactive/interactivetool_vcf_iobio.xml" />
         <tool file="interactive/interactivetool_neo4j.xml" />
         <tool file="interactive/interactivetool_phinch.xml" />
         <tool file="interactive/interactivetool_paraview.xml" />
@@ -588,14 +604,17 @@
         <tool file="interactive/interactivetool_vrm_editor.xml" />
         <tool file="interactive/interactivetool_simtext_app.xml" />
         <tool file="interactive/interactivetool_isee.xml" />
+        <tool file="interactive/interactivetool_ideal.xml" />
+        <tool file="interactive/interactivetool_phyloseq.xml" />
         <tool file="interactive/interactivetool_metashark.xml" labels="beta" />
+	<tool file="interactive/interactivetool_pampa.xml" labels="beta" />
         <tool file="interactive/interactivetool_audiolabeler.xml" />
         <tool file="interactive/interactivetool_genenotebook.xml" />
         <tool file="interactive/interactivetool_holoviz.xml" />
         <tool file="interactive/interactivetool_copernicus.xml" />
 	<tool file="interactive/interactivetool_qiskit_jupyter_notebook.xml" />
  	<tool file="interactive/interactivetool_qiskit_jupyter_notebook.xml" />
-	<tool file="interactive/interactivetool_qgis3_34.xml" />
+	<tool file="interactive/interactivetool_qgis3_34.xml" labels="land" />
 	<tool file="interactive/interactivetool_stac.xml" />
     </section>
 
@@ -609,7 +628,7 @@
   </section>
 
 <!-- Earth-system subdomain -->
-  <label id="earth-system-label-interactive-tools" text="General interactive tools" />  
+  <label id="earth-system-label-interactive-tools" text="General interactive tools" />
   <section id="earth-system-section-interactivetools" name="Interactive tools">
     <tool file="interactive/interactivetool_jupyter_notebook.xml" />
     <tool file="interactive/interactivetool_jupyter_notebook_1.0.0.xml" />
@@ -618,7 +637,7 @@
     <tool file="interactive/interactivetool_climate_notebook.xml" />
     <tool file="interactive/interactivetool_pangeo_notebook.xml" />
     <tool file="interactive/interactivetool_pangeo_ml_notebook.xml" />
-    <tool file="interactive/interactivetool_holoviz.xml" />  
+    <tool file="interactive/interactivetool_holoviz.xml" />
     <tool file="interactive/interactivetool_copernicus.xml" />
     <tool file="interactive/interactivetool_panoply.xml" />
     <tool file="interactive/interactivetool_stac.xml" />

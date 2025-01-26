@@ -127,6 +127,8 @@ fsm_scripts:
     paths:
       - "{{ galaxy_config['galaxy']['nginx_upload_store'] }}"
       - "{{ galaxy_config['galaxy']['nginx_upload_job_files_store'] }}"
+      - "{{ upload_dir_main }}"
+      - "{{ upload_dir_test }}"
     time: "{{ fsm_intervals.medium }}"
   job_working_dirs:
     enable: true
@@ -147,6 +149,7 @@ fsm_scripts:
 fsm_htcondor_enable: true
 
 # Role: dj-wasabi.telegraf
+telegraf_agent_metric_buffer_limit: 20000
 telegraf_agent_hostname: "{{ hostname }}"
 telegraf_agent_version: 1.17.2
 custom_telegraf_env: "/usr/bin/env GDPR_MODE=1 PGUSER={{ galaxy_user.name }} PGHOST={{ postgres_host }} GALAXY_ROOT={{ galaxy_server_dir }} GALAXY_CONFIG_FILE={{ galaxy_config_file }} GXADMIN_PYTHON={{ galaxy_venv_dir }}/bin/python"
@@ -219,6 +222,13 @@ telegraf_plugins_extra:
       - timeout = "15s"
       - data_format = "influx"
       - interval = "1m"
+  galaxy_tool_usage:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/galaxy_tool_usage"]
+      - timeout = "360s"
+      - data_format = "influx"
+      - interval = "24h"
   galaxy_job_queue_states_stats:
     plugin: "exec"
     config:
@@ -312,3 +322,37 @@ lp_logrotate_confd:
         notifempty
         compress
       }
+
+# WallE
+walle_verbose: false
+walle_script_location: /usr/local/sbin/walle.py
+walle_delete_threshold: HIGH
+walle_delete_users: false
+walle_filesize_min: 0
+walle_tool: interactive
+walle_user_name: "{{ galaxy_user.name }}"
+walle_user_group: "{{ galaxy_group.name }}"
+walle_virtualenv: "{{ galaxy_venv_dir }}"
+walle_bashrc: "{{ galaxy_user.home }}/.bashrc"
+walle_pgpass_file: "{{ galaxy_user.home }}/.pgpass"
+walle_malware_database_location: "/data/dnb01/maintenance/walle"
+walle_database_file: checksums.yml
+walle_galaxy_url: "https://usegalaxy.eu"
+walle_api_key: "{{ admin_api_key_maintenance }}"
+walle_extra_env_vars:
+  PGHOST: sn05.galaxyproject.eu
+  WALLE_USER_DELETION_MESSAGE: >
+      Our systems have detected activity related to your Galaxy account that most likely violate our terms of service.
+      To prevent damage and in accordance with our terms of service, we automatically deleted your account.
+      This means your jobs were terminated and you can not login anymore.
+      However it is possible to restore the account and its data.
+      If you think your account was deleted due to an error, please contact contact@usegalaxy.eu
+walle_envs_database:
+  MALWARE_LIB: "{{ walle_malware_database_location }}/{{ walle_database_file }}"
+  PGPASSFILE: "{{ walle_pgpass_file }}"
+  PGUSER: galaxy
+  PGDATABASE: galaxy
+  GXADMIN_PATH: /usr/local/bin/gxadmin
+walle_cron_day: "*"
+walle_cron_hour: "*"
+walle_cron_minute: "0"

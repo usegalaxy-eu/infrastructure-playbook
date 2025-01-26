@@ -1,12 +1,10 @@
 # Networking
 CONDOR_HOST = {{ htcondor_server }}
-COLLECTOR_HOST = $(CONDOR_HOST):{{ htcondor_port }}
-SHARED_PORT_PORT = {{ htcondor_port }}
-{% if "htcondor-secondary" in group_names %}
+COLLECTOR_HOST = $(CONDOR_HOST):{{ htcondor_server_port }}
+SHARED_PORT_PORT = {{ htcondor_shared_port }}
 WANT_UDP_COMMAND_SOCKET = False
 UPDATE_COLLECTOR_WITH_TCP = True
 UPDATE_VIEW_COLLECTOR_WITH_TCP = True
-{% endif %}
 {% if htcondor_network_interface is defined %}
 NETWORK_INTERFACE = {{ htcondor_network_interface }}
 {% endif %}

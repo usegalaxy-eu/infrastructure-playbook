@@ -1,11 +1,18 @@
 ---
 users:
   dominguj@informatik.uni-freiburg.de:
-    scheduling:
-      require:
-        - condor-secondary
   bjoern.gruening@gmail.com:
-    scheduling:
-      require:
-        - condor-secondary
+    rules:
+      - id: user-specific-notebook
+        if: |
+          'interactive_tool_jupyter_notebook' in tool.id
+        cores: 1
+        mem: 15
   kuntzm@informatik.uni-freiburg.de:
+  andreas.kalagasidis@gmail.com:
+    rules:
+      - id: user-specific-notebook
+        if: |
+          'interactive_tool_jupyter_notebook' in tool.id
+        cores: 1
+        mem: 15

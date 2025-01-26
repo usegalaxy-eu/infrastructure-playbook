@@ -1,0 +1,58 @@
+---
+- name: Traefik
+  become: true
+  hosts: traefik
+  vars_files:
+    - secret_group_vars/all.yml
+    - secret_group_vars/traefik.yml
+    - secret_group_vars/keys.yml
+    - group_vars/all.yml
+  pre_tasks:
+    - name: Install ansible dependencies
+      ansible.builtin.package:
+        name: "{{ item }}"
+      with_items:
+        - python3-policycoreutils
+        - python3-libselinux
+        - policycoreutils-python-utils
+        - python3-pip
+
+    - name: Install python docker
+      become: true
+      ansible.builtin.pip:
+        name: "{{ item }}"
+        virtualenv_command: "python3 -m venv"
+      loop:
+        - docker
+        - selinux
+
+    - name: Set authorized SSH key
+      ansible.posix.authorized_key:
+        user: "{{ ansible_ssh_user }}"
+        state: present
+        key: "{{ item }}"
+      loop:
+        - https://github.com/mira-miracoli.keys
+        - "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBACB5Q5blymkTIRSzVzXITOGvBuI7W0L9Ykwfz8LJGPraaGVPiezzFGvjhqwX+EyCqQPt7JprR5mimJRw/JN3nBXWAHjekvmB5FuILkk6m5fOiQJ5QhRMyQ5GfxODAvGbHpTuWHbYJLWD5fhcboKPxlXOWy4xY9kDZVuQvEKisNKYBsFLA== sanjay"
+        - "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBABRaLHL8mgW86rbtdUh6TY4rs7/la8hAGeSQ3jBF7LMwYZnbS32YDMYvDq3KgNu5WqSMFvkxNm3vfTAbd8CXBfakwDBFBaD9kO0b2t4/p4VoFUsd3B2OvmTR7Bsg7OxTGJJ7aUP/SzTg+Z4NzsmHwQ9h31gfI7n/buZD4S1edQke19Y6w== dominguj@informatik.uni-freiburg.de"
+        - "{{ galaxy_user_public_key }}"
+
+  roles:
+    - geerlingguy.repo-epel # Install EPEL repository
+    - usegalaxy-eu.autoupdates # keep all of our packages up to date
+    - influxdata.chrony # Keep our time in sync.
+    - dj-wasabi.telegraf
+    - usegalaxy-eu.logrotate # Rotate logs
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        enable_hostname: true
+        enable_powertools: true # geerlingguy.repo-epel role doesn't enable PowerTools repository
+        enable_remap_user: false
+        enable_exclude_packages: true
+        enable_pam_limits: true # Prevent out of control processes
+        enable_install_software: true # Some extra admin tools (*top, vim, etc)
+    - usegalaxy-eu.dynmotd
+    - artis3n.tailscale
+    - usegalaxy_eu.traefik
+    - devsec.hardening.ssh_hardening
+    - devsec.hardening.os_hardening
