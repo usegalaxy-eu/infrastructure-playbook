@@ -42,6 +42,12 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/bgruening/tabpfn/tabpfn/.*:
     inherits: basic_gpu_resource_param_tool
+    # This tool is using git to get a huggingface model, it seems that git is easily getting into a locked state on NFS.
+    # Here we reset the HOME dir in Galaxy to a non-NFS directory. It is true that now multiple tabpfn jobs are updating/cloning into a global directory,
+    # but since its git, it should work and even be faster for jobs that already find a model. This is not vrey reproducible as the model can change, but this is
+    # also true if the tool runs on NFS.
+    env:
+      HOME: /tmp
 
   toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_.*/deeptools_.*/.*:
     rules:
