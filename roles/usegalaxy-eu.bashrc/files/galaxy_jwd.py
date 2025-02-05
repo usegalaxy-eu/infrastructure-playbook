@@ -374,7 +374,7 @@ def decode_path(
         jwd_path = f"{backends_dict['pulsar_embedded']}/{job_id}"
     else:
         jwd_path = (
-            f"{backends_dict[metadata[0]]}/"
+            f"{backend_info['job_work_path']}/"
             f"0{job_id[0:2]}/{job_id[2:5]}/{job_id}"
         )
 
