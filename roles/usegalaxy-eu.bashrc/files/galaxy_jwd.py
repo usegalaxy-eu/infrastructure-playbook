@@ -307,7 +307,8 @@ def parse_object_store(object_store_conf: str) -> dict:
         # Get the extra_dir's path for each backend if type is "job_work"
         for extra_dir in backend.getElementsByTagName("extra_dir"):
             if extra_dir.getAttribute("type") == "job_work":
-                backends[backend_id]["job_work_path"] = extra_dir.getAttribute("path")
+                backends[backend_id]["job_work_path"] = \
+                    extra_dir.getAttribute("path")
     return backends
 
 
@@ -348,7 +349,8 @@ def decode_path(
     Args:
         job_id: Job id.
         metadata: List of object_store_id and update_time.
-        backends_dict: Dictionary of backend id with its type and path of type 'job_work'.
+        backends_dict: Dictionary of backend id with its type and path of type
+            'job_work'.
         job_runner_name: Name of the job runner. Defaults to None.
 
     Returns:
