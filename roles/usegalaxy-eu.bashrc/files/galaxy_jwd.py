@@ -360,12 +360,14 @@ def decode_path(
 
     # Check if object_store_id exists in our object store config
     if not backend_info:
-        print(f"Skipping backend '{object_store_id}' as it does not exist in the object_store_conf.xml file.")
+        print(f"Skipping backend '{object_store_id}' as it does not exist in"
+              f" the object_store_conf.xml file.")
         return None
 
     # Check if the backend type is 'disk'
     if backend_info["type"] != "disk":
-        print(f"Skipping backend '{object_store_id}' as its type is '{backend_info['type']}' and not 'disk'.")
+        print(f"Skipping backend '{object_store_id}' as its type "
+              f"is '{backend_info['type']}' and not 'disk'.")
         return None
 
     # Pulsar embedded jobs uses the staging directory and this has a different
