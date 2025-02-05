@@ -301,11 +301,13 @@ def parse_object_store(object_store_conf: str) -> dict:
     backends = {}
     for backend in dom.getElementsByTagName("backend"):
         backend_id = backend.getAttribute("id")
-        backends[backend_id] = {}
+        backend_type = backend.getAttribute("type")
+        backends[backend_id] = {"type": backend_type, "job_work_path": None}
+
         # Get the extra_dir's path for each backend if type is "job_work"
         for extra_dir in backend.getElementsByTagName("extra_dir"):
             if extra_dir.getAttribute("type") == "job_work":
-                backends[backend_id] = extra_dir.getAttribute("path")
+                backends[backend_id]["job_work_path"] = extra_dir.getAttribute("path")
     return backends
 
 
@@ -346,20 +348,25 @@ def decode_path(
     Args:
         job_id: Job id.
         metadata: List of object_store_id and update_time.
-        backends_dict: Dictionary of backend id and path of type 'job_work'.
+        backends_dict: Dictionary of backend id with its type and path of type 'job_work'.
         job_runner_name: Name of the job runner. Defaults to None.
 
     Returns:
         Path to the JWD.
     """
     job_id = str(job_id)
+    object_store_id = metadata[0]
+    backend_info = backends_dict.get(object_store_id)
 
     # Check if object_store_id exists in our object store config
-    if metadata[0] not in backends_dict.keys():
-        raise ValueError(
-            f"Object store id '{metadata[0]}' does not exist in the "
-            f"object_store_conf.xml file."
-        )
+    if not backend_info:
+        print(f"Skipping backend '{object_store_id}' as it does not exist in the object_store_conf.xml file.")
+        return None
+
+    # Check if the backend type is 'disk'
+    if backend_info["type"] != "disk":
+        print(f"Skipping backend '{object_store_id}' as its type is '{backend_info['type']}' and not 'disk'.")
+        return None
 
     # Pulsar embedded jobs uses the staging directory and this has a different
     # path structure
