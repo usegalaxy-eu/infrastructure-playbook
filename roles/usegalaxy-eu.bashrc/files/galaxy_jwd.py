@@ -366,12 +366,6 @@ def decode_path(
               f" the object_store_conf.xml file.")
         return None
 
-    # Check if the backend type is 'disk'
-    if backend_info["type"] != "disk":
-        print(f"Skipping backend '{object_store_id}' as its type "
-              f"is '{backend_info['type']}' and not 'disk'.")
-        return None
-
     # Pulsar embedded jobs uses the staging directory and this has a different
     # path structure
     if (job_runner_name or "").startswith("pulsar_embedded"):
