@@ -296,8 +296,9 @@ telegraf_plugins_extra:
         "{{ custom_telegraf_env }} /usr/bin/galaxy_most_used_tools_by_destination.sh",
         "{{ custom_telegraf_env }} /usr/bin/galaxy_num_anonymous_jobs_by_destination.sh",
         "{{ custom_telegraf_env }} /usr/bin/galaxy_unique_users_job_count_by_destination.sh",
+        "{{ custom_telegraf_env }} /usr/bin/galaxy_longest_running_jobs_by_destination.sh",
         ]
-      - timeout = "120s"
+      - timeout = "240s"
       - data_format = "influx"
       - interval = "1h"
 
