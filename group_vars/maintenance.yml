@@ -288,7 +288,18 @@ telegraf_plugins_extra:
       - timeout = "60s"
       - data_format = "influx"
       - interval = "2m"
-
+  galaxy_job_radar_visualization_stats:
+    plugin: "exec"
+    config:
+      - commands = [
+        "{{ custom_telegraf_env }} /usr/bin/galaxy_failed_jobs_by_destination.sh",
+        "{{ custom_telegraf_env }} /usr/bin/galaxy_most_used_tools_by_destination.sh",
+        "{{ custom_telegraf_env }} /usr/bin/galaxy_num_anonymous_jobs_by_destination.sh",
+        "{{ custom_telegraf_env }} /usr/bin/galaxy_unique_users_job_count_by_destination.sh",
+        ]
+      - timeout = "120s"
+      - data_format = "influx"
+      - interval = "1h"
 
 # Role: hxr.monitor-cluster
 monitor_condor: true
