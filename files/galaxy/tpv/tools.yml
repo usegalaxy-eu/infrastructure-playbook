@@ -40,6 +40,15 @@ tools:
   toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/.*:
     inherits: basic_gpu_resource_param_tool
 
+  toolshed.g2.bx.psu.edu/repos/bgruening/tabpfn/tabpfn/.*:
+    inherits: basic_gpu_resource_param_tool
+    # This tool is using git to get a huggingface model, it seems that git is easily getting into a locked state on NFS.
+    # Here we reset the HOME dir in Galaxy to a non-NFS directory. It is true that now multiple tabpfn jobs are updating/cloning into a global directory,
+    # but since its git, it should work and even be faster for jobs that already find a model. This is not vrey reproducible as the model can change, but this is
+    # also true if the tool runs on NFS.
+    env:
+      HOME: /tmp
+
   toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_.*/deeptools_.*/.*:
     rules:
       - id: deeptools_singularity
@@ -330,7 +339,10 @@ tools:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/ecology/data_paper_from_eml/data_paper_from_EML/.*:
     inherits: basic_docker_tool
-
+  toolshed.g2.bx.psu.edu/repos/ecology/harmonize_insitu_to_netcdf/harmonize_insitu_to_netcdf/.*:
+    inherits: basic_docker_tool
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
   # conda env not working, trying the container
   toolshed.g2.bx.psu.edu/repos/imgteam/color_deconvolution/ip_color_deconvolution/.*:
     inherits: basic_docker_tool
@@ -397,6 +409,14 @@ tools:
       docker_run_extra_arguments: ' --gpus all '
     env:
       GPU_AVAILABLE: 1
+
+  # picrust tries to remove TMP folders, on NFS this does not always work, so we run this tool in a container with internal (non-NFS) TMP
+  toolshed.g2.bx.psu.edu/repos/iuc/picrust.*:
+    inherits: basic_docker_tool
+    cores: 2
+    mem: 10
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
 
   toolshed.g2.bx.psu.edu/repos/bgruening/black_forest_labs_flux/black_forest_labs_flux/.*:
     inherits: basic_docker_tool

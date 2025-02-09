@@ -4,13 +4,25 @@
   hosts:
     - beacon
   vars_files:
-    - secret_group_vars/beacon.yml
+    - secret_group_vars/all.yml
+    - group_vars/all.yml
+    - group_vars/beacon/vars.yml
+    - group_vars/beacon/vault.yml
   vars:
-    postgres_data_dir: /data/postgresql/data
-    postgres_init_dir: /data/postgresql/init
-    bp_external_binding: 80
-    postgres_user: "{{ beacon_db_user }}"
-    postgres_pass: "{{ beacon_db_password }}"
-    postgres_external_binding: "{{ beacon_db_port }}"
+  collections:
+    - devsec.hardening
   roles:
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        enable_hostname: true
+        enable_powertools: true        # geerlingguy.repo-epel role doesn't enable PowerTools repository
+        enable_remap_user: true
+        enable_create_user: true
+    - usegalaxy-eu.autoupdates  # keep all of our packages up to date
+    - influxdata.chrony
+    - dj-wasabi.telegraf
+    - usegalaxy-eu.dynmotd # nicer MOTD/welcome message
     - paprikant.beacon
+    - paprikant.beacon-importer
+#    - os_hardening
+#    - ssh_hardening

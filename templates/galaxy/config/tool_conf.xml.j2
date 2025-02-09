@@ -44,6 +44,7 @@
     <tool file="${model_tools_path}/zip_collection.xml" />
     <tool file="${model_tools_path}/filter_failed_collection.xml" />
     <tool file="${model_tools_path}/filter_empty_collection.xml" />
+    <tool file="${model_tools_path}/filter_null.xml" />
     <tool file="${model_tools_path}/flatten_collection.xml" />
     <tool file="${model_tools_path}/merge_collection.xml" />
     <tool file="${model_tools_path}/relabel_from_file.xml" />
@@ -388,10 +389,10 @@
     <tool file="interactive/interactivetool_jupyter_notebook_1.0.1.xml" />
     <tool file="interactive/interactivetool_rstudio.xml" />
     <tool file="interactive/interactivetool_rstudio_0_3.xml" />
+    <tool file="interactive/interactivetool_rstudio_24.1.xml" />
     <tool file="interactive/interactivetool_cellxgene.xml" />
     <tool file="interactive/interactivetool_cellxgene_1.1.1.xml" />
     <tool file="interactive/interactivetool_isee.xml" />
-    <tool file="interactive/interactivetool_rstudio_askor.xml" />
   </section>
   <label id="single-cell-label-automated-cell-annotation" text="Automated cell annotation" />
   <section id="hca_sc_scmap_tools" name="SCMap">
@@ -403,6 +404,8 @@
   <section id="hca_sc_label_analysis_tools" name="CellTypeScan">
   </section>
   <section id="muon_spectroscopy" name="Muon Spectroscopy">
+  </section>
+  <section id="xas" name="XAS (X-ray Absorption Spectroscopy)">
   </section>
 
   <label id="other_and_toolsuites_label" text="Miscellaneous Tools" />
@@ -551,6 +554,7 @@
   <section id="astronomy" name="Astronomy" />
   <section id="interactivetools" name="Interactive tools">
         <tool file="interactive/interactivetool_source.xml" />
+        <tool file="interactive/interactivetool_cellxgene_mouse_sciatic_nerve.xml" hidden="True" />
         <tool file="interactive/interactivetool_napari.xml" />
         <tool file="interactive/interactivetool_cellprofiler.xml" />
         <tool file="interactive/interactivetool_tadviewer.xml" />
@@ -563,12 +567,16 @@
         <tool file="interactive/interactivetool_hdfview.xml" />
         <tool file="interactive/interactivetool_scoop3.xml" />
         <tool file="interactive/interactivetool_divand.xml" />
+    	<tool file="interactive/interactivetool_rstudio_askor.xml" />
         <tool file="interactive/interactivetool_blobtoolkit.xml" />
         <tool file="interactive/interactivetool_pavian.xml" />
+        <tool file="interactive/interactivetool_pcstudio.xml" />
+        <tool file="interactive/interactivetool_copasi.xml" />
         <tool file="interactive/interactivetool_mgnify_notebook.xml" />
         <tool file="interactive/interactivetool_mgnify_notebook_1.2.2.xml" />
         <tool file="interactive/interactivetool_jupyter_notebook.xml" />
         <tool file="interactive/interactivetool_jupyter_notebook_1.0.0.xml" />
+        <tool file="interactive/interactivetool_jupytergis_notebook.xml" />
         <tool file="interactive/interactivetool_ml_jupyter_notebook.xml" />
         <tool file="interactive/interactivetool_ml_jupyter_notebook_0.2.xml" />
         <tool file="interactive/interactivetool_climate_notebook.xml" />
