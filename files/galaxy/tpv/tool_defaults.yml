@@ -12,6 +12,10 @@ tools:
         value: "{int(mem * 1024)}" # set 5/2023 might be moved to runner or tool wrappers, related to Galaxy issue 15952
       - name: _JAVA_OPTIONS
         value: -Xmx{round(mem*0.9*1024)}m -Xms256m -Duser.home=/data/2/galaxy_db/tmp -Djava.io.tmpdir=$_GALAXY_JOB_TMP_DIR
+      - name: HDF5_USE_FILE_LOCKING
+        value: "FALSE"
+      - name: SINGULARITYENV_HDF5_USE_FILE_LOCKING
+        value: $HDF5_USE_FILE_LOCKING
     params:
       metadata_strategy: "extended"
       tmp_dir: true

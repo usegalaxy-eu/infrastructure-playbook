@@ -42,7 +42,7 @@ fsm_cron_tasks:
     job: ". {{ galaxy_root }}/.bashrc && docker system prune -f > /dev/null"
     user: "{{ fsm_galaxy_user.username }}"
   gxadmin:
-    enable: true
+    enable: false
     name: "Gxadmin Galaxy clean up"
     minute: 0
     hour: 0
@@ -323,7 +323,7 @@ galaxy_instance_hostname: usegalaxy.eu
 galaxy_config_style: yaml
 
 galaxy_repo: "https://github.com/usegalaxy-eu/galaxy.git"
-galaxy_commit_id: "release_24.1_europe"
+galaxy_commit_id: "release_24.2_europe"
 galaxy_force_checkout: true # discard any modified files
 #galaxy_admin_email_from: 'noreply@usegalaxy.eu'
 
