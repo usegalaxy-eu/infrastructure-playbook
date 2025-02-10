@@ -70,23 +70,23 @@ tools:
         # https://htcondor.readthedocs.io/en/latest/users-manual/time-scheduling-for-job-execution.html
         if: True
         execute: |
-        from datetime import datetime
+          from datetime import datetime
 
-        strike_start = datetime(2025,2,14,7,0)
-        strike_end = datetime(2025,2,14,20,0)
+          strike_start = datetime(2025,2,14,7,0)
+          strike_end = datetime(2025,2,14,20,0)
 
-        training_roles = (
-            [r.name for r in user.all_roles()
-            if not r.deleted and r.name in
-            ("training-master2025", "training-metap-intro")]
-            if user is not None else []
-        )
+          training_roles = (
+              [r.name for r in user.all_roles()
+              if not r.deleted and r.name in
+              ("training-master2025", "training-metap-intro")]
+              if user is not None else []
+          )
 
-        now = datetime.now()
-        if strike_start <= now < strike_end and not training_roles:
-            entity.params["deferral_time"] = f"{int(strike_end.timestamp())}"
-            entity.params["deferral_prep_time"] = "60"
-            entity.params["deferral_window"] = "864000"  # 10 days
+          now = datetime.now()
+          if strike_start <= now < strike_end and not training_roles:
+              entity.params["deferral_time"] = f"{int(strike_end.timestamp())}"
+              entity.params["deferral_prep_time"] = "60"
+              entity.params["deferral_window"] = "864000"  # 10 days
     rank: |
       final_destinations = helpers.weighted_random_sampling(candidate_destinations)
       final_destinations
