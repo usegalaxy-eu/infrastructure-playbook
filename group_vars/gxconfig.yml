@@ -1011,7 +1011,7 @@ base_app_main: &BASE_APP_MAIN
   # option ``interactivetoolsproxy_map``, which overrides this one.
   # The value of this option will be resolved with respect to
   # <data_dir>.
-  interactivetools_map: "{{ galaxy_mutable_data_dir }}/interactivetools_map.sqlite"
+  #interactivetools_map: interactivetools_map.sqlite
 
   # Use a database supported by SQLAlchemy as map for the
   # interactivetool proxy. When this option is set, the value of
@@ -1021,7 +1021,7 @@ base_app_main: &BASE_APP_MAIN
   # Mappings are written to the table "gxitproxy" within the database.
   # This value cannot match ``database_connection`` nor
   # ``install_database_connection``.
-  #interactivetoolsproxy_map: null
+  interactivetoolsproxy_map: "{{ interactivetools_db_connection }}"
 
   # Prefix to use in the formation of the subdomain or path for
   # interactive tools
