@@ -1,0 +1,256 @@
+---
+# Certbot
+certbot_auth_method: --webroot
+certbot_well_known_root: /srv/nginx/_well-known_root
+certbot_share_key_users:
+  - nginx
+certbot_virtualenv_package_name: python3-virtualenv
+certbot_post_renewal: |
+    systemctl restart nginx || true
+certbot_domains:
+  - "{{ grafana_domain }}"
+  - "{{ grafana_on_call_domain }}"
+#hostname: "{{ grafana_domain }}"
+# NGINX
+nginx_enable_default_server: false
+nginx_servers:
+  - redirect-ssl
+nginx_ssl_servers:
+  - grafana-ssl
+
+nginx_conf_http:
+  gzip: "on"
+  gzip_vary: "on"
+  gzip_min_length: 256
+  gzip_proxied: any
+  gzip_comp_level: 6
+  gzip_http_version: "1.1"
+  gzip_types: text/plain text/css text/xml text/javascript application/javascript application/x-javascript application/xml image/png image/jpg
+  gzip_disable: '"MSIE [1-6]\."'
+  client_max_body_size: 1g
+
+nginx_remove_default_vhost: true
+
+# Nginx Letsencrypt bindings
+nginx_ssl_role: usegalaxy-eu.certbot
+nginx_conf_ssl_certificate: /etc/ssl/certs/fullchain.pem
+nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
+
+#setting this to false will remove the on call compose services and it's compose directory
+grafana_on_call: true
+grafana_on_call_domain: oncall.galaxyproject.eu
+grafana_on_call_path: /data/grafana-on-call
+# Grafana
+grafana_version: "11.4.0"
+
+grafana_address: "127.0.0.1"
+grafana_domain: stats.galaxyproject.eu
+grafana_url: "https://{{ grafana_domain }}"
+
+grafana_users:
+  default_theme: "light"
+
+grafana_security:
+  admin_user: admin
+  admin_password: "{{ vault_grafana_auth_admin_password }}"
+  allow_embedding: "true"
+  cookie_secure: "true"
+grafana_security_secret_key: "{{ vault_grafana_security_secret_key }}"
+
+grafana_database:
+  type: postgres
+  host: sn05.galaxyproject.eu:5432
+  name: "{{ vault_grafana_database_name }}"
+  user: "{{ vault_grafana_database_user }}"
+  password: "{{ vault_grafana_database_password }}"
+
+grafana_auth:
+  anonymous:
+    enabled: "true"
+    org_name: "UseGalaxy.eu"
+    org_role: "Viewer"
+
+  github:
+    enabled: "true"
+    allow_sign_up: "true"
+    client_id: "{{ vault_grafana_auth__github_client_id }}"
+    client_secret: "{{ vault_grafana_auth__github_client_secret }}"
+    scopes: "user:email,read:org"
+    auth_url: "https://github.com/login/oauth/authorize"
+    token_url: "https://github.com/login/oauth/access_token"
+    api_url: "https://api.github.com/user"
+    allowed_organisations: "usegalaxy.eu galaxyproject"
+    role_attribute_path: contains(groups[*], '@usegalaxy-eu/admingrafana') && 'GrafanaAdmin' || 'Viewer'
+grafana_auth_admin_password: "{{ vault_grafana_auth_admin_password }}"
+
+grafana_image_storage:
+  provider: local
+
+grafana_panels:
+  disable_sanitize_html: "true"
+
+# This setting is not yet used by the role `grafana.grafana.grafana`. It will
+# be when PR [1] is merged.
+#
+# References:
+# - [1] https://github.com/grafana/grafana-ansible-collection/pull/215
+grafana_unified_alerting:
+  enabled: "true"
+  execute_alerts: "true"
+
+# Legacy alerting was removed in Grafana 11 [1]. However, the Ansible role
+# `grafana.grafana.grafana` still populates the [alerting] section [2] unless
+# `grafana_alerting` is empty. The setting can be removed from this file as
+# soon as PR [3] is merged.
+#
+# References:
+# - [1] https://grafana.com/blog/2024/04/04/legacy-alerting-removal-what-you-need-to-know-about-upgrading-to-grafana-alerting/
+# - [2] https://github.com/grafana/grafana-ansible-collection/blob/2e7fd0591d8ad1700186174213b8142047525b88/roles/grafana/templates/grafana.ini.j2#L116-L127
+# - [3] https://github.com/grafana/grafana-ansible-collection/pull/215
+grafana_alerting: {}
+
+grafana_plugins:
+  - grafana-worldmap-panel
+  - grafana-piechart-panel
+  - natel-discrete-panel
+
+grafana_dashboards_dir: "files/grafana"
+
+grafana_datasources:
+  - name: Galaxy
+    type: influxdb
+    access: proxy
+    url: "{{ influxdb.url }}"
+    isDefault: true
+    version: 1
+    editable: false
+    database: galaxy
+    user: "{{ influxdb.grafana.username }}"
+    password: "{{ influxdb.grafana.password }}"
+    uid: P9B81C0353945995B
+  - name: Galaxy Historical
+    type: influxdb
+    access: proxy
+    url: "{{ influxdb.url }}"
+    version: 1
+    editable: false
+    database: galaxy_stats
+    user: "{{ influxdb.grafana.username }}"
+    password: "{{ influxdb.grafana.password }}"
+    uid: PEBD82B4560F292BD
+  - name: GRT Tool Usage
+    type: influxdb
+    access: proxy
+    url: "{{ influxdb.url }}"
+    version: 1
+    editable: false
+    database: grt
+    user: "{{ influxdb.grafana.username }}"
+    password: "{{ influxdb.grafana.password }}"
+    uid: PA4245ACF5D5D4D2B
+  - name: InfluxDB - internal
+    type: influxdb
+    access: proxy
+    url: "{{ influxdb.url }}"
+    version: 1
+    editable: false
+    database: _internal
+    user: "{{ influxdb.grafana.username }}"
+    password: "{{ influxdb.grafana.password }}"
+    uid: P97EDD1499B7D2981
+  - name: Notifications
+    type: influxdb
+    access: proxy
+    url: "{{ influxdb.url }}"
+    version: 1
+    editable: false
+    database: notifications
+    user: "{{ influxdb.grafana.username }}"
+    password: "{{ influxdb.grafana.password }}"
+    uid: P788011833A5A0F22
+
+hxr_monitor_ssl_expiry:
+  # A couple of usegalaxy.eu subdomains.
+  - usegalaxy.eu:443
+  - metagenomics.usegalaxy.eu:443
+  # Proxy + Proxied services
+  - build.galaxyproject.eu:443
+  - influxdb.galaxyproject.eu:8086
+  - influxdb.galaxyproject.eu:443
+  - stats.galaxyproject.eu:443
+  - telescope.galaxyproject.eu:443
+  - toolshed.g2.bx.psu.edu:443
+  - galaxyproject.org:443
+  - usegalaxy.org:443
+
+
+telegraf_plugins_extra:
+  github:
+    plugin: github
+    config:
+      - repositories = ["galaxyproject/galaxy", "galaxyproject/training-material", "usegalaxy-eu/gxadmin"]
+      - interval = "6h"
+  simple_nagios:
+    plugin: "exec"
+    config:
+      - commands = ["/usr/bin/simple-nagios"]
+      - timeout = "120s"
+      - data_format = "influx"
+      - interval = "1m"
+
+  #galaxy_jobs:
+    #plugin: "exec"
+    #config:
+      #- commands = ["/usr/local/bin/simple-galaxy"]
+      #- timeout = "180s"
+      #- data_format = "influx"
+      #- interval = "15m"
+
+#galaxy_test_url: https://usegalaxy.eu
+#galaxy_test_user:
+    #api_key: "{{ vault_galaxy_test_user__api_key }}"
+    #username: bot@usegalaxy.eu
+    #password: "{{ vault_galaxy_test_user__password }}"
+    #handlers:
+        #- "handler0"
+        #- "handler1"
+        #- "handler2"
+        #- "handler3"
+        #- "handler4"
+        #- "handler5"
+        #- "handler6"
+        #- "handler7"
+        #- "handler8"
+        #- "handler9"
+        #- "handler10"
+        #- "handler11"
+        #- "drmaa"
+        #- "condor"
+
+galaxy_nagios_urls:
+  ftp_tests: []
+  http_tests:
+    - name: home_nossl
+      url: "http://usegalaxy.eu"
+      code: 301
+    - name: home
+      url: "https://usegalaxy.eu"
+      code: 200
+    - name: hicexplorer
+      url: "https://hicexplorer.usegalaxy.eu"
+      code: 200
+    - name: stats
+      url: "https://stats.galaxyproject.eu"
+      code: 200
+    - name: grt
+      url: "https://telescope.galaxyproject.eu"
+      code: 200
+    - name: build
+      url: "https://build.galaxyproject.eu"
+      code: 200
+    - name: influx
+      url: "{{ influxdb.url }}/ping"
+      code: 204
+    - name: phinch
+      url: "https://usegalaxy.eu/phinch/index.html"
+      code: 200

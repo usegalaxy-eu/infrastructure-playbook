@@ -17,7 +17,7 @@ server {
 	access_log /var/log/nginx/interactive.log;
 
 	location / {
-		proxy_pass http://127.0.0.1:8800;
+		proxy_pass http://127.0.0.1:{{ gie_proxy_port }};
 		proxy_redirect off;
 		proxy_http_version 1.1;
 		proxy_set_header Host $host;
