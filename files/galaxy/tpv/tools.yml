@@ -1523,3 +1523,11 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/optitype/optitype/.*:
     cores: 12
     mem: 256
+
+  # ppanggolin all tries to remove TMP folders, on NFS this does not always work, so we run this tool in singularity with internal (non-NFS) TMP
+  toolshed.g2.bx.psu.edu/repos/iuc/ppanggolin_all/ppanggolin_all/.*:
+    scheduling:
+      require:
+        - singularity
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
