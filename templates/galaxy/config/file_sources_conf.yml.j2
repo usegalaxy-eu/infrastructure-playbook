@@ -1,30 +1,30 @@
-- type: dropbox
-  id: dropbox
-  label: Your Dropbox Files
-  doc: Your Dropbox files - configure an access token via the user preferences
-  accessToken: ${user.preferences['dropbox|access_token']}
+#- type: dropbox
+#  id: dropbox
+#  label: Your Dropbox Files
+#  doc: Your Dropbox files - configure an access token via the user preferences
+#  accessToken: ${user.preferences['dropbox|access_token']}
 
-- type: webdav
-  id: b2drop
-  doc: B2Drop WebDAV server
-  url: https://b2drop.eudat.eu
-  root: /remote.php/dav/files/${user.preferences['b2drop|username']}/
-  use_temp_files: true
-  temp_path: /data/jwd04/tmp
-  login: ${user.preferences['b2drop|username']} 
-  password: ${user.preferences['b2drop|password']}
+#- type: webdav
+#  id: b2drop
+#  doc: B2Drop WebDAV server
+#  url: https://b2drop.eudat.eu
+#  root: /remote.php/dav/files/${user.preferences['b2drop|username']}/
+#  use_temp_files: true
+#  temp_path: /data/jwd04/tmp
+#  login: ${user.preferences['b2drop|username']} 
+#  password: ${user.preferences['b2drop|password']}
 
-- type: webdav
-  id: generic_nextcloud
-  label: Nextcloud/ownCloud
-  doc: You personal Cloud files
-  writable: true
-  url: ${user.preferences['nextcloud|url']}
-  root: ${user.preferences['nextcloud|root']}
-  use_temp_files: true
-  temp_path: /data/jwd04/tmp
-  login: ${user.preferences['nextcloud|username']}
-  password: ${user.preferences['nextcloud|password']}
+#- type: webdav
+#  id: generic_nextcloud
+#  label: Nextcloud/ownCloud
+#  doc: You personal Cloud files
+#  writable: true
+#  url: ${user.preferences['nextcloud|url']}
+#  root: ${user.preferences['nextcloud|root']}
+#  use_temp_files: true
+#  temp_path: /data/jwd04/tmp
+#  login: ${user.preferences['nextcloud|username']}
+#  password: ${user.preferences['nextcloud|password']}
 
 - type: webdav
   id: erga_nextcloud
@@ -111,15 +111,15 @@
   config_path: ""
   port: 2222
 
-- type: s3fs
-  label: Generic S3 instance
-  id: generic_s3
-  doc: Access to a generic S3 endpoint.
-  endpoint_url: ${user.preferences['generic_s3|endpoint_url']}
-  bucket: ${user.preferences['generic_s3|bucket']}
-  writable: true
-  secret: ${user.preferences['generic_s3|secret']}
-  key: ${user.preferences['generic_s3|key']}
+#- type: s3fs
+#  label: Generic S3 instance
+#  id: generic_s3
+#  doc: Access to a generic S3 endpoint.
+#  endpoint_url: ${user.preferences['generic_s3|endpoint_url']}
+#  bucket: ${user.preferences['generic_s3|bucket']}
+#  writable: true
+#  secret: ${user.preferences['generic_s3|secret']}
+#  key: ${user.preferences['generic_s3|key']}
 
 - type: s3fs
   label: Genome Ark
@@ -288,12 +288,12 @@
   public_name: ${user.preferences['zenodo_sandbox|public_name']}
   writable: true
 
-- type: onedata
-  id: onedata1
-  label: Onedata
-  doc: Your Onedata files - configure an access token via user preferences
-  accessToken: ${user.preferences['onedata|access_token']}
-  onezoneDomain: ${user.preferences['onedata|onezone_domain']}
+#- type: onedata
+#  id: onedata1
+#  label: Onedata
+#  doc: Your Onedata files - configure an access token via user preferences
+#  accessToken: ${user.preferences['onedata|access_token']}
+#  onezoneDomain: ${user.preferences['onedata|onezone_domain']}
 
 - type: onedata
   id: gtn_public_onedata
