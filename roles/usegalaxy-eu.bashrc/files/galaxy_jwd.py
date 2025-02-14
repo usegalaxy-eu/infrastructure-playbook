@@ -307,8 +307,9 @@ def parse_object_store(object_store_conf: str) -> dict:
         # Get the extra_dir's path for each backend if type is "job_work"
         for extra_dir in backend.getElementsByTagName("extra_dir"):
             if extra_dir.getAttribute("type") == "job_work":
-                backends[backend_id]["job_work_path"] = \
-                    extra_dir.getAttribute("path")
+                backends[backend_id]["job_work_path"] = extra_dir.getAttribute(
+                    "path"
+                )
     return backends
 
 
@@ -362,8 +363,10 @@ def decode_path(
 
     # Check if object_store_id exists in our object store config
     if not backend_info:
-        print(f"Skipping backend '{object_store_id}' as it does not exist in"
-              f" the object_store_conf.xml file.")
+        print(
+            f"Skipping backend '{object_store_id}' as it does not exist in"
+            f" the object_store_conf.xml file."
+        )
         return None
 
     # Pulsar embedded jobs uses the staging directory and this has a different
