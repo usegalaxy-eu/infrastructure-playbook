@@ -1,7 +1,7 @@
 tcp:
   routers:
     mq-rtr:
-      rule: "HostSNI(`mq-proxy.galaxyproject.eu`)"
+      rule: "HostSNI(`mq-proxy.galaxyproject.eu`) || ClientIP(`132.230.224.103`)" # Add the IP for every host
       service: "mq"
       entryPoints:
         - amqps
