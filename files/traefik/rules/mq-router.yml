@@ -1,0 +1,11 @@
+tcp:
+  routers:
+    mq-rtr:
+      rule: "HostSNI(`mq-proxy.galaxyproject.eu`)"
+      service: "mq"
+      entryPoints:
+        - amqps
+      tls:
+        certResolver: "route53"
+        domains:
+          - main: "mq-proxy.galaxyproject.eu"

@@ -71,6 +71,7 @@ traefik_containers:
       - --global.checkNewVersion=false
       - --entryPoints.web.address=:80
       - --entryPoints.websecure.address=:443
+      - --entryPoints.amqps.address=:5671
       - --entryPoints.web.http.redirections.entryPoint.to=websecure
       - --entryPoints.web.http.redirections.entryPoint.scheme=https
       - --entryPoints.metrics.address=:8082
@@ -146,6 +147,10 @@ traefik_containers:
         mode: host
       - target_port: 443
         published_port: 443
+        protocol: tcp
+        mode: host
+      - target_port: 5671
+        published_port: 5671
         protocol: tcp
         mode: host
       - target_port: 8082

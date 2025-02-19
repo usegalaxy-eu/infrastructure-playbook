@@ -17,6 +17,18 @@
         - policycoreutils-python-utils
         - python3-pip
 
+    - name: Configure Firewall
+      ansible.builtin.firewalld:
+        service: "{{ item }}"
+        permanent: true
+        zone: public
+      with_items:
+        - ssh
+        - amqps
+        - http
+        - https
+        - ntp
+
     - name: Install python docker
       become: true
       ansible.builtin.pip:
