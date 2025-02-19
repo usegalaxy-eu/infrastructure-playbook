@@ -18,10 +18,11 @@
         - python3-pip
 
     - name: Configure Firewall
-      ansible.builtin.firewalld:
+      ansible.posix.firewalld:
         service: "{{ item }}"
         permanent: true
         zone: public
+        state: enabled
       with_items:
         - ssh
         - amqps
