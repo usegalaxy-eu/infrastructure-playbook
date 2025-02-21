@@ -16,13 +16,18 @@
 #     message: <strong>We recommend using Diamond instead.</strong>
 #     class: warning
 
-toolmsg_messages:
-  - tool_id: toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastp_wrapper
-    message: >
-      <strong>We recommend using
-      <a href="https://usegalaxy.eu/?tool_id=bg_diamond">Diamond</a>
-      instead. Pairwise alignment of proteins and translated DNA can be up to 100x-10,000x faster than BLAST.</strong>
-    class: warning
+# Example 2: Display a warning message for the tool ncbi_blastp_wrapper, the message will be in bold format and will have a link to the Diamond tool
+# toolmsg_messages:
+#   - tool_id: toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastp_wrapper
+#     message: >
+#       <strong>We recommend using
+#       <a href="https://usegalaxy.eu/?tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fbgruening%2Fdiamond%2Fbg_diamond%2F2.1.11%2Bgalaxy0&version=latest"
+#           target="_blank"
+#       >
+#         Diamond
+#       </a>
+#       instead.</strong>
+#     class: warning
 
 toolmsg_messages:
   - tool_id: toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc
@@ -30,4 +35,10 @@ toolmsg_messages:
       <strong>We recommend using
       <a href="https://usegalaxy.eu/?tool_id=falco">Falco</a>
       instead. Falco is 3 times faster and offers the same functionality as FASTQC.</strong>
+    class: warning
+  - tool_id: toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastp_wrapper
+    message: >
+      <strong>We recommend using
+      <a href="https://usegalaxy.eu/?tool_id=bg_diamond">Diamond</a>
+      instead. Pairwise alignment of proteins and translated DNA can be up to 100x-10,000x faster than BLAST.</strong>
     class: warning
