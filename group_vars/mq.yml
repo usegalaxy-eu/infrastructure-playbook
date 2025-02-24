@@ -1,14 +1,14 @@
 ---
-hostname: mq-proxy.galaxyproject.eu
+hostname: mq.galaxyproject.eu
 
 # create_user task
 handy_groups:
   - group_name: rabbitmq
-    group_gid: 999
+    group_gid: 101
 
 handy_users:
   - user_name: rabbitmq
-    user_uid: 999
+    user_uid: 100
     user_group: rabbitmq
 
 # Certbot
@@ -153,7 +153,7 @@ rabbitmq_config:
 
 rabbitmq_container:
   name: rabbit_hole
-  image: rabbitmq:3.9.11
+  image: rabbitmq:4.0.6-alpine
   hostname: "{{ inventory_hostname }}"
 
 # Redis
