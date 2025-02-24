@@ -1,11 +1,9 @@
 tcp:
   routers:
     mq-rtr:
-      rule: "HostSNI(`mq-proxy.galaxyproject.eu`) || ClientIP(`132.230.224.103`)" # Add the IP for every host
+      rule: "HostSNI(`*`)" # || ClientIP(`132.230.224.103`)" Allow by host IP
       service: "mq"
       entryPoints:
         - amqps
       tls:
-        certResolver: "route53"
-        domains:
-          - main: "mq-proxy.galaxyproject.eu"
+        passthrough: true
