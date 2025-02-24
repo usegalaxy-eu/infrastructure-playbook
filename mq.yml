@@ -2,23 +2,22 @@
 - name: MQ
   hosts: mq
   become: true
-  vars:
-    hostname: mq.galaxyproject.eu
   vars_files:
     - secret_group_vars/all.yml
+    - secret_group_vars/aws.yml # AWS creds
     - secret_group_vars/pulsar.yml     # Pulsar + MQ Connections
   collections:
     - devsec.hardening
   pre_tasks:
-    - name: Set default version of Python
-      alternatives:
-        name: python
-        path: /usr/bin/python3
+    #    - name: Set default version of Python
+    #      alternatives:
+    #        name: python
+    #        path: /usr/bin/python3
     - name: Install docker pip package
       ansible.builtin.pip:
         name: docker
     - name: Set docker_users (Docker role)
-      set_fact:
+      ansible.builtin.set_fact:
         docker_users: "centos"
     - name: Configure SELinux
       ansible.posix.seboolean:
@@ -51,13 +50,23 @@
         - amqps
         - https
         - http
-    - name: Create redis db dir
-      ansible.builtin.file:
-        path: /var/lib/redis
-        owner: redis
+    - name: Create redis group
+      ansible.builtin.group:
+        name: redis
+    - name: Create redis user
+      ansible.builtin.user:
+        name: redis
         group: redis
-        state: directory
-        mode: 755
+        home: /var/lib/redis
+        create_home: true
+        shell: /bin/false
+        #    - name: Create redis db dir
+        #      ansible.builtin.file:
+        #        path: /var/lib/redis
+        #        owner: redis
+        #        group: redis
+        #        state: directory
+        #        mode: 755
     - name: Create redis log dir
       ansible.builtin.file:
         path: /var/log/redis
@@ -85,6 +94,7 @@
     - influxdata.chrony         # Keep our time in sync.
     # Applications
     - geerlingguy.docker
+    - hxr.aws-cli # Setup the AWS client that will be needed for route53 authentication of certbot. MUST come before nginx role
     - galaxyproject.nginx
     - usegalaxy_eu.rabbitmqserver
     - geerlingguy.redis
