@@ -22,11 +22,11 @@ def per_host_tool_labels( context, label ):
     # hide genomics label in the single cell subdomain
     if label.id == "genomics_label" and subdomain == "singlecell":
         return False
-        
+
     # show earth-system labels only in that subdomain
     if label.id.startswith("earth-system-label"):
         return subdomain == "earth-system"
-        
+
     # Core tools used by all virtual hosts.
     valid_labels = [ "file_meta_label", "general_text_label"]
     general_ngs_labels = [ "genomics_label" ]
@@ -113,6 +113,10 @@ DOMAIN_SECTIONS = {
         "multiple_alignments", "assembly", "annotation",
         "graph_display_data", "metagenomic_analysis", "mothur", "qiime",
         "biom_manipulation", "interactivetools", "nanopore", "ncbi_blast", 'metabolomics'],
+    'microbiology': GENERAL_NGS_SECTIONS + ["fasta_fastq_manipulation",
+        "multiple_alignments", "assembly", "annotation",
+        "graph_display_data", "metagenomic_analysis", "mothur", "qiime",
+        "biom_manipulation", "interactivetools", "nanopore", "ncbi_blast", 'metabolomics'],
     'rna': GENERAL_NGS_SECTIONS + ["rna_seq", "annotation", "rna_analysis",
         "graph_display_data"],
     'singlecell': [
@@ -159,11 +163,11 @@ DOMAIN_SECTIONS = {
     'materials': ['muon_spectroscopy', 'xas'],
     'aqua': ["climate_analysis", "gis_data_handling", "graph_display_data", "interactivetools", "machine_learning"],
     'earth-system': [
-        "earth-system-section-watercoastal", 
-        "earth-system-section-earthcritical", 
-        "earth-system-section-volcano", 
-        "earth-system-section-biogeo", 
-        "earth-system-section-marineomics", 
+        "earth-system-section-watercoastal",
+        "earth-system-section-earthcritical",
+        "earth-system-section-volcano",
+        "earth-system-section-biogeo",
+        "earth-system-section-marineomics",
         "earth-system-section-interactivetools",
         "biodiversity_data_exploration",
         "annotation",

@@ -287,16 +287,6 @@ server {
 	add_header X-Robots-Tag none;
 
 	client_max_body_size 1G; # aka max upload size, defaults to 1M
-
-	# BY-COVID federated analysis demonstration data (restricted access demo)
-	location /federated_analysis_data {
-		alias /data/dnb01/federated_analysis_demo_data/;
-		allow 10.5.68.0/24;
-		# BE instance IPs
-		allow 10.113.3.8;
-		allow 10.113.3.13;
-		deny all;
-	}
 }
 
 server {
@@ -306,4 +296,14 @@ server {
     server_name humancellatlas.usegalaxy.eu;
 
     return 302 $scheme://singlecell.usegalaxy.eu$request_uri;
+}
+
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    server_name microgalaxy.usegalaxy.eu microbiome.usegalaxy.eu;
+
+    return 302 $scheme://microbiology.usegalaxy.eu$request_uri;
 }
