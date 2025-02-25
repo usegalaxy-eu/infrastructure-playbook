@@ -80,6 +80,11 @@ tools:
     inherits: interactive_tool
     cores: 1
     mem: 4
+    params:
+      docker_run_extra_arguments: "-e NB_UID=999"
+    env:
+      HOME: /home/jovyan
+
   interactive_tool_divand:
     inherits: interactive_tool
     cores: 1
