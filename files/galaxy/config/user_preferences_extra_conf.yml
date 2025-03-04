@@ -33,49 +33,49 @@ preferences:
                   - [日本語, ja]
 
     # Used in file_sources_conf.yml
-    dropbox:
-        description: Your Dropbox account
-        inputs:
-            - name: access_token
-              label: Dropbox access token
-              type: password
-              required: False
+    #dropbox:
+    #    description: Your Dropbox account
+    #    inputs:
+    #        - name: access_token
+    #          label: Dropbox access token
+    #          type: password
+    #          required: False
 
     # Used in file_sources_conf.yml
-    nextcloud:
-        description: Your Personal Nextcloud / ownCloud account
-        inputs:
-            - name: url
-              label: Server Domain (e.g. https://myowncloud.org)
-              type: text
-              required: False
-            - name: root
-              label: Server Path (should end with /remote.php/webdav, e.g. /a/sub/path/remote.php/webdav)
-              type: text
-              required: False
-            - name: username
-              label: Username
-              type: text
-              required: False
-            - name: password
-              label: Password
-              type:  password
-              # for storing the password in a vault (instead of plaintext in the DB)
-              # store: vault
-              required: False
+    #nextcloud:
+    #    description: Your Personal Nextcloud / ownCloud account
+    #    inputs:
+    #        - name: url
+    #          label: Server Domain (e.g. https://myowncloud.org)
+    #          type: text
+    #          required: False
+    #        - name: root
+    #          label: Server Path (should end with /remote.php/webdav, e.g. /a/sub/path/remote.php/webdav)
+    #          type: text
+    #          required: False
+    #        - name: username
+    #          label: Username
+    #          type: text
+    #          required: False
+    #        - name: password
+    #          label: Password
+    #          type:  password
+    #          # for storing the password in a vault (instead of plaintext in the DB)
+    #          # store: vault
+    #          required: False
 
-    invenio:
-        description: Your Invenio RDM Integration Settings
-        inputs:
-            - name: token
-              label: Personal Token used to create draft records and to upload files
-              type: secret
-              store: vault # Requires setting up vault_config_file in your galaxy.yml
-              required: False
-            - name: public_name
-              label: Creator name to associate with new records (formatted as "Last name, First name"). If left blank "Anonymous Galaxy User" will be used. You can always change this by editing your record directly.
-              type: text
-              required: False
+    #invenio:
+    #    description: Your Invenio RDM Integration Settings
+    #    inputs:
+    #        - name: token
+    #          label: Personal Token used to create draft records and to upload files
+    #          type: secret
+    #          store: vault # Requires setting up vault_config_file in your galaxy.yml
+    #          required: False
+    #        - name: public_name
+    #          label: Creator name to associate with new records (formatted as "Last name, First name"). If left blank "Anonymous Galaxy User" will be used. You can always change this by editing your record directly.
+    #          type: text
+    #          required: False
 
     zenodo:
         description: Your Zenodo Integration Settings
@@ -104,22 +104,22 @@ preferences:
               required: False
 
     # Used in file_sources_conf.yml
-    onedata:
-        description: Your Onedata account
-        inputs:
-            - name: onezone_domain
-              label: Domain of the Onezone service (e.g. datahub.egi.eu). The minimal supported Onezone version is 21.02.4.
-              type: text
-              required: False
-            - name: access_token
-              label: Your access token, suitable for REST API access in a Oneprovider service
-              type: password
-              required: False
-            - name: disable_tls_certificate_validation
-              label: Allow connection to Onedata servers that do not present trusted SSL certificates. SHOULD NOT be used unless you really know what you are doing.
-              type: boolean
-              required: False
-              value: False
+    #onedata:
+    #    description: Your Onedata account
+    #    inputs:
+    #        - name: onezone_domain
+    #          label: Domain of the Onezone service (e.g. datahub.egi.eu). The minimal supported Onezone version is 21.02.4.
+    #          type: text
+    #          required: False
+    #        - name: access_token
+    #          label: Your access token, suitable for REST API access in a Oneprovider service
+    #          type: password
+    #          required: False
+    #        - name: disable_tls_certificate_validation
+    #          label: Allow connection to Onedata servers that do not present trusted SSL certificates. SHOULD NOT be used unless you really know what you are doing.
+    #          type: boolean
+    #          required: False
+    #          value: False
 
     distributed_arc_compute:
         description: The URL to your ARC remote HPC compute resource.
@@ -208,25 +208,25 @@ preferences:
               required: False
               value: https://auth.quantum-computing.ibm.com/api
 
-    generic_s3:
-        description: Your personal S3 account for data import
-        inputs:
-            - name: endpoint_url
-              label: Server Domain (e.g. byos.vm.fedcloud.eu)
-              type: text
-              required: False
-            - name: bucket
-              label: S3 Bucket (e.g. my-s3-bucket)
-              type: text
-              required: False
-            - name: secret
-              label: S3 secret (e.g. SuPerP4ssWord)
-              type: password
-              required: False
-            - name: key
-              label: S3 access key (e.g. project01)
-              type: password
-              required: False
+    #generic_s3:
+    #    description: Your personal S3 account for data import
+    #    inputs:
+    #        - name: endpoint_url
+    #         label: Server Domain (e.g. byos.vm.fedcloud.eu)
+    #         type: text
+    #         required: False
+    #       - name: bucket
+    #         label: S3 Bucket (e.g. my-s3-bucket)
+    #         type: text
+    #         required: False
+    #       - name: secret
+    #         label: S3 secret (e.g. SuPerP4ssWord)
+    #         type: password
+    #         required: False
+    #       - name: key
+    #         label: S3 access key (e.g. project01)
+    #         type: password
+    #         required: False
 
     # Require to attach pulsar endpoint to the Pulsar Network
     byoc_pulsar:
