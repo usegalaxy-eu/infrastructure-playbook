@@ -1226,7 +1226,7 @@ tools:
   braker_tool:
     abstract: true
     rules:
-      - id: braker_genome_sequence_length_rule
+      - id: braker_genome_sequence_count_rule
         if: |
           options = job.get_param_values(app)
           sequences = options["query_type"]["genome"].metadata.get("sequences")
