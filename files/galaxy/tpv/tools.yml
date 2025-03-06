@@ -1223,7 +1223,19 @@ tools:
       require:
         - singularity
 
+  braker_tool:
+    abstract: true
+    rules:
+      - id: braker_genome_sequence_length_rule
+        if: |
+          options = job.get_param_values(app)
+          sequences = options["query_type"]["genome"].metadata.get("sequences")
+          sequences > 100000
+        fail: |
+          The number of sequences in your genome file is too large (>100K) for this tool.
+
   toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.6.*:
+    inherits: braker_tool
     mem: 4
     cores: 6
     params:
@@ -1233,6 +1245,7 @@ tools:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.7.*:
+    inherits: braker_tool
     mem: 4
     cores: 6
     env:
@@ -1246,6 +1259,7 @@ tools:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.8.*:
+    inherits: braker_tool
     cores: 6
     mem: 4
     params:
@@ -1257,6 +1271,7 @@ tools:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.3.*:
+    inherits: braker_tool
     mem: 4
     cores: 6
     params:
@@ -1267,6 +1282,7 @@ tools:
 
   # GeneMark is a pain and needs special casing
   toolshed.g2.bx.psu.edu/repos/genouest/braker/braker/.*:
+    inherits: braker_tool
     mem: 4
     cores: 6
     env:
