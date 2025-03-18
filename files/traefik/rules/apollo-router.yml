@@ -9,6 +9,8 @@ http:
         certResolver: "route53"
         domains:
           - main: "usegalaxy.eu"
+            sans:
+              - "*.usegalaxy.eu"
     apollo-api-rtr:
       rule: "(Host(`usegalaxy.eu`) || HostRegexp(`^.+\\.usegalaxy\\.eu`)) && PathPrefix(`/apollo_api`)"
       middleware:
@@ -23,3 +25,5 @@ http:
         certResolver: "route53"
         domains:
           - main: "usegalaxy.eu"
+            sans:
+              - "*.usegalaxy.eu"
