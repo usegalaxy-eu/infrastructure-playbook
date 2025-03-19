@@ -30,6 +30,15 @@ autofs_mount_points:
 # Miniconda role variables (galaxyproject.miniconda)
 conda_prefix: /opt/miniconda
 
+# FirewallD
+firewall_internal_services:
+  - http
+  - https
+  - ssh
+firewall_public_services:
+  - http
+  - https
+
 # fs-maintenance
 fsm_maintenance_dir: "/data/dnb01/maintenance"
 fsm_cron_tasks:
