@@ -290,6 +290,13 @@ telegraf_plugins_extra:
       - timeout = "60s"
       - data_format = "influx"
       - interval = "2m"
+  galaxy_destination_queue_run_time: # This is used for the TPV Broker.
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery destination-queue-run-time --seconds --older-than=90"]
+      - timeout = "30m"
+      - data_format = "influx"
+      - interval = "24h"
 
 
 # Role: hxr.monitor-cluster
