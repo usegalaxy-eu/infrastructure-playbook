@@ -18,9 +18,6 @@ http:
       service: apollo
       entryPoints:
         - websecure
-      serversTransport:
-        forwardingTimeouts:
-          idleConnTimeout: 300s
       tls:
         certResolver: "route53"
         domains:
