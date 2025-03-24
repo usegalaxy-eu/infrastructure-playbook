@@ -35,9 +35,17 @@ firewall_internal_services:
   - http
   - https
   - ssh
+  - mosh
 firewall_public_services:
   - http
   - https
+firewall_mosh_service: >
+  <?xml version="1.0" encoding="utf-8"?>
+  <service>
+    <short>MOSH</short>
+    <description>Mosh (mosh.mit.edu) is a free replacement for SSH that allows roaming and supports intermittent connectivity.</description>
+    <port protocol="udp" port="60001-60100"/>
+  </service>
 
 # fs-maintenance
 fsm_maintenance_dir: "/data/dnb01/maintenance"
