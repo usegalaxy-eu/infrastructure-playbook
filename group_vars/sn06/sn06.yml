@@ -24,9 +24,20 @@ autofs_mount_points:
   - gxkey
   - jwd
   - usrlocal
+  - cache
+  - misc
 
 # Miniconda role variables (galaxyproject.miniconda)
 conda_prefix: /opt/miniconda
+
+# FirewallD
+firewall_internal_services:
+  - http
+  - https
+  - ssh
+firewall_public_services:
+  - http
+  - https
 
 # fs-maintenance
 fsm_maintenance_dir: "/data/dnb01/maintenance"
@@ -216,7 +227,7 @@ galaxy_systemd_gunicorn_timeout: 600
 galaxy_systemd_handlers: 6
 galaxy_systemd_workflow_schedulers: 3
 
-galaxy_systemd_gunicorn_env: "{{ apollo_env }}"
+galaxy_systemd_gunicorn_env: "{{ apollo_env }} GALAXY_DROPBOX_APP_CLIENT_ID={{ dropbox_app_client_id }} GALAXY_DROPBOX_APP_CLIENT_SECRET={{ dropbox_app_client_secret }}"
 galaxy_systemd_handler_env: "{{ galaxy_systemd_gunicorn_env }}"
 galaxy_systemd_workflow_scheduler_env: "{{ galaxy_systemd_gunicorn_env }}"
 

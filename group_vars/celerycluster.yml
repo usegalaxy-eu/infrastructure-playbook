@@ -34,6 +34,8 @@ autofs_mount_points:
   - jwd
   - usrlocal
   - usrlocal_celerycluster
+  - cache
+  - misc
 
 # SystemD
 galaxy_systemd_mode: ""
@@ -41,6 +43,7 @@ galaxy_systemd_celery: true
 galaxy_systemd_celery_internal_max_tasks: 50
 galaxy_systemd_celery_beat_schedule_path: "/opt/galaxy/celery/celery-beat-schedule"
 galaxy_systemd_watchdog: true
+galaxy_systemd_celery_env: "GALAXY_DROPBOX_APP_CLIENT_ID={{ dropbox_app_client_id }} GALAXY_DROPBOX_APP_CLIENT_SECRET={{ dropbox_app_client_secret }}"
 
 galaxy_systemd_celery_internal_workers: 10
 galaxy_systemd_celery_external_workers: 2
