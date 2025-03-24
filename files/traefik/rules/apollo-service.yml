@@ -1,6 +1,11 @@
 http:
+  serversTransports:
+    apollo-transport:
+      forwardingTimeouts:
+        idleConnTimeout: 300s
   services:
     apollo:
       loadBalancer:
+        serversTransport: apollo-transport
         servers:
-          - address: apollo.internal.galaxyproject.eu
+          - url: "http://apollo.internal.galaxyproject.eu"
