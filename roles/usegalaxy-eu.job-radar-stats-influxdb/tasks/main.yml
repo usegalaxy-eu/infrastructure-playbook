@@ -2,7 +2,7 @@
 - name: Copy the gxadmin bash scripts for collecting stats for galaxy job radar visualization tool
   ansible.builtin.copy:
     src: '{{ item }}'
-    dest: 'usr/bin/{{ item }}'
+    dest: '/usr/bin/{{ item }}'
     owner: 'root'
     group: 'root'
     mode: 0755
