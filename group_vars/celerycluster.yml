@@ -68,15 +68,15 @@ lp_logrotate_confd:
   - path: rsyslogd-messages
     conf: |
       /var/log/messages {
-      daily
-      rotate 7
-      compress
-      delaycompress
-      missingok
-      notifempty
-      dateext
-      maxage 7
-      postrotate
-        /usr/bin/systemctl reload rsyslog >/dev/null 2>&1 || true
-      endscript
+        daily
+        rotate 7
+        compress
+        delaycompress
+        missingok
+        notifempty
+        dateext
+        maxage 7
+        postrotate
+          /usr/bin/systemctl reload rsyslog >/dev/null 2>&1 || true
+        endscript
       }
