@@ -3,6 +3,7 @@
   hosts: celerycluster
   become: true
   become_user: root
+  become_method: sudo
   vars_files:
     - "secret_group_vars/all.yml"
     - "secret_group_vars/pulsar.yml"
