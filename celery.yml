@@ -38,4 +38,6 @@
     ## Filesystems
     - usegalaxy-eu.autofs # Set up the mount points which will be needed later
     - usegalaxy_eu.flower
-    - usegalaxy-eu.logrotate # Rotate logs
+    - role: usegalaxy-eu.logrotate # Rotate logs
+      become: true
+      become_user: root
