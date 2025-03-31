@@ -1,0 +1,15 @@
+http:
+  routers:
+    apollo-rtr:
+      rule: "(Host(`usegalaxy.eu`) || HostRegexp(`^.+\\.usegalaxy\\.eu`)) && (PathPrefix(`/apollo`) || PathPrefix(`/apollo-permapol`) || PathPrefix(`/apollo_api`))"
+      service: apollo
+      middlewares:
+        - apollo-mw
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: "route53"
+        domains:
+          - main: "usegalaxy.eu"
+            sans:
+              - "*.usegalaxy.eu"
