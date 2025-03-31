@@ -1,0 +1,13 @@
+http:
+  routers:
+    gdpr-rtr:
+      rule: "(Host(`usegalaxy.eu`) || HostRegexp(`^.+\\.usegalaxy\\.eu`)) && PathPrefix(`/gdpr`)"
+      service: gdpr
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: "route53"
+        domains:
+          - main: "usegalaxy.eu"
+            sans:
+              - "*.usegalaxy.eu"
