@@ -1,0 +1,11 @@
+http:
+  routers:
+    tpv-broker-rtr:
+      rule: "Host(`tpv-broker.usegalaxy.eu`)"
+      service: tpv-broker
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: "route53"
+        domains:
+          - main: "tpv-broker.usegalaxy.eu"
