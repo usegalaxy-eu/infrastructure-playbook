@@ -116,9 +116,10 @@ fsm_scripts:
       - /data/dnb-ds03/galaxy_db/tmp
       - /data/dnb05/galaxy_db/tmp
       - /data/dnb06/galaxy_db/tmp
-      - /data/jwd/tmp
-      - /data/jwd02f/tmp
-      - /data/jwd04/tmp
+      - "{{ generic_tmp_dir }}"
+      - "{{ short_term_web_storage_dir }}"
+      - "{{ nginx_upload_dir }}"
+      - "{{ object_store_cache_dir }}"
     time: "{{ fsm_intervals.long }}"
   upload_dirs:
     enable: true
