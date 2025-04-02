@@ -4,11 +4,20 @@ generic_tmp_dir: "{{ misc.misc06.path }}/tmp/"
 job_working_root_dir: "{{ jwd.jwd06.path }}" # we set this in gxconfig, but it should not be used, our object_store_conf is overwriting it
 object_store_cache_dir: "{{ cache.cache06.path }}/object_store_cache/"
 short_term_web_storage_dir: "{{ misc.misc06.path }}/short_term_web_storage/"
+ftp_upload_dir: "{{ misc.misc06.path }}/incoming"
 
 # Upload dirs
 upload_dir_test: "{{ misc.misc06.path }}/tus_upload/test"
 upload_dir_main: "{{ misc.misc06.path }}/tus_upload/main" # tus_upload_store
 nginx_upload_dir: "{{ misc.misc06.path }}/nginx_upload/"
+
+galaxy_config:
+  galaxy:
+    job_working_directory: "{{ job_working_root_dir }}/main/"
+    nginx_upload_store: "{{ nginx_upload_dir }}/main/uploads"
+    nginx_upload_job_files_store: "{{ nginx_upload_dir }}/main/jobfiles"
+    ftp_upload_dir: "{{ ftp_upload_dir }}"
+
 # Galaxy user and group
 galaxy_user:
   name: galaxy
