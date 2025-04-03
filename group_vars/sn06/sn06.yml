@@ -24,9 +24,28 @@ autofs_mount_points:
   - gxkey
   - jwd
   - usrlocal
+  - cache
+  - misc
 
 # Miniconda role variables (galaxyproject.miniconda)
 conda_prefix: /opt/miniconda
+
+# FirewallD
+firewall_internal_services:
+  - http
+  - https
+  - ssh
+  - mosh
+firewall_public_services:
+  - http
+  - https
+firewall_mosh_service: >
+  <?xml version="1.0" encoding="utf-8"?>
+  <service>
+    <short>MOSH</short>
+    <description>Mosh (mosh.mit.edu) is a free replacement for SSH that allows roaming and supports intermittent connectivity.</description>
+    <port protocol="udp" port="60001-60100"/>
+  </service>
 
 # fs-maintenance
 fsm_maintenance_dir: "/data/dnb01/maintenance"
@@ -216,7 +235,7 @@ galaxy_systemd_gunicorn_timeout: 600
 galaxy_systemd_handlers: 6
 galaxy_systemd_workflow_schedulers: 3
 
-galaxy_systemd_gunicorn_env: "{{ apollo_env }}"
+galaxy_systemd_gunicorn_env: "{{ apollo_env }} GALAXY_DROPBOX_APP_CLIENT_ID={{ dropbox_app_client_id }} GALAXY_DROPBOX_APP_CLIENT_SECRET={{ dropbox_app_client_secret }} GALAXY_GOOGLE_DRIVE_APP_CLIENT_ID={{ google_drive_oauth_client_id }} GALAXY_GOOGLE_DRIVE_APP_CLIENT_SECRET={{ google_drive_oauth_client_secret }}"
 galaxy_systemd_handler_env: "{{ galaxy_systemd_gunicorn_env }}"
 galaxy_systemd_workflow_scheduler_env: "{{ galaxy_systemd_gunicorn_env }}"
 
@@ -232,6 +251,8 @@ gie_proxy_virtualenv_command: "{{ conda_prefix }}/envs/_galaxy_/bin/python -m ve
 gie_proxy_nodejs_version: "14.21.3"
 gie_proxy_virtualenv: "{{ galaxy_root }}/gie-proxy/venv"
 gie_proxy_setup_service: systemd
+gie_proxy_service_restart_mode: always
+gie_proxy_service_restartsec: 2s
 gie_proxy_sessions_path: "{{ interactivetools_db_connection }}"
 gie_proxy_path_prefix: /interactivetool/ep
 gie_proxy_port: 8800

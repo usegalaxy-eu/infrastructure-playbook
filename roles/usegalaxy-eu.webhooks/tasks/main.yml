@@ -1,6 +1,21 @@
 - name: Clone webhook repository
-  git:
-    repo: "{{ galaxy_webhook_url }}"
-    dest: "{{ galaxy_webhook_dir }}"
+  ansible.builtin.git:
+    repo: '{{ galaxy_webhook_url }}'
+    dest: '{{ galaxy_webhook_dir }}'
     version: master
-    force: "yes"
+    force: 'yes'
+
+- name: Create toolmsg plugins directory in webhook directory
+  ansible.builtin.file:
+    path: '{{ galaxy_webhook_dir }}/toolmsg_24.2'
+    state: directory
+    mode: '0755'
+
+- name: Template toolmsg_24.2 webhook files
+  ansible.builtin.template:
+    src: '{{ item }}'
+    dest: "{{ galaxy_webhook_dir }}/toolmsg_24.2/{{ item | basename | regex_replace('\\.j2$', '') }}"
+    mode: 0644
+  with_fileglob:
+    - '{{ galaxy_webhook_plugins_template_dir }}/toolmsg_24.2/*'
+  notify: Restart Galaxy
