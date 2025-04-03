@@ -221,6 +221,14 @@ tools:
       - if: input_size >= 0.01
         cores: 3
 
+  toolshed.g2.bx.psu.edu/repos/iuc/ncbi_fcs_gx/ncbi_fcs_gx/.*:
+    rules:
+      - id: ncbi_fcs_gx
+        if: |
+          helpers.job_args_match(job, app, {"mode": {"mode_selector": "screen"}})
+        mem: 480
+        cores: 64
+
   toolshed.g2.bx.psu.edu/repos/computational-metabolomics/sirius_csifingerid/sirius_csifingerid/.*:
     cores: 8
     mem: 8
@@ -335,6 +343,8 @@ tools:
     inherits: basic_docker_tool
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
+  toolshed.g2.bx.psu.edu/repos/ecology/tool_odv/tool_odv/.*:
+    inherits: basic_docker_tool
   # conda env not working, trying the container
   toolshed.g2.bx.psu.edu/repos/imgteam/color_deconvolution/ip_color_deconvolution/.*:
     inherits: basic_docker_tool
@@ -355,6 +365,8 @@ tools:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/goeckslab/vitessce_spatial/vitessce_spatial/.*:
     inherits: basic_docker_tool
+    params:
+      docker_run_extra_arguments: --user 999
   toolshed.g2.bx.psu.edu/repos/bgruening/cellpose/cellpose/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/fgsea/fgsea/.*:
@@ -952,14 +964,7 @@ tools:
     scheduling:
       prefer:
         - condor-tpv
-    env:
-      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx{int(mem)}G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
     rules:
-      - if: helpers.tool_version_gte(tool, '2.15.1')
-        # see usegalaxy-eu/issues#473: https://github.com/usegalaxy-eu/issues/issues/473
-        env:
-          _JAVA_OPTIONS: -Xmx{int(mem)}G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
-
       - if: input_size < 0.1
         cores: 1
         mem: 4
@@ -982,7 +987,7 @@ tools:
     mem: 90
     params:
       docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
-      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
       docker_default_container_id: centos:8.3.2011
     scheduling:
       require:
@@ -995,7 +1000,7 @@ tools:
     mem: 20
     params:
       docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
-      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
       docker_default_container_id: centos:8.3.2011
     scheduling:
       require:
@@ -1006,7 +1011,7 @@ tools:
   '.*bioext_bam2msa.*':
     params:
       docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
-      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,,/data/dnb08/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
       docker_default_container_id: centos:8.3.2011
     scheduling:
       require:
@@ -1016,7 +1021,7 @@ tools:
   'last_*':
     params:
       docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
-      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
       docker_default_container_id: centos:8.3.2011
     scheduling:
       require:
@@ -1041,8 +1046,6 @@ tools:
     inherits: basic_docker_tool
     params:
       docker_run_extra_arguments: --user 999
-    env:
-      _JAVA_OPTIONS: -Xmx{int(mem)}G -Xms1G
 
   toolshed.g2.bx.psu.edu/repos/bgruening/diamond/diamond/.*:
     cores: 6
@@ -1115,12 +1118,6 @@ tools:
     inherits: basic_numba_tool
   toolshed.g2.bx.psu.edu/repos/computational-metabolomics/dimspy_align_samples/dimspy_align_samples/.*:
     inherits: basic_numba_tool
-  toolshed.g2.bx.psu.edu/repos/galaxyp/openms_msgfplusadapter/MSGFPlusAdapter/.*:
-    env:
-      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
-  toolshed.g2.bx.psu.edu/repos/iracooke/msgfplus/msgfplus/.*:
-    env:
-      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
   toolshed.g2.bx.psu.edu/repos/bgruening/repeat_masker/repeatmasker_wrapper/.*:
     rules:
       - if: helpers.tool_version_gte(tool, '4.1.5')
@@ -1131,29 +1128,6 @@ tools:
           RM_LIB_PATH: "/data/db/databases/dfam/3.4/"
       - if: helpers.tool_version_gte(tool, '4.1.5')
         cores: 4
-  toolshed.g2.bx.psu.edu/repos/galaxyp/reactome_pathwaymatcher/reactome_pathwaymatcher/.*:
-    env:
-      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx17G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
-
-  toolshed.g2.bx.psu.edu/repos/iuc/bbtools_callvariants/bbtools_callvariants/.*:
-    env:
-      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
-
-  toolshed.g2.bx.psu.edu/repos/crs4/prokka/prokka/.*:
-    env:
-      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
-
-  toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_SortSam/.*:
-    env:
-      _JAVA_OPTIONS: -Xmx4G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
-
-  toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/.*:
-    env:
-      _JAVA_OPTIONS: -XX:MaxPermSize=4G -Xmx120G -Xms4G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
-
-  toolshed.g2.bx.psu.edu/repos/iuc/migmap/migmap/.*:
-    env:
-      _JAVA_OPTIONS: -XX:MaxPermSize=6G -Xmx14G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_cluster_reduce_dimension/scanpy_cluster_reduce_dimension/.*:
     inherits: basic_numba_tool
@@ -1173,24 +1147,11 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_plot/scanpy_plot/.*:
     inherits: basic_numba_tool
 
-  toolshed.g2.bx.psu.edu/repos/devteam/sam_merge/sam_merge2/.*:
-    env:
-      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx15G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp
-
-  toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/.*:
-    env:
-      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
-
-  toolshed.g2.bx.psu.edu/repos/pjbriggs/trimmomatic/trimmomatic/.*:
-    env:
-      _JAVA_OPTIONS: -Xmx6G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
-
   toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*:
     cores: 24
     mem: 80
     env:
       TERM: vt100
-      _JAVA_OPTIONS: -XX:MaxPermSize=2G -Xmx6G -Xmx{int(mem)}G -Xms1G -Djava.io.tmpdir=/data/2/galaxy_db/tmp -Duser.home=/data/2/galaxy_db/tmp
     scheduling:
       accept:
         - pulsar
@@ -1264,7 +1225,19 @@ tools:
       require:
         - singularity
 
+  braker_tool:
+    abstract: true
+    rules:
+      - id: braker_genome_sequence_count_rule
+        if: |
+          options = job.get_param_values(app)
+          sequences = options["genome"].metadata.get("sequences")
+          sequences > 100000
+        fail: |
+          The number of sequences in your genome file is too large (>100K) for this tool.
+
   toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.6.*:
+    inherits: braker_tool
     mem: 4
     cores: 6
     params:
@@ -1274,6 +1247,7 @@ tools:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.7.*:
+    inherits: braker_tool
     mem: 4
     cores: 6
     env:
@@ -1287,6 +1261,7 @@ tools:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.8.*:
+    inherits: braker_tool
     cores: 6
     mem: 4
     params:
@@ -1298,6 +1273,7 @@ tools:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.3.*:
+    inherits: braker_tool
     mem: 4
     cores: 6
     params:
@@ -1308,6 +1284,7 @@ tools:
 
   # GeneMark is a pain and needs special casing
   toolshed.g2.bx.psu.edu/repos/genouest/braker/braker/.*:
+    inherits: braker_tool
     mem: 4
     cores: 6
     env:
@@ -1566,3 +1543,13 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/optitype/optitype/.*:
     cores: 12
     mem: 256
+
+  # ppanggolin all tries to remove TMP folders, on NFS this does not always work, so we run this tool in singularity with internal (non-NFS) TMP
+  toolshed.g2.bx.psu.edu/repos/iuc/ppanggolin_all/ppanggolin_all/.*:
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
+    params:
+      singularity_no_mount: null
+    scheduling:
+      require:
+        - singularity

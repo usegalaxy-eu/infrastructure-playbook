@@ -9,13 +9,6 @@ galaxy_config_file: "{{ galaxy_config_dir }}/galaxy.yml"
 galaxy_mutable_config_dir: "{{ galaxy_root }}/mutable-config"
 galaxy_log_dir: "/var/log/galaxy"
 
-galaxy_config:
-  galaxy:
-    job_working_directory: /data/jwd04/main
-    nginx_upload_store: "/data/jwd04/nginx_upload/main/uploads"
-    nginx_upload_job_files_store: "/data/jwd04/nginx_upload/main/jobfiles"
-    ftp_upload_dir: /data/jwd01/incoming
-
 galaxy_group:
   name: galaxy
   gid: 999
@@ -76,6 +69,8 @@ autofs_mount_points:
   - gxkey
   - jwd
   - usrlocal
+  - cache
+  - misc
 
 # Role: usegalaxy-eu.bashrc
 galaxy_pulsar_app_conf: "{{ galaxy_config_dir }}/pulsar_app.yml"
@@ -288,7 +283,27 @@ telegraf_plugins_extra:
       - timeout = "60s"
       - data_format = "influx"
       - interval = "2m"
-
+  galaxy_destination_queue_run_time: # This is used for the TPV Broker.
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery destination-queue-run-time --seconds --older-than=90"]
+      - timeout = "30m"
+      - data_format = "influx"
+      - interval = "24h"
+  galaxy_job_radar_visualization_stats:
+    plugin: "exec"
+    config:
+      - commands = [
+        "{{ custom_telegraf_env }} /usr/bin/galaxy_failed_jobs_by_destination.sh",
+        "{{ custom_telegraf_env }} /usr/bin/galaxy_most_used_tools_by_destination.sh",
+        "{{ custom_telegraf_env }} /usr/bin/galaxy_num_anonymous_jobs_by_destination.sh",
+        "{{ custom_telegraf_env }} /usr/bin/galaxy_unique_users_job_count_by_destination.sh",
+        "{{ custom_telegraf_env }} /usr/bin/galaxy_longest_running_jobs_by_destination.sh",
+        "{{ custom_telegraf_env }} /usr/bin/galaxy_num_user_running_jobs_count_by_destination.sh",
+        ]
+      - timeout = "300s"
+      - data_format = "influx"
+      - interval = "1h"
 
 # Role: hxr.monitor-cluster
 monitor_condor: true
@@ -341,7 +356,7 @@ walle_galaxy_url: "https://usegalaxy.eu"
 walle_api_key: "{{ admin_api_key_maintenance }}"
 walle_extra_env_vars:
   PGHOST: sn05.galaxyproject.eu
-  WALLE_USER_DELETION_MESSAGE: >
+  WALLE_USER_DELETION_MESSAGE: >-
       Our systems have detected activity related to your Galaxy account that most likely violate our terms of service.
       To prevent damage and in accordance with our terms of service, we automatically deleted your account.
       This means your jobs were terminated and you can not login anymore.

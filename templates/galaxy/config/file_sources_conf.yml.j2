@@ -10,7 +10,7 @@
   url: https://b2drop.eudat.eu
   root: /remote.php/dav/files/${user.preferences['b2drop|username']}/
   use_temp_files: true
-  temp_path: /data/jwd04/tmp
+  temp_path: {{ generic_tmp_dir }}
   login: ${user.preferences['b2drop|username']} 
   password: ${user.preferences['b2drop|password']}
 
@@ -22,7 +22,7 @@
   url: ${user.preferences['nextcloud|url']}
   root: ${user.preferences['nextcloud|root']}
   use_temp_files: true
-  temp_path: /data/jwd04/tmp
+  temp_path: {{ generic_tmp_dir }}
   login: ${user.preferences['nextcloud|username']}
   password: ${user.preferences['nextcloud|password']}
 
@@ -34,7 +34,7 @@
   url: 'https://ergapilot.bsc.es'
   root: '/remote.php/webdav'
   use_temp_files: true
-  temp_path: /data/jwd04/tmp
+  temp_path: {{ generic_tmp_dir }}
   login: "{{ erga_nextcloud_login }}"
   password: "{{ erga_nextcloud_password }}"
   requires_groups: erga
@@ -292,13 +292,13 @@
   id: onedata1
   label: Onedata
   doc: Your Onedata files - configure an access token via user preferences
-  accessToken: ${user.preferences['onedata|access_token']}
-  onezoneDomain: ${user.preferences['onedata|onezone_domain']}
+  access_token: ${user.preferences['onedata|access_token']}
+  onezone_domain: ${user.preferences['onedata|onezone_domain']}
 
 - type: onedata
   id: gtn_public_onedata
   label: GTN training data
   doc: Training data from the Galaxy Training Network (powered by Onedata)
   # The access Token is public and can be shared
-  accessToken: "MDAxY2xvY2F00aW9uIGRhdGFodWIuZWdpLmV1CjAwNmJpZGVudGlmaWVyIDIvbm1kL3Vzci00yNmI4ZTZiMDlkNDdjNGFkN2E3NTU00YzgzOGE3MjgyY2NoNTNhNS9hY3QvMGJiZmY1NWU4NDRiMWJjZGEwNmFlODViM2JmYmRhNjRjaDU00YjYKMDAxNmNpZCBkYXRhLnJlYWRvbmx5CjAwNDljaWQgZGF00YS5wYXRoID00gTHpaa1pUTTROMkl4WmpjMllXVmpOMlU00WWpreU5XWmtNV00ZpT1RKbU1ETXlZMmhoWTJReAowMDJmc2lnbmF00dXJlIIQvnXp01Oey02LnaNwEkFJAyArzhHN8SlXSYFsBbSkqdqCg"
-  onezoneDomain: "datahub.egi.eu"
+  access_token: "MDAxY2xvY2F00aW9uIGRhdGFodWIuZWdpLmV1CjAwNmJpZGVudGlmaWVyIDIvbm1kL3Vzci00yNmI4ZTZiMDlkNDdjNGFkN2E3NTU00YzgzOGE3MjgyY2NoNTNhNS9hY3QvMGJiZmY1NWU4NDRiMWJjZGEwNmFlODViM2JmYmRhNjRjaDU00YjYKMDAxNmNpZCBkYXRhLnJlYWRvbmx5CjAwNDljaWQgZGF00YS5wYXRoID00gTHpaa1pUTTROMkl4WmpjMllXVmpOMlU00WWpreU5XWmtNV00ZpT1RKbU1ETXlZMmhoWTJReAowMDJmc2lnbmF00dXJlIIQvnXp01Oey02LnaNwEkFJAyArzhHN8SlXSYFsBbSkqdqCg"
+  onezone_domain: "datahub.egi.eu"

@@ -148,7 +148,7 @@ base_app_main: &BASE_APP_MAIN
   # Pulsar.
   # The value of this option will be resolved with respect to
   # <data_dir>.
-  new_file_path: /data/jwd04/tmp
+  new_file_path: "{{ generic_tmp_dir }}"
 
   # Maximum size of uploadable files, specified in bytes (default:
   # 100GB). This value is ignored if an external upload server is
@@ -339,7 +339,7 @@ base_app_main: &BASE_APP_MAIN
   # external tooling.
   # The value of this option will be resolved with respect to
   # <cache_dir>.
-  short_term_storage_dir: '/data/jwd04/short_term_web_storage'
+  short_term_storage_dir: "{{ short_term_web_storage_dir }}"
 
   # Default duration before short term web storage files will be cleaned
   # up by Galaxy tasks (in seconds). The default duration is 1 day.
@@ -562,7 +562,7 @@ base_app_main: &BASE_APP_MAIN
   # directories will be created.
   # The value of this option will be resolved with respect to
   # <data_dir>.
-  job_working_directory: /data/jwd04/main
+  job_working_directory: "{{ job_working_root_dir }}/main/"
 
   # Mako templates are compiled as needed and cached for reuse, this
   # directory is used for the cache
@@ -759,7 +759,7 @@ base_app_main: &BASE_APP_MAIN
   # for that object store entry.
   # The value of this option will be resolved with respect to
   # <cache_dir>.
-  object_store_cache_path: '/data/jwd02f/s3_object_store_cache'
+  object_store_cache_path: "{{ object_store_cache_dir }}"
 
   # Default cache size, in GB, for caching object stores if the cache is
   # not configured for that object store entry.
@@ -1011,7 +1011,7 @@ base_app_main: &BASE_APP_MAIN
   # option ``interactivetoolsproxy_map``, which overrides this one.
   # The value of this option will be resolved with respect to
   # <data_dir>.
-  interactivetools_map: "{{ galaxy_mutable_data_dir }}/interactivetools_map.sqlite"
+  #interactivetools_map: interactivetools_map.sqlite
 
   # Use a database supported by SQLAlchemy as map for the
   # interactivetool proxy. When this option is set, the value of
@@ -1021,7 +1021,7 @@ base_app_main: &BASE_APP_MAIN
   # Mappings are written to the table "gxitproxy" within the database.
   # This value cannot match ``database_connection`` nor
   # ``install_database_connection``.
-  #interactivetoolsproxy_map: null
+  interactivetoolsproxy_map: "{{ interactivetools_db_connection }}"
 
   # Prefix to use in the formation of the subdomain or path for
   # interactive tools
@@ -1062,6 +1062,7 @@ base_app_main: &BASE_APP_MAIN
     'metagenomics.usegalaxy.eu': Metagenomics
     'microbiome.usegalaxy.eu': Microbiome
     'microgalaxy.usegalaxy.eu': microGalaxy
+    'microbiology.usegalaxy.eu': Microbiology
     'rna.usegalaxy.eu': RNA
     'graphclust.usegalaxy.eu': GraphClust
     'ecology.usegalaxy.eu': Ecology
@@ -1282,7 +1283,7 @@ base_app_main: &BASE_APP_MAIN
   # in detail in the documentation linked above.  The upload store is a
   # temporary directory in which files uploaded by the upload module
   # will be placed.
-  nginx_upload_store: "/data/jwd04/nginx_upload/main/uploads"
+  nginx_upload_store: "{{ nginx_upload_dir }}/main/uploads"
 
   # This value overrides the action set on the file upload form, e.g.
   # the web path where the nginx_upload_module has been configured to
@@ -1293,7 +1294,7 @@ base_app_main: &BASE_APP_MAIN
   # upon job completion by remote job runners (i.e. Pulsar) that
   # initiate staging operations on the remote end.  See the Galaxy nginx
   # documentation for the corresponding nginx configuration.
-  nginx_upload_job_files_store: "/data/jwd04/nginx_upload/main/jobfiles"
+  nginx_upload_job_files_store: "{{ nginx_upload_dir }}/main/jobfiles"
 
   # Galaxy can also use nginx_upload_module to receive files staged out
   # upon job completion by remote job runners (i.e. Pulsar) that
@@ -1304,7 +1305,7 @@ base_app_main: &BASE_APP_MAIN
   # The upload store is a temporary directory in which files uploaded by
   # the tus middleware or server for user uploads will be placed.
   # Defaults to new_file_path if not set.
-  tus_upload_store: "/data/jwd04/tus_upload/main"
+  tus_upload_store: "{{ upload_dir_main }}"
 
   # The upload store is a temporary directory in which files uploaded by
   # the tus middleware or server for remote job files (Pulsar) will be
@@ -2075,7 +2076,7 @@ base_app_main: &BASE_APP_MAIN
   # This should point to a directory containing subdirectories matching
   # users' identifier (defaults to e-mail), where Galaxy will look for
   # files.
-  ftp_upload_dir: /data/jwd01/incoming
+  ftp_upload_dir: "{{ ftp_upload_dir }}"
 
   # User attribute to use as subdirectory in calculating default
   # ftp_upload_dir pattern. By default this will be email so a user's
@@ -2589,7 +2590,7 @@ base_app_main: &BASE_APP_MAIN
 
   # API key for OpenAI (https://openai.com/) to enable the wizard (or
   # more?)
-  #openai_api_key: null
+  openai_api_key: "{{ openai_api_key }}"
 
   # OpenAI model to enable the wizard.
   #openai_model: gpt-4o
@@ -2707,7 +2708,7 @@ base_app_main: &BASE_APP_MAIN
 
   # Directory to store temporary files for file sources. This defaults
   # to new_file_path if not set.
-  #file_source_temp_dir: null
+  file_source_temp_dir: "{{ generic_tmp_dir }}"
 
   # Default value for use_temp_files for webdav plugins that don't
   # explicitly declare this.

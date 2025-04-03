@@ -409,7 +409,7 @@ jobs:
                   comparison[key] = yaml.safe_load(open(playbooks[key].parent / file, 'r')).get("tools", {})
                   comparison[key] = {
                     key: hashlib.sha256(yaml.dump(value, sort_keys=True).encode('utf-8')).hexdigest()
-                    for key, value in comparison[key].items()
+                    for key, value in comparison[key].items() if not value.get("abstract", False) # ignore abstract tools
                   }
               changed |= set(comparison['new']) - set(comparison['old'])
               changed |= {key for key in set(comparison['new']) & set(comparison['old']) if comparison['new'][key] != comparison['old'][key]}
