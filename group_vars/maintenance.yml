@@ -9,13 +9,6 @@ galaxy_config_file: "{{ galaxy_config_dir }}/galaxy.yml"
 galaxy_mutable_config_dir: "{{ galaxy_root }}/mutable-config"
 galaxy_log_dir: "/var/log/galaxy"
 
-galaxy_config:
-  galaxy:
-    job_working_directory: "{{ job_working_root_dir }}/main/"
-    nginx_upload_store: "{{ nginx_upload_dir }}/main/uploads"
-    nginx_upload_job_files_store: "{{ nginx_upload_dir }}/main/jobfiles"
-    ftp_upload_dir: /data/jwd01/incoming
-
 galaxy_group:
   name: galaxy
   gid: 999
