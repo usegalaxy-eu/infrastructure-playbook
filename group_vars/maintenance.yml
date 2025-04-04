@@ -109,9 +109,9 @@ fsm_scripts:
       - /data/dnb-ds03/galaxy_db/tmp
       - /data/dnb05/galaxy_db/tmp
       - /data/dnb06/galaxy_db/tmp
-      - /data/jwd/tmp
-      - /data/jwd02f/tmp
-      - /data/jwd04/tmp
+      - "{{ generic_tmp_dir }}"
+      - "{{ short_term_web_storage_dir }}"
+      - "{{ object_store_cache_dir }}"
     time: "{{ fsm_intervals.long }}"
   upload_dirs:
     enable: true
@@ -140,6 +140,8 @@ fsm_scripts:
       - /data/jwd03f/main
       - /data/jwd04/main
       - /data/jwd05e/main
+      - /data/jwd06/main
+      - /data/jwd07/main
     time: "{{ fsm_intervals.long }}"
 fsm_htcondor_enable: true
 
