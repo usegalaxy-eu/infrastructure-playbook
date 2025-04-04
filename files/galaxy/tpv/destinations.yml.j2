@@ -242,12 +242,18 @@ destinations:
         - it03-pulsar
 
   pulsar_fr01_tpv:
-    runner: pulsar_eu_fr01
     inherits: pulsar_default
+    runner: pulsar_eu_fr01
     max_accepted_cores: 8
     max_accepted_mem: 63
     min_accepted_gpus: 0
     max_accepted_gpus: 0
+    params:
+      singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro'
+    env:
+      TMP: $_GALAXY_JOB_TMP_DIR
+      TEMP: $_GALAXY_JOB_TMP_DIR
+      TMPDIR: $_GALAXY_JOB_TMP_DIR
     scheduling:
       require:
         - fr-pulsar
