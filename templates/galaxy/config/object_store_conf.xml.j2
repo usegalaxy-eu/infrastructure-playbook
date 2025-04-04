@@ -305,8 +305,9 @@ The storage consists of 16 Gen6 type A200 storage nodes and 16 Gen5 type X410 no
         <!-- private object store -->
         <backend type="generic_s3" id="s3_private_netapp01" allow_selection="true" weight="0" store_by="uuid" private="true" name="User-private storage with additional safeguards">
             <description>S3-based object storage is maintained by the compute center of the University of Freiburg.
-                         Data on this storage cannot be used for public datasets, cannot be shared between users, etc..
-                         All your data in Galaxy is by default only available to you and can not be seen by other users. However, you can always share data, and histories with others.
+                         Data on this storage cannot be made public, cannot be shared between users, etc..
+                         All your data in Galaxy is by default only available to you and can not be seen by other users. 
+                         On other storage classes, you can normally always share data, and histories with others.
                          This storage prevents sharing and provides an additional safeguard for you and your data. 
                          More information about our storage offerings is documented at [https://galaxyproject.org/eu/storage/](https://galaxyproject.org/eu/storage/).
             </description>
