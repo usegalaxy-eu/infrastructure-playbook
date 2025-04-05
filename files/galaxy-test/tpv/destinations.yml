@@ -228,7 +228,7 @@ destinations:
         - type: singularity
           shell: "/bin/bash"
           resolve_dependencies: true
-          identifier: "/data/misc07/singularity_base_images/centos:8.3.2011"
+          identifier: "{{ misc.misc07.path }}/singularity_base_images/centos:8.3.2011"
     scheduling:
       require:
         - singularity
