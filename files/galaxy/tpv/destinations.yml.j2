@@ -22,6 +22,10 @@ destinations:
         {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
         {% endif %}
         {% endfor %}
+        {% for vol in cache.values() %}{% if 'cache' in vol.name in %}
+        {{ vol.path }}/object_store_cache/:{{ vol.docker_perm }},
+        {% endif %}
+        {% endfor %}
         {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
         {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
@@ -44,6 +48,10 @@ destinations:
         $working_directory:rw,
         {% for vol in dnb.values() %}{% if vol.name not in ['5', 'dnb04', 'dnb-ds01', 'db'] %}
         {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
+        {% endif %}
+        {% endfor %}
+        {% for vol in cache.values() %}{% if 'cache' in vol.name in %}
+        {{ vol.path }}/object_store_cache/:{{ vol.docker_perm }},
         {% endif %}
         {% endfor %}
         {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
