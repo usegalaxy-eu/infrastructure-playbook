@@ -22,7 +22,7 @@ destinations:
         {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
         {% endif %}
         {% endfor %}
-        {% for vol in cache.values() %}{% if 'cache' in vol.name in %}
+        {% for vol in cache.values() %}{% if 'cache' in vol.name %}
         {{ vol.path }}/object_store_cache/:{{ vol.docker_perm }},
         {% endif %}
         {% endfor %}
@@ -50,7 +50,7 @@ destinations:
         {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
         {% endif %}
         {% endfor %}
-        {% for vol in cache.values() %}{% if 'cache' in vol.name in %}
+        {% for vol in cache.values() %}{% if 'cache' in vol.name %}
         {{ vol.path }}/object_store_cache/:{{ vol.docker_perm }},
         {% endif %}
         {% endfor %}
