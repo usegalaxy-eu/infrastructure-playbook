@@ -8,7 +8,7 @@
         url: "https://{{ galaxy_instance_hostname }}",
       },
       {% for subdomain in galaxy_themes_subdomains %}
-      {% if 'hidden' not in subdomain.name or not subdomain.hidden %}
+      {% if 'hidden' not in subdomain or not subdomain.hidden %}
       {
         label: "{{ galaxy_config.galaxy.brand_by_host[subdomain.name ~ '.' ~ galaxy_instance_hostname] }}",
         url: "https://{{ subdomain.name }}.{{ galaxy_instance_hostname }}",
