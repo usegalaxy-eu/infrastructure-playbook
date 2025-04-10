@@ -150,6 +150,7 @@ telegraf_agent_metric_buffer_limit: 20000
 telegraf_agent_hostname: "{{ hostname }}"
 telegraf_agent_version: 1.17.2
 custom_telegraf_env: "/usr/bin/env GDPR_MODE=1 PGUSER={{ galaxy_user.name }} PGHOST={{ postgres_host }} GALAXY_ROOT={{ galaxy_server_dir }} GALAXY_CONFIG_FILE={{ galaxy_config_file }} GXADMIN_PYTHON={{ galaxy_venv_dir }}/bin/python"
+custom_telegraf_env_without_gdpr_mode: "/usr/bin/env GDPR_MODE=1 PGUSER={{ galaxy_user.name }} PGHOST={{ postgres_host }} GALAXY_ROOT={{ galaxy_server_dir }} GALAXY_CONFIG_FILE={{ galaxy_config_file }} GXADMIN_PYTHON={{ galaxy_venv_dir }}/bin/python"
 telegraf_plugins_extra:
   postgres:
     plugin: "postgresql"
@@ -298,7 +299,7 @@ telegraf_plugins_extra:
       - commands = [
         "{{ custom_telegraf_env }} /usr/bin/galaxy_failed_jobs_by_destination.sh",
         "{{ custom_telegraf_env }} /usr/bin/galaxy_most_used_tools_by_destination.sh",
-        "{{ custom_telegraf_env }} /usr/bin/galaxy_num_anonymous_jobs_by_destination.sh",
+        "{{ custom_telegraf_env_without_gdpr_mode }} /usr/bin/galaxy_num_anonymous_jobs_by_destination.sh",
         "{{ custom_telegraf_env }} /usr/bin/galaxy_unique_users_job_count_by_destination.sh",
         "{{ custom_telegraf_env }} /usr/bin/galaxy_longest_running_jobs_by_destination.sh",
         "{{ custom_telegraf_env }} /usr/bin/galaxy_num_user_running_jobs_count_by_destination.sh",
