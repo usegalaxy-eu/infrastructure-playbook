@@ -243,26 +243,6 @@ The storage consists of 16 Gen6 type A200 storage nodes and 16 Gen5 type X410 no
             <extra_dir type="job_work" path="{{ jwd.jwd06.path }}/main"/>
             <extra_dir type="temp" path="{{ jwd.jwd06.path }}/tmp"/>
         </backend>
-        <!-- this backend is identical to `s3_scratch_netapp02`, the only difference is the different job_work and temp dir -->
-        <backend id="s3_scratch_netapp02" type="generic_s3" allow_selection="true" weight="0" store_by="uuid" device="scratch" name="Short term storage for e.g. method development">
-            <description>S3-based object storage is maintained by the compute center of the University of Freiburg.
-                         Data on this storage, also called scratch storage, is deleted if it is older than two months (60 days), so it is only appropriate for short-term methods development.
-                         The rapid deletion of stored data enables us to provide this storage without a quota. This storage is not backed up.
-                         More information about our storage offerings is documented at [https://galaxyproject.org/eu/storage/](https://galaxyproject.org/eu/storage/).
-            </description>
-            <quota source="scratch" />            
-            <badges>
-                <less_stable />
-                <not_backed_up />
-                <short_term>The data stored here is purged after two months (60 days).</short_term>
-            </badges>
-            <auth access_key="{{ s3_scratch_netapp01.usegalaxy_eu.access_key }}" secret_key="{{ s3_scratch_netapp01.usegalaxy_eu.secret_key }}" />
-            <bucket name="{{ s3_scratch_netapp01.usegalaxy_eu.bucket_name }}" use_reduced_redundancy="false" max_chunk_size="250" />
-            <connection host="{{ s3_scratch_netapp01.usegalaxy_eu.host }}" region="fr1-ec82" port="443" is_secure="True" conn_path="" multipart="True"/>
-            <cache path="{{ object_store_cache_dir }}" size="100000" cache_updated_data="true" />
-            <extra_dir type="job_work" path="{{ jwd.jwd07.path }}/main"/>
-            <extra_dir type="temp" path="{{ jwd.jwd07.path }}/tmp"/>
-        </backend>
 
         <!-- private object store -->
         <backend id="s3_private_netapp01" type="generic_s3" allow_selection="true" weight="0" store_by="uuid" private="true" name="Unshareable storage with additional safeguards">
