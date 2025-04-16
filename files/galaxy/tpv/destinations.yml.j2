@@ -22,6 +22,10 @@ destinations:
         {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
         {% endif %}
         {% endfor %}
+        {% for vol in cache.values() %}{% if 'cache' in vol.name %}
+        {{ vol.path }}/object_store_cache/:{{ vol.docker_perm }},
+        {% endif %}
+        {% endfor %}
         {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
         {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
@@ -44,6 +48,10 @@ destinations:
         $working_directory:rw,
         {% for vol in dnb.values() %}{% if vol.name not in ['5', 'dnb04', 'dnb-ds01', 'db'] %}
         {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
+        {% endif %}
+        {% endfor %}
+        {% for vol in cache.values() %}{% if 'cache' in vol.name %}
+        {{ vol.path }}/object_store_cache/:{{ vol.docker_perm }},
         {% endif %}
         {% endfor %}
         {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
@@ -242,12 +250,18 @@ destinations:
         - it03-pulsar
 
   pulsar_fr01_tpv:
-    runner: pulsar_eu_fr01
     inherits: pulsar_default
+    runner: pulsar_eu_fr01
     max_accepted_cores: 8
     max_accepted_mem: 63
     min_accepted_gpus: 0
     max_accepted_gpus: 0
+    params:
+      singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro'
+    env:
+      TMP: $_GALAXY_JOB_TMP_DIR
+      TEMP: $_GALAXY_JOB_TMP_DIR
+      TMPDIR: $_GALAXY_JOB_TMP_DIR
     scheduling:
       require:
         - fr-pulsar
@@ -465,7 +479,7 @@ destinations:
           # Use Centos 7 as a fallback container here
           # Most times this fallback is needed for very old tools
           # Centos 7 has libncurses.so.5.9 and python 2.7
-          identifier: "{{ dnb.0.path }}/singularity_base_images/centos:7.9.2009"
+          identifier: "{{ misc.misc07.path }}/singularity_base_images/centos:7.9.2009"
     scheduling:
       require:
         - singularity

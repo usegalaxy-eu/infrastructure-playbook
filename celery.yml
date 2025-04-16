@@ -9,14 +9,14 @@
     - mounts/mountpoints.yml
     - mounts/dest/all.yml
   pre_tasks:
-    - name: Install Dependencies
-      package:
-        name: ["python38"]
-      become: true
-    - name: Set default version of Python
-      alternatives:
-        name: python
-        path: /usr/bin/python3
+    # - name: Install Dependencies
+    #   package:
+    #     name: ["python38"]
+    #   become: true
+    # - name: Set default version of Python
+    #   alternatives:
+    #     name: python
+    #     path: /usr/bin/python3
     - name: Increase fs.inotify.max_user_watches # see https://github.com/usegalaxy-eu/issues/issues/544
       ansible.posix.sysctl:
         name: fs.inotify.max_user_watches

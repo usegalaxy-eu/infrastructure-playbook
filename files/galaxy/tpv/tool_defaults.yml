@@ -16,6 +16,8 @@ tools:
         value: "FALSE"
       - name: SINGULARITYENV_HDF5_USE_FILE_LOCKING
         value: $HDF5_USE_FILE_LOCKING
+      - name: AWS_REQUEST_CHECKSUM_CALCULATION
+        value: "when_required"
     params:
       metadata_strategy: "extended"
       tmp_dir: true
