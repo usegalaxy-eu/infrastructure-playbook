@@ -71,6 +71,13 @@ fsm_cron_tasks:
     job: "{{ custom_telegraf_env }} /usr/bin/gxadmin galaxy cleanup 60"
     user: "{{ fsm_galaxy_user.username }}"
 
+# Galaxy cleanup old hdas in objectstores
+galaxy_pgcleanup_objectstores:
+  - objectstore_id: 's3_scratch_netapp01'
+    days: 60
+  - objectstore_id: 's3_private_netapp01'
+    days: 60
+
 # TIaaS
 tiaas_virtualenv_python: "python3.8"
 
