@@ -214,9 +214,11 @@ backends:
     name: "Short term storage for e.g. method development"
     description: |
         S3-based object storage is maintained by the compute center of the University of Freiburg.
-        Data on this storage, also called scratch storage, is deleted if it is older than two months (60 days), so it is only appropriate for short-term methods development.
+        Data on this storage, also called scratch storage, is deleted if it is older than two months (60 days),
+        so it is only appropriate for short-term methods development.
         The rapid deletion of stored data enables us to provide this storage without a quota. This storage is not backed up.
-        More information about our storage offerings is documented at [https://galaxyproject.org/eu/storage/](https://galaxyproject.org/eu/storage/).
+        More information about our storage offerings is
+        documented at [https://galaxyproject.org/eu/storage/](https://galaxyproject.org/eu/storage/).
     weight: 0
     quota:
       source: scratch
@@ -258,7 +260,8 @@ backends:
         All your data in Galaxy is by default only available to you and can not be seen by other users. 
         On other storage classes, you can normally always share data, and histories with others.
         However, this storage prevents sharing and provides an additional safeguard for you and your data. 
-        More information about our storage offerings is documented at [https://galaxyproject.org/eu/storage/](https://galaxyproject.org/eu/storage/).
+        More information about our storage offerings is
+        documented at [https://galaxyproject.org/eu/storage/](https://galaxyproject.org/eu/storage/).
     weight: 0
     quota:
       source: scratch
@@ -285,15 +288,4 @@ backends:
         path: "{{ jwd.jwd07.path }}/main
       - type: temp
         path: "{{ jwd.jwd07.path }}/tmp"
-
-
-
-
-
-
-
-
-
-
-
 
