@@ -1,0 +1,289 @@
+type: distributed
+##global_max_percent_full: 90
+search_for_missing: true
+id: primary     # is that needed
+order: 0        # is that needed
+backends:
+  - id: secondary
+    type: disk
+    store_by: id
+    weight: 0
+    files_dir: "/data/0/galaxy_db/files"
+
+  - id: files1
+    type: disk
+    store_by: id
+    name: "University of Freiburg storage (NetApp FabricPool, id=files1)"
+    weight: 0
+    files_dir: "/data/1/galaxy_db/files"
+
+  - id: files2
+    type: disk
+    store_by: id
+    name: "University of Freiburg storage (NetApp FabricPool, id=files2)"
+    weight: 0
+    files_dir: "/data/2/galaxy_db/files"
+
+  - id: files3
+    type: disk
+    store_by: id
+    name: "University of Freiburg storage (NetApp FabricPool, id=files3)"
+    weight: 0
+    files_dir: "/data/3/galaxy_db/files"
+
+  - id: files4
+    type: disk
+    store_by: id
+    name: "University of Freiburg storage (NetApp FabricPool, id=files4)"
+    weight: 0
+    files_dir: "/data/4/galaxy_db/files"
+
+  - id: files6
+    type: disk
+    store_by: id
+    name: "University of Freiburg storage (NetApp FabricPool, id=files6)"
+    weight: 0
+    files_dir: "/data/6/galaxy_db/files"
+
+  - id: files7
+    type: disk
+    store_by: id
+    name: "University of Freiburg storage (NetApp FabricPool, id=files7)"
+    weight: 0
+    files_dir: "/data/7/galaxy_db/files"    
+
+  - id: files8
+    type: disk
+    store_by: id
+    name: "University of Freiburg storage (NetApp FabricPool, id=files8)"
+    weight: 0
+    files_dir: "/data/dnb-ds01/galaxy_db/files"
+
+  - id: files9
+    type: disk
+    store_by: id
+    name: "University of Freiburg storage (NetApp FabricPool, id=files9)"
+    weight: 0
+    files_dir: "/data/dnb-ds02/galaxy_db/files"
+
+  - id: files10
+    type: disk
+    store_by: uuid
+    name: "University of Freiburg storage (NetApp FabricPool, id=files10)"
+    weight: 0
+    files_dir: "/data/dnb-ds03/galaxy_db/files" 
+
+  - id: files11
+    type: disk
+    store_by: uuid
+    name: "University of Freiburg storage (NetApp FabricPool, id=files11)"
+    weight: 0
+    files_dir: "/data/dnb05/galaxy_db/files" 
+
+  - id: files12
+    type: disk
+    store_by: uuid
+    name: "University of Freiburg storage (NetApp FabricPool, id=files12)"
+    weight: 0
+    files_dir: "/data/dnb06/galaxy_db/files" 
+
+  - id: files13
+    type: disk
+    store_by: uuid
+    device: "dnb07"
+    name: "University of Freiburg storage (NetApp FabricPool, id=files13)"
+    weight: 0
+    files_dir: "/data/dnb07/galaxy_db/files" 
+
+  - id: files18
+    type: disk
+    store_by: uuid
+    device: "dnb08"
+    name: "University of Freiburg storage (NetApp FabricPool, id=files18)"
+    weight: 0
+    files_dir: "/data/dnb08/galaxy_db/files"
+
+  - id: files23
+    type: disk
+    store_by: uuid
+    device: "dnb09"
+    name: "University of Freiburg storage (NetApp FabricPool, id=files23)"
+    weight: 0
+    files_dir: "/data/dnb09/galaxy_db/files"
+
+  - id: files24
+    type: disk
+    store_by: uuid
+    device: "dnb09"
+    name: "University of Freiburg storage (NetApp FabricPool, id=files24)"
+    weight: 0
+    files_dir: "/data/dnb09/galaxy_db/files"
+
+  - id: files25
+    type: disk
+    store_by: uuid
+    device: "dnb09"
+    name: "University of Freiburg storage (NetApp FabricPool, id=files25)"
+    weight: 0
+    files_dir: "/data/dnb09/galaxy_db/files"
+
+  - id: files26
+    type: disk
+    store_by: uuid
+    device: "dnb09"
+    name: "University of Freiburg storage (NetApp FabricPool, id=files26)"
+    weight: 0
+    files_dir: "/data/dnb09/galaxy_db/files"
+
+  - id: files27
+    type: disk
+    store_by: uuid
+    device: "dnb10"
+    name: "University of Freiburg storage (NetApp FabricPool, id=files27)"
+    weight: 0
+    files_dir: "/data/dnb10/galaxy_db/files"
+
+  - id: files28
+    type: disk
+    store_by: uuid
+    device: "dnb10"
+    name: "University of Freiburg storage (NetApp FabricPool, id=files28)"
+    weight: 0
+    files_dir: "/data/dnb10/galaxy_db/files"
+
+  - id: files29
+    type: disk
+    store_by: uuid
+    device: "dnb11"
+    name: "University of Freiburg storage (NetApp FabricPool, id=files29)"
+    weight: 0
+    files_dir: "/data/dnb11/galaxy_db/files"
+
+  - id: files30
+    type: disk
+    store_by: uuid
+    device: "dnb11"
+    name: "University of Freiburg storage (NetApp FabricPool, id=files30)"
+    weight: 2
+    files_dir: "/data/dnb11/galaxy_db/files"
+    extra_dirs:
+      - type: job_work
+        path: "/data/jwd05e/main"
+
+  - id: files31
+    type: disk
+    store_by: uuid
+    device: "dnb11"
+    name: "University of Freiburg storage (NetApp FabricPool, id=files31)"
+    weight: 2
+    files_dir: "/data/dnb11/galaxy_db/files"
+    extra_dirs:
+      - type: job_work
+        path: "/data/jwd06/main"
+
+  - id: files32
+    type: disk
+    store_by: uuid
+    device: "dnb11"
+    name: "University of Freiburg storage (NetApp FabricPool, id=files32)"
+    weight: 2
+    files_dir: "/data/dnb11/galaxy_db/files"
+    extra_dirs:
+      - type: job_work
+        path: "/data/jwd07/main"
+
+  - id: dataplant01
+    type: disk
+    store_by: uuid
+    device: "dp01"
+    name: "University of Freiburg storage (NetApp FabricPool, id=dataplant01)"
+    weight: 0
+    files_dir: "/data/dp01/galaxy_db/files"
+    extra_dirs:
+      - type: job_work
+        path: "/data/jwd/main" ## that looks wired and should be adopted
+      - type: temp
+        path: "/data/jwd/object_store_temp/dataplant01" ## we need to adjust
+
+  # Scratch storage, we call it short-term storage
+  - id: s3_scratch_netapp01
+    type: generic_s3
+    allow_selection: true
+    store_by: uuid
+    device: "scratch"
+    name: "Short term storage for e.g. method development"
+    description: |
+        S3-based object storage is maintained by the compute center of the University of Freiburg.
+        Data on this storage, also called scratch storage, is deleted if it is older than two months (60 days),
+        so it is only appropriate for short-term methods development.
+        The rapid deletion of stored data enables us to provide this storage with an extended quota. This storage is not backed up.
+        More information about our storage offerings is
+        documented at [https://galaxyproject.org/eu/storage/](https://galaxyproject.org/eu/storage/).
+    weight: 0
+    quota:
+      source: scratch
+    auth:
+      access_key: "{{ s3_scratch_netapp01.usegalaxy_eu.access_key }}"
+      secret_key: "{{ s3_scratch_netapp01.usegalaxy_eu.secret_key }}"
+    bucket:
+      name: "{{ s3_scratch_netapp01.usegalaxy_eu.bucket_name }}"
+      use_reduced_redundancy: false
+      max_chunk_size: 250
+    connection:
+      host: "{{ s3_scratch_netapp01.usegalaxy_eu.host }}"
+      region: "fr1-ec82"
+      port: 443
+      conn_path: ""
+      multipart: true
+      is_secure: true
+    cache:
+      path: "{{ object_store_cache_dir }}"
+      size: 100000
+      cache_updated_data: true
+    extra_dirs:
+      - type: job_work
+        path: "{{ jwd.jwd06.path }}/main"
+      - type: temp
+        path: "{{ jwd.jwd06.path }}/tmp"
+
+
+  # Private object stores, or as we call it unshareable storage
+  - id: s3_private_netapp01
+    type: generic_s3
+    allow_selection: true
+    store_by: uuid
+    private: true
+    name: "Unshareable storage with additional safeguards"
+    description: |
+        S3-based object storage is maintained by the compute center of the University of Freiburg.
+        Data on this storage cannot be made public, cannot be shared between users, etc..
+        All your data in Galaxy is by default only available to you and can not be seen by other users. 
+        On other storage classes, you can normally always share data, and histories with others.
+        However, this storage prevents sharing and provides an additional safeguard for you and your data. 
+        More information about our storage offerings is
+        documented at [https://galaxyproject.org/eu/storage/](https://galaxyproject.org/eu/storage/).
+    weight: 0
+    auth:
+      access_key: "{{ s3_private_netapp01.usegalaxy_eu.access_key }}"
+      secret_key: "{{ s3_private_netapp01.usegalaxy_eu.secret_key }}"
+    bucket:
+      name: "{{ s3_private_netapp01.usegalaxy_eu.bucket_name }}"
+      use_reduced_redundancy: false
+      max_chunk_size: 250
+    connection:
+      host: "{{ s3_private_netapp01.usegalaxy_eu.host }}"
+      region: "fr1-ec82"
+      port: 443
+      conn_path: ""
+      multipart: true
+      is_secure: true
+    cache:
+      path: "{{ object_store_cache_dir }}"
+      size: 100000
+      cache_updated_data: true ## do we need this here?
+    extra_dirs:
+      - type: job_work
+        path: "{{ jwd.jwd07.path }}/main"
+      - type: temp
+        path: "{{ jwd.jwd07.path }}/tmp"
+
