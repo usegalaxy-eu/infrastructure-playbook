@@ -61,7 +61,7 @@ fsm_cron_tasks:
     job: ". {{ galaxy_root }}/.bashrc && docker system prune -f > /dev/null"
     user: "{{ fsm_galaxy_user.username }}"
   gxadmin:
-    enable: false
+    enable: true
     name: "Gxadmin Galaxy clean up"
     minute: 0
     hour: 0
