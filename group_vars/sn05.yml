@@ -70,6 +70,7 @@ postgresql_conf:
 #  - log_line_prefix: "'%t:%r:%u@%d:[%p]<%m>: '"
   - log_checkpoints: "on"
   - log_min_duration_statement: 500
+  - track_activity_query_size: 4096
 postgresql_pg_hba_conf:
   - "host    postgres        galaxy          132.230.223.239/32      md5"
   - "host    postgres        galaxy          10.5.68.237/32          md5"
