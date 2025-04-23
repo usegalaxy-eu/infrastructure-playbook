@@ -197,7 +197,7 @@ backends:
     store_by: uuid
     device: "dp01"
     name: "University of Freiburg storage (NetApp FabricPool, id=dataplant01)"
-    weight: 2
+    weight: 0
     files_dir: "/data/dp01/galaxy_db/files"
     extra_dirs:
       - type: job_work
@@ -263,8 +263,6 @@ backends:
         More information about our storage offerings is
         documented at [https://galaxyproject.org/eu/storage/](https://galaxyproject.org/eu/storage/).
     weight: 0
-    quota:
-      source: scratch
     auth:
       access_key: "{{ s3_private_netapp01.usegalaxy_eu.access_key }}"
       secret_key: "{{ s3_private_netapp01.usegalaxy_eu.secret_key }}"
