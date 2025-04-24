@@ -22,3 +22,11 @@
     owner: root
     group: root
     mode: 0755
+
+- name: Copy the galaxy monthly active users script
+  copy:
+    src: "galaxy_monthly_active_users.sh"
+    dest: "/usr/bin/galaxy_monthly_active_users"
+    owner: root
+    group: root
+    mode: 0755
