@@ -315,6 +315,20 @@ telegraf_plugins_extra:
       - timeout = "600s"
       - data_format = "influx"
       - interval = "24h"
+  galaxy_user_file_source_utilisation:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/galaxy_user_file_source_utilisation"]
+      - timeout = "10s"
+      - data_format = "influx"
+      - interval = "24h"
+  galaxy_user_object_store_utilisation:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/galaxy_user_object_store_utilisation"]
+      - timeout = "10s"
+      - data_format = "influx"
+      - interval = "24h"
 
 # Role: hxr.monitor-cluster
 monitor_condor: true
