@@ -335,7 +335,7 @@ def parse_object_store_yaml(object_store_conf: str) -> dict:
     Returns:
         Dictionary of backend id and path of type 'job_work'.
     """
-    with open(object_store_conf, 'r', encoding='utf-8') as file:
+    with open(object_store_conf, "r", encoding="utf-8") as file:
         config = yaml.safe_load(file)
 
     backends = {}
