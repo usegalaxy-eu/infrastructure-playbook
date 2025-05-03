@@ -308,6 +308,15 @@ telegraf_plugins_extra:
       - timeout = "300s"
       - data_format = "influx"
       - interval = "1h"
+  galaxy_job_radar_visualization_job_stats:
+    plugin: "exec"
+    config:
+      - commands = [
+        "{{ custom_telegraf_env }} /usr/bin/galaxy_jobs_stats.sh",
+        ]
+      - timeout = "60s"
+      - data_format = "influx"
+      - interval = "4h"
   galaxy_monthly_active_users:
     plugin: "exec"
     config:
