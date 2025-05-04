@@ -348,6 +348,7 @@ def parse_object_store_yaml(object_store_conf: str) -> dict:
         for extra_dir in backend.get("extra_dirs", []):
             if extra_dir.get("type") == "job_work":
                 backends[backend_id]["job_work_path"] = extra_dir.get("path")
+    return backends
 
 
 def get_pulsar_staging_dir(galaxy_pulsar_app_conf: str) -> str:
