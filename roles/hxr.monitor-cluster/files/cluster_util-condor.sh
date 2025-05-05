@@ -19,14 +19,14 @@ claimed_memory=$(condor_status -af Memory -constraint 'State == "Claimed"' | pas
 # Unclaimed memory
 unclaimed_memory=$(condor_status -af Memory -constraint 'State == "Unclaimed"' | paste -s -d'+' | bc)
 
-# Total number of GPU slots
-total_gpu_slots=$(condor_status -af Name -constraint 'CUDADeviceName =!= undefined' | wc -l)
+# Total number of GPU hosts
+total_gpu_slots=$(condor_status -af Name -constraint 'SlotType == "Partitionable" && TotalGPUs == 1' | wc -l)
 
-# Claimed GPUs slots
-claimed_gpus=$(condor_status -af Name -constraint 'State == "Claimed" && CUDADeviceName =!= undefined' | wc -l)
+# Claimed GPU hosts
+claimed_gpus=$( condor_status -af Name -constraint 'State == "Claimed" && TotalGPUs == 1' |  sed 's/slot[^@]*@//' | sort | uniq -c | wc -l)
 
-# Unclaimed GPUs slots
-unclaimed_gpus=$(condor_status -af Name -constraint 'State == "Unclaimed" && CUDADeviceName =!= undefined' | wc -l)
+# Unclaimed GPU hosts
+unclaimed_gpus=$((total_gpu_slots - claimed_gpus))
 
 # Total load average at the machine level
 total_loadavg=$(condor_status -af TotalLoadAvg -constraint 'SlotType == "Partitionable"' | paste -s -d'+' | bc)
