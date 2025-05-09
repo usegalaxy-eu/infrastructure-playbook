@@ -128,6 +128,9 @@ destinations:
     env:
       LC_ALL: C
       SINGULARITY_CACHEDIR: /data/share/var/database/container_cache # On the NFS share on remote Pulsar side
+      TMP: $_GALAXY_JOB_TMP_DIR
+      TEMP: $_GALAXY_JOB_TMP_DIR
+      TMPDIR: $_GALAXY_JOB_TMP_DIR
     params:
       jobs_directory: /data/share/staging
       transport: curl
@@ -196,10 +199,6 @@ destinations:
     max_accepted_gpus: 0
     params:
       singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro'
-    env:
-      TMP: $_GALAXY_JOB_TMP_DIR
-      TEMP: $_GALAXY_JOB_TMP_DIR
-      TMPDIR: $_GALAXY_JOB_TMP_DIR
     scheduling:
       require:
         - sk-pulsar
@@ -213,10 +212,6 @@ destinations:
     max_accepted_gpus: 0
     params:
       singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro'
-    env:
-      TMP: $_GALAXY_JOB_TMP_DIR
-      TEMP: $_GALAXY_JOB_TMP_DIR
-      TMPDIR: $_GALAXY_JOB_TMP_DIR
     scheduling:
       require:
         - it-pulsar
@@ -230,10 +225,6 @@ destinations:
     max_accepted_gpus: 0
     params:
       singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro'
-    env:
-      TMP: $_GALAXY_JOB_TMP_DIR
-      TEMP: $_GALAXY_JOB_TMP_DIR
-      TMPDIR: $_GALAXY_JOB_TMP_DIR
     scheduling:
       require:
         - it02-pulsar
@@ -247,10 +238,6 @@ destinations:
     max_accepted_gpus: 0
     params:
       singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro'
-    env:
-      TMP: $_GALAXY_JOB_TMP_DIR
-      TEMP: $_GALAXY_JOB_TMP_DIR
-      TMPDIR: $_GALAXY_JOB_TMP_DIR
     scheduling:
       require:
         - it03-pulsar
@@ -264,10 +251,6 @@ destinations:
     max_accepted_gpus: 0
     params:
       singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro'
-    env:
-      TMP: $_GALAXY_JOB_TMP_DIR
-      TEMP: $_GALAXY_JOB_TMP_DIR
-      TMPDIR: $_GALAXY_JOB_TMP_DIR
     scheduling:
       require:
         - fr-pulsar
@@ -400,10 +383,6 @@ destinations:
     max_accepted_mem: 30
     min_accepted_gpus: 0
     max_accepted_gpus: 0
-    env:
-      TMP: $_GALAXY_JOB_TMP_DIR
-      TEMP: $_GALAXY_JOB_TMP_DIR
-      TMPDIR: $_GALAXY_JOB_TMP_DIR
     scheduling:
       require:
         - hcmr-gr-pulsar
