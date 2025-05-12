@@ -64,8 +64,21 @@ Please mind `http` and `https`.
         <icon>https://lifescience-ri.eu/fileadmin/lifescience-ri/media/Images/button-login-small.png</icon>
         <!-- (Optional) Extra scopes you need to request for your implementation -->
         <extra_scopes>offline_access</extra_scopes>
-
     </provider>
+
+    <!-- # Documentation is at https://doc.nfdi-aai.de/  
+        https://infraproxy.nfdi-aai.dfn.de/idp/profile/oidc/configuration
+    -->
+    <provider name="nfdi">
+        <client_id>{{ nfdi_aai.usegalaxy_eu.client_id }}</client_id>
+        <client_secret>{{ nfdi_aai.usegalaxy_eu.client_secret }}</client_secret>
+        <redirect_uri>https://usegalaxy.eu/authnz/nfdi/callback</redirect_uri>
+        <prompt>consent</prompt>
+        <icon>https://doc.nfdi-aai.de/images/Logo_IAM4NFDI_lang_rgb.png</icon>
+        <!-- (Optional) Extra scopes you need to request for your implementation -->
+        <!-- <extra_scopes>offline_access,something-else</extra_scopes> -->
+    </provider>
+
     <provider name="Keycloak">
         <url>https://auth.nfdi4plants.org/realms/dataplant</url>
         <client_id>{{ dataplant_keycloak.usegalaxy_eu.client_id }}</client_id>
