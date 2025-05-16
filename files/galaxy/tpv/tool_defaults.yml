@@ -18,6 +18,14 @@ tools:
         value: $HDF5_USE_FILE_LOCKING
       - name: AWS_REQUEST_CHECKSUM_CALCULATION
         value: "when_required"
+      - name: LC_ALL
+        value: C
+      - name: SINGULARITYENV_LC_ALL
+        value: $LC_ALL
+      - name: TERM
+        value: vt100
+      - name: SINGULARITYENV_TERM
+        value: $TERM
     params:
       metadata_strategy: "extended"
       tmp_dir: true
