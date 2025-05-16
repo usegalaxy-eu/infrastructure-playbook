@@ -900,6 +900,14 @@ tools:
       - if: input_size >= 20
         fail: Too much data, please don't use this tool for this.
 
+  toolshed.g2.bx.psu.edu/repos/iuc/beagle/beagle/.*:
+    cores: 1
+    rules:
+      - if: input_size < 1
+        mem: 24
+      - if: input_size >= 1
+        mem: 64
+
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/smudgeplot/smudgeplot/.*:
     cores: 8
     rules:
