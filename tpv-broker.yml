@@ -7,7 +7,7 @@
     hostname: '{{ inventory_hostname }}'
     nginx_conf_user: galaxy
     server_names:
-      - {{ inventory_hostname }}
+      - '{{ inventory_hostname }}'
   vars_files:
     - secret_group_vars/all.yml
     - secret_group_vars/aws.yml
