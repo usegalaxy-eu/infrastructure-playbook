@@ -54,6 +54,8 @@ def per_host_tool_labels( context, label ):
         return label.id in valid_labels
     if "earth-system.usegalaxy.eu" in host:
         return label.id in valid_labels
+    if "astronomy.usegalaxy.eu" in host:
+        return False
     return True
 
 
@@ -173,9 +175,11 @@ DOMAIN_SECTIONS = {
         "annotation",
         "climate_analysis"
     ],
-    'eirene': ['chemicaltoolbox','metabolomics','interactivetools']
+    'eirene': ['chemicaltoolbox','metabolomics','interactivetools'],
 }
 
+astro_sections = ["text_manipulation", "get_data", "collection_operations", "join__subtract_and_group", "expression_tools", "send_data",
+    "statistics", "machine_learning", "astronomy"]
 
 def per_host_tool_sections( context, section ):
     """
@@ -211,6 +215,9 @@ def per_host_tool_sections( context, section ):
     if host == "usegalaxy.eu":
         return True
 
+    if subdomain == "astronomy":
+        return section.id in astro_sections
+    
     if subdomain in DOMAIN_SECTIONS:
         return section.id in DOMAIN_SECTIONS[subdomain] or section.id in BASE_SECTIONS
     else:
