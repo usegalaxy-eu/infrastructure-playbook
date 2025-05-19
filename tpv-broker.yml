@@ -1,0 +1,81 @@
+---
+- name: TPV Broker
+  hosts: tpvbroker
+  become: true
+  become_user: root
+  vars:
+    hostname: '{{ inventory_hostname }}'
+    nginx_conf_user: galaxy
+    server_names:
+      - {{ inventory_hostname }}
+  vars_files:
+    - secret_group_vars/all.yml
+    - secret_group_vars/aws.yml
+  collections:
+    - devsec.hardening
+  pre_tasks:
+    - name: Install Dependencies
+      package:
+        name:
+          [
+            'git',
+            'python3-virtualenv',
+            'firewalld',
+          ]
+        state: present
+    - name: Enable and start firewalld
+      service:
+        name: firewalld
+        state: started
+        enabled: true
+    - name: Allow http and https services
+      firewalld:
+        service: '{{ item }}'
+        permanent: true
+        state: enabled
+        immediate: true
+      loop:
+        - http
+        - https
+  post_tasks:
+    - name: Append some users to the systemd-journal group
+      user:
+        name: '{{ item }}'
+        groups: systemd-journal
+        append: true
+      loop:
+        - '{{ galaxy_user.name }}'
+    - name: Set authorized SSH key (galaxy user)
+      ansible.posix.authorized_key:
+        user: '{{ galaxy_user.name }}'
+        state: present
+        key: '{{ item }}'
+      loop:
+        - 'ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBACB5Q5blymkTIRSzVzXITOGvBuI7W0L9Ykwfz8LJGPraaGVPiezzFGvjhqwX+EyCqQPt7JprR5mimJRw/JN3nBXWAHjekvmB5FuILkk6m5fOiQJ5QhRMyQ5GfxODAvGbHpTuWHbYJLWD5fhcboKPxlXOWy4xY9kDZVuQvEKisNKYBsFLA== sanjay'
+    - name: Copy TPV Broker nginx config
+      template:
+        src: tpv-broker.j2
+        dest: /etc/nginx/sites-available/tpv-broker
+      notify:
+        - restart nginx
+    - name: Enable TPV Broker nginx config
+      file:
+        src: /etc/nginx/sites-available/tpv-broker
+        dest: /etc/nginx/sites-enabled/tpv-broker
+        state: link
+      notify:
+        - restart nginx
+  roles:
+    - usegalaxy_eu.handy.os_setup
+    - geerlingguy.repo-epel
+    - role: galaxyproject.miniconda
+      vars:
+        miniconda_prefix: '{{ conda_prefix_dir }}'
+        galaxy_conda_create_env: true
+        galaxy_conda_env_packages:
+          - python=3.11
+          - pip
+    - influxdata.chrony
+    - hxr.aws-cli
+    - usegalaxy-eu.nginx
+    - usegalaxy_eu.tpv-broker
