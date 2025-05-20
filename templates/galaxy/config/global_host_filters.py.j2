@@ -176,10 +176,9 @@ DOMAIN_SECTIONS = {
         "climate_analysis"
     ],
     'eirene': ['chemicaltoolbox','metabolomics','interactivetools'],
+    'astronomy': ["text_manipulation", "get_data", "collection_operations", "join__subtract_and_group", "expression_tools", "send_data",
+    "statistics", "machine_learning", "astronomy"],
 }
-
-astro_sections = ["text_manipulation", "get_data", "collection_operations", "join__subtract_and_group", "expression_tools", "send_data",
-    "statistics", "machine_learning", "astronomy"]
 
 def per_host_tool_sections( context, section ):
     """
@@ -216,7 +215,7 @@ def per_host_tool_sections( context, section ):
         return True
 
     if subdomain == "astronomy":
-        return section.id in astro_sections
+        return section.id in DOMAIN_SECTIONS[subdomain]
     
     if subdomain in DOMAIN_SECTIONS:
         return section.id in DOMAIN_SECTIONS[subdomain] or section.id in BASE_SECTIONS
