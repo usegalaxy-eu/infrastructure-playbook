@@ -214,9 +214,6 @@ def per_host_tool_sections( context, section ):
     if host == "usegalaxy.eu":
         return True
 
-    if subdomain == "astronomy":
-        return section.id in DOMAIN_SECTIONS[subdomain]
-    
     if subdomain in DOMAIN_SECTIONS:
         return section.id in DOMAIN_SECTIONS[subdomain] or section.id in BASE_SECTIONS
     else:
