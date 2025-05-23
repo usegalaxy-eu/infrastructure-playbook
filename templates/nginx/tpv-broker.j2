@@ -6,18 +6,18 @@ server {
 	access_log  /var/log/nginx/access.log;
     error_log   /var/log/nginx/error.log;
 
-	{% if tpv_metascheduler_api_nginx_conf %}
-	location {{ tpv_metascheduler_api_proxy_config.location }} {
-		rewrite  ^{{ tpv_metascheduler_api_proxy_config.location }}(.*)  /$1 break;
-        proxy_pass {{ tpv_metascheduler_api_proxy_config.proxy_pass_protocol }}://{{ tpv_metascheduler_api_proxy_config.proxy_pass_host }}:{{ tpv_metascheduler_api_proxy_config.proxy_pass_port }};
+	{% if tpv_broker_nginx_conf %}
+	location {{ tpv_broker_proxy_config.location }} {
+		rewrite  ^{{ tpv_broker_proxy_config.location }}(.*)  /$1 break;
+        proxy_pass {{ tpv_broker_proxy_config.proxy_pass_protocol }}://{{ tpv_broker_proxy_config.proxy_pass_host }}:{{ tpv_broker_proxy_config.proxy_pass_port }};
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
 	}
 
-	location {{ tpv_metascheduler_api_proxy_config.location }}version {
-		alias {{ tpv_metascheduler_api_dir }}/version;
+	location {{ tpv_broker_proxy_config.location }}version {
+		alias {{ tpv_broker_dir }}/version;
 		add_header Content-Type text/plain;
         }
 	{% endif %}

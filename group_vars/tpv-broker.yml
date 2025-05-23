@@ -26,7 +26,12 @@ handy_groups:
     group_gid: '{{ galaxy_group.gid }}'
 
 # Role: galaxyproject.miniconda
-conda_prefix_dir: "/opt/miniconda"
+conda_prefix_dir: '/opt/miniconda'
+miniconda_prefix: '{{ conda_prefix_dir }}'
+galaxy_conda_create_env: true
+galaxy_conda_env_packages:
+  - python=3.11
+  - pip
 
 # Certbot
 certbot_virtualenv_package_name: python3-virtualenv
@@ -53,27 +58,32 @@ nginx_servers:
 nginx_ssl_servers:
   - tpv-broker
 nginx_enable_default_server: false
-nginx_flavor: ""
+nginx_flavor: ''
 
 # Nginx Letsencrypt bindings
 nginx_ssl_role: usegalaxy-eu.certbot
 nginx_conf_ssl_certificate: /etc/ssl/certs/fullchain.pem
 nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
 
-# Role: tpv_metascheduler_api
-tpv_metascheduler_api_dir: '/opt/tpv-broker'
-tpv_metascheduler_api_repo: 'https://github.com/usegalaxy-eu/tpv-broker.git'
-tpv_metascheduler_api_commit_id: 'main'
-tpv_metascheduler_api_force_checkout: true # discards local changes if any
-tpv_metascheduler_api_venv_dir: '/opt/tpv-broker/venv'
-tpv_metascheduler_api_virtualenv_command: '{{ conda_prefix_dir }}/envs/_galaxy_/bin/python -m venv --copies'
-tpv_metascheduler_api_systemd_service_name: 'tpv-broker'
-tpv_metascheduler_api_systemd_service_user: 'nginx'
-tpv_metascheduler_api_ssl_certificate: '{{ nginx_conf_ssl_certificate }}'
-tpv_metascheduler_api_ssl_certificate_key: '{{ nginx_conf_ssl_certificate_key }}'
-tpv_metascheduler_api_nginx_conf: true
-tpv_metascheduler_api_proxy_config:
+# Role: usegalaxy_eu.ansible_tpv_broker
+tpv_broker_dir: '/opt/tpv-broker'
+tpv_broker_repo: 'https://github.com/usegalaxy-eu/tpv-broker.git'
+tpv_broker_commit_id: 'main'
+tpv_broker_force_checkout: true # discards local changes if any
+tpv_broker_venv_dir: '/opt/tpv-broker/venv'
+tpv_broker_virtualenv_command: '{{ conda_prefix_dir }}/envs/_galaxy_/bin/python -m venv --copies'
+tpv_broker_systemd_service_name: 'tpv-broker'
+tpv_broker_systemd_service_user: 'nginx'
+tpv_broker_ssl_certificate: '{{ nginx_conf_ssl_certificate }}'
+tpv_broker_ssl_certificate_key: '{{ nginx_conf_ssl_certificate_key }}'
+tpv_broker_nginx_conf: true
+tpv_broker_proxy_config:
   location: '/'
   proxy_pass_host: '127.0.0.1'
   proxy_pass_port: 8000
   proxy_pass_protocol: 'https'
+influx_address: '{{ influxdb.host }}'
+influx_port: 8086
+influx_db: '{{ influxdb.node.database }}'
+influx_username: '{{ influxdb.node.username }}'
+influx_password: '{{ influxdb.node.password }}'
