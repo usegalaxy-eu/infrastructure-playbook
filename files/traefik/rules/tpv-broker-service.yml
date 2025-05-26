@@ -1,7 +1,10 @@
 http:
+  serversTransports:
+    tpv-broker-transport:
+      serverName: tpv-broker.galaxyproject.eu
   services:
     tpv-broker:
       loadBalancer:
-        passHostHeader: true
+        serversTransport: tpv-broker-transport
         servers:
-          - url: "http://10.4.68.199"
+          - url: "https://10.4.68.199"
