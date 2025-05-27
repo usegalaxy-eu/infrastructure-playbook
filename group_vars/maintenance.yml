@@ -323,7 +323,7 @@ telegraf_plugins_extra:
       - commands = ["{{ custom_telegraf_env }} /usr/bin/galaxy_monthly_active_users"]
       - timeout = "600s"
       - data_format = "influx"
-      - interval = "7d"
+      - interval = "168h"
   galaxy_user_file_source_utilisation:
     plugin: "exec"
     config:
