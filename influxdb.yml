@@ -6,6 +6,7 @@
     hostname: influxdb.galaxyproject.eu
   vars_files:
     - "secret_group_vars/all.yml"
+    - secret_group_vars/aws.yml # AWS creds
   pre_tasks:
     - name: Install Dependencies
       become: true
