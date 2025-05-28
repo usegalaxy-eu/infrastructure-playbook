@@ -62,6 +62,12 @@ certbot_install_method: virtualenv
 certbot_share_key_users:
   - nginx
   - influxdb
+aws_cli_credentials:
+  - access_key: "{{ aws_credentials.certbot.AWS_ACCESS_KEY }}"
+    secret_key: "{{ aws_credentials.certbot.AWS_SECRET_KEY }}"
+    homedir: /root
+    owner: root
+    group: root
 
 certbot_post_renewal: |
     systemctl restart nginx || true
