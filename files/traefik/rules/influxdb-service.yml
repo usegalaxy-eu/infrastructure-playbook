@@ -1,0 +1,10 @@
+http:
+  serversTransports:
+    influxdb-transport:
+      serverName: influxdb.galaxyproject.eu
+  services:
+    influxdb:
+      loadBalancer:
+        serversTransport: influxdb-transport
+        servers:
+          - url: "https://10.4.68.196"
