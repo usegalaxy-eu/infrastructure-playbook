@@ -4,7 +4,7 @@ http:
       rule: "Host(`influxdb.galaxyproject.eu`)"
       service: influxdb
       entryPoints:
-        - websecure
+        - influxdb
       tls:
         certResolver: "route53"
         domains:
