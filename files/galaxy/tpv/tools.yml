@@ -346,7 +346,9 @@ tools:
         - docker
 
   toolshed.g2.bx.psu.edu/repos/bgruening/markitdown/markitdown/.*:
-    inherits: basic_docker_tool  
+    inherits: basic_docker_tool
+    params:
+      docker_run_extra_arguments: --user 999
   toolshed.g2.bx.psu.edu/repos/iuc/brew3r_r/brew3r_r/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/bellavista_prepare/bellavista_prepare/.*:
