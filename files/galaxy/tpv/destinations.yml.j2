@@ -525,3 +525,33 @@ destinations:
       GPU_AVAILABLE: 1
     params:
       requirements: 'GalaxyGroup == "compute_gpu"'
+
+  condor_docker_gpu_pxe:
+    inherits: basic_docker_destination
+    # shorter than inheriting from condor_gpu
+    runner: condor
+    max_accepted_cores: 14
+    max_accepted_mem: 37
+    min_accepted_gpus: 1
+    max_accepted_gpus: 4
+    scheduling:
+      require:
+        - docker
+        - pxe
+    env:
+      GPU_AVAILABLE: 1
+
+  condor_singularity_gpu_pxe:
+    inherits: basic_singularity_destination
+    # shorter than inheriting from condor_gpu
+    runner: condor
+    max_accepted_cores: 14
+    max_accepted_mem: 37
+    min_accepted_gpus: 1
+    max_accepted_gpus: 4
+    scheduling:
+      require:
+        - singularity
+        - pxe
+    env:
+      GPU_AVAILABLE: 1

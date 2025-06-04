@@ -6,6 +6,13 @@ roles:
   storage-test*:
     params:
       object_store_id: "s3_netapp01"
+  training-pxe-test*:
+    rules:
+      - id: gpu_pxe_test
+        if: gpus > 0
+        scheduling:
+          require:
+            - pxe
 
   rstudio-poweruser*:
     rules:
