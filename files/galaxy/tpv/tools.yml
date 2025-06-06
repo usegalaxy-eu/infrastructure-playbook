@@ -369,8 +369,12 @@ tools:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/ecology/tool_odv/tool_odv_history/.*:
     inherits: basic_docker_tool
+    params:
+      docker_run_extra_arguments: --user 999
   toolshed.g2.bx.psu.edu/repos/ecology/tool_odv/tool_biogeochemical_calibration/.*:
     inherits: basic_docker_tool
+    params:
+      docker_run_extra_arguments: --user 999
   # conda env not working, trying the container
   toolshed.g2.bx.psu.edu/repos/imgteam/color_deconvolution/ip_color_deconvolution/.*:
     inherits: basic_docker_tool
