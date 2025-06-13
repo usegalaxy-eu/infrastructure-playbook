@@ -422,9 +422,13 @@ tools:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/biomodels_biomd0000001076/biomodels_biomd0000001076/.*:
     inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/bgruening/image_processing/yolo-utils/doclayoutyolo/doclayoutyolo/.*:
+  toolshed.g2.bx.psu.edu/repos/bgruening/doclayoutyolo/doclayoutyolo/.*:
     inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/bgruening/image_processing/yolo/json2yolosegment/.*:
+  toolshed.g2.bx.psu.edu/repos/bgruening/json2yolosegment/json2yolosegment/.*:
+    inherits: basic_docker_tool
+    toolshed.g2.bx.psu.edu/repos/bgruening/yolo_predict/yolo_predict/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/bgruening/yolo_training/yolo_training/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/imgteam/rfove/rfove/.*:
     inherits: basic_docker_tool
@@ -435,24 +439,6 @@ tools:
   toolshed.g2.bx.psu.edu/repos/galaxyp/diann/diann/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/instagraal/instagraal/.*:
-    inherits: basic_docker_tool
-    gpus: 1
-    cores: 1
-    mem: 30
-    params:
-      docker_run_extra_arguments: ' --gpus all '
-    env:
-      GPU_AVAILABLE: 1
-  toolshed.g2.bx.psu.edu/repos/bgruening/image_processing/yolo/yolo_predict/.*:
-    inherits: basic_docker_tool
-    gpus: 1
-    cores: 1
-    mem: 30
-    params:
-      docker_run_extra_arguments: ' --gpus all '
-    env:
-      GPU_AVAILABLE: 1
-  toolshed.g2.bx.psu.edu/repos/bgruening/image_processing/yolo/yolo_training/.*:
     inherits: basic_docker_tool
     gpus: 1
     cores: 1
