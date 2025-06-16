@@ -107,6 +107,7 @@ telegraf_plugins_extra:
 # Custom pip installer
 pip_venv_path: "{{ galaxy_venv_dir }}"
 pip_install_dependencies:
+  - rspace-client==2.6.1  # RSpace support for Galaxy (workaround for issue https://github.com/galaxyproject/galaxy/issues/20483, remove when fixed)
   # celery and flower
   - redis
   - flower
