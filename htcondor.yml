@@ -12,6 +12,8 @@
         state: reloaded
   vars_files:
     - secret_group_vars/db-main.yml  # PostgreSQL password (galaxyproject.gxadmin)
+    - mounts/dest/all.yml
+    - mounts/mountpoints.yml
   pre_tasks:
     - name: Ensure findutils is installed. (handy.os_setup)
       become: true
