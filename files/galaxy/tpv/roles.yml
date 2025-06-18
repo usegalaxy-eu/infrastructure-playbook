@@ -9,7 +9,8 @@ roles:
   training-pxe-test*:
     rules:
       - id: gpu_pxe_test
-        if: tool.gpus > 0
+        if: |
+          self.gpus > 0
         scheduling:
           require:
             - pxe-gpu
