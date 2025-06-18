@@ -9,11 +9,10 @@ roles:
   training-pxe-test*:
     rules:
       - id: gpu_pxe_test
-        if: gpus > 0
+        if: tool.gpus > 0
         scheduling:
           require:
-            - pxe
-
+            - pxe-gpu
   rstudio-poweruser*:
     rules:
       - id: rstudio_poweruser

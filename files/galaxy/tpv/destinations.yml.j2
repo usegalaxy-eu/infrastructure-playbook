@@ -537,9 +537,11 @@ destinations:
     scheduling:
       require:
         - docker
-        - pxe
+        - pxe-gpu
     env:
       GPU_AVAILABLE: 1
+    params:
+      requirements: 'GalaxyGroup == "training-pxe-test-gpu"'
 
   condor_singularity_gpu_pxe:
     inherits: basic_singularity_destination
@@ -552,6 +554,8 @@ destinations:
     scheduling:
       require:
         - singularity
-        - pxe
+        - pxe-gpu
     env:
       GPU_AVAILABLE: 1
+    params:
+      requirements: 'GalaxyGroup == "training-pxe-test-gpu"'
