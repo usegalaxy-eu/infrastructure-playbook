@@ -8,6 +8,7 @@ galaxy_config_dir: "{{ galaxy_root }}/config"
 galaxy_config_file: "{{ galaxy_config_dir }}/galaxy.yml"
 galaxy_mutable_config_dir: "{{ galaxy_root }}/mutable-config"
 galaxy_log_dir: "/var/log/galaxy"
+galaxy_virtualenv_python: "{{ galaxy_venv_dir }}/bin/python"
 
 galaxy_group:
   name: galaxy
@@ -345,6 +346,13 @@ telegraf_plugins_extra:
       - timeout = "10s"
       - data_format = "influx"
       - interval = "24h"
+  tpv_broker_pulsar_consumer:
+    plugin: "exec"
+    config:
+      - commands = ["{{ consumer_venv_dir }} {{ pulsar_consumer_dir }}/pulsar_metric_consumer.py {{ consumer_galaxy_job_conf }}"]
+      - timeout = "10s"
+      - data_format = "influx"
+      - interval = "1m"
 
 # Role: hxr.monitor-cluster
 monitor_condor: true
@@ -412,3 +420,15 @@ walle_envs_database:
 walle_cron_day: "*"
 walle_cron_hour: "*"
 walle_cron_minute: "0"
+
+# Role: usegalaxy_eu.ansible-pulsar-util
+pulsar_metric_role: "consumer"
+consumer_influx_address: '{{ influxdb.host }}'
+consumer_influx_port: 8086
+consumer_influx_db: '{{ influxdb.node.database }}'
+consumer_influx_username: '{{ influxdb.node.username }}'
+consumer_influx_password: '{{ influxdb.node.password }}'
+consumer_influx_measurement: "pulsars_htcondor_cluster_usage"
+pulsar_consumer_dir: "/opt/tpv_broker_pulsar_consumer"
+consumer_venv_dir: "{{ pulsar_consumer_dir }}/venv"
+consumer_galaxy_job_conf: "{{ galaxy_config_dir }}/job_conf.yml"
