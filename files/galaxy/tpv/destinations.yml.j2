@@ -542,6 +542,7 @@ destinations:
       GPU_AVAILABLE: 1
     params:
       requirements: 'GalaxyGroup == "training-pxe-test-gpu"'
+      request_gpus: "{gpus or 0}"
 
   condor_singularity_gpu_pxe:
     inherits: basic_singularity_destination
@@ -559,3 +560,4 @@ destinations:
       GPU_AVAILABLE: 1
     params:
       requirements: 'GalaxyGroup == "training-pxe-test-gpu"'
+      request_gpus: "{gpus or 0}"
