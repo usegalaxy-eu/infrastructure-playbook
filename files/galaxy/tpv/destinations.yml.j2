@@ -540,7 +540,6 @@ destinations:
         - pxe-gpu
     env:
       GPU_AVAILABLE: 1
-      CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
     params:
       requirements: 'GalaxyGroup == "training-pxe-test-gpu"'
       request_gpus: "{gpus or 0}"
@@ -559,7 +558,6 @@ destinations:
         - pxe-gpu
     env:
       GPU_AVAILABLE: 1
-      CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
     params:
       requirements: 'GalaxyGroup == "training-pxe-test-gpu"'
       request_gpus: "{gpus or 0}"
