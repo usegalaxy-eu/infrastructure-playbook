@@ -461,7 +461,7 @@ tools:
     gpus: 1
     cores: 1
     params:
-      docker_run_extra_arguments: ' --gpus all '
+      docker_run_extra_arguments: ' --gpus all  --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
     env:
       GPU_AVAILABLE: 1
 
