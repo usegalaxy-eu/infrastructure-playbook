@@ -22,17 +22,17 @@ tools:
       - id: no-pulsar
         if: user is not None
         execute: |
-            from tpv.core.entities import Tag, TagSetManager, TagType
+          from tpv.core.entities import Tag, TagSetManager, TagType
 
-            user_preferences = user.extra_preferences
-            pulsar_tag = user_preferences.get("distributed_compute|remote_resources", "None")
-            pulsar_tag = Tag("scheduling", pulsar_tag, TagType.REQUIRE) if pulsar_tag != "None" else None
+          user_preferences = user.extra_preferences
+          pulsar_tag = user_preferences.get("distributed_compute|remote_resources", "None")
+          pulsar_tag = Tag("scheduling", pulsar_tag, TagType.REQUIRE) if pulsar_tag != "None" else None
 
-            entity.tpv_tags.tags = [
-                tag
-                for tag in entity.tpv_tags.tags
-                if tag != pulsar_tag
-            ]
+          entity.tpv_tags.tags = [
+              tag
+              for tag in entity.tpv_tags.tags
+              if tag != pulsar_tag
+          ]
 
     env:
       TEMP: /data/1/galaxy_db/tmp
@@ -364,7 +364,7 @@ tools:
   toolshed.g2.bx.psu.edu/repos/ecology/harmonize_insitu_to_netcdf/harmonize_insitu_to_netcdf/.*:
     inherits: basic_docker_tool
     env:
-      _GALAXY_JOB_TMP_DIR: '/tmp'
+      _GALAXY_JOB_TMP_DIR: "/tmp"
   toolshed.g2.bx.psu.edu/repos/ecology/tool_odv/tool_odv/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/ecology/tool_odv_history/tool_odv_history/.*:
@@ -384,7 +384,7 @@ tools:
     inherits: basic_docker_tool
     mem: 6
     env:
-      _GALAXY_JOB_TMP_DIR: '/tmp'
+      _GALAXY_JOB_TMP_DIR: "/tmp"
   toolshed.g2.bx.psu.edu/repos/goeckslab/gate_finder/gate_finder/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/galaxyp/qupath_roi_splitter/qupath_roi_splitter/.*:
@@ -444,7 +444,7 @@ tools:
     cores: 1
     mem: 30
     params:
-      docker_run_extra_arguments: ' --gpus all '
+      docker_run_extra_arguments: " --gpus all "
     env:
       GPU_AVAILABLE: 1
 
@@ -454,14 +454,14 @@ tools:
     cores: 2
     mem: 10
     env:
-      _GALAXY_JOB_TMP_DIR: '/tmp'
+      _GALAXY_JOB_TMP_DIR: "/tmp"
 
   toolshed.g2.bx.psu.edu/repos/bgruening/black_forest_labs_flux/black_forest_labs_flux/.*:
     inherits: basic_docker_tool
     gpus: 1
     cores: 1
     params:
-      docker_run_extra_arguments: ' --gpus all  --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
+      docker_run_extra_arguments: " --gpus all  --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs "
     env:
       GPU_AVAILABLE: 1
 
@@ -877,7 +877,7 @@ tools:
       - if: input_size >= 0.2
         gpus: 1
         params:
-          singularity_run_extra_arguments: ' --nv '
+          singularity_run_extra_arguments: " --nv "
 
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_eval/cherri_eval/.*:
     inherits: basic_docker_tool
@@ -1026,7 +1026,7 @@ tools:
           Too much data, we cannot support such large Trinity assemblies with our
           backend. Please use another server for your job.
 
-  '.*mothur_.*':
+  ".*mothur_.*":
     cores: 1
     mem: 90
     params:
@@ -1039,7 +1039,7 @@ tools:
         # see https://github.com/galaxyproject/galaxy/issues/16121#issuecomment-1555153421
         ##- embedded-pulsar
 
-  '.*mothur_classify_seqs.*':
+  ".*mothur_classify_seqs.*":
     cores: 2
     mem: 20
     params:
@@ -1052,7 +1052,7 @@ tools:
         # see https://github.com/galaxyproject/galaxy/issues/16121#issuecomment-1555153421
         ##- embedded-pulsar
 
-  '.*bioext_bam2msa.*':
+  ".*bioext_bam2msa.*":
     params:
       docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
       docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
@@ -1062,7 +1062,7 @@ tools:
         - docker
         - embedded-pulsar
 
-  'last_*':
+  "last_*":
     params:
       docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
       docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
@@ -1136,7 +1136,7 @@ tools:
       require:
         - singularity
         - conda
-# Not for Pulsar, or is the file copied?
+  # Not for Pulsar, or is the file copied?
   toolshed.g2.bx.psu.edu/repos/climate/cds_essential_variability/cds_essential_variability/.*:
     env:
       COPERNICUS_CDSAPIRC_KEY_FILE: /data/db/data_managers/COPERNICUS_CDSAPIRC_KEY_FILE
@@ -1270,7 +1270,7 @@ tools:
         - singularity
     env:
       - name: SINGULARITYENV_LC_ALL
-        value: $LC_ALL
+        value: C
 
   braker_tool:
     abstract: true
@@ -1443,7 +1443,7 @@ tools:
     cores: 8
     mem: 42
     env:
-      _GALAXY_JOB_TMP_DIR: '/tmp'
+      _GALAXY_JOB_TMP_DIR: "/tmp"
     rules:
       - id: funannotate_annotate_large_input
         if: input_size > 3.2
@@ -1462,7 +1462,7 @@ tools:
     mem: 12
     env:
       GENEMARK_PATH: /usr/local/tools/genemark/etp.for_braker/bin/gmes/
-      _GALAXY_JOB_TMP_DIR: '/tmp'
+      _GALAXY_JOB_TMP_DIR: "/tmp"
     params:
       singularity_run_extra_arguments: "--env GENEMARK_PATH=/usr/local/tools/genemark/etp.for_braker/bin/gmes/ -B /tmp:/tmp"
       singularity_no_mount: null
@@ -1567,7 +1567,7 @@ tools:
         - conda
         - singularity
     env:
-      _GALAXY_JOB_TMP_DIR: '/tmp'
+      _GALAXY_JOB_TMP_DIR: "/tmp"
 
   toolshed.g2.bx.psu.edu/repos/bgruening/hicexplorer_hicinfo/hicexplorer_hicinfo/.*:
     scheduling:
@@ -1580,7 +1580,7 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/iuc/episcanpy_build_matrix/episcanpy_build_matrix/.*:
     env:
-      _GALAXY_JOB_TMP_DIR: '/tmp'
+      _GALAXY_JOB_TMP_DIR: "/tmp"
     params:
       singularity_no_mount: null
     scheduling:
@@ -1594,7 +1594,7 @@ tools:
   # ppanggolin all tries to remove TMP folders, on NFS this does not always work, so we run this tool in singularity with internal (non-NFS) TMP
   toolshed.g2.bx.psu.edu/repos/iuc/ppanggolin_all/ppanggolin_all/.*:
     env:
-      _GALAXY_JOB_TMP_DIR: '/tmp'
+      _GALAXY_JOB_TMP_DIR: "/tmp"
     params:
       singularity_no_mount: null
     scheduling:
