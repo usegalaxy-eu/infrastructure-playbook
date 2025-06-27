@@ -1268,6 +1268,9 @@ tools:
     scheduling:
       require:
         - singularity
+    env:
+      - name: SINGULARITYENV_LC_ALL
+        value: $LC_ALL
 
   braker_tool:
     abstract: true
