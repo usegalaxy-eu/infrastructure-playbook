@@ -470,7 +470,15 @@ tools:
     cores: 1
     mem: 5
     env:
+      WHISPERX_MODEL_DIR: "/data/db/models/whisperx/"
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/whisperx/whisperx/.*:
+    inherits: basic_docker_tool
+    cores: 1
+    mem: 5
+    env:
       OPENAI_WHISPER_MODEL_DIR: "/data/db/models/openai_whisper/"
+
   toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc/.*:
     # 8 (from the shared TPV) seems to high for me
     cores: 3
