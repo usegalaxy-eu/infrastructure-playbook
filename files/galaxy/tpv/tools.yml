@@ -345,18 +345,6 @@ tools:
     scheduling:
       require:
         - docker
-  basic_pxe_tool:
-    rule:
-      - name: Assign pxe by random
-        if: true
-        execute: |
-          from tpv.core.entities import Tag, TagSetManager, TagType
-          from random import SystemRandom
-          if SystemRandom().random() < 0.5:
-             pulsar_tag = Tag("scheduling", "pxe", TagType.PREFER)
-             entity.tpv_tags = entity.tpv_tags.combine(
-                     TagSetManager(tags=[pulsar_tag])
-                 )
   basic_pxe_gpu_tool:
     inherits: basic_docker_tool
     rule:
@@ -365,11 +353,9 @@ tools:
         execute: |
           from tpv.core.entities import Tag, TagSetManager, TagType
           from random import SystemRandom
-          if SystemRandom().random() < 0.5:
+          if SystemRandom().random() < 0.2:
             pulsar_tag = Tag("scheduling", "pxe-gpu", TagType.PREFER)
-             entity.tpv_tags = entity.tpv_tags.combine(
-                     TagSetManager(tags=[pulsar_tag])
-                 )
+            entity.tpv_tags = entity.tpv_tags.combine(TagSetManager(tags=[pulsar_tag]))
   toolshed.g2.bx.psu.edu/repos/bgruening/markitdown/markitdown/.*:
     inherits: basic_docker_tool
     params:
