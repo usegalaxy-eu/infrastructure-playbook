@@ -218,7 +218,6 @@ tools:
     cores: 8
     params:
       singularity_enabled: true
-    inherits: basic_pxe_tool
 
   toolshed.g2.bx.psu.edu/repos/rnateam/dewseq/dewseq/.*:
     cores: 2
@@ -514,7 +513,6 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc/.*:
     # 8 (from the shared TPV) seems to high for me
-    inherits: basic_pxe_tool
     cores: 3
 
 
@@ -1048,7 +1046,6 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/trinity/trinity/.*:
     cores: 24
     mem: 250
-    inherits: basic_pxe_tool
     scheduling:
       prefer:
         - condor-tpv
