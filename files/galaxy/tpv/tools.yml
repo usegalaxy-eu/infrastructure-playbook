@@ -218,6 +218,7 @@ tools:
     cores: 8
     params:
       singularity_enabled: true
+    inherits: basic_pxe_tool
 
   toolshed.g2.bx.psu.edu/repos/rnateam/dewseq/dewseq/.*:
     cores: 2
@@ -344,7 +345,31 @@ tools:
     scheduling:
       require:
         - docker
-
+  basic_pxe_tool:
+    rule:
+      - name: Assign pxe by random
+        if: true
+        execute: |
+          from tpv.core.entities import Tag, TagSetManager, TagType
+          from random import SystemRandom
+          if SystemRandom().random() < 0.5:
+             pulsar_tag = Tag("scheduling", "pxe", TagType.PREFER)
+             entity.tpv_tags = entity.tpv_tags.combine(
+                     TagSetManager(tags=[pulsar_tag])
+                 )
+  basic_pxe_gpu_tool:
+    inherits: basic_docker_tool
+    rule:
+      - name: Assign pxe-gpu by random
+        if: true
+        execute: |
+          from tpv.core.entities import Tag, TagSetManager, TagType
+          from random import SystemRandom
+          if SystemRandom().random() < 0.5:
+            pulsar_tag = Tag("scheduling", "pxe-gpu", TagType.PREFER)
+             entity.tpv_tags = entity.tpv_tags.combine(
+                     TagSetManager(tags=[pulsar_tag])
+                 )
   toolshed.g2.bx.psu.edu/repos/bgruening/markitdown/markitdown/.*:
     inherits: basic_docker_tool
     params:
@@ -446,7 +471,7 @@ tools:
   toolshed.g2.bx.psu.edu/repos/galaxyp/diann/diann/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/instagraal/instagraal/.*:
-    inherits: basic_docker_tool
+    inherits: basic_pxe_gpu_tool
     gpus: 1
     cores: 1
     mem: 30
@@ -464,7 +489,7 @@ tools:
       _GALAXY_JOB_TMP_DIR: '/tmp'
 
   toolshed.g2.bx.psu.edu/repos/iuc/diffdock/diffdock/.*:
-    inherits: basic_docker_tool
+    inherits: basic_pxe_gpu_tool
     gpus: 1
     cores: 1
     params:
@@ -473,7 +498,7 @@ tools:
       GPU_AVAILABLE: 1
 
   toolshed.g2.bx.psu.edu/repos/bgruening/black_forest_labs_flux/black_forest_labs_flux/.*:
-    inherits: basic_docker_tool
+    inherits: basic_pxe_gpu_tool
     gpus: 1
     cores: 1
     params:
@@ -483,14 +508,14 @@ tools:
       GPU_AVAILABLE: 1
 
   toolshed.g2.bx.psu.edu/repos/bgruening/whisper/whisper/.*:
-    inherits: basic_docker_tool
+    inherits: basic_pxe_gpu_tool
     cores: 1
     mem: 5
     env:
       OPENAI_WHISPER_MODEL_DIR: "/data/db/models/openai_whisper/"
 
   toolshed.g2.bx.psu.edu/repos/bgruening/whisperx/whisperx/.*:
-    inherits: basic_docker_tool
+    inherits: basic_pxe_gpu_tool
     gpus: 1
     cores: 1
     mem: 5
@@ -503,7 +528,9 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc/.*:
     # 8 (from the shared TPV) seems to high for me
+    inherits: basic_pxe_tool
     cores: 3
+
 
   toolshed.g2.bx.psu.edu/repos/iuc/bbtools_tadpole/bbtools_tadpole/.*:
     mem: 8
@@ -1035,6 +1062,7 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/trinity/trinity/.*:
     cores: 24
     mem: 250
+    inherits: basic_pxe_tool
     scheduling:
       prefer:
         - condor-tpv
