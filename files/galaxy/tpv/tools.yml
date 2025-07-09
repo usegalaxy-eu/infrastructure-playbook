@@ -345,6 +345,18 @@ tools:
       require:
         - docker
 
+  basic_pxe_gpu_tool:
+    inherits: basic_docker_tool
+    rule:
+      - name: Assign pxe-gpu by random
+        if: true
+        execute: |
+          from tpv.core.entities import Tag, TagSetManager, TagType
+          from random import SystemRandom
+          if SystemRandom().random() < 0.2:
+            pulsar_tag = Tag("scheduling", "pxe-gpu", TagType.PREFER)
+            entity.tpv_tags = entity.tpv_tags.combine(TagSetManager(tags=[pulsar_tag]))
+
   toolshed.g2.bx.psu.edu/repos/bgruening/markitdown/markitdown/.*:
     inherits: basic_docker_tool
     params:
@@ -434,7 +446,7 @@ tools:
     cores: 4
     mem: 32
     params:
-      docker_run_extra_arguments: ' --gpus all '
+      docker_run_extra_arguments: ' --gpus all --shm-size 16g '
     env:
       GPU_AVAILABLE: 1
   toolshed.g2.bx.psu.edu/repos/imgteam/rfove/rfove/.*:
@@ -446,7 +458,7 @@ tools:
   toolshed.g2.bx.psu.edu/repos/galaxyp/diann/diann/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/instagraal/instagraal/.*:
-    inherits: basic_docker_tool
+    inherits: basic_pxe_gpu_tool
     gpus: 1
     cores: 1
     mem: 30
@@ -464,7 +476,7 @@ tools:
       _GALAXY_JOB_TMP_DIR: '/tmp'
 
   toolshed.g2.bx.psu.edu/repos/iuc/diffdock/diffdock/.*:
-    inherits: basic_docker_tool
+    inherits: basic_pxe_gpu_tool
     gpus: 1
     cores: 1
     params:
@@ -473,7 +485,7 @@ tools:
       GPU_AVAILABLE: 1
 
   toolshed.g2.bx.psu.edu/repos/bgruening/black_forest_labs_flux/black_forest_labs_flux/.*:
-    inherits: basic_docker_tool
+    inherits: basic_pxe_gpu_tool
     gpus: 1
     cores: 1
     params:
@@ -483,14 +495,14 @@ tools:
       GPU_AVAILABLE: 1
 
   toolshed.g2.bx.psu.edu/repos/bgruening/whisper/whisper/.*:
-    inherits: basic_docker_tool
+    inherits: basic_pxe_gpu_tool
     cores: 1
     mem: 5
     env:
       OPENAI_WHISPER_MODEL_DIR: "/data/db/models/openai_whisper/"
 
   toolshed.g2.bx.psu.edu/repos/bgruening/whisperx/whisperx/.*:
-    inherits: basic_docker_tool
+    inherits: basic_pxe_gpu_tool
     gpus: 1
     cores: 1
     mem: 5
@@ -504,6 +516,7 @@ tools:
   toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc/.*:
     # 8 (from the shared TPV) seems to high for me
     cores: 3
+
 
   toolshed.g2.bx.psu.edu/repos/iuc/bbtools_tadpole/bbtools_tadpole/.*:
     mem: 8
