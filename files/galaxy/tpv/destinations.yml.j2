@@ -543,14 +543,14 @@ destinations:
     params:
       requirements: 'GalaxyGroup == "pxe-gpu"'
       request_gpus: "{gpus or 0}"
-      docker_run_extra_arguments: "{{ entity.params.get('docker_run_extra_arguments') or '' }} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
+      docker_run_extra_arguments: "{entity.params.get('docker_run_extra_arguments') or ''} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
 
   condor_docker_gpu_pxe_divide4:
     inherits: condor_docker_gpu_pxe
     params:
       requirements: 'GalaxyGroup == "pxe-gpu-div4"'
       request_gpus: "{gpus or 0}"
-      docker_run_extra_arguments: "{{ entity.params.get('docker_run_extra_arguments') or '' }} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
+      docker_run_extra_arguments: "{entity.params.get('docker_run_extra_arguments') or ''} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
 
   condor_singularity_gpu_pxe:
     inherits: basic_singularity_destination
@@ -567,4 +567,4 @@ destinations:
     params:
       requirements: 'GalaxyGroup == "pxe-gpu-div4"'
       request_gpus: "{gpus or 0}"
-      singularity_run_extra_arguments: "{{ entity.params.get('singularity_run_extra_arguments') or '' }} --nv --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
+      singularity_run_extra_arguments: "{entity.params.get('singularity_run_extra_arguments') or ''} --nv --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
