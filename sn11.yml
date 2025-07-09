@@ -1,0 +1,36 @@
+---
+- name: Galaxy DB server
+  hosts: sn11
+  become: true
+  vars:
+    hostname: sn11.galaxyproject.eu
+  vars_files:
+    - secret_group_vars/all.yml
+    - group_vars/sn11.yml
+    - mounts/dest/all.yml
+    - mounts/mountpoints.yml
+  collections:
+    - devsec.hardening
+  post_tasks:
+    - name: Ensure PostgreSQL is allowed on the firewall
+      ansible.builtin.firewalld:
+        service: postgresql
+        permanent: true
+        state: enabled
+        immediate: true
+  roles:
+    - geerlingguy.repo-epel
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        enable_hostname: true
+        enable_powertools: true # geerlingguy.repo-epel role doesn't enable PowerTools repository
+        enable_install_software: true # Some extra admin tools (*top, vim, etc)
+    - usegalaxy-eu.dynmotd
+    - influxdata.chrony
+    - hxr.monitor-email
+    - usegalaxy-eu.autoupdates # keep all of our packages up to date
+    - usegalaxy-eu.autofs
+    - ssh-host-sign
+    - usegalaxy-eu.ansible-postgresql
+    - dj-wasabi.telegraf
+    - ssh_hardening
