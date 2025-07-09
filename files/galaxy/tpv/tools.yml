@@ -344,6 +344,7 @@ tools:
     scheduling:
       require:
         - docker
+
   basic_pxe_gpu_tool:
     inherits: basic_docker_tool
     rule:
@@ -355,6 +356,7 @@ tools:
           if SystemRandom().random() < 0.2:
             pulsar_tag = Tag("scheduling", "pxe-gpu", TagType.PREFER)
             entity.tpv_tags = entity.tpv_tags.combine(TagSetManager(tags=[pulsar_tag]))
+
   toolshed.g2.bx.psu.edu/repos/bgruening/markitdown/markitdown/.*:
     inherits: basic_docker_tool
     params:
