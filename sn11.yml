@@ -11,12 +11,13 @@
     - mounts/mountpoints.yml
   collections:
     - devsec.hardening
-  # pre_tasks:
-  #   - name: Disable firewalld service
-  #     ansible.builtin.service:
-  #       name: firewalld
-  #       enabled: false
-  #       state: stopped
+  post_tasks:
+    - name: Ensure PostgreSQL is allowed on the firewall
+      ansible.builtin.firewalld:
+        service: postgresql
+        permanent: true
+        state: enabled
+        immediate: true
   roles:
     - geerlingguy.repo-epel
     - role: usegalaxy_eu.handy.os_setup
