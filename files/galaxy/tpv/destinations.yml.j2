@@ -544,6 +544,7 @@ destinations:
       CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
     params:
       requirements: 'GalaxyGroup == "pxe-gpu"'
+      request_gpus: "{gpus or 0}"
 
   condor_docker_gpu_pxe:
     inherits: basic_docker_destination
