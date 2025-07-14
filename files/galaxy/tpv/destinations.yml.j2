@@ -541,6 +541,7 @@ destinations:
     max_accepted_gpus: 4
     env:
       GPU_AVAILABLE: 1
+      CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
     params:
       requirements: 'GalaxyGroup == "pxe-gpu"'
 
