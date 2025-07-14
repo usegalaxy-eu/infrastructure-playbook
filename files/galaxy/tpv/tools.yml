@@ -481,6 +481,9 @@ tools:
       docker_run_extra_arguments: ' --gpus all '
     env:
       GPU_AVAILABLE: 1
+    scheduling:
+      require:
+        - gpu-divided
 
   toolshed.g2.bx.psu.edu/repos/bgruening/whisper/whisper/.*:
     inherits: basic_docker_tool
@@ -488,6 +491,9 @@ tools:
     mem: 5
     env:
       OPENAI_WHISPER_MODEL_DIR: "/data/db/models/openai_whisper/"
+    scheduling:
+      require:
+        - gpu-divided
 
   toolshed.g2.bx.psu.edu/repos/bgruening/whisperx/whisperx/.*:
     inherits: basic_docker_tool
@@ -500,6 +506,9 @@ tools:
       WHISPERX_MODEL_DIR: "/data/db/models/whisperx/whisperx_models/"
       WHISPERX_DEVICE: "cuda"
       WHISPERX_COMPUTE_TYPE: "float16"
+    scheduling:
+      require:
+        - gpu-divided
 
   toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc/.*:
     # 8 (from the shared TPV) seems to high for me

@@ -564,13 +564,15 @@ destinations:
       request_gpus: "{gpus or 0}"
       docker_run_extra_arguments: "{entity.params.get('docker_run_extra_arguments') or ''} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
 
+  # This means a GPU can be shared by max 4 jobs at the same time
   condor_docker_gpu_pxe_divide4:
     inherits: condor_docker_gpu_pxe
     max_accepted_gpus: 1
     params:
       requirements: 'GalaxyGroup == "pxe-gpu-div4"'
-      request_gpus: "{gpus or 0}"
-      docker_run_extra_arguments: "{entity.params.get('docker_run_extra_arguments') or ''} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
+    scheduling:
+      require:
+        - gpu-divided
 
   condor_singularity_gpu_pxe:
     inherits: basic_singularity_destination
@@ -585,6 +587,6 @@ destinations:
         - singularity
         - pxe-gpu
     params:
-      requirements: 'GalaxyGroup == "pxe-gpu-div4"'
+      requirements: 'GalaxyGroup == "pxe-gpu"'
       request_gpus: "{gpus or 0}"
       singularity_run_extra_arguments: "{entity.params.get('singularity_run_extra_arguments') or ''} --nv --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
