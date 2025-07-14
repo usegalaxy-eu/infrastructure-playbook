@@ -449,6 +449,8 @@ tools:
       docker_run_extra_arguments: ' --gpus all --shm-size 16g '
     env:
       GPU_AVAILABLE: 1
+      ## the non-NFS /tmp dir is needed to avoid "resource is busy" errors 
+      _GALAXY_JOB_TMP_DIR: '/tmp'
   toolshed.g2.bx.psu.edu/repos/imgteam/rfove/rfove/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/homer_findmotifs/homer_findMotifs/.*:
