@@ -491,9 +491,6 @@ tools:
     mem: 5
     env:
       OPENAI_WHISPER_MODEL_DIR: "/data/db/models/openai_whisper/"
-    scheduling:
-      require:
-        - gpu-divided
 
   toolshed.g2.bx.psu.edu/repos/bgruening/whisperx/whisperx/.*:
     inherits: basic_docker_tool
