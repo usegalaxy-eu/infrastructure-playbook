@@ -537,7 +537,6 @@ destinations:
     scheduling:
       require:
         - docker
-        - pxe-gpu
     env:
       GPU_AVAILABLE: 1
     params:
@@ -547,6 +546,8 @@ destinations:
 
   condor_docker_gpu_pxe_divide4:
     inherits: condor_docker_gpu_pxe
+    max_accepted_gpus: 1
+    scheduling:
     params:
       requirements: 'GalaxyGroup == "pxe-gpu-div4"'
       request_gpus: "{gpus or 0}"
@@ -559,7 +560,7 @@ destinations:
     max_accepted_cores: 128
     max_accepted_mem: 500
     min_accepted_gpus: 1
-    max_accepted_gpus: 4
+    max_accepted_gpus: 1
     scheduling:
       require:
         - singularity
