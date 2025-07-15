@@ -29,3 +29,10 @@
   with_items:
     - boot.menu
     - config
+
+
+- name: Change the httpd_t domain to permissive
+  community.general.selinux_permissive:
+    name: tftpd_t
+    permissive: true
+
