@@ -24,7 +24,7 @@
     mode: '0644'
     owner: "{{ http_user }}"
     group: "{{ http_group }}"
-    src: "{{ item }}.j2"
+    src: "templates/dnbd3/{{ item }}.j2"
     dest: "{{ apache_vhosts[0].documentroot }}/{{ item }}"
   with_items:
     - boot.menu
