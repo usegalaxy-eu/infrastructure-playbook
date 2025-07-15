@@ -1,0 +1,31 @@
+- name: Grant access to http directory
+  ansible.builtin.file:
+    mode: "770"
+    path: "{{ apache_vhosts[0].documentroot }}/netboot"
+    state: directory
+    owner: "{{ http_user }}"
+    group: "{{ http_group }}"
+- name: Grant access to tftp root directory
+  ansible.builtin.file:
+    mode: "770"
+    path: "{{ tftpboot_path }}"
+    state: directory
+    owner: "{{ tftp_user }}"
+    group: "{{ tftp_group }}"
+- name: Copy ipxe.efi
+  ansible.builtin.copy:
+    mode: '0644'
+    owner: "{{ tftp_user }}"
+    group: "{{ tftp_group }}"
+    src: ipxe.efi
+    dest: "{{ tftpboot_path }}"
+- name: Template http served files
+  ansible.builtin.template:
+    mode: '0644'
+    owner: "{{ http_user }}"
+    group: "{{ http_group }}"
+    src: "{{ item }}.j2"
+    dest: "{{ apache_vhosts[0].documentroot }}/{{ item }}"
+  with_items:
+    - boot.menu
+    - config
