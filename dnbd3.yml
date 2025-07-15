@@ -31,7 +31,7 @@
         group: "{{ dnbd3_group }}"
 
   post_tasks:
-    - name: Allow apache to modify files in /srv/git_repos
+    - name: Create SELinux rule for apache to access http dir
       community.general.sefcontext:
         target: '{{ dnbd3_base_path }}/http(/.*)?'
         setype: httpd_sys_rw_content_t
