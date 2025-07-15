@@ -17,7 +17,7 @@
     mode: '0644'
     owner: "{{ tftp_user }}"
     group: "{{ tftp_group }}"
-    src: ipxe.efi
+    src: files/dnbd3/ipxe.efi
     dest: "{{ tftpboot_path }}"
 - name: Template http served files
   ansible.builtin.template:
