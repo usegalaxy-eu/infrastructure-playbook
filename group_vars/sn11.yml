@@ -22,30 +22,30 @@ postgresql_version: 17
 postgresql_pgdump_dir: '/var/lib/pgsql/pgdump3'
 postgresql_conf:
   # From pgtune
-  # DB Version: 13
-  # OS Type: linux
-  # DB Type: web
-  # Total Memory (RAM): 125 GB
-  # CPUs num: 40
-  # Data Storage: ssd
+  # PostgreSQL-Version: 13 (highest version that could be selected in pgtune)
+  # OS: Linux
+  # Application: OLTP
+  # Memory: 512GB
+  # Cores: 128
+  # Storage: SSD
   - listen_addresses: "'*'"
   - max_connections: 1024
-  - shared_buffers: '24GB'
-  - effective_cache_size: '72GB'
+  - shared_buffers: '128GB'
+  - effective_cache_size: '384GB'
   - maintenance_work_mem: '2GB'
   - checkpoint_completion_target: 0.9
   - wal_buffers: 16MB
   - default_statistics_target: 100
   - random_page_cost: 1.1
   - effective_io_concurrency: 200
-  - work_mem: 40MB
+  - work_mem: 132MB
   - huge_pages: try
-  - min_wal_size: 1GB
+  - min_wal_size: 2GB
   - max_wal_size: 4GB
-  - max_worker_processes: 30
-  - max_parallel_workers_per_gather: 4
-  - max_parallel_workers: 30
-  - max_parallel_maintenance_workers: 4
+  - max_worker_processes: 128
+  - max_parallel_workers_per_gather: 64
+  - max_parallel_workers: 128
+  - max_parallel_maintenance_workers: 64
   - temp_buffers: '64MB'
   - max_prepared_transactions: 100
   # the following line throws an error in v13
