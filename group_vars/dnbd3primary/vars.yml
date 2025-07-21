@@ -11,6 +11,7 @@ apache_vhosts:
   - servername: "dnbd3-primary.galaxyproject.eu"
     serveralias: "{{ hostvars['dnbd3-primary.galaxyproject.eu']['ansible_default_ipv4']['address'] }}"
     documentroot: "{{ netboot_basepath }}/http"
+http_path: "{{ apache_vhosts[0].documentroot }}/netboot"
 # Firewall
 firewall_ip_prefix_trusted:
   - 10.4.68.0/24

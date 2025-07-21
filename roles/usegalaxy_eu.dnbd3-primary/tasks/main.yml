@@ -1,7 +1,7 @@
 - name: Grant access to http directory
   ansible.builtin.file:
     mode: "770"
-    path: "{{ apache_vhosts[0].documentroot }}/netboot"
+    path: "{{ http_path }}"
     state: directory
     owner: "{{ http_user }}"
     group: "{{ http_group }}"
@@ -25,14 +25,11 @@
     owner: "{{ http_user }}"
     group: "{{ http_group }}"
     src: "templates/dnbd3/{{ item }}.j2"
-    dest: "{{ apache_vhosts[0].documentroot }}/{{ item }}"
+    dest: "{{ http_path }}/{{ item }}"
   with_items:
     - boot.menu
     - config
-
-
 - name: Change the httpd_t domain to permissive
   community.general.selinux_permissive:
     name: tftpd_t
     permissive: true
-
