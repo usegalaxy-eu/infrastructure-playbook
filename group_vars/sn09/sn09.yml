@@ -52,7 +52,7 @@ firewall_htcondor_shared_port_service: >
   <service>
     <short>HTCondor Shared Port</short>
     <description>HTCondor shared port service.</description>
-    <port protocol="tcp" port="9618"/>
+    <port protocol="tcp" port="9628"/>
   </service>
 
 # fs-maintenance
@@ -240,7 +240,7 @@ galaxy_cvmfs_server_urls:
 
 # SystemD
 galaxy_systemd_mode: 'gunicorn'
-galaxy_systemd_gunicorns: 7
+galaxy_systemd_gunicorns: 2
 galaxy_systemd_gunicorn_workers: 4
 galaxy_systemd_gunicorn_timeout: 600
 galaxy_systemd_handlers: 0
