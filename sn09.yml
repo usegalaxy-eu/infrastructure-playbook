@@ -73,19 +73,30 @@
         cd /opt/galaxy/ && source /opt/galaxy/.bashrc  && /usr/bin/gxadmin gunicorn handler-restart && systemctl restart galaxy-handler@* && systemctl restart galaxy-workflow-scheduler@*
       listen: 'restart galaxy'
   pre_tasks:
-    - name: Install Dependencies
+    # This should be the 1st pretask as the rest of the tasks are dependent on it.
+    - name: Install EPEL-release
       ansible.builtin.package:
+        name: epel-release
+        state: present
+
+    - name: Install Dependencies
+      ansible.builtin.dnf:
         name:
           [
             'git',
             'postgresql',
             'python3-psycopg2',
-            'python3-virtualenv',
             'bc',
             'python3-devel',
             'rsyslog',
             'rsyslog-gnutls',
           ]
+        state: present
+
+    - name: Install python3-virtualenv from enable crb repository (this repo is the one that provides the package)
+      ansible.builtin.dnf:
+        name: python3-virtualenv
+        enablerepo: crb
         state: present
 
     # ToDo: To avoid PostgreSQL client and version mismatch issues when migrating
@@ -305,7 +316,6 @@
     ## GALAXY
     - hxr.postgres-connection
     - galaxyproject.gxadmin
-    - galaxyproject.tiaas2
     - usegalaxy_eu.ansible_nginx_upload_module
     - usegalaxy-eu.nginx
     - usegalaxy-eu.gapars-galaxy
@@ -329,6 +339,7 @@
         galaxy_build_client: true
         galaxy_client_make_target: client-production
 
+    - galaxyproject.tiaas2
     - usegalaxy_eu.tpv_auto_lint
     ## Extras!
     - usegalaxy-eu.fix-galaxy-server-dir # Fix details into the galaxy server dirs
