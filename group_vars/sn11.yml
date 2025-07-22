@@ -51,6 +51,7 @@ postgresql_conf:
   # the following line throws an error in v13
   #  - shared_preload_libraries: "'pg_stat_statements'"
   #  - log_line_prefix: "'%t:%r:%u@%d:[%p]<%m>: '"
+  - log_filename: "'postgresql-%u-%a.log'"
   - log_checkpoints: 'on'
   - log_min_duration_statement: 1500
   - track_activity_query_size: 4096

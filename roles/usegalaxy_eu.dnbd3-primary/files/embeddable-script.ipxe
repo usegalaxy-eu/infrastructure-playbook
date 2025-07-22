@@ -1,0 +1,17 @@
+#!ipxe
+prompt --key 0x1b --timeout 5000 Press ESC for the iPXE command line... && shell ||
+set nic:int32 -1
+
+:loop
+inc nic
+iseq ${nic} 10 && goto dhcp ||
+isset ${net${nic}/ip} || goto loop
+ifopen net${nic} || shell
+goto chain
+
+:dhcp
+ifconf net0 || shell
+set nic:int32 0
+
+:chain
+chain http://dnbd3-primary.galaxyproject.eu/netboot/boot.menu || shell
