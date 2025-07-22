@@ -2,13 +2,16 @@
 - name: DNBD3 Infrastructure
   hosts: dnbd3primary,dnbd3proxy
   become: true
+  vars_files:
+    - group_vars/all.yml
+    - secret_group_vars/all.yml
+
   pre_tasks:
     - name: Install dependencies
       ansible.builtin.package:
         name:
           - git
         state: present
-
     - name: Create dnbd3 user
       ansible.builtin.group:
         name: "{{ dnbd3_group }}"
@@ -26,35 +29,32 @@
         state: directory
         owner: "{{ dnbd3_user }}"
         group: "{{ dnbd3_group }}"
-    - name: Grant access to tftp root directory
-      ansible.builtin.file:
-        mode: "770"
-        path: "{{ tftpboot_path }}"
-        state: directory
-        owner: "{{ tftp_user }}"
-        group: "{{ tftp_group }}"
-      when: "'dnbd3primary' in group_names"
+
+  post_tasks:
+    - name: Create SELinux rule for apache to access http dir
+      community.general.sefcontext:
+        target: '{{ dnbd3_base_path }}/http(/.*)?'
+        setype: httpd_sys_rw_content_t
+        state: present
+
   roles:
-    #    - role: usegalaxy_eu.handy.os_setup
-    #      become: true
-    #      vars:
-    #        hostname: "{{ inventory_hostname }}"
-    #        enable_hostname: true
-    #        enable_powertools: true
-    #      when: "'dnbd3_primary' in group_names"
+    - usegalaxy-eu.dynmotd
+    - usegalaxy-eu.autoupdates # keep all of our packages up to date
+    - influxdata.chrony # Keep our time in sync.
+    - dj-wasabi.telegraf
+    - role: usegalaxy-eu.autofs
+      when: "'dnbd3primary' in group_names"
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        hostname: "{{ inventory_hostname }}"
+        enable_hostname: true
+        enable_powertools: true
+      when: "'dnbd3_primary' in group_names"
     - role: usegalaxy_eu.dnbd3
     - role: usegalaxy_eu.tftp
       when: "'dnbd3primary' in group_names"
     - role: geerlingguy.apache
       when: "'dnbd3primary' in group_names"
-
-
-  post_tasks:
-    - name: Grant access to http directory
-      ansible.builtin.file:
-        mode: "770"
-        path: "{{ apache_vhosts[0].documentroot }}"
-        state: directory
-        owner: "www-data"
-        group: "www-data"
+    - role: usegalaxy_eu.dnbd3-primary
       when: "'dnbd3primary' in group_names"
+    - role: usegalaxy_eu.firewall
