@@ -279,9 +279,6 @@
     ## Setup docker
     - geerlingguy.docker
 
-    # HTCondor Cluster setup
-    # - usegalaxy_eu.htcondor
-
     # Misc.
     - role: hxr.galaxy-nonreproducible-tools
       become: true
@@ -308,6 +305,7 @@
     ## GALAXY
     - hxr.postgres-connection
     - galaxyproject.gxadmin
+    - galaxyproject.tiaas2
     - usegalaxy_eu.ansible_nginx_upload_module
     - usegalaxy-eu.nginx
     - usegalaxy-eu.gapars-galaxy
@@ -330,9 +328,7 @@
         galaxy_fetch_dependencies: true
         galaxy_build_client: true
         galaxy_client_make_target: client-production
-        # galaxy_custom_environment_LD_LIBRARY_PATH: "{{ conda_prefix }}/envs/_galaxy_/lib{{ ':' + ansible_env.LD_LIBRARY_PATH if ansible_env.LD_LIBRARY_PATH is defined else '' }}"
 
-    - galaxyproject.tiaas2
     - usegalaxy_eu.tpv_auto_lint
     ## Extras!
     - usegalaxy-eu.fix-galaxy-server-dir # Fix details into the galaxy server dirs
