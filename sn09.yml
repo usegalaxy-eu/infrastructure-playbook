@@ -67,6 +67,8 @@
     - templates/galaxy/config/job_conf.yml
     - mounts/dest/all.yml
     - mounts/mountpoints.yml
+  collections:
+    - devsec.hardening
   handlers:
     - name: Restart Galaxy
       ansible.builtin.shell: |
@@ -339,8 +341,8 @@
         galaxy_build_client: true
         galaxy_client_make_target: client-production
 
-    - galaxyproject.tiaas2
     - usegalaxy_eu.tpv_auto_lint
+    - galaxyproject.tiaas2
     ## Extras!
     - usegalaxy-eu.fix-galaxy-server-dir # Fix details into the galaxy server dirs
     - hxr.install-to-venv # Some extra packages our site needs.
@@ -357,6 +359,6 @@
     - usegalaxy-eu.galaxy-procstat # Some custom telegraf monitoring that's templated
     # Some of our 'cleanups' also generate telegraf format so this goes at end.
     - dj-wasabi.telegraf
-    - dev-sec.ssh-hardening #from dev-sec.hardening collection
+    - ssh_hardening #dev-sec.hardening collection
     - usegalaxy-eu.fix-stop-ITs
     - usegalaxy_eu.firewall
