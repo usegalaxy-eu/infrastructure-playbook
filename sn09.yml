@@ -232,6 +232,31 @@
             - '/tmp/nginx_gunicorn_selinux.te'
             - '/tmp/nginx_gunicorn_selinux.mod'
             - '/tmp/nginx_gunicorn_selinux.pp'
+    - name: Ensure SELinux contexts for TIaaS deployment
+      block:
+        - name: Set SELinux context for /opt/tiaas2 to usr_t
+          community.general.sefcontext:
+            target: '/opt/tiaas2(/.*)?'
+            setype: usr_t
+            state: present
+
+        - name: Apply SELinux context to /opt/tiaas2
+          command: restorecon -Rv /opt/tiaas2
+
+        - name: Label tiaas.sock as httpd_var_run_t for nginx SELinux access
+          community.general.sefcontext:
+            target: '{{ tiaas_socket }}'
+            setype: httpd_var_run_t
+            state: present
+
+        - name: Apply SELinux context to tiaas.sock
+          command: restorecon -v "{{ tiaas_socket }}"
+
+        - name: Restart TIaaS service to apply SELinux context changes
+          ansible.builtin.systemd:
+            name: tiaas
+            state: restarted
+            enabled: true
   roles:
     ## Starting configuration of the operating system
     - role: usegalaxy_eu.handy.os_setup
