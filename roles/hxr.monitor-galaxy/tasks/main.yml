@@ -54,3 +54,11 @@
     owner: root
     group: root
     mode: 0755
+
+- name: Copy the galaxy wizard utilization and OpenAI costs-completion script
+  ansible.builtin.copy:
+    src: "galaxy_wizard_openai_utilization_and_costs.py"
+    dest: "/usr/bin/galaxy_wizard_openai_utilization_and_costs.py"
+    owner: root
+    group: root
+    mode: 0755
