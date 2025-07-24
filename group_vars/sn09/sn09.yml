@@ -365,7 +365,7 @@ galaxy_config: '{{ galaxy_config_hash }}'
 # Galaxy Subdomains
 # ToDo: Enable this and remove the 2nd one because the 2nd one is when I am deploying manually from non CI worker.
 #galaxy_themes_ansible_file_path: /scratch/workspace/usegalaxy-eu/playbooks/sn09/files/galaxy/subdomains
-galaxy_themes_ansible_file_path: /home/sanjay/playground/sn09_deployment/usegalaxy-eu_infrastructure-playbook/files/galaxy/subdomains
+galaxy_themes_ansible_file_path: '{{ playbook_dir }}/files/galaxy/subdomains'
 galaxy_themes_default_welcome: https://galaxyproject.org/bare/eu/usegalaxy/main/
 galaxy_themes_welcome_url_prefix: https://usegalaxy-eu.github.io/index-
 
