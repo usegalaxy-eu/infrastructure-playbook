@@ -200,7 +200,9 @@
 
     # Note (ToDo): We should ensure that the Gunicorn sockets are created with the correct SELinux
     # context to avoid adding or allowing unconfined contexts. This will further tighten
-    # the security of the Galaxy instance.
+    # the security of the Galaxy instance. (Check the systemd role that is creating the sockets and
+    # maybe include a task to set the SELinux context for the sockets, and then we can remove the
+    # below tasks)
     # Add SELinux policy for nginx to interact with the gunicorn socket
     - name: Check if nginx-gunicorn selinux policy is installed
       ansible.builtin.command: semodule --list=full | grep -q nginx_gunicorn_selinux
@@ -232,16 +234,17 @@
             - '/tmp/nginx_gunicorn_selinux.te'
             - '/tmp/nginx_gunicorn_selinux.mod'
             - '/tmp/nginx_gunicorn_selinux.pp'
+
     - name: Ensure SELinux contexts for TIaaS deployment
       block:
         - name: Set SELinux context for /opt/tiaas2 to usr_t
           community.general.sefcontext:
-            target: '/opt/tiaas2(/.*)?'
+            target: '{{ tiaas_dir }}(/.*)?'
             setype: usr_t
             state: present
 
         - name: Apply SELinux context to /opt/tiaas2
-          command: restorecon -Rv /opt/tiaas2
+          command: restorecon -Rv "{{ tiaas_dir }}"
 
         - name: Label tiaas.sock as httpd_var_run_t for nginx SELinux access
           community.general.sefcontext:
@@ -281,7 +284,7 @@
         galaxy_conda_env_packages:
           - python=3.11.5
           - pip
-          - libsqlite=3.43.0
+          - libsqlite=3.43.0 #pinning this due to https://github.com/galaxyproject/ansible-galaxy/issues/228
 
     - usegalaxy-eu.autoupdates # keep all of our packages up to date
     - influxdata.chrony # Keep our time in sync.
