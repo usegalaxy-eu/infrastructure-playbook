@@ -260,6 +260,13 @@
             name: tiaas
             state: restarted
             enabled: true
+
+    - name: Change compliance.log file ownership to the galaxy user
+      file:
+        path: '{{ galaxy_server_dir }}/compliance.log'
+        owner: galaxy
+        group: root
+        mode: 0644
   roles:
     ## Starting configuration of the operating system
     - role: usegalaxy_eu.handy.os_setup
