@@ -204,62 +204,62 @@
     # maybe include a task to set the SELinux context for the sockets, and then we can remove the
     # below tasks)
     # Add SELinux policy for nginx to interact with the gunicorn socket
-    - name: Check if nginx-gunicorn selinux policy is installed
-      ansible.builtin.command: semodule --list=full | grep -q nginx_gunicorn_selinux
-      register: nginx_gunicorn_selinux_policy
-      failed_when: nginx_gunicorn_selinux_policy.rc > 1
+    # - name: Check if nginx-gunicorn selinux policy is installed
+    #   ansible.builtin.command: semodule --list=full | grep -q nginx_gunicorn_selinux
+    #   register: nginx_gunicorn_selinux_policy
+    #   failed_when: nginx_gunicorn_selinux_policy.rc > 1
 
-    - name: Add SELinux policy for nginx to interact with the gunicorn socket
-      when: nginx_gunicorn_selinux_policy.rc == 1
-      block:
-        - name: Copy nginx-gunicorn selinux type enforcement file
-          ansible.builtin.copy:
-            src: 'files/galaxy/config/nginx_gunicorn_selinux.te'
-            dest: '/tmp/nginx_gunicorn_selinux.te'
+    # - name: Add SELinux policy for nginx to interact with the gunicorn socket
+    #   when: nginx_gunicorn_selinux_policy.rc == 1
+    #   block:
+    #     - name: Copy nginx-gunicorn selinux type enforcement file
+    #       ansible.builtin.copy:
+    #         src: 'files/galaxy/config/nginx_gunicorn_selinux.te'
+    #         dest: '/tmp/nginx_gunicorn_selinux.te'
 
-        - name: Compile nginx-gunicorn selinux module
-          ansible.builtin.command: 'checkmodule -M -m -o /tmp/nginx_gunicorn_selinux.mod /tmp/nginx_gunicorn_selinux.te'
+    #     - name: Compile nginx-gunicorn selinux module
+    #       ansible.builtin.command: 'checkmodule -M -m -o /tmp/nginx_gunicorn_selinux.mod /tmp/nginx_gunicorn_selinux.te'
 
-        - name: Compile nginx-gunicorn selinux policy package
-          ansible.builtin.command: 'semodule_package -o /tmp/nginx_gunicorn_selinux.pp -m /tmp/nginx_gunicorn_selinux.mod'
+    #     - name: Compile nginx-gunicorn selinux policy package
+    #       ansible.builtin.command: 'semodule_package -o /tmp/nginx_gunicorn_selinux.pp -m /tmp/nginx_gunicorn_selinux.mod'
 
-        - name: Install nginx-gunicorn selinux policy package
-          ansible.builtin.command: 'semodule -i /tmp/nginx_gunicorn_selinux.pp'
+    #     - name: Install nginx-gunicorn selinux policy package
+    #       ansible.builtin.command: 'semodule -i /tmp/nginx_gunicorn_selinux.pp'
 
-        - name: Clean up nginx-gunicorn selinux policy files
-          ansible.builtin.file:
-            path: '{{ item }}'
-            state: absent
-          with_items:
-            - '/tmp/nginx_gunicorn_selinux.te'
-            - '/tmp/nginx_gunicorn_selinux.mod'
-            - '/tmp/nginx_gunicorn_selinux.pp'
+    #     - name: Clean up nginx-gunicorn selinux policy files
+    #       ansible.builtin.file:
+    #         path: '{{ item }}'
+    #         state: absent
+    #       with_items:
+    #         - '/tmp/nginx_gunicorn_selinux.te'
+    #         - '/tmp/nginx_gunicorn_selinux.mod'
+    #         - '/tmp/nginx_gunicorn_selinux.pp'
 
-    - name: Ensure SELinux contexts for TIaaS deployment
-      block:
-        - name: Set SELinux context for /opt/tiaas2 to usr_t
-          community.general.sefcontext:
-            target: '{{ tiaas_dir }}(/.*)?'
-            setype: usr_t
-            state: present
+    # - name: Ensure SELinux contexts for TIaaS deployment
+    #   block:
+    #     - name: Set SELinux context for /opt/tiaas2 to usr_t
+    #       community.general.sefcontext:
+    #         target: '{{ tiaas_dir }}(/.*)?'
+    #         setype: usr_t
+    #         state: present
 
-        - name: Apply SELinux context to /opt/tiaas2
-          command: restorecon -Rv "{{ tiaas_dir }}"
+    #     - name: Apply SELinux context to /opt/tiaas2
+    #       command: restorecon -Rv "{{ tiaas_dir }}"
 
-        - name: Label tiaas.sock as httpd_var_run_t for nginx SELinux access
-          community.general.sefcontext:
-            target: '{{ tiaas_socket }}'
-            setype: httpd_var_run_t
-            state: present
+    #     - name: Label tiaas.sock as httpd_var_run_t for nginx SELinux access
+    #       community.general.sefcontext:
+    #         target: '{{ tiaas_socket }}'
+    #         setype: httpd_var_run_t
+    #         state: present
 
-        - name: Apply SELinux context to tiaas.sock
-          command: restorecon -v "{{ tiaas_socket }}"
+    #     - name: Apply SELinux context to tiaas.sock
+    #       command: restorecon -v "{{ tiaas_socket }}"
 
-        - name: Restart TIaaS service to apply SELinux context changes
-          ansible.builtin.systemd:
-            name: tiaas
-            state: restarted
-            enabled: true
+    #     - name: Restart TIaaS service to apply SELinux context changes
+    #       ansible.builtin.systemd:
+    #         name: tiaas
+    #         state: restarted
+    #         enabled: true
 
     - name: Change compliance.log file ownership to the galaxy user
       file:
