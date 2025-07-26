@@ -101,6 +101,10 @@
         enablerepo: crb
         state: present
 
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+
     # ToDo: To avoid PostgreSQL client and version mismatch issues when migrating
     # from sn05 to sn11 DB server, enable the below tasks and remove the postgresql
     # client package from the sn09 server and deploy this playbook to have the
