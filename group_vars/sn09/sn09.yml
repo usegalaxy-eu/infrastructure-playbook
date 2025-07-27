@@ -27,9 +27,6 @@ autofs_mount_points:
   - cache
   - misc
 
-# Miniconda role variables (galaxyproject.miniconda)
-conda_prefix: /opt/miniconda
-
 # Role: usegalaxy_eu.firewall
 # NOTE: firewall_restart_daemon is set to false by default and it is deliberately set to false
 # to avoid restarting the firewall daemon because the changes can possibly disrupt your only
@@ -259,7 +256,7 @@ galaxy_systemd_memory_limit_workflow: 15
 gie_proxy_dir: '{{ galaxy_root }}/gie-proxy/proxy'
 gie_proxy_git_version: v0.1.0
 gie_proxy_setup_nodejs: nodeenv
-gie_proxy_virtualenv_command: '{{ conda_prefix }}/envs/_galaxy_/bin/python -m venv --copies' #"{{ pip_virtualenv_command }}"
+gie_proxy_virtualenv_command: '{{ galaxy_virtualenv_command }}'
 gie_proxy_nodejs_version: '22.0.0'
 gie_proxy_virtualenv: '{{ galaxy_root }}/gie-proxy/venv'
 gie_proxy_setup_service: systemd
@@ -327,7 +324,7 @@ galaxy_venv_dir: '{{ galaxy_root }}/venv'
 galaxy_job_working_directory: "{{ galaxy_config['galaxy']['job_working_directory'] }}"
 ucsc_build_sites:
 
-galaxy_virtualenv_command: '{{ conda_prefix }}/envs/_galaxy_/bin/python -m venv --copies'
+galaxy_virtualenv_command: '/usr/local/tools/_conda/envs/__python@3.11.5/bin/python -m venv --copies'
 galaxy_nonrepro_tools: '{{ galaxy_root }}/custom-tools'
 galaxy_nonrepro_commit: master
 
