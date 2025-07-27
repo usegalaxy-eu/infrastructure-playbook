@@ -267,6 +267,14 @@
         group: root
         mode: 0644
 
+    - name: Ensure .config directory exists for galaxy user
+      ansible.builtin.file:
+        path: '{{ galaxy_root }}/.config'
+        state: directory
+        owner: galaxy
+        group: galaxy
+        mode: '0755'
+
     - name: Add gxadmin local script
       ansible.builtin.copy:
         src: 'files/galaxy/config/gxadmin-local.sh'
