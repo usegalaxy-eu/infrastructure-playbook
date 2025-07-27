@@ -18,6 +18,23 @@ software_groups_to_install:
   - utils
   - terminals
 
+# Role: usegalaxy_eu.firewall
+# NOTE: firewall_restart_daemon is set to false by default and it is deliberately set to false
+# to avoid restarting the firewall daemon because the changes can possibly disrupt your only
+# way to connect to the machine. So, if you would like to see the changes applied immediately,
+# you can set this to true or login to the node and restart the firewall daemon manually.
+firewall_restart_daemon: false
+firewall_internal_services:
+  - ssh
+  - mosh
+firewall_mosh_service: >
+  <?xml version="1.0" encoding="utf-8"?>
+  <service>
+    <short>MOSH</short>
+    <description>Mosh (mosh.mit.edu) is a free replacement for SSH that allows roaming and supports intermittent connectivity.</description>
+    <port protocol="udp" port="60001-60100"/>
+  </service>
+
 # PostgreSQL
 postgresql_version: 17
 postgresql_pgdump_dir: '/var/lib/pgsql/pgdump3'
