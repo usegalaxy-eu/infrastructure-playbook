@@ -86,7 +86,6 @@
         name:
           [
             'git',
-            'postgresql',
             'python3-psycopg2',
             'bc',
             'python3-devel',
@@ -105,30 +104,26 @@
       selinux:
         state: disabled
 
-    # ToDo: To avoid PostgreSQL client and version mismatch issues when migrating
-    # from sn05 to sn11 DB server, enable the below tasks and remove the postgresql
-    # client package from the sn09 server and deploy this playbook to have the
-    # latest PostgreSQL client installed, don't forget to remove from the above list as well.
-    # - name: Install repository key (PostgreSQL v11 and above)
-    #   ansible.builtin.rpm_key:
-    #     key: https://download.postgresql.org/pub/repos/yum/keys/PGDG-RPM-GPG-KEY-RHEL
-    #     state: present
+    - name: Install repository key (PostgreSQL v11 and above)
+      ansible.builtin.rpm_key:
+        key: https://download.postgresql.org/pub/repos/yum/keys/PGDG-RPM-GPG-KEY-RHEL
+        state: present
 
-    # - name: Install pgdg repository package (RedHat)
-    #   ansible.builtin.yum:
-    #     name: >-
-    #       https://download.postgresql.org/pub/repos/yum/reporpms/{{ postgresql_pgdg_shortfamilies[ansible_distribution]
-    #         | default("EL") }}-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-{{
-    #         postgresql_pgdg_families[ansible_distribution] | default("redhat") }}-repo-latest.noarch.rpm
-    #   register: postgresql_yum_result
-    #   until: postgresql_yum_result is succeeded
-    #   retries: 5
-    #   delay: 5
+    - name: Install pgdg repository package (RedHat)
+      ansible.builtin.yum:
+        name: >-
+          https://download.postgresql.org/pub/repos/yum/reporpms/{{ postgresql_pgdg_shortfamilies[ansible_distribution]
+            | default("EL") }}-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-{{
+            postgresql_pgdg_families[ansible_distribution] | default("redhat") }}-repo-latest.noarch.rpm
+      register: postgresql_yum_result
+      until: postgresql_yum_result is succeeded
+      retries: 5
+      delay: 5
 
-    # - name: Install PostgreSQL client (RedHat >= 8)
-    #   ansible.builtin.dnf:
-    #     name: postgresql17
-    #     disablerepo: AppStream
+    - name: Install PostgreSQL client (RedHat >= 8)
+      ansible.builtin.dnf:
+        name: postgresql17
+        disablerepo: AppStream
 
     - name: Add mosh service config for FirewallD
       ansible.builtin.copy:
