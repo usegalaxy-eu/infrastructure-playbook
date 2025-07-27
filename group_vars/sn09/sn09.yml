@@ -324,6 +324,8 @@ galaxy_venv_dir: '{{ galaxy_root }}/venv'
 galaxy_job_working_directory: "{{ galaxy_config['galaxy']['job_working_directory'] }}"
 ucsc_build_sites:
 
+# 27/07/2025: The reason to use the Python from this conda environment is
+# due to https://github.com/usegalaxy-eu/infrastructure-playbook/pull/1591
 galaxy_virtualenv_command: '/usr/local/tools/_conda/envs/__python@3.11.5/bin/python -m venv --copies'
 galaxy_nonrepro_tools: '{{ galaxy_root }}/custom-tools'
 galaxy_nonrepro_commit: master
@@ -360,8 +362,6 @@ galaxy_singularity_images_cvmfs_path: '/cvmfs/singularity.galaxyproject.org/all/
 galaxy_config: '{{ galaxy_config_hash }}'
 
 # Galaxy Subdomains
-# ToDo: Enable this and remove the 2nd one because the 2nd one is when I am deploying manually from non CI worker.
-#galaxy_themes_ansible_file_path: /scratch/workspace/usegalaxy-eu/playbooks/sn09/files/galaxy/subdomains
 galaxy_themes_ansible_file_path: '{{ playbook_dir }}/files/galaxy/subdomains'
 galaxy_themes_default_welcome: https://galaxyproject.org/bare/eu/usegalaxy/main/
 galaxy_themes_welcome_url_prefix: https://usegalaxy-eu.github.io/index-
