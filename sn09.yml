@@ -285,21 +285,6 @@
         enable_pam_limits: true # Prevent out of control processes
         enable_install_software: true # Some extra admin tools (*top, vim, etc)
     - geerlingguy.repo-epel # Install EPEL repository
-
-    ## Install miniconda, create a _galaxy_ environment and install Packages
-    ## Galaxy will use the virtualenv from this conda environment (see
-    ## galaxy_virtualenv_command) in the group_vars/sn09.yml
-    - role: galaxyproject.miniconda
-      vars:
-        miniconda_prefix: '{{ conda_prefix }}'
-        miniconda_distribution: 'miniconda'
-        miniconda_executable: 'conda'
-        galaxy_conda_create_env: true
-        galaxy_conda_env_packages:
-          - python=3.11.5
-          - pip
-          - libsqlite=3.43.0 #pinning this due to https://github.com/galaxyproject/ansible-galaxy/issues/228
-
     - usegalaxy-eu.autoupdates # keep all of our packages up to date
     - influxdata.chrony # Keep our time in sync.
 
