@@ -261,11 +261,19 @@
     #         enabled: true
 
     - name: Change compliance.log file ownership to the galaxy user
-      file:
+      ansible.builtin.file:
         path: '{{ galaxy_server_dir }}/compliance.log'
         owner: galaxy
         group: root
         mode: 0644
+    - name: Add gxadmin local script
+
+      ansible.builtin.copy:
+        src: 'files/galaxy/config/gxadmin-local.sh'
+        dest: '{{ galaxy_root }}/.config/gxadmin-local.sh'
+        owner: galaxy
+        group: galaxy
+        mode: '0755'
   roles:
     ## Starting configuration of the operating system
     - role: usegalaxy_eu.handy.os_setup
