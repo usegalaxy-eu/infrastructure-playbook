@@ -168,6 +168,17 @@
         - https://github.com/bgruening.keys
         - '{{ galaxy_user_public_key }}'
 
+    - name: Set authorized SSH key (centos user)
+      ansible.posix.authorized_key:
+        user: centos
+        state: present
+        key: '{{ item }}'
+      loop:
+        - https://github.com/mira-miracoli.keys
+        - 'ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBACB5Q5blymkTIRSzVzXITOGvBuI7W0L9Ykwfz8LJGPraaGVPiezzFGvjhqwX+EyCqQPt7JprR5mimJRw/JN3nBXWAHjekvmB5FuILkk6m5fOiQJ5QhRMyQ5GfxODAvGbHpTuWHbYJLWD5fhcboKPxlXOWy4xY9kDZVuQvEKisNKYBsFLA== sanjay'
+        - https://github.com/bgruening.keys
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB9jEgiHsymRUkBmq02GyRH7fUzuTJwnWC6qn7gBGquC dominguj@informatik.uni-freiburg.de
+
     - name: Set authorized SSH key (stats user)
       ansible.posix.authorized_key:
         user: 'stats'
