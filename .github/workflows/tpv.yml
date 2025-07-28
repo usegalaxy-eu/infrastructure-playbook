@@ -1,43 +1,42 @@
 ---
 name: Total Perspective Vortex
 
-'on':
+"on":
   pull_request:
     paths:
-      - 'files/galaxy/tpv/**'
+      - "files/galaxy/tpv/**"
   push:
     branches:
       - master
     paths:
-      - 'files/galaxy/tpv/**'
+      - "files/galaxy/tpv/**"
 
 jobs:
   lint:
     name: Total Perspective Vortex linter
     runs-on: ubuntu-latest
     steps:
-
       - name: Check out the codebase.
         uses: actions/checkout@v2
         with:
-          path: 'infrastructure-playbook'
+          path: "infrastructure-playbook"
 
       - name: Workaround Ansible vault password not being available to GitHub.
-        working-directory: 'infrastructure-playbook'
+        working-directory: "infrastructure-playbook"
         run: |
           rm -f group_vars/htcondor/vault.yml
           rm -f group_vars/htcondor-secondary/vault.yml
 
       - name: Update git submodules.
-        working-directory: 'infrastructure-playbook'
+        working-directory: "infrastructure-playbook"
         run: |
           git submodule update --init --recursive --remote --checkout
 
       - name: Set up Python 3.
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
-          cache: 'pip'
+          python-version: "3.11"
+          cache: "pip"
 
       # Install Ansible.
       - name: Cache Ansible.
@@ -47,7 +46,7 @@ jobs:
           path: /opt/hostedtoolcache/Python/*/*/lib/python*/site-packages/ansible*
           key: ${{ hashFiles('infrastructure-playbook/requirements.txt') }}
       - name: Install Ansible (fast when an existing installation was already cached).
-        working-directory: 'infrastructure-playbook'
+        working-directory: "infrastructure-playbook"
         run: |
           # Install an Ansible version compatible with the version of
           # ansible-core specified in requirements.txt for the
@@ -71,14 +70,14 @@ jobs:
       #   usegalaxy.eu.
       # Therefore, we clone Galaxy and add it to the PYTHONPATH.
       - name: Get Galaxy repo and commit id.
-        working-directory: 'infrastructure-playbook'
+        working-directory: "infrastructure-playbook"
         run: |
           # Get the Galaxy repository URL and commit from Ansible variables.
           export TMP_FILE=`mktemp`
           openssl rand -base64 24 > .vault_password
           ansible localhost --connection local \
             --inventory hosts --module-name copy \
-            --args "content={{hostvars['sn06.galaxyproject.eu']}} dest=${TMP_FILE}" \
+            --args "content={{hostvars['sn09.galaxyproject.eu']}} dest=${TMP_FILE}" \
             > /dev/null
           export GALAXY_COMMIT_ID=$(cat ${TMP_FILE} | jq -r .galaxy_commit_id)
           export GALAXY_REPO=$(cat ${TMP_FILE} | jq -r .galaxy_repo)
@@ -105,13 +104,13 @@ jobs:
           path: galaxy
           key: ${{ hashFiles('galaxy_repo') }}-${{ hashFiles('galaxy_commit_id') }}
       - name: Install Galaxy requirements.
-        working-directory: 'galaxy'
+        working-directory: "galaxy"
         run: pip install -r requirements.txt
 
       # Install the Total Perspective Vortex version that should be running on
       # usegalaxy.eu
       - name: Install Total Perspective Vortex.
-        working-directory: 'galaxy'
+        working-directory: "galaxy"
         run: |
           TPV_REQ=$(perl -pe 's/\\\n/ /' lib/galaxy/dependencies/conditional-requirements.txt | grep total-perspective-vortex)
           pip3 install --upgrade "$TPV_REQ"
@@ -121,13 +120,13 @@ jobs:
           pip3 install jinja2-ansible-filters
 
       - name: Create mounts vars file.
-        working-directory: 'infrastructure-playbook/mounts'
+        working-directory: "infrastructure-playbook/mounts"
         run: |
           make dest/all.yml
 
       - name: Create a playbook to template the TPV files.
         shell: python -u {0}
-        working-directory: 'infrastructure-playbook'
+        working-directory: "infrastructure-playbook"
         run: |
           import glob
           import importlib.util
@@ -145,7 +144,7 @@ jobs:
               for file in glob.glob(f"{tpv_path}/*.yaml.j2") + glob.glob(f"{tpv_path}/*.yml.j2")
           )
 
-          playbook = make_playbook('sn06.yml', templates=templates)
+          playbook = make_playbook('sn09.yml', templates=templates)
           with open('../playbook_path', 'w') as file:
             file.write(str(playbook))
 
@@ -180,29 +179,28 @@ jobs:
     name: Total Perspective Vortex dry-run
     runs-on: ubuntu-latest
     steps:
-
       - name: Check out the codebase.
         uses: actions/checkout@v3
         with:
           fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 0 }}
-          path: 'infrastructure-playbook'
+          path: "infrastructure-playbook"
 
       - name: Workaround Ansible vault password not being available to GitHub.
-        working-directory: 'infrastructure-playbook'
+        working-directory: "infrastructure-playbook"
         run: |
           rm -f group_vars/htcondor/vault.yml
           rm -f group_vars/htcondor-secondary/vault.yml
 
       - name: Update git submodules.
-        working-directory: 'infrastructure-playbook'
+        working-directory: "infrastructure-playbook"
         run: |
           git submodule update --init --recursive --remote --checkout
 
       - name: Set up Python 3.
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
-          cache: 'pip'
+          python-version: "3.11"
+          cache: "pip"
 
       # Install Ansible.
       - name: Cache Ansible.
@@ -212,7 +210,7 @@ jobs:
           path: /opt/hostedtoolcache/Python/*/*/lib/python*/site-packages/ansible*
           key: ${{ hashFiles('infrastructure-playbook/requirements.txt') }}
       - name: Install Ansible.
-        working-directory: 'infrastructure-playbook'
+        working-directory: "infrastructure-playbook"
         run: |
           # Install an Ansible version compatible with the version of
           # ansible-core specified in requirements.txt for the
@@ -237,14 +235,14 @@ jobs:
       # Therefore, we clone Galaxy and add it to the PYTHONPATH.
       - name: Get Galaxy repo and commit id.
         id: commits-galaxy
-        working-directory: 'infrastructure-playbook'
+        working-directory: "infrastructure-playbook"
         run: |
           # Get the Galaxy repository URL and commit from Ansible variables.
           export TMP_FILE=`mktemp`
           openssl rand -base64 24 > .vault_password
           ansible localhost --connection local \
             --inventory hosts --module-name copy \
-            --args "content={{hostvars['sn06.galaxyproject.eu']}} dest=${TMP_FILE}" \
+            --args "content={{hostvars['sn09.galaxyproject.eu']}} dest=${TMP_FILE}" \
             > /dev/null
           export GALAXY_COMMIT_ID=$(cat ${TMP_FILE} | jq -r .galaxy_commit_id)
           export GALAXY_REPO=$(cat ${TMP_FILE} | jq -r .galaxy_repo)
@@ -272,13 +270,13 @@ jobs:
           path: galaxy
           key: ${{ steps.commits-galaxy.outputs.repo }}-${{ steps.commits-galaxy.outputs.commit }}
       - name: Install Galaxy requirements.
-        working-directory: 'galaxy'
+        working-directory: "galaxy"
         run: pip install -r requirements.txt
 
       # Install the Total Perspective Vortex version that should be running on
       # usegalaxy.eu
       - name: Install Total Perspective Vortex.
-        working-directory: 'galaxy'
+        working-directory: "galaxy"
         run: |
           TPV_REQ=$(perl -pe 's/\\\n/ /' lib/galaxy/dependencies/conditional-requirements.txt | grep total-perspective-vortex)
           pip3 install --upgrade "$TPV_REQ"
@@ -288,13 +286,13 @@ jobs:
           pip3 install jinja2-ansible-filters
 
       - name: Create mounts vars file.
-        working-directory: 'infrastructure-playbook/mounts'
+        working-directory: "infrastructure-playbook/mounts"
         run: |
           make dest/all.yml
 
       - name: Get commit ids before/after push or pull request.
         id: commits-infrastructure-playbook
-        working-directory: 'infrastructure-playbook'
+        working-directory: "infrastructure-playbook"
         run: |
           set -Eeo pipefail
           if ${{ github.event_name == 'pull_request' }}; then
@@ -308,7 +306,7 @@ jobs:
       - name: Create playbooks to template the TPV files.
         id: playbooks
         shell: python -u {0}
-        working-directory: 'infrastructure-playbook'
+        working-directory: "infrastructure-playbook"
         run: |
           import glob
           import importlib.util
@@ -333,7 +331,7 @@ jobs:
           )
 
           # template files based on the new version
-          playbook = make_playbook('sn06.yml', templates=templates)
+          playbook = make_playbook('sn09.yml', templates=templates)
           with open(os.environ["GITHUB_OUTPUT"], "a") as file:
               file.write(f"new={playbook}\n")
 
@@ -341,7 +339,7 @@ jobs:
           subprocess.run(
             ["git", "checkout", "${{ steps.commits-infrastructure-playbook.outputs.before }}"]
           )
-          playbook = make_playbook('sn06.yml', templates=templates)
+          playbook = make_playbook('sn09.yml', templates=templates)
           with open(os.environ["GITHUB_OUTPUT"], "a") as file:
               file.write(f"old={playbook}\n")
 
