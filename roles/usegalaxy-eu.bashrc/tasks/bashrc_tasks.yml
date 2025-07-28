@@ -105,6 +105,7 @@
           alias cu='journalctl -u galaxy-gunicorn@*.service --since "10 minutes ago" | grep "/history/current_history_json"  | awk "{print \$11}" | sort -u | wc -l'
           alias chg2wd='change_to_wd'
           alias chg2jwd='change_to_jwd'
+          alias g-restart-all='systemctl restart galaxy-handler@* && gxadmin gunicorn handler-restart && systemctl restart galaxy-workflow-scheduler@*'
 
           # finds big files somewhere ;)
           function findbig () {
