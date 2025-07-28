@@ -1,8 +1,23 @@
 ---
 - name: Add postgres connection configuration
   block:
+    - name: Check for bashrc
+      ansible.builtin.stat:
+        path: "{{ item.uhome }}/.bashrc"
+      register: bashrc_stat_out
+
+    - name: Copy default bashrc when not existing
+      ansible.builtin.copy:
+        src: /etc/skel/.bashrc
+        dest: "{{ item.uhome }}/.bashrc"
+        remote_src: yes
+        mode: 0640
+        owner: "{{ item.uname }}"
+        group: "{{ item.gname }}"
+      when: not bashrc_stat_out.stat.exists
+
     - name: Add env vars in bashrc
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: "{{ item.uhome }}/.bashrc"
         regexp: "^export {{ task_item.var }}"
         line: "export {{ task_item.var }}='{{ task_item.val }}'"
@@ -17,7 +32,7 @@
         loop_var: task_item
 
     - name: Copy using the 'content' for inline data
-      copy:
+      ansible.builtin.copy:
         content: |
           {{ postgres_host }}:{{ postgres_port }}:*:{{ item.pguser }}:{{ item.pgpass }}
         dest: "{{ item.uhome }}/.pgpass"
