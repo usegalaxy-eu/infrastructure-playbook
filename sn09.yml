@@ -287,6 +287,14 @@
         group: galaxy
         mode: '0755'
 
+    - name: "Ensure {{ galaxy_server_dir }}/database directory exists and is owned by galaxy user"
+      ansible.builtin.file:
+        path: "{{ galaxy_server_dir }}/database"
+        state: directory
+        owner: "{{ galaxy_user.name }}"
+        group: "{{ galaxy_group.name }}"
+        mode: "0750"
+
     - name: Add gxadmin local script
       ansible.builtin.copy:
         src: '{{ playbook_dir }}/files/galaxy/config/gxadmin-local.sh'
