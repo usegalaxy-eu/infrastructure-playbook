@@ -95,6 +95,9 @@ destinations:
       GPU_AVAILABLE: "1"
     params:
       requirements: 'GalaxyGroup == "compute_gpu"'
+    scheduling:
+      reject:
+        - offline
 
   interactive_pulsar_rstudio_poweruser:
     inherits: interactive_pulsar
@@ -117,6 +120,9 @@ destinations:
       GPU_AVAILABLE: "1"
     params:
       requirements: 'GalaxyGroup == "compute_gpu"'
+    scheduling:
+      reject:
+        - offline
 
   #######################
   # PULSAR DESTINATIONS #
@@ -585,8 +591,33 @@ destinations:
     scheduling:
       require:
         - singularity
-        - pxe-gpu
     params:
       requirements: 'GalaxyGroup == "pxe-gpu"'
       request_gpus: "{gpus or 0}"
       singularity_run_extra_arguments: "{entity.params.get('singularity_run_extra_arguments') or ''} --nv --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
+
+  interactive_pulsar_gpu_pxe:
+    inherits: interactive_pulsar
+    max_accepted_cores: 128
+    max_accepted_mem: 500
+    min_accepted_gpus: 1
+    max_accepted_gpus: 1
+    env:
+      GPU_AVAILABLE: "1"
+    params:
+      requirements: 'GalaxyGroup == "pxe-gpu"'
+      request_gpus: "{gpus or 0}"
+      docker_run_extra_arguments: "{entity.params.get('docker_run_extra_arguments') or ''} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
+
+  embedded_pulsar_docker_gpu_pxe:
+    inherits: embedded_pulsar_docker
+    max_accepted_cores: 128
+    max_accepted_mem: 500
+    min_accepted_gpus: 1
+    max_accepted_gpus: 1
+    env:
+      GPU_AVAILABLE: "1"
+    params:
+      requirements: 'GalaxyGroup == "pxe-gpu"'
+      request_gpus: "{gpus or 0}"
+      docker_run_extra_arguments: "{entity.params.get('docker_run_extra_arguments') or ''} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
