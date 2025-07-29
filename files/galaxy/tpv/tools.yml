@@ -1512,6 +1512,9 @@ tools:
     scheduling:
       require:
         - singularity
+    rules:
+      - if: input_size >= 0.1
+        mem: 100
 
   toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_compute_graph/scanpy_compute_graph/.*:
     scheduling:
