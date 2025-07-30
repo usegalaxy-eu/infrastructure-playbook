@@ -349,6 +349,13 @@ telegraf_plugins_extra:
       - timeout = "10s"
       - data_format = "influx"
       - interval = "24h"
+  galaxy_wizard_openai_utilization_and_costs:
+    plugin: "exec"
+    config:
+      - commands = ['bash -c "source {{ telegraf_user.home }}/.bashrc && {{ custom_telegraf_env }} /usr/bin/galaxy_wizard_openai_utilization_and_costs.py"']
+      - timeout = "120s"
+      - data_format = "influx"
+      - interval = "24h"
 
 # Role: hxr.monitor-cluster
 monitor_condor: true

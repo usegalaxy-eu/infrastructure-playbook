@@ -117,6 +117,13 @@
       with_items:
         - 9628/tcp # HTCondor shared port
         - 514/tcp  # rsyslog
+    - name: Add the OpenAI API key to the telegraf user's bashrc file
+      ansible.builtin.lineinfile:
+        path: "/etc/telegraf/.bashrc"
+        regexp: "^export OPENAI_API_KEY_TELEGRAF"
+        line: 'export OPENAI_API_KEY_TELEGRAF="{{ openai_api_key_telegraf }}"'
+        create: true
+        no_log: true
   roles:
     - usegalaxy-eu.vgcn-monitoring
     - usegalaxy_eu.handy.os_setup
