@@ -204,6 +204,9 @@ tools:
     rules:
       - if: input_size >= 0.015
         cores: 14
+      - if: input_size >= 1
+        cores: 14
+        mem: 24
 
   toolshed.g2.bx.psu.edu/repos/iuc/enasearch_search_data/enasearch_search_data/.*:
     scheduling:

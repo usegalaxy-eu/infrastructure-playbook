@@ -22,8 +22,21 @@ galaxy_user:
 # Role: hxr.postgres-connection
 # Role: usegalaxy-eu.galaxy-slurp
 postgres_user: galaxy
-postgres_host: sn05.galaxyproject.eu
+postgres_host: sn11.galaxyproject.eu
 postgres_port: 5432
+pgc_users:
+  - uname: "{{ galaxy_user.name }}"
+    uhome: "{{ galaxy_user.home }}"
+    gname: "{{ galaxy_group.name | default(galaxy_group) }}"
+    pguser: "{{ postgres_user }}"
+    pgpass: "{{ postgres_pass }}"
+    pgdatabase: galaxy
+  - uname: "{{ telegraf_user.name }}"
+    uhome: "{{ telegraf_user.home }}"
+    gname: "{{ telegraf_user.group }}"
+    pguser: "{{ postgres_user }}"
+    pgpass: "{{ postgres_pass }}"
+    pgdatabase: galaxy
 
 # Role: usegalaxy_eu.handy.os_setup
 enable_hostname: true
@@ -78,15 +91,6 @@ bashrc_users:
   - uname: "{{ galaxy_user.name }}"
     uhome: "{{ galaxy_user.home }}"
     gname: "{{ galaxy_group.name }}"
-
-# Role: hxr.postgres-connection
-pgc_users:
-  - uname: "{{ galaxy_user.name }}"
-    uhome: "{{ galaxy_user.home }}"
-    gname: "{{ galaxy_group.name }}"
-    pguser: "{{ postgres_user }}"
-    pgpass: "{{ postgres_pass }}"
-    pgdatabase: galaxy
 
 # Role: usegalaxy_eu.fs_maintenance
 fsm_maintenance_dir: "/data/dnb01/maintenance"
@@ -403,7 +407,7 @@ walle_database_file: checksums.yml
 walle_galaxy_url: "https://usegalaxy.eu"
 walle_api_key: "{{ admin_api_key_maintenance }}"
 walle_extra_env_vars:
-  PGHOST: sn05.galaxyproject.eu
+  PGHOST: sn11.galaxyproject.eu
   WALLE_USER_DELETION_MESSAGE: >-
       Our systems have detected activity related to your Galaxy account that most likely violate our terms of service.
       To prevent damage and in accordance with our terms of service, we automatically deleted your account.

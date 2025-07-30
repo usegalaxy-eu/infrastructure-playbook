@@ -16,6 +16,24 @@ software_groups_to_install:
   - editors
   - services
   - utils
+  - terminals
+
+# Role: usegalaxy_eu.firewall
+# NOTE: firewall_restart_daemon is set to false by default and it is deliberately set to false
+# to avoid restarting the firewall daemon because the changes can possibly disrupt your only
+# way to connect to the machine. So, if you would like to see the changes applied immediately,
+# you can set this to true or login to the node and restart the firewall daemon manually.
+firewall_restart_daemon: false
+firewall_internal_services:
+  - ssh
+  - mosh
+firewall_mosh_service: >
+  <?xml version="1.0" encoding="utf-8"?>
+  <service>
+    <short>MOSH</short>
+    <description>Mosh (mosh.mit.edu) is a free replacement for SSH that allows roaming and supports intermittent connectivity.</description>
+    <port protocol="udp" port="60001-60100"/>
+  </service>
 
 # PostgreSQL
 postgresql_version: 17
@@ -86,8 +104,8 @@ postgresql_pg_hba_conf:
   - 'host    grafana         grafana         132.230.224.112/32      md5'
   - 'host    grafana         grafana         132.230.223.239/32      md5'
   - 'host    grafana         grafana         10.5.67.211/32          md5'
-  - "host    galaxy          galaxy          10.4.68.201/32          md5"
-  - "host    postgres        galaxy          10.4.68.201/32          md5"
-  - "host    galaxy          galaxy-readonly 10.4.68.201/32          md5"
-  - "host    tiaas           tiaas           10.4.68.201/32          md5"
-  - "host    gxitproxy       galaxy          10.4.68.201/32          md5"
+  - 'host    galaxy          galaxy          10.4.68.201/32          md5'
+  - 'host    postgres        galaxy          10.4.68.201/32          md5'
+  - 'host    galaxy          galaxy-readonly 10.4.68.201/32          md5'
+  - 'host    tiaas           tiaas           10.4.68.201/32          md5'
+  - 'host    gxitproxy       galaxy          10.4.68.201/32          md5'
