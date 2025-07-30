@@ -24,6 +24,19 @@ galaxy_user:
 postgres_user: galaxy
 postgres_host: sn11.galaxyproject.eu
 postgres_port: 5432
+pgc_users:
+  - uname: "{{ galaxy_user.name }}"
+    uhome: "{{ galaxy_user.home }}"
+    gname: "{{ galaxy_group.name | default(galaxy_group) }}"
+    pguser: "{{ postgres_user }}"
+    pgpass: "{{ postgres_pass }}"
+    pgdatabase: galaxy
+  - uname: "{{ telegraf_user.name }}"
+    uhome: "{{ telegraf_user.home }}"
+    gname: "{{ telegraf_user.group }}"
+    pguser: "{{ postgres_user }}"
+    pgpass: "{{ postgres_pass }}"
+    pgdatabase: galaxy
 
 # Role: usegalaxy_eu.handy.os_setup
 enable_hostname: true
@@ -78,15 +91,6 @@ bashrc_users:
   - uname: "{{ galaxy_user.name }}"
     uhome: "{{ galaxy_user.home }}"
     gname: "{{ galaxy_group.name }}"
-
-# Role: hxr.postgres-connection
-pgc_users:
-  - uname: "{{ galaxy_user.name }}"
-    uhome: "{{ galaxy_user.home }}"
-    gname: "{{ galaxy_group.name }}"
-    pguser: "{{ postgres_user }}"
-    pgpass: "{{ postgres_pass }}"
-    pgdatabase: galaxy
 
 # Role: usegalaxy_eu.fs_maintenance
 fsm_maintenance_dir: "/data/dnb01/maintenance"
