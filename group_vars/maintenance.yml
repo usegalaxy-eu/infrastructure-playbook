@@ -348,7 +348,7 @@ telegraf_plugins_extra:
   galaxy_wizard_openai_utilization_and_costs:
     plugin: "exec"
     config:
-      - commands = ["{{ custom_telegraf_env }} OPENAI_API_KEY_TELEGRAF={{ openai_api_key_telegraf }} /usr/bin/galaxy_wizard_openai_utilization_and_costs.py"]
+      - commands = ['bash -c "source {{ telegraf_user.home }}/.bashrc && {{ custom_telegraf_env }} /usr/bin/galaxy_wizard_openai_utilization_and_costs.py"']
       - timeout = "120s"
       - data_format = "influx"
       - interval = "24h"
