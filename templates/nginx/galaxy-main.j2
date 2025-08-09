@@ -43,7 +43,7 @@ server {
 		# This is the backend to send the requests to.
 		proxy_pass http://galaxy;
 		proxy_set_header Host $http_host;
-		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-For $remote_addr;
 		proxy_set_header X-Forwarded-Proto $scheme;
 		proxy_set_header Upgrade $http_upgrade;
 
@@ -68,7 +68,7 @@ server {
 		proxy_buffering off;
 		proxy_pass http://galaxy;
 		proxy_set_header Host $http_host;
-		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-For $remote_addr;
 		proxy_set_header X-Forwarded-Proto $scheme;
 		proxy_set_header Upgrade $http_upgrade;
 	}
@@ -183,19 +183,22 @@ server {
 
 	# Route all path-based interactive tool requests to the InteractiveTool proxy application
 	location ~* ^/(interactivetool/.+)$ {
-	        proxy_redirect off;
-	        proxy_http_version 1.1;
-	        proxy_set_header Host $host;
-	        proxy_set_header X-Real-IP $remote_addr;
-	        proxy_set_header Upgrade $http_upgrade;
-	        proxy_set_header Connection "upgrade";
-	        proxy_pass http://127.0.0.1:{{ gie_proxy_port }};
+            proxy_redirect      off;
+            proxy_http_version  1.1;
+            proxy_set_header    Host        $host;
+            proxy_set_header    X-Real-IP   $remote_addr;
+            proxy_set_header    Upgrade     $http_upgrade;
+            proxy_set_header    Connection  "upgrade";
+            proxy_hide_header   X-Frame-Options;
+            add_header          X-Frame-Options "SAMEORIGIN";
+	        proxy_pass          http://127.0.0.1:{{ gie_proxy_port }};
+            ##proxy_pass        http://{{ gxit_proxy_host }}:{{ gxit_proxy_port }};
     	}
 
 	location /.well-known/ {
 		proxy_set_header           Host $host:$server_port;
 		proxy_set_header           X-Real-IP $remote_addr;
-		proxy_set_header           X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header           X-Forwarded-For $remote_addr;
 		proxy_set_header           X-Forwarded-Proto $scheme;
 		proxy_pass                 http://127.0.0.1:8118;
 		proxy_pass_request_headers on;
@@ -228,7 +231,7 @@ server {
 		rewrite ^/beacon/?(.*)$ /$1 break;
 		proxy_pass http://beacon.galaxyproject.eu;
 		proxy_http_version 1.1;
-		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-For $remote_addr;
 		proxy_set_header X-Real-IP $remote_addr;
 		proxy_set_header Host beacon.galaxyproject.eu;
 	}

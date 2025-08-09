@@ -49,7 +49,7 @@ nginx_extra_http_options: ""
 #      proxy_buffering    off;
 #      proxy_set_header   X-Real-IP $remote_addr;
 #      proxy_set_header   X-Scheme $scheme;
-#      proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+#      proxy_set_header   X-Forwarded-For $remote_addr;
 #      proxy_set_header   Host $http_host;
 
 nginx_remove_default_vhost: false
