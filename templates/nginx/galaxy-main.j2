@@ -192,7 +192,6 @@ server {
             proxy_hide_header   X-Frame-Options;
             add_header          X-Frame-Options "SAMEORIGIN";
 	        proxy_pass          http://127.0.0.1:{{ gie_proxy_port }};
-            ##proxy_pass        http://{{ gxit_proxy_host }}:{{ gxit_proxy_port }};
     	}
 
 	location /.well-known/ {
