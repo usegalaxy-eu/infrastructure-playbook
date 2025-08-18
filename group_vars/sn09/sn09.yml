@@ -103,13 +103,6 @@ telegraf_plugins_extra:
       - timeout = "15s"
       - data_format = "influx"
       - interval = "15s"
-  galaxy_active_users:
-    plugin: 'exec'
-    config:
-      - commands = ["/usr/bin/gxadmin gunicorn active-users"]
-      - timeout = "90s"
-      - data_format = "influx"
-      - interval = "5m"
 
 # Custom pip installer
 pip_venv_path: '{{ galaxy_venv_dir }}'
