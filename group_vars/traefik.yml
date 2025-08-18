@@ -1,7 +1,14 @@
 ---
 hostname: traefik.flyingrabb.it
-
+galaxy_active_users_script: /usr/local/bin/galaxy_active_users
 telegraf_plugins_extra:
+  galaxy_active_users:
+    plugin: 'exec'
+    config:
+      - commands = ["{{ galaxy_active_users_script }}"]
+      - timeout = "15s"
+      - data_format = "influx"
+      - interval = "1m"
   listen_galaxy_routes:
     plugin: "prometheus"
     config:
