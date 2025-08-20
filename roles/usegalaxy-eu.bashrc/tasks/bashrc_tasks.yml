@@ -104,6 +104,7 @@
           alias glw='journalctl -f -u galaxy-workflow-scheduler@*'
           alias chg2wd='change_to_wd'
           alias chg2jwd='change_to_jwd'
+          alias g-restart-all='systemctl restart galaxy-handler@* && gxadmin gunicorn handler-restart && systemctl restart galaxy-workflow-scheduler@*'
 
           # finds big files somewhere ;)
           function findbig () {
