@@ -418,6 +418,13 @@ tools:
         mem: 72
   toolshed.g2.bx.psu.edu/repos/iuc/chewbbaca.*:
     inherits: basic_docker_tool
+
+  # NCBI recommends AWS r6a.8xlarge: cores: 32, mem:256
+  toolshed.g2.bx.psu.edu/repos/richard-burhans/ncbi_egapx/ncbi_egapx/.*:
+    inherits: basic_docker_tool
+    cores: 32
+    mem: 248
+
   toolshed.g2.bx.psu.edu/repos/recetox/recetox_msfinder/recetox_msfinder/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/recetox/qcxms_getres/qcxms_getres/.*:
