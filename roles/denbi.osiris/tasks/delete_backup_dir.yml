@@ -1,0 +1,21 @@
+---
+- name: "Ensure base backup folder exists"
+  ansible.builtin.file:
+    path: "{{ backup_restore_base_dir }}"
+    owner: "root"
+    group: "root"
+    mode: "0700"
+    state: "directory"
+
+- name: "Delete backup folder and any existing files"
+  ansible.builtin.file:
+    path: "{{ backup_restore_dir }}"
+    state: absent
+
+- name: "Ensure backup folder exists"
+  ansible.builtin.file:
+    path: "{{ backup_restore_dir }}"
+    owner: "root"
+    group: "root"
+    mode: "0700"
+    state: "directory"

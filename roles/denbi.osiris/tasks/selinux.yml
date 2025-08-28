@@ -1,0 +1,22 @@
+---
+- name: "Allow apache to read files in OSIRIS php subdir"
+  community.general.sefcontext:
+    target: "{{ osiris_www_dir }}(/.*)?"
+    setype: httpd_sys_content_t
+    state: present
+
+- name: "Allow apache to modify files in OSIRIS upload dir"
+  community.general.sefcontext:
+    target: "{{ osiris_www_dir }}/uploads(/.*)?"
+    setype: httpd_sys_rw_content_t
+    state: present
+
+- name: "Apply new SELinux file context to OSIRIS php files"
+  ansible.builtin.command: "restorecon -irv {{ osiris_www_dir }}"
+  notify: "Validate and restart apache"
+
+- name: "Allow Apache to connect to other network resources (including PHP and Mongo)"
+  ansible.posix.seboolean:
+    name: httpd_can_network_connect
+    state: true
+    persistent: true
