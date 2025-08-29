@@ -1,0 +1,18 @@
+---
+- name: "Checkout matching OSIRIS version"
+  ansible.builtin.git:
+    repo: "{{ osiris_repo }}"
+    dest: "{{ osiris_www_dir }}"
+    version: "v{{ osiris_version }}"
+    update: true
+  become: yes
+  become_user: "apache"
+
+- name: "Ensure permissions for OSIRIS PHP files"
+  ansible.builtin.file:
+    path: "{{ osiris_www_dir }}"
+    owner: "apache"
+    group: "apache"
+    mode: "u=rwX,g=rwX,o="
+    recurse: true
+    state: directory
