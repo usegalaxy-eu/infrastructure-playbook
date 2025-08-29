@@ -384,6 +384,10 @@ tools:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/artbio/manta/manta/.*:
     inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/bgruening/llm_hub/llm_hub/*:
+    mem: 1
+    env:
+      LITELLM_CONFIG_FILE: '/opt/galaxy/config/litellm_config.yaml'
   toolshed.g2.bx.psu.edu/repos/goeckslab/squidpy/squidpy_spatial/*:
     inherits: basic_docker_tool
     mem: 6
@@ -414,6 +418,13 @@ tools:
         mem: 72
   toolshed.g2.bx.psu.edu/repos/iuc/chewbbaca.*:
     inherits: basic_docker_tool
+
+  # NCBI recommends AWS r6a.8xlarge: cores: 32, mem:256
+  toolshed.g2.bx.psu.edu/repos/richard-burhans/ncbi_egapx/ncbi_egapx/.*:
+    inherits: basic_docker_tool
+    cores: 32
+    mem: 248
+
   toolshed.g2.bx.psu.edu/repos/recetox/recetox_msfinder/recetox_msfinder/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/recetox/qcxms_getres/qcxms_getres/.*:
@@ -1313,6 +1324,9 @@ tools:
     scheduling:
       require:
         - singularity
+    env:
+      - name: SINGULARITYENV_LC_ALL
+        value: C
 
   braker_tool:
     abstract: true
@@ -1649,3 +1663,8 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/seurat_preprocessing/seurat_preprocessing/.*:
     cores: 1
     mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/lirasearch/lirasearch/.*:
+    inherits: basic_docker_tool
+    cores: 24
+    mem: 24
