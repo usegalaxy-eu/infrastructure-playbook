@@ -180,22 +180,6 @@ destinations:
       require:
         - mira-pulsar
 
-  pulsar_sanjay_tpv:
-    inherits: pulsar_default
-    runner: pulsar_sanjay_runner
-    max_accepted_cores: 8
-    max_accepted_mem: 15
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
-    env:
-      SINGULARITY_CACHEDIR: "/pulsar_data/container_cache"
-    params:
-      jobs_directory: "/pulsar_data/staging/ps02"
-      persistence_directory: "/pulsar_data/persisted_data/ps02"
-    scheduling:
-      require:
-        - sanjay-pulsar
-
   pulsar_sk01_tpv:
     inherits: pulsar_default
     runner: pulsar_eu_sk01
