@@ -1,0 +1,28 @@
+---
+hostname: osiris.denbi.de
+
+php_memory_limit: "128M"
+php_max_execution_time: "60"
+php_upload_max_filesize: "128M"
+php_packages:
+  - php
+  - php-cli
+  - php-pear
+  - php-ldap
+  - php-pecl-mongodb
+
+php_webserver_daemon: httpd
+php_enablerepo: epel
+
+php_enable_php_fpm: true
+php_fpm_state: started
+php_fpm_enabled_on_boot: true
+
+osiris_www_dir: /var/www/osiris
+osiris_config_file: "{{ osiris_www_dir }}/CONFIG.php"
+
+apache_vhosts:
+  - servername: "{{ hostname }}"
+    documentroot: "{{ osiris_www_dir }}"
+    extra_parameters: |
+      ProxyPassMatch ^/(.*\.php(/.*)?)$ "fcgi://127.0.0.1:9000{{ osiris_www_dir }}"

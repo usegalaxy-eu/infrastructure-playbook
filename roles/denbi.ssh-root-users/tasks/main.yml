@@ -1,0 +1,16 @@
+---
+- name: Ensure .ssh directory exists
+  ansible.builtin.file:
+    path: /root/.ssh
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: Add public key to root authorized_keys
+  ansible.posix.authorized_key:
+    user: root
+    state: present
+    key: "{{ item.value }}"
+    comment: "{{ item.key }}"
+  loop: "{{ ssh_pub_keys | dict2items }}"
