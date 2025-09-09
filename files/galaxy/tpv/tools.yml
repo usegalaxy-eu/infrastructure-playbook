@@ -930,7 +930,7 @@ tools:
       require:
         - singularity
     rules:
-      - if: input_size >= 0.2
+      - if: input_size >= 0.01
         gpus: 1
         params:
           singularity_run_extra_arguments: ' --nv '
