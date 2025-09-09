@@ -1,5 +1,6 @@
 ---
 hostname: osiris.denbi.de
+server_alias: osiris-denbi.galaxyproject.eu
 
 php_memory_limit: "128M"
 php_max_execution_time: "60"
@@ -21,8 +22,62 @@ php_fpm_enabled_on_boot: true
 osiris_www_dir: /var/www/osiris
 osiris_config_file: "{{ osiris_www_dir }}/CONFIG.php"
 
-apache_vhosts:
+apache_ssl_cipher_suite: "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305"
+apache_vhosts_ssl:
   - servername: "{{ hostname }}"
     documentroot: "{{ osiris_www_dir }}"
+    certificate_file: /etc/ssl/certs/cert.pem
+    certificate_chain_file: /etc/ssl/certs/fullchain.pem
+    certificate_key_file: /etc/ssl/user/privkey-apache.pem
     extra_parameters: |
       ProxyPassMatch ^/(.*\.php(/.*)?)$ "fcgi://127.0.0.1:9000{{ osiris_www_dir }}"
+apache_vhosts:
+  - servername: "{{ hostname }}"
+    documentroot: "{{ certbot_well_known_root }}"
+    extra_parameters: |
+      Alias /.well-known/acme-challenge/ /var/www/html/.well-known/acme-challenge/
+      <Directory "{{ certbot_well_known_root }}/acme-challenge/">
+          Options None
+          AllowOverride None
+          ForceType text/plain
+          Require all granted
+      </Directory>
+  - servername: "{{ server_alias }}"
+    documentroot: "{{ certbot_well_known_root }}"
+    extra_parameters: |
+      Alias /.well-known/acme-challenge/ /var/www/html/.well-known/acme-challenge/
+      <Directory "{{ certbot_well_known_root }}/acme-challenge/">
+          Options None
+          AllowOverride None
+          ForceType text/plain
+          Require all granted
+      </Directory>
+
+certbot_post_renewal: |
+    systemctl restart httpd || true
+certbot_domains:
+  - "{{ hostname }}"
+  - "{{ server_alias }}"
+certbot_auth_method: --webroot
+certbot_well_known_root: /srv/httpd/_well-known_root
+# Certbot auto-renew cron job configuration (for certificate renewals).
+# Where to put Certbot when installing from source or pip.
+certbot_dir: /opt/certbot
+
+certbot_letsencrypt_dir: /etc/letsencrypt
+# the test in tasks/request-cert.yml ensure that this is not used if
+# certbot_dns_provider is not defined but a default is necessary to ensure that
+# an error is not triggered when certbot_dns_provider is not defined
+
+certbot_environment: staging # change/remove before switching to production
+
+# of the format 'nginx', 'root'
+certbot_share_key_users:
+  - apache
+# of the format '999:999'
+certbot_share_key_dir: /etc/ssl/user
+
+# Agree to the TOS
+certbot_agree_tos: "--agree-tos"
+# Must be set as following to agree automatically, otherwise it will fail.
+# certbot_agree_tos: "--agree-tos"
