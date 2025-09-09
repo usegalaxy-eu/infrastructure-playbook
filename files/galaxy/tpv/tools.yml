@@ -1525,6 +1525,12 @@ tools:
     params:
       singularity_run_extra_arguments: "--env GENEMARK_PATH=/usr/local/tools/genemark/etp.for_braker/bin/gmes/ -B /tmp:/tmp"
       singularity_no_mount: null
+    rules:
+      - if: helpers.tool_version_eq(tool, '1.8.17+galaxy0')
+        params:
+          singularity_run_extra_arguments: "--writable-tmpfs --env GENEMARK_PATH=/usr/local/tools/genemark/etp.for_braker/bin/gmes/ -B /tmp:/tmp"
+       	env:
+          - execute: "chmod +x /usr/local/lib/python3.11/site-packages/funannotate/aux_scripts/augustus_parallel.py"
     scheduling:
       require:
         - singularity
