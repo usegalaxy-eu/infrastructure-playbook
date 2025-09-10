@@ -1,0 +1,13 @@
+---
+- name: Validate sshd config
+  ansible.builtin.command: /usr/sbin/sshd -t
+  register: sshd_check
+  changed_when: false
+  failed_when: sshd_check.rc != 0
+  listen: "Reload sshd"
+
+- name: Reload sshd
+  ansible.builtin.service:
+    name: sshd
+    state: reloaded
+  listen: "Reload sshd"
