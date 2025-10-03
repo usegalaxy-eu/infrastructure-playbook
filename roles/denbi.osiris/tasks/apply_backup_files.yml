@@ -1,8 +1,4 @@
 ---
-# - name: "Import mongodb backup"
-# - name: "Move OSIRIS backup files to live dir"
-# - name: "Ensure permissions"
-
 - name: "Restore MongoDB backup"
   ansible.builtin.command: "mongorestore --drop --nsInclude '{{ mongo_dbname }}.*' 'mongodb://{{ mongo_user }}:{{ mongo_passwd }}@localhost/{{ mongo_dbname }}' '{{ backup_restore_dir }}/{{ mongo_dbname }}'"
 
@@ -49,3 +45,9 @@
     regexp: '^define\("DB_STRING",'
     line: 'define("DB_STRING", "{{ mongo_connection }}");' 
     state: present
+
+- name: Remove default ssl vhost configurations
+  replace:
+    dest: "{{ apache_conf_path }}/ssl.conf"
+    regexp: "##\\n##\\s*SSL Virtual Host Context(.*\\n)*</VirtualHost>"
+  notify: restart apache
