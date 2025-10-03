@@ -22,44 +22,36 @@ php_fpm_enabled_on_boot: true
 osiris_www_dir: /var/www/osiris
 osiris_config_file: "{{ osiris_www_dir }}/CONFIG.php"
 
-apache_ssl_cipher_suite: "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305"
-apache_vhosts_ssl:
-  - servername: "{{ hostname }}"
-    documentroot: "{{ osiris_www_dir }}"
-    certificate_file: /etc/ssl/certs/cert.pem
-    certificate_chain_file: /etc/ssl/certs/fullchain.pem
-    certificate_key_file: /etc/ssl/user/privkey-apache.pem
-    extra_parameters: |
-      ProxyPassMatch ^/(.*\.php(/.*)?)$ "fcgi://127.0.0.1:9000{{ osiris_www_dir }}"
 apache_vhosts:
   - servername: "{{ hostname }}"
-    documentroot: "{{ certbot_well_known_root }}"
+    documentroot: "{{ osiris_www_dir }}"
     extra_parameters: |
-      Alias /.well-known/acme-challenge/ /var/www/html/.well-known/acme-challenge/
-      <Directory "{{ certbot_well_known_root }}/acme-challenge/">
+      Alias /.well-known/acme-challenge/ {{ osiris_www_dir }}/.well-known/acme-challenge/
+      <Directory "{{ osiris_www_dir }}">
           Options None
           AllowOverride None
           ForceType text/plain
           Require all granted
       </Directory>
+      ProxyPassMatch ^/(.*\.php(/.*)?)$ "fcgi://127.0.0.1:9000{{ osiris_www_dir }}"
   - servername: "{{ server_alias }}"
-    documentroot: "{{ certbot_well_known_root }}"
+    documentroot: "{{ osiris_www_dir }}"
     extra_parameters: |
-      Alias /.well-known/acme-challenge/ /var/www/html/.well-known/acme-challenge/
-      <Directory "{{ certbot_well_known_root }}/acme-challenge/">
+      Alias /.well-known/acme-challenge/ {{ osiris_www_dir }}/.well-known/acme-challenge/
+      <Directory "{{ osiris_www_dir }}">
           Options None
           AllowOverride None
           ForceType text/plain
           Require all granted
       </Directory>
-
+      ProxyPassMatch ^/(.*\.php(/.*)?)$ "fcgi://127.0.0.1:9000{{ osiris_www_dir }}"
 certbot_post_renewal: |
     systemctl restart httpd || true
 certbot_domains:
   - "{{ hostname }}"
   - "{{ server_alias }}"
 certbot_auth_method: --webroot
-certbot_well_known_root: /srv/httpd/_well-known_root
+certbot_well_known_root: "{{ osiris_www_dir }}"
 # Certbot auto-renew cron job configuration (for certificate renewals).
 # Where to put Certbot when installing from source or pip.
 certbot_dir: /opt/certbot
@@ -77,6 +69,7 @@ certbot_share_key_users:
 # of the format '999:999'
 certbot_share_key_dir: /etc/ssl/user
 
+certbot_virtualenv_command: python3 -m venv
 # Agree to the TOS
 certbot_agree_tos: "--agree-tos"
 # Must be set as following to agree automatically, otherwise it will fail.
