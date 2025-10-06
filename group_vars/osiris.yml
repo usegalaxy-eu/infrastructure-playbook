@@ -33,6 +33,12 @@ apache_vhosts:
           ForceType text/plain
           Require all granted
       </Directory>
+      # Restrict access to .git which we use for updates - https://www.ncsc.admin.ch/git-en
+      <Directory "{{ osiris_www_dir }}/.git">
+          Options None
+          AllowOverride None
+          Require all denied
+      </Directory>
       ProxyPassMatch ^/(.*\.php(/.*)?)$ "fcgi://127.0.0.1:9000{{ osiris_www_dir }}"
   - servername: "{{ server_alias }}"
     documentroot: "{{ osiris_www_dir }}"
@@ -43,6 +49,12 @@ apache_vhosts:
           AllowOverride None
           ForceType text/plain
           Require all granted
+      </Directory>
+      # Restrict access to .git which we use for updates - https://www.ncsc.admin.ch/git-en
+      <Directory "{{ osiris_www_dir }}/.git">
+          Options None
+          AllowOverride None
+          Require all denied
       </Directory>
       ProxyPassMatch ^/(.*\.php(/.*)?)$ "fcgi://127.0.0.1:9000{{ osiris_www_dir }}"
 certbot_post_renewal: |
