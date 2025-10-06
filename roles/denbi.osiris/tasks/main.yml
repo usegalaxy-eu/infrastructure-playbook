@@ -6,30 +6,30 @@
   loop: "{{ osiris_dependencies }}"
 
 - name: "Configure restic backups"
-  include_tasks: configure_restic.yml
+  ansible.builtin.include_tasks: configure_restic.yml
 
 - name: "Restore backup from zip"
-  include_tasks: restore_from_zip.yml
+  ansible.builtin.include_tasks: restore_from_zip.yml
   when: backup_is_zip | default(false) | bool
 
 - name: "Restore backup from restic"
-  include_tasks: restore_from_restic.yml
+  ansible.builtin.include_tasks: restore_from_restic.yml
   when: not(backup_is_zip | default(false)) | bool
 
 - name: "Use restored backup"
-  include_tasks: apply_backup_files.yml
+  ansible.builtin.include_tasks: apply_backup_files.yml
 
 - name: "Ensure OSIRIS version matches configuration"
-  include_tasks: osiris_version.yml
+  ansible.builtin.include_tasks: osiris_version.yml
 
 - name: "Configure SELinux for OSIRIS"
-  include_tasks: selinux.yml
+  ansible.builtin.include_tasks: selinux.yml
 
 - name: "Delete/Cleanup backup directories"
-  include_tasks: delete_backup_dir.yml
+  ansible.builtin.include_tasks: delete_backup_dir.yml
 
 - name: "Configure certbot and SSL certs"
-  include_tasks: certbot_ssl.yml
+  ansible.builtin.include_tasks: certbot_ssl.yml
 
 - name: "Notify about need to delete RESTIC files from S3 bucket when restoring from ZIP"
   ansible.builtin.debug:
