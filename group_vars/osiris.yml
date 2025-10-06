@@ -27,7 +27,7 @@ apache_vhosts:
     documentroot: "{{ osiris_www_dir }}"
     extra_parameters: |
       Alias /.well-known/acme-challenge/ {{ osiris_www_dir }}/.well-known/acme-challenge/
-      <Directory "{{ osiris_www_dir }}">
+      <Directory "{{ osiris_www_dir }}/.well-known">
           Options None
           AllowOverride None
           ForceType text/plain
@@ -38,7 +38,7 @@ apache_vhosts:
     documentroot: "{{ osiris_www_dir }}"
     extra_parameters: |
       Alias /.well-known/acme-challenge/ {{ osiris_www_dir }}/.well-known/acme-challenge/
-      <Directory "{{ osiris_www_dir }}">
+      <Directory "{{ osiris_www_dir }}/.well-known">
           Options None
           AllowOverride None
           ForceType text/plain
