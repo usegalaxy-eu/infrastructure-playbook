@@ -27,3 +27,6 @@
 
 - name: "Delete/Cleanup backup directories"
   include_tasks: delete_backup_dir.yml
+
+- name: "Configure certbot and SSL certs"
+  include_tasks: certbot_ssl.yml
