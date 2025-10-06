@@ -30,3 +30,8 @@
 
 - name: "Configure certbot and SSL certs"
   include_tasks: certbot_ssl.yml
+
+- name: "Notify about need to delete RESTIC files from S3 bucket when restoring from ZIP"
+  ansible.builtin.debug:
+    msg: "WARNING: You are restoring a backup from ZIP! You need to delete all files/folder but {{ zip_name }} from the S3 bucket {{ s3_host_url }}/{{ s3_bucket }} or RESTIC will not be able to initialize the first backup"
+  when: backup_is_zip | bool
