@@ -22,12 +22,19 @@ php_fpm_enabled_on_boot: true
 osiris_www_dir: /var/www/osiris
 osiris_config_file: "{{ osiris_www_dir }}/CONFIG.php"
 
+certbot_bin: "/usr/bin/certbot"
+certbot_well_known_root: "{{ osiris_www_dir }}/_well-known_root"
+certbot_domains:
+  - "{{ hostname }}"
+  - "{{ server_alias }}"
+certbot_auto_renew_extra:
+
 apache_vhosts:
   - servername: "{{ hostname }}"
     documentroot: "{{ osiris_www_dir }}"
     extra_parameters: |
-      Alias /.well-known/acme-challenge/ {{ osiris_www_dir }}/.well-known/acme-challenge/
-      <Directory "{{ osiris_www_dir }}/.well-known">
+      Alias /.well-known/acme-challenge/ {{ certbot_well_known_root }}/acme-challenge/
+      <Directory "{{ certbot_well_known_root }}">
           Options None
           AllowOverride None
           ForceType text/plain
@@ -43,8 +50,8 @@ apache_vhosts:
   - servername: "{{ server_alias }}"
     documentroot: "{{ osiris_www_dir }}"
     extra_parameters: |
-      Alias /.well-known/acme-challenge/ {{ osiris_www_dir }}/.well-known/acme-challenge/
-      <Directory "{{ osiris_www_dir }}/.well-known">
+      Alias /.well-known/acme-challenge/ {{ certbot_well_known_root }}/acme-challenge/
+      <Directory "{{ certbot_well_known_root }}">
           Options None
           AllowOverride None
           ForceType text/plain
@@ -57,9 +64,3 @@ apache_vhosts:
           Require all denied
       </Directory>
       ProxyPassMatch ^/(.*\.php(/.*)?)$ "fcgi://127.0.0.1:9000{{ osiris_www_dir }}"
-
-certbot_bin: "/usr/bin/certbot"
-certbot_domains:
-  - "{{ hostname }}"
-  - "{{ server_alias }}"
-certbot_auto_renew_extra:
