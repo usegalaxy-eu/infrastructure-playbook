@@ -1113,6 +1113,20 @@ tools:
   '.*bioext_bam2msa.*':
     params:
       docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,
+        $defaults,
+        {% for vol in dnb.values() %}
+        {% if vol.name not in ['db', 'dnb04', 'dnb-ds01', '5'] %}
+        {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
+        {% endif %}
+        {% endfor %}
+        {% for vol in cache.values() %}{% if 'cache' in vol.name %}
+        {{ vol.path }}/object_store_cache/:{{ vol.docker_perm }},
+        {% endif %}
+        {% endfor %}
+        {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
+        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
       docker_default_container_id: centos:8.3.2011
     scheduling:
       require:
@@ -1122,6 +1136,20 @@ tools:
   'last_*':
     params:
       docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,
+        $defaults,
+        {% for vol in dnb.values() %}
+        {% if vol.name not in ['db', 'dnb04', 'dnb-ds01', '5'] %}
+        {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
+        {% endif %}
+        {% endfor %}
+        {% for vol in cache.values() %}{% if 'cache' in vol.name %}
+        {{ vol.path }}/object_store_cache/:{{ vol.docker_perm }},
+        {% endif %}
+        {% endfor %}
+        {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
+        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
       docker_default_container_id: centos:8.3.2011
     scheduling:
       require:
