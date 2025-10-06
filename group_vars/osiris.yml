@@ -57,32 +57,9 @@ apache_vhosts:
           Require all denied
       </Directory>
       ProxyPassMatch ^/(.*\.php(/.*)?)$ "fcgi://127.0.0.1:9000{{ osiris_www_dir }}"
-certbot_post_renewal: |
-    systemctl restart httpd || true
+
+certbot_bin: "/usr/bin/certbot"
 certbot_domains:
   - "{{ hostname }}"
   - "{{ server_alias }}"
-certbot_auth_method: --webroot
-certbot_well_known_root: "{{ osiris_www_dir }}"
-# Certbot auto-renew cron job configuration (for certificate renewals).
-# Where to put Certbot when installing from source or pip.
-certbot_dir: /opt/certbot
-
-certbot_letsencrypt_dir: /etc/letsencrypt
-# the test in tasks/request-cert.yml ensure that this is not used if
-# certbot_dns_provider is not defined but a default is necessary to ensure that
-# an error is not triggered when certbot_dns_provider is not defined
-
-certbot_environment: staging # change/remove before switching to production
-
-# of the format 'nginx', 'root'
-certbot_share_key_users:
-  - apache
-# of the format '999:999'
-certbot_share_key_dir: /etc/ssl/user
-
-certbot_virtualenv_command: python3 -m venv
-# Agree to the TOS
-certbot_agree_tos: "--agree-tos"
-# Must be set as following to agree automatically, otherwise it will fail.
-# certbot_agree_tos: "--agree-tos"
+certbot_auto_renew_extra:
