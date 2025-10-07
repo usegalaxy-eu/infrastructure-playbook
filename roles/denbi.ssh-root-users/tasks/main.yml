@@ -13,4 +13,4 @@
     state: present
     key: "{{ item.value }}"
     comment: "{{ item.key }}"
-  loop: "{{ ssh_pub_keys | dict2items }}"
+  loop: "{{ ssh_root_pub_keys | dict2items }}"
