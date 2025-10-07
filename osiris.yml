@@ -9,9 +9,11 @@
     # backup_is_zip == false -> Use the latest restic (daily) snapshop from S3
     backup_is_zip: true
     zip_name: denbi.zip
+    # Request certbot SSL when running the playbook
+    request_certbot_ssl: true
     # This setting will be applied after restoring a backup
     # If no version change is desired, make sure this version matches that of the backup
-    osiris_version: "1.5.1"
+    osiris_version: "1.5.2"
   vars_files:
     - group_vars/osiris.yml
     - secret_group_vars/osiris.yml
@@ -33,7 +35,6 @@
     - geerlingguy.repo-epel
     - hxr.admin-tools
     - geerlingguy.apache
-    - usegalaxy-eu.certbot
     - geerlingguy.php
     - geerlingguy.apache-php-fpm
 
