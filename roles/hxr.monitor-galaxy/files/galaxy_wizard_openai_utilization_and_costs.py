@@ -18,7 +18,7 @@ if not API_KEY:
     logger.warning("OPENAI_API_KEY_TELEGRAF environment variable not set")
 HEADERS = {"Authorization": "Bearer " + API_KEY, "Content-Type": "application/json"}
 
-START_TIME = datetime.datetime(2025, 2, 1, tzinfo=datetime.timezone.utc)
+START_TIME = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=7)
 START_TIME_TS = int(START_TIME.timestamp())
 
 PROJECT_IDS = ["proj_Al7GiZF7rlVHDMV8agVoppWi"]
@@ -87,4 +87,4 @@ def process_costs():
 if __name__ == "__main__":
     completions = process_completions()
     costs = process_costs()
-    print("\n".join(completions + costs))
+    print("\n".join(completions + costs), flush=True)
