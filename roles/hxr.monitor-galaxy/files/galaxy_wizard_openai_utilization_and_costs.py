@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Description: This script fetches OpenAI completions and costs data for a
 # specific project and outputs it in the influxDB line protocol format.
 # Author: @arash77 (GitHub), and @sanjaysrikakulam (GitHub)
