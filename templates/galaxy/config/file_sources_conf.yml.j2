@@ -315,3 +315,12 @@
   label: CERN Open Data
   url: https://opendata.cern
 
+- type: omero
+  id: omero_demo
+  label: "OMERO Demo Server"
+  doc: "Browse and import images from OMERO demo server"
+  username: "{{ omero_test_username }}"
+  password: "{{ omero_test_password }}"
+  host: "demo.openmicroscopy.org" # without protocol
+  port: 4064
+  writable: false # OMERO file sources are read-only
