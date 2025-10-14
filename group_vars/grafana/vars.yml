@@ -43,12 +43,6 @@ grafana_on_call_path: /data/grafana-on-call
 # Grafana
 grafana_version: "11.4.0"
 
-# patch from https://github.com/grafana/grafana-ansible-collection/pull/414;
-# once merged upstream, update the collection version in requirements.yml and
-# remove the next two lines
-grafana_yum_repo: "https://rpm.grafana.com"
-grafana_yum_key: "https://rpm.grafana.com/gpg.key"
-
 grafana_address: "127.0.0.1"
 grafana_domain: stats.galaxyproject.eu
 grafana_url: "https://{{ grafana_domain }}"
