@@ -1,0 +1,7 @@
+#SPDX-License-Identifier: MIT-0
+---
+- name: Include SSH Keys for root users
+  ansible.builtin.include_tasks: root.yml
+
+- name: Include SSH Keys for other role users
+  ansible.builtin.include_tasks: generic.yml
