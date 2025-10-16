@@ -64,7 +64,7 @@ backends:
     weight: 0
     badges:
       - type: more_stable
-    files_dir: "/data/7/galaxy_db/files"
+    files_dir: "/data/7/galaxy_db/files"    
 
   - id: files8
     type: disk
@@ -91,7 +91,7 @@ backends:
     weight: 0
     badges:
       - type: more_stable
-    files_dir: "/data/dnb-ds03/galaxy_db/files"
+    files_dir: "/data/dnb-ds03/galaxy_db/files" 
 
   - id: files11
     type: disk
@@ -100,7 +100,7 @@ backends:
     weight: 0
     badges:
       - type: more_stable
-    files_dir: "/data/dnb05/galaxy_db/files"
+    files_dir: "/data/dnb05/galaxy_db/files" 
 
   - id: files12
     type: disk
@@ -109,7 +109,7 @@ backends:
     weight: 0
     badges:
       - type: more_stable
-    files_dir: "/data/dnb06/galaxy_db/files"
+    files_dir: "/data/dnb06/galaxy_db/files" 
 
   - id: files13
     type: disk
@@ -119,7 +119,7 @@ backends:
     weight: 0
     badges:
       - type: more_stable
-    files_dir: "/data/dnb07/galaxy_db/files"
+    files_dir: "/data/dnb07/galaxy_db/files" 
 
   - id: files18
     type: disk
@@ -317,7 +317,8 @@ backends:
       is_secure: true
     cache:
       path: "{{ object_store_cache_dir }}"
-      size: 30000
+      size: 100000
+      cache_updated_data: true
     extra_dirs:
       - type: job_work
         path: "{{ jwd.jwd06.path }}/main"
@@ -335,9 +336,9 @@ backends:
     description: |
         S3-based object storage is maintained by the compute center of the University of Freiburg.
         Data on this storage cannot be made public, cannot be shared between users, etc..
-        All your data in Galaxy is by default only available to you and can not be seen by other users.
+        All your data in Galaxy is by default only available to you and can not be seen by other users. 
         On other storage classes, you can normally always share data, and histories with others.
-        However, this storage prevents sharing and provides an additional safeguard for you and your data.
+        However, this storage prevents sharing and provides an additional safeguard for you and your data. 
         More information about our storage offerings is
         documented at [https://galaxyproject.org/eu/storage/](https://galaxyproject.org/eu/storage/).
     weight: 0
@@ -359,9 +360,11 @@ backends:
       is_secure: true
     cache:
       path: "{{ object_store_cache_dir }}"
-      size: 30000
+      size: 100000
+      cache_updated_data: true ## do we need this here?
     extra_dirs:
       - type: job_work
         path: "{{ jwd.jwd07.path }}/main"
       - type: temp
         path: "{{ jwd.jwd07.path }}/tmp"
+
