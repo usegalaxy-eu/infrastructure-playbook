@@ -72,6 +72,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     params:
+      submit_requirements: {entity.params.get('requirements') or ""}
       docker_volumes: "$job_directory:rw,
         $_CONDOR_SCRATCH_DIR:rw,
         $tool_directory:ro,
