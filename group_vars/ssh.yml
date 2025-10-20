@@ -1,73 +1,112 @@
 ---
 
+# I need someone to complete this list bellow because Im probably missing most of them
+ssh_roles:
+  - name: admin
+    hosts: all
+    users:
+      - centos
+      - stats
+      - galaxy
+      - root  # can be omitted for now, centos can `sudo su`
+
+  - name: stats
+    hosts:
+      - sn09
+      - sn06
+    users:
+      - stats
+
+  - name: galaxy
+    hosts:
+      - sn09
+      - sn06
+    users:
+      - galaxy
+
 ssh_users:
   - user: galaxy
     key:
       - {{ galaxy_user_public_key }}
-    roles: [{{ galaxy_user.name }}]
+    roles:
+      - admin
 
   - user: bgruening
     key:
       - https://github.com/bgruening.keys
-    roles: [root,stats,centos, {{ galaxy_user.name }}]
+    roles:
+      - admin
 
   - user: mira-miracolu
     key:
       - https://github.com/mira-miracolu.keys
-    roles: [root,stats,centos, {{ galaxy_user.name }}]
+    roles:
+      - admin
 
   - user: dominguj
     key:
       - 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINZNuF25HySp311FKtDW9lDKUGslH6PGIap1eYniaPsC dominguj@informatik.uni-freiburg.de'
-    roles: [root,stats,centos,{{ galaxy_user.name }}]
+    roles:
+      - admin
 
   - user: gsaudade
     key:
       - 'sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIAXgFT+ynWEgCCAKepVgkSHauy+mLo+KlIGIIj0dkAXeAAAABHNzaDo= gsaudade@fp-10-126-129-243.eduroam-fp.privat'
-    roles: [root,stats,centos,{{ galaxy_user.name }}]
+    roles:
+      - admin
 
   - user: nate
     key:
       - 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFH54+qZEBeU5uwIeWWOViLcC509qxoRW6oN0VHRQr4r nate'
-    roles: [stats,{{ galaxy_user.name }}]
+    roles:
+      - stats
+      - galaxy
 
   - user: wm75
     key:
       - https://github.com/wm75.keys
-    roles: [{{ galaxy_user.name }}]
+    roles:
+      - galaxy
 
   - user: videmp
     key:
       - 'ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEApcUIRRUHl0wVVXz5GX1QnHSq9+nThIKKH3fYM21LfW1n6gGvC7UiCCaDZQUbejJTq3EITbH3J6/Tji2jGAIJ6Xzn0Jf7sQ1yON/dO/75To32Jdo8YWS7XQeA7lU9heSc7FM5yKIBJN7PrpnYAveCsOE/1kkfUSsBZsqj9yyoFe/tquoVm5Y3nFZfKJv7/gszSVkzNxhHvn+0ccClRLpnFUHjqXgXHIQCm7P/9Lf7unSoYRd9Iefwgp52Lcm6AIncQvz5tdAFD2WciP4J15EFPMTKPdc6tfT5Tis/+/oNfYlsnaIGrbV5Hc2909KiYnvuvqKcrSFloXWzAdXJOxhszw== videmp@cn001.bi.uni-freiburg.de'
       - 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC8/9GdD96Xfc0MavIJQEuNSIrOlaBSYkH4s5RyGhNnc8Al7x3hC7KXt/mcqyNoI1JTvrXp23aDpTr67e3Dnrp6Me7z8nyY9oIy5WHOgwG2ra1Ga8oi89MVgXPhtxvcYnk8hVfuPDmhWkgwS5ILH/7V/1hEKHcS0H7Q0pJp8EGCBDFWrxNfUWqJJuVcXb11CMnaSJX/VhD+S4g4rG01lMr696+k8eKs9y2sq9JpuUD1TNN16RYu1uVlVz8nhIPbEBsnFeKV+EYKLcSRQnjDTNjWqZHHM9NMWfK3wGvr5pfla158ZdsYQTmQtcchTsEoB+7eAQaER3XsEtuo8yQj4zbL videmp@work'
-    roles: [stats]
+    roles:
+      - stats
 
   - user: paul
     key:
       - 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCtMvCQL1Xw/DrzO/U4nfyIL6CE63apSXHjQByWK+vWpfNkBjMh4uwQl6SzWvCn6y7tlMko1P6BG9bVDkWLLjC/kL+ds+FXDwUyLmRcfyhkortBVMWrZO3ZSSimpFugPDcfUeh+iim/Jg2CY1geVmlA9bybY8k0hGTKa5rn9KzbLCoZdsR1c9627PAefV9lr7xTHMamWsG0cIYjkOBqZM85Yw9huftUGZi1SAALjiG3k57XFswZcHrvZkE/L5Q5uU9NC0KYVapzG9PYmgU+O40Oi82PB4C6SWoOM0MG39AIS4DU7DstF3mrl2M/6crbcHIfVTB+GCQI2U9CzfvlhA6qQu+xlAc4ZX/rXeYZvNW6QtU1vvUcL95wSrPyXlqlSA6o/0T0EP8e2LG2JpNtzorcLrj010fWdpH1jY/c9ZACYNmCPuUTD/ASt5FXCqPR0WJnf4Mle10ALmghsbm7vLXQUKDcQSC4bJKpgzdFT2ocmk9jiGqCq3hivSVmR6OvHok= paul@paul-LIFEBOOK-U7410'
-    roles: [stats]
+    roles:
+      - stats
 
   - user: david
     key:
       - 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCoWkk57x20iE5Wf0cDX3QvkJf/XxO4wqIeZIPIosK7rFcvy/SvDF/mwQk4iQrQ7qDam35NFHrFden+5zoE5HJoRVeHYhqNaItmiMNBY9CqgITCXsD2j9/6NdzIcR66uzLHDVvLlXr2hJmrNoeGTzg94+EVtQ0/BARwffAq//2WzgG4oClgYE4RqahQRXbmBygf4g4BAbEb5JnsLJ3qqnhsAgcUYyXg7/dz36QVsvoTwChMMCXDJpPyNb1+PqOKAgl7+yZQiPD0yI5zZG+iF6dsvc6Dhscpmt0nOjr4h+o97wQk3sbvq9ysXPlARqgL950H+0LtSiWnC+KEBK4KOgc83g6NynCE7zGZ9LJiKoT0mmt8BKaJKFRDVob3nlYR3/DDLEq2AkCoxYF0JFUNVta/wEF/likB61Yhsv01gNVMNcCfK9nzZVyTGNwdsFPdi4WL+KfkMgEcA0xrCtLXhkxnU8f3H8a7XcwJWr3fuSK1ndFwNxmfKlA+sRRKYBHouU8rpnC/HCxYsxF/palYxHv8KNcfGIRUBIgfgugsigzFcB5yz4lY73NiEyVEY9ZnBbbXllyX3ICoI/IboMQVUDyccRZiDAeHJ/v29pIsIihkmWIT2I1VqppXuVYgTydPM42CDBaKE7ko3p0CuZDyB2sZaS4XYUQlkRpX9ZARtcC/AQ== david'
-    roles: [stats]
+    roles:
+      - stats
 
   - user: bebatut
     key:
       - 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC9itwmMTgcRCrwjO3RCke/NWJsRb3N5lUTF5fubw/V0PlSbFDuv7IMKp5hhFfhiOuVRMoXQBHnnOWWu1xd9jDqZKXmNGHg06JtnddQ/OVprZ6Dpu2g9pZ6uc4r1As94mvpICLVK9lNHPNA60sIwTsTRVFSb1VbXALI4iuLOxPLzIxhrZ1LouK19VWetJIQ/Uq8UalfTDr1KOyQQ/ZgjBeWdD5InSOl3sbPJZhGQLqSHIi0MVxH527CMnh1PQIxiD/vqX8SK7HaKvUZIHHzz5TFrUgrw7BkfRd04UIgr1OhnMf1E413yZdeQzJQV7C1CL9MbAThXX6Ruvs0Rg3ylazpYfwDifMWvqLeRoTCDUbGx94ySO/wzer/kcjpJ27iydNo+en/hImMYz7kktf6A3BzOYxFmOQvnQ9cChP+iuk7fTiQZS7Qtkz+axNIvwCkm7Hmgt7vYizHc+OAtKmzZFTHecozjxCXs9RwynnWpToheP3ZPYgOpKc7pkUngRSjXyc= bebatut@bebatut-ThinkPad-T14-Gen-1'
-    roles: [stats]
+    roles:
+      - stats
 
   - user: catherine
     key:
       - 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFH54+qZEBeU5uwIeWWOViLcC509qxoRW6oN0VHRQr4r nate'
-    roles: [stats]
+    roles:
+      - stats
 
   - user: jdavcs
     key:
       - 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPzm/ZHp+16Oz/5TbQkJZMC5yvp/C3OfvgOlRWqEX/Fc jdavcs@gmail.com'
-    roles: [stats]
+    roles:
+      - stats
 
   - user: marius
     key:
       - 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINGQxOm1ZlWT4k8+wK9QXSY4Obb/kz7CR7u89XWCJcqW marius@galaxyproject.org'
-    roles: [stats]
+    roles:
+      - stats

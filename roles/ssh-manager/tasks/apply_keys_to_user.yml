@@ -1,0 +1,53 @@
+---
+- name: "Check if user {{ target_user }} exists on target host"
+  ansible.builtin.set_fact:
+    user_exists: "{{ target_user in (getent_passwd_result.ansible_facts.getent_passwd | default({})).keys() }}"
+  delegate_to: "{{ target_host | default(omit) }}"
+
+- name: "Get home directory for user {{ target_user }}"
+  ansible.builtin.set_fact:
+    user_home_dir: "{{ getent_passwd_result.ansible_facts.getent_passwd[target_user][4] }}"
+  when: user_exists | bool
+  delegate_to: "{{ target_host | default(omit) }}"
+
+- name: "Process user {{ target_user }}"
+  block:
+    - name: "Ensure .ssh directory exists for {{ target_user }}"
+      become: true
+      ansible.builtin.file:
+        path: "{{ user_home_dir }}/.ssh"
+        state: directory
+        owner: "{{ target_user }}"
+        group: "{{ getent_passwd_result.ansible_facts.getent_passwd[target_user][2] }}"
+        mode: '0700'
+      delegate_to: "{{ target_host | default(omit) }}"
+
+    - name: "Manage SSH keys for {{ target_user }} (exclusive)"
+      become: true
+      ansible.posix.authorized_key:
+        user: "{{ target_user }}"
+        key: "{{ user_keys_map[target_user] | join('\n') }}"
+        path: "{{ user_home_dir }}/.ssh/authorized_keys"
+        state: present
+        exclusive: true
+      delegate_to: "{{ target_host | default(omit) }}"
+      when: user_keys_map[target_user] | default([]) | length > 0
+
+    - name: "Ensure authorized_keys file exists even if no keys (for {{ target_user }})"
+      become: true
+      ansible.builtin.file:
+        path: "{{ user_home_dir }}/.ssh/authorized_keys"
+        state: touch
+        owner: "{{ target_user }}"
+        group: "{{ getent_passwd_result.ansible_facts.getent_passwd[target_user][2] }}"
+        mode: '0600'
+      delegate_to: "{{ target_host | default(omit) }}"
+      when: user_keys_map[target_user] | default([]) | length == 0
+
+  when: 
+    - user_exists | bool
+
+- name: "Warning for non-existent user {{ target_user }}"
+  ansible.builtin.debug:
+    msg: "Warning: User {{ target_user }} does not exist on {{ target_host | default(inventory_hostname) }}, skipping"
+  when: not (user_exists | bool)

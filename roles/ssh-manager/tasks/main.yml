@@ -1,7 +1,47 @@
 #SPDX-License-Identifier: MIT-0
 ---
-- name: Include SSH Keys for root users
-  ansible.builtin.include_tasks: root.yml
+- name: Get passwd database on target to find user home directories
+  ansible.builtin.getent:
+    database: passwd
+  register: getent_passwd_result
+  delegate_to: "{{ target_host | default(omit) }}"
 
-- name: Include SSH Keys for other role users
-  ansible.builtin.include_tasks: generic.yml
+- name: Find applicable SSH roles for current target host
+  ansible.builtin.set_fact:
+    applicable_roles: >-
+      {{ ssh_roles
+         | selectattr('hosts', 'contains', target_host | default(inventory_hostname))
+         | list }}
+  delegate_to: "{{ target_host | default(omit) }}"
+
+- name: Initialize user_keys_map
+  ansible.builtin.set_fact:
+    user_keys_map: {}
+  delegate_to: "{{ target_host | default(omit) }}"
+
+- name: Collect all target users from applicable roles
+  ansible.builtin.set_fact:
+    all_target_users: >-
+      {{ applicable_roles
+         | map(attribute='users')
+         | flatten
+         | unique
+         | list }}
+  delegate_to: "{{ target_host | default(omit) }}"
+
+- name: Process each applicable role to collect keys per user
+  ansible.builtin.include_tasks: collect_role_keys.yml
+  loop: "{{ applicable_roles }}"
+  loop_control:
+    loop_var: current_role
+  when: applicable_roles | length > 0
+
+- name: Apply collected keys to each target user
+  ansible.builtin.include_tasks: apply_keys_to_user.yml
+  loop: "{{ all_target_users }}"
+  loop_control:
+    loop_var: target_user
+  when:
+    - all_target_users | length > 0
+    - target_user in user_keys_map
+    - user_keys_map[target_user] | length > 0
