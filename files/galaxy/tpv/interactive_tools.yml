@@ -6,6 +6,7 @@ tools:
     params:
       docker_volumes: $defaults
       container_monitor_result: callback
+      submit_requirements: 'GalaxyDockerHack == True' # && GalaxyGroup == "interactive"'
     scheduling:
       require:
         - docker
@@ -14,12 +15,21 @@ tools:
       - if: not user
         fail: |
           Interactive tools require registration. Please log-in or register on https://usegalaxy.eu/login
+      - if: user is not None
+        execute: |
+          training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
+          oubb_roles = [r for r in training_roles if "oubb" in r]
+          if oubb_roles:
+              # If there is an 'oubb' role, set the submit requirements accordingly
+              training_expr = 'GalaxyGroup == "%s"' % oubb_roles[0]
+              entity.params['submit_requirements'] = 'GalaxyDockerHack == True || %s' % training_expr
   interactive_tool_gpu:
     cores: 1
     mem: 4
     params:
       docker_volumes: $defaults
       container_monitor_result: callback
+      submit_requirements: 'GalaxyDockerHack == True'
     rules:
       - if: user and 'gpu_access_validated' in [role.name for role in user.all_roles() if not role.deleted]
         scheduling:
