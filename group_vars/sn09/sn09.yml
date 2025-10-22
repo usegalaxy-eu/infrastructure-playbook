@@ -262,6 +262,7 @@ gie_proxy_verbose: true
 
 # gxadmin
 postgres_user: galaxy
+postgres_user_ro: galaxy-readonly
 postgres_host: sn11.galaxyproject.eu
 postgres_port: 5432
 
@@ -277,6 +278,12 @@ pgc_users:
     uhome: "{{ telegraf_user.home }}"
     gname: "{{ telegraf_user.group }}"
     pguser: "{{ postgres_user }}"
+    pgpass: "{{ postgres_pass }}"
+    pgdatabase: galaxy
+  - uname: "{{ stats_user.name }}"
+    uhome: "{{ stats_user.home }}"
+    gname: "{{ stats_user.group }}"
+    pguser: "{{ postgres_user_ro }}"
     pgpass: "{{ postgres_pass }}"
     pgdatabase: galaxy
 
