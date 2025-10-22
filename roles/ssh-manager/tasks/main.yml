@@ -1,10 +1,8 @@
-#SPDX-License-Identifier: MIT-0
 ---
-- name: Get passwd database on target to find user home directories
+- name: Get passwd database
   ansible.builtin.getent:
     database: passwd
   register: getent_passwd_result
-#  delegate_to: "{{ target_host | default(omit) }}"
 
 - name: Find applicable SSH roles
   block:
@@ -21,7 +19,6 @@
 - name: Initialize user_keys_map
   ansible.builtin.set_fact:
     user_keys_map: {}
-#  delegate_to: "{{ target_host | default(omit) }}"
 
 - name: Collect all target users from applicable roles
   ansible.builtin.set_fact:
@@ -31,7 +28,6 @@
          | flatten
          | unique
          | list }}
-  #delegate_to: "{{ target_host | default(omit) }}"
 
 - name: Process each applicable role to collect keys per user
   ansible.builtin.include_tasks: collect_role_keys.yml
