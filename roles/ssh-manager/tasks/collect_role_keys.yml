@@ -12,7 +12,6 @@
          | flatten
          | reject('match', '^https?://')
          | list }}
-  delegate_to: "{{ target_host | default(omit) }}"
 
 - name: "Collect SSH keys from URLs for role: {{ current_role.name }}"
   ansible.builtin.set_fact:
@@ -23,40 +22,31 @@
          | flatten
          | select('match', '^https?://')
          | list }}
-  delegate_to: "{{ target_host | default(omit) }}"
-
-
 
 - name: "Fetch keys from URLs for role: {{ current_role.name }}"
   ansible.builtin.set_fact:
     fetched_keys: >-
       {{ fetched_keys | default([]) + (
-           lookup('url', item) 
-           | default('') 
+           lookup('url', item)
+           | default('')
            | replace(',', '\n')
-           | split('\n') 
-           | map('trim') 
-           | reject('equalto', '') 
-           | select('match', '^(ssh-rsa|ssh-dss|ssh-ed25519|ecdsa-sha2-|sk-ssh-ed25519@openssh.com|sk-ecdsa-sha2-)') 
+           | split('\n')
+           | map('trim')
+           | reject('equalto', '')
+           | select('match', '^(ssh-rsa|ssh-dss|ssh-ed25519|ecdsa-sha2-|sk-ssh-ed25519@openssh.com|sk-ecdsa-sha2-)')
            | list
          ) }}
   loop: "{{ role_url_keys | default([]) | unique }}"
   when: role_url_keys | default([]) | length > 0
-  delegate_to: "{{ target_host | default(omit) }}"
-
-
 
 - name: "Combine all keys for role: {{ current_role.name }}"
   ansible.builtin.set_fact:
     all_role_keys: >-
-      {{ (role_keys | default([])) + (fetched_keys | default([])) 
-         | map('trim') 
-         | reject('equalto', '') 
-         | unique 
+      {{ (role_keys | default([])) + (fetched_keys | default([]))
+         | map('trim')
+         | reject('equalto', '')
+         | unique
          | list }}
-  delegate_to: "{{ target_host | default(omit) }}"
-
-
 
 - name: "Add role keys to each target user in user_keys_map"
   ansible.builtin.set_fact:
@@ -65,16 +55,7 @@
            item: (user_keys_map.get(item, []) + all_role_keys) | unique | list
          }) }}
   loop: "{{ current_role.users }}"
-  when: 
+  when:
     - current_role.users is defined
     - current_role.users | length > 0
     - all_role_keys | length > 0
-  delegate_to: "{{ target_host | default(omit) }}"
-
-- name: "Reset variables for next role"
-  ansible.builtin.set_fact:
-    role_keys: []
-    role_url_keys: []
-    fetched_keys: []
-    all_role_keys: []
-  delegate_to: "{{ target_host | default(omit) }}"

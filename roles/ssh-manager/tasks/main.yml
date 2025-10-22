@@ -4,20 +4,24 @@
   ansible.builtin.getent:
     database: passwd
   register: getent_passwd_result
-  delegate_to: "{{ target_host | default(omit) }}"
+#  delegate_to: "{{ target_host | default(omit) }}"
 
-- name: Find applicable SSH roles for current target host
-  ansible.builtin.set_fact:
-    applicable_roles: >-
-      {{ ssh_roles
-         | selectattr('hosts', 'contains', target_host | default(inventory_hostname))
-         | list }}
-  delegate_to: "{{ target_host | default(omit) }}"
+- name: Find applicable SSH roles
+  block:
+    - name: Initialize list of applicable roles
+      ansible.builtin.set_fact:
+        applicable_roles: []
+
+    - name: Append role to the list if it applies to the current host
+      ansible.builtin.set_fact:
+        applicable_roles: "{{ applicable_roles + [item] }}"
+      loop: "{{ ssh_roles }}"
+      when: inventory_hostname in item.hosts
 
 - name: Initialize user_keys_map
   ansible.builtin.set_fact:
     user_keys_map: {}
-  delegate_to: "{{ target_host | default(omit) }}"
+#  delegate_to: "{{ target_host | default(omit) }}"
 
 - name: Collect all target users from applicable roles
   ansible.builtin.set_fact:
@@ -27,7 +31,7 @@
          | flatten
          | unique
          | list }}
-  delegate_to: "{{ target_host | default(omit) }}"
+  #delegate_to: "{{ target_host | default(omit) }}"
 
 - name: Process each applicable role to collect keys per user
   ansible.builtin.include_tasks: collect_role_keys.yml

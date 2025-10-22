@@ -1,22 +1,9 @@
 ---
 # ansible-playbook test-ssh.yml --check --diff
 # it should output the changes to the authorized_keys file
-- hosts: localhost
+- hosts: test-ssh
   gather_facts: false
   vars_files:
     - group_vars/ssh.yml
-
-  pre_tasks:
-    - name: Get all hosts matching the pattern
-      delegate_to: localhost
-      ansible.builtin.set_fact:
-        matched_hosts: "{{ query('inventory_hostnames', 'test-ssh') }}"
-      run_once: true
-
-  tasks:
-    - name: Run ssh-manager role for each matched host
-      ansible.builtin.include_role:
-        name: ssh-manager
-      loop: "{{ matched_hosts }}"
-      loop_control:
-        loop_var: target_host
+  role:
+     - role: ssh-manager
