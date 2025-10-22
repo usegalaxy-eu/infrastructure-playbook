@@ -145,6 +145,36 @@ server {
 		proxy_pass http://upload.galaxyproject.eu:1081/api/upload/resumable_upload;
 	}
 
+    # Allowlist the external origin(s) that may call the /authnz/keycloak/login endpoint
+    # might be extended to all /authnz/*/login endpoints?
+    # This is currently (2025-10) needed for the EOSC EU Node
+    map $http_origin $cors_allow_origin {
+        default "";
+        "~^https://(usegalaxy.eu|eosc-test-ds.acc.myaccessid.org)$" $http_origin;
+    }
+
+    # This is currently (2025-10) needed for the EOSC EU Node
+    location = /authnz/keycloak/login {
+        proxy_pass http://galaxy_upstream;
+
+        # Only add CORS for cross-origin callers we allow
+        if ($cors_allow_origin != "") {
+            add_header Access-Control-Allow-Origin $cors_allow_origin always;
+            add_header Access-Control-Allow-Methods "GET, OPTIONS" always;
+            add_header Access-Control-Allow-Headers "Content-Type, Authorization" always;
+            # If you need cookies/tokens across origins (you might have to test this):
+            # add_header Access-Control-Allow-Credentials "true" always;
+        }
+
+        # Preflight for cross-origin callers
+        if ($request_method = OPTIONS) {
+            add_header Access-Control-Max-Age 86400 always;
+            add_header Content-Length 0 always;
+            add_header Content-Type text/plain always;
+            return 204;
+        }
+    }
+
 	location /phinch {
 		root /opt;
 	}
