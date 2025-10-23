@@ -7,7 +7,7 @@ certbot_share_key_users:
 certbot_virtualenv_package_name: python3-virtualenv
 certbot_post_renewal: |
     systemctl restart nginx || true
-#hostname: "{{ grafana_domain }}"
+
 # NGINX
 nginx_enable_default_server: false
 nginx_servers:
@@ -33,8 +33,6 @@ nginx_ssl_role: usegalaxy-eu.certbot
 nginx_conf_ssl_certificate: /etc/ssl/certs/fullchain.pem
 nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
 
-#setting this to false will remove the on call compose services and it's compose directory
-grafana_on_call: false
 # Grafana
 grafana_version: "11.4.0"
 
