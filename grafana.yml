@@ -24,23 +24,6 @@
       ansible.builtin.package:
         name:
           - git
-    - name: Create data dir
-      ansible.builtin.file:
-        state: directory
-        path: /data
-      become: true
-    - name: Create FS
-      community.general.filesystem:
-        fstype: xfs
-        dev: /dev/vdb
-      become: true
-    - name: Mount data volume
-      ansible.posix.mount:
-        path: /data
-        src: /dev/vdb
-        state: mounted
-      become: true
-
   collections:
     - devsec.hardening
     - grafana.grafana
@@ -75,12 +58,7 @@
     - grafana
     - role: pgs
       become: true
-    - role: geerlingguy.docker
-      become: true
-      vars:
-        docker_install_compose: true
-        docker_users:
-          - "{{ ansible_ssh_user }}"
+    - usegalaxy_eu.grafana_matrix_forwarder
 
   post_tasks:
     - name: Open nginx ports
@@ -92,39 +70,3 @@
       with_items:
         - 80/tcp
         - 443/tcp
-    - name: Add on-call backend
-      when: grafana_on_call
-      block:
-        - name: Create dir
-          ansible.builtin.file:
-            path: "{{ grafana_on_call_path }}"
-            state: directory
-            owner: "{{ ansible_ssh_user }}"
-            group: "{{ ansible_ssh_user }}"
-          become: true
-        - name: Get docker compose
-          ansible.builtin.get_url:
-            url: https://raw.githubusercontent.com/grafana/oncall/49d20f1a7e40669e901db95443603138e1a1cde4/docker-compose.yml
-            dest: "{{ grafana_on_call_path }}/docker_compose.yml"
-            owner: "{{ ansible_ssh_user }}"
-            group: "{{ ansible_ssh_user }}"
-        - name: Create env
-          ansible.builtin.copy:
-            content: |
-              SECRET_KEY={{ grafana_on_call_secret }}
-              COMPOSE_PROFILES=''
-            dest: "{{ grafana_on_call_path }}/.env"
-            owner: "{{ ansible_ssh_user }}"
-            group: "{{ ansible_ssh_user }}"
-            mode: "0600"
-          no_log: true
-        - name: Spin up OnCall
-          docker_compose:
-            project_src: "{{ grafana_on_call_path }}"
-          register: output
-        - name: Run `docker-compose up` again
-          docker_compose:
-            project_src: "{{ grafana_on_call_path }}"
-          register: output
-        - assert:
-            that: "not output.changed "
