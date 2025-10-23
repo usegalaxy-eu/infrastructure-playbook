@@ -111,7 +111,6 @@
         - name: Create env
           ansible.builtin.copy:
             content: |
-              DOMAIN=http://localhost:8080
               SECRET_KEY={{ grafana_on_call_secret }}
               COMPOSE_PROFILES=''
             dest: "{{ grafana_on_call_path }}/.env"
