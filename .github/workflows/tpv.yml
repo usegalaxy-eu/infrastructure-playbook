@@ -74,7 +74,7 @@ jobs:
           export GALAXY_REPO=$(cat ${TMP_FILE} | jq -r .galaxy_repo)
           rm ${TMP_FILE}
           echo "commit=$GALAXY_COMMIT_ID" >> $GITHUB_OUTPUT
-          echo "repo=$(echo "$GALAXY_REPO" | sed -E 's#(https?://)?github\.com[/:]##' | sed 's/\.git$//')" >> $GITHUB_OUTPUT
+          echo "repo=$GALAXY_REPO" >> $GITHUB_OUTPUT
       - name: Cache Galaxy
         id: cache-galaxy
         uses: actions/cache@v4
@@ -83,12 +83,9 @@ jobs:
           key: galaxy-${{ steps.commits-galaxy.outputs.repo }}-${{ steps.commits-galaxy.outputs.commit }}
       - name: Clone Galaxy
         if: ${{ steps.cache-galaxy.outputs.cache-hit != 'true' }}
-        uses: actions/checkout@v5
-        with:
-          repository: ${{ steps.commits-galaxy.outputs.repo }}
-          path: galaxy
-          fetch-depth: 0
-      - name: Checkout specific Galaxy commit
+        run: |
+          git clone ${{ steps.commits-galaxy.outputs.repo }} galaxy
+      - name: Checkout production Galaxy commit
         if: ${{ steps.cache-galaxy.outputs.cache-hit != 'true' }}
         working-directory: galaxy
         run: |
@@ -228,7 +225,7 @@ jobs:
           export GALAXY_REPO=$(cat ${TMP_FILE} | jq -r .galaxy_repo)
           rm ${TMP_FILE}
           echo "commit=$GALAXY_COMMIT_ID" >> $GITHUB_OUTPUT
-          echo "repo=$(echo "$GALAXY_REPO" | sed -E 's#(https?://)?github\.com[/:]##' | sed 's/\.git$//')" >> $GITHUB_OUTPUT
+          echo "repo=$GALAXY_REPO" >> $GITHUB_OUTPUT
       - name: Cache Galaxy
         id: cache-galaxy
         uses: actions/cache@v4
@@ -237,12 +234,9 @@ jobs:
           key: galaxy-${{ steps.commits-galaxy.outputs.repo }}-${{ steps.commits-galaxy.outputs.commit }}
       - name: Clone Galaxy
         if: ${{ steps.cache-galaxy.outputs.cache-hit != 'true' }}
-        uses: actions/checkout@v5
-        with:
-          repository: ${{ steps.commits-galaxy.outputs.repo }}
-          path: galaxy
-          fetch-depth: 0
-      - name: Checkout specific Galaxy commit
+        run: |
+          git clone ${{ steps.commits-galaxy.outputs.repo }} galaxy
+      - name: Checkout production Galaxy commit
         if: ${{ steps.cache-galaxy.outputs.cache-hit != 'true' }}
         working-directory: galaxy
         run: |
