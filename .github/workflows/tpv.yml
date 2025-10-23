@@ -74,7 +74,7 @@ jobs:
           export GALAXY_REPO=$(cat ${TMP_FILE} | jq -r .galaxy_repo)
           rm ${TMP_FILE}
           echo "commit=$GALAXY_COMMIT_ID" >> $GITHUB_OUTPUT
-          echo "repo=$GALAXY_REPO" >> $GITHUB_OUTPUT
+          echo "repo=$(echo "$GALAXY_REPO" | sed -E 's#(https?://)?github\.com[/:]##' | sed 's/\.git$//')" >> $GITHUB_OUTPUT
       - name: Cache Galaxy
         id: cache-galaxy
         uses: actions/cache@v4
@@ -228,7 +228,7 @@ jobs:
           export GALAXY_REPO=$(cat ${TMP_FILE} | jq -r .galaxy_repo)
           rm ${TMP_FILE}
           echo "commit=$GALAXY_COMMIT_ID" >> $GITHUB_OUTPUT
-          echo "repo=$GALAXY_REPO" >> $GITHUB_OUTPUT
+          echo "repo=$(echo "$GALAXY_REPO" | sed -E 's#(https?://)?github\.com[/:]##' | sed 's/\.git$//')" >> $GITHUB_OUTPUT
       - name: Cache Galaxy
         id: cache-galaxy
         uses: actions/cache@v4
