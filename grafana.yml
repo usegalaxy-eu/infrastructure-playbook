@@ -18,11 +18,7 @@
     - name: Install Dependencies
       become: true
       ansible.builtin.package:
-        name: ["python3-virtualenv", "python3-docker", "python3-pip"]
-    - name: Install docker compose python (no rpm available)
-      ansible.builtin.pip:
-        name: docker-compose
-        version: 1.29.2
+        name: ["python3-virtualenv", "python3-docker"]
     - name: Ensure git is installed. (hxr.monitor-ssl)
       become: true
       ansible.builtin.package:
@@ -120,7 +116,7 @@
         - name: Create env
           ansible.builtin.copy:
             content: |
-              DOMAIN=https://{{ grafana_on_call_domain }}
+              DOMAIN=http://localhost:8080
               SECRET_KEY={{ grafana_on_call_secret }}
               COMPOSE_PROFILES=''
             dest: "{{ grafana_on_call_path }}/.env"
@@ -128,8 +124,15 @@
             group: "{{ ansible_ssh_user }}"
             mode: "0600"
           no_log: true
-        - name: Start OnCall
-          community.docker.docker_compose_v2:
+        - name: Spin up OnCall
+          community.general.docker_compose:
             project_src: "{{ grafana_on_call_path }}"
-            project_name: oncall
+    - name: Remove OnCall
+      when: not grafana_on_call
+      block:
+        - name: Stop all services
+          community.general.docker_compose:
+            project_src: "{{ grafana_on_call_path }}"
+            state: absent
+          failed_when: "output.services.engine.{{ grafana_on_call_path | basename }}_engine_1.state.running"
 
