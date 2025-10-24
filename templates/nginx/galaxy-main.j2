@@ -145,17 +145,9 @@ server {
 		proxy_pass http://upload.galaxyproject.eu:1081/api/upload/resumable_upload;
 	}
 
-    # Allowlist the external origin(s) that may call the /authnz/keycloak/login endpoint
-    # might be extended to all /authnz/*/login endpoints?
-    # This is currently (2025-10) needed for the EOSC EU Node
-    map $http_origin $cors_allow_origin {
-        default "";
-        "~^https://(usegalaxy.eu|eosc-test-ds.acc.myaccessid.org)$" $http_origin;
-    }
-
     # This is currently (2025-10) needed for the EOSC EU Node
     location = /authnz/keycloak/login {
-        proxy_pass http://galaxy_upstream;
+        proxy_pass http://galaxy;
 
         # Only add CORS for cross-origin callers we allow
         if ($cors_allow_origin != "") {
