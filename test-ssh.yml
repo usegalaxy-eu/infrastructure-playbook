@@ -1,0 +1,9 @@
+---
+# ansible-playbook test-ssh.yml --check --diff
+# it should output the changes to the authorized_keys file
+- hosts: test-ssh
+  gather_facts: false
+  vars_files:
+    - group_vars/ssh.yml
+  role:
+     - role: ssh-manager
