@@ -14,7 +14,7 @@
       ansible.builtin.set_fact:
         applicable_roles: "{{ applicable_roles + [item] }}"
       loop: "{{ ssh_roles }}"
-      when: inventory_hostname in item.hosts
+      when: inventory_hostname in query('inventory_hostnames', item.hosts if item.hosts is string else item.hosts | join(','))
 
 - name: Initialize user_keys_map
   ansible.builtin.set_fact:
