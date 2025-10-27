@@ -1,7 +1,7 @@
 ---
 - name: "Process role: {{ current_role.name }}"
   ansible.builtin.debug:
-    msg: "Processing role {{ current_role.name }} for host {{ target_host | default(inventory_hostname) }}"
+    msg: "Processing role {{ current_role.name }} for host {{ inventory_hostname }}"
 
 - name: "Collect SSH keys for role: {{ current_role.name }}"
   ansible.builtin.set_fact:

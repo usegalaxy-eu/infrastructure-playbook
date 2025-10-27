@@ -2,13 +2,11 @@
 - name: "Check if user {{ target_user }} exists on target host"
   ansible.builtin.set_fact:
     user_exists: "{{ target_user in (getent_passwd_result.ansible_facts.getent_passwd | default({})).keys() }}"
-  delegate_to: "{{ target_host | default(omit) }}"
 
 - name: "Get home directory for user {{ target_user }}"
   ansible.builtin.set_fact:
     user_home_dir: "{{ getent_passwd_result.ansible_facts.getent_passwd[target_user][4] }}"
   when: user_exists | bool
-  delegate_to: "{{ target_host | default(omit) }}"
 
 - name: "Process user {{ target_user }}"
   block:
@@ -20,7 +18,6 @@
         path: "{{ user_home_dir }}/.ssh/authorized_keys"
         state: present
         exclusive: true
-      delegate_to: "{{ target_host | default(omit) }}"
   when:
     - user_exists | bool
     - user_keys_map[target_user] | default([]) | length > 0
