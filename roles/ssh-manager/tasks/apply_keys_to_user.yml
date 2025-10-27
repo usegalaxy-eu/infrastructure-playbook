@@ -3,19 +3,20 @@
   ansible.builtin.set_fact:
     user_exists: "{{ target_user in (getent_passwd_result.ansible_facts.getent_passwd | default({})).keys() }}"
 
-- name: "Get home directory for user {{ target_user }}"
-  ansible.builtin.set_fact:
-    user_home_dir: "{{ getent_passwd_result.ansible_facts.getent_passwd[target_user][4] }}"
-  when: user_exists | bool
-
 - name: "Process user {{ target_user }}"
+  become: true
+  become_user: "{{ target_user }}"
   block:
+    - name: "Ensure ~/.ssh directory exists for {{ target_user }}"
+      ansible.builtin.file:
+        path: "~/.ssh"
+        state: directory
+        mode: "0700"
+
     - name: "Manage SSH keys for {{ target_user }}"
-      become: true
       ansible.posix.authorized_key:
         user: "{{ target_user }}"
         key: "{{ user_keys_map[target_user] | join('\n') }}"
-        path: "{{ user_home_dir }}/.ssh/authorized_keys"
         state: present
         exclusive: true
   when:
