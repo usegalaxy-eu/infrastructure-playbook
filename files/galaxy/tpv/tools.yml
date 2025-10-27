@@ -581,6 +581,17 @@ tools:
       require:
         - gpu-divided
 
+  toolshed.g2.bx.psu.edu/repos/iuc/biapy/biapy/.*:
+    inherits: basic_docker_tool
+    gpus: 1
+    cores: 1
+    mem: 12
+    params:
+      docker_run_extra_arguments: ' --gpus all '
+    env:
+      GPU_AVAILABLE: 1
+      GALAXY_BIAPY_GPU_STRING: 0
+
   toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc/.*:
     # 8 (from the shared TPV) seems to high for me
     cores: 3
