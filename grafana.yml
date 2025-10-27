@@ -55,6 +55,8 @@
     ## Grafana
     - role: galaxyproject.nginx
       become: true
+      vars:
+        hostname: "{{ grafana_domain }}"
     - grafana
     - role: pgs
       become: true
