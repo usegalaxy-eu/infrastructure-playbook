@@ -352,13 +352,15 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/bgruening/markitdown/markitdown/.*:
     inherits: basic_docker_tool
+
+  toolshed.g2.bx.psu.edu/repos/goeckslab/.*:
+    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/goeckslab/squidpy/squidpy_spatial/*:
     inherits: basic_docker_tool
     mem: 6
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
-  toolshed.g2.bx.psu.edu/repos/goeckslab/.*:
-    inherits: basic_docker_tool
+
   toolshed.g2.bx.psu.edu/repos/bgruening/mitohifi/mitohifi/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/brew3r_r/brew3r_r/.*:
@@ -369,12 +371,12 @@ tools:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/vpt_segment/.*:
     inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/ecology/.*:
+    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/ecology/harmonize_insitu_to_netcdf/harmonize_insitu_to_netcdf/.*:
     inherits: basic_docker_tool
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
-  toolshed.g2.bx.psu.edu/repos/ecology/.*:
-    inherits: basic_docker_tool
   # conda env not working, trying the container
   toolshed.g2.bx.psu.edu/repos/imgteam/color_deconvolution/ip_color_deconvolution/.*:
     inherits: basic_docker_tool
