@@ -37,7 +37,8 @@ tools:
     env:
       TEMP: /data/1/galaxy_db/tmp
 
-  basic_docker_tool:
+  # Abstract tool in Nates Fashion:
+  _basic_docker_tool:
     params:
       submit_requirements: "GalaxyDockerHack == True"
       docker_run_extra_arguments: --user 999:999
@@ -46,7 +47,7 @@ tools:
         - docker
 
   toolshed.g2.bx.psu.edu/repos/.*:
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
 
   toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/.*:
     inherits: basic_gpu_resource_param_tool
@@ -354,13 +355,13 @@ tools:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/goeckslab/squidpy/squidpy_spatial/*:
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
     mem: 6
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
 
   toolshed.g2.bx.psu.edu/repos/ecology/harmonize_insitu_to_netcdf/harmonize_insitu_to_netcdf/.*:
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
 
@@ -370,29 +371,29 @@ tools:
       LITELLM_CONFIG_FILE: '/opt/galaxy/config/litellm_config.yaml'
 
   '.*3dtrees_overviews.*':
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
 
   '.*3dtrees_sat.*':
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
     gpus: 1
     cores: 10
     mem: 100
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_tile_merge/3dtrees_tile_merge/.*:
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
     cores: 10
     mem: 20
 
   '.*3dtrees_tile_merge.*':
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
     cores: 10
     mem: 20
 
   '.*3dtrees_standard.*':
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
 
   '.*3dtrees_detailview.*':
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
     gpus: 1
     cores: 8
     mem: 20
@@ -408,13 +409,13 @@ tools:
 
   # NCBI recommends AWS r6a.8xlarge: cores: 32, mem:256
   toolshed.g2.bx.psu.edu/repos/richard-burhans/ncbi_egapx/ncbi_egapx/.*:
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
     cores: 32
     mem: 248
 
 
   toolshed.g2.bx.psu.edu/repos/bgruening/yolo_training/yolo_training/.*:
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
     gpus: 1
     cores: 4
     mem: 32
@@ -425,7 +426,7 @@ tools:
       # the non-NFS /tmp dir is needed to avoid "resource is busy" errors
       _GALAXY_JOB_TMP_DIR: '/tmp'
   toolshed.g2.bx.psu.edu/repos/bgruening/parabricks_fq2bam/parabricks_fq2bam/.*:
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
     gpus: 1
     cores: 1
     params:
@@ -439,7 +440,7 @@ tools:
         - gpu-divided
 
   toolshed.g2.bx.psu.edu/repos/bgruening/instagraal/instagraal/.*:
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
     gpus: 1
     cores: 1
     mem: 30
@@ -450,14 +451,14 @@ tools:
 
   # picrust tries to remove TMP folders, on NFS this does not always work, so we run this tool in a container with internal (non-NFS) TMP
   toolshed.g2.bx.psu.edu/repos/iuc/picrust.*:
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
     cores: 2
     mem: 10
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
 
   toolshed.g2.bx.psu.edu/repos/iuc/diffdock/diffdock/.*:
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
     gpus: 1
     cores: 1
     params:
@@ -466,7 +467,7 @@ tools:
       GPU_AVAILABLE: 1
 
   toolshed.g2.bx.psu.edu/repos/bgruening/black_forest_labs_flux/black_forest_labs_flux/.*:
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
     gpus: 1
     cores: 1
     params:
@@ -479,14 +480,14 @@ tools:
         - gpu-divided
 
   toolshed.g2.bx.psu.edu/repos/bgruening/whisper/whisper/.*:
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
     cores: 1
     mem: 5
     env:
       OPENAI_WHISPER_MODEL_DIR: "/data/db/models/openai_whisper/"
 
   toolshed.g2.bx.psu.edu/repos/bgruening/whisperx/whisperx/.*:
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
     gpus: 1
     cores: 1
     mem: 5
@@ -513,7 +514,7 @@ tools:
 
 
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_train/cherri_train/.*:
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
     cores: 10
     mem: 90
 
@@ -538,7 +539,7 @@ tools:
           singularity_run_extra_arguments: ' --nv '
 
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_eval/cherri_eval/.*:
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
     cores: 1
     mem: 20
 
@@ -726,7 +727,7 @@ tools:
   toolshed.g2.bx.psu.edu/repos/bgruening/blobtoolkit/blobtoolkit/.*:
     cores: 8
     mem: 20
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
 
 
   # 4GB is enough for most of the runs as it seems
@@ -737,7 +738,7 @@ tools:
   toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicates/.*:
     cores: 8
     mem: 20
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
 
 
   toolshed.g2.bx.psu.edu/repos/bgruening/diamond/diamond/.*:
@@ -1064,7 +1065,7 @@ tools:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/iuc/funannotate_annotate/funannotate_annotate/.*:
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
     cores: 8
     mem: 42
     env:
@@ -1199,6 +1200,6 @@ tools:
     mem: 20
 
   toolshed.g2.bx.psu.edu/repos/bgruening/lirasearch/lirasearch/.*:
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
     cores: 24
     mem: 24
