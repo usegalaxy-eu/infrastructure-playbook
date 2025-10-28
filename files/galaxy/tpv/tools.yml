@@ -350,7 +350,7 @@ tools:
       require:
         - docker
 
-  toolshed.g2.bx.psu.edu/repos/bgruening/markitdown/markitdown/.*:
+  toolshed.g2.bx.psu.edu/repos/bgruening/.*:
     inherits: basic_docker_tool
 
   toolshed.g2.bx.psu.edu/repos/goeckslab/.*:
@@ -361,15 +361,9 @@ tools:
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
 
-  toolshed.g2.bx.psu.edu/repos/bgruening/mitohifi/mitohifi/.*:
-    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/brew3r_r/brew3r_r/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/bellavista_prepare/bellavista_prepare/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/bgruening/vpt_extract/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/bgruening/vpt_segment/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/ecology/.*:
     inherits: basic_docker_tool
@@ -381,8 +375,6 @@ tools:
   toolshed.g2.bx.psu.edu/repos/imgteam/color_deconvolution/ip_color_deconvolution/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_point/ggplot2_point/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/bgruening/mgnify_seqprep/mgnify_seqprep/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/artbio/manta/manta/.*:
     inherits: basic_docker_tool
@@ -424,8 +416,6 @@ tools:
   toolshed.g2.bx.psu.edu/repos/galaxyp/msconvert/msconvert/.*:
     inherits: basic_docker_tool
 
-  toolshed.g2.bx.psu.edu/repos/bgruening/cellpose/cellpose/.*:
-    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/fgsea/fgsea/.*:
     # any container should work
     inherits: basic_docker_tool
@@ -450,14 +440,7 @@ tools:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/imgteam/bioformats2raw/bf2raw/.*:
     inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/bgruening/biomodels_.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/bgruening/doclayoutyolo/doclayoutyolo/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/bgruening/json2yolosegment/json2yolosegment/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/bgruening/yolo_predict/yolo_predict/.*:
-    inherits: basic_docker_tool
+
   toolshed.g2.bx.psu.edu/repos/bgruening/yolo_training/yolo_training/.*:
     inherits: basic_docker_tool
     gpus: 1
@@ -570,10 +553,6 @@ tools:
     inherits: basic_docker_tool
 
   toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_.*:
-    inherits: basic_docker_tool
-
-
-  toolshed.g2.bx.psu.edu/repos/bgruening/qiime2_dbotu_q2/.*:
     inherits: basic_docker_tool
 
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_train/cherri_train/.*:
