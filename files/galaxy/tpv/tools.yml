@@ -345,24 +345,19 @@ tools:
   basic_docker_tool:
     params:
       submit_requirements: "GalaxyDockerHack == True"
+      docker_run_extra_arguments: --user 999:999
     scheduling:
       require:
         - docker
 
   toolshed.g2.bx.psu.edu/repos/bgruening/markitdown/markitdown/.*:
     inherits: basic_docker_tool
-    params:
-      docker_run_extra_arguments: --user 999
-
-  toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_anndata_to_csv/scimap_anndata_to_csv/.*:
+  toolshed.g2.bx.psu.edu/repos/goeckslab/squidpy/squidpy_spatial/*:
     inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_mcmicro_to_anndata/scimap_mcmicro_to_anndata/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_phenotyping/scimap_phenotyping/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_plotting/scimap_plotting/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_spatial/scimap_spatial/.*:
+    mem: 6
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
+  toolshed.g2.bx.psu.edu/repos/goeckslab/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/mitohifi/mitohifi/.*:
     inherits: basic_docker_tool
@@ -374,19 +369,11 @@ tools:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/vpt_segment/.*:
     inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/eml2eal/eml2eal/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/data_paper_from_eml/data_paper_from_EML/.*:
-    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/ecology/harmonize_insitu_to_netcdf/harmonize_insitu_to_netcdf/.*:
     inherits: basic_docker_tool
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
-  toolshed.g2.bx.psu.edu/repos/ecology/tool_odv/tool_odv/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/tool_odv_history/tool_odv_history/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/tool_biogeochemical_calibration/tool_biogeochemical_calibration/.*:
+  toolshed.g2.bx.psu.edu/repos/ecology/.*:
     inherits: basic_docker_tool
   # conda env not working, trying the container
   toolshed.g2.bx.psu.edu/repos/imgteam/color_deconvolution/ip_color_deconvolution/.*:
@@ -401,13 +388,6 @@ tools:
     mem: 1
     env:
       LITELLM_CONFIG_FILE: '/opt/galaxy/config/litellm_config.yaml'
-  toolshed.g2.bx.psu.edu/repos/goeckslab/squidpy/squidpy_spatial/*:
-    inherits: basic_docker_tool
-    mem: 6
-    env:
-      _GALAXY_JOB_TMP_DIR: '/tmp'
-  toolshed.g2.bx.psu.edu/repos/goeckslab/gate_finder/gate_finder/.*:
-    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/galaxyp/qupath_roi_splitter/qupath_roi_splitter/.*:
     inherits: basic_docker_tool
 
@@ -441,10 +421,7 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/msconvert/msconvert/.*:
     inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/goeckslab/vitessce_spatial/vitessce_spatial/.*:
-    inherits: basic_docker_tool
-    params:
-      docker_run_extra_arguments: --user 999
+
   toolshed.g2.bx.psu.edu/repos/bgruening/cellpose/cellpose/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/fgsea/fgsea/.*:
@@ -467,19 +444,11 @@ tools:
     cores: 32
     mem: 248
 
-  toolshed.g2.bx.psu.edu/repos/recetox/recetox_msfinder/recetox_msfinder/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/recetox/qcxms_getres/qcxms_getres/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/recetox/qcxms_neutral_run/qcxms_neutral_run/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/recetox/qcxms_production_run/qcxms_production_run/.*:
+  toolshed.g2.bx.psu.edu/repos/recetox/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/imgteam/bioformats2raw/bf2raw/.*:
     inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/bgruening/biomodels_biomd0000001066/biomodels_biomd0000001066/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/bgruening/biomodels_biomd0000001076/biomodels_biomd0000001076/.*:
+  toolshed.g2.bx.psu.edu/repos/bgruening/biomodels_.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/doclayoutyolo/doclayoutyolo/.*:
     inherits: basic_docker_tool
@@ -594,70 +563,23 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/iuc/pairtools_parse/pairtools_parse/.*:
     inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/cb_ivr/cb_ivr/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/taxo_cov_template/taxo_cov_template/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/makeeml/makeeml/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/entities_template/entities_template/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/eal_templates/eal_templates/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/eal_table_template/eal_table_template/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/raster_template/raster_template/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/vector_template/vector_template/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/perssond/basic_illumination/basic_illumination/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/goeckslab/mesmer/mesmer/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/perssond/quantification/quantification/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/perssond/s3segmenter/s3segmenter/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/perssond/coreograph/unet_coreograph/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/perssond/unmicst/unmicst/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/perssond/ashlar/ashlar/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__.*:
-    inherits: basic_docker_tool
-    params:
-      docker_run_extra_arguments: --user 999
 
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_core__tools__export/qiime2_core__tools__export/.*:
+  toolshed.g2.bx.psu.edu/repos/perssond/.*:
     inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_core__tools__import/qiime2_core__tools__import/.*:
+
+  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_.*:
     inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_core__tools__import_fastq/qiime2_core__tools__import_fastq/.*:
-    inherits: basic_docker_tool
+
+
   toolshed.g2.bx.psu.edu/repos/bgruening/qiime2_dbotu_q2/.*:
     inherits: basic_docker_tool
+
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_train/cherri_train/.*:
     inherits: basic_docker_tool
     cores: 10
     mem: 90
 
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastn_wrapper/.*:
-    env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastp_wrapper/.*:
-    env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastx_wrapper/.*:
-    env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_makeblastdb/.*:
-    env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_tblastn_wrapper/.*:
-    env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_tblastx_wrapper/.*:
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/.*:
     env:
       BLASTDB: "/data/db/databases/blast/taxdb"
 
@@ -867,8 +789,7 @@ tools:
     cores: 8
     mem: 20
     inherits: basic_docker_tool
-    params:
-      docker_run_extra_arguments: --user 999
+
 
   # 4GB is enough for most of the runs as it seems
   toolshed.g2.bx.psu.edu/repos/iuc/purge_dups/purge_dups/.*:
@@ -879,8 +800,7 @@ tools:
     cores: 8
     mem: 20
     inherits: basic_docker_tool
-    params:
-      docker_run_extra_arguments: --user 999
+
 
   toolshed.g2.bx.psu.edu/repos/bgruening/diamond/diamond/.*:
     cores: 6
@@ -1268,42 +1188,7 @@ tools:
       require:
         - singularity
 
-  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_compute_graph/scanpy_compute_graph/.*:
-    scheduling:
-      require:
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_filter_cells/scanpy_filter_cells/.*:
-    scheduling:
-      require:
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_find_cluster/scanpy_find_cluster/.*:
-    scheduling:
-      require:
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_find_variable_genes/scanpy_find_variable_genes/.*:
-    scheduling:
-      require:
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_multiplet_scrublet/scanpy_multiplet_scrublet/.*:
-    scheduling:
-      require:
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_normalise_data/scanpy_normalise_data/.*:
-    scheduling:
-      require:
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_plot_embed/scanpy_plot_embed/.*:
-    scheduling:
-      require:
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_run_dpt/scanpy_run_dpt/.*:
+  toolshed.g2.bx.psu.edu/repos/ebi-gxa/.*:
     scheduling:
       require:
         - singularity
