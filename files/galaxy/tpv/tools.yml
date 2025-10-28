@@ -37,6 +37,9 @@ tools:
     env:
       TEMP: /data/1/galaxy_db/tmp
 
+  toolshed.g2.bx.psu.edu/repos/.*:
+    inherits: basic_docker_tool
+
   toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/.*:
     inherits: basic_gpu_resource_param_tool
 
@@ -350,40 +353,21 @@ tools:
       require:
         - docker
 
-  toolshed.g2.bx.psu.edu/repos/bgruening/.*:
-    inherits: basic_docker_tool
-
-  toolshed.g2.bx.psu.edu/repos/goeckslab/.*:
-    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/goeckslab/squidpy/squidpy_spatial/*:
     inherits: basic_docker_tool
     mem: 6
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
 
-  toolshed.g2.bx.psu.edu/repos/iuc/brew3r_r/brew3r_r/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/iuc/bellavista_prepare/bellavista_prepare/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/.*:
-    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/ecology/harmonize_insitu_to_netcdf/harmonize_insitu_to_netcdf/.*:
     inherits: basic_docker_tool
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
-  # conda env not working, trying the container
-  toolshed.g2.bx.psu.edu/repos/imgteam/color_deconvolution/ip_color_deconvolution/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_point/ggplot2_point/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/artbio/manta/manta/.*:
-    inherits: basic_docker_tool
+
   toolshed.g2.bx.psu.edu/repos/bgruening/llm_hub/llm_hub/*:
     mem: 1
     env:
       LITELLM_CONFIG_FILE: '/opt/galaxy/config/litellm_config.yaml'
-  toolshed.g2.bx.psu.edu/repos/galaxyp/qupath_roi_splitter/qupath_roi_splitter/.*:
-    inherits: basic_docker_tool
 
   '.*3dtrees_overviews.*':
     inherits: basic_docker_tool
@@ -413,12 +397,6 @@ tools:
     cores: 8
     mem: 20
 
-  toolshed.g2.bx.psu.edu/repos/galaxyp/msconvert/msconvert/.*:
-    inherits: basic_docker_tool
-
-  toolshed.g2.bx.psu.edu/repos/iuc/fgsea/fgsea/.*:
-    # any container should work
-    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/cat_bins/cat_bins/.*:
     rules:
       - id: cat_bins_medium_input_rule
@@ -427,8 +405,6 @@ tools:
       - id: cat_bins_large_input_rule
         if: input_size >= 0.06
         mem: 72
-  toolshed.g2.bx.psu.edu/repos/iuc/chewbbaca.*:
-    inherits: basic_docker_tool
 
   # NCBI recommends AWS r6a.8xlarge: cores: 32, mem:256
   toolshed.g2.bx.psu.edu/repos/richard-burhans/ncbi_egapx/ncbi_egapx/.*:
@@ -436,10 +412,6 @@ tools:
     cores: 32
     mem: 248
 
-  toolshed.g2.bx.psu.edu/repos/recetox/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/imgteam/bioformats2raw/bf2raw/.*:
-    inherits: basic_docker_tool
 
   toolshed.g2.bx.psu.edu/repos/bgruening/yolo_training/yolo_training/.*:
     inherits: basic_docker_tool
@@ -465,14 +437,7 @@ tools:
     scheduling:
       require:
         - gpu-divided
-  toolshed.g2.bx.psu.edu/repos/imgteam/rfove/rfove/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/iuc/homer_findmotifs/homer_findMotifs/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/gga/repeatexplorer_clustering/repeatexplorer_clustering/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/galaxyp/diann/diann/.*:
-    inherits: basic_docker_tool
+
   toolshed.g2.bx.psu.edu/repos/bgruening/instagraal/instagraal/.*:
     inherits: basic_docker_tool
     gpus: 1
@@ -546,14 +511,6 @@ tools:
       require:
         - singularity
 
-  toolshed.g2.bx.psu.edu/repos/iuc/pairtools_parse/pairtools_parse/.*:
-    inherits: basic_docker_tool
-
-  toolshed.g2.bx.psu.edu/repos/perssond/.*:
-    inherits: basic_docker_tool
-
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_.*:
-    inherits: basic_docker_tool
 
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_train/cherri_train/.*:
     inherits: basic_docker_tool
@@ -848,12 +805,6 @@ tools:
       VECLIB_MAXIMUM_THREADS: 4
       NUMEXPR_NUM_THREADS: 4
       NUMBA_NUM_THREADS: 4
-  toolshed.g2.bx.psu.edu/repos/computational-metabolomics/dimspy_process_scans/dimspy_process_scans/.*:
-    inherits: basic_numba_tool
-  toolshed.g2.bx.psu.edu/repos/computational-metabolomics/dimspy_replicate_filter/dimspy_replicate_filter/.*:
-    inherits: basic_numba_tool
-  toolshed.g2.bx.psu.edu/repos/computational-metabolomics/dimspy_align_samples/dimspy_align_samples/.*:
-    inherits: basic_numba_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/repeat_masker/repeatmasker_wrapper/.*:
     rules:
       - if: helpers.tool_version_gte(tool, '4.1.5')
@@ -864,24 +815,6 @@ tools:
           RM_LIB_PATH: "/data/db/databases/dfam/3.4/"
       - if: helpers.tool_version_gte(tool, '4.1.5')
         cores: 4
-
-  toolshed.g2.bx.psu.edu/repos/iuc/scanpy_cluster_reduce_dimension/scanpy_cluster_reduce_dimension/.*:
-    inherits: basic_numba_tool
-
-  toolshed.g2.bx.psu.edu/repos/iuc/scanpy_filter/scanpy_filter/.*:
-    inherits: basic_numba_tool
-
-  toolshed.g2.bx.psu.edu/repos/iuc/scanpy_inspect/scanpy_inspect/.*:
-    inherits: basic_numba_tool
-
-  toolshed.g2.bx.psu.edu/repos/iuc/scanpy_normalize/scanpy_normalize/.*:
-    inherits: basic_numba_tool
-
-  toolshed.g2.bx.psu.edu/repos/iuc/scanpy_remove_confounders/scanpy_remove_confounders/.*:
-    inherits: basic_numba_tool
-
-  toolshed.g2.bx.psu.edu/repos/iuc/scanpy_plot/scanpy_plot/.*:
-    inherits: basic_numba_tool
 
   toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*:
     cores: 24
