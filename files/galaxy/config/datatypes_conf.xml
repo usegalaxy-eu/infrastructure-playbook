@@ -56,15 +56,15 @@
             The BAM index format "BAI" is automatically created by Galaxy when a BAM file is processed. Usually you don't need to upload this file.
         </upload_warning>
     </datatype>
-    <datatype extension="qname_input_sorted.bam" type="galaxy.datatypes.binary:BamInputSorted" mimetype="application/octet-stream" display_in_upload="false" description="A binary file compressed in the BGZF format with a '.bam' file extension and sorted based on the aligner output." description_url="https://wiki.galaxyproject.org/Learn/Datatypes#BAM"/>
-    <datatype extension="qname_sorted.bam" type="galaxy.datatypes.binary:BamQuerynameSorted" mimetype="application/octet-stream" display_in_upload="true" description="A binary file compressed in the BGZF format with a '.bam' file extension and sorted by queryname." description_url="https://wiki.galaxyproject.org/Learn/Datatypes#BAM"/>
-    <datatype extension="unsorted.bam" type="galaxy.datatypes.binary:BamNative" mimetype="application/octet-stream" display_in_upload="true" description="A binary file compressed in the BGZF format with a '.bam' file extension." description_url="https://wiki.galaxyproject.org/Learn/Datatypes#BAM">
+    <datatype extension="qname_input_sorted.bam" type="galaxy.datatypes.:BamInputSorted" mimetype="application/octet-stream" display_in_upload="false" description="A  file compressed in the BGZF format with a '.bam' file extension and sorted based on the aligner output." description_url="https://wiki.galaxyproject.org/Learn/Datatypes#BAM"/>
+    <datatype extension="qname_sorted.bam" type="galaxy.datatypes.:BamQuerynameSorted" mimetype="application/octet-stream" display_in_upload="true" description="A  file compressed in the BGZF format with a '.bam' file extension and sorted by queryname." description_url="https://wiki.galaxyproject.org/Learn/Datatypes#BAM"/>
+    <datatype extension="unsorted.bam" type="galaxy.datatypes.:BamNative" mimetype="application/octet-stream" display_in_upload="true" description="A  file compressed in the BGZF format with a '.bam' file extension." description_url="https://wiki.galaxyproject.org/Learn/Datatypes#BAM">
       <converter file="bam_to_bigwig_converter.xml" target_datatype="bigwig"/>
       <converter file="to_coordinate_sorted_bam.xml" target_datatype="bam"/>
       <converter file="to_qname_sorted_bam.xml" target_datatype="qname_sorted.bam"/>
     </datatype>
-    <datatype extension="probam" type="galaxy.datatypes.binary:ProBam" mimetype="application/octet-stream" display_in_upload="true"/>
-    <datatype extension="cram" type="galaxy.datatypes.binary:CRAM" mimetype="application/octet-stream" display_in_upload="true" description="CRAM is a file format for highly efficient and tunable reference-based compression of alignment data." description_url="http://www.ebi.ac.uk/ena/software/cram-usage">
+    <datatype extension="probam" type="galaxy.datatypes.:ProBam" mimetype="application/octet-stream" display_in_upload="true"/>
+    <datatype extension="cram" type="galaxy.datatypes.:CRAM" mimetype="application/octet-stream" display_in_upload="true" description="CRAM is a file format for highly efficient and tunable reference-based compression of alignment data." description_url="http://www.ebi.ac.uk/ena/software/cram-usage">
         <infer_from suffix="cram" />
         <converter file="cram_to_bam_converter.xml" target_datatype="bam"/>
         <display file="igb/cram.xml"/>
@@ -92,15 +92,15 @@
     <datatype extension="len" type="galaxy.datatypes.chrominfo:ChromInfo" display_in_upload="true">
       <converter file="len_to_linecount.xml" target_datatype="linecount"/>
     </datatype>
-    <datatype extension="daa" type="galaxy.datatypes.binary:DAA" display_in_upload="true"/>
-    <datatype extension="rma6" type="galaxy.datatypes.binary:RMA6" display_in_upload="true"/>
-    <datatype extension="dmnd" type="galaxy.datatypes.binary:DMND" display_in_upload="false">
+    <datatype extension="daa" type="galaxy.datatypes.:DAA" display_in_upload="true"/>
+    <datatype extension="rma6" type="galaxy.datatypes.:RMA6" display_in_upload="true"/>
+    <datatype extension="dmnd" type="galaxy.datatypes.:DMND" display_in_upload="false">
         <infer_from suffix="dmnd" />
     </datatype>
-    <datatype extension="parquet" type="galaxy.datatypes.binary:Parquet" display_in_upload="true">
+    <datatype extension="parquet" type="galaxy.datatypes.:Parquet" display_in_upload="true">
       <converter file="parquet_to_csv_converter.xml" target_datatype="csv"/>
     </datatype>
-    <datatype extension="idat" type="galaxy.datatypes.binary:Idat" display_in_upload="true"/>
+    <datatype extension="idat" type="galaxy.datatypes.:Idat" display_in_upload="true"/>
     <datatype extension="bigbed" type="galaxy.datatypes.binary:BigBed" mimetype="application/octet-stream" display_in_upload="true">
       <converter file="bigbed_to_bed_converter.xml" target_datatype="bed"/>
       <display file="ucsc/bigbed.xml"/>
@@ -141,6 +141,12 @@
     <datatype extension="data" type="galaxy.datatypes.data:Data" mimetype="application/octet-stream" max_optional_metadata_filesize="1048576"/>
     <datatype extension="gz" type="galaxy.datatypes.binary:Binary" subclass="true"/>
     <datatype extension="binary" type="galaxy.datatypes.binary:Binary" mimetype="application/octet-stream" max_optional_metadata_filesize="1048576"/>
+    <datatype extension="las" type="galaxy.datatypes.binary:Binary" mimetype="application/vnd.las" subclass="true" display_in_upload="true" description="The LAS (LASer) format is a file format designed for the interchange and archiving of Lidar point cloud data." description_url="https://www.loc.gov/preservation/digital/formats/fdd/fdd000418.shtml">
+        <infer_from suffix="las" />
+    </datatype>
+    <datatype extension="laz" type="galaxy.datatypes.binary:Binary" mimetype="application/vnd.las" subclass="true" display_in_upload="true" description="LAZ is an open format for lossless compression of LAS." description_url="https://downloads.rapidlasso.de/doc/laszip.pdf">
+        <infer_from suffix="laz" />
+    </datatype>
     <datatype extension="d3_hierarchy" type="galaxy.datatypes.text:Json" mimetype="application/json" subclass="true" display_in_upload="true"/>
     <datatype extension="cytoscapejson" type="galaxy.datatypes.text:CytoscapeJson" mimetype="application/json" display_in_upload="true" description="Cytoscape JSON format for network visualization, typically containing 'nodes' and 'edges' in a JSON object." description_url="https://js.cytoscape.org/#notation/elements-json" />
     <datatype extension="imgt.json" type="galaxy.datatypes.text:ImgtJson" mimetype="application/json" display_in_upload="True"/>
