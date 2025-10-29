@@ -492,7 +492,8 @@ tools:
     cores: 1
     params:
       docker_run_extra_arguments: ' --gpus all --shm-size 16g '
-      avoid_gpu_models: ["Tesla V100-PCIE-32GB"]
+      exclude_gpu_models: ["Tesla V100-PCIE-32GB"]
+      prefer_gpu_models: ["NVIDIA L40S"]
     env:
       GPU_AVAILABLE: 1
       # the non-NFS /tmp dir is needed to avoid "resource is busy" errors
