@@ -602,6 +602,25 @@ destinations:
     env:
       GPU_AVAILABLE: "1"
     params:
-      requirements: 'GalaxyGroup == "pxe-gpu"'
+      submit_requirements: 'GalaxyGroup == "pxe-gpu"'
       request_gpus: "{gpus or 0}"
       docker_run_extra_arguments: "{entity.params.get('docker_run_extra_arguments') or ''} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
+    rules:
+      - id: Avoid certain GPU Models for specific tools
+        if: entity.params.get('avoid_gpu_model', '') != ''
+        execute: |
+           avoid_gpu_models = entity.params.get('avoid_gpu_models', [])
+           existing_requirements = entity.params.get('submit_requirements', '')
+           if avoid_gpu_models:
+               # Build the GPU model exclusion conditions
+               gpu_conditions = ' && '.join(
+                   f'(GPUs_DeviceName != "{model}")' for model in avoid_gpu_models
+               )
+               # Combine with existing requirements
+               if existing_requirements:
+                   entity.params['submit_requirements'] = f'{gpu_conditions} && ({existing_requirements})'
+               else:
+                   entity.params['submit_requirements'] = gpu_conditions
+           else:
+               # No models to avoid, keep existing requirements
+               entity.params['submit_requirements'] = existing_requirements
