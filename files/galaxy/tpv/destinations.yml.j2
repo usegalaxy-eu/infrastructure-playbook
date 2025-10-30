@@ -72,6 +72,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     params:
+      submit_requirements: "{entity.params.get('requirements') or ''}"
       docker_volumes: "$job_directory:rw,
         $_CONDOR_SCRATCH_DIR:rw,
         $tool_directory:ro,
@@ -589,7 +590,7 @@ destinations:
     env:
       GPU_AVAILABLE: "1"
     params:
-      requirements: 'GalaxyGroup == "pxe-gpu"'
+      submit_requirements: 'GalaxyGroup == "pxe-gpu"'
       request_gpus: "{gpus or 0}"
       docker_run_extra_arguments: "{entity.params.get('docker_run_extra_arguments') or ''} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
 
@@ -602,6 +603,6 @@ destinations:
     env:
       GPU_AVAILABLE: "1"
     params:
-      requirements: 'GalaxyGroup == "pxe-gpu"'
+      submit_requirements: 'GalaxyGroup == "pxe-gpu"'
       request_gpus: "{gpus or 0}"
       docker_run_extra_arguments: "{entity.params.get('docker_run_extra_arguments') or ''} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
