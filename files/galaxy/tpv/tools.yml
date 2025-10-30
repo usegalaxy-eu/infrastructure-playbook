@@ -410,6 +410,12 @@ tools:
   toolshed.g2.bx.psu.edu/repos/galaxyp/qupath_roi_splitter/qupath_roi_splitter/.*:
     inherits: basic_docker_tool
 
+  3dtrees_sat:
+    inherits: basic_docker_tool
+    gpus: 1
+    cores: 8
+    mem: 20
+
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_tile_merge/3dtrees_tile_merge/.*:
     inherits: basic_docker_tool
     cores: 10
