@@ -601,18 +601,20 @@ destinations:
     max_accepted_gpus: 1
     env:
       GPU_AVAILABLE: "1"
+    context:
+      galaxy_group: 'GalaxyGroup == "pxe-gpu"'
     params:
-      submit_requirements: 'GalaxyGroup == "pxe-gpu"'
+      submit_requirements: "{galaxy_group}"
       request_gpus: "{gpus or 0}"
       docker_run_extra_arguments: "{entity.params.get('docker_run_extra_arguments') or ''} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
     rules:
       - id: GPU model preferences
         if: |
-          "exclude_gpu_models" in entity.params or "include_gpu_models" in entity.params
+          "exclude_gpu_models" in entity.context or "include_gpu_models" in entity.context
         execute: |
-          exclude_gpu_models = entity.params.get('exclude_gpu_models', [])
-          include_gpu_models = entity.params.get('include_gpu_models', [])
-          existing_requirements = entity.params.get('submit_requirements', '')
+          exclude_gpu_models = entity.context.get('exclude_gpu_models', [])
+          include_gpu_models = entity.context.get('include_gpu_models', [])
+          existing_requirements = galaxy_group
           gpu_conditions_list = []
           if exclude_gpu_models:
               exclude_conditions = ' && '.join(
@@ -632,3 +634,4 @@ destinations:
                   entity.params['submit_requirements'] = f'{gpu_conditions} && ({existing_requirements})'
               else:
                   entity.params['submit_requirements'] = gpu_conditions
+
