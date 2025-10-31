@@ -1,0 +1,47 @@
+---
+- name: "Get user's home directory for {{ unix_user }}"
+  ansible.builtin.set_fact:
+    user_home: "{{ getent_passwd_result.ansible_facts.getent_passwd[unix_user][4] }}"
+
+- name: "Initialize empty key list for {{ unix_user }}"
+  ansible.builtin.set_fact:
+    user_ssh_keys: []
+
+- name: "Build list of SSH keys for {{ unix_user }}"
+  ansible.builtin.set_fact:
+    user_ssh_keys: "{{ user_ssh_keys + person_keys }}"
+  loop: "{{ ssh_authorized_persons }}"
+  loop_control:
+    loop_var: person_entry
+    label: "{{ person_name }}"
+  vars:
+    person_name: "{{ person_entry.keys() | list | first }}"
+    person_data: "{{ person_entry[person_name] }}"
+    # this will match if the person is authorized for all machines or the current machine
+    machine_matches: "{{ 'all' in person_data['machines'] or inventory_hostname in person_data['machines'] }}"
+    # this will match if the person is authorized for the current user
+    user_matches: "{{ unix_user in person_data['users'] }}"
+    person_keys: "{{ person_data['keys'] | default(person_data['key'] | default([])) }}"
+  when:
+    - machine_matches | bool
+    - user_matches | bool
+    - person_keys | length > 0
+
+- name: "Ensure .ssh directory exists for {{ unix_user }}"
+  become: true
+  ansible.builtin.file:
+    path: "{{ user_home }}/.ssh"
+    state: directory
+    owner: "{{ unix_user }}"
+    group: "{{ unix_user }}"
+    mode: '0700'
+  when: user_ssh_keys | length > 0
+
+- name: "Replace authorized_keys for {{ unix_user }}"
+  become: true
+  ansible.builtin.authorized_key:
+    user: "{{ unix_user }}"
+    key: "{{ user_ssh_keys | join('\n') }}"
+    state: present
+    exclusive: true
+  when: user_ssh_keys | length > 0

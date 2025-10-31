@@ -1,47 +1,20 @@
 ---
-- name: Get passwd database
+- name: Get passwd database on target
   ansible.builtin.getent:
     database: passwd
   register: getent_passwd_result
 
-- name: Find applicable SSH roles
-  block:
-    - name: Initialize list of applicable roles
-      ansible.builtin.set_fact:
-        applicable_roles: []
-
-    - name: Append role to the list if it applies to the current host
-      ansible.builtin.set_fact:
-        applicable_roles: "{{ applicable_roles + [item] }}"
-      loop: "{{ ssh_roles }}"
-      when: inventory_hostname in query('inventory_hostnames', item.hosts if item.hosts is string else item.hosts | join(','))
-
-- name: Initialize user_keys_map
+- name: Filter users that exist on the system
   ansible.builtin.set_fact:
-    user_keys_map: {}
+    existing_unix_users: >-
+      {{
+        ssh_unix_users
+        | intersect((getent_passwd_result.ansible_facts.getent_passwd | default({})).keys() | list)
+      }}
 
-- name: Collect all target users from applicable roles
-  ansible.builtin.set_fact:
-    all_target_users: >-
-      {{ applicable_roles
-         | map(attribute='users')
-         | flatten
-         | unique
-         | list }}
-
-- name: Process each applicable role to collect keys per user
-  ansible.builtin.include_tasks: collect_role_keys.yml
-  loop: "{{ applicable_roles }}"
+- name: Process SSH keys for each existing unix user
+  include_tasks: process_user.yml
+  loop: "{{ existing_unix_users }}"
   loop_control:
-    loop_var: current_role
-  when: applicable_roles | length > 0
-
-- name: Apply collected keys to each target user
-  ansible.builtin.include_tasks: apply_keys_to_user.yml
-  loop: "{{ all_target_users }}"
-  loop_control:
-    loop_var: target_user
-  when:
-    - all_target_users | length > 0
-    - target_user in user_keys_map
-    - user_keys_map[target_user] | length > 0
+    loop_var: unix_user
+    label: "{{ unix_user }}"
