@@ -608,22 +608,22 @@ destinations:
     rules:
       - id: GPU model preferences
         if: |
-          "exclude_gpu_models" in entity.params or "prefer_gpu_models" in entity.params
+          "exclude_gpu_models" in entity.params or "include_gpu_models" in entity.params
         execute: |
           exclude_gpu_models = entity.params.get('exclude_gpu_models', [])
-          prefer_gpu_models = entity.params.get('prefer_gpu_models', [])
+          include_gpu_models = entity.params.get('include_gpu_models', [])
           existing_requirements = entity.params.get('submit_requirements', '')
           gpu_conditions_list = []
           if exclude_gpu_models:
-              avoid_conditions = ' && '.join(
+              exclude_conditions = ' && '.join(
                   f'(GPUs_DeviceName != "{model}")' for model in exclude_gpu_models
               )
-              gpu_conditions_list.append(avoid_conditions)
-          if prefer_gpu_models:
-              prefer_conditions = ' || '.join(
-                  f'(GPUs_DeviceName == "{model}")' for model in prefer_gpu_models
+              gpu_conditions_list.append(exclude_conditions)
+          if include_gpu_models:
+              include_conditions = ' || '.join(
+                  f'(GPUs_DeviceName == "{model}")' for model in include_gpu_models
               )
-              gpu_conditions_list.append(f'({prefer_conditions})')
+              gpu_conditions_list.append(f'({include_conditions})')
           # Combine all GPU conditions with AND
           if gpu_conditions_list:
               gpu_conditions = ' && '.join(gpu_conditions_list)
