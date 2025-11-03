@@ -9,7 +9,7 @@
     existing_unix_users: >-
       {{
         ssh_unix_users
-        | intersect((getent_passwd_result.ansible_facts.getent_passwd | default({})).keys() | list)
+        | intersect(getent_passwd_result.ansible_facts.getent_passwd.keys() | list)
       }}
 
 - name: Process SSH keys for each existing unix user

@@ -9,14 +9,14 @@
 
 - name: "Build list of SSH keys for {{ unix_user }}"
   ansible.builtin.set_fact:
-    user_ssh_keys: "{{ user_ssh_keys + person_keys }}"
-  loop: "{{ ssh_authorized_persons }}"
+    user_ssh_keys: "{{ (user_ssh_keys + person_keys) | unique }}"
+  loop: "{{ ssh_authorized_persons | dict2items }}"
   loop_control:
     loop_var: person_entry
-    label: "{{ person_name }}"
+    label: "{{ person_entry.key }}"
   vars:
-    person_name: "{{ person_entry.keys() | list | first }}"
-    person_data: "{{ person_entry[person_name] }}"
+    person_name: "{{ person_entry.key }}"
+    person_data: "{{ person_entry.value }}"
     # this will match if the person is authorized for all machines or the current machine
     machine_matches: "{{ 'all' in person_data['machines'] or inventory_hostname in person_data['machines'] }}"
     # this will match if the person is authorized for the current user
@@ -25,7 +25,6 @@
   when:
     - machine_matches | bool
     - user_matches | bool
-    - person_keys | length > 0
 
 - name: "Ensure .ssh directory exists for {{ unix_user }}"
   become: true
@@ -35,13 +34,12 @@
     owner: "{{ unix_user }}"
     group: "{{ unix_user }}"
     mode: '0700'
-  when: user_ssh_keys | length > 0
 
 - name: "Replace authorized_keys for {{ unix_user }}"
   become: true
-  ansible.builtin.authorized_key:
-    user: "{{ unix_user }}"
-    key: "{{ user_ssh_keys | join('\n') }}"
-    state: present
-    exclusive: true
-  when: user_ssh_keys | length > 0
+  ansible.builtin.template:
+    src: authorized_keys.j2
+    dest: "{{ user_home }}/.ssh/authorized_keys"
+    owner: "{{ unix_user }}"
+    group: "{{ unix_user }}"
+    mode: '0600'
