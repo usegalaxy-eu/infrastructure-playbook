@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the codebase.
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           path: "infrastructure-playbook"
 
@@ -33,32 +33,22 @@ jobs:
           git submodule update --init --recursive --remote --checkout
 
       - name: Set up Python 3.
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
-          cache: "pip"
+          python-version: "3.13"
+
+      - name: Install uv.
+        uses: astral-sh/setup-uv@v7
 
       # Install Ansible.
-      - name: Cache Ansible.
-        id: cache-ansible
-        uses: actions/cache@v3
-        with:
-          path: /opt/hostedtoolcache/Python/*/*/lib/python*/site-packages/ansible*
-          key: ${{ hashFiles('infrastructure-playbook/requirements.txt') }}
-      - name: Install Ansible (fast when an existing installation was already cached).
+      - name: Install Ansible.
         working-directory: "infrastructure-playbook"
         run: |
           # Install an Ansible version compatible with the version of
           # ansible-core specified in requirements.txt for the
           # infrastructure-playbook repo.
           ANSIBLE_CORE_REQ=$(perl -pe 's/\\\n/ /' requirements.txt | grep ansible-core)
-          pip3 install --use-feature=fast-deps ansible "$ANSIBLE_CORE_REQ"
-      - name: Save Ansible cache.
-        uses: actions/cache/save@v3
-        if: ${{ steps.cache-ansible.outputs.cache-hit != 'true' }}
-        with:
-          path: /opt/hostedtoolcache/Python/*/*/lib/python*/site-packages/ansible*
-          key: ${{ hashFiles('infrastructure-playbook/requirements.txt') }}
+          uv pip install --system ansible "$ANSIBLE_CORE_REQ"
 
       # Total Perspective Vortex needs the Galaxy logic, which should be
       # installed automatically when running `pip3 install
@@ -70,6 +60,7 @@ jobs:
       #   usegalaxy.eu.
       # Therefore, we clone Galaxy and add it to the PYTHONPATH.
       - name: Get Galaxy repo and commit id.
+        id: commits-galaxy
         working-directory: "infrastructure-playbook"
         run: |
           # Get the Galaxy repository URL and commit from Ansible variables.
@@ -82,30 +73,26 @@ jobs:
           export GALAXY_COMMIT_ID=$(cat ${TMP_FILE} | jq -r .galaxy_commit_id)
           export GALAXY_REPO=$(cat ${TMP_FILE} | jq -r .galaxy_repo)
           rm ${TMP_FILE}
-          echo $GALAXY_COMMIT_ID > ../galaxy_commit_id
-          echo $GALAXY_REPO > ../galaxy_repo
+          echo "commit=$GALAXY_COMMIT_ID" >> $GITHUB_OUTPUT
+          echo "repo=$GALAXY_REPO" >> $GITHUB_OUTPUT
       - name: Cache Galaxy
         id: cache-galaxy
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: galaxy
-          key: ${{ hashFiles('galaxy_repo') }}-${{ hashFiles('galaxy_commit_id') }}
+          key: galaxy-${{ steps.commits-galaxy.outputs.repo }}-${{ steps.commits-galaxy.outputs.commit }}
       - name: Clone Galaxy
         if: ${{ steps.cache-galaxy.outputs.cache-hit != 'true' }}
         run: |
-          export GALAXY_COMMIT_ID="$(cat ./galaxy_commit_id)"
-          export GALAXY_REPO="$(cat ./galaxy_repo)"
-          # git clone -b $GALAXY_COMMIT_ID --single-branch --depth=1 $GALAXY_REPO galaxy  # does not work with commit hashes
-          git clone $GALAXY_REPO galaxy && cd galaxy && git checkout $GALAXY_COMMIT_ID
-      - name: Save Galaxy cache.
-        uses: actions/cache/save@v3
+          git clone ${{ steps.commits-galaxy.outputs.repo }} galaxy
+      - name: Checkout production Galaxy commit
         if: ${{ steps.cache-galaxy.outputs.cache-hit != 'true' }}
-        with:
-          path: galaxy
-          key: ${{ hashFiles('galaxy_repo') }}-${{ hashFiles('galaxy_commit_id') }}
+        working-directory: galaxy
+        run: |
+          git checkout "${{ steps.commits-galaxy.outputs.commit }}"
       - name: Install Galaxy requirements.
         working-directory: "galaxy"
-        run: pip install -r requirements.txt
+        run: uv pip install --system -r requirements.txt
 
       # Install the Total Perspective Vortex version that should be running on
       # usegalaxy.eu
@@ -113,11 +100,11 @@ jobs:
         working-directory: "galaxy"
         run: |
           TPV_REQ=$(perl -pe 's/\\\n/ /' lib/galaxy/dependencies/conditional-requirements.txt | grep total-perspective-vortex)
-          pip3 install --upgrade "$TPV_REQ"
+          uv pip install --system --upgrade "$TPV_REQ"
 
       - name: Install port of Ansible filters for Jinja (required for the next step).
         run: |
-          pip3 install jinja2-ansible-filters
+          uv pip install --system jinja2-ansible-filters
 
       - name: Create mounts vars file.
         working-directory: "infrastructure-playbook/mounts"
@@ -180,7 +167,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the codebase.
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
         with:
           fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 0 }}
           path: "infrastructure-playbook"
@@ -197,18 +184,14 @@ jobs:
           git submodule update --init --recursive --remote --checkout
 
       - name: Set up Python 3.
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
-          cache: "pip"
+          python-version: "3.13"
+
+      - name: Install uv.
+        uses: astral-sh/setup-uv@v7
 
       # Install Ansible.
-      - name: Cache Ansible.
-        id: cache-ansible
-        uses: actions/cache@v3
-        with:
-          path: /opt/hostedtoolcache/Python/*/*/lib/python*/site-packages/ansible*
-          key: ${{ hashFiles('infrastructure-playbook/requirements.txt') }}
       - name: Install Ansible.
         working-directory: "infrastructure-playbook"
         run: |
@@ -216,13 +199,7 @@ jobs:
           # ansible-core specified in requirements.txt for the
           # infrastructure-playbook repo.
           ANSIBLE_CORE_REQ=$(perl -pe 's/\\\n/ /' requirements.txt | grep ansible-core)
-          pip3 install --use-feature=fast-deps ansible "$ANSIBLE_CORE_REQ"
-      - name: Save Ansible cache.
-        uses: actions/cache/save@v3
-        if: ${{ steps.cache-ansible.outputs.cache-hit != 'true' }}
-        with:
-          path: /opt/hostedtoolcache/Python/*/*/lib/python*/site-packages/ansible*
-          key: ${{ hashFiles('infrastructure-playbook/requirements.txt') }}
+          uv pip install --system ansible "$ANSIBLE_CORE_REQ"
 
       # Total Perspective Vortex needs the Galaxy logic, which should be
       # installed automatically when running `pip3 install
@@ -251,27 +228,22 @@ jobs:
           echo "repo=$GALAXY_REPO" >> $GITHUB_OUTPUT
       - name: Cache Galaxy
         id: cache-galaxy
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: galaxy
-          key: ${{ steps.commits-galaxy.outputs.repo }}-${{ steps.commits-galaxy.outputs.commit }}
+          key: galaxy-${{ steps.commits-galaxy.outputs.repo }}-${{ steps.commits-galaxy.outputs.commit }}
       - name: Clone Galaxy
         if: ${{ steps.cache-galaxy.outputs.cache-hit != 'true' }}
         run: |
-          # git clone -b ${{ steps.commits-galaxy.outputs.commit }} \
-          #   --single-branch \
-          #   --depth=1 ${{ steps.commits-galaxy.outputs.repo }} \
-          #   galaxy  # does not work with commit hashes
-          git clone ${{ steps.commits-galaxy.outputs.repo }} galaxy && cd galaxy && git checkout ${{ steps.commits-galaxy.outputs.commit }}
-      - name: Save Galaxy cache.
-        uses: actions/cache/save@v3
+          git clone ${{ steps.commits-galaxy.outputs.repo }} galaxy
+      - name: Checkout production Galaxy commit
         if: ${{ steps.cache-galaxy.outputs.cache-hit != 'true' }}
-        with:
-          path: galaxy
-          key: ${{ steps.commits-galaxy.outputs.repo }}-${{ steps.commits-galaxy.outputs.commit }}
+        working-directory: galaxy
+        run: |
+          git checkout "${{ steps.commits-galaxy.outputs.commit }}"
       - name: Install Galaxy requirements.
         working-directory: "galaxy"
-        run: pip install -r requirements.txt
+        run: uv pip install --system -r requirements.txt
 
       # Install the Total Perspective Vortex version that should be running on
       # usegalaxy.eu
@@ -279,11 +251,11 @@ jobs:
         working-directory: "galaxy"
         run: |
           TPV_REQ=$(perl -pe 's/\\\n/ /' lib/galaxy/dependencies/conditional-requirements.txt | grep total-perspective-vortex)
-          pip3 install --upgrade "$TPV_REQ"
+          uv pip install --system --upgrade "$TPV_REQ"
 
       - name: Install port of Ansible filters for Jinja.
         run: |
-          pip3 install jinja2-ansible-filters
+          uv pip install --system jinja2-ansible-filters
 
       - name: Create mounts vars file.
         working-directory: "infrastructure-playbook/mounts"

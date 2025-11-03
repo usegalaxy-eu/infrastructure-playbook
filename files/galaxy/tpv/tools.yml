@@ -344,7 +344,6 @@ tools:
 
   basic_docker_tool:
     params:
-      submit_requirements: "GalaxyDockerHack == True"
     scheduling:
       require:
         - docker
@@ -354,6 +353,16 @@ tools:
     params:
       docker_run_extra_arguments: --user 999
 
+  toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_anndata_to_csv/scimap_anndata_to_csv/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_mcmicro_to_anndata/scimap_mcmicro_to_anndata/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_phenotyping/scimap_phenotyping/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_plotting/scimap_plotting/.*:
+    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_spatial/scimap_spatial/.*:
+    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/mitohifi/mitohifi/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/brew3r_r/brew3r_r/.*:
@@ -401,12 +410,63 @@ tools:
   toolshed.g2.bx.psu.edu/repos/galaxyp/qupath_roi_splitter/qupath_roi_splitter/.*:
     inherits: basic_docker_tool
 
-  '.*3dtrees_overviews.*':
+  toolshed.g2.bx.psu.edu/repos/iuc/fileidentification/fileidentification/.*:
     inherits: basic_docker_tool
-  '.*3dtrees_tile_merge.*':
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_overviews/3dtrees_overviews/.*:
     inherits: basic_docker_tool
-  '.*3dtrees_standard.*':
+    cores: 5
+    mem: 5
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_tile_merge/3dtrees_tile_merge/.*:
     inherits: basic_docker_tool
+    cores: 10
+    mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_segmentanytree/3dtrees_segmentanytree/.*:
+    inherits: basic_docker_tool
+    gpus: 1
+    cores: 10
+    mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_standardization/3dtrees_standardization/.*:
+    inherits: basic_docker_tool
+    cores: 10
+    mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_detailview/3dtrees_detailview/.*:
+    inherits: basic_docker_tool
+    gpus: 1
+    cores: 8
+    mem: 20
+
+  3dtrees_sat:
+    # /opt/galaxy/custom-tools/test/3dtrees/sat.xml
+    inherits: basic_docker_tool
+    gpus: 1
+    cores: 8
+    mem: 20
+
+  3dtrees_overviews:
+    # /opt/galaxy/custom-tools/test/3dtrees/overviews.xml
+    inherits: basic_docker_tool
+
+  3dtrees_standard:
+    # /opt/galaxy/custom-tools/test/3dtrees/standard.xml
+    inherits: basic_docker_tool
+
+  3dtrees_tile_merge:
+    # /opt/galaxy/custom-tools/test/3dtrees/tile_merge.xml
+    inherits: basic_docker_tool
+    cores: 10
+    mem: 20
+
+  3dtrees_detailview:
+    # /opt/galaxy/custom-tools/test/3dtrees/detailview.xml
+    inherits: basic_docker_tool
+    gpus: 1
+    cores: 8
+    mem: 20
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/msconvert/msconvert/.*:
     inherits: basic_docker_tool
@@ -467,6 +527,19 @@ tools:
       GPU_AVAILABLE: 1
       # the non-NFS /tmp dir is needed to avoid "resource is busy" errors
       _GALAXY_JOB_TMP_DIR: '/tmp'
+  toolshed.g2.bx.psu.edu/repos/bgruening/parabricks_fq2bam/parabricks_fq2bam/.*:
+    inherits: basic_docker_tool
+    gpus: 1
+    cores: 1
+    params:
+      docker_run_extra_arguments: ' --gpus all --shm-size 16g '
+    env:
+      GPU_AVAILABLE: 1
+      # the non-NFS /tmp dir is needed to avoid "resource is busy" errors
+      _GALAXY_JOB_TMP_DIR: '/tmp'
+    scheduling:
+      require:
+        - gpu-divided
   toolshed.g2.bx.psu.edu/repos/imgteam/rfove/rfove/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/homer_findmotifs/homer_findMotifs/.*:
@@ -580,334 +653,11 @@ tools:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/perssond/ashlar/ashlar/.*:
     inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__alignment__mafft/qiime2__alignment__mafft/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__alignment__mafft_add/qiime2__alignment__mafft_add/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__alignment__mask/qiime2__alignment__mask/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__composition__add_pseudocount/qiime2__composition__add_pseudocount/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__composition__ancom/qiime2__composition__ancom/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__composition__ancombc/qiime2__composition__ancombc/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__filter_alpha_diversity/qiime2__diversity__filter_alpha_diversity/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__composition__tabulate/qiime2__composition__tabulate/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__cutadapt__demux_paired/qiime2__cutadapt__demux_paired/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__cutadapt__demux_single/qiime2__cutadapt__demux_single/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__cutadapt__trim_paired/qiime2__cutadapt__trim_paired/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__cutadapt__trim_single/qiime2__cutadapt__trim_single/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__dada2__denoise_ccs/qiime2__dada2__denoise_ccs/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__dada2__denoise_paired/qiime2__dada2__denoise_paired/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__dada2__denoise_pyro/qiime2__dada2__denoise_pyro/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__dada2__denoise_single/qiime2__dada2__denoise_single/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__deblur__denoise_16S/qiime2__deblur__denoise_16S/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__deblur__denoise_other/qiime2__deblur__denoise_other/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__deblur__visualize_stats/qiime2__deblur__visualize_stats/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__emp_paired/qiime2__demux__emp_paired/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__emp_single/qiime2__demux__emp_single/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__filter_samples/qiime2__demux__filter_samples/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__subsample_paired/qiime2__demux__subsample_paired/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__subsample_single/qiime2__demux__subsample_single/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__summarize/qiime2__demux__summarize/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__adonis/qiime2__diversity__adonis/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__alpha/qiime2__diversity__alpha/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__alpha_correlation/qiime2__diversity__alpha_correlation/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__alpha_group_significance/qiime2__diversity__alpha_group_significance/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__alpha_phylogenetic/qiime2__diversity__alpha_phylogenetic/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__alpha_rarefaction/qiime2__diversity__alpha_rarefaction/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__beta/qiime2__diversity__beta/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__beta_correlation/qiime2__diversity__beta_correlation/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__beta_group_significance/qiime2__diversity__beta_group_significance/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__beta_phylogenetic/qiime2__diversity__beta_phylogenetic/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__beta_rarefaction/qiime2__diversity__beta_rarefaction/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__bioenv/qiime2__diversity__bioenv/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__core_metrics/qiime2__diversity__core_metrics/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__core_metrics_phylogenetic/qiime2__diversity__core_metrics_phylogenetic/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__filter_distance_matrix/qiime2__diversity__filter_distance_matrix/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__mantel/qiime2__diversity__mantel/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__pcoa/qiime2__diversity__pcoa/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__pcoa_biplot/qiime2__diversity__pcoa_biplot/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__procrustes_analysis/qiime2__diversity__procrustes_analysis/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__tsne/qiime2__diversity__tsne/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__umap/qiime2__diversity__umap/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__alpha_passthrough/qiime2__diversity_lib__alpha_passthrough/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__beta_passthrough/qiime2__diversity_lib__beta_passthrough/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__beta_phylogenetic_meta_passthrough/qiime2__diversity_lib__beta_phylogenetic_meta_passthrough/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__beta_phylogenetic_passthrough/qiime2__diversity_lib__beta_phylogenetic_passthrough/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__bray_curtis/qiime2__diversity_lib__bray_curtis/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__faith_pd/qiime2__diversity_lib__faith_pd/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__jaccard/qiime2__diversity_lib__jaccard/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__observed_features/qiime2__diversity_lib__observed_features/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__pielou_evenness/qiime2__diversity_lib__pielou_evenness/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__shannon_entropy/qiime2__diversity_lib__shannon_entropy/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__unweighted_unifrac/qiime2__diversity_lib__unweighted_unifrac/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__weighted_unifrac/qiime2__diversity_lib__weighted_unifrac/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__emperor__biplot/qiime2__emperor__biplot/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__emperor__plot/qiime2__emperor__plot/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__emperor__procrustes_plot/qiime2__emperor__procrustes_plot/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_classifier__blast/qiime2__feature_classifier__blast/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_classifier__classify_consensus_blast/qiime2__feature_classifier__classify_consensus_blast/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_classifier__classify_consensus_vsearch/qiime2__feature_classifier__classify_consensus_vsearch/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_classifier__classify_hybrid_vsearch_sklearn/qiime2__feature_classifier__classify_hybrid_vsearch_sklearn/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_classifier__classify_sklearn/qiime2__feature_classifier__classify_sklearn/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_classifier__extract_reads/qiime2__feature_classifier__extract_reads/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_classifier__find_consensus_annotation/qiime2__feature_classifier__find_consensus_annotation/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_classifier__fit_classifier_naive_bayes/qiime2__feature_classifier__fit_classifier_naive_bayes/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_classifier__fit_classifier_sklearn/qiime2__feature_classifier__fit_classifier_sklearn/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_classifier__vsearch_global/qiime2__feature_classifier__vsearch_global/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__core_features/qiime2__feature_table__core_features/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__filter_features/qiime2__feature_table__filter_features/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__filter_features_conditionally/qiime2__feature_table__filter_features_conditionally/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__filter_samples/qiime2__feature_table__filter_samples/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__filter_seqs/qiime2__feature_table__filter_seqs/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__group/qiime2__feature_table__group/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__heatmap/qiime2__feature_table__heatmap/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__merge/qiime2__feature_table__merge/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__merge_seqs/qiime2__feature_table__merge_seqs/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__merge_taxa/qiime2__feature_table__merge_taxa/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__presence_absence/qiime2__feature_table__presence_absence/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__rarefy/qiime2__feature_table__rarefy/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__relative_frequency/qiime2__feature_table__relative_frequency/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__rename_ids/qiime2__feature_table__rename_ids/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__subsample/qiime2__feature_table__subsample/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__summarize/qiime2__feature_table__summarize/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__tabulate_seqs/qiime2__feature_table__tabulate_seqs/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__transpose/qiime2__feature_table__transpose/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__fragment_insertion__classify_otus_experimental/qiime2__fragment_insertion__classify_otus_experimental/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__fragment_insertion__filter_features/qiime2__fragment_insertion__filter_features/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__fragment_insertion__sepp/qiime2__fragment_insertion__sepp/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__gneiss__assign_ids/qiime2__gneiss__assign_ids/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__gneiss__correlation_clustering/qiime2__gneiss__correlation_clustering/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__gneiss__dendrogram_heatmap/qiime2__gneiss__dendrogram_heatmap/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__gneiss__gradient_clustering/qiime2__gneiss__gradient_clustering/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__gneiss__ilr_hierarchical/qiime2__gneiss__ilr_hierarchical/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__gneiss__ilr_phylogenetic/qiime2__gneiss__ilr_phylogenetic/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__gneiss__ilr_phylogenetic_differential/qiime2__gneiss__ilr_phylogenetic_differential/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__gneiss__ilr_phylogenetic_ordination/qiime2__gneiss__ilr_phylogenetic_ordination/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__longitudinal__anova/qiime2__longitudinal__anova/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__longitudinal__feature_volatility/qiime2__longitudinal__feature_volatility/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__longitudinal__first_differences/qiime2__longitudinal__first_differences/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__longitudinal__first_distances/qiime2__longitudinal__first_distances/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__longitudinal__linear_mixed_effects/qiime2__longitudinal__linear_mixed_effects/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__longitudinal__maturity_index/qiime2__longitudinal__maturity_index/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__longitudinal__nmit/qiime2__longitudinal__nmit/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__longitudinal__pairwise_differences/qiime2__longitudinal__pairwise_differences/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__longitudinal__pairwise_distances/qiime2__longitudinal__pairwise_distances/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__longitudinal__plot_feature_volatility/qiime2__longitudinal__plot_feature_volatility/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__longitudinal__volatility/qiime2__longitudinal__volatility/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__metadata__distance_matrix/qiime2__metadata__distance_matrix/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__metadata__shuffle_groups/qiime2__metadata__shuffle_groups/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__metadata__tabulate/qiime2__metadata__tabulate/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__align_to_tree_mafft_fasttree/qiime2__phylogeny__align_to_tree_mafft_fasttree/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__align_to_tree_mafft_iqtree/qiime2__phylogeny__align_to_tree_mafft_iqtree/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__align_to_tree_mafft_raxml/qiime2__phylogeny__align_to_tree_mafft_raxml/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__fasttree/qiime2__phylogeny__fasttree/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__filter_table/qiime2__phylogeny__filter_table/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__filter_tree/qiime2__phylogeny__filter_tree/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__iqtree/qiime2__phylogeny__iqtree/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__iqtree_ultrafast_bootstrap/qiime2__phylogeny__iqtree_ultrafast_bootstrap/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__midpoint_root/qiime2__phylogeny__midpoint_root/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__raxml/qiime2__phylogeny__raxml/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__raxml_rapid_bootstrap/qiime2__phylogeny__raxml_rapid_bootstrap/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__robinson_foulds/qiime2__phylogeny__robinson_foulds/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__quality_control__bowtie2_build/qiime2__quality_control__bowtie2_build/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__quality_control__evaluate_composition/qiime2__quality_control__evaluate_composition/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__quality_control__evaluate_seqs/qiime2__quality_control__evaluate_seqs/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__quality_control__evaluate_taxonomy/qiime2__quality_control__evaluate_taxonomy/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__quality_control__exclude_seqs/qiime2__quality_control__exclude_seqs/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__quality_control__filter_reads/qiime2__quality_control__filter_reads/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__quality_filter__q_score/qiime2__quality_filter__q_score/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__classify_samples/qiime2__sample_classifier__classify_samples/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__classify_samples_from_dist/qiime2__sample_classifier__classify_samples_from_dist/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__classify_samples_ncv/qiime2__sample_classifier__classify_samples_ncv/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__confusion_matrix/qiime2__sample_classifier__confusion_matrix/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__fit_classifier/qiime2__sample_classifier__fit_classifier/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__fit_regressor/qiime2__sample_classifier__fit_regressor/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__heatmap/qiime2__sample_classifier__heatmap/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__metatable/qiime2__sample_classifier__metatable/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__predict_classification/qiime2__sample_classifier__predict_classification/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__predict_regression/qiime2__sample_classifier__predict_regression/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__regress_samples/qiime2__sample_classifier__regress_samples/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__regress_samples_ncv/qiime2__sample_classifier__regress_samples_ncv/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__scatterplot/qiime2__sample_classifier__scatterplot/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__split_table/qiime2__sample_classifier__split_table/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__summarize/qiime2__sample_classifier__summarize/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__taxa__barplot/qiime2__taxa__barplot/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__taxa__collapse/qiime2__taxa__collapse/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__taxa__filter_seqs/qiime2__taxa__filter_seqs/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__taxa__filter_table/qiime2__taxa__filter_table/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__vsearch__cluster_features_closed_reference/qiime2__vsearch__cluster_features_closed_reference/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__vsearch__cluster_features_de_novo/qiime2__vsearch__cluster_features_de_novo/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__vsearch__cluster_features_open_reference/qiime2__vsearch__cluster_features_open_reference/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__vsearch__dereplicate_sequences/qiime2__vsearch__dereplicate_sequences/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__vsearch__fastq_stats/qiime2__vsearch__fastq_stats/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__vsearch__merge_pairs/qiime2__vsearch__merge_pairs/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__vsearch__uchime_denovo/qiime2__vsearch__uchime_denovo/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__vsearch__uchime_ref/qiime2__vsearch__uchime_ref/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_core__tools__export/qiime2_core__tools__export/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_core__tools__import/qiime2_core__tools__import/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_core__tools__import_fastq/qiime2_core__tools__import_fastq/.*:
-    inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_.*:
+    inherits: basic_docker_tool
+    params:
+      docker_run_extra_arguments: --user 999:999
+
   toolshed.g2.bx.psu.edu/repos/bgruening/qiime2_dbotu_q2/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_train/cherri_train/.*:
@@ -1497,7 +1247,7 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/bgruening/flye/flye/.*:
     cores: 20
-    mem: min(max(input_size*1.2, 3.8), 256)
+    mem: min(max(input_size * 1.2, 3.8), 256)
     scheduling:
       require:
         - singularity

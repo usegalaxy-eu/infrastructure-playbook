@@ -414,7 +414,7 @@ base_app_main: &BASE_APP_MAIN
   # If this is set to None, the default container resolvers loaded is
   # determined by enable_mulled_containers. For available options see
   # https://docs.galaxyproject.org/en/master/admin/container_resolvers.html
-  container_resolvers_config_file: "{{ galaxy_config_dir }}/container_resolvers_conf.xml"
+  container_resolvers_config_file: "{{ galaxy_config_dir }}/container_resolvers_conf.yml"
 
   # Rather than specifying a container_resolvers_config_file, the
   # definition of the resolvers to enable can be embedded into Galaxy's
@@ -754,7 +754,7 @@ base_app_main: &BASE_APP_MAIN
   # the celery task if it is configured (by setting enable_celery_tasks
   # to true and not setting object_store_cache_monitor_driver to
   # external).
-  object_store_cache_monitor_interval: 600
+  object_store_cache_monitor_interval: 172800 # 48h
 
   # Default cache path for caching object stores if cache not configured
   # for that object store entry.

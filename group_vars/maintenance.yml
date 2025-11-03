@@ -111,7 +111,7 @@ fsm_scripts:
       - /data/dnb06/galaxy_db/tmp
       - "{{ generic_tmp_dir }}"
       - "{{ short_term_web_storage_dir }}"
-      # - "{{ object_store_cache_dir }}" # Testing Celery Task Scheduler
+      - "{{ object_store_cache_dir }}"
     time: "{{ fsm_intervals.long }}"
   upload_dirs:
     enable: true
