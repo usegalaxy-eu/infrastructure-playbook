@@ -4,17 +4,29 @@
     database: passwd
   register: getent_passwd_result
 
-- name: Filter users that exist on the system
+- name: Collect UNIX users from authorized persons role setting
   ansible.builtin.set_fact:
-    existing_unix_users: >-
-      {{
-        ssh_unix_users
-        | intersect(getent_passwd_result.ansible_facts.getent_passwd.keys() | list)
-      }}
+    authorized_unix_users: "{{ ssh_authorized_persons | dict2items | map(attribute='value.users') | sum(start=[]) | unique }}"
 
-- name: Process SSH keys for each existing unix user
+- name: Collect UNIX users that have an authorized keys file defined
+  ansible.builtin.shell:
+    cmd: |
+      while IFS=: read -r username homedir; do
+        if [ -f "$homedir/.ssh/authorized_keys" ]; then
+          echo "$username"
+        fi
+      done
+    stdin: |
+      {% for user, fields in getent_passwd_result.ansible_facts.getent_passwd.items() %}
+      {{ user }}:{{ fields[4] }}
+      {% endfor %}
+  changed_when: false
+  check_mode: false
+  register: access_configured_unix_users
+
+- name: Process SSH keys for each UNIX user
   include_tasks: process_user.yml
-  loop: "{{ existing_unix_users }}"
+  loop: "{{ (authorized_unix_users + access_configured_unix_users.stdout_lines) | unique }}"
   loop_control:
     loop_var: unix_user
     label: "{{ unix_user }}"
