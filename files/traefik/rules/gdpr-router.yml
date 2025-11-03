@@ -2,7 +2,7 @@ http:
   routers:
     gdpr-rtr:
       rule: "(Host(`usegalaxy.eu`) || HostRegexp(`^.+\\.usegalaxy\\.eu`)) && (PathPrefix(`/gdpr`) || PathPrefix(`/terms`))"
-      service: gdpr
+      service: usegalaxy-github
       entryPoints:
         - websecure
       tls:
