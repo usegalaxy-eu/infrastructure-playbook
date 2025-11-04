@@ -344,7 +344,6 @@ tools:
 
   basic_docker_tool:
     params:
-      submit_requirements: "GalaxyDockerHack == True"
     scheduling:
       require:
         - docker
@@ -411,8 +410,22 @@ tools:
   toolshed.g2.bx.psu.edu/repos/galaxyp/qupath_roi_splitter/qupath_roi_splitter/.*:
     inherits: basic_docker_tool
 
+  toolshed.g2.bx.psu.edu/repos/iuc/fileidentification/fileidentification/.*:
+    inherits: basic_docker_tool
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_overviews/3dtrees_overviews/.*:
+    inherits: basic_docker_tool
+    cores: 5
+    mem: 5
+
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_tile_merge/3dtrees_tile_merge/.*:
     inherits: basic_docker_tool
+    cores: 10
+    mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_segmentanytree/3dtrees_segmentanytree/.*:
+    inherits: basic_docker_tool
+    gpus: 1
     cores: 10
     mem: 20
 
@@ -422,6 +435,34 @@ tools:
     mem: 20
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_detailview/3dtrees_detailview/.*:
+    inherits: basic_docker_tool
+    gpus: 1
+    cores: 8
+    mem: 20
+
+  3dtrees_sat:
+    # /opt/galaxy/custom-tools/test/3dtrees/sat.xml
+    inherits: basic_docker_tool
+    gpus: 1
+    cores: 8
+    mem: 20
+
+  3dtrees_overviews:
+    # /opt/galaxy/custom-tools/test/3dtrees/overviews.xml
+    inherits: basic_docker_tool
+
+  3dtrees_standard:
+    # /opt/galaxy/custom-tools/test/3dtrees/standard.xml
+    inherits: basic_docker_tool
+
+  3dtrees_tile_merge:
+    # /opt/galaxy/custom-tools/test/3dtrees/tile_merge.xml
+    inherits: basic_docker_tool
+    cores: 10
+    mem: 20
+
+  3dtrees_detailview:
+    # /opt/galaxy/custom-tools/test/3dtrees/detailview.xml
     inherits: basic_docker_tool
     gpus: 1
     cores: 8
