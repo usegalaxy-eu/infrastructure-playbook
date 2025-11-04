@@ -6,7 +6,7 @@
 
 - name: Collect UNIX users from authorized persons role setting
   ansible.builtin.set_fact:
-    authorized_unix_users: "{{ ssh_authorized_persons | dict2items | map(attribute='value.users') | sum(start=[]) | unique }}"
+    authorized_unix_users: "{{ ssh_manager_authorized_persons | dict2items | map(attribute='value.users') | sum(start=[]) | unique }}"
 
 - name: Collect UNIX users that have an authorized keys file defined
   ansible.builtin.shell:

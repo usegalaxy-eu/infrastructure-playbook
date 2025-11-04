@@ -12,7 +12,7 @@
     - name: "Build list of SSH keys for {{ unix_user }}"
       ansible.builtin.set_fact:
         user_ssh_keys: "{{ (user_ssh_keys + person_keys) | unique }}"
-      loop: "{{ ssh_authorized_persons | dict2items }}"
+      loop: "{{ ssh_manager_authorized_persons | dict2items }}"
       loop_control:
         loop_var: person_entry
         label: "{{ person_entry.key }}"
