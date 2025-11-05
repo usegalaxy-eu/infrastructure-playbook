@@ -529,17 +529,21 @@ tools:
       _GALAXY_JOB_TMP_DIR: '/tmp'
   toolshed.g2.bx.psu.edu/repos/bgruening/parabricks_fq2bam/parabricks_fq2bam/.*:
     inherits: basic_docker_tool
+    mem: 16
     gpus: 1
     cores: 1
     params:
       docker_run_extra_arguments: ' --gpus all --shm-size 16g '
+    context:
+      exclude_gpu_models: ["Tesla V100-PCIE-32GB"]
+      include_gpu_models: ["NVIDIA L40S", "Tesla T4"]
     env:
       GPU_AVAILABLE: 1
       # the non-NFS /tmp dir is needed to avoid "resource is busy" errors
       _GALAXY_JOB_TMP_DIR: '/tmp'
     scheduling:
       require:
-        - gpu-divided
+        - embedded-pulsar
   toolshed.g2.bx.psu.edu/repos/imgteam/rfove/rfove/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/homer_findmotifs/homer_findMotifs/.*:
