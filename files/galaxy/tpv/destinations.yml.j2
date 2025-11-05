@@ -80,16 +80,16 @@ destinations:
         $working_directory:rw,
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
 
-  interactive_pulsar:
-    inherits: embedded_pulsar_docker_abstract
+   embedded_interactive_pulsar_docker:
+    inherits: embedded_interactive_pulsar_docker_abstract
     scheduling:
-      accept:
-        - docker
       require:
         - interactive
+        - docker
+        - embedded-pulsar
 
   interactive_pulsar_gpu:
-    inherits: interactive_pulsar
+    inherits: embedded_interactive_pulsar_docker
     min_accepted_gpus: 1
     max_accepted_gpus: 1
     env:
@@ -101,20 +101,13 @@ destinations:
         - offline
 
   interactive_pulsar_rstudio_poweruser:
-    inherits: interactive_pulsar
+    inherits: embedded_interactive_pulsar_docker
     scheduling:
       require:
         - rstudio-poweruser
 
-  embedded_pulsar_docker:
-    inherits: embedded_pulsar_docker_abstract
-    scheduling:
-      require:
-        - docker
-        - embedded-pulsar
-
   embedded_pulsar_docker_gpu:
-    inherits: embedded_pulsar_docker
+    inherits: embedded_interactive_pulsar_docker
     min_accepted_gpus: 1
     max_accepted_gpus: 1
     env:
@@ -581,21 +574,8 @@ destinations:
       request_gpus: "{gpus or 0}"
       singularity_run_extra_arguments: "{entity.params.get('singularity_run_extra_arguments') or ''} --nv --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
 
-  interactive_pulsar_gpu_pxe:
-    inherits: interactive_pulsar
-    max_accepted_cores: 128
-    max_accepted_mem: 500
-    min_accepted_gpus: 1
-    max_accepted_gpus: 1
-    env:
-      GPU_AVAILABLE: "1"
-    params:
-      submit_requirements: 'GalaxyGroup == "pxe-gpu"'
-      request_gpus: "{gpus or 0}"
-      docker_run_extra_arguments: "{entity.params.get('docker_run_extra_arguments') or ''} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
-
-  embedded_pulsar_docker_gpu_pxe:
-    inherits: embedded_pulsar_docker
+  embedded_interactive_pulsar_docker_gpu_pxe:
+    inherits: embedded_interactive_pulsar_docker
     max_accepted_cores: 128
     max_accepted_mem: 500
     min_accepted_gpus: 1
