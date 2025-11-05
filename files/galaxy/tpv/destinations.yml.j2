@@ -88,18 +88,6 @@ destinations:
       require:
         - interactive
 
-  interactive_pulsar_gpu:
-    inherits: interactive_pulsar
-    min_accepted_gpus: 1
-    max_accepted_gpus: 1
-    env:
-      GPU_AVAILABLE: "1"
-    params:
-      requirements: 'GalaxyGroup == "compute_gpu"'
-    scheduling:
-      reject:
-        - offline
-
   interactive_pulsar_rstudio_poweruser:
     inherits: interactive_pulsar
     scheduling:
@@ -112,18 +100,6 @@ destinations:
       require:
         - docker
         - embedded-pulsar
-
-  embedded_pulsar_docker_gpu:
-    inherits: embedded_pulsar_docker
-    min_accepted_gpus: 1
-    max_accepted_gpus: 1
-    env:
-      GPU_AVAILABLE: "1"
-    params:
-      requirements: 'GalaxyGroup == "compute_gpu"'
-    scheduling:
-      reject:
-        - offline
 
   #######################
   # PULSAR DESTINATIONS #
@@ -473,56 +449,6 @@ destinations:
     scheduling:
       require:
         - upload
-
-  condor_gpu:
-    runner: condor
-    max_accepted_cores: 14
-    max_accepted_mem: 37
-    min_accepted_gpus: 1
-    max_accepted_gpus: 1
-    env:
-      GPU_AVAILABLE: 1
-    params:
-      requirements: 'GalaxyGroup == "compute_gpu"'
-    scheduling:
-      reject:
-        - offline
-
-  condor_docker_gpu:
-    inherits: basic_docker_destination
-    # shorter than inheriting from condor_gpu
-    runner: condor
-    max_accepted_cores: 14
-    max_accepted_mem: 37
-    min_accepted_gpus: 1
-    max_accepted_gpus: 1
-    scheduling:
-      require:
-        - docker
-      reject:
-        - offline
-    env:
-      GPU_AVAILABLE: 1
-    params:
-      requirements: 'GalaxyGroup == "compute_gpu"'
-
-  condor_singularity_gpu:
-    inherits: basic_singularity_destination
-    # shorter than inheriting from condor_gpu
-    runner: condor
-    max_accepted_cores: 14
-    max_accepted_mem: 37
-    min_accepted_gpus: 1
-    max_accepted_gpus: 1
-    scheduling:
-      require:
-        - singularity
-      reject:
-        - offline
-    env:
-      GPU_AVAILABLE: 1
-    params:
-      requirements: 'GalaxyGroup == "compute_gpu"'
 
   condor_gpu_pxe:
     runner: condor
