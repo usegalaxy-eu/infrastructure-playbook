@@ -1,0 +1,28 @@
+set -Eeuo pipefail
+
+# Source and destination (restic repository) paths
+SRC_DIR="/opt/galaxy/mutable-data/"
+KEEP_LAST="${KEEP_LAST:-15}"
+
+export RESTIC_PASSWORD= {{ RESTIC_PASSWORD }}
+export RESTIC_REPOSITORY="/data/dnb01/mutable-data"
+
+HOSTNAME="$(hostname -f 2>/dev/null || hostname || echo unknown-host)"
+
+echo "Starting backup of '$SRC_DIR' to restic repo '$RESTIC_REPOSITORY' ..."
+restic backup \
+  --host "$HOSTNAME" \
+  --tag "path:$SRC_DIR" \
+  --one-file-system \
+  "$SRC_DIR"
+
+echo "Applying retention: keep last $KEEP_LAST snapshots for this path and host (with prune) ..."
+restic forget --prune \
+  --host "$HOSTNAME" \
+  --tag "path:$SRC_DIR" \
+  --keep-last "$KEEP_LAST"
+
+echo "Snapshots after pruning:"
+restic snapshots --host "$HOSTNAME" --tag "path:$SRC_DIR" || true
+
+echo "Done."

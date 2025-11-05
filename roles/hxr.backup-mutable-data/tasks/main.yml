@@ -1,0 +1,19 @@
+---
+- name: Install backup script from template
+  become: true
+  ansible.builtin.template:
+    src: backup-mutable-data.j2
+    dest: /usr/bin/backup-mutable-data
+    owner: galaxy
+    group: galaxy
+    mode: "0755"
+
+- name: Ensure daily cron at 21:00 for backup
+  become: true
+  ansible.builtin.cron:
+    name: "backup-mutable-data daily"
+    user: "galaxy"
+    minute: "0"
+    hour: "21"
+    job: "/usr/bin/backup-mutable-data"
+    state: present
