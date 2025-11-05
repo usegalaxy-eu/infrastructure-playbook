@@ -23,6 +23,6 @@ restic forget --prune \
   --keep-last "$KEEP_LAST"
 
 echo "Snapshots after pruning:"
-restic snapshots --host "$HOSTNAME" --tag "path:$SRC_DIR" || true
+restic snapshots --host "$HOSTNAME" --tag "path:$SRC_DIR" > /tmp/restic-snapshots.txt
 
 echo "Done."
