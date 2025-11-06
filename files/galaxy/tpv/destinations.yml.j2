@@ -78,7 +78,7 @@ destinations:
         $tool_directory:ro,
         $job_directory/outputs:rw,
         $working_directory:rw,
-        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
+        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }}:ro,
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
 
   interactive_pulsar:
