@@ -78,6 +78,7 @@ destinations:
         $tool_directory:ro,
         $job_directory/outputs:rw,
         $working_directory:rw,
+        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
 
   interactive_pulsar:
@@ -154,11 +155,13 @@ destinations:
         $tool_directory:ro,
         $job_directory/outputs:rw,
         $working_directory:rw,
+        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
       singularity_volumes: "$job_directory:rw,
         $tool_directory:ro,
         $job_directory/outputs:rw,
         $working_directory:rw,
+        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
       singularity_enabled: true
       singularity_default_container_id: "{{ cvmfs.singularity.path }}/all/centos:8.3.2011"
