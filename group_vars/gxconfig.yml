@@ -746,7 +746,7 @@ base_app_main: &BASE_APP_MAIN
   # 'inprocess' otherwise. This option serves as the default for all
   # object stores and can be overridden on a per object store basis (but
   # don't - just setup tmpwatch for all relevant cache paths).
-  #object_store_cache_monitor_driver: auto
+  object_store_cache_monitor_driver: external
 
   # For object store cache monitoring done by Galaxy, this is the
   # interval between cache checking steps. This is used by both
