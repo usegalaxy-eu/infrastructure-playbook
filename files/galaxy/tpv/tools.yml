@@ -534,6 +534,7 @@ tools:
     cores: 1
     params:
       docker_run_extra_arguments: ' --gpus all --shm-size 16g '
+      docker_env_CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
     context:
       exclude_gpu_models: ["Tesla V100-PCIE-32GB"]
       include_gpu_models: ["NVIDIA L40S", "Tesla T4"]
