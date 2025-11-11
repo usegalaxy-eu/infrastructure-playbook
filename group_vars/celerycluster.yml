@@ -49,6 +49,7 @@ galaxy_systemd_celery_internal_workers: 10
 galaxy_systemd_celery_external_workers: 2
 
 # Flower
+flower_bind_address: "{{ tailscale_node_ipv4 }}"
 flower_custom_logging: false
 flower_install: false
 flower_app_dir: /opt/galaxy

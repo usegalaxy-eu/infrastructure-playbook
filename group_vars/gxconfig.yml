@@ -746,7 +746,7 @@ base_app_main: &BASE_APP_MAIN
   # 'inprocess' otherwise. This option serves as the default for all
   # object stores and can be overridden on a per object store basis (but
   # don't - just setup tmpwatch for all relevant cache paths).
-  #object_store_cache_monitor_driver: auto
+  object_store_cache_monitor_driver: external
 
   # For object store cache monitoring done by Galaxy, this is the
   # interval between cache checking steps. This is used by both
@@ -754,7 +754,7 @@ base_app_main: &BASE_APP_MAIN
   # the celery task if it is configured (by setting enable_celery_tasks
   # to true and not setting object_store_cache_monitor_driver to
   # external).
-  #object_store_cache_monitor_interval: 600
+  object_store_cache_monitor_interval: 172800 # 48h
 
   # Default cache path for caching object stores if cache not configured
   # for that object store entry.

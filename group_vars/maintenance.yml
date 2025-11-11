@@ -419,3 +419,22 @@ walle_envs_database:
 walle_cron_day: "*"
 walle_cron_hour: "*"
 walle_cron_minute: "0"
+
+# Restics
+restic_schedule_type: "cronjob"
+restic_user: galaxy
+restic_repos:
+  local:
+    location: "/data/dnb01/mutable-data"
+    password: "{{ restic_password }}"
+    init: false
+restic_backups:
+  data:
+    name: mutable-data
+    repo: local
+    src: /opt/galaxy/mutable-data/
+    scheduled: true
+    schedule_hour: "21"
+    schedule_minute: "0"
+    keep_last: 15
+    prune: true
