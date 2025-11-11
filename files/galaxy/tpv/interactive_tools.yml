@@ -10,17 +10,17 @@ tools:
       require:
         - docker
         - embedded-pulsar
-    rules:
-      - if: not user
-        fail: |
-          Interactive tools require registration. Please log-in or register on https://usegalaxy.eu/login
+    #rules:
+    #  - if: not user
+    #    fail: |
+    #      Interactive tools require registration. Please log-in or register on https://usegalaxy.eu/login
   interactive_tool_gpu:
     inherits: interactive_tool
-    rules:
-      - if: |
-          not user or not any([ role for role in user.all_roles() if (role.name in ['gpu_access_validated'] and not role.deleted) ])
-        fail: |
-          Interactive tools require registration. Moreover, this tool has restricted access even for registered users. Please log-in or register on https://usegalaxy.eu/login and then request access by visiting https://usegalaxy.eu/gpu-request.
+    #rules:
+    #  - if: |
+    #      not user or not any([ role for role in user.all_roles() if (role.name in ['gpu_access_validated'] and not role.deleted) ])
+    #    fail: |
+    #      Interactive tools require registration. Moreover, this tool has restricted access even for registered users. Please log-in or register on https://usegalaxy.eu/login and then request access by visiting https://usegalaxy.eu/gpu-request.
 
   interactive_tool_napari:
     inherits: interactive_tool
