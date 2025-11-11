@@ -9,23 +9,14 @@ tools:
     scheduling:
       require:
         - docker
-        - interactive
+        - embedded-pulsar
     rules:
       - if: not user
         fail: |
           Interactive tools require registration. Please log-in or register on https://usegalaxy.eu/login
   interactive_tool_gpu:
-    cores: 1
-    mem: 4
-    params:
-      docker_volumes: $defaults
-      container_monitor_result: callback
+    inherits: interactive_tool
     rules:
-      - if: user and 'gpu_access_validated' in [role.name for role in user.all_roles() if not role.deleted]
-        scheduling:
-          require:
-            - docker
-            - interactive
       - if: |
           not user or not any([ role for role in user.all_roles() if (role.name in ['gpu_access_validated'] and not role.deleted) ])
         fail: |
@@ -33,18 +24,12 @@ tools:
 
   interactive_tool_napari:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
 
   interactive_tool_terriamap:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
 
   interactive_tool_cellprofiler:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
 
   interactive_tool_anylabeling:
     inherits: interactive_tool
@@ -53,36 +38,24 @@ tools:
 
   interactive_tool_cellpose:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
 
   interactive_tool_escriptorium:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
 
   interactive_tool_ideal:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
     params:
       docker_run_extra_arguments: "--user $UID:$GID"
 
   interactive_tool_phyloseq:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
     params:
       docker_run_extra_arguments: "--user $UID:$GID"
 
   interactive_tool_qiskit_jupyter_notebook:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_jupytergis_notebook:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
     params:
       docker_run_extra_arguments: "-e NB_UID=999"
     env:
@@ -91,59 +64,37 @@ tools:
 
   interactive_tool_libertem:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_divand:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_ilastik:
     inherits: interactive_tool
     cores: 3
     mem: 10
   interactive_tool_source:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
 
   interactive_tool_stac:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
 
   interactive_tool_cellxgene_mouse_sciatic_nerve:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
 
   interactive_tool_pretextview:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
 
   interactive_tool_qupath:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
 
   interactive_tool_pcstudio:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
 
   interactive_tool_copasi:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
 
   interactive_zeppelin_notebook:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_qgis:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
     env:
       # This is needed because the default TMPDIR is mounted to /var/lib/condor/execute/dir_NUMBERS
       # which is not writable by the container "app" user
@@ -152,130 +103,68 @@ tools:
       TMPDIR: /tmp
   interactive_tool_tadviewer:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_bellavista:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_hdfview:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_pampa:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_metashrimps:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_odv:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_scoop3_argo:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_pavian:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_blobtoolkit:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
     env:
       TEMP: /data/1/galaxy_db/tmp
   interactive_tool_mgnify_notebook:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_copernicus_notebook:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_openrefine:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_audiolabeler:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_ethercalc:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_geoexplorer:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_radiant:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_higlass:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_phinch:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_neo4j:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_hicbrowser:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_cellxgene:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_cellxgene_vip:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_bam_iobio:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_vcf_iobio:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_askomics:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_wilson:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_wallace:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_paraview:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_simtext_app:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_isee:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_metashark:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_rstudio:
     inherits: interactive_tool
     cores: 2
@@ -286,7 +175,6 @@ tools:
     mem: 8
   interactive_tool_pyiron:
     inherits: interactive_tool
-    cores: 1
     mem: 8
   interactive_tool_guacamole_desktop:
     inherits: interactive_tool
@@ -294,22 +182,16 @@ tools:
     mem: 8
   interactive_tool_panoply:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
   interactive_tool_vrm_editor:
     inherits: interactive_tool
-    cores: 1
-    mem: 4
 
   interactive_tool_holoviz:
     inherits: interactive_tool
-    mem: 4
     env:
       HOME: /home/jovyan
 
   interactive_tool_jupyter_notebook:
     inherits: interactive_tool
-    mem: 4
     params:
       # needed for > quay.io/bgruening/docker-jupyter-notebook:24.07, this image starts as root but drops privileges
       docker_run_extra_arguments: "-e NB_UID=999"
@@ -318,13 +200,11 @@ tools:
 
   interactive_tool_pangeo_notebook:
     inherits: interactive_tool
-    mem: 4
     env:
       HOME: /home/jovyan
 
   interactive_tool_climate_notebook:
     inherits: interactive_tool
-    mem: 4
     env:
       HOME: /home/jovyan
   interactive_tool_genenotebook:
@@ -333,15 +213,9 @@ tools:
   interactive_tool_ml_jupyter_notebook:
     inherits: interactive_tool_gpu
     gpus: 1
-    cores: 1
     mem: 8
     env:
       XLA_FLAGS: "--xla_gpu_cuda_data_dir=/op/conda/"
-    params:
-      docker_run_extra_arguments: " --gpus all"
-    scheduling:
-      require:
-        - docker
 
   #interactive_tool_jupyter_notebook:
   #  inherits: interactive_tool
