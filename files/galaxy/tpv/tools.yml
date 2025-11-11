@@ -587,7 +587,10 @@ tools:
     cores: 1
     mem: 12
     params:
-      docker_run_extra_arguments: ' --gpus all '
+      docker_run_extra_arguments: ' --gpus all --shm-size 16g --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
+      docker_env_CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
+      docker_env_GALAXY_BIAPY_GPU_STRING: "$_CONDOR_AssignedGPUs"
+      docker_env_GPU_AVAILABLE: 1
     env:
       GPU_AVAILABLE: 1
       GALAXY_BIAPY_GPU_STRING: 0
