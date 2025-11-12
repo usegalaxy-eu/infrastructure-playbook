@@ -533,7 +533,8 @@ tools:
     gpus: 1
     cores: 1
     params:
-      docker_run_extra_arguments: ' --gpus all --shm-size 16g '
+      docker_env_CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
+      docker_run_extra_arguments: ' --gpus all --shm-size 16g --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
     context:
       exclude_gpu_models: ["Tesla V100-PCIE-32GB"]
       include_gpu_models: ["NVIDIA L40S", "Tesla T4"]
@@ -613,6 +614,20 @@ tools:
     scheduling:
       require:
         - gpu-divided
+
+  toolshed.g2.bx.psu.edu/repos/iuc/biapy/biapy/.*:
+    inherits: basic_docker_tool
+    gpus: 1
+    cores: 1
+    mem: 12
+    params:
+      docker_run_extra_arguments: ' --gpus all --shm-size 16g --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
+      docker_env_CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
+      docker_env_GALAXY_BIAPY_GPU_STRING: "$_CONDOR_AssignedGPUs"
+      docker_env_GPU_AVAILABLE: 1
+    env:
+      GPU_AVAILABLE: 1
+      GALAXY_BIAPY_GPU_STRING: 0
 
   toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc/.*:
     # 8 (from the shared TPV) seems to high for me
