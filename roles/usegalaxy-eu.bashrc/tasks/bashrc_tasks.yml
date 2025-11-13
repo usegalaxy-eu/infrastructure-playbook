@@ -113,7 +113,7 @@
               elif [ $# -eq 2 ]; then
                   condor_q -autoformat ClusterID Cmd JobDescription | grep $1 | awk '{print$1}' | xargs -i condor_q --better-analyze {} --machine $2
               else
-                  echo "Pass a CondorID or GalaxyID or a tool name and optional a RemoteHost to compare ClassAds against (e.g. tstimg.bi.privat)"
+                  echo "Pass a CondorID or GalaxyID or a tool name and optionally a RemoteHost to compare ClassAds (e.g. tstimg.bi.privat)"
               fi
           }
 
