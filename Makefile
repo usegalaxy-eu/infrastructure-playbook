@@ -26,6 +26,7 @@ deps: requirements.yaml
 	ansible-galaxy install -r requirements.yaml
 
 known_hosts:
+	grep --quiet '^osiris.denbi.de' ~/.ssh/known_hosts || echo "osiris.denbi.de ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINZMRlC7VfGh2XBExqH74UZZg6ZUc1d/Ok2adr5ostBV" >> ~/.ssh/known_hosts
 	grep --quiet '^worker-0.gold.build.galaxyproject.eu' ~/.ssh/known_hosts || echo "worker-0.gold.build.galaxyproject.eu ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAjC0YY4V6gDjvIyFb1qyszQn+Jr2GtLImSJO5BVoeHq" >> ~/.ssh/known_hosts
 	grep --quiet '^worker-0.bronze.build.galaxyproject.eu' ~/.ssh/known_hosts || echo "worker-0.bronze.build.galaxyproject.eu ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKE2VMZbiOf4NHTVyNj9FyCu2P71YF/RHHO97lrsPC46" >> ~/.ssh/known_hosts
 	grep --quiet '^sn10.galaxyproject.eu' ~/.ssh/known_hosts || echo "sn10.galaxyproject.eu ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC49py5wws/7FhAfRDRS8byDMbSaqxNj3ddigSoXJM/y" >> ~/.ssh/known_hosts
