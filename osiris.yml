@@ -4,11 +4,6 @@
   hosts:
     - osiris
   vars:
-    # This controls which of the two backup restore strategies to use
-    # backup_is_zip == true -> Use zip file from S3
-    # backup_is_zip == false -> Use the latest restic (daily) snapshop from S3
-    backup_is_zip: false
-    zip_name: denbi.zip
     # Request certbot SSL when running the playbook
     request_certbot_ssl: true
     # This setting will be applied after restoring a backup
