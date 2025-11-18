@@ -25,6 +25,9 @@ php_enable_php_fpm: true
 php_fpm_state: started
 php_fpm_enabled_on_boot: true
 
+# Prevent mongo from configuring a replicaset
+replicaset: false
+
 osiris_www_dir: /var/www/osiris
 osiris_config_file: "{{ osiris_www_dir }}/CONFIG.php"
 
