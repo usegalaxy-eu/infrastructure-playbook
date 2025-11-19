@@ -8,7 +8,9 @@
     request_certbot_ssl: true
     # This setting will be applied after restoring a backup
     # If no version change is desired, make sure this version matches that of the backup
-    osiris_version: "1.6.2"
+    # Can also be a commit hash so long it is part of a branch
+    # osiris_version: "v1.6.2"
+    osiris_version: "3081628ff42f8905d9bc3ae24f39bd3ede56cfab"
   vars_files:
     - group_vars/osiris.yml
     - secret_group_vars/osiris.yml

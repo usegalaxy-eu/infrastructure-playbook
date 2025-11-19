@@ -3,7 +3,7 @@
   ansible.builtin.git:
     repo: "{{ osiris_repo }}"
     dest: "{{ osiris_www_dir }}"
-    version: "v{{ osiris_version }}"
+    version: "{{ osiris_version }}"
     update: true
   become: yes
   become_user: "apache"
