@@ -7,7 +7,7 @@ gxadmin query q "COPY (
            REPLACE(regexp_replace(tool_id, '/[^/]+$', ''), ' ', '_') AS tool_id,
            COUNT(*) AS usage_count
     FROM job
-    WHERE create_time >= date_trunc('month', NOW())
+    WHERE create_time >= date_trunc('month', NOW()) - INTERVAL '2 years'
     GROUP BY month, tool_id
 ) TO STDOUT WITH (FORMAT CSV, HEADER FALSE, DELIMITER ',');" \
 | awk -F, '{printf "galaxy_tool_usage_over_time,tool_id=%s,month=%s usage_count=%d\n", $2, $1, $3}' \
