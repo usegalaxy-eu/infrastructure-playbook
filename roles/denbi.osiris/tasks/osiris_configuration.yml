@@ -1,0 +1,29 @@
+- name: "Ensure permissions for OSIRIS PHP files"
+  ansible.builtin.file:
+    path: "{{ osiris_www_dir }}"
+    owner: "apache"
+    group: "apache"
+    mode: "u=rwX,g=rwX,o="
+    recurse: true
+    state: directory
+
+- name: "Ensure OSIRIS DB_NAME is defined"
+  ansible.builtin.lineinfile:
+    path: "{{ osiris_config_file }}"
+    regexp: '^define\("DB_NAME",'
+    line: 'define("DB_NAME", "{{ mongo_dbname }}");'
+    state: present
+
+- name: "Ensure OSIRIS connection string is correct"
+  ansible.builtin.lineinfile:
+    path: "{{ osiris_config_file }}"
+    regexp: '^define\("DB_STRING",'
+    line: 'define("DB_STRING", "{{ mongo_connection }}");' 
+    state: present
+
+- name: Remove default ssl vhost configurations
+  ansible.builtin.replace:
+    path: "{{ apache_conf_path }}/ssl.conf"
+    regexp: '##\n## SSL Virtual Host Context(.*\n)*</VirtualHost>'
+    backup: true
+  notify: restart apache
