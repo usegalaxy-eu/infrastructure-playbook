@@ -1,0 +1,8 @@
+---
+- name: Manage authorized SSH keys
+  hosts: all
+  gather_facts: false
+  vars_files:
+    - secret_group_vars/all.yml
+  roles:
+    - artis3n.tailscale
