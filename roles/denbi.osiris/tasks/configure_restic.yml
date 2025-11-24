@@ -42,7 +42,7 @@
     mode: "0700"
     state: "directory"
 
-- name: "Add restic backup and restore script"
+- name: "Add/Update restic backup and restore script"
   ansible.builtin.template:
     src: "templates/restic_backup_restore.sh.j2"
     dest: "{{ restic_backup_script }}"
@@ -56,5 +56,5 @@
     minute: "00"
     hour: "02"
     user: "root"
-    job: "{{ cron_bin_dir }}/restic_backup_restore.sh"
+    job: "{{ restic_backup_script }}"
     cron_file: ansible_restic_backup_restore

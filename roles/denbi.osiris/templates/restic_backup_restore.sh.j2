@@ -71,6 +71,7 @@ check() {
 
 stats() {
     feedback "Collecting repository statistics"
+    "$RESTIC" -r "$URL" snapshots
     "$RESTIC" -r "$URL" stats
 }
 
