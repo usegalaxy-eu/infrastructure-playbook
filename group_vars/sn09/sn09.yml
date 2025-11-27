@@ -81,10 +81,6 @@ fsm_cron_tasks:
     job: '{{ custom_telegraf_env }} /usr/bin/gxadmin galaxy cleanup 60'
     user: '{{ fsm_galaxy_user.username }}'
 
-galaxy_pgcleanup_objectstores:
-  - objectstore_id: 's3_scratch_netapp01'
-    days: 60
-
 # Telegraf
 telegraf_agent_hostname: '{{ hostname }}'
 telegraf_agent_version: 1.17.2
