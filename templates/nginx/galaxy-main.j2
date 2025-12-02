@@ -10,6 +10,11 @@ upstream galaxy {
     {% endfor %}
 }
 
+map $remote_addr $upload_server {
+    default                    upload.galaxyproject.eu;
+    {{ rustus_test_ip }}       upload-kvm.galaxyproject.eu;
+}
+
 server {
     listen 443 default_server;
     listen [::]:443 default_server;
@@ -146,7 +151,8 @@ server {
         proxy_set_header         Upgrade $http_upgrade;
         proxy_set_header         Connection "upgrade";
         client_max_body_size     0;
-        proxy_pass http://upload.galaxyproject.eu:1081/api/upload/resumable_upload;
+
+        proxy_pass http://$upload_server:1081/api/upload/resumable_upload;
     }
 
     location /phinch {
