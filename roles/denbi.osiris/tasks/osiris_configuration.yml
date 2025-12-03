@@ -27,3 +27,19 @@
     regexp: '##\n## SSL Virtual Host Context(.*\n)*</VirtualHost>'
     backup: true
   notify: restart apache
+
+- name: Ensure firewall allows connections via http (port 80)
+  ansible.posix.firewalld:
+    service: http
+    state: enabled
+    permanent: true
+    immediate: true
+    offline: true
+
+- name: Ensure firewall allows connections via https (port 443)
+  ansible.posix.firewalld:
+    service: https
+    state: enabled
+    permanent: true
+    immediate: true
+    offline: true
