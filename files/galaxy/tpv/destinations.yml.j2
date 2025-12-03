@@ -126,6 +126,14 @@ destinations:
               else:
                   entity.params['submit_requirements'] = gpu_conditions
 
+  embedded_pulsar_docker_gpu_pxe_div4:
+    inherits: embedded_pulsar_docker_gpu_pxe
+    context:
+      galaxy_group: 'GalaxyGroup == "pxe-gpu-div4"'
+    scheduling:
+      require:
+        - pxe-gpu-div4
+
   #######################
   # PULSAR DESTINATIONS #
   #######################
