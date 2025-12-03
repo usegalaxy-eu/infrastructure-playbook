@@ -11,6 +11,6 @@
   ansible.builtin.cron:
     name: "Galaxy cleanup objectstores"
     job: "/usr/local/bin/galaxy_cleanup_objectstores.sh"
-    minute: "{{ galaxy_cleanup_minute | default(0) }}"
-    hour: "{{ galaxy_cleanup_hour | default(1) }}"
+    minute: "{{ galaxy_cleanup_minute }}"
+    hour: "{{ galaxy_cleanup_hour }}"
     user: "{{ galaxy_user.name }}"
