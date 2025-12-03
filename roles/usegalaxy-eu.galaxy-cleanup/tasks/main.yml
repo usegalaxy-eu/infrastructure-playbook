@@ -1,11 +1,9 @@
 ---
 - name: Install cleanup objectstore script
   template:
-    src: "{{ item }}.j2"
-    dest: "/usr/local/bin/{{ item }}"
+    src: "galaxy_cleanup_objectstores.sh.j2"
+    dest: "/usr/local/bin/galaxy_cleanup_objectstores.sh"
     mode: "0555"
-  with_items:
-    - "galaxy_cleanup_objectstores.sh"
 
 - name: Schedule Galaxy cleanup objectstore script
   ansible.builtin.cron:
