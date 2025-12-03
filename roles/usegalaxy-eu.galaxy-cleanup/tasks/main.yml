@@ -2,7 +2,7 @@
 - name: Install cleanup objectstore script
   template:
     src: "{{ item }}.j2"
-    dest: "/usr/bin/{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
     mode: "0555"
   with_items:
     - "galaxy_cleanup_objectstores.sh"
