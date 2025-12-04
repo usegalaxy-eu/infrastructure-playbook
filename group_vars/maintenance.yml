@@ -19,7 +19,13 @@ galaxy_user:
   uid: 999
   shell: /bin/bash
 
-galaxy_cleanup_objectstores:
+# *****************************************************************************************
+# WARNING: Adding or modifying entries in `galaxy_cleanup_scratchstorage` will cause data
+#          in the specified object stores to be **deleted** after the defined retention
+#          period (e.g., `days: 60`).  Ensure you only include object stores that are meant
+#          to be cleaned up, and double‑check the `objectstore_id` values before saving.
+# *****************************************************************************************
+galaxy_cleanup_scratchstorage:
   - objectstore_id: 's3_scratch_netapp01'
     days: 60
 
