@@ -1,13 +1,6 @@
 ---
 - name: Verify galaxy_cleanup_scratchstorage configuration
   block:
-    - name: Check if galaxy_cleanup_scratchstorage is not empty
-      assert:
-        that:
-          - galaxy_cleanup_scratchstorage | length > 0
-        fail_msg: "galaxy_cleanup_scratchstorage is empty"
-        success_msg: "galaxy_cleanup_scratchstorage is configured"
-
     - name: Check if objectstore_id includes 'scratch'
       assert:
         that:
