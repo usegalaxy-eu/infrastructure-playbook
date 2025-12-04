@@ -83,6 +83,9 @@ os_auditd_space_left_action: suspend
 
 # Tailscale
 tailscale_args: "--accept-dns=false"
+tailscale_authkey: "{{ tailacale_auth_key_usegalaxy_eu }}"
+tailscale_tags:
+  - "critical"
 
 # Telegraf
 telegraf_agent_package_state: latest
