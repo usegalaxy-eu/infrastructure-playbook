@@ -50,8 +50,11 @@ celery-1.galaxyproject.eu
 
 # Baremetal
 [galaxyservers]
-sn09.galaxyproject.eu
+sn06.galaxyproject.eu
 sn07.galaxyproject.eu
+
+[sn06]
+sn06.galaxyproject.eu
 
 [sn07]
 sn07.galaxyproject.eu
@@ -77,6 +80,7 @@ ansible_group_priority=4
 
 [htcondor-submit]
 maintenance.galaxyproject.eu
+sn06.galaxyproject.eu
 sn09.galaxyproject.eu
 
 [htcondor-submit:vars]
