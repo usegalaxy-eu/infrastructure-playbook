@@ -1,0 +1,111 @@
+---
+# Autofs
+autofs_service.install: true
+autofs_service.enable: true
+
+autofs_mount_points:
+  - data
+  - gxtest
+  - gxkey
+  - jwd
+
+# packages
+software_groups_to_install:
+  - admin
+  - debug
+  - editors
+  - services
+  - utils
+  - terminals
+
+# Role: usegalaxy_eu.firewall
+# NOTE: firewall_restart_daemon is set to false by default and it is deliberately set to false
+# to avoid restarting the firewall daemon because the changes can possibly disrupt your only
+# way to connect to the machine. So, if you would like to see the changes applied immediately,
+# you can set this to true or login to the node and restart the firewall daemon manually.
+firewall_restart_daemon: false
+firewall_internal_services:
+  - ssh
+  - mosh
+firewall_mosh_service: >
+  <?xml version="1.0" encoding="utf-8"?>
+  <service>
+    <short>MOSH</short>
+    <description>Mosh (mosh.mit.edu) is a free replacement for SSH that allows roaming and supports intermittent connectivity.</description>
+    <port protocol="udp" port="60001-60100"/>
+  </service>
+
+# PostgreSQL
+postgresql_version: 17
+postgresql_pgdump_dir: '/var/lib/pgsql/pgdump3'
+postgresql_conf:
+  # From pgtune
+  # PostgreSQL-Version: 13 (highest version that could be selected in pgtune)
+  # OS: Linux
+  # Application: OLTP
+  # Memory: 512GB
+  # Cores: 128
+  # Storage: SSD
+  - listen_addresses: "'*'"
+  - max_connections: 2048
+  - shared_buffers: '128GB'
+  - effective_cache_size: '384GB'
+  - maintenance_work_mem: '2GB'
+  - checkpoint_completion_target: 0.9
+  - wal_buffers: 16MB
+  - default_statistics_target: 100
+  - random_page_cost: 1.1
+  - effective_io_concurrency: 200
+  - work_mem: 132MB
+  - huge_pages: try
+  - min_wal_size: 2GB
+  - max_wal_size: 4GB
+  - max_worker_processes: 128
+  - max_parallel_workers_per_gather: 64
+  - max_parallel_workers: 128
+  - max_parallel_maintenance_workers: 64
+  - temp_buffers: '64MB'
+  - max_prepared_transactions: 100
+  # the following line throws an error in v13
+  #  - shared_preload_libraries: "'pg_stat_statements'"
+  #  - log_line_prefix: "'%t:%r:%u@%d:[%p]<%m>: '"
+  - log_filename: "'postgresql-%u-%a.log'"
+  - log_checkpoints: 'on'
+  - log_min_duration_statement: 1500
+  - track_activity_query_size: 4096
+postgresql_pg_hba_conf:
+  - 'host    postgres        galaxy          132.230.223.239/32      md5'
+  - 'host    postgres        galaxy          10.5.68.237/32          md5'
+  - 'host    postgres        galaxy-test     10.5.68.154/32          md5'
+  - 'host    galaxy          galaxy          132.230.223.239/32      md5'
+  - 'host    galaxy          galaxy          132.230.223.238/32      md5'
+  - 'host    galaxy          galaxy          10.5.68.237/32          md5'
+  - 'host    galaxy          galaxy          10.5.68.126/32          md5'
+  - 'host    galaxy          galaxy          10.5.67.211/32          md5'
+  - 'host    galaxy          galaxy          10.5.67.216/32          md5'
+  - 'host    galaxy          galaxy          10.4.68.198/32          md5'
+  - 'host    galaxy          galaxy          100.118.169.22/32       md5'
+  - 'host    galaxy          galaxy-readonly 132.230.223.239/32      md5'
+  - 'host    galaxy          galaxy-readonly 10.5.68.237/32          md5'
+  - 'host    galaxy          galaxy-readonly 10.5.67.211/32          md5'
+  - 'host    galaxy          galaxy-readonly 132.230.223.238/32      md5'
+  - 'host    tiaas           tiaas           132.230.223.239/32      md5'
+  - 'host    tiaas           tiaas           132.230.223.238/32      md5'
+  - 'host    tiaas           tiaas           10.5.68.237/32          md5'
+  - 'host    gxitproxy       galaxy          132.230.223.239/32      md5'
+  - 'host    galaxy-test     galaxy-test     132.230.223.239/32      md5'
+  - 'host    galaxy-test     galaxy-test     10.5.68.0/24            md5'
+  - 'host    galaxy          galaxyftp       132.230.224.107/32      md5'
+  - 'host    galaxy          galaxyftp       10.5.67.0/24            md5'
+  - 'host    galaxy          galaxy-apollo   10.5.67.0/24            md5'
+  - 'host    apollo          apollo          10.5.67.0/24            md5'
+  - 'host    chado           apollo          10.5.67.0/24            md5'
+  - 'host    grt             grt             10.5.68.0/24            md5'
+  - 'host    grafana         grafana         132.230.224.112/32      md5'
+  - 'host    grafana         grafana         132.230.223.239/32      md5'
+  - 'host    grafana         grafana         10.5.67.211/32          md5'
+  - 'host    galaxy          galaxy          10.4.68.201/32          md5'
+  - 'host    postgres        galaxy          10.4.68.201/32          md5'
+  - 'host    galaxy          galaxy-readonly 10.4.68.201/32          md5'
+  - 'host    tiaas           tiaas           10.4.68.201/32          md5'
+  - 'host    gxitproxy       galaxy          10.4.68.201/32          md5'

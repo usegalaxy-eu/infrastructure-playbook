@@ -141,13 +141,19 @@
     <datatype extension="data" type="galaxy.datatypes.data:Data" mimetype="application/octet-stream" max_optional_metadata_filesize="1048576"/>
     <datatype extension="gz" type="galaxy.datatypes.binary:Binary" subclass="true"/>
     <datatype extension="binary" type="galaxy.datatypes.binary:Binary" mimetype="application/octet-stream" max_optional_metadata_filesize="1048576"/>
+    <datatype extension="las" type="galaxy.datatypes.binary:Binary" mimetype="application/vnd.las" subclass="true" display_in_upload="true" description="The LAS (LASer) format is a file format designed for the interchange and archiving of Lidar point cloud data." description_url="https://www.loc.gov/preservation/digital/formats/fdd/fdd000418.shtml">
+        <infer_from suffix="las" />
+    </datatype>
+    <datatype extension="laz" type="galaxy.datatypes.binary:Binary" mimetype="application/vnd.laszip" subclass="true" display_in_upload="true" description="LAZ is an open format for lossless compression of LAS." description_url="https://downloads.rapidlasso.de/doc/laszip.pdf">
+        <infer_from suffix="laz" />
+    </datatype>
     <datatype extension="d3_hierarchy" type="galaxy.datatypes.text:Json" mimetype="application/json" subclass="true" display_in_upload="true"/>
     <datatype extension="cytoscapejson" type="galaxy.datatypes.text:CytoscapeJson" mimetype="application/json" display_in_upload="true" description="Cytoscape JSON format for network visualization, typically containing 'nodes' and 'edges' in a JSON object." description_url="https://js.cytoscape.org/#notation/elements-json" />
     <datatype extension="imgt.json" type="galaxy.datatypes.text:ImgtJson" mimetype="application/json" display_in_upload="True"/>
     <datatype extension="geojson" type="galaxy.datatypes.text:GeoJson" mimetype="application/json" display_in_upload="True">
       <visualization plugin="openlayers" />
     </datatype>
-    <datatype extension="vitesscejson" type="galaxy.datatypes.text:VitessceJson" mimetype="application/json" display_in_upload="True">
+    <datatype extension="vitessce.json" type="galaxy.datatypes.text:VitessceJson" mimetype="application/json" display_in_upload="True">
       <visualization plugin="vitessce" />
     </datatype>
     <datatype extension="data_manager_json" type="galaxy.datatypes.text:DataManagerJson" mimetype="application/json" subclass="true" display_in_upload="false"/>
@@ -342,6 +348,7 @@
     <datatype extension="ome_zarr.zip" type="galaxy.datatypes.binary:CompressedOMEZarrZipArchive" display_in_upload="true">
         <converter file="archive_to_directory.xml" target_datatype="ome_zarr" />
     </datatype>
+    <datatype extension="spatialdata.zip" type="galaxy.datatypes.binary:SpatialData" mimetype="application/octet-stream" display_in_upload="true" description="A data framework that comprises a FAIR storage format and a collection of python libraries for performant access, alignment, and processing of uni- and multi-modal spatial omics datasets" description_url="https://github.com/scverse/spatialdata"/>
     <datatype extension="mat" type="galaxy.datatypes.binary:Binary" subclass="True" display_in_upload="true"/>
     <datatype extension="no_unzip.zip" type="galaxy.datatypes.binary:CompressedArchive" subclass="true" display_in_upload="true"/>
     <datatype extension="tar" auto_compressed_types="gz,bz2" type="galaxy.datatypes.binary:CompressedArchive" subclass="true" display_in_upload="true">
@@ -388,7 +395,10 @@
     <datatype extension="mascotxml" type="galaxy.datatypes.proteomics:MascotXML" mimetype="application/xml" display_in_upload="true"/>
     <datatype extension="mztab" type="galaxy.datatypes.proteomics:MzTab" display_in_upload="true"/>
     <datatype extension="mztab2" type="galaxy.datatypes.proteomics:MzTab2" display_in_upload="true"/>
-    <datatype extension="mzml" type="galaxy.datatypes.proteomics:MzML" mimetype="application/xml" display_in_upload="true"/>
+    <datatype extension="mzml" type="galaxy.datatypes.proteomics:MzML" mimetype="application/xml" display_in_upload="true">
+        <infer_from suffix="mzml" />
+        <infer_from suffix="mzML" />
+    </datatype>
     <datatype extension="nmrml" type="galaxy.datatypes.proteomics:NmrML" mimetype="application/xml" display_in_upload="true" description="nmrML is an open mark-up language for NMR data." description_url="http://nmrml.org/schema/"/>
     <datatype extension="meryldb" type="galaxy.datatypes.binary:Meryldb" subclass="true" display_in_upload="true" description="MerylDB is a tar.gz archive containing 64 binaries + 64 indexes." />
     <datatype extension="bref3" type="galaxy.datatypes.binary:Bref3" display_in_upload="true" description="Bref3 format is a binary format for storing phased, non-missing genotypes for a list of samples. More information in https://faculty.washington.edu/browning/beagle/bref3.14May18.pdf" />
@@ -609,6 +619,7 @@
     <datatype extension="onnx" type="galaxy.datatypes.binary:Binary" subclass="true" description="ONNX (Open neural network exchange) is data format for storing and sharing machine learning and deep learning models." display_in_upload="true">
         <infer_from suffix="onnx" />
     </datatype>
+    <datatype extension="safetensors" type="galaxy.datatypes.binary:Binary" subclass="true" display_in_upload="true" description="A simple format for storing tensors safely (as opposed to pickle) and that is still fast (zero-copy)" description_url="https://huggingface.co/docs/safetensors/index"/>
     <datatype extension="tabix" type="galaxy.datatypes.binary:Binary" subclass="true"/>
     <datatype extension="interval_tabix.gz" type="galaxy.datatypes.interval:IntervalTabix" mimetype="application/octet-stream" />
     <datatype extension="juicer_medium_tabix.gz" type="galaxy.datatypes.interval:JuicerMediumTabix" mimetype="application/octet-stream" display_in_upload="true"/>
@@ -629,11 +640,11 @@
     </datatype>
     <datatype extension="nhx" type="galaxy.datatypes.data:Newick" subclass="true" display_in_upload="true" description="The New Hampshire X (NHX) format is an extension to Newick that adds key-value data to Newick nodes.">
         <infer_from suffix="nhx" />
-    </datatype>    
+    </datatype>
     <datatype extension="nex" type="galaxy.datatypes.data:Nexus" display_in_upload="true"/>
     <datatype extension="iqtree" type="galaxy.datatypes.text:IQTree">
         <infer_from suffix="iqtree" />
-    </datatype>  
+    </datatype>
     <datatype extension="mldist" type="galaxy.datatypes.mothur:SquareDistanceMatrix"/>
     <!-- Start RGenetics Datatypes -->
     <datatype extension="affybatch" type="galaxy.datatypes.genetics:Affybatch" display_in_upload="true"/>
@@ -673,7 +684,7 @@
     <!-- deprecated, should use excel.xls -->
     <datatype extension="xls" type="galaxy.datatypes.binary:ExcelXls">
         <infer_from suffix="xls" />
-    </datatype>  
+    </datatype>
     <!-- End RGenetics Datatypes -->
     <datatype extension="ipynb" type="galaxy.datatypes.text:Ipynb" display_in_upload="true">
         <infer_from suffix="ipynb" />
@@ -883,6 +894,7 @@
     </datatype>
     <datatype extension="sdf" type="galaxy.datatypes.molecules:SDF" display_in_upload="true">
         <infer_from suffix="sdf" />
+        <visualization plugin="molstar" />
         <converter file="molecules_converter.xml" target_datatype="smi"/>
         <converter file="molecules_converter.xml" target_datatype="inchi"/>
         <converter file="molecules_converter.xml" target_datatype="mol2"/>
@@ -899,6 +911,7 @@
     </datatype>
     <datatype extension="mol" type="galaxy.datatypes.molecules:MOL" display_in_upload="true">
         <infer_from suffix="mol" />
+        <visualization plugin="molstar" />
         <converter file="molecules_converter.xml" target_datatype="smi"/>
         <converter file="molecules_converter.xml" target_datatype="sdf"/>
         <converter file="molecules_converter.xml" target_datatype="inchi"/>
@@ -907,6 +920,7 @@
     </datatype>
     <datatype extension="mol2" type="galaxy.datatypes.molecules:MOL2" display_in_upload="true">
         <infer_from suffix="mol2" />
+        <visualization plugin="molstar" />
         <converter file="molecules_converter.xml" target_datatype="smi"/>
         <converter file="molecules_converter.xml" target_datatype="sdf"/>
         <converter file="molecules_converter.xml" target_datatype="inchi"/>
@@ -916,6 +930,7 @@
     </datatype>
     <datatype extension="cml" type="galaxy.datatypes.molecules:CML" display_in_upload="true">
         <infer_from suffix="cml" />
+        <visualization plugin="molstar" />
         <converter file="cml_to_smi_converter.xml" target_datatype="smi"/>
         <converter file="molecules_converter.xml" target_datatype="inchi"/>
         <converter file="molecules_converter.xml" target_datatype="sdf"/>
@@ -927,6 +942,7 @@
     <datatype extension="phar" type="galaxy.datatypes.molecules:PHAR" display_in_upload="true"/>
     <datatype extension="pdb" type="galaxy.datatypes.molecules:PDB" display_in_upload="true">
         <infer_from suffix="pdb" />
+        <visualization plugin="molstar" />
         <display file="icn3d/icn3d_simple.xml"/>
         <converter file="pdb_to_gro.xml" target_datatype="gro"/>
     </datatype>
@@ -959,6 +975,8 @@
     <datatype extension="edr" type="galaxy.datatypes.binary:Edr" display_in_upload="true"/>
     <datatype extension="tpr" type="galaxy.datatypes.binary:Binary" display_in_upload="true"/>
     <datatype extension="gro" type="galaxy.datatypes.molecules:GRO" display_in_upload="true">
+      <visualization plugin="molstar" />
+      <infer_from suffix="gro" />
       <converter file="gro_to_pdb.xml" target_datatype="pdb"/>
     </datatype>
     <datatype extension="inpcrd" type="galaxy.datatypes.data:Text" subclass="true" display_in_upload="true" description="AMBER coordinate file" />
@@ -1166,6 +1184,7 @@
     <!-- Flexible Image Transport System (FITS) used in Astronomy https://fits.gsfc.nasa.gov/ https://fits.gsfc.nasa.gov/rfc4047.txt -->
     <datatype extension="fits" type="galaxy.datatypes.binary:FITS" mimetype="application/octet-stream" display_in_upload="true" description="Flexible Image Transport System (FITS) used in Astronomy">
         <infer_from suffix="fits" />
+        <visualization plugin="aladin" />
     </datatype>
     <datatype extension="chain" type="galaxy.datatypes.chain:Chain" display_in_upload="true" description_url="https://genome.ucsc.edu/goldenPath/help/chain.html"/>
     <datatype extension="ucsc.net" type="galaxy.datatypes.chain:Net" display_in_upload="true" description_url="https://genome.ucsc.edu/goldenPath/help/net.html"/>
@@ -1276,6 +1295,7 @@
     <sniffer type="galaxy.datatypes.qiime2:QIIME2Metadata"/>
     <sniffer type="galaxy.datatypes.qiime2:QIIME2Artifact"/>
     <sniffer type="galaxy.datatypes.qiime2:QIIME2Visualization"/>
+    <sniffer type="galaxy.datatypes.binary:SpatialData"/>
     <sniffer type="galaxy.datatypes.binary:CompressedOMEZarrZipArchive"/>
     <sniffer type="galaxy.datatypes.binary:CompressedZarrZipArchive"/>
     <sniffer type="galaxy.datatypes.binary:CompressedZipArchive"/>

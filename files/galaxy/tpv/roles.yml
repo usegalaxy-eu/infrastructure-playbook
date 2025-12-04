@@ -6,7 +6,13 @@ roles:
   storage-test*:
     params:
       object_store_id: "s3_netapp01"
-
+  training-pxe-test*:
+    rules:
+      - id: gpu_pxe_test
+        if: entity.gpus > 0
+        scheduling:
+          require:
+            - pxe-gpu
   rstudio-poweruser*:
     rules:
       - id: rstudio_poweruser
@@ -15,7 +21,6 @@ roles:
         scheduling:
           require:
             - docker
-            - interactive
-            - rstudio-poweruser
+            - embedded-pulsar
         mem: 100
         cores: 2

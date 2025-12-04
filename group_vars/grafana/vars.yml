@@ -7,10 +7,7 @@ certbot_share_key_users:
 certbot_virtualenv_package_name: python3-virtualenv
 certbot_post_renewal: |
     systemctl restart nginx || true
-certbot_domains:
-  - "{{ grafana_domain }}"
-  - "{{ grafana_on_call_domain }}"
-#hostname: "{{ grafana_domain }}"
+
 # NGINX
 nginx_enable_default_server: false
 nginx_servers:
@@ -36,12 +33,14 @@ nginx_ssl_role: usegalaxy-eu.certbot
 nginx_conf_ssl_certificate: /etc/ssl/certs/fullchain.pem
 nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
 
-#setting this to false will remove the on call compose services and it's compose directory
-grafana_on_call: true
-grafana_on_call_domain: oncall.galaxyproject.eu
-grafana_on_call_path: /data/grafana-on-call
 # Grafana
 grafana_version: "11.4.0"
+
+# patch from https://github.com/grafana/grafana-ansible-collection/pull/414;
+# once merged upstream, update the collection version in requirements.yml and
+# remove the next two lines
+grafana_yum_repo: "https://rpm.grafana.com"
+grafana_yum_key: "https://rpm.grafana.com/gpg.key"
 
 grafana_address: "127.0.0.1"
 grafana_domain: stats.galaxyproject.eu
@@ -59,7 +58,7 @@ grafana_security_secret_key: "{{ vault_grafana_security_secret_key }}"
 
 grafana_database:
   type: postgres
-  host: sn05.galaxyproject.eu:5432
+  host: sn11.galaxyproject.eu:5432
   name: "{{ vault_grafana_database_name }}"
   user: "{{ vault_grafana_database_user }}"
   password: "{{ vault_grafana_database_password }}"
@@ -80,7 +79,6 @@ grafana_auth:
     token_url: "https://github.com/login/oauth/access_token"
     api_url: "https://api.github.com/user"
     allowed_organisations: "usegalaxy.eu galaxyproject"
-    role_attribute_path: contains(groups[*], '@usegalaxy-eu/admingrafana') && 'GrafanaAdmin' || 'Viewer'
 grafana_auth_admin_password: "{{ vault_grafana_auth_admin_password }}"
 
 grafana_image_storage:

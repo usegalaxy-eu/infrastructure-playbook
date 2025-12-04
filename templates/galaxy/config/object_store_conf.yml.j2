@@ -206,20 +206,20 @@ backends:
     store_by: uuid
     device: "dnb11"
     name: "University of Freiburg storage (NetApp FabricPool, id=files30)"
-    weight: 2
+    weight: 0
     badges:
       - type: more_stable
     files_dir: "/data/dnb11/galaxy_db/files"
     extra_dirs:
       - type: job_work
-        path: "/data/jwd05e/main"
+        path: "/data/jwd08/main"
 
   - id: files31
     type: disk
     store_by: uuid
     device: "dnb11"
     name: "University of Freiburg storage (NetApp FabricPool, id=files31)"
-    weight: 2
+    weight: 0
     badges:
       - type: more_stable
     files_dir: "/data/dnb11/galaxy_db/files"
@@ -232,13 +232,39 @@ backends:
     store_by: uuid
     device: "dnb11"
     name: "University of Freiburg storage (NetApp FabricPool, id=files32)"
-    weight: 2
+    weight: 0
     badges:
       - type: more_stable
     files_dir: "/data/dnb11/galaxy_db/files"
     extra_dirs:
       - type: job_work
-        path: "/data/jwd07/main"
+        path: "/data/jwd08/main"
+
+  - id: files33
+    type: disk
+    store_by: uuid
+    device: "dnb12"
+    name: "University of Freiburg storage (NetApp FabricPool, id=files33)"
+    weight: 1
+    badges:
+      - type: more_stable
+    files_dir: "/data/dnb12/galaxy_db/files"
+    extra_dirs:
+      - type: job_work
+        path: "/data/jwd08/main"
+
+  - id: files34
+    type: disk
+    store_by: uuid
+    device: "dnb12"
+    name: "University of Freiburg storage (NetApp FabricPool, id=files34)"
+    weight: 0
+    badges:
+      - type: more_stable
+    files_dir: "/data/dnb12/galaxy_db/files"
+    extra_dirs:
+      - type: job_work
+        path: "/data/jwd08/main"
 
   - id: dataplant01
     type: disk
@@ -338,7 +364,7 @@ backends:
       cache_updated_data: true ## do we need this here?
     extra_dirs:
       - type: job_work
-        path: "{{ jwd.jwd07.path }}/main"
+        path: "{{ jwd.jwd08.path }}/main"
       - type: temp
-        path: "{{ jwd.jwd07.path }}/tmp"
+        path: "{{ jwd.jwd08.path }}/tmp"
 

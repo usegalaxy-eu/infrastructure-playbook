@@ -103,7 +103,7 @@ DOMAIN_SECTIONS = {
     'nanopore': GENERAL_NGS_SECTIONS + ["nanopore", "ncbi_blast", "fasta_fastq", "assembly", "graph_display_data", "metagenomic_analysis"],
     'ecology': ["join__subtract_and_group", "convert_formats", "data_and_metadata_management", "operate_on_genomic_intervals", "statistics", "graph_display_data", "machine_learning",
         "ncbi_blast", "fasta_fastq", "fastq_quality_control", "assembly", "dna_metabarcoding", "metagenomic_analysis",
-        "mothur", "qiime", "rad_seq", "animal_detection_on_acoustic_recordings","species_abundance","biodiversity_data_exploration",
+        "mothur", "qiime", "rad_seq", "animal_detection_on_acoustic_recordings","computer_vision","species_abundance","biodiversity_data_exploration",
         "gis_data_handling", "climate_analysis", "interactivetools", "geom_mean",
         "compute_indicators_for_satellite_remote_sensing", "compute_indicators_for_turnover_boulders_fields", "ecoregionalization", "phylodiversity", "annotation"],
     'climate': ["climate_analysis", "gis_data_handling", "graph_display_data", "interactivetools"],
@@ -165,19 +165,30 @@ DOMAIN_SECTIONS = {
     'materials': ['muon_spectroscopy', 'xas'],
     'aqua': ["climate_analysis", "gis_data_handling", "graph_display_data", "interactivetools", "machine_learning"],
     'earth-system': [
-        "earth-system-section-watercoastal",
-        "earth-system-section-earthcritical",
-        "earth-system-section-volcano",
-        "earth-system-section-biogeo",
-        "earth-system-section-marineomics",
-        "earth-system-section-interactivetools",
-        "biodiversity_data_exploration",
         "annotation",
-        "climate_analysis"
+        "earth-system-section-ocean",
+        "earth-system-section-atmosphere",
+        "earth-system-section-land",
+        "earth-system-section-biosphere",
+        "earth-system-section-general",
+        "climate_analysis",
+        "gis_data_handling",
+        "biodiversity_data_exploration",
+        "ecoregionalization"
     ],
     'eirene': ['chemicaltoolbox','metabolomics','interactivetools'],
     'astronomy': ["text_manipulation", "get_data", "collection_operations", "join__subtract_and_group", "expression_tools", "send_data",
     "statistics", "machine_learning", "astronomy"],
+    'biodiversity-genomics': [
+        "assembly",
+        "annotation",
+        "genome_diversity",
+        "biodiversity_data_exploration",
+        "multiple_alignments",
+        "phylogenetics",
+        "evolution",
+        "metagenomic_analysis"
+    ]
 }
 
 def per_host_tool_sections( context, section ):

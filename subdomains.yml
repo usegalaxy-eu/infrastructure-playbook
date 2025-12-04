@@ -1,16 +1,16 @@
 ---
 - name: UseGalaxy.eu
-  hosts: sn06
+  hosts: sn09
   become: true
   become_user: root
   vars:
-    hostname: sn06.galaxyproject.eu
+    hostname: sn09.galaxyproject.eu
 
   vars_files:
-    # Just keep the same as sn06, so nothing gets messed up ;)
-    - group_vars/sn06/sn06.yml
-    - group_vars/sn06/themes_conf.yml
-    - group_vars/sn06/subdomains.yml
+    # Just keep the same as sn09, so nothing gets messed up ;)
+    - group_vars/sn09/sn09.yml
+    - group_vars/sn09/themes_conf.yml
+    - group_vars/sn09/subdomains.yml
     - group_vars/tiaas.yml # All of the training infrastructure
     - group_vars/gxconfig.yml # The base galaxy configuration
     - group_vars/toolbox.yml # User controlled toolbox

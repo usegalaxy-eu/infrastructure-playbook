@@ -72,8 +72,8 @@ proftpd_options:
   - Port: 21
 proftpd_sql_db: "{{ proftpd__galaxy_db_connection }}"
 proftpd_sql_user: ''
-proftpd_conf_ssl_certificate: /etc/ssl/certs/cert.pem
-proftpd_conf_ssl_certificate_key: /etc/ssl/user/privkey-proftpd.pem
+proftpd_conf_ssl_certificate: /etc/letsencrypt/live/ftp.usegalaxy.eu/cert.pem
+proftpd_conf_ssl_certificate_key: /etc/letsencrypt/live/ftp.usegalaxy.eu/privkey.pem
 proftpd_conf_ssl_ca_certificate: /etc/letsencrypt/live/ftp.usegalaxy.eu/chain.pem
 proftpd_global_options:
   - PassivePorts: 49152 65534

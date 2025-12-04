@@ -63,60 +63,68 @@ destinations:
   # EMBEDDED PULSAR DESTINATIONS #
   ################################
 
-  embedded_pulsar_docker_abstract:
+  embedded_pulsar_docker:
     inherits: basic_docker_destination
-    abstract: true
     runner: pulsar_embedded
-    max_accepted_cores: 24
-    max_accepted_mem: 128
+    max_accepted_cores: 190
+    max_accepted_mem: 1500
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     params:
+      submit_requirements: "{entity.params.get('requirements') or ''}"
       docker_volumes: "$job_directory:rw,
         $_CONDOR_SCRATCH_DIR:rw,
         $tool_directory:ro,
         $job_directory/outputs:rw,
         $working_directory:rw,
+        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
-
-  interactive_pulsar:
-    inherits: embedded_pulsar_docker_abstract
-    scheduling:
-      accept:
-        - docker
-      require:
-        - interactive
-
-  interactive_pulsar_gpu:
-    inherits: interactive_pulsar
-    min_accepted_gpus: 1
-    max_accepted_gpus: 1
-    env:
-      GPU_AVAILABLE: "1"
-    params:
-      requirements: 'GalaxyGroup == "compute_gpu"'
-
-  interactive_pulsar_rstudio_poweruser:
-    inherits: interactive_pulsar
-    scheduling:
-      require:
-        - rstudio-poweruser
-
-  embedded_pulsar_docker:
-    inherits: embedded_pulsar_docker_abstract
     scheduling:
       require:
         - docker
         - embedded-pulsar
 
-  embedded_pulsar_docker_gpu:
+  embedded_pulsar_docker_gpu_pxe:
     inherits: embedded_pulsar_docker
+    max_accepted_cores: 128
+    max_accepted_mem: 500
     min_accepted_gpus: 1
     max_accepted_gpus: 1
     env:
       GPU_AVAILABLE: "1"
+    context:
+      galaxy_group: 'GalaxyGroup == "pxe-gpu"'
     params:
-      requirements: 'GalaxyGroup == "compute_gpu"'
+      submit_requirements: "{galaxy_group}"
+      request_gpus: "{gpus or 0}"
+      docker_run_extra_arguments: "{entity.params.get('docker_run_extra_arguments') or ''} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
+    rules:
+      - id: GPU model preferences
+        if: |
+          "exclude_gpu_models" in entity.context or "include_gpu_models" in entity.context
+        execute: |
+          exclude_gpu_models = entity.context.get('exclude_gpu_models', [])
+          include_gpu_models = entity.context.get('include_gpu_models', [])
+          existing_requirements = galaxy_group
+          gpu_conditions_list = []
+          if exclude_gpu_models:
+              exclude_conditions = ' && '.join(
+                  f'(GPUs_DeviceName != "{model}")' for model in exclude_gpu_models
+              )
+              gpu_conditions_list.append(exclude_conditions)
+          if include_gpu_models:
+              include_conditions = ' || '.join(
+                  f'(GPUs_DeviceName == "{model}")' for model in include_gpu_models
+              )
+              gpu_conditions_list.append(f'({include_conditions})')
+          # Combine all GPU conditions with AND
+          if gpu_conditions_list:
+              gpu_conditions = ' && '.join(gpu_conditions_list)
+              # Combine with existing requirements with AND
+              if existing_requirements:
+                  entity.params['submit_requirements'] = f'{gpu_conditions} && ({existing_requirements})'
+              else:
+                  entity.params['submit_requirements'] = gpu_conditions
 
   #######################
   # PULSAR DESTINATIONS #
@@ -173,22 +181,6 @@ destinations:
     scheduling:
       require:
         - mira-pulsar
-
-  pulsar_sanjay_tpv:
-    inherits: pulsar_default
-    runner: pulsar_sanjay_runner
-    max_accepted_cores: 8
-    max_accepted_mem: 15
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
-    env:
-      SINGULARITY_CACHEDIR: "/pulsar_data/container_cache"
-    params:
-      jobs_directory: "/pulsar_data/staging/ps02"
-      persistence_directory: "/pulsar_data/persisted_data/ps02"
-    scheduling:
-      require:
-        - sanjay-pulsar
 
   pulsar_sk01_tpv:
     inherits: pulsar_default
@@ -483,45 +475,60 @@ destinations:
       require:
         - upload
 
-  condor_gpu:
+  condor_gpu_pxe:
     runner: condor
-    max_accepted_cores: 14
-    max_accepted_mem: 37
+    max_accepted_cores: 128
+    max_accepted_mem: 500
     min_accepted_gpus: 1
-    max_accepted_gpus: 1
+    max_accepted_gpus: 4
     env:
       GPU_AVAILABLE: 1
+      CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
     params:
-      requirements: 'GalaxyGroup == "compute_gpu"'
+      requirements: 'GalaxyGroup == "pxe-gpu"'
+      request_gpus: "{gpus or 0}"
 
-  condor_docker_gpu:
+  condor_docker_gpu_pxe:
     inherits: basic_docker_destination
     # shorter than inheriting from condor_gpu
     runner: condor
-    max_accepted_cores: 14
-    max_accepted_mem: 37
+    max_accepted_cores: 128
+    max_accepted_mem: 500
     min_accepted_gpus: 1
-    max_accepted_gpus: 1
+    max_accepted_gpus: 4
     scheduling:
       require:
         - docker
     env:
       GPU_AVAILABLE: 1
     params:
-      requirements: 'GalaxyGroup == "compute_gpu"'
+      requirements: 'GalaxyGroup == "pxe-gpu"'
+      request_gpus: "{gpus or 0}"
+      docker_run_extra_arguments: "{entity.params.get('docker_run_extra_arguments') or ''} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
 
-  condor_singularity_gpu:
+  # This means a GPU can be shared by max 4 jobs at the same time
+  condor_docker_gpu_pxe_divide4:
+    inherits: condor_docker_gpu_pxe
+    max_accepted_gpus: 1
+    params:
+      requirements: 'GalaxyGroup == "pxe-gpu-div4"'
+    scheduling:
+      require:
+        - gpu-divided
+
+  condor_singularity_gpu_pxe:
     inherits: basic_singularity_destination
     # shorter than inheriting from condor_gpu
     runner: condor
-    max_accepted_cores: 14
-    max_accepted_mem: 37
+    max_accepted_cores: 128
+    max_accepted_mem: 500
     min_accepted_gpus: 1
     max_accepted_gpus: 1
     scheduling:
       require:
         - singularity
-    env:
-      GPU_AVAILABLE: 1
     params:
-      requirements: 'GalaxyGroup == "compute_gpu"'
+      requirements: 'GalaxyGroup == "pxe-gpu"'
+      request_gpus: "{gpus or 0}"
+      singularity_run_extra_arguments: "{entity.params.get('singularity_run_extra_arguments') or ''} --nv --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
+
