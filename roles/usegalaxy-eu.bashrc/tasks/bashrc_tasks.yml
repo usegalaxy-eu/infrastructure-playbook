@@ -102,12 +102,28 @@
           alias glg='journalctl -fu galaxy-gunicorn@* | grep -v -e "/api/upload/hooks" -e "/history/current_history_json"'
           alias glh='journalctl -f -u galaxy-handler@*'
           alias glw='journalctl -f -u galaxy-workflow-scheduler@*'
-          alias cu='journalctl -u galaxy-gunicorn@*.service --since "10 minutes ago" | grep "/history/current_history_json"  | awk "{print \$11}" | sort -u | wc -l'
           alias chg2wd='change_to_wd'
           alias chg2jwd='change_to_jwd'
+          alias g-restart-all='systemctl restart galaxy-handler@* && gxadmin gunicorn handler-restart && systemctl restart galaxy-workflow-scheduler@*'
+
+          alias caj='condor_analyze_job'
+          function condor_analyze_job () {
+              if [ $# -eq 1 ]; then
+                  condor_q -autoformat ClusterID Cmd JobDescription | grep $1 | awk '{print$1}' | xargs -i condor_q --better-analyze {}
+              elif [ $# -eq 2 ]; then
+                  condor_q -autoformat ClusterID Cmd JobDescription | grep $1 | awk '{print$1}' | xargs -i condor_q --better-analyze {} --machine $2
+              else
+                  echo "Pass a CondorID or GalaxyID or a tool name and optionally a RemoteHost to compare ClassAds (e.g. tstimg.bi.privat)"
+              fi
+          }
 
           # finds big files somewhere ;)
           function findbig () {
+          USAGE="Please provide a path and a size (integer, in MB)"
+          if (( $# == 0 )); then
+                  echo $USAGE
+                  return 0;
+          fi
           echo -e "$(find $1 -type f -size +$2M -exec ls -lh {} +)"
           }
 

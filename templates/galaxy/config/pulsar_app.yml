@@ -2,6 +2,8 @@ private_token: {{ pulsar_private_token }}
 staging_directory: "{{ job_working_root_dir }}/pulsar_staging/"
 tool_dependency_dir: "{{ job_working_root_dir }}/pulsar_dependencies/"
 
+conda_auto_init: false
+
 managers:
   _default_:
     type: queued_condor

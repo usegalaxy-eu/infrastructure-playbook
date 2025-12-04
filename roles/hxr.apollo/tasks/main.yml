@@ -56,3 +56,11 @@
     #- WEB-INF/classes/java/apollo-config.groovy
     - WEB-INF/classes/apollo-config.groovy
   notify: 'restart tomcat'
+
+- name: Schedule cache cleanup cronjob
+  ansible.builtin.cron:
+    name: "Tomcat cache cleanup"
+    job: "tmpwatch -v -a --mtime --dirmtime 3d {{ tomcat_cache_dir }}"
+    user: root
+    minute: "0"
+    hour: "3"

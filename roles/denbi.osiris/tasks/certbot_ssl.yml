@@ -1,0 +1,14 @@
+---
+- name: "Add cron job for certbot SSL renewal"
+  ansible.builtin.cron:
+    name: "OSIRIS SSL certbot renewal"
+    cron_file: ansible_certbot_renew
+    job: "{{ certbot_bin }} renew --quiet {{ certbot_auto_renew_extra }}"
+    minute: "{{ certbot_auto_renew_minute }}"
+    hour: "{{ certbot_auto_renew_hour }}"
+    user: "{{ certbot_auto_renew_user }}"
+
+- name: "Run certbot to obtain SSL cert for OSIRIS"
+  ansible.builtin.command: "{{ certbot_bin }} --apache --non-interactive -m {{ certbot_admin_email }} --agree-tos -d {{ ','.join(certbot_domains) }}"
+  when: request_certbot_ssl | default(false) | bool
+  notify: restart apache

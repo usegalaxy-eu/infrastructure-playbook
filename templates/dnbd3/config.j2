@@ -1,6 +1,7 @@
 read_only_partition="/dev/loop0p1"
 SLX_DNBD3_SERVERS='{{ hostvars['dnbd3-primary.galaxyproject.eu']['ansible_default_ipv4']['address'] }} {{ hostvars['sn12.galaxyproject.eu']['ansible_default_ipv4']['address'] }}'
 SLX_DNBD3_IMAGE='rockylinux-9-latest-x86_64-workers-gpu-internal.qcow2'
+SLX_DNBD3_RID='{{ vgcn_image_revision_id }}'
 SLX_CONFIG_NAME='config.tgz'
 SLX_WRITABLE_DEVICE_PERSISTENT='no'
 SLX_SYSTEM_PARTITION_IDENTIFIER='system'

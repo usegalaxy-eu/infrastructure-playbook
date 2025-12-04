@@ -104,9 +104,6 @@ rabbitmq_users:
   - user: galaxy_cz01
     password: "{{ rabbitmq_password_galaxy_cz01 }}"
     vhost: /pulsar/galaxy_cz01
-  - user: galaxy_sanjay_pulsar
-    password: "{{ rabbitmq_password_galaxy_sanjay_pulsar }}"
-    vhost: /pulsar/galaxy_sanjay_pulsar
   - user: galaxy_mira_pulsar
     password: "{{ rabbitmq_password_galaxy_mira_pulsar }}"
     vhost: /pulsar/galaxy_mira_pulsar
@@ -171,7 +168,6 @@ redis_dbfilename: dump.rdb
 redis_dbdir: /var/lib/redis
 redis_loglevel: "notice"
 redis_logfile: /var/log/redis/redis-server.log
-redis_conf_path: /etc/redis
 # Telegraf
 telegraf_plugins_extra:
   prometheus:
