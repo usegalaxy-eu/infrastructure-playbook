@@ -5,8 +5,12 @@ stats.galaxyproject.eu
 [build]
 build.galaxyproject.eu ansible_ssh_user=root
 
+[build-workers]
+worker-0.gold.build.galaxyproject.eu
+worker-0.bronze.build.galaxyproject.eu
+
 [beacon]
-beacon.galaxyproject.eu ansible_ssh_user=root
+beacon.bi.privat ansible_ssh_user=root
 
 [influxdb]
 influxdb.galaxyproject.eu ansible_host=influxdb.bi.privat
@@ -38,15 +42,6 @@ cvmfs1-ufr0.internal.galaxyproject.eu
 [cvmfs-stratum0]
 cvmfs-stratum0.galaxyproject.eu
 
-[telescope]
-telescope.internal.galaxyproject.eu
-
-[galaxy-test]
-test.internal.usegalaxy.eu ansible_ssh_user=rocky
-
-[denbistratum0]
-cvmfs-stratum0-test.galaxyproject.eu
-
 [plausible]
 plausible.galaxyproject.eu
 
@@ -63,9 +58,6 @@ sn06.galaxyproject.eu
 
 [sn07]
 sn07.galaxyproject.eu
-
-[sn05]
-sn05.galaxyproject.eu ansible_ssh_user=root
 
 [maintenance]
 maintenance.galaxyproject.eu
@@ -95,7 +87,7 @@ sn09.galaxyproject.eu
 ansible_group_priority=4
 
 [dokku]
-apps.galaxyproject.eu ansible_ssh_user=ubuntu
+apps.galaxyproject.eu ansible_ssh_user=ubuntu ansible_port=8080
 
 [dnbd3:children]
 dnbd3primary
