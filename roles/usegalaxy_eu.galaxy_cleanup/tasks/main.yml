@@ -20,7 +20,6 @@
     src: "clean_scratch_storage.sh.j2"
     dest: "/usr/local/bin/clean_scratch_storage.sh"
     mode: "0555"
-  when: galaxy_cleanup_scratchstorage | length > 0
 
 - name: Schedule Galaxy cleanup objectstore script
   ansible.builtin.cron:
