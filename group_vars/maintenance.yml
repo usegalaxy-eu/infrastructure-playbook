@@ -235,7 +235,7 @@ telegraf_plugins_extra:
       - commands = ["{{ custom_telegraf_env }} /usr/bin/galaxy_tool_usage_over_time"]
       - timeout = "360s"
       - data_format = "influx"
-      - interval = "720h"
+      - interval = "168h"
   galaxy_job_queue_states_stats:
     plugin: "exec"
     config:
