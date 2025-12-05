@@ -216,6 +216,9 @@ tools:
     mem: 8
     env:
       XLA_FLAGS: "--xla_gpu_cuda_data_dir=/op/conda/"
+    scheduling:
+      require:
+        - pxe-gpu-div4
 
   #interactive_tool_jupyter_notebook:
   #  inherits: interactive_tool
