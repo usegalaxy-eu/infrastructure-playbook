@@ -11,6 +11,7 @@ upload_dir_test: "{{ misc.misc07.path }}/tus_upload/test"
 upload_dir_main: "{{ misc.misc07.path }}/tus_upload/main" # tus_upload_store
 nginx_upload_dir: "{{ misc.misc06.path }}/nginx_upload/"
 
+bashrc_galaxy_job_working_directory: "{{ galaxy_config['galaxy']['job_working_directory'] }}"
 galaxy_config:
   galaxy:
     job_working_directory: "{{ job_working_root_dir }}/main/"
