@@ -26,6 +26,7 @@ jobs:
         run: |
           rm -f group_vars/htcondor/vault.yml
           rm -f group_vars/htcondor-secondary/vault.yml
+          rm -f group_vars/all/ssh-keys_vault.yml
 
       - name: Update git submodules.
         working-directory: "infrastructure-playbook"
@@ -177,6 +178,7 @@ jobs:
         run: |
           rm -f group_vars/htcondor/vault.yml
           rm -f group_vars/htcondor-secondary/vault.yml
+          rm -f group_vars/all/ssh-keys_vault.yml
 
       - name: Update git submodules.
         working-directory: "infrastructure-playbook"
