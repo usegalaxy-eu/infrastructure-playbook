@@ -154,13 +154,6 @@
         - 'telegraf'
         - 'stats' # special account to retrieve statistics from the server in read-only mode
 
-    - name: Set temporary cron for cleaning docker images
-      ansible.builtin.cron:
-        name: 'Temporary docker cleanup – needs upstream fix see issue #584'
-        minute: '0'
-        hour: '*/3'
-        job: '/bin/docker system prune --all -f > /dev/null'
-
     # Note (ToDo): We should ensure that the Gunicorn sockets are created with the correct SELinux
     # context to avoid adding or allowing unconfined contexts. This will further tighten
     # the security of the Galaxy instance. (Check the systemd role that is creating the sockets and
@@ -353,6 +346,7 @@
     - usegalaxy_eu.galaxy_systemd # Manage the Galaxy processes with SystemD
     - usegalaxy-eu.update-hosts # Update hosts list
     - usegalaxy_eu.gie_proxy # Setup the NodeJS proxy for GxIT
+    - usegalaxy_eu.fs_maintenance
     - usegalaxy-eu.logrotate # Rotate logs
     - usegalaxy-eu.error-pages # Copy the NGINX error pages
     - usegalaxy-eu.fix-stuck-handlers # Restart handlers to prevent several classes of issues
