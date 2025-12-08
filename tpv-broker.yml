@@ -46,13 +46,7 @@
         append: true
       loop:
         - '{{ galaxy_user.name }}'
-    - name: Set authorized SSH key (galaxy user)
-      ansible.posix.authorized_key:
-        user: '{{ galaxy_user.name }}'
-        state: present
-        key: '{{ item }}'
-      loop:
-        - 'ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBACB5Q5blymkTIRSzVzXITOGvBuI7W0L9Ykwfz8LJGPraaGVPiezzFGvjhqwX+EyCqQPt7JprR5mimJRw/JN3nBXWAHjekvmB5FuILkk6m5fOiQJ5QhRMyQ5GfxODAvGbHpTuWHbYJLWD5fhcboKPxlXOWy4xY9kDZVuQvEKisNKYBsFLA== sanjay'
+
   roles:
     - usegalaxy_eu.handy.os_setup
     - geerlingguy.repo-epel
