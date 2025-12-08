@@ -95,16 +95,6 @@ bashrc_users:
 # Role: usegalaxy_eu.fs_maintenance
 fsm_maintenance_dir: "/data/dnb01/maintenance"
 fsm_cron_tasks:
-  docker:
-    enable: true
-    name: 'Docker clean up'
-    minute: 30
-    hour: 2
-    dom: '*'
-    month: '*'
-    dow: '*'
-    job: '. {{ galaxy_root }}/.bashrc && docker system prune -f > /dev/null'
-    user: '{{ fsm_galaxy_user.username }}'
   # Cleanup histories/hdas/etc for past N days using the python objects-based method
   gxadmin:
     enable: true
