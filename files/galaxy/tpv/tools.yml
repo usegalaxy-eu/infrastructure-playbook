@@ -532,12 +532,12 @@ tools:
       _GALAXY_JOB_TMP_DIR: '/tmp'
   toolshed.g2.bx.psu.edu/repos/bgruening/parabricks_fq2bam/parabricks_fq2bam/.*:
     inherits: basic_docker_tool
-    mem: 16
+    mem: 40
     gpus: 1
-    cores: 1
+    cores: 16
     params:
       docker_env_CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
-      docker_run_extra_arguments: ' --gpus all --shm-size 16g --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
+      docker_run_extra_arguments: ' --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
     context:
       exclude_gpu_models: ["Tesla V100-PCIE-32GB"]
       include_gpu_models: ["NVIDIA L40S", "Tesla T4"]
@@ -1462,3 +1462,5 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/ecology/wildlife_megadetector_huggingface/wildlife_megadetector_huggingface/.*:
     inherits: basic_docker_tool
+    gpus: 1
+    mem: 20
