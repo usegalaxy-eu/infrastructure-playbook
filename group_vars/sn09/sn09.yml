@@ -70,16 +70,6 @@ fsm_cron_tasks:
     dow: '*'
     job: '. {{ galaxy_root }}/.bashrc && docker system prune -f > /dev/null'
     user: '{{ fsm_galaxy_user.username }}'
-  gxadmin:
-    enable: false
-    name: 'Gxadmin Galaxy clean up'
-    minute: 0
-    hour: 0
-    dom: '*/2'
-    month: '*'
-    dow: '*'
-    job: '{{ custom_telegraf_env }} /usr/bin/gxadmin galaxy cleanup 60'
-    user: '{{ fsm_galaxy_user.username }}'
 
 # Telegraf
 telegraf_agent_hostname: '{{ hostname }}'
