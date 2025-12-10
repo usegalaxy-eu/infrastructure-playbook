@@ -4,6 +4,7 @@
     - name: Check that all objectstore_id include 'scratch'
       assert:
         that:
+          - galaxy_cleanup_scratchstorage | length > 0
           - galaxy_cleanup_scratchstorage
             | rejectattr('objectstore_id', 'search', 'scratch')
             | list
