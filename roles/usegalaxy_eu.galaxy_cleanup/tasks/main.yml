@@ -1,12 +1,15 @@
 ---
 - name: Verify galaxy_cleanup_scratchstorage configuration
   block:
-    - name: Check if objectstore_id includes 'scratch'
+    - name: Check that all objectstore_id include 'scratch'
       assert:
         that:
-          - galaxy_cleanup_scratchstorage | selectattr('objectstore_id', 'search', 'scratch') | list | length > 0
-        fail_msg: "No objectstore_id in galaxy_cleanup_scratchstorage contains 'scratch'"
-        success_msg: "At least one objectstore_id contains 'scratch'"
+          - galaxy_cleanup_scratchstorage
+            | rejectattr('objectstore_id', 'search', 'scratch')
+            | list
+            | length == 0
+        fail_msg: "Found objectstore_id entries that do NOT contain 'scratch'"
+        success_msg: "All objectstore_id values contain 'scratch'"
 
 - name: Install cleanup scratch script
   template:
