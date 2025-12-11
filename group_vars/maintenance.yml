@@ -94,18 +94,6 @@ bashrc_users:
 
 # Role: usegalaxy_eu.fs_maintenance
 fsm_maintenance_dir: "/data/dnb01/maintenance"
-fsm_cron_tasks:
-  # Cleanup histories/hdas/etc for past N days using the python objects-based method
-  gxadmin:
-    enable: true
-    name: 'Gxadmin Galaxy clean up'
-    minute: 0
-    hour: 0
-    dom: '*/2'
-    month: '*'
-    dow: '*'
-    job: '{{ custom_telegraf_env }} /usr/bin/gxadmin galaxy cleanup 60'
-    user: '{{ fsm_galaxy_user.username }}'
 fsm_intervals:
   short: "3d"
   medium: "7d"
@@ -156,6 +144,27 @@ fsm_scripts:
       - /data/jwd07/main
       - /data/jwd08/main
     time: "{{ fsm_intervals.long }}"
+fsm_cron_tasks:
+  docker:
+    enable: false
+    name: "Docker clean up"
+    minute: 30
+    hour: 2
+    dom: "*"
+    month: "*"
+    dow: "*"
+    job: "docker system prune -f > /dev/null"
+    user: "{{ fsm_galaxy_user.username }}"
+  gxadmin:
+    enable: true
+    name: "Gxadmin Galaxy clean up"
+    minute: 0
+    hour: "*/6"
+    dom: "*"
+    month: "*"
+    dow: "*"
+    job: "/usr/bin/gxadmin galaxy cleanup 60"
+    user: "{{ fsm_galaxy_user.username }}"
 fsm_htcondor_enable: true
 
 # Role: dj-wasabi.telegraf
