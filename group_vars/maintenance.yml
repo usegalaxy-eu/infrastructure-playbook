@@ -85,8 +85,15 @@ autofs_mount_points:
   - cache
   - misc
 
-# Role: usegalaxy-eu.bashrc
-galaxy_pulsar_app_conf: "{{ galaxy_config_dir }}/pulsar_app.yml"
+# (usegalaxy-eu.bashrc)
+bashrc_galaxy_root: "{{ galaxy_root }}"
+bashrc_galaxy_venv_dir: "{{ galaxy_venv_dir }}"
+bashrc_galaxy_server_dir: "{{ galaxy_server_dir }}"
+bashrc_galaxy_config_dir: "{{ galaxy_config_dir }}"
+bashrc_galaxy_config_file: "{{ galaxy_config_file }}"
+bashrc_galaxy_mutable_config_dir: "{{ galaxy_mutable_config_dir }}"
+bashrc_galaxy_log_dir: "{{ galaxy_log_dir }}"
+bashrc_galaxy_pulsar_app_conf: "{{ galaxy_config_dir }}/pulsar_app.yml"
 bashrc_users:
   - uname: "{{ galaxy_user.name }}"
     uhome: "{{ galaxy_user.home }}"
