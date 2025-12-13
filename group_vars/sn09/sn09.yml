@@ -68,7 +68,7 @@ fsm_cron_tasks:
     dom: '*'
     month: '*'
     dow: '*'
-    job: '. {{ galaxy_root }}/.bashrc && docker system prune -f > /dev/null'
+    job: '. {{ galaxy_root }}/.bashrc && docker system prune -f --all> /dev/null'
     user: '{{ fsm_galaxy_user.username }}'
   gxadmin:
     enable: false
