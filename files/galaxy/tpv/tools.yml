@@ -537,10 +537,12 @@ tools:
       # the non-NFS /tmp dir is needed to avoid "resource is busy" errors
       _GALAXY_JOB_TMP_DIR: '/tmp'
   toolshed.g2.bx.psu.edu/repos/bgruening/parabricks_fq2bam/parabricks_fq2bam/.*:
+    # 16 mem / 8 cores = 4min for a paired-end 2,5/2,5 GB FASTQ file
+    # 32 mem / 16 cores = 2min for a paired-end 2,5/2,5 GB FASTQ file
     inherits: basic_docker_tool
-    mem: 100
+    mem: 16
     gpus: 1
-    cores: 16
+    cores: 8
     params:
       docker_env_CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
       docker_run_extra_arguments: ' --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
