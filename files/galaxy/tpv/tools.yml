@@ -1418,13 +1418,14 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/falco/falco/.*:
     cores: 3
 
-  toolshed.g2.bx.psu.edu/repos/peterjc/tmhmm_and_signalp/Psortb/.*:
-    scheduling:
-      require:
-        - conda
-        - singularity
-    env:
-      _GALAXY_JOB_TMP_DIR: '/tmp'
+  ## conda in singularity works fine, this tool is just broken in conda
+  #toolshed.g2.bx.psu.edu/repos/peterjc/tmhmm_and_signalp/Psortb/.*:
+  #  scheduling:
+  #    require:
+  #      - conda
+  #      - singularity
+  #  env:
+  #    _GALAXY_JOB_TMP_DIR: '/tmp'
 
   toolshed.g2.bx.psu.edu/repos/bgruening/hicexplorer_hicinfo/hicexplorer_hicinfo/.*:
     scheduling:
