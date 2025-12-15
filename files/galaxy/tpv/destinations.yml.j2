@@ -419,7 +419,7 @@ destinations:
     params:
       jobs_directory: /work/songalax/pulsar/
       submit_user: $__user_name__
-      submit_native_specification: --qos=galaxy -p galaxy -t 24:00:00 --cpus-per-task={int(cores)} --mem-per-cpu={int(mem/cores)}
+      submit_native_specification: "--qos=galaxy -p galaxy -t 24:00:00 --cpus-per-task={int(cores)} --mem-per-cpu={int(mem/cores)}"
     scheduling:
       require:
         - ufz-eve-pulsar
