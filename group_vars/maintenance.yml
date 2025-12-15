@@ -166,6 +166,7 @@ fsm_cron_tasks:
     job: "/usr/bin/gxadmin galaxy cleanup 60"
     user: "{{ fsm_galaxy_user.username }}"
 fsm_htcondor_enable: true
+remove_orphan_jobs_exclude: "{{ fsm_scripts | dict2items | map(attribute='value') | map(attribute='dst') | map('basename') | list }}"
 
 # Role: dj-wasabi.telegraf
 telegraf_agent_metric_buffer_limit: 100000
