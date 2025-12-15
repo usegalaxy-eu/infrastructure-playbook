@@ -409,6 +409,21 @@ destinations:
       require:
         - uca-pulsar
 
+  pulsar_ufz_eve01_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_ufz_eve01
+    max_accepted_cores: 56
+    max_accepted_mem: 360
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    params:
+      jobs_directory: /work/songalax/pulsar/
+      submit_user: $__user_name__
+      submit_native_specification: "--qos=galaxy -p galaxy -t 24:00:00 --cpus-per-task={int(cores)} --mem-per-cpu={int(mem/cores)}"
+    scheduling:
+      require:
+        - ufz-eve-pulsar
+
   #############################
   # LOCAL CONDOR DESTINATIONS #
   #############################
