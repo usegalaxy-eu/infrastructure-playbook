@@ -12,10 +12,12 @@ condor_running_jobs=(`condor_q -global -autoformat Cmd ClusterId JobStatus -json
 # Get running jobs from the Galaxy database
 galaxy_running_jobs=(`gxadmin query queue-detail | grep -E "queued|running" | awk '{print$3}'`)
 
+{% raw %}
 # Safeguard: abort if no jobs seem to be known to Galaxy
 if [ "${#galaxy_running_jobs[@]}" -eq 0 ]; then
     exit 1
 fi
+{% endraw %}
 
 # Check if each result from the HTCondor queue matches an entry from the galaxy_running_jobs list
 for job in "${condor_running_jobs[@]}"; do
