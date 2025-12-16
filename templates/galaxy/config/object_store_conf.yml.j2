@@ -258,13 +258,13 @@ backends:
     store_by: uuid
     device: "dnb12"
     name: "University of Freiburg storage (NetApp FabricPool, id=files34)"
-    weight: 0
+    weight: 1
     badges:
       - type: more_stable
     files_dir: "/data/dnb12/galaxy_db/files"
     extra_dirs:
       - type: job_work
-        path: "/data/jwd08/main"
+        path: "/data/jwd07/main"
 
   - id: dataplant01
     type: disk
@@ -321,9 +321,9 @@ backends:
       cache_updated_data: true
     extra_dirs:
       - type: job_work
-        path: "{{ jwd.jwd06.path }}/main"
+        path: "{{ jwd.jwd07.path }}/main"
       - type: temp
-        path: "{{ jwd.jwd06.path }}/tmp"
+        path: "{{ jwd.jwd07.path }}/tmp"
 
 
   # Private object stores, or as we call it unshareable storage
