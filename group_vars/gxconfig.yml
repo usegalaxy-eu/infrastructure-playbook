@@ -2660,12 +2660,10 @@ base_app_main: &BASE_APP_MAIN
 
   # API key for an AI provider. AI provider is Openai By default
   # (https://openai.com/) to enable the wizard (or more?)
-  ai_api_key: "{{ openai_api_key }}"
-  # here we need to add the University AI key
+  ai_api_key: "{{ galaxy_infrastructure_llm_api_key }}"
 
   # AI API base URL. Needs to be OpenAI compatible, defaults to OpenAI
-  #ai_api_base_url: null
-  # change to URL of the University
+  ai_api_base_url: "{{ galaxy_infrastructure_llm_url }}"
 
   # AI model to enable the wizard.
   #ai_model: gpt-4o
