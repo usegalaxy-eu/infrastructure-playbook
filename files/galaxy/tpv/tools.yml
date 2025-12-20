@@ -488,14 +488,6 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/fgsea/fgsea/.*:
     # any container should work
     inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/iuc/cat_bins/cat_bins/.*:
-    rules:
-      - id: cat_bins_medium_input_rule
-        if: input_size >= 0.03
-        mem: 48
-      - id: cat_bins_large_input_rule
-        if: input_size >= 0.06
-        mem: 72
   toolshed.g2.bx.psu.edu/repos/iuc/chewbbaca.*:
     inherits: basic_docker_tool
 
