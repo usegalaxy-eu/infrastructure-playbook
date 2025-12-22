@@ -1,4 +1,4 @@
-# Sample file for container resolvers. Resolvers that are potentially used by default
+# Configuration file for container resolvers. Resolvers that are potentially used by default
 # are uncommented (comments describe under which premises they are in the
 # defaults).
 
@@ -44,7 +44,7 @@
 # checks if the image file exists in `cache_directory`
 - type: cached_mulled_singularity
   #namespace: biocontainers
-  cache_directory: "/cvmfs/singularity.galaxyproject.org/all/"
+  cache_directory: "{{ galaxy_singularity_images_cvmfs_path }}"
   #
   # the method for caching directory listings (not the method for image caching)
   # can be uncached or dir_mtime (the latter only determines the directory listing
@@ -67,7 +67,7 @@
   #
   # If true return quay.io/NAMESPACE/MULLED_HASH otherwise to the cached image
   # which is also quay.io/NAMESPACE/MULLED_HASH in case of docker
-  #auto_install: true
+  auto_install: true
 
 # Differences with the docker `mulled` resolver are
 # - when pulling the image file will be stored in the configured cache dir
@@ -80,6 +80,7 @@
   # and note the minor difference in the default for `cache_directory`
   cache_directory: "/cvmfs/singularity.galaxyproject.org/all/"
   #cache_directory_cacher_type: uncached
+  auto_install: true
 
 # Building container resolvers
 # ----------------------------
