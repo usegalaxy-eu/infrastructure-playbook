@@ -230,23 +230,6 @@ tools:
       prefer:
         - condor-tpv
 
-  toolshed.g2.bx.psu.edu/repos/iuc/fasta_stats/fasta-stats/.*:
-    rules:
-      - if: input_size >= 0.01
-        cores: 3
-
-  toolshed.g2.bx.psu.edu/repos/iuc/ncbi_fcs_gx/ncbi_fcs_gx/.*:
-    rules:
-      - id: ncbi_fcs_gx
-        if: |
-          helpers.job_args_match(job, app, {"mode": {"mode_selector": "screen"}})
-        mem: 480
-        cores: 64
-
-  toolshed.g2.bx.psu.edu/repos/computational-metabolomics/sirius_csifingerid/sirius_csifingerid/.*:
-    cores: 8
-    mem: 8
-
   ## a user exported 100 of files and memory was not enough
   export_remote:
     mem: 8
@@ -644,7 +627,6 @@ tools:
       # /tmp is not monted in, and is not writeable, this make fastqc crash
       singularity_run_extra_arguments: " -B /tmp:$TMPDIR "
 
-
   toolshed.g2.bx.psu.edu/repos/iuc/bbtools_tadpole/bbtools_tadpole/.*:
     mem: 8
     scheduling:
@@ -714,22 +696,6 @@ tools:
     env:
       BLASTDB: "/data/db/databases/blast/taxdb"
 
-  toolshed.g2.bx.psu.edu/repos/iuc/velocyto_cli/velocyto_cli/.*:
-    cores: 4
-    mem: 100
-
-  toolshed.g2.bx.psu.edu/repos/genouest/helixer/helixer/.*:
-    cores: 4
-    mem: 30
-    scheduling:
-      require:
-        - singularity
-    rules:
-      - if: input_size >= 0.01
-        gpus: 1
-        params:
-          singularity_run_extra_arguments: ' --nv '
-
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_eval/cherri_eval/.*:
     inherits: basic_docker_tool
     cores: 1
@@ -751,6 +717,7 @@ tools:
       - if: input_size >= 60
         fail: Too much data, please don't use Spades for this
 
+  ## todo: can we just take the shared-db entries for spades* ?
   toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*:
     cores: 2
     rules:
@@ -804,6 +771,7 @@ tools:
     inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
 
   # cactus suite
+  # TODO: prefer-singularity
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/cactus_cactus/cactus_cactus/.*:
     context:
       test_cores: 4
@@ -888,11 +856,6 @@ tools:
     params:
       docker_run_extra_arguments: --user 999
 
-  # 4GB is enough for most of the runs as it seems
-  toolshed.g2.bx.psu.edu/repos/iuc/purge_dups/purge_dups/.*:
-    cores: 1
-    mem: 6
-
   toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicates/.*:
     cores: 8
     mem: 20
@@ -900,16 +863,19 @@ tools:
     params:
       docker_run_extra_arguments: --user 999
 
+  # does that tool exist? The ID: toolshed.g2.bx.psu.edu/repos/bgruening/diamond/bg_diamond/.*:
   toolshed.g2.bx.psu.edu/repos/bgruening/diamond/diamond/.*:
     cores: 6
     mem: 90
     rules:
       - if: input_size >= 30
         cores: 12
+
   toolshed.g2.bx.psu.edu/repos/bgruening/xchem_transfs_scoring/xchem_transfs_scoring/.*:
     scheduling:
       require:
         - docker
+
   toolshed.g2.bx.psu.edu/repos/bgruening/openduck_run_smd/openduck_run_smd/.*:
     env:
       docker_set_user: 1000
@@ -1187,26 +1153,27 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/iuc/funannotate_annotate/funannotate_annotate/.*:
     inherits: basic_docker_tool
-    cores: 8
-    mem: 42
+    #cores: 8
+    #mem: 42
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
-    rules:
-      - id: funannotate_annotate_large_input
-        if: input_size > 3.2
-        mem: 62
+    # is upstream
+    #rules:
+    #  - id: funannotate_annotate_large_input
+    #    if: input_size > 3.2
+    #    mem: 62
 
   toolshed.g2.bx.psu.edu/repos/iuc/funannotate_clean/funannotate_clean/.*:
-    cores: 8
-    mem: 40
+    #cores: 8
+    #mem: 40
     scheduling:
       require:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/iuc/funannotate_predict/funannotate_predict/.*:
     # we need this here because we need to set the GENEMARK_PATH
-    cores: 12
-    mem: 12
+    #cores: 12
+    #mem: 12
     env:
       GENEMARK_PATH: /usr/local/tools/genemark/etp.for_braker/bin/gmes/
       _GALAXY_JOB_TMP_DIR: '/tmp'
@@ -1217,6 +1184,7 @@ tools:
       require:
         - singularity
 
+  # TODO there is a better one upstream but with less cores
   toolshed.g2.bx.psu.edu/repos/iuc/kraken2/kraken2/.*:
     cores: 16
     mem: 100
@@ -1271,36 +1239,6 @@ tools:
       require:
         - singularity
 
-  toolshed.g2.bx.psu.edu/repos/iuc/red/red/.*:
-    cores: 1
-    mem: 35
-
-  toolshed.g2.bx.psu.edu/repos/iuc/anndata_manipulate/anndata_manipulate/.*:
-    cores: 1
-    mem: 16
-    rules:
-      - id: anndata_concat
-        if: |
-          param_dict = job.get_param_values(app)
-          param_dict.get('manipulate', {}).get('function') == 'concatenate'
-        mem: 60
-  # anndata is already upstream
-  toolshed.g2.bx.psu.edu/repos/iuc/anndata_import/anndata_import/.*:
-    cores: 1
-    mem: 16
-
-  toolshed.g2.bx.psu.edu/repos/iuc/anndata_export/anndata_export/.*:
-    cores: 1
-    mem: 16
-
-  toolshed.g2.bx.psu.edu/repos/iuc/anndata_inspect/anndata_inspect/.*:
-    cores: 1
-    mem: 16
-
-  # Tool is same as fastqc so setting the same resources
-  toolshed.g2.bx.psu.edu/repos/iuc/falco/falco/.*:
-    cores: 3
-
   ## conda in singularity works fine, this tool is just broken in conda
   #toolshed.g2.bx.psu.edu/repos/peterjc/tmhmm_and_signalp/Psortb/.*:
   #  scheduling:
@@ -1336,10 +1274,6 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/bgruening/lirasearch/lirasearch/.*:
     inherits: basic_docker_tool
-    cores: 24
-    mem: 24
 
   toolshed.g2.bx.psu.edu/repos/ecology/wildlife_megadetector_huggingface/wildlife_megadetector_huggingface/.*:
     inherits: basic_docker_tool
-    gpus: 1
-    mem: 20
