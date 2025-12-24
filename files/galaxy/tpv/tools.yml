@@ -735,10 +735,6 @@ tools:
     cores: 1
     mem: 20
 
-  toolshed.g2.bx.psu.edu/repos/iuc/gatk4_mutect2/gatk4_mutect2/.*:
-    cores: 12
-    mem: 36
-
   toolshed.g2.bx.psu.edu/repos/nml/metaspades/metaspades/.*:
     cores: 2
     scheduling:
@@ -772,41 +768,6 @@ tools:
             - condor-tpv
       - if: input_size >= 20
         fail: Too much data, please don't use this tool for this.
-
-  toolshed.g2.bx.psu.edu/repos/iuc/beagle/beagle/.*:
-    cores: 1
-    rules:
-      - if: input_size < 1
-        mem: 24
-      - if: input_size >= 1
-        mem: 64
-
-  toolshed.g2.bx.psu.edu/repos/galaxy-australia/smudgeplot/smudgeplot/.*:
-    cores: 8
-    rules:
-      - if: input_size < 1
-        mem: 15
-      - if: 1 <= input_size < 5
-        mem: 75
-      - if: 5 <= input_size < 10
-        cores: 12
-        mem: 150
-      - if: 10 <= input_size < 15
-        cores: 12
-        mem: 225
-      - if: 15 <= input_size < 20
-        cores: 12
-        mem: 300
-      - if: 20 <= input_size < 25
-        mem: 375
-        cores: 16
-      - if: input_size >= 25
-        fail: Too much data, please check if the input is correct.
-
-  toolshed.g2.bx.psu.edu/repos/devteam/freebayes/freebayes/.*:
-    # see https://github.com/usegalaxy-eu/infrastructure-playbook/pull/881 for some numbers
-    cores: 10
-    mem: 9 + input_size * 1
 
   toolshed.g2.bx.psu.edu/repos/iuc/shovill/shovill/.*:
     inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
@@ -1090,32 +1051,6 @@ tools:
         - singularity
         - conda
 
-  toolshed.g2.bx.psu.edu/repos/galaxyp/custom_pro_db/custom_pro_db/.*:
-    mem: 16
-
-  toolshed.g2.bx.psu.edu/repos/iuc/data_manager_gtdbtk_database_installer/gtdbtk_database_installer/.*:
-    mem: 128
-
-  toolshed.g2.bx.psu.edu/repos/iuc/semibin/semibin/.*:
-    mem: 32
-    cores: 16
-
-  toolshed.g2.bx.psu.edu/repos/iuc/comebin/comebin/.*:
-    mem: 12
-    cores: 32
-
-  toolshed.g2.bx.psu.edu/repos/bgruening/nextdenovo/nextdenovo/.*:
-    mem: 128
-    cores: 24
-
-  toolshed.g2.bx.psu.edu/repos/iuc/windowmasker/windowmasker_mkcounts/.*:
-    mem: 64
-    cores: 1
-
-  jbrowse2:
-    mem: 6
-    cores: 1
-
   toolshed.g2.bx.psu.edu/repos/iuc/circos/circos/.*:
     scheduling:
       require:
@@ -1190,17 +1125,6 @@ tools:
       GENEMARK_PATH: "/usr/local/tools/genemark/etp.for_braker/bin/gmes/"
       PROTHINT_PATH: "/usr/local/tools/genemark/etp.for_braker/bin/gmes/ProtHint/bin/"
 
-  toolshed.g2.bx.psu.edu/repos/iuc/checkm_taxonomy_wf/checkm_taxonomy_wf/.*:
-    mem: 8
-    cores: 8
-
-  toolshed.g2.bx.psu.edu/repos/iuc/checkm_lineage_wf/checkm_lineage_wf/.*:
-    mem: 16
-    cores: 16
-  toolshed.g2.bx.psu.edu/repos/iuc/maker/maker/.*:
-    mem: 64
-    cores: 16
-
   ## is in the shared DB - we need to test it here a bit
   toolshed.g2.bx.psu.edu/repos/galaxyp/openms_featurefindermultiplex/FeatureFinderMultiplex/.*:
     cores: 8
@@ -1253,35 +1177,6 @@ tools:
     scheduling:
       require:
         - singularity
-
-  toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2/.*:
-    cores: 32
-    mem: 244
-    rules:
-      - id: bwa_mem2_small_input_rule
-        if: input_size < 0.25
-        cores: 2
-        mem: 7.6
-      - id: bwa_mem2_medium_input_rule
-        if: 0.25 <= input_size < 16
-        cores: 8
-        mem: 28
-      - id: bwa_mem2_large_input_rule
-        if: 16 <= input_size < 32
-        cores: 16
-        mem: 58
-      - id: bwa_mem2_xlarge_input_rule
-        if: 32 <= input_size < 64
-        cores: 24
-        mem: 120
-      - id: bwa_mem2_history_reference_rule
-        if: |
-          helpers.job_args_match(job, app, {"reference_source": {"reference_source_selector": "history"}})
-        # per https://github.com/bwa-mem2/bwa-mem2/issues/41 it's 28 * reference
-        mem: |
-          options = job.get_param_values(app)
-          size = options["reference_source"]["ref_file"].get_size()
-          min(max(float(size/1024**3) * 28, (input_size - float(size/1024**3)) * 2, 7.6), 120)
 
   toolshed.g2.bx.psu.edu/repos/bgruening/flye/flye/.*:
     cores: 20
@@ -1389,7 +1284,7 @@ tools:
           param_dict = job.get_param_values(app)
           param_dict.get('manipulate', {}).get('function') == 'concatenate'
         mem: 60
-
+  # anndata is already upstream
   toolshed.g2.bx.psu.edu/repos/iuc/anndata_import/anndata_import/.*:
     cores: 1
     mem: 16
@@ -1401,13 +1296,6 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/anndata_inspect/anndata_inspect/.*:
     cores: 1
     mem: 16
-
-  toolshed.g2.bx.psu.edu/repos/iuc/modify_loom/modify_loom/.*:
-    cores: 1
-    mem: 16
-
-  toolshed.g2.bx.psu.edu/repos/iuc/humann/humann/.*:
-    cores: 12
 
   # Tool is same as fastqc so setting the same resources
   toolshed.g2.bx.psu.edu/repos/iuc/falco/falco/.*:
@@ -1427,10 +1315,6 @@ tools:
       require:
         - singularity
 
-  toolshed.g2.bx.psu.edu/repos/galaxyp/fragpipe/fragpipe/.*:
-    cores: 12
-    mem: 256
-
   toolshed.g2.bx.psu.edu/repos/iuc/episcanpy_build_matrix/episcanpy_build_matrix/.*:
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
@@ -1439,10 +1323,6 @@ tools:
     scheduling:
       require:
         - singularity
-
-  toolshed.g2.bx.psu.edu/repos/iuc/optitype/optitype/.*:
-    cores: 12
-    mem: 256
 
   # ppanggolin all tries to remove TMP folders, on NFS this does not always work, so we run this tool in singularity with internal (non-NFS) TMP
   toolshed.g2.bx.psu.edu/repos/iuc/ppanggolin_all/ppanggolin_all/.*:
@@ -1453,13 +1333,6 @@ tools:
     scheduling:
       require:
         - singularity
-
-  toolshed.g2.bx.psu.edu/repos/iuc/vapor/vapor/.*:
-    mem: 8
-
-  toolshed.g2.bx.psu.edu/repos/iuc/seurat_preprocessing/seurat_preprocessing/.*:
-    cores: 1
-    mem: 20
 
   toolshed.g2.bx.psu.edu/repos/bgruening/lirasearch/lirasearch/.*:
     inherits: basic_docker_tool
