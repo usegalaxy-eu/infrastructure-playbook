@@ -1,4 +1,16 @@
 #jinja2: trim_blocks: True, lstrip_blocks: True
+{% macro galaxy_volumes(exclude_volumes) -%}
+        {%- for vol in dnb.values() %}
+            {%- if vol.name not in exclude_volumes %}
+        {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
+            {%- endif %}
+        {%- endfor %}
+        {%- for vol in cache.values() %}
+            {%- if 'cache' in vol.name %}
+        {{ vol.path }}/object_store_cache/:{{ vol.docker_perm }},
+            {%- endif %}
+        {%- endfor %}
+{%- endmacro %}
 ---
 # NOTE: Use dashes (-) exclusively for tags and underscores (_) exclusively for destinations.
 # submit_request_cpus its called in pulsar and in plain condor only request_cpus
@@ -17,15 +29,7 @@ destinations:
       # $defaults expands to "$galaxy_root:ro,$tool_directory:ro,$job_directory:ro,$working_directory:rw,$default_file_path:rw"
       docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,
         $defaults,
-        {% for vol in dnb.values() %}
-        {% if vol.name not in ['db', 'dnb04', 'dnb-ds01', '5'] %}
-        {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
-        {% endif %}
-        {% endfor %}
-        {% for vol in cache.values() %}{% if 'cache' in vol.name %}
-        {{ vol.path }}/object_store_cache/:{{ vol.docker_perm }},
-        {% endif %}
-        {% endfor %}
+        {{ galaxy_volumes(exclude_volumes=['db', 'dnb04', 'dnb-ds01', '5']) }}
         {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
         {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
@@ -46,14 +50,7 @@ destinations:
         $tool_directory:ro,
         $job_directory/outputs:rw,
         $working_directory:rw,
-        {% for vol in dnb.values() %}{% if vol.name not in ['5', 'dnb04', 'dnb-ds01', 'db'] %}
-        {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
-        {% endif %}
-        {% endfor %}
-        {% for vol in cache.values() %}{% if 'cache' in vol.name %}
-        {{ vol.path }}/object_store_cache/:{{ vol.docker_perm }},
-        {% endif %}
-        {% endfor %}
+        {{ galaxy_volumes(exclude_volumes=['db', 'dnb04', 'dnb-ds01', '5']) }}
         {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
         {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
         {{ tools.tools.path }}/:{{ tools.tools.docker_perm }}"
@@ -554,4 +551,3 @@ destinations:
       requirements: 'GalaxyGroup == "pxe-gpu"'
       request_gpus: "{gpus or 0}"
       singularity_run_extra_arguments: "{entity.params.get('singularity_run_extra_arguments') or ''} --nv --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
-
