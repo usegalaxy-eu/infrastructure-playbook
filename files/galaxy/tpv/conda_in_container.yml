@@ -1,0 +1,49 @@
+---
+# Tools that must run in conda even when using container for isolation.
+tools:
+  _conda_in_container:
+    abstract: true
+    scheduling:
+      require:
+        - conda
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_compare/deeptools_bam_compare/2.4.1.0:
+    inherits: _conda_in_container
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_coverage/deeptools_bam_coverage/2.4.1.0:
+    inherits: _conda_in_container
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_plot_coverage/deeptools_plot_coverage/2.4.1.0:
+    inherits: _conda_in_container
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_plot_profile/deeptools_plot_profile/3.1.2.0.0:
+    inherits: _conda_in_container
+
+  toolshed.g2.bx.psu.edu/repos/iuc/enasearch_search_data/enasearch_search_data/.*:
+    inherits: _conda_in_container
+
+  toolshed.g2.bx.psu.edu/repos/iuc/sleuth/sleuth/.*:
+    inherits: _conda_in_container
+    cores: 4
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/iuc/rnaquast/rna_quast/.*:
+    inherits: _conda_in_container
+    cores: 12
+    mem: 40
+
+  toolshed.g2.bx.psu.edu/repos/iuc/mashmap/mashmap/.*:
+    inherits: _conda_in_container
+    cores: 8
+    mem: 32
+
+  toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/.*:
+    inherits: _conda_in_container
+    cores: 8
+    memory: 24
+
+  toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/.*:
+    inherits: _conda_in_container
+    cores: 1
+    mem: 40
