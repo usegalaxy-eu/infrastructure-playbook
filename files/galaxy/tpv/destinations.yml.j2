@@ -195,7 +195,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     params:
-      singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro'
+      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
     scheduling:
       require:
         - sk-pulsar
@@ -208,7 +208,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     params:
-      singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro'
+      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
     scheduling:
       require:
         - it-pulsar
@@ -221,7 +221,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     params:
-      singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro'
+      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
     scheduling:
       require:
         - it02-pulsar
@@ -234,7 +234,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     params:
-      singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro'
+      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
     scheduling:
       require:
         - it03-pulsar
@@ -247,7 +247,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     params:
-      singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro'
+      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
     scheduling:
       require:
         - fr-pulsar
@@ -281,7 +281,7 @@ destinations:
     params:
       jobs_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/staging"
       persistence_directory: "/opt/pulsar/files/persistent"
-      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,/cvmfs/data.galaxyproject.org/managed/:/data/db/data_managers/:ro"
+      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }},$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,/cvmfs/data.galaxyproject.org/managed/:/data/db/data_managers/:ro"
       singularity_env__JAVA_OPTIONS: '-Xmx{int(mem)}g -Djava.io.tmpdir=$SCRATCHDIR'
 #      singularity_run_extra_arguments: '--env _JAVA_OPTIONS=\"-Xmx{int(mem)}g -Djava.io.tmpdir=$SCRATCHDIR\"'
       submit_native_specification: "-l select=1:ncpus={int(cores)}:mem={int(mem)}gb:scratch_local=100gb -l walltime=24:00:00 -q galaxyeu@pbs-m1.metacentrum.cz -N pulsar_eu_j{job.id}__{tool.id if '/' not in tool.id else tool.id.split('/')[-2]+'_v'+tool.id.split('/')[-1]}__{user.username if user and hasattr(user, 'username') else 'anonymous'}"
@@ -291,7 +291,7 @@ destinations:
     rules:
       - if: tool.id.startswith("toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta") or tool.id.startswith("toolshed.g2.bx.psu.edu/repos/iuc/plasmidfinder/plasmidfinder")
         params:
-          singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,/cvmfs/data.galaxyproject.org/byhand/:/data/db/data_managers/:ro"
+          singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }},$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,/cvmfs/data.galaxyproject.org/byhand/:/data/db/data_managers/:ro"
 
   pulsar_cz02_tpv:
     inherits: pulsar_default
