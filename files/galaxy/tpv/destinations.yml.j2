@@ -11,6 +11,13 @@
             {%- endif %}
         {%- endfor %}
 {%- endmacro %}
+{% macro pulsar_base_volumes() -%}
+        $job_directory:rw,
+        $tool_directory:ro,
+        $job_directory/outputs:rw,
+        $working_directory:rw,
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}
+{%- endmacro %}
 ---
 # NOTE: Use dashes (-) exclusively for tags and underscores (_) exclusively for destinations.
 # submit_request_cpus its called in pulsar and in plain condor only request_cpus
@@ -156,16 +163,8 @@ destinations:
       dependency_resolution: "none"
       submit_request_cpus: "{cores}"
       submit_request_memory: "{mem}G"
-      docker_volumes: "$job_directory:rw,
-        $tool_directory:ro,
-        $job_directory/outputs:rw,
-        $working_directory:rw,
-        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
-      singularity_volumes: "$job_directory:rw,
-        $tool_directory:ro,
-        $job_directory/outputs:rw,
-        $working_directory:rw,
-        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+      docker_volumes: "{{ pulsar_base_volumes() }}"
+      singularity_volumes: "{{ pulsar_base_volumes() }}"
       singularity_enabled: true
       singularity_default_container_id: "{{ cvmfs.singularity.path }}/all/centos:8.3.2011"
     scheduling:
@@ -195,7 +194,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     params:
-      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+      singularity_volumes: "{{ pulsar_base_volumes() }}"
     scheduling:
       require:
         - sk-pulsar
@@ -208,7 +207,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     params:
-      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+      singularity_volumes: "{{ pulsar_base_volumes() }}"
     scheduling:
       require:
         - it-pulsar
@@ -221,7 +220,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     params:
-      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+      singularity_volumes: "{{ pulsar_base_volumes() }}"
     scheduling:
       require:
         - it02-pulsar
@@ -234,7 +233,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     params:
-      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+      singularity_volumes: "{{ pulsar_base_volumes() }}"
     scheduling:
       require:
         - it03-pulsar
@@ -247,7 +246,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     params:
-      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+      singularity_volumes: "{{ pulsar_base_volumes() }}"
     scheduling:
       require:
         - fr-pulsar
