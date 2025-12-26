@@ -5,17 +5,18 @@ stats.galaxyproject.eu
 [build]
 build.galaxyproject.eu ansible_ssh_user=root
 
-[beacon]
-beacon.galaxyproject.eu ansible_ssh_user=rocky
+[build-workers]
+worker-0.gold.build.galaxyproject.eu
+worker-0.bronze.build.galaxyproject.eu
 
-[beacon_import]
-beacon-import.galaxyproject.eu
+[beacon]
+beacon.bi.privat ansible_ssh_user=root
 
 [influxdb]
-influxdb.galaxyproject.eu
+influxdb.galaxyproject.eu ansible_host=influxdb.bi.privat
 
 [mq]
-mq.galaxyproject.eu
+mq02.galaxyproject.eu
 
 [incoming]
 incoming.galaxyproject.eu
@@ -41,40 +42,26 @@ cvmfs1-ufr0.internal.galaxyproject.eu
 [cvmfs-stratum0]
 cvmfs-stratum0.galaxyproject.eu
 
-[telescope]
-telescope.internal.galaxyproject.eu
-
-[galaxy-test]
-test.internal.usegalaxy.eu ansible_ssh_user=rocky
-
-[denbistratum0]
-cvmfs-stratum0-test.galaxyproject.eu
-
 [plausible]
 plausible.galaxyproject.eu
 
 [celerycluster]
-celery-0.galaxyproject.eu
+celery-1.galaxyproject.eu
 
 # Baremetal
 [galaxyservers]
-sn06.galaxyproject.eu
+sn09.galaxyproject.eu
 sn07.galaxyproject.eu
-
-[sn06]
-sn06.galaxyproject.eu
 
 [sn07]
 sn07.galaxyproject.eu
-
-[sn05]
-sn05.galaxyproject.eu ansible_ssh_user=root
 
 [maintenance]
 maintenance.galaxyproject.eu
 
 [traefik]
 traefik.galaxyproject.eu ansible_ssh_user=rocky
+
 [all:vars]
 ansible_ssh_user=centos
 
@@ -90,10 +77,38 @@ ansible_group_priority=4
 
 [htcondor-submit]
 maintenance.galaxyproject.eu
-sn06.galaxyproject.eu
+sn09.galaxyproject.eu
 
 [htcondor-submit:vars]
 ansible_group_priority=4
 
 [dokku]
-apps.galaxyproject.eu ansible_ssh_user=ubuntu
+apps.galaxyproject.eu ansible_ssh_user=ubuntu ansible_port=8080
+
+[dnbd3:children]
+dnbd3primary
+dnbd3proxy
+
+[dnbd3primary]
+dnbd3-primary.galaxyproject.eu ansible_ssh_user=root
+
+[dnbd3proxy]
+sn12.galaxyproject.eu
+
+[tpvbroker]
+tpv-broker.galaxyproject.eu ansible_host=10.4.68.199 ansible_ssh_user=root
+
+[sn09]
+sn09.galaxyproject.eu
+
+[sn10]
+sn10.galaxyproject.eu ansible_ssh_user=root
+
+[sn11]
+sn11.galaxyproject.eu ansible_ssh_user=root
+
+[sn12]
+sn12.galaxyproject.eu
+
+[osiris]
+osiris.denbi.de ansible_ssh_user=rocky

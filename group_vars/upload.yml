@@ -70,6 +70,8 @@ autofs_mount_points:
   - gxtest
   - gxkey
   - jwd
+  - cache
+  - misc
 
 # usegalaxy_eu.handy.os_setup
 ## packages
@@ -79,3 +81,22 @@ software_groups_to_install:
 
 ## kernel_5
 kernel_5_package: kernel-ml
+rustus_monitor_requests_path: /usr/local/bin/monitor-rustus-requests
+rustus_monitor_requests: |
+  #!/bin/bash
+  successful=$(journalctl -u 'rustus-main_uploads.service' --since '1 minute ago' | \
+              grep "PATCH /api/upload/resumable_upload/"| \
+              grep "204" | sort -u | wc -l)
+  errors=$(journalctl -u 'rustus-main_uploads.service' --since '1 minute ago' | \
+              grep "PATCH /api/upload/resumable_upload/"| \
+              grep -v "204" | sort -u | wc -l)
+  echo rustus,timespan=last_1_min successful_requests="${successful:-0}i",erroring_requests="${errors:-0}i"
+
+telegraf_plugins_extra:
+  rustus_requests:
+    plugin: "exec"
+    config:
+      - commands = ["{{ rustus_monitor_requests_path }}"]
+      - timeout = "15s"
+      - interval = "1m"
+      - data_format = "influx"

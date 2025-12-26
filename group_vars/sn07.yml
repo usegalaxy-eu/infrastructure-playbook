@@ -24,6 +24,8 @@ autofs_mount_points:
   - gxkey
   - jwd
   - usrlocal
+  - cache
+  - misc
 
 # Miniconda role variables (galaxyproject.miniconda)
 conda_prefix: /opt/miniconda
@@ -280,20 +282,20 @@ condor_extra: |
 
 # gie_proxy
 gie_proxy_dir: "{{ galaxy_root }}/gie-proxy/proxy"
-gie_proxy_git_version: main
+gie_proxy_git_version: v0.1.0
 gie_proxy_setup_nodejs: nodeenv
 gie_proxy_virtualenv_command: "{{ conda_prefix }}/envs/_galaxy_/bin/python -m venv --copies" #"{{ pip_virtualenv_command }}"
-gie_proxy_nodejs_version: "10.13.0"
+gie_proxy_nodejs_version: "14.21.3"
 gie_proxy_virtualenv: "{{ galaxy_root }}/gie-proxy/venv"
 gie_proxy_setup_service: systemd
-gie_proxy_sessions_path: "{{ galaxy_mutable_data_dir }}/interactivetools_map.sqlite"
+gie_proxy_sessions_path: "{{ interactivetools_db_connection }}"
 gie_proxy_path_prefix: /interactivetool/ep
 gie_proxy_port: 8800
 gie_proxy_verbose: true
 
 # gxadmin
 postgres_user: galaxy
-postgres_host: sn05.galaxyproject.eu
+postgres_host: sn11.galaxyproject.eu
 postgres_port: 5432
 
 # Slurp script
@@ -455,8 +457,8 @@ galaxy_config_templates:
     dest: "{{ galaxy_server_dir }}/lib/galaxy/tool_util/toolbox/filters/global_host_filters.py"
   - src: "{{ galaxy_config_template_src_dir }}/config/job_conf.yml.j2"
     dest: "{{ galaxy_config_dir }}/job_conf.yml"
-  - src: "{{ galaxy_config_template_src_dir }}/config/container_resolvers_conf.xml.j2"
-    dest: "{{ galaxy_config_dir }}/container_resolvers_conf.xml"
+  - src: "{{ galaxy_config_template_src_dir }}/config/container_resolvers_conf.yml.j2"
+    dest: "{{ galaxy_config_dir }}/container_resolvers_conf.yml"
   - src: "{{ galaxy_config_template_src_dir }}/config/user_filters.py.j2"
     dest: "{{ galaxy_server_dir }}/lib/galaxy/tool_util/toolbox/filters/user_filters.py"
   - src: "{{ galaxy_config_template_src_dir }}/config/nagios_tool_conf.xml"
@@ -477,3 +479,13 @@ galaxy_config_templates:
     dest: "{{ galaxy_config_dir }}/file_sources_conf.yml"
   - src: "{{ galaxy_config_template_src_dir }}/config/object_store_conf.xml.j2"
     dest: "{{ galaxy_config['galaxy']['object_store_config_file'] }}"
+
+# (usegalaxy-eu.bashrc)
+bashrc_galaxy_root: "{{ galaxy_root }}"
+bashrc_galaxy_venv_dir: "{{ galaxy_venv_dir }}"
+bashrc_galaxy_server_dir: "{{ galaxy_server_dir }}"
+bashrc_galaxy_config_dir: "{{ galaxy_config_dir }}"
+bashrc_galaxy_config_file: "{{ galaxy_config_file }}"
+bashrc_galaxy_mutable_config_dir: "{{ galaxy_mutable_config_dir }}"
+bashrc_galaxy_log_dir: "{{ galaxy_log_dir }}"
+bashrc_galaxy_pulsar_app_conf: "{{ galaxy_config_dir }}/pulsar_app.yml"

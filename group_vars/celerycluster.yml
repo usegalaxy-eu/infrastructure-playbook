@@ -34,6 +34,8 @@ autofs_mount_points:
   - jwd
   - usrlocal
   - usrlocal_celerycluster
+  - cache
+  - misc
 
 # SystemD
 galaxy_systemd_mode: ""
@@ -41,11 +43,13 @@ galaxy_systemd_celery: true
 galaxy_systemd_celery_internal_max_tasks: 50
 galaxy_systemd_celery_beat_schedule_path: "/opt/galaxy/celery/celery-beat-schedule"
 galaxy_systemd_watchdog: true
+galaxy_systemd_celery_env: "GALAXY_DROPBOX_APP_CLIENT_ID={{ dropbox_app_client_id }} GALAXY_DROPBOX_APP_CLIENT_SECRET={{ dropbox_app_client_secret }} GALAXY_GOOGLE_DRIVE_APP_CLIENT_ID={{ google_drive_oauth_client_id }} GALAXY_GOOGLE_DRIVE_APP_CLIENT_SECRET={{ google_drive_oauth_client_secret }}"
 
 galaxy_systemd_celery_internal_workers: 10
 galaxy_systemd_celery_external_workers: 2
 
 # Flower
+flower_bind_address: "{{ tailscale_node_ipv4 }}"
 flower_custom_logging: false
 flower_install: false
 flower_app_dir: /opt/galaxy
@@ -59,3 +63,21 @@ flower_broker_api: "https://flower:{{ rabbitmq_password_flower }}@{{ rabbitmq_ur
 flower_broker_url: "amqp://flower:{{ rabbitmq_password_flower }}@{{ rabbitmq_url }}:5671/galaxy?ssl=true"
 
 tailscale_authkey: "{{ tailacale_auth_key_usegalaxy_eu }}"
+
+# Role: usegalaxy-eu.logrotate
+lp_logrotate_confd:
+  - path: rsyslogd-messages
+    conf: |
+      /var/log/messages {
+        daily
+        rotate 7
+        compress
+        delaycompress
+        missingok
+        notifempty
+        dateext
+        maxage 7
+        postrotate
+          /usr/bin/systemctl reload rsyslog >/dev/null 2>&1 || true
+        endscript
+      }

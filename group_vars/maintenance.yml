@@ -9,13 +9,6 @@ galaxy_config_file: "{{ galaxy_config_dir }}/galaxy.yml"
 galaxy_mutable_config_dir: "{{ galaxy_root }}/mutable-config"
 galaxy_log_dir: "/var/log/galaxy"
 
-galaxy_config:
-  galaxy:
-    job_working_directory: /data/jwd04/main
-    nginx_upload_store: "/data/jwd04/nginx_upload/main/uploads"
-    nginx_upload_job_files_store: "/data/jwd04/nginx_upload/main/jobfiles"
-    ftp_upload_dir: /data/jwd01/incoming
-
 galaxy_group:
   name: galaxy
   gid: 999
@@ -29,8 +22,21 @@ galaxy_user:
 # Role: hxr.postgres-connection
 # Role: usegalaxy-eu.galaxy-slurp
 postgres_user: galaxy
-postgres_host: sn05.galaxyproject.eu
+postgres_host: sn11.galaxyproject.eu
 postgres_port: 5432
+pgc_users:
+  - uname: "{{ galaxy_user.name }}"
+    uhome: "{{ galaxy_user.home }}"
+    gname: "{{ galaxy_group.name | default(galaxy_group) }}"
+    pguser: "{{ postgres_user }}"
+    pgpass: "{{ postgres_pass }}"
+    pgdatabase: galaxy
+  - uname: "{{ telegraf_user.name }}"
+    uhome: "{{ telegraf_user.home }}"
+    gname: "{{ telegraf_user.group }}"
+    pguser: "{{ postgres_user }}"
+    pgpass: "{{ postgres_pass }}"
+    pgdatabase: galaxy
 
 # Role: usegalaxy_eu.handy.os_setup
 enable_hostname: true
@@ -76,22 +82,22 @@ autofs_mount_points:
   - gxkey
   - jwd
   - usrlocal
+  - cache
+  - misc
 
-# Role: usegalaxy-eu.bashrc
-galaxy_pulsar_app_conf: "{{ galaxy_config_dir }}/pulsar_app.yml"
+# (usegalaxy-eu.bashrc)
+bashrc_galaxy_root: "{{ galaxy_root }}"
+bashrc_galaxy_venv_dir: "{{ galaxy_venv_dir }}"
+bashrc_galaxy_server_dir: "{{ galaxy_server_dir }}"
+bashrc_galaxy_config_dir: "{{ galaxy_config_dir }}"
+bashrc_galaxy_config_file: "{{ galaxy_config_file }}"
+bashrc_galaxy_mutable_config_dir: "{{ galaxy_mutable_config_dir }}"
+bashrc_galaxy_log_dir: "{{ galaxy_log_dir }}"
+bashrc_galaxy_pulsar_app_conf: "{{ galaxy_config_dir }}/pulsar_app.yml"
 bashrc_users:
   - uname: "{{ galaxy_user.name }}"
     uhome: "{{ galaxy_user.home }}"
     gname: "{{ galaxy_group.name }}"
-
-# Role: hxr.postgres-connection
-pgc_users:
-  - uname: "{{ galaxy_user.name }}"
-    uhome: "{{ galaxy_user.home }}"
-    gname: "{{ galaxy_group.name }}"
-    pguser: "{{ postgres_user }}"
-    pgpass: "{{ postgres_pass }}"
-    pgdatabase: galaxy
 
 # Role: usegalaxy_eu.fs_maintenance
 fsm_maintenance_dir: "/data/dnb01/maintenance"
@@ -107,16 +113,12 @@ fsm_scripts:
     user: "{{ fsm_galaxy_user.username }}"
     group: "{{ fsm_galaxy_user.groupname }}"
     paths:
-      - /data/1/galaxy_db/tmp
-      - /data/2/galaxy_db/tmp
-      - /data/dnb01/galaxy_db/tmp
-      - /data/dnb02/galaxy_db/tmp
       - /data/dnb-ds03/galaxy_db/tmp
       - /data/dnb05/galaxy_db/tmp
       - /data/dnb06/galaxy_db/tmp
-      - /data/jwd/tmp
-      - /data/jwd02f/tmp
-      - /data/jwd04/tmp
+      - "{{ generic_tmp_dir }}"
+      - "{{ short_term_web_storage_dir }}"
+      - "{{ object_store_cache_dir }}"
     time: "{{ fsm_intervals.long }}"
   upload_dirs:
     enable: true
@@ -145,14 +147,40 @@ fsm_scripts:
       - /data/jwd03f/main
       - /data/jwd04/main
       - /data/jwd05e/main
+      - /data/jwd06/main
+      - /data/jwd07/main
+      - /data/jwd08/main
     time: "{{ fsm_intervals.long }}"
+fsm_cron_tasks:
+  docker:
+    enable: false
+    name: "Docker clean up"
+    minute: 30
+    hour: 2
+    dom: "*"
+    month: "*"
+    dow: "*"
+    job: "docker system prune -f --all> /dev/null"
+    user: "{{ fsm_galaxy_user.username }}"
+  gxadmin:
+    enable: true
+    name: "Gxadmin Galaxy clean up"
+    minute: 0
+    hour: "*/6"
+    dom: "*"
+    month: "*"
+    dow: "*"
+    job: "/usr/bin/gxadmin galaxy cleanup 60"
+    user: "{{ fsm_galaxy_user.username }}"
 fsm_htcondor_enable: true
 
 # Role: dj-wasabi.telegraf
-telegraf_agent_metric_buffer_limit: 20000
+telegraf_agent_metric_buffer_limit: 100000
 telegraf_agent_hostname: "{{ hostname }}"
 telegraf_agent_version: 1.17.2
 custom_telegraf_env: "/usr/bin/env GDPR_MODE=1 PGUSER={{ galaxy_user.name }} PGHOST={{ postgres_host }} GALAXY_ROOT={{ galaxy_server_dir }} GALAXY_CONFIG_FILE={{ galaxy_config_file }} GXADMIN_PYTHON={{ galaxy_venv_dir }}/bin/python"
+# When GDPR_MODE is set for the Telegraf ENV the galaxy_num_anonymous_jobs_by_destination.sh script returns empty. When this is enabled, gxadmin masks the user details, which is non-existent for anonymous users, leading to empty results.
+custom_telegraf_env_without_gdpr_mode: "/usr/bin/env PGUSER={{ galaxy_user.name }} PGHOST={{ postgres_host }} GALAXY_ROOT={{ galaxy_server_dir }} GALAXY_CONFIG_FILE={{ galaxy_config_file }} GXADMIN_PYTHON={{ galaxy_venv_dir }}/bin/python"
 telegraf_plugins_extra:
   postgres:
     plugin: "postgresql"
@@ -229,6 +257,13 @@ telegraf_plugins_extra:
       - timeout = "360s"
       - data_format = "influx"
       - interval = "24h"
+  galaxy_tool_usage_over_time:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/galaxy_tool_usage_over_time"]
+      - timeout = "360s"
+      - data_format = "influx"
+      - interval = "168h"
   galaxy_job_queue_states_stats:
     plugin: "exec"
     config:
@@ -288,7 +323,64 @@ telegraf_plugins_extra:
       - timeout = "60s"
       - data_format = "influx"
       - interval = "2m"
-
+  galaxy_destination_queue_run_time: # This is used for the TPV Broker.
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery destination-queue-run-time --seconds --older-than=90"]
+      - timeout = "30m"
+      - data_format = "influx"
+      - interval = "24h"
+  galaxy_job_radar_visualization_stats:
+    plugin: "exec"
+    config:
+      - commands = [
+        "{{ custom_telegraf_env }} /usr/bin/galaxy_failed_jobs_by_destination.sh",
+        "{{ custom_telegraf_env }} /usr/bin/galaxy_most_used_tools_by_destination.sh",
+        "{{ custom_telegraf_env_without_gdpr_mode }} /usr/bin/galaxy_num_anonymous_jobs_by_destination.sh",
+        "{{ custom_telegraf_env }} /usr/bin/galaxy_unique_users_job_count_by_destination.sh",
+        "{{ custom_telegraf_env }} /usr/bin/galaxy_longest_running_jobs_by_destination.sh",
+        "{{ custom_telegraf_env }} /usr/bin/galaxy_num_user_running_jobs_count_by_destination.sh",
+        ]
+      - timeout = "300s"
+      - data_format = "influx"
+      - interval = "1h"
+  galaxy_job_radar_visualization_job_stats:
+    plugin: "exec"
+    config:
+      - commands = [
+        "{{ custom_telegraf_env }} /usr/bin/galaxy_jobs_stats.sh",
+        ]
+      - timeout = "60s"
+      - data_format = "influx"
+      - interval = "4h"
+  galaxy_monthly_active_users:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/galaxy_monthly_active_users"]
+      - timeout = "600s"
+      - data_format = "influx"
+      - interval = "168h"
+  galaxy_user_file_source_utilisation:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/galaxy_user_file_source_utilisation"]
+      - timeout = "10s"
+      - data_format = "influx"
+      - interval = "24h"
+  galaxy_user_object_store_utilisation:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/galaxy_user_object_store_utilisation"]
+      - timeout = "10s"
+      - data_format = "influx"
+      - interval = "24h"
+  galaxy_wizard_openai_utilization_and_costs:
+    plugin: "exec"
+    config:
+      - commands = ['bash -c "source {{ telegraf_user.home }}/.bashrc && {{ custom_telegraf_env }} /usr/bin/galaxy_wizard_openai_utilization_and_costs.py"']
+      - timeout = "120s"
+      - data_format = "influx"
+      - interval = "24h"
 
 # Role: hxr.monitor-cluster
 monitor_condor: true
@@ -322,3 +414,57 @@ lp_logrotate_confd:
         notifempty
         compress
       }
+
+# WallE
+walle_verbose: false
+walle_script_location: /usr/local/sbin/walle.py
+walle_delete_threshold: HIGH
+walle_delete_users: false
+walle_filesize_min: 0
+walle_tool: interactive
+walle_user_name: "{{ galaxy_user.name }}"
+walle_user_group: "{{ galaxy_group.name }}"
+walle_virtualenv: "{{ galaxy_venv_dir }}"
+walle_bashrc: "{{ galaxy_user.home }}/.bashrc"
+walle_pgpass_file: "{{ galaxy_user.home }}/.pgpass"
+walle_malware_database_location: "/data/dnb01/maintenance/walle"
+walle_database_file: checksums.yml
+walle_galaxy_url: "https://usegalaxy.eu"
+walle_api_key: "{{ admin_api_key_maintenance }}"
+walle_extra_env_vars:
+  PGHOST: sn11.galaxyproject.eu
+  WALLE_USER_DELETION_MESSAGE: >-
+      Our systems have detected activity related to your Galaxy account that most likely violate our terms of service.
+      To prevent damage and in accordance with our terms of service, we automatically deleted your account.
+      This means your jobs were terminated and you can not login anymore.
+      However it is possible to restore the account and its data.
+      If you think your account was deleted due to an error, please contact contact@usegalaxy.eu
+walle_envs_database:
+  MALWARE_LIB: "{{ walle_malware_database_location }}/{{ walle_database_file }}"
+  PGPASSFILE: "{{ walle_pgpass_file }}"
+  PGUSER: galaxy
+  PGDATABASE: galaxy
+  GXADMIN_PATH: /usr/local/bin/gxadmin
+walle_cron_day: "*"
+walle_cron_hour: "*"
+walle_cron_minute: "0"
+
+# Restics
+restic_schedule_type: "cronjob"
+restic_create_cron: true
+restic_user: galaxy
+restic_repos:
+  local:
+    location: "/data/dnb01/mutable-data"
+    password: "{{ restic_password }}"
+    init: false
+restic_backups:
+  data:
+    name: mutable-data
+    repo: local
+    src: /opt/galaxy/mutable-data/
+    scheduled: true
+    schedule_hour: "21"
+    schedule_minute: "0"
+    keep_last: 15
+    prune: true

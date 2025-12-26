@@ -1,30 +1,3 @@
-- type: dropbox
-  id: dropbox
-  label: Your Dropbox Files
-  doc: Your Dropbox files - configure an access token via the user preferences
-  accessToken: ${user.preferences['dropbox|access_token']}
-
-- type: webdav
-  id: b2drop
-  doc: B2Drop WebDAV server
-  url: https://b2drop.eudat.eu
-  root: /remote.php/dav/files/${user.preferences['b2drop|username']}/
-  use_temp_files: true
-  temp_path: /data/jwd04/tmp
-  login: ${user.preferences['b2drop|username']} 
-  password: ${user.preferences['b2drop|password']}
-
-- type: webdav
-  id: generic_nextcloud
-  label: Nextcloud/ownCloud
-  doc: You personal Cloud files
-  writable: true
-  url: ${user.preferences['nextcloud|url']}
-  root: ${user.preferences['nextcloud|root']}
-  use_temp_files: true
-  temp_path: /data/jwd04/tmp
-  login: ${user.preferences['nextcloud|username']}
-  password: ${user.preferences['nextcloud|password']}
 
 - type: webdav
   id: erga_nextcloud
@@ -34,10 +7,16 @@
   url: 'https://ergapilot.bsc.es'
   root: '/remote.php/webdav'
   use_temp_files: true
-  temp_path: /data/jwd04/tmp
+  temp_path: {{ generic_tmp_dir }}
   login: "{{ erga_nextcloud_login }}"
   password: "{{ erga_nextcloud_password }}"
   requires_groups: erga
+
+- type: posix
+  root: '/data/db/file_sources/tabula_atlases'
+  id: tabula-atlases
+  doc: "Tabula Sapiens and Tabula Muris senis single-cell transcriptomic atlases, providing comprehensive cell-type–resolved gene expression profiles across multiple tissues and organs in human and mouse."
+  label: "Tabula Atlases"
 
 - type: posix
   root: '/data/5/galaxy_import/galaxy_user_data/covid-19/data/sequences/'
@@ -56,6 +35,12 @@
   id: ml-models
   doc: ML/AI models for PyTorch, TensorFlow, Keras ...
   label: ML models
+
+- type: inveniordm
+  id: zenodo
+  doc: Zenodo is an open-access digital repository created by CERN (the European Organization for Nuclear Research) to enable researchers to share, preserve, and cite research outputs across various disciplines.
+  label: Zenodo
+  url: https://zenodo.org
 
 - type: ftp
   id: ebi-ftp
@@ -110,16 +95,6 @@
   path: "/home/FTPvandenbeek/userspace/staging/"
   config_path: ""
   port: 2222
-
-- type: s3fs
-  label: Generic S3 instance
-  id: generic_s3
-  doc: Access to a generic S3 endpoint.
-  endpoint_url: ${user.preferences['generic_s3|endpoint_url']}
-  bucket: ${user.preferences['generic_s3|bucket']}
-  writable: true
-  secret: ${user.preferences['generic_s3|secret']}
-  key: ${user.preferences['generic_s3|key']}
 
 - type: s3fs
   label: Genome Ark
@@ -240,10 +215,10 @@
   anon: true
 
 - type: s3fs
-  label: ECMWF ERA5 Reanalysis
-  id: era5-pds
+  label: NSF NCAR Curated ECMWF Reanalysis 5 (ERA5)
+  id: nsf-ncar-era5
   doc: ERA5 is the fifth generation of ECMWF atmospheric reanalyses of the global climate created with the best available observation data from satellites, in-situ stations and ECMWF's Integrated Forecast System. The dataset provides atmospheric meteorological parameters.
-  bucket: era5-pds
+  bucket: nsf-ncar-era5
   anon: true
 
 - type: s3fs
@@ -251,6 +226,13 @@
   id: mf-nwp-models
   doc: Global and high-resolution regional atmospheric models from Météo-France.
   bucket: mf-nwp-models
+  anon: true
+  
+- type: s3fs
+  label: Argo marine floats data and metadata from Global Data Assembly Centre (Argo GDAC)
+  id: argo-gdac-sandbox
+  doc: Argo is an international program to observe the interior of the ocean with a fleet of profiling floats drifting in the deep ocean currents (https://argo.ucsd.edu). 
+  bucket: argo-gdac-sandbox
   anon: true
 
 - type: arcfs
@@ -262,36 +244,31 @@
   writable: true
 
 - type: inveniordm
-  id: zenodo
-  doc: Zenodo is an open-access digital repository created by CERN (the European Organization for Nuclear Research) to enable researchers to share, preserve, and cite research outputs across various disciplines.
-  label: Zenodo
-  url: https://zenodo.org
-  token: ${user.user_vault.read_secret('preferences/zenodo/token')}
-  # token: ${user.preferences['zenodo|token']} # Alternatively use this for retrieving the token from user preferences instead of the Vault
-  public_name: ${user.preferences['zenodo|public_name']}
-  writable: true
-
-- type: inveniordm
-  id: zenodo_sandbox
-  doc: This is the Sandbox instance of Zenodo. It is used for testing purposes only, content is NOT preserved. DOIs created in this instance are not real and will not resolve.
-  label: Zenodo Sandbox (TESTING ONLY)
-  url: https://sandbox.zenodo.org
-  token: ${user.user_vault.read_secret('preferences/zenodo_sandbox/token')}
-  # token: ${user.preferences['zenodo_sandbox|token']} # Alternatively use this for retrieving the token from user preferences instead of the Vault
-  public_name: ${user.preferences['zenodo_sandbox|public_name']}
-  writable: true
-
-- type: onedata
-  id: onedata1
-  label: Onedata
-  doc: Your Onedata files - configure an access token via user preferences
-  accessToken: ${user.preferences['onedata|access_token']}
-  onezoneDomain: ${user.preferences['onedata|onezone_domain']}
+  id: berd_nfdi
+  doc: "A Single Place for Data in Business, Economics and Related Fields"
+  label: "BERD@NFDI Repository"
+  url: https://berd-platform.de
 
 - type: onedata
   id: gtn_public_onedata
   label: GTN training data
   doc: Training data from the Galaxy Training Network (powered by Onedata)
   # The access Token is public and can be shared
-  accessToken: "MDAxY2xvY2F00aW9uIGRhdGFodWIuZWdpLmV1CjAwNmJpZGVudGlmaWVyIDIvbm1kL3Vzci00yNmI4ZTZiMDlkNDdjNGFkN2E3NTU00YzgzOGE3MjgyY2NoNTNhNS9hY3QvMGJiZmY1NWU4NDRiMWJjZGEwNmFlODViM2JmYmRhNjRjaDU00YjYKMDAxNmNpZCBkYXRhLnJlYWRvbmx5CjAwNDljaWQgZGF00YS5wYXRoID00gTHpaa1pUTTROMkl4WmpjMllXVmpOMlU00WWpreU5XWmtNV00ZpT1RKbU1ETXlZMmhoWTJReAowMDJmc2lnbmF00dXJlIIQvnXp01Oey02LnaNwEkFJAyArzhHN8SlXSYFsBbSkqdqCg"
-  onezoneDomain: "datahub.egi.eu"
+  access_token: "MDAxY2xvY2F00aW9uIGRhdGFodWIuZWdpLmV1CjAwNmJpZGVudGlmaWVyIDIvbm1kL3Vzci00yNmI4ZTZiMDlkNDdjNGFkN2E3NTU00YzgzOGE3MjgyY2NoNTNhNS9hY3QvMGJiZmY1NWU4NDRiMWJjZGEwNmFlODViM2JmYmRhNjRjaDU00YjYKMDAxNmNpZCBkYXRhLnJlYWRvbmx5CjAwNDljaWQgZGF00YS5wYXRoID00gTHpaa1pUTTROMkl4WmpjMllXVmpOMlU00WWpreU5XWmtNV00ZpT1RKbU1ETXlZMmhoWTJReAowMDJmc2lnbmF00dXJlIIQvnXp01Oey02LnaNwEkFJAyArzhHN8SlXSYFsBbSkqdqCg"
+  onezone_domain: "datahub.egi.eu"
+
+- type: inveniordm
+  id: cern_opendata
+  doc: "The CERN Open Data Portal is a repository that enables large scale experimental data releases of curated datasets, accompanying software, supporting documentation and example analyses"
+  label: CERN Open Data
+  url: https://opendata.cern
+
+- type: omero
+  id: omero_demo
+  label: "OMERO Demo Server"
+  doc: "Browse and import images from OMERO demo server"
+  username: "{{ omero_test_username }}"
+  password: "{{ omero_test_password }}"
+  host: "demo.openmicroscopy.org" # without protocol
+  port: 4064
+  writable: false # OMERO file sources are read-only

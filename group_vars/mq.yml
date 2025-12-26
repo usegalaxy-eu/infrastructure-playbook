@@ -4,29 +4,37 @@ hostname: mq.galaxyproject.eu
 # create_user task
 handy_groups:
   - group_name: rabbitmq
-    group_gid: 999
+    group_gid: 101
 
 handy_users:
   - user_name: rabbitmq
-    user_uid: 999
+    user_uid: 100
     user_group: rabbitmq
 
 # Certbot
 certbot_admin_email: security@usegalaxy.eu
 certbot_agree_tos: --agree-tos
-certbot_auth_method: --webroot
+certbot_dns_provider: route53
+certbot_auth_method: --standalone
 certbot_auto_renew: true
 certbot_auto_renew_user: root
 certbot_auto_renew_hour: "{{ 23 |random(seed=inventory_hostname)  }}"
 certbot_auto_renew_minute: "{{ 59 |random(seed=inventory_hostname)  }}"
 certbot_domains:
   - "{{ hostname }}"
+  - "{{ inventory_hostname }}"
 certbot_environment: "production" # change to production when ready to go
 certbot_install_method: virtualenv
 certbot_share_key_users:
   - nginx
   - rabbitmq
 
+aws_cli_credentials:
+  - access_key: "{{ aws_credentials.certbot.AWS_ACCESS_KEY }}"
+    secret_key: "{{ aws_credentials.certbot.AWS_SECRET_KEY }}"
+    homedir: /root
+    owner: root
+    group: root
 certbot_post_renewal: |
   systemctl restart nginx || true
   systemctl restart docker || true
@@ -96,9 +104,6 @@ rabbitmq_users:
   - user: galaxy_cz01
     password: "{{ rabbitmq_password_galaxy_cz01 }}"
     vhost: /pulsar/galaxy_cz01
-  - user: galaxy_sanjay_pulsar
-    password: "{{ rabbitmq_password_galaxy_sanjay_pulsar }}"
-    vhost: /pulsar/galaxy_sanjay_pulsar
   - user: galaxy_mira_pulsar
     password: "{{ rabbitmq_password_galaxy_mira_pulsar }}"
     vhost: /pulsar/galaxy_mira_pulsar
@@ -120,6 +125,15 @@ rabbitmq_users:
   - user: galaxy_tubitak01
     password: '{{ rabbitmq_password_galaxy_tubitak01 }}'
     vhost: /pulsar/galaxy_tubitak01
+  - user: galaxy_eosc01
+    password: '{{ rabbitmq_password_galaxy_eosc01 }}'
+    vhost: /pulsar/galaxy_eosc01
+  - user: galaxy_uca01
+    password: '{{ rabbitmq_password_galaxy_uca01 }}'
+    vhost: /pulsar/galaxy_uca01
+  - user: galaxy_ufz_eve01
+    password: '{{ rabbitmq_password_galaxy_ufz_eve01 }}'
+    vhost: /pulsar/galaxy_ufz_eve01
 
 rabbitmq_plugins:
   - rabbitmq_management
@@ -146,7 +160,7 @@ rabbitmq_config:
 
 rabbitmq_container:
   name: rabbit_hole
-  image: rabbitmq:3.9.11
+  image: rabbitmq:4.0.6-management-alpine
   hostname: "{{ inventory_hostname }}"
 
 # Redis
@@ -157,7 +171,6 @@ redis_dbfilename: dump.rdb
 redis_dbdir: /var/lib/redis
 redis_loglevel: "notice"
 redis_logfile: /var/log/redis/redis-server.log
-redis_conf_path: /etc/redis
 # Telegraf
 telegraf_plugins_extra:
   prometheus:

@@ -148,7 +148,7 @@ base_app_main: &BASE_APP_MAIN
   # Pulsar.
   # The value of this option will be resolved with respect to
   # <data_dir>.
-  new_file_path: /data/jwd04/tmp
+  new_file_path: "{{ generic_tmp_dir }}"
 
   # Maximum size of uploadable files, specified in bytes (default:
   # 100GB). This value is ignored if an external upload server is
@@ -234,7 +234,7 @@ base_app_main: &BASE_APP_MAIN
 
   # conda channels to enable by default
   # (https://conda.io/docs/user-guide/tasks/manage-channels.html)
-  conda_ensure_channels: "conda-forge,bioconda"
+  #conda_ensure_channels: conda-forge,bioconda
 
   # Use locally-built conda packages.
   #conda_use_local: false
@@ -245,8 +245,9 @@ base_app_main: &BASE_APP_MAIN
 
   # Set to true to instruct Galaxy to install Conda from the web
   # automatically if it cannot find a local copy and conda_exec is not
-  # configured.
-  #conda_auto_init: true
+  # configured. The default is true if running Galaxy from source, and
+  # false if running from installed packages.
+  #conda_auto_init: false
 
   # You must set this to true if conda_prefix and job_working_directory
   # are not on the same volume, or some conda dependencies will fail to
@@ -338,7 +339,7 @@ base_app_main: &BASE_APP_MAIN
   # external tooling.
   # The value of this option will be resolved with respect to
   # <cache_dir>.
-  short_term_storage_dir: '/data/jwd04/short_term_web_storage'
+  short_term_storage_dir: "{{ short_term_web_storage_dir }}"
 
   # Default duration before short term web storage files will be cleaned
   # up by Galaxy tasks (in seconds). The default duration is 1 day.
@@ -377,15 +378,6 @@ base_app_main: &BASE_APP_MAIN
   # Configured user file source templates embedded into Galaxy's config.
   #file_source_templates: null
 
-  # Configure URIs for user object stores to use either the object ID
-  # ('id') or UUIDs ('uuid'). Either is fine really, Galaxy doesn't
-  # typically expose database objects by 'id' but there isn't any
-  # obvious disadvantage to doing it in this case and it keeps user
-  # exposed URIs much smaller. The default of UUID feels a little more
-  # like a typical way to do this within Galaxy though. Do not change
-  # this value once user object stores have been created.
-  #user_config_templates_index_by: uuid
-
   # User defined object stores and file sources are saved in the
   # database with their last valid configuration. It may be the case
   # that the admin changes file source and object store templates over
@@ -422,7 +414,7 @@ base_app_main: &BASE_APP_MAIN
   # If this is set to None, the default container resolvers loaded is
   # determined by enable_mulled_containers. For available options see
   # https://docs.galaxyproject.org/en/master/admin/container_resolvers.html
-  container_resolvers_config_file: "{{ galaxy_config_dir }}/container_resolvers_conf.xml"
+  container_resolvers_config_file: "{{ galaxy_config_dir }}/container_resolvers_conf.yml"
 
   # Rather than specifying a container_resolvers_config_file, the
   # definition of the resolvers to enable can be embedded into Galaxy's
@@ -570,7 +562,7 @@ base_app_main: &BASE_APP_MAIN
   # directories will be created.
   # The value of this option will be resolved with respect to
   # <data_dir>.
-  job_working_directory: /data/jwd04/main
+  job_working_directory: "{{ job_working_root_dir }}/main/"
 
   # Mako templates are compiled as needed and cached for reuse, this
   # directory is used for the cache
@@ -599,12 +591,13 @@ base_app_main: &BASE_APP_MAIN
   # generated commands run in sh.
   #default_job_shell: /bin/bash
 
-  # Whether to enable the tool document cache. This cache stores
-  # expanded XML strings. Enabling the tool cache results in slightly
-  # faster startup times. The tool cache is backed by a SQLite database,
-  # which cannot be stored on certain network disks. The cache location
-  # is configurable with the ``tool_cache_data_dir`` tag in tool config
-  # files.
+  # This option is deprecated, and the tool document cache will be
+  # removed in the next release. Whether to enable the tool document
+  # cache. This cache stores expanded XML strings. Enabling the tool
+  # cache results in slightly faster startup times. The tool cache is
+  # backed by a SQLite database, which cannot be stored on certain
+  # network disks. The cache location is configurable with the
+  # ``tool_cache_data_dir`` tag in tool config files.
   #enable_tool_document_cache: false
 
   # Directory in which the toolbox search index is stored. The value of
@@ -729,7 +722,7 @@ base_app_main: &BASE_APP_MAIN
   # it overrides any other objectstore settings.
   # The value of this option will be resolved with respect to
   # <config_dir>.
-  object_store_config_file: "{{ galaxy_config_dir }}/object_store_conf.xml"
+  object_store_config_file: "{{ galaxy_config_dir }}/object_store_conf.yml"
 
   # Rather than specifying an object_store_config_file, the object store
   # configuration can be embedded into Galaxy's config with this option.
@@ -753,7 +746,7 @@ base_app_main: &BASE_APP_MAIN
   # 'inprocess' otherwise. This option serves as the default for all
   # object stores and can be overridden on a per object store basis (but
   # don't - just setup tmpwatch for all relevant cache paths).
-  #object_store_cache_monitor_driver: auto
+  object_store_cache_monitor_driver: external
 
   # For object store cache monitoring done by Galaxy, this is the
   # interval between cache checking steps. This is used by both
@@ -761,16 +754,16 @@ base_app_main: &BASE_APP_MAIN
   # the celery task if it is configured (by setting enable_celery_tasks
   # to true and not setting object_store_cache_monitor_driver to
   # external).
-  #object_store_cache_monitor_interval: 600
+  object_store_cache_monitor_interval: 172800 # 48h
 
   # Default cache path for caching object stores if cache not configured
   # for that object store entry.
   # The value of this option will be resolved with respect to
   # <cache_dir>.
-  object_store_cache_path: '/data/jwd02f/s3_object_store_cache'
+  object_store_cache_path: "{{ object_store_cache_dir }}"
 
-  # Default cache size for caching object stores if cache not configured
-  # for that object store entry.
+  # Default cache size, in GB, for caching object stores if the cache is
+  # not configured for that object store entry.
   object_store_cache_size: 10000
 
   # Set this to true to indicate in the UI that a user's object store
@@ -881,6 +874,46 @@ base_app_main: &BASE_APP_MAIN
   # <config_dir>.
   #email_domain_allowlist_file: null
 
+  # E-mail ban file is used to specify email addresses that have been
+  # banned. If a user attempts to register a new account using an email
+  # address listed in this file, registration will be denied. This file
+  # does not affect user sign-in. Email addresses are matched against a
+  # canonical address representation based on rules defined in
+  # <canonical_email_rules>. The file should include one email address
+  # per line. Lines starting with the "#" character are ignored.
+  # Example value "banned_emails.conf"
+  # The value of this option will be resolved with respect to
+  # <config_dir>.
+  #email_ban_file: null
+
+  # Specifies how email addresses are reduced to their canonical form by
+  # assigning rules to email service domains and domain aliases.
+  # Available rules - ignore_case   Values are not case-sensitive
+  # (RickDeckard@foo.cOM == rickdeckard@foo.com) - ignore_dots   Periods
+  # in the local-part of an email address are ignored
+  # (rick.deckard@foo.com == rickdeckard@foo.com) - sub_addressing
+  # Suffixes prefixed with <sub_addressing_delim> in the local-part of
+  # an email address are ignored   (rickdeckard+anything@foo.com ==
+  # rickdeckard@foo.com if delimiter is the character '+')
+  #canonical_email_rules:
+  #  all:
+  #    ignore_case: false
+  #    ignore_dots: false
+  #    sub_addressing: false
+  #    sub_addressing_delim: +
+  #  gmail.com:
+  #    aliases:
+  #    - googlemail.com
+  #    ignore_case: true
+  #    ignore_dots: true
+  #    sub_addressing: true
+  #  proton.me:
+  #    aliases:
+  #    - pm.me
+  #    - protonmail.com
+  #    ignore_case: true
+  #    sub_addressing: true
+
   # Registration warning message is used to discourage people from
   # registering multiple accounts.  Applies mostly for the main Galaxy
   # instance. If no message specified the warning box will not be shown.
@@ -988,7 +1021,7 @@ base_app_main: &BASE_APP_MAIN
   # `geographical_server_location_code` value is invalid or unsupported.
   # To see a full list of supported locations, visit
   # https://docs.galaxyproject.org/en/master/admin/carbon_emissions.html
-  geographical_server_location_code: DE-BW
+  geographical_server_location_code: DE
 
   # The estimated power usage effectiveness of the data centre housing
   # the server your galaxy instance is running on. This can make carbon
@@ -1013,10 +1046,23 @@ base_app_main: &BASE_APP_MAIN
   # subdomain. Defaults to "/".
   #interactivetools_base_path: /
 
-  # Map for interactivetool proxy.
+  # Map for the interactivetool proxy. Mappings are stored in a SQLite
+  # database file located on this path. As an alternative, you may also
+  # store them in any other RDBMS supported by SQLAlchemy using the
+  # option ``interactivetoolsproxy_map``, which overrides this one.
   # The value of this option will be resolved with respect to
   # <data_dir>.
-  interactivetools_map: "{{ galaxy_mutable_data_dir }}/interactivetools_map.sqlite"
+  #interactivetools_map: interactivetools_map.sqlite
+
+  # Use a database supported by SQLAlchemy as map for the
+  # interactivetool proxy. When this option is set, the value of
+  # ``interactivetools_map`` is ignored. The value of this option must
+  # be a `SQLAlchemy database URL
+  # <https://docs.sqlalchemy.org/en/20/core/engines.html#database-urls>`_.
+  # Mappings are written to the table "gxitproxy" within the database.
+  # This value cannot match ``database_connection`` nor
+  # ``install_database_connection``.
+  interactivetoolsproxy_map: "{{ interactivetools_db_connection }}"
 
   # Prefix to use in the formation of the subdomain or path for
   # interactive tools
@@ -1048,8 +1094,8 @@ base_app_main: &BASE_APP_MAIN
   brand_by_host:
     'usegalaxy.eu': Europe
     'assembly.usegalaxy.eu': Genome Assembly
-    'nanopore': Nanopore
-    'erasmusmc': ErasmusMC
+    'nanopore.usegalaxy.eu': Nanopore
+    'erasmusmc.usegalaxy.eu': ErasmusMC
     'climate.usegalaxy.eu': Climate
     'hicexplorer.usegalaxy.eu': HiCExplorer
     'annotation.usegalaxy.eu': Genome Annotation
@@ -1057,6 +1103,8 @@ base_app_main: &BASE_APP_MAIN
     'metagenomics.usegalaxy.eu': Metagenomics
     'microbiome.usegalaxy.eu': Microbiome
     'microgalaxy.usegalaxy.eu': microGalaxy
+    'microbiology.usegalaxy.eu': Microbiology
+    'biodiversity-genomics.usegalaxy.eu': Biodiversity Genomics
     'rna.usegalaxy.eu': RNA
     'graphclust.usegalaxy.eu': GraphClust
     'ecology.usegalaxy.eu': Ecology
@@ -1068,6 +1116,7 @@ base_app_main: &BASE_APP_MAIN
     'beta.usegalaxy.eu': beta
     'streetscience.usegalaxy.eu': StreetScienceCommunity
     'singlecell.usegalaxy.eu': Single Cell Omics
+    'nubri.usegalaxy.eu': NUBRI-Sudan
     'humancellatlas.usegalaxy.eu': Human Cell Atlas
     'ml.usegalaxy.eu': Machine Learning
     'live.usegalaxy.eu': Live
@@ -1084,6 +1133,7 @@ base_app_main: &BASE_APP_MAIN
     'cancer.usegalaxy.eu': Cancer
     'aqua.usegalaxy.eu': Aqua
     'eirene.usegalaxy.eu': EIRENE
+    'astronomy.usegalaxy.eu': Astronomy
 
 
   # This option has been deprecated, use the `logo_src` instead to
@@ -1251,7 +1301,7 @@ base_app_main: &BASE_APP_MAIN
   # since the upstream server will do it faster on the fly. To enable
   # compression add ``application/zip`` to the proxy's compressable
   # mimetypes.
-  #upstream_gzip: false
+  upstream_gzip: true
 
   # If using the mod-zip module in nginx, use this option to assemble
   # zip archives in nginx. This is preferable over the upstream_gzip
@@ -1277,7 +1327,7 @@ base_app_main: &BASE_APP_MAIN
   # in detail in the documentation linked above.  The upload store is a
   # temporary directory in which files uploaded by the upload module
   # will be placed.
-  nginx_upload_store: "/data/jwd04/nginx_upload/main/uploads"
+  nginx_upload_store: "{{ nginx_upload_dir }}/main/uploads"
 
   # This value overrides the action set on the file upload form, e.g.
   # the web path where the nginx_upload_module has been configured to
@@ -1288,7 +1338,7 @@ base_app_main: &BASE_APP_MAIN
   # upon job completion by remote job runners (i.e. Pulsar) that
   # initiate staging operations on the remote end.  See the Galaxy nginx
   # documentation for the corresponding nginx configuration.
-  nginx_upload_job_files_store: "/data/jwd04/nginx_upload/main/jobfiles"
+  nginx_upload_job_files_store: "{{ nginx_upload_dir }}/main/jobfiles"
 
   # Galaxy can also use nginx_upload_module to receive files staged out
   # upon job completion by remote job runners (i.e. Pulsar) that
@@ -1299,7 +1349,7 @@ base_app_main: &BASE_APP_MAIN
   # The upload store is a temporary directory in which files uploaded by
   # the tus middleware or server for user uploads will be placed.
   # Defaults to new_file_path if not set.
-  tus_upload_store: "/data/jwd04/tus_upload/main"
+  tus_upload_store: "{{ upload_dir_main }}"
 
   # The upload store is a temporary directory in which files uploaded by
   # the tus middleware or server for remote job files (Pulsar) will be
@@ -2070,7 +2120,7 @@ base_app_main: &BASE_APP_MAIN
   # This should point to a directory containing subdirectories matching
   # users' identifier (defaults to e-mail), where Galaxy will look for
   # files.
-  ftp_upload_dir: /data/jwd01/incoming
+  ftp_upload_dir: "{{ ftp_upload_dir }}"
 
   # User attribute to use as subdirectory in calculating default
   # ftp_upload_dir pattern. By default this will be email so a user's
@@ -2110,10 +2160,6 @@ base_app_main: &BASE_APP_MAIN
   # <config_dir>.
   job_metrics_config_file: "{{ galaxy_config_dir }}/job_metrics_conf.yml"
 
-  # This option allows users to see the job metrics (except for
-  # environment variables).
-  expose_potentially_sensitive_job_metrics: true
-
   # Rather than specifying a job_metrics_config_file, the definition of
   # the metrics to enable can be embedded into Galaxy's config with this
   # option. This has no effect if a job_metrics_config_file is used.
@@ -2126,7 +2172,7 @@ base_app_main: &BASE_APP_MAIN
 
   # This option allows users to see the job metrics (except for
   # environment variables).
-  #expose_potentially_sensitive_job_metrics: false
+  expose_potentially_sensitive_job_metrics: true
 
   # Enable the API for sample tracking
   #enable_legacy_sample_tracking_api: false
@@ -2239,6 +2285,18 @@ base_app_main: &BASE_APP_MAIN
   # throughput is necessary, but doing so can increase CPU usage of
   # handler processes. Float values are allowed.
   #workflow_monitor_sleep: 1.0
+
+  # In which cases Galaxy should calculate a hash for a new dataset.
+  # Dataset hashes can be used by the Galaxy job cache/search to check
+  # if job inputs match. Setting the 'enable_celery_tasks' option to
+  # true is also required for dataset hash calculation. Possible values
+  # are: 'always', 'upload' (the default), 'never'. If set to 'upload',
+  # the hash is calculated only for the outputs of upload jobs.
+  #calculate_dataset_hash: upload
+
+  # Hash function to use if 'calculate_dataset_hash' is enabled.
+  # Possible values are: 'md5', 'sha1', 'sha256', 'sha512'
+  #hash_function: sha256
 
   # Determines how metadata will be set. Valid values are `directory`,
   # `extended`, `directory_celery` and `extended_celery`. In extended
@@ -2444,6 +2502,19 @@ base_app_main: &BASE_APP_MAIN
   # <config_dir>.
   workflow_schedulers_config_file: "{{ galaxy_config_dir  }}/workflow_schedulers_conf.xml"
 
+  # Workflows launched with URI/URL inputs that are not marked as
+  # 'deferred' are "materialized" (or undeferred) by the workflow
+  # scheduler. This might be a lengthy process. Setting this to 'True'
+  # will place the invocation back in the queue after materialization
+  # before scheduling the workflow so it is less likely to starve other
+  # workflow scheduling. Ideally, Galaxy would allow more fine grain
+  # control of handlers but until then, this provides a way to tip the
+  # balance between "doing more work" and "being more fair". The default
+  # here is pretty arbitrary - it has been to False to optimize Galaxy
+  # for automated, single user applications where "fairness" is mostly
+  # irrelevant.
+  #workflow_scheduling_separate_materialization_iteration: false
+
   # If using job concurrency limits (configured in job_config_file),
   # several extra database queries must be performed to determine the
   # number of jobs a user has dispatched to a given destination.  By
@@ -2573,6 +2644,16 @@ base_app_main: &BASE_APP_MAIN
   # as threshold (above threshold: regular select fields will be used)
   #select_type_workflow_threshold: -1
 
+  # API key for an AI provider. AI provider is Openai By default
+  # (https://openai.com/) to enable the wizard (or more?)
+  openai_api_key: "{{ openai_api_key }}"
+
+  # AI API base URL. Needs to be OpenAI compatible, defaults to OpenAI
+  #ai_api_base_url: null
+
+  # AI model to enable the wizard.
+  #ai_model: gpt-4o
+
   # Allow the display of tool recommendations in workflow editor and
   # after tool execution. If it is enabled and set to true, please
   # enable 'tool_recommendation_model_path' as well
@@ -2684,7 +2765,66 @@ base_app_main: &BASE_APP_MAIN
   # This requires the help_forum_api_url to be set.
   enable_help_forum_tool_panel_integration: true
 
-  # TODO(hxr): UNDOCUMENTED
+  # Directory to store temporary files for file sources. This defaults
+  # to new_file_path if not set.
+  file_source_temp_dir: "{{ generic_tmp_dir }}"
+
+  # Default value for use_temp_files for webdav plugins that don't
+  # explicitly declare this.
+  #file_source_webdav_use_temp_files: true
+
+  # Number of seconds before file source content listings are refreshed.
+  # Shorter times will result in more queries while browsing a file
+  # sources. Longer times will result in fewer requests to file sources
+  # but outdated contents might be displayed to the user. Currently only
+  # affects s3fs file sources.
+  #file_source_listings_expiry_time: 60
+
+  # Set the default value in the Admin UI to automatically install tool
+  # dependencies when installing tools from the Tool Shed or not. Tool
+  # dependencies are the software packages and libraries required for a
+  # tool to function properly. Tool dependencies are typically specified
+  # in the tool's XML configuration using <requirement> tags. Galaxy can
+  # automatically install these dependencies if the tool_dependency_dir
+  # is properly configured in the galaxy.yml file. This option should be
+  # set to false if containerized versions of tools are used.
+  #install_tool_dependencies: true
+
+  # Set the default value in the Admin UI to automatically install
+  # repository dependencies when installing tools from the Tool Shed.
+  # Repository dependencies are other Tool Shed repositories that the
+  # tool being installed depends on and they are commonly used with tool
+  # suites. Repository dependencies ensure that all necessary components
+  # are installed for the tool (or suite) to work correctly within the
+  # Galaxy environment.
+  #install_repository_dependencies: true
+
+  # Set the default value in the Admin UI to automatically install
+  # resolver dependencies when installing tools from the Tool Shed.
+  # Resolver dependencies is a mechanism used by Galaxy to locate and
+  # make available the required software packages for Galaxy tools.
+  # Galaxy uses dependency resolvers (e.g., Conda) to determine how to
+  # satisfy these dependencies. This option should be set to false if
+  # containerized versions of tools are used.
+  #install_resolver_dependencies: true
+
+  # Enables the cleanup of failed Galaxy job's working directories. Runs
+  # in a Celery task.
+  #enable_failed_jobs_working_directory_cleanup: false
+
+  # The number of days to keep failed Galaxy job's working directories
+  # before attempting to delete them if
+  # enable_failed_jobs_working_directory_cleanup is ``true``. Runs in a
+  # Celery task.
+  #failed_jobs_working_directory_cleanup_days: 5
+
+  # The interval in seconds between attempts to delete all failed Galaxy
+  # job's working directories from the filesystem (every 24 hours by
+  # default) if enable_failed_jobs_working_directory_cleanup is
+  # ``true``. Runs in a Celery task.
+  #failed_jobs_working_directory_cleanup_interval: 86400
+
+ # TODO(hxr): UNDOCUMENTED
   ucsc_build_sites: "{{ galaxy_config_dir }}/ucsc_build_sites.txt"
 
 galaxy_config_hash:

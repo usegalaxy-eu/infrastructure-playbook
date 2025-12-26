@@ -1,0 +1,36 @@
+---
+# Important! This defines which image the bare metal cluster boots.
+# On the node or in Jenkins you can map the revision id (=Jenkins build number) to a vgcn commit
+vgcn_image_revision_id: 186
+
+dnbd3_is_proxy: false
+netboot_basepath: /netboot
+dnbd3_base_path: "{{ netboot_basepath }}/images"
+tftpboot_path: "{{ netboot_basepath }}/boot"
+http_user: apache
+http_group: apache
+apache_listen_port: 80
+apache_remove_default_vhost: true
+apache_vhosts:
+  - servername: "dnbd3-primary.galaxyproject.eu"
+    serveralias: "{{ hostvars['dnbd3-primary.galaxyproject.eu']['ansible_default_ipv4']['address'] }}"
+    documentroot: "{{ netboot_basepath }}/http"
+http_path: "{{ apache_vhosts[0].documentroot }}/netboot"
+# Firewall
+firewall_ip_prefix_trusted:
+  - 10.4.68.0/24
+firewall_internal_services:
+  - ssh
+firewall_public_services: []
+
+# Autofs
+autofs_conf_files:
+  usrlocal:
+    - /netboot       -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/galaxy-boot
+autofs_service:
+  install: true
+  enable: true
+nfs_kernel_tuning: true
+
+autofs_mount_points:
+  - usrlocal

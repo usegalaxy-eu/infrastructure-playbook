@@ -1,7 +1,14 @@
 ---
 hostname: traefik.flyingrabb.it
-
+galaxy_active_users_script: /usr/local/bin/galaxy_active_users
 telegraf_plugins_extra:
+  galaxy_active_users:
+    plugin: 'exec'
+    config:
+      - commands = ["{{ galaxy_active_users_script }}"]
+      - timeout = "15s"
+      - data_format = "influx"
+      - interval = "1m"
   listen_galaxy_routes:
     plugin: "prometheus"
     config:
@@ -71,6 +78,8 @@ traefik_containers:
       - --global.checkNewVersion=false
       - --entryPoints.web.address=:80
       - --entryPoints.websecure.address=:443
+      - --entryPoints.amqps.address=:5671
+      - --entryPoints.influxdb.address=:8086
       - --entryPoints.web.http.redirections.entryPoint.to=websecure
       - --entryPoints.web.http.redirections.entryPoint.scheme=https
       - --entryPoints.metrics.address=:8082
@@ -148,8 +157,16 @@ traefik_containers:
         published_port: 443
         protocol: tcp
         mode: host
+      - target_port: 5671
+        published_port: 5671
+        protocol: tcp
+        mode: host
       - target_port: 8082
         published_port: 8082
+        protocol: tcp
+        mode: host
+      - target_port: 8086
+        published_port: 8086
         protocol: tcp
         mode: host
 

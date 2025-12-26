@@ -4,7 +4,7 @@
   become: true
   become_user: root
   vars_files:
-    - group_vars/all.yml
+    - secret_group_vars/all.yml
     - secret_group_vars/sentry.yml
     - mounts/mountpoints.yml
     - mounts/dest/all.yml
@@ -13,8 +13,15 @@
         zone: public
         port: 1080-1081/tcp
         permanent: true
+        immediate: true
         state: enabled
-
+    - name: Copy Rustus request monitoring script
+      ansible.builtin.copy:
+        content: "{{ rustus_monitor_requests }}"
+        dest: "{{ rustus_monitor_requests_path }}"
+        mode: "0755"
+        owner: root
+        group: root
   roles:
     - role: usegalaxy_eu.handy.os_setup
       vars:
@@ -23,7 +30,15 @@
         enable_kernel_5: true
         enable_install_software: true
     - influxdata.chrony
+    - dj-wasabi.telegraf
     ## Filesystems
     - usegalaxy-eu.autofs     # Setup the mount points which will be needed later
 
     - usegalaxy_eu.rustus
+  post_tasks:
+    - name: add telegraf to systemd-journal
+      ansible.builtin.user:
+        name: telegraf
+        groups:
+          - systemd-journal
+        append: true

@@ -118,19 +118,6 @@ destinations:
         - condor-tpv
         - singularity
 
-  pulsar_sanjay_tpv:
-    inherits: pulsar_default
-    runner: pulsar_sanjay_runner
-    max_accepted_cores: 8
-    max_accepted_mem: 15
-    scheduling:
-      require:
-        - sanjay-pulsar
-      accept:
-        - docker
-        - condor-tpv
-        - singularity
-
   pulsar_sk01_tpv:
     inherits: pulsar_default
     runner: pulsar_eu_sk01
@@ -228,7 +215,7 @@ destinations:
         - type: singularity
           shell: "/bin/bash"
           resolve_dependencies: true
-          identifier: "/data/0/singularity_base_images/centos:8.3.2011"
+          identifier: "{{ misc.misc07.path }}/singularity_base_images/centos:8.3.2011"
     scheduling:
       require:
         - singularity

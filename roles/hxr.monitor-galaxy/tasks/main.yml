@@ -1,6 +1,6 @@
 ---
 - name: "Send Galaxy job queue states stats"
-  copy:
+  ansible.builtin.copy:
     src: "galaxy_job_queue_states.sh"
     dest: "/usr/bin/galaxy_job_queue_states_stats"
     owner: root
@@ -8,7 +8,7 @@
     mode: 0755
 
 - name: "Send Galaxy jobs per handler stats"
-  copy:
+  ansible.builtin.copy:
     src: "galaxy_jobs_per_handler.sh"
     dest: "/usr/bin/galaxy_jobs_per_handler_stats"
     owner: root
@@ -16,9 +16,49 @@
     mode: 0755
 
 - name: Copy the galaxy tool-usage script
-  copy:
+  ansible.builtin.copy:
     src: "galaxy_tool_usage.sh"
     dest: "/usr/bin/galaxy_tool_usage"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Copy the galaxy monthly active users script
+  ansible.builtin.copy:
+    src: "galaxy_monthly_active_users.sh"
+    dest: "/usr/bin/galaxy_monthly_active_users"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Copy the galaxy file source utilisation script
+  ansible.builtin.copy:
+    src: "galaxy_user_file_source_utilisation.sh"
+    dest: "/usr/bin/galaxy_user_file_source_utilisation"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Copy the galaxy file source utilisation script
+  ansible.builtin.copy:
+    src: "galaxy_user_object_store_utilisation.sh"
+    dest: "/usr/bin/galaxy_user_object_store_utilisation"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Copy the galaxy tool-usage over time script
+  ansible.builtin.copy:
+    src: "galaxy_tool_usage_over_time.sh"
+    dest: "/usr/bin/galaxy_tool_usage_over_time"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Copy the galaxy wizard utilization and OpenAI costs-completion script
+  ansible.builtin.copy:
+    src: "galaxy_wizard_openai_utilization_and_costs.py"
+    dest: "/usr/bin/galaxy_wizard_openai_utilization_and_costs.py"
     owner: root
     group: root
     mode: 0755

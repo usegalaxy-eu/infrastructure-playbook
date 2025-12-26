@@ -8,8 +8,6 @@
     - secret_group_vars/all.yml
     - mounts/dest/all.yml
     - mounts/mountpoints.yml
-    - group_vars/maintenance.yml
-    - group_vars/all.yml
   collections:
     - devsec.hardening
   handlers:
@@ -43,15 +41,7 @@
       loop:
         - '{{ galaxy_user.name }}'
         - 'telegraf'
-    - name: Set authorized SSH key (galaxy user)
-      ansible.posix.authorized_key:
-        user: '{{ galaxy_user.name }}'
-        state: present
-        key: '{{ item }}'
-      loop:
-        - 'ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBOBINXdjILF6x3WuppXyq6J2a2oSLR6waZ6txgjYJogHdIKPbI0TdReCv4EVxxYRY/NqGpHbjkqfRTsf2VgoU3U= mk@galaxy-mira'
-        - 'ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBACB5Q5blymkTIRSzVzXITOGvBuI7W0L9Ykwfz8LJGPraaGVPiezzFGvjhqwX+EyCqQPt7JprR5mimJRw/JN3nBXWAHjekvmB5FuILkk6m5fOiQJ5QhRMyQ5GfxODAvGbHpTuWHbYJLWD5fhcboKPxlXOWy4xY9kDZVuQvEKisNKYBsFLA== sanjay'
-        - 'ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBABRaLHL8mgW86rbtdUh6TY4rs7/la8hAGeSQ3jBF7LMwYZnbS32YDMYvDq3KgNu5WqSMFvkxNm3vfTAbd8CXBfakwDBFBaD9kO0b2t4/p4VoFUsd3B2OvmTR7Bsg7OxTGJJ7aUP/SzTg+Z4NzsmHwQ9h31gfI7n/buZD4S1edQke19Y6w== dominguj@informatik.uni-freiburg.de'
+
     - name: rsyslog configuration
       copy:
         content: |
@@ -117,6 +107,13 @@
       with_items:
         - 9628/tcp # HTCondor shared port
         - 514/tcp  # rsyslog
+    - name: Add the OpenAI API key to the telegraf user's bashrc file
+      ansible.builtin.lineinfile:
+        path: "/etc/telegraf/.bashrc"
+        regexp: "^export OPENAI_API_KEY_TELEGRAF"
+        line: 'export OPENAI_API_KEY_TELEGRAF="{{ openai_api_key_telegraf }}"'
+        create: true
+      no_log: true
   roles:
     - usegalaxy-eu.vgcn-monitoring
     - usegalaxy_eu.handy.os_setup
@@ -140,7 +137,10 @@
     # - usegalaxy-eu.fix-user-quotas
     - usegalaxy-eu.remove-orphan-condor-jobs
     - ssh_hardening
+    - usegalaxy-eu.job-radar-stats-influxdb
     - dj-wasabi.telegraf
     # - usegalaxy-eu.fix-stop-ITs
     - usegalaxy-eu.logrotate
     - usegalaxy_eu.walle
+    - usegalaxy_eu.ntfy-notifications
+    - l3d.restic

@@ -1,0 +1,58 @@
+---
+- name: TPV Broker
+  hosts: tpvbroker
+  become: true
+  become_user: root
+  vars:
+    hostname: '{{ inventory_hostname }}'
+    nginx_conf_user: galaxy
+    server_names:
+      - '{{ inventory_hostname }}'
+  vars_files:
+    - group_vars/tpv-broker.yml
+    - secret_group_vars/all.yml
+    - secret_group_vars/aws.yml
+  collections:
+    - devsec.hardening
+  pre_tasks:
+    - name: Install Dependencies
+      package:
+        name:
+          [
+            'git',
+            'python3-virtualenv',
+            'firewalld',
+          ]
+        state: present
+    - name: Enable and start firewalld
+      service:
+        name: firewalld
+        state: started
+        enabled: true
+    - name: Allow http and https services
+      firewalld:
+        service: '{{ item }}'
+        permanent: true
+        state: enabled
+        immediate: true
+      loop:
+        - http
+        - https
+  post_tasks:
+    - name: Append some users to the systemd-journal group
+      user:
+        name: '{{ item }}'
+        groups: systemd-journal
+        append: true
+      loop:
+        - '{{ galaxy_user.name }}'
+
+  roles:
+    - usegalaxy_eu.handy.os_setup
+    - geerlingguy.repo-epel
+    - galaxyproject.miniconda
+    - influxdata.chrony
+    - hxr.aws-cli
+    - usegalaxy_eu.ansible_nginx_upload_module
+    - usegalaxy-eu.nginx
+    - usegalaxy_eu.ansible_tpv_broker

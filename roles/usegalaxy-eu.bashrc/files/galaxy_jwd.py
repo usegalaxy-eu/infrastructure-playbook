@@ -162,6 +162,19 @@ def main():
     )
 
     object_store_conf = get_object_store_conf_path(galaxy_config_file)
+
+    # Apply the correct parser based on the file extension of the object store
+    if object_store_conf.endswith(".xml"):
+        parse_object_store = parse_object_store_xml
+    elif object_store_conf.endswith((".yml", ".yaml")):
+        parse_object_store = parse_object_store_yaml
+    else:
+        raise ValueError(
+            f"Unsupported object store configuration file format: "
+            f"{object_store_conf}"
+        )
+
+    # Parse the object store configuration file
     backends = parse_object_store(object_store_conf)
 
     # Add pulsar staging directory (runner: pulsar_embedded) to backends
@@ -263,13 +276,13 @@ def extract_password_from_pgpass(pgpass_file: str) -> str:
 
 
 def get_object_store_conf_path(galaxy_config_file: str) -> str:
-    """Get the path to the object_store_conf.xml file.
+    """Get the path to the object_store_conf file.
 
     Args:
         galaxy_config_file: Path to the galaxy.yml file.
 
     Returns:
-        Path to the object_store_conf.xml file.
+        Path to the object_store_conf file.
 
     Raises:
         ValueError: The object store configuration file specified in the
@@ -281,14 +294,14 @@ def get_object_store_conf_path(galaxy_config_file: str) -> str:
             if line.strip().startswith("object_store_config_file"):
                 object_store_conf = line.split(":")[1].strip()
 
-                # Check if the object_store_conf.xml file exists
+                # Check if the object_store_conf file exists
                 if not os.path.isfile(object_store_conf):
                     raise ValueError(f"{object_store_conf} does not exist")
 
                 return object_store_conf
 
 
-def parse_object_store(object_store_conf: str) -> dict:
+def parse_object_store_xml(object_store_conf: str) -> dict:
     """Get the path of type 'job_work' from the extra_dir's for each backend.
 
     Args:
@@ -301,11 +314,40 @@ def parse_object_store(object_store_conf: str) -> dict:
     backends = {}
     for backend in dom.getElementsByTagName("backend"):
         backend_id = backend.getAttribute("id")
-        backends[backend_id] = {}
+        backend_type = backend.getAttribute("type")
+        backends[backend_id] = {"type": backend_type, "job_work_path": None}
+
         # Get the extra_dir's path for each backend if type is "job_work"
         for extra_dir in backend.getElementsByTagName("extra_dir"):
             if extra_dir.getAttribute("type") == "job_work":
-                backends[backend_id] = extra_dir.getAttribute("path")
+                backends[backend_id]["job_work_path"] = extra_dir.getAttribute(
+                    "path"
+                )
+    return backends
+
+
+def parse_object_store_yaml(object_store_conf: str) -> dict:
+    """Get the path of type 'job_work' from the extra_dir's for each backend.
+
+    Args:
+        object_store_conf: Path to the object_store_conf.yml file.
+
+    Returns:
+        Dictionary of backend id and path of type 'job_work'.
+    """
+    with open(object_store_conf, "r", encoding="utf-8") as file:
+        config = yaml.safe_load(file)
+
+    backends = {}
+    for backend in config.get("backends", []):
+        backend_id = backend.get("id")
+        backend_type = backend.get("type")
+        backends[backend_id] = {"type": backend_type, "job_work_path": None}
+
+        # Get the extra_dir's path for each backend if type is "job_work"
+        for extra_dir in backend.get("extra_dirs", []):
+            if extra_dir.get("type") == "job_work":
+                backends[backend_id]["job_work_path"] = extra_dir.get("path")
     return backends
 
 
@@ -346,20 +388,24 @@ def decode_path(
     Args:
         job_id: Job id.
         metadata: List of object_store_id and update_time.
-        backends_dict: Dictionary of backend id and path of type 'job_work'.
+        backends_dict: Dictionary of backend id with its type and path of type
+            'job_work'.
         job_runner_name: Name of the job runner. Defaults to None.
 
     Returns:
         Path to the JWD.
     """
     job_id = str(job_id)
+    object_store_id = metadata[0]
+    backend_info = backends_dict.get(object_store_id)
 
     # Check if object_store_id exists in our object store config
-    if metadata[0] not in backends_dict.keys():
-        raise ValueError(
-            f"Object store id '{metadata[0]}' does not exist in the "
-            f"object_store_conf.xml file."
+    if not backend_info:
+        print(
+            f"Skipping backend '{object_store_id}' as it does not exist in"
+            f" the object_store_conf file."
         )
+        return None
 
     # Pulsar embedded jobs uses the staging directory and this has a different
     # path structure
@@ -367,7 +413,7 @@ def decode_path(
         jwd_path = f"{backends_dict['pulsar_embedded']}/{job_id}"
     else:
         jwd_path = (
-            f"{backends_dict[metadata[0]]}/"
+            f"{backend_info['job_work_path']}/"
             f"0{job_id[0:2]}/{job_id[2:5]}/{job_id}"
         )
 

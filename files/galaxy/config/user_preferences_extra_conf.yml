@@ -7,16 +7,6 @@ preferences:
               type: text
               required: False
 
-    use_cached_job:
-        description: Do you want to be able to re-use previously run jobs ?
-        inputs:
-            - name: use_cached_job_checkbox
-              label: Do you want to be able to re-use  equivalent jobs ?
-              type: boolean
-              checked: false
-              value: false
-              help: If you select yes, you will be able to select for each tool and workflow run if you would like to use this feature.
-
     localization:
         description: Localization
         inputs:
@@ -32,75 +22,17 @@ preferences:
                   - [Français, fr]
                   - [日本語, ja]
 
-    # Used in file_sources_conf.yml
-    dropbox:
-        description: Your Dropbox account
-        inputs:
-            - name: access_token
-              label: Dropbox access token
-              type: password
-              required: False
-
-    # Used in file_sources_conf.yml
-    nextcloud:
-        description: Your Personal Nextcloud / ownCloud account
-        inputs:
-            - name: url
-              label: Server Domain (e.g. https://myowncloud.org)
-              type: text
-              required: False
-            - name: root
-              label: Server Path (should end with /remote.php/webdav, e.g. /a/sub/path/remote.php/webdav)
-              type: text
-              required: False
-            - name: username
-              label: Username
-              type: text
-              required: False
-            - name: password
-              label: Password
-              type:  password
-              # for storing the password in a vault (instead of plaintext in the DB)
-              # store: vault
-              required: False
-
-    zenodo:
-        description: Your Zenodo Integration Settings
+    invenio:
+        description: Your Invenio RDM Integration Settings
         inputs:
             - name: token
-              label: Personal Access Token used to create draft records and to upload files. You can manage your tokens at https://zenodo.org/account/settings/applications/
+              label: Personal Token used to create draft records and to upload files
               type: secret
               store: vault # Requires setting up vault_config_file in your galaxy.yml
               required: False
             - name: public_name
               label: Creator name to associate with new records (formatted as "Last name, First name"). If left blank "Anonymous Galaxy User" will be used. You can always change this by editing your record directly.
               type: text
-              required: False
-
-    zenodo_sandbox:
-        description: Your Zenodo Sandbox Integration Settings (TESTING ONLY)
-        inputs:
-            - name: token
-              label: Personal Access Token used to create draft records and to upload files. You can manage your tokens at https://sandbox.zenodo.org/account/settings/applications/
-              type: secret
-              store: vault # Requires setting up vault_config_file in your galaxy.yml
-              required: False
-            - name: public_name
-              label: Creator name to associate with new records (formatted as "Last name, First name"). If left blank "Anonymous Galaxy User" will be used. You can always change this by editing your record directly.
-              type: text
-              required: False
-
-    # Used in file_sources_conf.yml
-    onedata:
-        description: Your Onedata account
-        inputs:
-            - name: onezone_domain
-              label: Domain of the Onezone service (e.g. "demo.onedata.org")
-              type: text
-              required: False
-            - name: access_token
-              label: Your access token, suitable for REST API access in a Oneprovider service
-              type: password
               required: False
 
     distributed_arc_compute:
@@ -124,7 +56,6 @@ preferences:
                   # - ["Joint remote GPU cluster using docker engine - Galaxy will decide where to put your job", remote_condor_cluster_gpu_docker]
                   # - ["Joint remote CPU cluster using singularity engine - Galaxy will decide where to put your job", remote_condor_cluster_singularity]
                   - ["Freiburg (Germany) - Mira's test Pulsar", mira-pulsar]
-                  - ["Freiburg (Germany) - Sanjay's test Pulsar", sanjay-pulsar]
                   # - ["Freiburg (Germany) - de.NBI cloud - docker", remote_cluster_mq_docker_de01]
                   #- ["Freiburg (Germany) - de.NBI cloud - singularity, 2wd true", remote_cluster_mq_singularity_2wdtrue_de01]
                   # - ["Tübingen (Germany) - de.NBI cloud", remote_cluster_mq_de02]
@@ -132,9 +63,8 @@ preferences:
                   # - ["Freiburg (Germany) - de.NBI cloud GPU - docker", remote_cluster_mq_docker_de03]
                   - ["Rennes (France) - GenOuest bioinformatics", fr-pulsar]
                   - ["Bari (Italy) - RECAS", it-pulsar]
-                  - ["Bari (Italy) - RECAS 2", it02-pulsar]
-                  # - ["Palermo (Italy) - GARR, 2wd true", remote_cluster_mq_2wdtrue_it03]
-                  # - ["Palermo (Italy) - GARR, 2wd falsef", remote_cluster_mq_2wdfalse_it03]
+                  - ["CINECA (Italy)", it02-pulsar]
+                  - ["GARR (Italy)", it03-pulsar]
                   # - ["Lisbon (Portugal) - Tecnico ULisboa", remote_cluster_mq_pt01]
                   # - ["Oxfordshire (UK) - Diamond Light Source", remote_cluster_mq_uk01]
                   # - ["Oxfordshire (UK) - Diamond Light Source - GPUs on docker", remote_cluster_mq_docker_uk01]
@@ -147,7 +77,9 @@ preferences:
                   - ["Ankara (Turkey) - TÜBİTAK ULAKBİM", tubitak-pulsar]
                   - ["Krakow (Poland) - Cyfronet", pl-pulsar]
                   - ["Heraklion-Crete (Greece) - HCMR", hcmr-gr-pulsar]
-            
+                  - ["EOSC EU Node 01", eosc-eu-node-01-pulsar]
+                  - ["Clermont-Ferrand (France) - UCA", uca-pulsar]
+
     ega_account:
         description: Your EGA (European Genome Archive) account
         inputs:
@@ -189,26 +121,6 @@ preferences:
               type: text
               required: False
               value: https://auth.quantum-computing.ibm.com/api
-
-    generic_s3:
-        description: Your personal S3 account for data import
-        inputs:
-            - name: endpoint_url
-              label: Server Domain (e.g. byos.vm.fedcloud.eu)
-              type: text
-              required: False
-            - name: bucket
-              label: S3 Bucket (e.g. my-s3-bucket)
-              type: text
-              required: False
-            - name: secret
-              label: S3 secret (e.g. SuPerP4ssWord)
-              type: password
-              required: False
-            - name: key
-              label: S3 access key (e.g. project01)
-              type: password
-              required: False
 
     # Require to attach pulsar endpoint to the Pulsar Network
     byoc_pulsar:

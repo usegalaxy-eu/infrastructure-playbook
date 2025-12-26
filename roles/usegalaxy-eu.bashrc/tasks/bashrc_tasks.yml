@@ -71,7 +71,7 @@
                           fi
           done
           JID=$1
-          WD=$(dirname `condor_q -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || dirname `condor_history -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || find "{{ galaxy_config['galaxy']['job_working_directory'] }}""/0"${JID:0:2}"/"${JID:2:3} -maxdepth 1 -type d -name ${JID})
+          WD=$(dirname `condor_q -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || dirname `condor_history -autoformat Cmd ClusterId | grep ${JID} | cut -f1 -d' '` || find "{{ bashrc_galaxy_job_working_directory }}""/0"${JID:0:2}"/"${JID:2:3} -maxdepth 1 -type d -name ${JID})
           cd $WD
           }
 
@@ -102,12 +102,28 @@
           alias glg='journalctl -fu galaxy-gunicorn@* | grep -v -e "/api/upload/hooks" -e "/history/current_history_json"'
           alias glh='journalctl -f -u galaxy-handler@*'
           alias glw='journalctl -f -u galaxy-workflow-scheduler@*'
-          alias cu='journalctl -u galaxy-gunicorn@*.service --since "10 minutes ago" | grep "/history/current_history_json"  | awk "{print \$11}" | sort -u | wc -l'
           alias chg2wd='change_to_wd'
           alias chg2jwd='change_to_jwd'
+          alias g-restart-all='systemctl restart galaxy-handler@* && gxadmin gunicorn handler-restart && systemctl restart galaxy-workflow-scheduler@*'
+
+          alias caj='condor_analyze_job'
+          function condor_analyze_job () {
+              if [ $# -eq 1 ]; then
+                  condor_q -autoformat ClusterID Cmd JobDescription | grep $1 | awk '{print$1}' | xargs -i condor_q --better-analyze {}
+              elif [ $# -eq 2 ]; then
+                  condor_q -autoformat ClusterID Cmd JobDescription | grep $1 | awk '{print$1}' | xargs -i condor_q --better-analyze {} --machine $2
+              else
+                  echo "Pass a CondorID or GalaxyID or a tool name and optionally a RemoteHost to compare ClassAds (e.g. tstimg.bi.privat)"
+              fi
+          }
 
           # finds big files somewhere ;)
           function findbig () {
+          USAGE="Please provide a path and a size (integer, in MB)"
+          if (( $# == 0 )); then
+                  echo $USAGE
+                  return 0;
+          fi
           echo -e "$(find $1 -type f -size +$2M -exec ls -lh {} +)"
           }
 
@@ -120,15 +136,13 @@
         line: "{{ task_item }}"
       loop:
         # ENV's for gxadmin and the galaxy_jwd python script
-        - "export GALAXY_CONFIG_DIR={{ galaxy_config_dir }}"
-        - "export GALAXY_CONFIG_FILE={{ galaxy_config_file }}"
-        - "export GALAXY_LOG_DIR={{ galaxy_log_dir }}"
-        - "export GALAXY_MUTABLE_CONFIG_DIR={{ galaxy_mutable_config_dir }}"
-        - "export GALAXY_ROOT={{ galaxy_server_dir }}"
-        - "export VIRTUAL_ENV={{ galaxy_venv_dir }}"
-        - "export GALAXY_PULSAR_APP_CONF={{ galaxy_pulsar_app_conf }}"
-        - 'export MALWARE_LIB="{{ walle_malware_database_location }}/{{ walle_database_file }}"'
-        - 'export PGPASSFILE="{{ walle_pgpass_file }}"'
+        - "export GALAXY_CONFIG_DIR={{ bashrc_galaxy_config_dir }}"
+        - "export GALAXY_CONFIG_FILE={{ bashrc_galaxy_config_file }}"
+        - "export GALAXY_LOG_DIR={{ bashrc_galaxy_log_dir }}"
+        - "export GALAXY_MUTABLE_CONFIG_DIR={{ bashrc_galaxy_mutable_config_dir }}"
+        - "export GALAXY_ROOT={{ bashrc_galaxy_root }}"
+        - "export VIRTUAL_ENV={{ bashrc_galaxy_venv_dir }}"
+        - "export GALAXY_PULSAR_APP_CONF={{ bashrc_galaxy_pulsar_app_conf }}"
       loop_control:
         loop_var: task_item
 

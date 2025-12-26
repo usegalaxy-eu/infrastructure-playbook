@@ -1,0 +1,358 @@
+---
+- name: UseGalaxy.eu
+  hosts: sn09
+  become: true
+  become_user: root
+  vars:
+    # The full internal name.
+    hostname: sn09.galaxyproject.eu
+    # The nginx user needed into the galaxyproject.nginx role
+    nginx_conf_user: galaxy
+    # This server has multiple CNAMEs that are important. Additionally it
+    # provides proxying for many of the other services run by Galaxy Europe.
+    # These server_names are passed to certbot. They generally should not need
+    # to be updated unless you add a new domain. They *only* work with the
+    # route53 provider, so if we want to do usegalaxy.xy, it may require
+    # refactoring / multiple certbot runs.
+    #
+    #
+    # The best way to expand them is to run the playbook, it will leave a message with the command it would have run (look for `skipped, since /etc/letsencrypt/renewal/usegalaxy.eu.conf exists`)
+    #
+    # Then take this command to the command line (root@sn04) and run it with `--expand`. E.g. (DO NOT COPY PASTE (in case the config changes))
+    #
+    # $ /opt/certbot/bin/certbot certonly --non-interactive --dns-route53 \
+    #     -m security@usegalaxy.eu --agree-tos -d 'usegalaxy.eu,*.usegalaxy.eu,galaxyproject.eu,*.galaxyproject.eu,*.interactivetoolentrypoint.interactivetool.usegalaxy.eu,*.interactivetoolentrypoint.interactivetool.live.usegalaxy.eu,*.interactivetoolentrypoint.interactivetool.test.usegalaxy.eu' --expand
+    # Saving debug log to /var/log/letsencrypt/letsencrypt.log
+    # Credentials found in config file: ~/.aws/config
+    # ....
+    # IMPORTANT NOTES:
+    #  - Congratulations! Your certificate and chain have been saved at:
+    #
+    # And you're done expanding the certs.
+    #
+    # The nginx user needed into the galaxyproject.nginx role
+    server_names:
+      - 'usegalaxy.eu'
+      - '*.usegalaxy.eu'
+      - 'galaxyproject.eu'
+      - '*.galaxyproject.eu'
+      - '*.ep.interactivetool.usegalaxy.eu'
+      - '*.ep.interactivetool.live.usegalaxy.eu'
+      - '*.ep.interactivetool.test.usegalaxy.eu'
+      - '*.aqua.usegalaxy.eu'
+      - '*.ep.interactivetool.aqua.usegalaxy.eu'
+      - '*.ecology.usegalaxy.eu'
+      - '*.ep.interactivetool.ecology.usegalaxy.eu'
+      - '*.earth-system.usegalaxy.eu'
+      - '*.ep.interactivetool.earth-system.usegalaxy.eu'
+      - '*.eirene.usegalaxy.eu'
+      - '*.ep.interactivetool.eirene.usegalaxy.eu'
+  vars_files:
+    - group_vars/sn09/sn09.yml
+    - group_vars/sn09/themes_conf.yml
+    - group_vars/sn09/subdomains.yml
+    - group_vars/sn09/toolmsg.yml
+    - group_vars/tiaas.yml # All of the training infrastructure
+    - group_vars/gxconfig.yml # The base galaxy configuration
+    - group_vars/toolbox.yml # User controlled toolbox
+    - secret_group_vars/sentry.yml # Sentry SDK init url
+    - secret_group_vars/aws.yml # AWS creds
+    - secret_group_vars/pulsar.yml # Pulsar + MQ Connections
+    - secret_group_vars/oidc.yml # OIDC credentials (ELIXIR, keycloak)
+    - secret_group_vars/object_store.yml # Object Store credentils (S3 etc ...)
+    - secret_group_vars/db-main.yml # DB URL + some postgres stuff
+    - secret_group_vars/file_sources.yml # file_sources_conf.yml creds
+    - secret_group_vars/all.yml # All of the other assorted secrets...
+    - secret_group_vars/keys.yml # SSH keys
+    - templates/galaxy/config/job_conf.yml
+    - mounts/dest/all.yml
+    - mounts/mountpoints.yml
+  collections:
+    - devsec.hardening
+  handlers:
+    - name: Restart Galaxy
+      ansible.builtin.shell: |
+        cd /opt/galaxy/ && source /opt/galaxy/.bashrc  && /usr/bin/gxadmin gunicorn handler-restart && sudo -u galaxy /usr/bin/galaxy-sync-to-nfs && systemctl restart galaxy-handler@* && systemctl restart galaxy-workflow-scheduler@*
+      listen: 'restart galaxy'
+  pre_tasks:
+    # This should be the 1st pretask as the rest of the tasks are dependent on it.
+    - name: Install EPEL-release
+      ansible.builtin.package:
+        name: epel-release
+        state: present
+
+    - name: Install Dependencies
+      ansible.builtin.dnf:
+        name:
+          [
+            'git',
+            'python3-psycopg2',
+            'bc',
+            'python3-devel',
+            'rsyslog',
+            'rsyslog-gnutls',
+            'byobu',
+          ]
+        state: present
+
+    - name: Install python3-virtualenv from enable crb repository (this repo is the one that provides the package)
+      ansible.builtin.dnf:
+        name: python3-virtualenv
+        enablerepo: crb
+        state: present
+
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+
+    - name: Install repository key (PostgreSQL v11 and above)
+      ansible.builtin.rpm_key:
+        key: https://download.postgresql.org/pub/repos/yum/keys/PGDG-RPM-GPG-KEY-RHEL
+        state: present
+
+    - name: Install pgdg repository package (RedHat)
+      ansible.builtin.yum:
+        name: >-
+          https://download.postgresql.org/pub/repos/yum/reporpms/{{ postgresql_pgdg_shortfamilies[ansible_distribution]
+            | default("EL") }}-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-{{
+            postgresql_pgdg_families[ansible_distribution] | default("redhat") }}-repo-latest.noarch.rpm
+      register: postgresql_yum_result
+      until: postgresql_yum_result is succeeded
+      retries: 5
+      delay: 5
+
+    - name: Install PostgreSQL client (RedHat >= 8)
+      ansible.builtin.dnf:
+        name: postgresql17
+        disablerepo: AppStream
+
+    - name: Add mosh service config for FirewallD
+      ansible.builtin.copy:
+        content: '{{ firewall_mosh_service }}'
+        dest: /etc/firewalld/services/mosh.xml
+
+    - name: Add HTcondor shared port service config for FirewallD
+      ansible.builtin.copy:
+        content: '{{ firewall_htcondor_shared_port_service }}'
+        dest: /etc/firewalld/services/htcondor-shared-port.xml
+  post_tasks:
+    - name: Write Galaxy __galaxy_client_build_version and __galaxy_current_commit_id
+      delegate_to: 127.0.0.1
+      ansible.builtin.copy:
+        content: |
+          client_build_version={{ __galaxy_client_build_version }}
+          current_commit_id={{ __galaxy_current_commit_id }}
+        dest: '{{ playbook_dir }}/galaxy_update.properties'
+
+    - name: Append some users to the systemd-journal group
+      user:
+        name: '{{ item }}'
+        groups: systemd-journal
+        append: true
+      loop:
+        - '{{ galaxy_user.name }}'
+        - 'telegraf'
+        - 'stats' # special account to retrieve statistics from the server in read-only mode
+
+    # Note (ToDo): We should ensure that the Gunicorn sockets are created with the correct SELinux
+    # context to avoid adding or allowing unconfined contexts. This will further tighten
+    # the security of the Galaxy instance. (Check the systemd role that is creating the sockets and
+    # maybe include a task to set the SELinux context for the sockets, and then we can remove the
+    # below tasks)
+    # Add SELinux policy for nginx to interact with the gunicorn socket
+    # - name: Check if nginx-gunicorn selinux policy is installed
+    #   ansible.builtin.command: semodule --list=full | grep -q nginx_gunicorn_selinux
+    #   register: nginx_gunicorn_selinux_policy
+    #   failed_when: nginx_gunicorn_selinux_policy.rc > 1
+
+    # - name: Add SELinux policy for nginx to interact with the gunicorn socket
+    #   when: nginx_gunicorn_selinux_policy.rc == 1
+    #   block:
+    #     - name: Copy nginx-gunicorn selinux type enforcement file
+    #       ansible.builtin.copy:
+    #         src: 'files/galaxy/config/nginx_gunicorn_selinux.te'
+    #         dest: '/tmp/nginx_gunicorn_selinux.te'
+
+    #     - name: Compile nginx-gunicorn selinux module
+    #       ansible.builtin.command: 'checkmodule -M -m -o /tmp/nginx_gunicorn_selinux.mod /tmp/nginx_gunicorn_selinux.te'
+
+    #     - name: Compile nginx-gunicorn selinux policy package
+    #       ansible.builtin.command: 'semodule_package -o /tmp/nginx_gunicorn_selinux.pp -m /tmp/nginx_gunicorn_selinux.mod'
+
+    #     - name: Install nginx-gunicorn selinux policy package
+    #       ansible.builtin.command: 'semodule -i /tmp/nginx_gunicorn_selinux.pp'
+
+    #     - name: Clean up nginx-gunicorn selinux policy files
+    #       ansible.builtin.file:
+    #         path: '{{ item }}'
+    #         state: absent
+    #       with_items:
+    #         - '/tmp/nginx_gunicorn_selinux.te'
+    #         - '/tmp/nginx_gunicorn_selinux.mod'
+    #         - '/tmp/nginx_gunicorn_selinux.pp'
+
+    # - name: Ensure SELinux contexts for TIaaS deployment
+    #   block:
+    #     - name: Set SELinux context for /opt/tiaas2 to usr_t
+    #       community.general.sefcontext:
+    #         target: '{{ tiaas_dir }}(/.*)?'
+    #         setype: usr_t
+    #         state: present
+
+    #     - name: Apply SELinux context to /opt/tiaas2
+    #       command: restorecon -Rv "{{ tiaas_dir }}"
+
+    #     - name: Label tiaas.sock as httpd_var_run_t for nginx SELinux access
+    #       community.general.sefcontext:
+    #         target: '{{ tiaas_socket }}'
+    #         setype: httpd_var_run_t
+    #         state: present
+
+    #     - name: Apply SELinux context to tiaas.sock
+    #       command: restorecon -v "{{ tiaas_socket }}"
+
+    #     - name: Restart TIaaS service to apply SELinux context changes
+    #       ansible.builtin.systemd:
+    #         name: tiaas
+    #         state: restarted
+    #         enabled: true
+
+    - name: Change compliance.log file ownership to the galaxy user
+      ansible.builtin.file:
+        path: '{{ galaxy_server_dir }}/compliance.log'
+        owner: galaxy
+        group: root
+        mode: 0644
+
+    - name: Ensure .config directory exists for galaxy user
+      ansible.builtin.file:
+        path: '{{ galaxy_root }}/.config'
+        state: directory
+        owner: galaxy
+        group: galaxy
+        mode: '0755'
+
+    - name: "Ensure {{ galaxy_server_dir }}/database directory exists and is owned by galaxy user"
+      ansible.builtin.file:
+        path: "{{ galaxy_server_dir }}/database"
+        state: directory
+        owner: "{{ galaxy_user.name }}"
+        group: "{{ galaxy_group.name }}"
+        mode: "0750"
+
+    - name: Add gxadmin local script
+      ansible.builtin.copy:
+        src: '{{ playbook_dir }}/files/galaxy/config/gxadmin-local.sh'
+        dest: '{{ galaxy_root }}/.config/gxadmin-local.sh'
+        owner: galaxy
+        group: galaxy
+        mode: '0755'
+  roles:
+    ## Starting configuration of the operating system
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        enable_hostname: true
+        enable_powertools: true # geerlingguy.repo-epel role doesn't enable PowerTools repository
+        enable_remap_user: true
+        enable_exclude_packages: true
+        enable_pam_limits: true # Prevent out of control processes
+        enable_install_software: true # Some extra admin tools (*top, vim, etc)
+    - geerlingguy.repo-epel # Install EPEL repository
+    - usegalaxy-eu.autoupdates # keep all of our packages up to date
+    - influxdata.chrony # Keep our time in sync.
+
+    ## Filesystems
+    - usegalaxy-eu.autofs # Setup the mount points which will be needed later
+    - galaxyproject.cvmfs # Galaxy datasets
+
+    ## Monitoring
+    - hxr.monitor-email
+    - hxr.monitor-galaxy-journalctl
+
+    # Setup Galaxy user
+    - role: galaxyproject.galaxy
+      vars:
+        galaxy_create_user: true
+        galaxy_manage_clone: false
+        galaxy_manage_cleanup: false # we should use this
+        galaxy_manage_download: false
+        galaxy_manage_existing: true
+        galaxy_manage_paths: true
+        galaxy_manage_static_setup: false
+        galaxy_manage_mutable_setup: false
+        galaxy_manage_database: false
+        galaxy_manage_subdomain_static: false
+        galaxy_fetch_dependencies: false
+        galaxy_build_client: false
+        galaxy_manage_systemd: false # switch to gravity(?)
+        galaxy_manage_gravity: false
+    # The bashrc needs to be created for several later features.
+    - usegalaxy-eu.bashrc
+
+    ## Setup docker
+    - geerlingguy.docker
+
+    # Misc.
+    - role: hxr.galaxy-nonreproducible-tools
+      become: true
+      become_user: galaxy
+    - usegalaxy-eu.dynmotd # nicer MOTD/welcome message
+
+    - usegalaxy-eu.rsync-to-nfs # sync codebase to NFS
+
+    - role: usegalaxy-eu.webhooks # Clone webhook repository
+      become: true
+      become_user: galaxy
+    - role: usegalaxy-eu.tours # Clone tour repository
+      become: true
+      become_user: galaxy
+
+    ## SSL / Security
+    # https://en.wikipedia.org/wiki/Trust_on_first_use
+    - ssh-host-sign # Sign the server host key to prevent TOFU for SSH
+    - hxr.aws-cli # Setup the AWS client that will be needed for route53 authentication of certbot. MUST come before nginx role
+
+    ## GALAXY
+    - hxr.postgres-connection
+    - galaxyproject.gxadmin
+    - usegalaxy_eu.ansible_nginx_upload_module
+    - usegalaxy-eu.nginx
+    - usegalaxy-eu.gapars-galaxy
+
+    # The REAL galaxy role call that will install Galaxy and all of its dependencies.
+    - role: galaxyproject.galaxy
+      vars:
+        galaxy_create_user: true
+        galaxy_manage_clone: true
+        galaxy_manage_cleanup: false # we should use this
+        galaxy_manage_download: false
+        galaxy_manage_existing: false
+        galaxy_manage_static_setup: true
+        galaxy_manage_mutable_setup: true
+        galaxy_manage_database: true
+        galaxy_manage_subdomain_static: true
+        galaxy_manage_host_filters: false # test when themes work
+        galaxy_manage_systemd: false # switch to gravity(?)
+        galaxy_manage_gravity: false
+        galaxy_fetch_dependencies: true
+        galaxy_build_client: true
+        galaxy_client_make_target: client-production
+
+    - usegalaxy_eu.tpv_auto_lint
+    - galaxyproject.tiaas2
+    ## Extras!
+    - usegalaxy-eu.fix-galaxy-server-dir # Fix details into the galaxy server dirs
+    - hxr.install-to-venv # Some extra packages our site needs.
+    - usegalaxy_eu.galaxy_systemd # Manage the Galaxy processes with SystemD
+    - usegalaxy-eu.update-hosts # Update hosts list
+    - usegalaxy_eu.gie_proxy # Setup the NodeJS proxy for GxIT
+    - usegalaxy_eu.fs_maintenance # Filesystems maintenance
+    - usegalaxy-eu.logrotate # Rotate logs
+    - usegalaxy-eu.error-pages # Copy the NGINX error pages
+    - usegalaxy-eu.fix-stuck-handlers # Restart handlers to prevent several classes of issues
+    - usegalaxy-eu.log-cleaner # do not retain journalctl logs, they are unnecessary/risky under GDPR
+    - dj-wasabi.telegraf
+    - usegalaxy-eu.galaxy-procstat # Some custom telegraf monitoring that's templated
+    - ssh_hardening #dev-sec.hardening collection
+    - usegalaxy-eu.fix-stop-ITs
+    - usegalaxy_eu.firewall

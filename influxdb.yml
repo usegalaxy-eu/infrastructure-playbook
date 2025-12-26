@@ -6,6 +6,7 @@
     hostname: influxdb.galaxyproject.eu
   vars_files:
     - "secret_group_vars/all.yml"
+    - secret_group_vars/aws.yml # AWS creds
   pre_tasks:
     - name: Install Dependencies
       become: true
@@ -42,6 +43,7 @@
     - devsec.hardening
   roles:
     ## Starting configuration of the operating system
+    - geerlingguy.swap
     - role: usegalaxy_eu.firewall
       become: true
     - role: usegalaxy_eu.handy.os_setup
@@ -57,6 +59,7 @@
     - hxr.monitor-email
 #    # Applications
     - geerlingguy.docker
+    - hxr.aws-cli # Setup the AWS client that will be needed for route53 authentication of certbot. MUST come before nginx role
     - galaxyproject.nginx
     - usegalaxy_eu.influxdbserver
     - dj-wasabi.telegraf

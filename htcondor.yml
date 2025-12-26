@@ -12,6 +12,8 @@
         state: reloaded
   vars_files:
     - secret_group_vars/db-main.yml  # PostgreSQL password (galaxyproject.gxadmin)
+    - mounts/dest/all.yml
+    - mounts/mountpoints.yml
   pre_tasks:
     - name: Ensure findutils is installed. (handy.os_setup)
       become: true
@@ -95,7 +97,7 @@
       when: htcondor_role_submit
     - grycap.htcondor
     - name: usegalaxy-eu.htcondor_release
-      when: htcondor_role_submit and inventory_hostname != "maintenance.galaxyproject.eu"
+      when: htcondor_role_submit and inventory_hostname == "sn09.galaxyproject.eu"
     - name: usegalaxy-eu.fix-stop-ITs
       when: htcondor_role_submit and inventory_hostname != "maintenance.galaxyproject.eu"
     - name: usegalaxy-eu.remove-orphan-condor-jobs

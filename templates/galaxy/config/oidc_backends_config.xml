@@ -13,9 +13,7 @@ Quick Reference
 _______________
 
 - provider:         Sets the name of OpenID Connect (OIDC) Identity Provider (IdP).
-                    The following IdPs are currently supported:
-
-                        { "Google", "Globus" }
+                    Supported providers are listed below in the sample.
 
 - client id:        Sets the id of this client (i.e., your Galaxy instance) with the IdP, which is
                     obtained from the IdP at client registration.
@@ -25,6 +23,8 @@ _______________
                     See https://tools.ietf.org/html/rfc6749#section-2.3.1
 
 - label:            A label to identify this IDP to users in the UI. Defaults to the provider name if absent.
+
+- icon:             Image to be displayed on the login button.
 
 - require_create_confirmation:            A boolean value that decides whether a NewUserConfirmation page shows up.
 
@@ -56,17 +56,31 @@ Please mind `http` and `https`.
 
 -->
 <OIDC>
-    <provider name="Elixir">
+    <provider name="lifescience">
         <client_id>{{ elixir_aai.usegalaxy_eu.client_id }}</client_id>
         <client_secret>{{ elixir_aai.usegalaxy_eu.client_secret }}</client_secret>
-        <redirect_uri>https://usegalaxy.eu/authnz/elixir/callback</redirect_uri>
+        <redirect_uri>https://usegalaxy.eu/authnz/lifescience/callback</redirect_uri>
         <prompt>consent</prompt>
         <icon>https://lifescience-ri.eu/fileadmin/lifescience-ri/media/Images/button-login-small.png</icon>
         <!-- (Optional) Extra scopes you need to request for your implementation -->
-        <!-- <extra_scopes>offline_access,something-else</extra_scopes> -->
-
+        <extra_scopes>offline_access</extra_scopes>
     </provider>
-    <provider name="Keycloak">
+
+    <!-- # Documentation is at https://doc.nfdi-aai.de/  
+        https://infraproxy.nfdi-aai.dfn.de/idp/profile/oidc/configuration
+    -->
+    <provider name="nfdi">
+        <client_id>{{ nfdi_aai.usegalaxy_eu.client_id }}</client_id>
+        <client_secret>{{ nfdi_aai.usegalaxy_eu.client_secret }}</client_secret>
+        <redirect_uri>https://usegalaxy.eu/authnz/nfdi/callback</redirect_uri>
+        <prompt>consent</prompt>
+        <well_known_oidc_config_uri>https://infraproxy.nfdi-aai.dfn.de/idp/profile/oidc/configuration</well_known_oidc_config_uri>
+        <icon>https://doc.nfdi-aai.de/images/Logo_IAM4NFDI_lang_rgb.png</icon>
+        <!-- (Optional) Extra scopes you need to request for your implementation -->
+        <extra_scopes>offline_access</extra_scopes>
+    </provider>
+
+    <!--provider name="Keycloak">
         <url>https://auth.nfdi4plants.org/realms/dataplant</url>
         <client_id>{{ dataplant_keycloak.usegalaxy_eu.client_id }}</client_id>
         <client_secret>{{ dataplant_keycloak.usegalaxy_eu.client_secret }}</client_secret>
@@ -74,7 +88,18 @@ Please mind `http` and `https`.
         <redirect_uri>https://usegalaxy.eu/authnz/keycloak/callback</redirect_uri>
         <prompt>consent</prompt>
         <icon>https://galaxyproject.eu/assets/media/DataPLANT_logo.png</icon>
+    </provider-->
+
+    <provider name="Keycloak">
+        <url>https://proxy.testing.eosc-federation.eu</url>
+        <client_id>{{ eosc_keycloak.usegalaxy_eu.client_id }}</client_id>
+        <client_secret>{{ eosc_keycloak.usegalaxy_eu.client_secret }}</client_secret>
+        <well_known_oidc_config_uri>https://proxy.testing.eosc-federation.eu/.well-known/openid-configuration</well_known_oidc_config_uri>
+        <redirect_uri>https://usegalaxy.eu/authnz/keycloak/callback</redirect_uri>
+        <prompt>consent</prompt>
+        <icon>https://usegalaxy.eu/static/share/eosc-aai-logo.png</icon>
     </provider>
+
     <!-- Documentation: https://docs.egi.eu/providers/check-in/sp -->
     <provider name="egi_checkin">
        <!-- Client id and secret can be obtained by registering your client at EGI Check-in
