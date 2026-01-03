@@ -41,6 +41,8 @@
   doc: Zenodo is an open-access digital repository created by CERN (the European Organization for Nuclear Research) to enable researchers to share, preserve, and cite research outputs across various disciplines.
   label: Zenodo
   url: https://zenodo.org
+  token: ""
+  public_name: ""
 
 - type: ftp
   id: ebi-ftp
@@ -235,19 +237,21 @@
   bucket: argo-gdac-sandbox
   anon: true
 
-- type: arcfs
-  id: arcfs1
-  label: DataPLANT DataHUB ARCs
-  doc: Explore ARCs in the DataPLANT GitLab repository.
-  token: ${user.preferences['gitlabfs|read_access_token']}
-  server_url: "https://git.nfdi4plants.org"
-  writable: true
+#- type: arcfs
+#  id: arcfs1
+#  label: DataPLANT DataHUB ARCs
+#  doc: Explore ARCs in the DataPLANT GitLab repository.
+#  token: ${user.preferences['gitlabfs|read_access_token']}
+#  server_url: "https://git.nfdi4plants.org"
+#  writable: true
 
 - type: inveniordm
   id: berd_nfdi
   doc: "A Single Place for Data in Business, Economics and Related Fields"
   label: "BERD@NFDI Repository"
   url: https://berd-platform.de
+  token: ""
+  public_name: ""
 
 - type: onedata
   id: gtn_public_onedata
@@ -262,6 +266,8 @@
   doc: "The CERN Open Data Portal is a repository that enables large scale experimental data releases of curated datasets, accompanying software, supporting documentation and example analyses"
   label: CERN Open Data
   url: https://opendata.cern
+  token: ""
+  public_name: ""
 
 - type: omero
   id: omero_demo
