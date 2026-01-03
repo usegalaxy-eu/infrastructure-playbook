@@ -22,18 +22,15 @@ tools:
       - id: no-pulsar
         if: user is not None
         execute: |
-            from tpv.core.entities import Tag, TagType
-
             user_preferences = user.extra_preferences
             pulsar_tag = user_preferences.get("distributed_compute|remote_resources", "None")
-            pulsar_tag = Tag("scheduling", pulsar_tag, TagType.REQUIRE) if pulsar_tag != "None" else None
 
-            entity.tpv_tags.tags = [
-                tag
-                for tag in entity.tpv_tags.tags
-                if tag != pulsar_tag
-            ]
-
+            if pulsar_tag != "None":
+                entity.tpv_tags.require = [
+                    tag
+                    for tag in (entity.tpv_tags.require or [])
+                    if tag != pulsar_tag
+                ]
     env:
       TEMP: /data/1/galaxy_db/tmp
 
