@@ -54,7 +54,7 @@ tools:
       - id: remote_resources
         if: user is not None
         execute: |
-          from tpv.core.entities import Tag, TagSetManager, TagType
+          from tpv.core.entities import Tag, TagType
 
           user_preferences = user.extra_preferences
           pulsar_tag = user_preferences.get("distributed_compute|remote_resources", "None")
