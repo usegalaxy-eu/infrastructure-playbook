@@ -17,7 +17,6 @@
     <tool file="data_source/biomart_test.xml" />
     <tool file="data_source/cbi_rice_mart.xml" />
     <tool file="data_source/gramene_mart.xml" />
-    <tool file="data_source/dorina_galaxy.xml" />
     <tool file="data_source/fly_modencode.xml" />
     <tool file="data_source/intermine.xml" />
     <tool file="data_source/flymine.xml" />
@@ -36,14 +35,12 @@
     <tool file="/opt/galaxy/custom-tools/test/omicsdi/omicsdi.xml" labels="beta" />
   </section>
   <section id="send_data" name="Send Data">
-    <tool file="data_export/send.xml" />
     <tool file="data_export/export_remote.xml" />
   </section>
   <section id="collection_operations" name="Collection Operations">
     <tool file="${model_tools_path}/unzip_collection.xml" />
     <tool file="${model_tools_path}/zip_collection.xml" />
     <tool file="${model_tools_path}/filter_failed_collection.xml" />
-    <tool file="${model_tools_path}/filter_failed_collection_1.1.0.xml" />
     <tool file="${model_tools_path}/filter_empty_collection.xml" />
     <tool file="${model_tools_path}/filter_empty_collection_1.1.0.xml" />
     <tool file="${model_tools_path}/filter_null.xml" />
@@ -272,9 +269,8 @@
   <section id="phylogenetics" name="Phylogenetics" >
   </section>
   <section id="phenotype_association" name="Phenotype Association">
-    <tool file="evolution/codingSnps.xml" />
-    <tool file="evolution/add_scores.xml" />
-    <tool file="phenotype_association/sift.xml" />
+    <!-- has some XML errors -->
+    <!--tool file="phenotype_association/sift.xml" /-->
     <tool file="phenotype_association/linkToGProfile.xml" />
     <tool file="phenotype_association/linkToDavid.xml" />
     <tool file="phenotype_association/ldtools.xml" />
@@ -386,11 +382,7 @@
   <section id="graph_display_data" name="Graph/Display Data" >
     <tool file="plotting/bar_chart.xml" />
     <tool file="plotting/boxplot.xml" />
-    <tool file="visualization/LAJ.xml" />
     <tool file="maf/vcf_to_maf_customtrack.xml" />
-    <tool file="chromatra/chromatral.xml" />
-    <tool file="chromatra/chromatrat.xml" />
-    <tool file="plotting/foldchanges_heatmap.xml" />
   </section>
   <section id="single-cell-section-interactivetools" name="Interactive tools">
     <tool file="interactive/interactivetool_jupyter_notebook.xml" />
@@ -420,7 +412,6 @@
   </section>
   <section id="xas" name="XAS (X-ray Absorption Spectroscopy)">
   </section>
-
   <label id="other_and_toolsuites_label" text="Miscellaneous Tools" />
   <!--section id="regional_variation" name="Regional Variation">
     <tool file="regVariation/windowSplitter.xml" />
@@ -436,12 +427,12 @@
     <tool file="regVariation/microsats_mutability.xml" />
   </section-->
   <section id="evolution" name="Evolution">
-    <tool file="evolution/codingSnps.xml" />
-    <tool file="evolution/add_scores.xml" />
+    <!-- tool removed upstream -->
+    <!--tool file="evolution/codingSnps.xml" />
+    <tool file="evolution/add_scores.xml" /-->
   </section>
   <section id="motif_tools" name="Motif Tools">
     <tool file="meme/meme.xml" hidden="True" />
-    <tool file="meme/fimo.xml" hidden="True" />
     </section>
   <section id="test_tools" name="Test Tools">
     <tool file="/opt/galaxy/custom-tools/test/zarr/xarray_netcdf2zarr.xml" />
@@ -461,7 +452,6 @@
     <tool file="/opt/galaxy/custom-tools/tombo/tombo_plot_most_significant.xml" labels="alpha" />
     <tool file="/opt/galaxy/custom-tools/tombo/tombo_plot_genome_locations.xml" labels="alpha" />
     <tool file="/opt/galaxy/custom-tools/test/tpp/peptide_prophet.xml"  labels="beta" />
-    <tool file="/opt/galaxy/custom-tools/test/tpp/pepxml_and_protxml_to_table.xml" />
     <tool file="/opt/galaxy/custom-tools/test/tpp/protein_prophet.xml"  />
     <tool file="/opt/galaxy/custom-tools/test/tpp/interprophet.xml" />
 
@@ -484,15 +474,6 @@
     <tool file="/opt/galaxy/custom-tools/test/bwtool.xml" />
     <!--tool file="/opt/galaxy/custom-tools/test/bigwig_to_bedgraph.xml" /-->
     <tool file="/opt/galaxy/custom-tools/test/protein_properties.xml" />
-
-    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicBuildMatrix.xml" hidden="True" />
-    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicCorrectMatrix.xml" hidden="True" />
-    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicCorrelate.xml" hidden="True" />
-    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicFindTADs.xml" hidden="True" />
-    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicPlotDistVsCounts.xml" hidden="True" />
-    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicPlotMatrix.xml" hidden="True" />
-    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicPlotTADs.xml" hidden="True" />
-    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicSumMatrices.xml" hidden="True" />
 
     <tool file="/opt/galaxy/custom-tools/test/biopython/base_distribution.xml" />
     <tool file="/opt/galaxy/custom-tools/test/biopython/codon_count.xml" />
@@ -576,7 +557,7 @@
         <tool file="interactive/interactivetool_cellprofiler.xml" />
         <tool file="interactive/interactivetool_tadviewer.xml" />
         <tool file="interactive/interactivetool_qgis.xml" />
-        <tool file="interactive/interactivetool_escriptorium.xml" />
+        <!--tool file="interactive/interactivetool_escriptorium.xml" /-->
         <tool file="interactive/interactivetool_qupath.xml" />
         <tool file="interactive/interactivetool_qupath_0.6.0.xml" />
         <tool file="interactive/interactivetool_pampa.xml" />
