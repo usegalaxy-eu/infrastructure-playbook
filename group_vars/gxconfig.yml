@@ -62,8 +62,7 @@ base_app_main: &BASE_APP_MAIN
   # If using MySQL and the server logs the error "MySQL server has gone
   # away", you will want to set this to some positive value (7200 should
   # work).
-  # We enabled this to circumvent some installation issues of tools, should be reverted when we update PG from version 13
-  database_engine_option_pool_recycle: 360
+  #database_engine_option_pool_recycle: -1
 
   # If large database query results are causing memory or response time
   # issues in the Galaxy process, leave the result on the server
@@ -549,6 +548,10 @@ base_app_main: &BASE_APP_MAIN
   # list.
   tour_config_dir: "config/plugins/tours,{{ galaxy_tour_dir }}"
 
+  # Allow tools to show the option of and create interactive tours
+  # crafted for them by the backend.
+  #enable_tool_generated_tours: true
+
   # Webhooks directory: where to store webhooks - plugins to extend the
   # Galaxy UI. By default none will be loaded.  Set to
   # config/plugins/webhooks/demo to load Galaxy's demo webhooks.  To use
@@ -590,15 +593,6 @@ base_app_main: &BASE_APP_MAIN
   # /bin/sh - so more maximum portability tool authors should assume
   # generated commands run in sh.
   #default_job_shell: /bin/bash
-
-  # This option is deprecated, and the tool document cache will be
-  # removed in the next release. Whether to enable the tool document
-  # cache. This cache stores expanded XML strings. Enabling the tool
-  # cache results in slightly faster startup times. The tool cache is
-  # backed by a SQLite database, which cannot be stored on certain
-  # network disks. The cache location is configurable with the
-  # ``tool_cache_data_dir`` tag in tool config files.
-  #enable_tool_document_cache: false
 
   # Directory in which the toolbox search index is stored. The value of
   # this option will be resolved with respect to <data_dir>.
@@ -917,7 +911,7 @@ base_app_main: &BASE_APP_MAIN
   # Registration warning message is used to discourage people from
   # registering multiple accounts.  Applies mostly for the main Galaxy
   # instance. If no message specified the warning box will not be shown.
-  #registration_warning_message: Please register only one account - we provide this service free of charge and have limited computational resources. Multi-accounts are tracked and will be subjected to account termination and data deletion.
+  #registration_warning_message: Please register only one account to ensure fair sharing of computational resources. Multiple registrations are monitored and will result in account termination and data deletion.
 
   # User account activation feature global flag.  If set to false, the
   # rest of the Account activation configuration is ignored and user
@@ -1221,6 +1215,10 @@ base_app_main: &BASE_APP_MAIN
   # The URL linked by the "How to Cite Galaxy" link in the "Help" menu.
   #citation_url: https://galaxyproject.org/citing-galaxy
 
+  # The BibTeX citation for Galaxy, to be displayed in the History Tool
+  # Reference List
+  #citation_bibtex: '@article{Galaxy2024, title={The Galaxy platform for accessible, reproducible, and collaborative data analyses: 2024 update}, author={{The Galaxy Community}}, journal={Nucleic Acids Research}, year={2024}, doi={10.1093/nar/gkae410}, url={https://doi.org/10.1093/nar/gkae410}}'
+
   # The URL linked by the "Galaxy Version" link in the "Help" menu.
   #release_doc_base_url: https://docs.galaxyproject.org/en/release_
 
@@ -1233,9 +1231,9 @@ base_app_main: &BASE_APP_MAIN
   terms_url: https://usegalaxy.eu/terms
 
   # Serve static content, which must be enabled if you're not serving it
-  # via a proxy server.  These options should be self explanatory and so
-  # are not documented individually.  You can use these paths (or ones
-  # in the proxy server) to point to your own styles.
+  # via a proxy server. You can use these paths (or ones in the proxy
+  # server) to point to your own styles. The static_* options that refer
+  # to paths are relative to the current working directory.
   #static_enabled: true
 
   # Serve static content, which must be enabled if you're not serving it
@@ -1244,40 +1242,31 @@ base_app_main: &BASE_APP_MAIN
   # in the proxy server) to point to your own styles.
   #static_cache_time: 360
 
-  # Serve static content, which must be enabled if you're not serving it
-  # via a proxy server.  These options should be self explanatory and so
-  # are not documented individually.  You can use these paths (or ones
-  # in the proxy server) to point to your own styles.
+  # Path to the static content dir. Ignored if static_enabled is false.
   #static_dir: static/
 
-  # Serve static content, which must be enabled if you're not serving it
-  # via a proxy server.  These options should be self explanatory and so
-  # are not documented individually.  You can use these paths (or ones
-  # in the proxy server) to point to your own styles.
-  #static_images_dir: static/images
+  # Path to the built Galaxy client application, static/dist/ in the
+  # Galaxy source code after the build is complete. Ignored if
+  # static_enabled is false.
+  #static_dist_dir: static/dist/
 
-  # Serve static content, which must be enabled if you're not serving it
-  # via a proxy server.  These options should be self explanatory and so
-  # are not documented individually.  You can use these paths (or ones
-  # in the proxy server) to point to your own styles.
+  # Path to the static images directory. Ignored if static_enabled is
+  # false.
+  #static_images_dir: static/images/
+
+  # Path to favicon.ico, not the directory that contains it (the name is
+  # a misnomer). Ignored if static_enabled is false.
   #static_favicon_dir: static/favicon.ico
 
-  # Serve static content, which must be enabled if you're not serving it
-  # via a proxy server.  These options should be self explanatory and so
-  # are not documented individually.  You can use these paths (or ones
-  # in the proxy server) to point to your own styles.
+  # Path to the static scripts directory. Ignored if static_enabled is
+  # false.
   #static_scripts_dir: static/scripts/
 
-  # Serve static content, which must be enabled if you're not serving it
-  # via a proxy server.  These options should be self explanatory and so
-  # are not documented individually.  You can use these paths (or ones
-  # in the proxy server) to point to your own styles.
-  #static_style_dir: static/style
+  # Path to the static style directory. Ignored if static_enabled is
+  # false.
+  #static_style_dir: static/style/
 
-  # Serve static content, which must be enabled if you're not serving it
-  # via a proxy server.  These options should be self explanatory and so
-  # are not documented individually.  You can use these paths (or ones
-  # in the proxy server) to point to your own styles.
+  # Path to robots.txt. Ignored if static_enabled is false.
   #static_robots_txt: static/robots.txt
 
   # Incremental Display Options
@@ -1827,9 +1816,17 @@ base_app_main: &BASE_APP_MAIN
   # and registration.
   #prefer_custos_login: false
 
-  # Allow unregistered users to create new accounts (otherwise, they
-  # will have to be created by an admin).
-  #allow_user_creation: true
+  # Allow unregistered users to create new local (non-OIDC) accounts
+  # (otherwise, they will have to be created by an admin). This option
+  # will be overridden to false in case disable_local_accounts  is set
+  # to true.
+  #allow_local_account_creation: true
+
+  # Disable local accounts. If this option is set to true, at least one
+  # OIDC provider needs  to be configured and will serve as the account
+  # provider. If this option is set to true,  allow_local_account
+  # creation will be overridden with false.
+  #disable_local_accounts: false
 
   # Allow administrators to delete accounts.
   allow_user_deletion: true
@@ -1964,7 +1961,7 @@ base_app_main: &BASE_APP_MAIN
   # because model objects are expunged from the SQL alchemy session
   # between workflow invocation scheduling iterations. Set to -1 to
   # disable any such maximum.
-  maximum_workflow_jobs_per_scheduling_iteration: 100
+  #maximum_workflow_jobs_per_scheduling_iteration: 1000
 
   # Maximum number of datasets to create before flushing created
   # datasets to database. This affects tools that create many output
@@ -1997,6 +1994,23 @@ base_app_main: &BASE_APP_MAIN
   # The value of this option will be resolved with respect to
   # <config_dir>.
   oidc_backends_config_file: "{{ galaxy_config_dir }}/oidc_backends_config.xml"
+
+  # Sets the full sequence of steps that Python Social Auth goes through
+  # when authenticating an OIDC login. Use when you want to completely
+  # customize the pipeline (e.g. for testing).
+  # By default, Galaxy uses galaxy.authnz.psa_authnz.AUTH_PIPELINE - see
+  # there for example steps.
+  # Each element should be an import path to a function, e.g.
+  # galaxy.authnz.psa_authnz.contains_required_data
+  #oidc_auth_pipeline: null
+
+  # Sets additional authentication pipeline steps, added after the
+  # default steps (from galaxy.authnz.psa_authnz.AUTH_PIPELINE).
+  # Use when you want to keep the default pipeline, but add additional
+  # custom processing.
+  # Each element should be an import path to a function, e.g.
+  # galaxy.authnz.psa_authnz.contains_required_data
+  #oidc_auth_pipeline_extra: null
 
   # Sets the prefix for OIDC scopes specific to this Galaxy instance. If
   # an API call is made against this Galaxy instance using an OIDC
@@ -2579,7 +2593,6 @@ base_app_main: &BASE_APP_MAIN
   # database located in your <galaxy>/database folder (indicated in the
   # commented out line below).
   amqp_internal_connection: "pyamqp://galaxy:{{ rabbitmq_password_galaxy }}@mq.galaxyproject.eu:5671/galaxy?ssl=1"
-  #amqp_internal_connection: "amqp://galaxy:{{ rabbitmq_password_galaxy }}@localhost:5672/galaxy"
 
   # Offload long-running tasks to a Celery task queue. Activate this
   # only if you have setup a Celery worker for Galaxy and you have
@@ -2646,10 +2659,10 @@ base_app_main: &BASE_APP_MAIN
 
   # API key for an AI provider. AI provider is Openai By default
   # (https://openai.com/) to enable the wizard (or more?)
-  openai_api_key: "{{ openai_api_key }}"
+  ai_api_key: "{{ galaxy_infrastructure_llm_api_key }}"
 
   # AI API base URL. Needs to be OpenAI compatible, defaults to OpenAI
-  #ai_api_base_url: null
+  ai_api_base_url: "{{ galaxy_infrastructure_llm_url }}"
 
   # AI model to enable the wizard.
   #ai_model: gpt-4o
@@ -2702,7 +2715,7 @@ base_app_main: &BASE_APP_MAIN
   # Vault config file.
   # The value of this option will be resolved with respect to
   # <config_dir>.
-  vault_config_file: vault_conf.yml
+  #vault_config_file: vault_conf.yml
 
   # Display built-in converters in the tool panel.
   #display_builtin_converters: true
@@ -2827,6 +2840,7 @@ base_app_main: &BASE_APP_MAIN
  # TODO(hxr): UNDOCUMENTED
   ucsc_build_sites: "{{ galaxy_config_dir }}/ucsc_build_sites.txt"
 
+# Not sure if this option is still needed.
 galaxy_config_hash:
   "uwsgi": {}
   "galaxy":
