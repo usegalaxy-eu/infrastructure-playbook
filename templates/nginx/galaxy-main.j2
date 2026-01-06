@@ -1,300 +1,308 @@
 map $http_upgrade $connection_upgrade {
-	default upgrade;
-	''      close;
+    default upgrade;
+    ''      close;
 }
 
 upstream galaxy {
-	{% for n in range(galaxy_systemd_gunicorns) %}
-    	server unix:{{ galaxy_mutable_data_dir }}/{{ galaxy_systemd_gunicorn_socket_name }}_{{ n }}.sock;
-	{% endfor %}
+    keepalive 64;
+    {% for n in range(galaxy_systemd_gunicorns) %}
+        server unix:{{ galaxy_mutable_data_dir }}/{{ galaxy_systemd_gunicorn_socket_name }}_{{ n }}.sock;
+    {% endfor %}
 }
 
 server {
-	listen 443 default_server;
-	listen [::]:443 default_server;
+    listen 443 default_server;
+    listen [::]:443 default_server;
 
-	error_page 404 /404.html;
-	error_page 502 /502.html;
-	error_page 503 /503.html;
-	error_page 504 /503.html;
+    error_page 404 /404.html;
+    error_page 502 /502.html;
+    error_page 503 /503.html;
+    error_page 504 /503.html;
 
-	location /404.html {
-		root /usr/share/nginx/html;
-		internal;
-	}
-	location /502.html {
-		root /usr/share/nginx/html;
-		internal;
-	}
-	location /503.html {
-		root /usr/share/nginx/html;
-		internal;
-	}
-	location /504.html {
-		root /usr/share/nginx/html;
-		internal;
-	}
+    location /404.html {
+        root /usr/share/nginx/html;
+        internal;
+    }
+    location /502.html {
+        root /usr/share/nginx/html;
+        internal;
+    }
+    location /503.html {
+        root /usr/share/nginx/html;
+        internal;
+    }
+    location /504.html {
+        root /usr/share/nginx/html;
+        internal;
+    }
 
-	# Move to remote storage, hopefully hammer local disk slightly less?
-	#client_body_temp_path  /data/dnb01/nginx_upload_store/;
-	client_body_buffer_size 1024m;
+    # Move to remote storage, hopefully hammer local disk slightly less?
+    #client_body_temp_path  /data/dnb01/nginx_upload_store/;
+    client_body_buffer_size 1024m;
 
-	location / {
-		# This is the backend to send the requests to.
-		proxy_pass http://galaxy;
-		proxy_set_header Host $http_host;
-		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-		proxy_set_header X-Forwarded-Proto $scheme;
-		proxy_set_header Upgrade $http_upgrade;
+    location / {
+        # This is the backend to send the requests to.
+        proxy_pass       http://galaxy;
+        proxy_set_header Host               $host;
+        proxy_set_header X-Forwarded-For    $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto  $scheme;
+        proxy_set_header Upgrade            $http_upgrade;
+        proxy_set_header Connection         $connection_upgrade;
 
-		# Throttle downloads. First 100Mb are free, after that 5Mb/s.
-		# users can move to FTP if they need / we can sort that out.
-		limit_rate_after 100m;
-		limit_rate 5m;
+        # Throttle downloads. First 100Mb are free, after that 5Mb/s.
+        # users can move to FTP if they need / we can sort that out.
+        limit_rate_after 100m;
+        limit_rate 5m;
 
-		# Temporarily break downloading :(
-		location /api/libraries/datasets/download/ {
-			return 302 https://usegalaxy.eu;
-		}
-		#location /history/export_archive {
-		#	return 302 https://usegalaxy.eu;
-		#}
+        add_header X-Clacks-Overhead 'GNU James Taylor (@jxtx) Simon Gladman (@slugger70) Jim Johnson (@jj-umn)';
+    }
 
-		add_header X-Clacks-Overhead 'GNU James Taylor (@jxtx) Simon Gladman (@slugger70) Jim Johnson (@jj-umn)';
-	}
-	location ~ ^/api/dataset_collections/([^/]+)/download/?$ {
-		proxy_read_timeout 1200s;
+    # Temporarily break downloading :(
+    #location /api/libraries/datasets/download/ {
+    #    return 302 https://usegalaxy.eu;
+    #}
+    #location /history/export_archive {
+    #    return 302 https://usegalaxy.eu;
+    #}
 
-		proxy_buffering off;
-		proxy_pass http://galaxy;
-		proxy_set_header Host $http_host;
-		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-		proxy_set_header X-Forwarded-Proto $scheme;
-		proxy_set_header Upgrade $http_upgrade;
-	}
+    location ~ ^/api/dataset_collections/([^/]+)/download/?$ {
+        proxy_read_timeout 1200s;
 
-	location /_x_accel_redirect {
-		internal;
-		alias /;
-		add_header X-Frame-Options SAMEORIGIN;
-		add_header X-Content-Type-Options nosniff;
+        proxy_buffering off;
+        proxy_pass          http://galaxy;
+        proxy_set_header    Host               $host;
+        proxy_set_header    X-Forwarded-For    $proxy_add_x_forwarded_for;
+        proxy_set_header    X-Forwarded-Proto  $scheme;
+        proxy_set_header    Upgrade            $http_upgrade;
+    }
 
-		# CORS
-                if ($http_origin ~ "^https?://(covid19map\.elixir-luxembourg\.org|avivator\.gehlenborglab\.org|www\.bx\.psu\.edu)$") {
-			add_header Access-Control-Allow-Origin $http_origin;
-			add_header Access-Control-Allow-Methods 'GET';
-			add_header Access-Control-Expose-Headers 'Content-Length,Content-Range';
-			add_header Access-Control-Allow-Headers 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
-		}
-	}
+    location /_x_accel_redirect {
+        internal;
+        alias /;
+        add_header X-Frame-Options SAMEORIGIN;
+        add_header X-Content-Type-Options nosniff;
 
-	location /_upload {
-		upload_store {{ galaxy_config['galaxy']['nginx_upload_store'] }};
-		upload_limit_rate 32k;
-		upload_store_access user:rw group:rw all:rw;
-		upload_pass_form_field "";
-		upload_set_form_field "__${upload_field_name}__is_composite" "true";
-		upload_set_form_field "__${upload_field_name}__keys" "name path";
-		upload_set_form_field "${upload_field_name}_name" "$upload_file_name";
-		upload_set_form_field "${upload_field_name}_path" "$upload_tmp_path";
-		upload_pass_args on;
-		upload_pass /_upload_done;
-	}
+        # CORS
+        if ($http_origin ~ "^https?://(covid19map\.elixir-luxembourg\.org|avivator\.gehlenborglab\.org|www\.bx\.psu\.edu)$") {
+            add_header Access-Control-Allow-Origin $http_origin;
+            add_header Access-Control-Allow-Methods 'GET';
+            add_header Access-Control-Expose-Headers 'Content-Length,Content-Range';
+            add_header Access-Control-Allow-Headers 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
+        }
+    }
 
-	location /_upload_done {
-		set $dst /api/tools;
-		if ($args ~ nginx_redir=([^&]+)) {
-				set $dst $1;
-		}
-		rewrite "" $dst;
-	}
+    location /_upload {
+        upload_store {{ galaxy_config['galaxy']['nginx_upload_store'] }};
+        upload_limit_rate 32k;
+        upload_store_access user:rw group:rw all:rw;
+        upload_pass_form_field "";
+        upload_set_form_field "__${upload_field_name}__is_composite" "true";
+        upload_set_form_field "__${upload_field_name}__keys" "name path";
+        upload_set_form_field "${upload_field_name}_name" "$upload_file_name";
+        upload_set_form_field "${upload_field_name}_path" "$upload_tmp_path";
+        upload_pass_args on;
+        upload_pass /_upload_done;
+    }
 
-	location /_job_files {
-		if ($request_method != POST) {
-				rewrite "" /api/jobs/$arg_job_id/files last;
-		}
-		upload_store {{ galaxy_config['galaxy']['nginx_upload_job_files_store'] }};
+    location /_upload_done {
+        set $dst /api/tools;
+        if ($args ~ nginx_redir=([^&]+)) {
+                set $dst $1;
+        }
+        rewrite "" $dst;
+    }
+
+    location /_job_files {
+        if ($request_method != POST) {
+                rewrite "" /api/jobs/$arg_job_id/files last;
+        }
+        upload_store {{ galaxy_config['galaxy']['nginx_upload_job_files_store'] }};
                 # the rate limit might be needed if we have many Pulsar jobs that are writing data back
-		# we need to limit it because the disc IO can be too large, ideally this happens on a different node
+        # we need to limit it because the disc IO can be too large, ideally this happens on a different node
                 # upload_limit_rate 32k;
-		upload_store_access user:rw group:rw all:rw;
-		upload_pass_form_field "";
-		upload_set_form_field "__${upload_field_name}_path" "$upload_tmp_path";
-		upload_pass_args on;
-		upload_pass /_upload_job_files_done;
-	}
+        upload_store_access user:rw group:rw all:rw;
+        upload_pass_form_field "";
+        upload_set_form_field "__${upload_field_name}_path" "$upload_tmp_path";
+        upload_pass_args on;
+        upload_pass /_upload_job_files_done;
+    }
 
-	location /_upload_job_files_done {
-		internal;
-		rewrite "" /api/jobs/$arg_job_id/files;
-	}
+    location /_upload_job_files_done {
+        internal;
+        rewrite "" /api/jobs/$arg_job_id/files;
+    }
 
-	location /api/upload/resumable_upload {
-		# Disable request and response buffering
-		proxy_request_buffering  off;
-		proxy_buffering          off;
-		proxy_http_version       1.1;
+    location /api/upload/resumable_upload {
+        # Disable request and response buffering
+        proxy_request_buffering  off;
+        proxy_buffering          off;
+        proxy_http_version       1.1;
 
-		# Add X-Forwarded-* headers
-		proxy_set_header X-Forwarded-Host $host;
-		proxy_set_header X-Forwarded-Proto $scheme;
+        # Add X-Forwarded-* headers
+        proxy_set_header X-Forwarded-Host   $host;
+        proxy_set_header X-Forwarded-For    $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto  $scheme;
 
-		proxy_set_header         Upgrade $http_upgrade;
-		proxy_set_header         Connection "upgrade";
-		client_max_body_size     0;
-		proxy_pass http://upload.galaxyproject.eu:1081/api/upload/resumable_upload;
-	}
+        proxy_set_header         Upgrade $http_upgrade;
+        proxy_set_header         Connection "upgrade";
+        client_max_body_size     0;
+        proxy_pass http://upload.galaxyproject.eu:1081/api/upload/resumable_upload;
+    }
 
-	location /phinch {
-		root /opt;
-	}
+    location /phinch {
+        root /opt;
+    }
 
-	location /static/vgcn {
-		expires 24h;
-		autoindex on;
-		alias /data/dnb01/vgcn/;
-	}
-	location /static/share {
-		expires 24h;
-		autoindex on;
-		alias /data/dnb01/share/;
-	}
+    location /static/vgcn {
+        expires 24h;
+        autoindex on;
+        alias /data/dnb01/vgcn/;
+    }
+    location /static/share {
+        expires 24h;
+        autoindex on;
+        alias /data/dnb01/share/;
+    }
 
-	location ~ ^/plugins/(?<plug_type>[^/]+?)/((?<vis_d>[^/_]*)_?)?(?<vis_name>[^/]*?)/static/(?<static_file>.*?)$ {
-		alias /opt/galaxy/config/plugins/$plug_type/;
-		try_files $vis_d/${vis_d}_${vis_name}/static/$static_file
-				  $vis_d/static/$static_file =404;
-	}
+    location ~ ^/plugins/(?<plug_type>[^/]+?)/((?<vis_d>[^/_]*)_?)?(?<vis_name>[^/]*?)/static/(?<static_file>.*?)$ {
+        alias /opt/galaxy/config/plugins/$plug_type/;
+        try_files $vis_d/${vis_d}_${vis_name}/static/$static_file
+                  $vis_d/static/$static_file =404;
+    }
 
-	# Global GIE configuration
-	location /gie_proxy {
-		proxy_pass http://127.0.0.1:8800/gie_proxy;
-		proxy_redirect off;
-	}
+    # Global GIE configuration
+    location /gie_proxy {
+        proxy_pass http://127.0.0.1:8800/gie_proxy;
+        proxy_redirect off;
+    }
 
-	# Project Jupyter specific. Other IEs may require their own routes.
-	location ~ ^/gie_proxy/jupyter/(?<nbtype>[^/]+)/api/kernels(?<rest>.*?)$ {
-		proxy_pass http://127.0.0.1:8800/gie_proxy/jupyter/$nbtype/api/kernels$rest;
-		proxy_redirect off;
-		proxy_http_version 1.1;
-		proxy_set_header Upgrade $http_upgrade;
-		proxy_set_header Connection "upgrade";
-	}
+    # Project Jupyter specific. Other IEs may require their own routes.
+    location ~ ^/gie_proxy/jupyter/(?<nbtype>[^/]+)/api/kernels(?<rest>.*?)$ {
+        proxy_pass http://127.0.0.1:8800/gie_proxy/jupyter/$nbtype/api/kernels$rest;
+        proxy_redirect off;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
 
-	# Route all path-based interactive tool requests to the InteractiveTool proxy application
-	location ~* ^/(interactivetool/.+)$ {
-	        proxy_redirect off;
-	        proxy_http_version 1.1;
-	        proxy_set_header Host $host;
-	        proxy_set_header X-Real-IP $remote_addr;
-	        proxy_set_header Upgrade $http_upgrade;
-	        proxy_set_header Connection "upgrade";
-	        proxy_pass http://127.0.0.1:{{ gie_proxy_port }};
-    	}
+    # Route all path-based interactive tool requests to the InteractiveTool proxy application
+    location ~* ^/(interactivetool/.+)$ {
+            proxy_redirect      off;
+            proxy_http_version  1.1;
+            proxy_set_header    Host            $host;
+            proxy_set_header    X-Real-IP       $remote_addr;
+            proxy_set_header    Upgrade         $http_upgrade;
+            proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header    Connection      "upgrade";
+            proxy_hide_header   X-Frame-Options;
+            add_header          X-Frame-Options "SAMEORIGIN";
+            proxy_pass          http://127.0.0.1:{{ gie_proxy_port }};
+        }
 
-	location /.well-known/ {
-		proxy_set_header           Host $host:$server_port;
-		proxy_set_header           X-Real-IP $remote_addr;
-		proxy_set_header           X-Forwarded-For $proxy_add_x_forwarded_for;
-		proxy_set_header           X-Forwarded-Proto $scheme;
-		proxy_pass                 http://127.0.0.1:8118;
-		proxy_pass_request_headers on;
-	}
+    location /.well-known/ {
+        proxy_pass          http://127.0.0.1:8118;
+        proxy_set_header    Host                $host;
+        proxy_set_header    X-Real-IP           $remote_addr;
+        proxy_set_header    X-Forwarded-For     $proxy_add_x_forwarded_for;
+        proxy_set_header    X-Forwarded-Proto   $scheme;
+        proxy_pass_request_headers on;
+    }
 
-	{{ gapars_nginx_config }}
+    {{ gapars_nginx_config }}
 
-	location /apollo/ {
-		proxy_pass http://apollo.internal.galaxyproject.eu/apollo/;
-		proxy_http_version 1.1;
-		proxy_set_header Upgrade $http_upgrade;
-		proxy_set_header Connection $connection_upgrade;
-		proxy_set_header Host $host;
-	}
+    location /apollo/ {
+        proxy_pass http://apollo.internal.galaxyproject.eu/apollo/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header Host $host;
+    }
 
-	location /apollo-permapol/ {
-		proxy_pass http://apollo.internal.galaxyproject.eu/apollo-permapol/;
-		proxy_http_version 1.1;
-		proxy_set_header Upgrade $http_upgrade;
-		proxy_set_header Connection $connection_upgrade;
-		proxy_set_header Host $host;
-	}
+    location /apollo-permapol/ {
+        proxy_pass http://apollo.internal.galaxyproject.eu/apollo-permapol/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header Host $host;
+    }
 
-	location /apollo_api/ {
-		proxy_pass http://apollo.internal.galaxyproject.eu/apollo_api/;
-		proxy_read_timeout 300;
-	}
+    location /apollo_api/ {
+        proxy_pass http://apollo.internal.galaxyproject.eu/apollo_api/;
+        proxy_read_timeout 300;
+    }
 
-	location /beacon {
-		rewrite ^/beacon/?(.*)$ /$1 break;
-		proxy_pass http://beacon.galaxyproject.eu;
-		proxy_http_version 1.1;
-		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-		proxy_set_header X-Real-IP $remote_addr;
-		proxy_set_header Host beacon.galaxyproject.eu;
-	}
+    location /beacon {
+        rewrite ^/beacon/?(.*)$ /$1 break;
+        proxy_pass http://beacon.galaxyproject.eu;
+        proxy_http_version 1.1;
+        proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header    X-Real-IP       $remote_addr;
+        proxy_set_header    Host            beacon.galaxyproject.eu;
+    }
 
-	location /external/phdcomics/ {
-		proxy_pass http://phdcomics.com/;
-		# The comics are extremely cacheable. No sense waiting for a server from USA to respond.
-		proxy_cache           STATIC;
-		proxy_cache_valid     200  10d;
-		proxy_cache_use_stale error timeout invalid_header updating http_500 http_502 http_503 http_504;
-	}
+    location /external/phdcomics/ {
+        proxy_pass http://phdcomics.com/;
+        # The comics are extremely cacheable. No sense waiting for a server from USA to respond.
+        proxy_cache           STATIC;
+        proxy_cache_valid     200  10d;
+        proxy_cache_use_stale error timeout invalid_header updating http_500 http_502 http_503 http_504;
+    }
 
-	location /quota-increase {
-		return 301 https://docs.google.com/forms/d/e/1FAIpQLSf9w2MOS6KOlu9XdhRSDqWnCDkzoVBqHJ3zH_My4p8D8ZgkIQ/viewform;
-	}
+    location /quota-increase {
+        return 301 https://docs.google.com/forms/d/e/1FAIpQLSf9w2MOS6KOlu9XdhRSDqWnCDkzoVBqHJ3zH_My4p8D8ZgkIQ/viewform;
+    }
 
-	location /gpu-request {
-		return 301 https://docs.google.com/forms/d/e/1FAIpQLSd-isWRKIX9QVRNJAEBVfh4pLpR3NsOAdOSgKpZH9sKdJ0rBg/viewform;
-	}
+    location /gpu-request {
+        return 301 https://docs.google.com/forms/d/e/1FAIpQLSd-isWRKIX9QVRNJAEBVfh4pLpR3NsOAdOSgKpZH9sKdJ0rBg/viewform;
+    }
 
-	# TIaaS 2
-	{{ tiaas_nginx_routes }}
+    # TIaaS 2
+    {{ tiaas_nginx_routes }}
 
-	# For GTN in Galaxy Webhook
-	location /training-material/ {
-		proxy_pass https://training.galaxyproject.org/training-material/;
-	}
+    # For GTN in Galaxy Webhook
+    location /training-material/ {
+        proxy_ssl_server_name on;
+        proxy_pass https://training.galaxyproject.org/training-material/;
+    }
 
-	location /request-tiaas {
-		return 301 https://usegalaxy.eu/tiaas/new/;
-	}
+    location /request-tiaas {
+        return 301 https://usegalaxy.eu/tiaas/new/;
+    }
 
-	location /freiburg {
-		return 301 https://galaxyproject.eu/freiburg/;
-	}
-	location /erasmusmc {
-		return 301 https://galaxyproject.eu/erasmusmc/;
-	}
-	location /pasteur {
-		return 301 https://galaxyproject.eu/pasteur/;
-	}
-	location /belgium {
-		return 301 https://galaxyproject.eu/belgium/;
-	}
-	location /people {
-		return 301 https://galaxyproject.eu/people;
-	}
-	location /terms {
-		return 301 https://galaxyproject.eu/gdpr;
-	}
+    location /freiburg {
+        return 301 https://galaxyproject.eu/freiburg/;
+    }
+    location /erasmusmc {
+        return 301 https://galaxyproject.eu/erasmusmc/;
+    }
+    location /pasteur {
+        return 301 https://galaxyproject.eu/pasteur/;
+    }
+    location /belgium {
+        return 301 https://galaxyproject.eu/belgium/;
+    }
+    location /people {
+        return 301 https://galaxyproject.eu/people;
+    }
+    location /terms {
+        return 301 https://galaxyproject.eu/gdpr;
+    }
 
-	location /favicon.ico {
-		alias {{ galaxy_server_dir }}/static/favicon.ico;
-	}
+    location /favicon.ico {
+        alias {{ galaxy_server_dir }}/static/favicon.ico;
+    }
 
-	location /robots.txt {
-		alias {{ galaxy_server_dir }}/static/robots.txt;
-	}
+    location /robots.txt {
+        alias {{ galaxy_server_dir }}/static/robots.txt;
+    }
 
-	resolver 8.8.8.8 8.8.4.4 valid=300s;
-	resolver_timeout 5s;
-	add_header X-Content-Type-Options nosniff;
-	add_header X-XSS-Protection "1; mode=block";
-	add_header X-Robots-Tag none;
+    resolver 8.8.8.8 8.8.4.4 valid=300s;
+    resolver_timeout 5s;
+    add_header X-Content-Type-Options nosniff;
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Robots-Tag none;
 
-	client_max_body_size 1G; # aka max upload size, defaults to 1M
+    client_max_body_size 1G; # aka max upload size, defaults to 1M
 }
 
 server {
@@ -302,7 +310,6 @@ server {
     listen [::]:443 ssl;
 
     server_name humancellatlas.usegalaxy.eu;
-
     return 302 $scheme://singlecell.usegalaxy.eu$request_uri;
 }
 
@@ -312,6 +319,5 @@ server {
     listen [::]:443 ssl;
 
     server_name microgalaxy.usegalaxy.eu microbiome.usegalaxy.eu;
-
     return 302 $scheme://microbiology.usegalaxy.eu$request_uri;
 }

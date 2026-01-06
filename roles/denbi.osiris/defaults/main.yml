@@ -1,0 +1,17 @@
+---
+backup_restore_base_dir: /var/tmp/backup/osiris
+backup_restore_dir: "{{ backup_restore_base_dir }}/denbi_dump"
+
+cron_bin_dir: /root/bin
+minio_client_bin: "/usr/local/bin/mc"
+restic_backup_script: "{{ cron_bin_dir }}/restic_backup_restore.sh"
+restic_log_dir: /var/log/restic
+restic_log: "{{ restic_log_dir }}/osiris.log"
+
+osiris_repo: "https://github.com/OSIRIS-Solutions/osiris.git"
+osiris_dependencies:
+  - git
+  - restic
+  - rsync
+  - certbot
+  - python3-certbot-apache

@@ -5,7 +5,6 @@
   become_user: root
   vars_files:
     - secret_group_vars/all.yml
-    - group_vars/all.yml
     - secret_group_vars/sentry.yml
     - mounts/mountpoints.yml
     - mounts/dest/all.yml
@@ -14,6 +13,7 @@
         zone: public
         port: 1080-1081/tcp
         permanent: true
+        immediate: true
         state: enabled
     - name: Copy Rustus request monitoring script
       ansible.builtin.copy:

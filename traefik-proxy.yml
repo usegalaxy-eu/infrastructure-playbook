@@ -6,7 +6,6 @@
     - secret_group_vars/all.yml
     - secret_group_vars/traefik.yml
     - secret_group_vars/keys.yml
-    - group_vars/all.yml
   pre_tasks:
     - name: Install ansible dependencies
       ansible.builtin.package:
@@ -39,16 +38,13 @@
         - docker
         - selinux
 
-    - name: Set authorized SSH key
-      ansible.posix.authorized_key:
-        user: "{{ ansible_ssh_user }}"
-        state: present
-        key: "{{ item }}"
-      loop:
-        - https://github.com/mira-miracoli.keys
-        - "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBACB5Q5blymkTIRSzVzXITOGvBuI7W0L9Ykwfz8LJGPraaGVPiezzFGvjhqwX+EyCqQPt7JprR5mimJRw/JN3nBXWAHjekvmB5FuILkk6m5fOiQJ5QhRMyQ5GfxODAvGbHpTuWHbYJLWD5fhcboKPxlXOWy4xY9kDZVuQvEKisNKYBsFLA== sanjay"
-        - "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBABRaLHL8mgW86rbtdUh6TY4rs7/la8hAGeSQ3jBF7LMwYZnbS32YDMYvDq3KgNu5WqSMFvkxNm3vfTAbd8CXBfakwDBFBaD9kO0b2t4/p4VoFUsd3B2OvmTR7Bsg7OxTGJJ7aUP/SzTg+Z4NzsmHwQ9h31gfI7n/buZD4S1edQke19Y6w== dominguj@informatik.uni-freiburg.de"
-        - "{{ galaxy_user_public_key }}"
+    - name: Copy Galaxy active users script
+      ansible.builtin.copy:
+        src: files/traefik/active_users.sh
+        dest: "{{ galaxy_active_users_script }}"
+        mode: '0755'
+        owner: root
+        group: root
 
   roles:
     - geerlingguy.repo-epel # Install EPEL repository

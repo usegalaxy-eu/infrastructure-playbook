@@ -1,0 +1,45 @@
+---
+- name: "Install dependencies for OSIRIS or system use"
+  ansible.builtin.dnf:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ osiris_dependencies }}"
+
+- name: "Configure restic backups"
+  ansible.builtin.include_tasks: configure_restic.yml
+
+- name: "Check if we should restore the latest backup"
+  ansible.builtin.stat:
+    path: "{{ restore_backup_semaphore_path }}"
+  register: backup_status_register
+
+- name: "Invert conditional logic for readability"
+  ansible.builtin.set_fact:
+    restore_backup: "{{ not backup_status_register.stat.exists }}"
+
+- name: "Perform backup before changes/updates if not restoring"
+  ansible.builtin.include_tasks: perform_backup.yml
+  when: not restore_backup
+
+- name: "Restore backup from restic"
+  ansible.builtin.include_tasks: restore_from_restic.yml
+  when: restore_backup
+
+- name: "Use restored backup"
+  ansible.builtin.include_tasks: apply_backup_files.yml
+  when: restore_backup
+
+- name: "Ensure OSIRIS configuration and permissions"
+  ansible.builtin.include_tasks: osiris_configuration.yml
+
+- name: "Ensure OSIRIS version matches configuration"
+  ansible.builtin.include_tasks: osiris_version.yml
+
+- name: "Configure SELinux for OSIRIS"
+  ansible.builtin.include_tasks: selinux.yml
+
+- name: "Delete/Cleanup backup directories"
+  ansible.builtin.include_tasks: delete_backup_dir.yml
+
+- name: "Configure certbot and SSL certs"
+  ansible.builtin.include_tasks: certbot_ssl.yml

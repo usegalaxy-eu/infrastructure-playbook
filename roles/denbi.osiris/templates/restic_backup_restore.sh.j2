@@ -1,0 +1,149 @@
+#!/usr/bin/env bash
+
+set -eu
+
+export AWS_ACCESS_KEY_ID='{{ s3_access_key }}'
+export AWS_SECRET_ACCESS_KEY='{{ s3_secret_key }}'
+
+export RESTIC_PASSWORD='{{ restic_passwd }}'
+MONGODB_DATABASE='{{ mongo_dbname }}'
+MONGODB_CONNECTION='{{ mongo_connection }}'
+
+RESTIC='/bin/restic'
+RESTORE='{{ backup_restore_dir }}'
+FILES='{{ osiris_www_dir }}'
+INIT='{{ backup_restore_base_dir }}/osiris_init'
+URL='s3:{{ s3_host_url }}/{{ s3_bucket }}'
+LOG_FILE='{{ restic_log }}'
+
+backup() {
+    feedback "Starting OSIRIS backup"
+
+    # Delete any existing dump dir
+    rm -rf "$RESTORE"
+    mkdir -p "$RESTORE"
+
+    ## Backup OSIRIS MongoDB
+    feedback "Dumping MongoDB"
+
+    mongodump -d "$MONGODB_DATABASE" -o "$RESTORE" "${MONGODB_CONNECTION}"
+
+    ## Restic + minio backup
+    if [ ! -f "$INIT" ]; then
+        feedback "Initializing restic repository"
+        "$RESTIC" -r "$URL" init
+        touch "$INIT"
+    fi
+
+    rsync -a "$FILES" "$RESTORE"
+
+    feedback "Performing restic backup"
+    "$RESTIC" -r "$URL" backup "$RESTORE"
+}
+
+restore() {
+    feedback "Restoring so assuming RESTIC initialization took place in the past"
+    touch "$INIT"
+
+    feedback "Restoring latest RESTIC OSIRIS backup to ${RESTORE}"
+    # NOTE: The '--target' is / (system root) because restic keeps the full
+    # path in its backup DB ({{ backup_restore_dir }}/...)
+    "$RESTIC" -r "$URL" restore --target / latest
+
+    feedback "Backup restored, please apply with Ansible recipe or relocate/restore files manually"
+}
+
+feedback() {
+    echo "$(date '+%F %H:%M:%S') - >>> $1 <<<"
+}
+
+rotate() {
+    # Keeping daily backups for 2 weeks and one backup for the last 6 months
+    # We will not have backups older than half a year
+    feedback "Rotating old backups"
+    "$RESTIC" -r "$URL" forget --keep-last 14 --keep-monthly 6 --prune
+}
+
+check() {
+    feedback "Checking old backups"
+    "$RESTIC" -r "$URL" check
+}
+
+stats() {
+    feedback "Collecting repository statistics"
+    "$RESTIC" -r "$URL" snapshots
+    "$RESTIC" -r "$URL" stats
+}
+
+redirect() {
+    # Open standard out at `$LOG_FILE` for write.
+    exec 1>>$LOG_FILE
+    # Copy stderr to be sent to stderr and the logfile
+    exec 2> >(tee -a /dev/stderr)
+}
+
+cleanup() {
+    feedback "Removing temporary backup files: $RESTORE"
+    rm -rf "$RESTORE"
+    feedback "Exiting"
+}
+
+register_cleanup() {
+    trap cleanup EXIT
+    set -e
+}
+
+# Parse args using getopt (instead of getopts) to allow arguments before options
+ARGS=$(getopt -o bdrtsh -l backup,redirect,restore,rotate,stats -n "$0" -- "$@")
+# reorganize arguments as returned by getopt
+eval set -- "$ARGS"
+
+ACTION=0
+
+while true; do
+    case "$1" in
+        # Shift before to throw away option
+        # Shift after if option has a required positional argument
+        -d|--redirect)
+            shift
+            redirect
+            ;;
+        -b|--backup)
+            register_cleanup
+
+            shift
+            backup
+            ACTION=1
+            ;;
+        -t|--rotate)
+            shift
+            rotate
+            check
+            ACTION=1
+            ;;
+        -s|--stats)
+            shift
+            stats
+            ACTION=1
+            ;;
+        -r|--restore)
+            shift
+            restore
+            ACTION=1
+            ;;
+        --)
+            shift
+            break
+            ;;
+    esac
+done
+
+# If ACTION is 0 we run with default behavior
+if [ "$ACTION" == "0" ]; then
+    redirect
+    backup
+    cleanup
+    rotate
+    check
+    stats
+fi

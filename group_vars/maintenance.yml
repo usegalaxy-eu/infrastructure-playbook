@@ -22,8 +22,21 @@ galaxy_user:
 # Role: hxr.postgres-connection
 # Role: usegalaxy-eu.galaxy-slurp
 postgres_user: galaxy
-postgres_host: sn05.galaxyproject.eu
+postgres_host: sn11.galaxyproject.eu
 postgres_port: 5432
+pgc_users:
+  - uname: "{{ galaxy_user.name }}"
+    uhome: "{{ galaxy_user.home }}"
+    gname: "{{ galaxy_group.name | default(galaxy_group) }}"
+    pguser: "{{ postgres_user }}"
+    pgpass: "{{ postgres_pass }}"
+    pgdatabase: galaxy
+  - uname: "{{ telegraf_user.name }}"
+    uhome: "{{ telegraf_user.home }}"
+    gname: "{{ telegraf_user.group }}"
+    pguser: "{{ postgres_user }}"
+    pgpass: "{{ postgres_pass }}"
+    pgdatabase: galaxy
 
 # Role: usegalaxy_eu.handy.os_setup
 enable_hostname: true
@@ -72,21 +85,19 @@ autofs_mount_points:
   - cache
   - misc
 
-# Role: usegalaxy-eu.bashrc
-galaxy_pulsar_app_conf: "{{ galaxy_config_dir }}/pulsar_app.yml"
+# (usegalaxy-eu.bashrc)
+bashrc_galaxy_root: "{{ galaxy_root }}"
+bashrc_galaxy_venv_dir: "{{ galaxy_venv_dir }}"
+bashrc_galaxy_server_dir: "{{ galaxy_server_dir }}"
+bashrc_galaxy_config_dir: "{{ galaxy_config_dir }}"
+bashrc_galaxy_config_file: "{{ galaxy_config_file }}"
+bashrc_galaxy_mutable_config_dir: "{{ galaxy_mutable_config_dir }}"
+bashrc_galaxy_log_dir: "{{ galaxy_log_dir }}"
+bashrc_galaxy_pulsar_app_conf: "{{ galaxy_config_dir }}/pulsar_app.yml"
 bashrc_users:
   - uname: "{{ galaxy_user.name }}"
     uhome: "{{ galaxy_user.home }}"
     gname: "{{ galaxy_group.name }}"
-
-# Role: hxr.postgres-connection
-pgc_users:
-  - uname: "{{ galaxy_user.name }}"
-    uhome: "{{ galaxy_user.home }}"
-    gname: "{{ galaxy_group.name }}"
-    pguser: "{{ postgres_user }}"
-    pgpass: "{{ postgres_pass }}"
-    pgdatabase: galaxy
 
 # Role: usegalaxy_eu.fs_maintenance
 fsm_maintenance_dir: "/data/dnb01/maintenance"
@@ -102,10 +113,6 @@ fsm_scripts:
     user: "{{ fsm_galaxy_user.username }}"
     group: "{{ fsm_galaxy_user.groupname }}"
     paths:
-      - /data/1/galaxy_db/tmp
-      - /data/2/galaxy_db/tmp
-      - /data/dnb01/galaxy_db/tmp
-      - /data/dnb02/galaxy_db/tmp
       - /data/dnb-ds03/galaxy_db/tmp
       - /data/dnb05/galaxy_db/tmp
       - /data/dnb06/galaxy_db/tmp
@@ -142,7 +149,29 @@ fsm_scripts:
       - /data/jwd05e/main
       - /data/jwd06/main
       - /data/jwd07/main
+      - /data/jwd08/main
     time: "{{ fsm_intervals.long }}"
+fsm_cron_tasks:
+  docker:
+    enable: false
+    name: "Docker clean up"
+    minute: 30
+    hour: 2
+    dom: "*"
+    month: "*"
+    dow: "*"
+    job: "docker system prune -f --all> /dev/null"
+    user: "{{ fsm_galaxy_user.username }}"
+  gxadmin:
+    enable: true
+    name: "Gxadmin Galaxy clean up"
+    minute: 0
+    hour: "*/6"
+    dom: "*"
+    month: "*"
+    dow: "*"
+    job: "/usr/bin/gxadmin galaxy cleanup 60"
+    user: "{{ fsm_galaxy_user.username }}"
 fsm_htcondor_enable: true
 
 # Role: dj-wasabi.telegraf
@@ -234,7 +263,7 @@ telegraf_plugins_extra:
       - commands = ["{{ custom_telegraf_env }} /usr/bin/galaxy_tool_usage_over_time"]
       - timeout = "360s"
       - data_format = "influx"
-      - interval = "24h"
+      - interval = "168h"
   galaxy_job_queue_states_stats:
     plugin: "exec"
     config:
@@ -345,6 +374,13 @@ telegraf_plugins_extra:
       - timeout = "10s"
       - data_format = "influx"
       - interval = "24h"
+  galaxy_wizard_openai_utilization_and_costs:
+    plugin: "exec"
+    config:
+      - commands = ['bash -c "source {{ telegraf_user.home }}/.bashrc && {{ custom_telegraf_env }} /usr/bin/galaxy_wizard_openai_utilization_and_costs.py"']
+      - timeout = "120s"
+      - data_format = "influx"
+      - interval = "24h"
 
 # Role: hxr.monitor-cluster
 monitor_condor: true
@@ -396,7 +432,7 @@ walle_database_file: checksums.yml
 walle_galaxy_url: "https://usegalaxy.eu"
 walle_api_key: "{{ admin_api_key_maintenance }}"
 walle_extra_env_vars:
-  PGHOST: sn05.galaxyproject.eu
+  PGHOST: sn11.galaxyproject.eu
   WALLE_USER_DELETION_MESSAGE: >-
       Our systems have detected activity related to your Galaxy account that most likely violate our terms of service.
       To prevent damage and in accordance with our terms of service, we automatically deleted your account.
@@ -412,3 +448,23 @@ walle_envs_database:
 walle_cron_day: "*"
 walle_cron_hour: "*"
 walle_cron_minute: "0"
+
+# Restics
+restic_schedule_type: "cronjob"
+restic_create_cron: true
+restic_user: galaxy
+restic_repos:
+  local:
+    location: "/data/dnb01/mutable-data"
+    password: "{{ restic_password }}"
+    init: false
+restic_backups:
+  data:
+    name: mutable-data
+    repo: local
+    src: /opt/galaxy/mutable-data/
+    scheduled: true
+    schedule_hour: "21"
+    schedule_minute: "0"
+    keep_last: 15
+    prune: true
