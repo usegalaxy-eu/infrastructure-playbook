@@ -12,6 +12,13 @@
   password: "{{ erga_nextcloud_password }}"
   requires_groups: erga
 
+- type: huggingface
+  id: huggingface
+  label: Hugging Face Hub 🤗
+  doc: 'Hugging Face Hub is a platform for sharing machine learning models and datasets.'
+  endpoint: 'https://huggingface.co'
+  token: ''
+
 - type: posix
   root: '/data/db/file_sources/tabula_atlases'
   id: tabula-atlases
