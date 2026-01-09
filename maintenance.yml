@@ -15,6 +15,14 @@
       service:
         name: rsyslog
         state: restarted
+  tasks:
+    - name: Run library permission set for Issue 855
+      ansible.builtin.cron:
+        name: Sets the library permissions of all dataset in Library SPAMR-VET to Role SPAMR-VET
+        user: galaxy
+        job: uvx --from ephemeris set-library-permissions "{{ library_id_spamr_vet }}" -g  https://usegalaxy.eu -a "$GALAXY_API_KEY" --roles "{{ role_id_spamr_vet }}" -y -s
+        hour: "*/4"
+
   pre_tasks:
     - name: Set additional local mount point
       set_fact:
