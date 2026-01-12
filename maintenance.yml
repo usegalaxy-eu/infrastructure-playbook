@@ -22,6 +22,7 @@
         user: galaxy
         job: uvx --from ephemeris set-library-permissions "{{ library_id_spamr_vet }}" -g  https://usegalaxy.eu -a "$GALAXY_API_KEY" --roles "{{ role_id_spamr_vet }}" -y -s
         hour: "*/4"
+        minute: "0"
 
   pre_tasks:
     - name: Set additional local mount point
