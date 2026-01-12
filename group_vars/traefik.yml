@@ -108,7 +108,7 @@ traefik_containers:
       - "--log=true"
       - "--log.format=json"
       - --log.filePath={{ traefik_log_dir }}/traefik.log
-      - "--log.level=DEBUG" # DEBUG, PANIC, FATAL, ERROR, WARN, INFO
+      - "--log.level=INFO" # DEBUG, PANIC, FATAL, ERROR, WARN, INFO
       - --accesslog=true
       - --accesslog.filepath={{ traefik_log_dir }}/access.log
     labels:
