@@ -22,6 +22,16 @@
       - /etc/ssh/ssh_host_ed25519_key-cert.pub
   notify: "restart sshd"
 
+- name: Add keys to SSHD Config
+  ansible.builtin.lineinfile:
+    line: "{{ item }}"
+    path: /etc/ssh/sshd_config
+  with_items:
+    - HostCertificate /etc/ssh/ssh_host_rsa_key-cert.pub
+    - HostCertificate /etc/ssh/ssh_host_ecdsa_key-cert.pub
+    - HostCertificate /etc/ssh/ssh_host_ed25519_key-cert.pub
+  notify: "restart sshd"
+
 - name: Ensure server key is gone
   file:
     path: /tmp/server_ca
@@ -29,4 +39,4 @@
 
 - name: "Helper"
   debug:
-    msg: "Please add the following to your known_hosts file: @cert-authority <ip-range|*.domain> {{ lookup('file', 'server_ca.pub')  }}"
+    msg: "Please add the following to your known_hosts file: @cert-authority {{ ssh_cert_domains_ips }} {{ lookup('file', 'server_ca.pub')  }}"
