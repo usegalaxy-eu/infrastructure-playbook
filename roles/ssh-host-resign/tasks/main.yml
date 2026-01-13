@@ -13,14 +13,13 @@
     - rsa
     - ecdsa
     - ed25519
+  # This ensures the server_ca will be removed in any case
+  ignore_errors: true
 
-# Requires dev-sec.ssh-hardening + patches
-- set_fact:
-    ssh_host_key_cert_files:
-      - /etc/ssh/ssh_host_rsa_key-cert.pub
-      - /etc/ssh/ssh_host_ecdsa_key-cert.pub
-      - /etc/ssh/ssh_host_ed25519_key-cert.pub
-  notify: "restart sshd"
+- name: Ensure server key is gone
+  file:
+    path: /tmp/server_ca
+    state: absent
 
 - name: Add keys to SSHD Config
   ansible.builtin.lineinfile:
@@ -32,11 +31,6 @@
     - HostCertificate /etc/ssh/ssh_host_ed25519_key-cert.pub
   notify: "restart sshd"
 
-- name: Ensure server key is gone
-  file:
-    path: /tmp/server_ca
-    state: absent
-
 - name: "Helper"
   debug:
-    msg: "Please add the following to your known_hosts file: @cert-authority {{ ssh_cert_domains_ips }} {{ lookup('file', 'server_ca.pub')  }}"
+    msg: "Please add the following to your known_hosts file: @cert-authority {{ ssh_host_resign_cert_domains_ips }} {{ lookup('file', 'server_ca.pub')  }}"

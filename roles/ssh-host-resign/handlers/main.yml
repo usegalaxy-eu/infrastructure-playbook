@@ -1,0 +1,5 @@
+---
+- name: restart sshd
+  ansible.builtin.systemd:
+    service: sshd
+    state: reloaded
