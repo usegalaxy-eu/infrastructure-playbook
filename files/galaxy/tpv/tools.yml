@@ -66,30 +66,6 @@ tools:
           require:
             - singularity
 
-  toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_compare/deeptools_bam_compare/2.4.1.0:
-    scheduling:
-      require:
-        - conda
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_coverage/deeptools_bam_coverage/2.4.1.0:
-    scheduling:
-      require:
-        - conda
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_plot_coverage/deeptools_plot_coverage/2.4.1.0:
-    scheduling:
-      require:
-        - conda
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_plot_profile/deeptools_plot_profile/3.1.2.0.0:
-    scheduling:
-      require:
-        - conda
-        - singularity
-
   toolshed.g2.bx.psu.edu/repos/iuc/quast/quast/.*:
     cores: 10
     rules:
@@ -162,12 +138,6 @@ tools:
         cores: 14
         mem: 24
 
-  toolshed.g2.bx.psu.edu/repos/iuc/enasearch_search_data/enasearch_search_data/.*:
-    scheduling:
-      require:
-        - conda
-        - singularity
-
   toolshed.g2.bx.psu.edu/repos/iuc/mummer_mummer/mummer_mummer/.*:
     mem: 8
 
@@ -210,30 +180,6 @@ tools:
     scheduling:
       prefer:
         - condor-tpv
-
-  toolshed.g2.bx.psu.edu/repos/iuc/sleuth/sleuth/.*:
-    cores: 4
-    mem: 16
-    scheduling:
-      require:
-        - conda
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/iuc/rnaquast/rna_quast/.*:
-    cores: 12
-    mem: 40
-    scheduling:
-      require:
-        - conda
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/iuc/mashmap/mashmap/.*:
-    cores: 8
-    mem: 32
-    scheduling:
-      require:
-        - conda
-        - singularity
 
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold/.*:
     cores: 10
@@ -1104,22 +1050,6 @@ tools:
       singularity_container_id_override: "quay.io/biocontainers/mulled-v2-56685ecbcd8a92192501538ce5a05b1be490b742:1f13308a8260334d826a999ba1f77b563eccd8a5-0"
     scheduling:
       require:
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/.*:
-    cores: 8
-    memory: 24
-    scheduling:
-      require:
-        - conda
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/.*:
-    cores: 1
-    mem: 40
-    scheduling:
-      require:
-        - conda
         - singularity
 
   # 27:02:2024: We seem to have issues with the tools when loaded from the conda envs.
