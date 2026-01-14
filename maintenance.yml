@@ -16,6 +16,11 @@
         name: rsyslog
         state: restarted
   pre_tasks:
+    - name: Install EPEL-release
+      ansible.builtin.package:
+        name: epel-release
+        state: present
+
     - name: Set additional local mount point
       set_fact:
         autofs_conf_files: "{{ autofs_conf_files | combine({ 'usrlocal': autofs_conf_files['usrlocal'] + galaxy_mount }) }}"
@@ -32,13 +37,6 @@
             'python3-devel',
           ]
       become: true
-
-    - name: Install python3-virtualenv from enable crb repository (this repo is the one that provides the package)
-      ansible.builtin.dnf:
-        name: python3-virtualenv
-        enablerepo: crb
-        state: present
-
   post_tasks:
     - name: Append some users to the systemd-journal group
       user:
