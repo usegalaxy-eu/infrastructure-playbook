@@ -32,6 +32,13 @@
             'python3-devel',
           ]
       become: true
+
+    - name: Install python3-virtualenv from enable crb repository (this repo is the one that provides the package)
+      ansible.builtin.dnf:
+        name: python3-virtualenv
+        enablerepo: crb
+        state: present
+
   post_tasks:
     - name: Append some users to the systemd-journal group
       user:
