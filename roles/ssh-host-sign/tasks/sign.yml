@@ -1,0 +1,47 @@
+- name: Check if cert files exist
+  ansible.builtin.stat:
+    path: "/etc/ssh/ssh_host_{{item}}_key-cert.pub"
+  register: "st"
+
+- set_fact:
+    outdated_certs: 0
+- name: Sign keys if outdated
+  when: st.stat.exists
+  block:
+    - ansible.builtin.command:
+        cmd: "ssh-keygen -L -f /etc/ssh/ssh_host_{{ item }}_key-cert.pub"
+      register: cert_info
+    - name: Parse expiration date
+      set_fact:
+        # Extracts "2036-01-02T12:22:54"
+        expiry_string: "{{ cert_info | regex_search('to\\s(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2})', '\\1') | first | regex_replace('T', '\ ')  }}"
+    - debug:
+       var: "{{ expiry_string }}"
+
+    - name: Convert dates for comparison
+      set_fact:
+        expiry_date: "{{ (expiry_string | to_datetime) }}"
+        
+    - name: Determine if certificate will expire in less than a month
+      ansible.builtin.set_fact:
+        is_outdated: "{{ ((expiry_string | to_datetime) - now()).days < 30  }}"
+
+- name: Sign keys if outdated
+  when: (not st.stat.exists) or is_outdated
+  block:
+    - name: Copy server key into VM temporarily
+      copy:
+        src: server_ca
+        dest: /tmp/server_ca
+        owner: root
+        group: root
+        mode: 0600
+    
+    - name: Sign Keys
+      command: ssh-keygen -s /tmp/server_ca -I key_for_test1 -h -V +520w /etc/ssh/ssh_host_{{ item }}_key.pub
+      ignore_errors: true
+  rescue:
+    - name: Ensure server key is gone
+      file:
+        path: /tmp/server_ca
+        state: absent
