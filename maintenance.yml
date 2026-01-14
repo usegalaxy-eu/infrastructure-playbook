@@ -25,6 +25,10 @@
         minute: "0"
 
   pre_tasks:
+    - name: Install EPEL-release
+      ansible.builtin.package:
+        name: epel-release
+        state: present
     - name: Set additional local mount point
       set_fact:
         autofs_conf_files: "{{ autofs_conf_files | combine({ 'usrlocal': autofs_conf_files['usrlocal'] + galaxy_mount }) }}"
@@ -39,6 +43,8 @@
             'bc',
             'python3',
             'python3-devel',
+            'bzip2',
+            'firewalld',
           ]
       become: true
   post_tasks:
@@ -107,6 +113,12 @@
         owner: root
         group: root
         mode: "0555"
+    - name: Ensure firewalld is running
+      ansible.builtin.service:
+        name: firewalld
+        state: started
+        enabled: true
+      become: true
     - name: Configure firewalld to open ports
       firewalld:
         port: "{{ item }}"
