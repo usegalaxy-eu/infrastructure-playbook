@@ -4,11 +4,11 @@ tools:
   _conda_in_container:
     abstract: true
     env:
-    # TPV is not passing ENV vars into the containers as it seems (2026-01), so lets set this for all containers and pass in with "SINGULARITYENV_"
-    - name: _JAVA_OPTIONS
-      value: -Djava.io.tmpdir=$_GALAXY_JOB_TMP_DIR -Xmx{round(mem*0.9*1024)}m -Xms256m
-    - name: SINGULARITYENV__JAVA_OPTIONS
-      value: $_JAVA_OPTIONS
+      # TPV is not passing ENV vars into the containers as it seems (2026-01), so lets set this for all containers and pass in with "SINGULARITYENV_"
+      - name: _JAVA_OPTIONS
+        value: -Djava.io.tmpdir=$_GALAXY_JOB_TMP_DIR -Xmx{round(mem*0.9*1024)}m -Xms256m
+      - name: SINGULARITYENV__JAVA_OPTIONS
+        value: $_JAVA_OPTIONS
     scheduling:
       require:
         - conda
