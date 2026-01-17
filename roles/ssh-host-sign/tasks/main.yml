@@ -1,23 +1,16 @@
 ---
-- stat: path=/etc/ssh/ssh_host_rsa_key-cert.pub
-  register: st
-
-- name: Copy server key into VM temporarily
-  copy:
-    src: server_ca
-    dest: /tmp/server_ca
-    owner: root
-    group: root
-    mode: 0600
-  when: not st.stat.exists
-
-- name: Sign Keys
-  command: ssh-keygen -s /tmp/server_ca -I key_for_test1 -h -V +520w /etc/ssh/ssh_host_{{ item }}_key.pub
+- name: Sign host keys if missing or expired
+  ansible.builtin.include_tasks:
+    file: sign.yml
   with_items:
     - rsa
     - ecdsa
     - ed25519
-  when: not st.stat.exists
+    
+- name: Ensure server key is gone
+  file:
+    path: /tmp/server_ca
+    state: absent
 
 # Requires dev-sec.ssh-hardening
 - set_fact:
@@ -27,19 +20,12 @@
       - "HostCertificate /etc/ssh/ssh_host_ed25519_key-cert.pub"
   notify: "restart sshd"
 
-- name: Ensure server key is gone
-  file:
-    path: /tmp/server_ca
-    state: absent
-  when: not st.stat.exists
-
 - name: Another way to call known_hosts
-  known_hosts:
-    name: "CA"
-    key: "@cert-authority * {{ lookup('file', 'server_ca.pub')  }}"
+  ansible.builtin.lineinfile:
+    line: "@cert-authority {{ ssh_host_resign_cert_domains_ips }} {{ lookup('file', 'server_ca.pub')  }}"
     path: /etc/ssh/ssh_known_hosts
-    state: present
+    create: true
 
-# - name: "Helper"
-#   debug:
-#     msg: "Please add the following to your known_hosts file: @cert-authority <ip-range|*.domain> {{ lookup('file', 'server_ca.pub')  }}"
+- name: "Helper"
+  debug:
+    msg: "Please add the following to your known_hosts file: @cert-authority {{ ssh_host_resign_cert_domains_ips }} {{ lookup('file', 'server_ca.pub')  }}"
