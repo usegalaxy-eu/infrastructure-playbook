@@ -1,6 +1,6 @@
 - name: Check if cert files exist
   ansible.builtin.stat:
-    path: "/etc/ssh/ssh_host_{{item}}_key-cert.pub"
+    path: "{{ item.certificate }}"
   register: "st"
 
 - set_fact:
@@ -9,7 +9,7 @@
   when: st.stat.exists
   block:
     - ansible.builtin.command:
-        cmd: "ssh-keygen -L -f /etc/ssh/ssh_host_{{ item }}_key-cert.pub"
+        cmd: "ssh-keygen -L -f {{ item.certificate }}"
       register: cert_info
     - name: Parse expiration date
       set_fact:
@@ -38,10 +38,13 @@
         mode: 0600
     
     - name: Sign Keys
-      command: ssh-keygen -s /tmp/server_ca -I key_for_test1 -h -V +520w /etc/ssh/ssh_host_{{ item }}_key.pub
-      ignore_errors: true
+      command: "ssh-keygen -s /tmp/server_ca -I key_for_test1 -h -V +520w {{ item.key }}"
   always:
     - name: Ensure server key is gone
       file:
         path: /tmp/server_ca
         state: absent
+
+- name: "Helper"
+  ansible.builtin.debug:
+    msg: "Please add the following to your known_hosts file: @cert-authority {{ ssh_host_sign_cert_domains_ips }} {{ lookup('file', 'server_ca.pub')  }}"

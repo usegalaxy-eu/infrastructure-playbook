@@ -1,0 +1,11 @@
+ssh_host_sign_keys:
+  - key: /etc/ssh/ssh_host_rsa_key.pub
+    certificate: /etc/ssh/ssh_host_rsa_key-cert.pub
+
+  - key: /etc/ssh/ssh_host_ecdsa_key.pub
+    certificate: /etc/ssh/ssh_host_ecdsa_key-cert.pub
+
+  - key: /etc/ssh/ssh_host_ed25519_key.pub
+    certificate: /etc/ssh/ssh_host_ed25519_key-cert.pub
+
+ssh_host_sign_cert_domains_ips: "*.galaxyproject.eu,*.usegalaxy.eu,*.bi.privat,192.52.33.*,192.52.32.*,10.4.68.*,10.5.68.*,10.5.67.*"
