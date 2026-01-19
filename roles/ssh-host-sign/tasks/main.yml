@@ -10,3 +10,7 @@
     path: /etc/ssh/ssh_known_hosts
     state: present
     create: true
+
+- name: "Helper"
+  ansible.builtin.debug:
+    msg: "Please add the following to your known_hosts file: @cert-authority {{ ssh_host_sign_cert_domains_ips }} {{ lookup('file', 'server_ca.pub')  }}"
