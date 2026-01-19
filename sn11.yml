@@ -9,8 +9,6 @@
     - group_vars/sn11.yml
     - mounts/dest/all.yml
     - mounts/mountpoints.yml
-  collections:
-    - devsec.hardening
   pre_tasks:
     - name: Add mosh service config for FirewallD
       ansible.builtin.copy:

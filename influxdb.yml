@@ -39,8 +39,6 @@
       ansible.builtin.service:
         name: firewalld
         state: reloaded
-  collections:
-    - devsec.hardening
   roles:
     ## Starting configuration of the operating system
     - geerlingguy.swap

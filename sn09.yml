@@ -67,8 +67,6 @@
     - templates/galaxy/config/job_conf.yml
     - mounts/dest/all.yml
     - mounts/mountpoints.yml
-  collections:
-    - devsec.hardening
   handlers:
     - name: Restart Galaxy
       ansible.builtin.shell: |
