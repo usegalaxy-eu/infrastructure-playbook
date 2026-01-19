@@ -4,8 +4,8 @@
   register: "st"
 
 - set_fact:
-    outdated_certs: 0
-- name: Sign keys if outdated
+    is_outdated: 0
+- name: Determine if keys are outdated
   when: st.stat.exists
   block:
     - ansible.builtin.command:
@@ -40,7 +40,7 @@
     - name: Sign Keys
       command: ssh-keygen -s /tmp/server_ca -I key_for_test1 -h -V +520w /etc/ssh/ssh_host_{{ item }}_key.pub
       ignore_errors: true
-  rescue:
+  always:
     - name: Ensure server key is gone
       file:
         path: /tmp/server_ca

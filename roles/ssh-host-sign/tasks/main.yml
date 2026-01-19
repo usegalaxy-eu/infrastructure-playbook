@@ -6,11 +6,6 @@
     - rsa
     - ecdsa
     - ed25519
-    
-- name: Ensure server key is gone
-  file:
-    path: /tmp/server_ca
-    state: absent
 
 # Requires dev-sec.ssh-hardening
 - set_fact:
@@ -22,10 +17,11 @@
 
 - name: Another way to call known_hosts
   ansible.builtin.lineinfile:
-    line: "@cert-authority {{ ssh_host_resign_cert_domains_ips }} {{ lookup('file', 'server_ca.pub')  }}"
+    line: "@cert-authority {{ ssh_host_sign_cert_domains_ips }} {{ lookup('file', 'server_ca.pub')  }}"
     path: /etc/ssh/ssh_known_hosts
+    state: present
     create: true
 
 - name: "Helper"
   debug:
-    msg: "Please add the following to your known_hosts file: @cert-authority {{ ssh_host_resign_cert_domains_ips }} {{ lookup('file', 'server_ca.pub')  }}"
+    msg: "Please add the following to your known_hosts file: @cert-authority {{ ssh_host_sign_cert_domains_ips }} {{ lookup('file', 'server_ca.pub')  }}"
