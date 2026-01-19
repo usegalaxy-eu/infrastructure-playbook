@@ -10,6 +10,8 @@
   block:
     - ansible.builtin.command:
         cmd: "ssh-keygen -L -f {{ item.certificate }}"
+      check_mode: false
+      changed_when: false
       register: cert_info
     - name: Parse expiration date
       set_fact:
