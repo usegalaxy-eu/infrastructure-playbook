@@ -22,18 +22,15 @@ tools:
       - id: no-pulsar
         if: user is not None
         execute: |
-            from tpv.core.entities import Tag, TagSetManager, TagType
-
             user_preferences = user.extra_preferences
             pulsar_tag = user_preferences.get("distributed_compute|remote_resources", "None")
-            pulsar_tag = Tag("scheduling", pulsar_tag, TagType.REQUIRE) if pulsar_tag != "None" else None
 
-            entity.tpv_tags.tags = [
-                tag
-                for tag in entity.tpv_tags.tags
-                if tag != pulsar_tag
-            ]
-
+            if pulsar_tag != "None":
+                entity.tpv_tags.require = [
+                    tag
+                    for tag in (entity.tpv_tags.require or [])
+                    if tag != pulsar_tag
+                ]
     env:
       TEMP: /data/1/galaxy_db/tmp
 
@@ -68,74 +65,6 @@ tools:
         scheduling:
           require:
             - singularity
-
-  toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_compare/deeptools_bam_compare/.*:
-    rules:
-      - id: deeptools_singularity_bam_compare
-        if: |
-          # versions working in conda but not in singularity
-          conda_only_versions = {
-              '2.4.1.0',
-          }
-          any(helpers.tool_version_eq(tool, version) for version in conda_only_versions)
-        # remove singularity tag
-        execute: |
-          from tpv.core.entities import TagSetManager, TagType
-          entity.tpv_tags = TagSetManager([
-              tag for tag in entity.tpv_tags.tags
-              if not (tag.value == 'singularity' and tag.tag_type == TagType.REQUIRE)
-          ])
-
-  toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_coverage/deeptools_bam_coverage/.*:
-    rules:
-      - id: deeptools_singularity_bam_coverage
-        if: |
-          # versions working in conda but not in singularity
-          conda_only_versions = {
-              '2.4.1.0',
-          }
-          any(helpers.tool_version_eq(tool, version) for version in conda_only_versions)
-        # remove singularity tag
-        execute: |
-          from tpv.core.entities import TagSetManager, TagType
-          entity.tpv_tags = TagSetManager([
-              tag for tag in entity.tpv_tags.tags
-              if not (tag.value == 'singularity' and tag.tag_type == TagType.REQUIRE)
-          ])
-
-  toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_plot_coverage/deeptools_plot_coverage/.*:
-    rules:
-      - id: deeptools_singularity_plot_coverage
-        if: |
-          # versions working in conda but not in singularity
-          conda_only_versions = {
-              '2.4.1.0',
-          }
-          any(helpers.tool_version_eq(tool, version) for version in conda_only_versions)
-        # remove singularity tag
-        execute: |
-          from tpv.core.entities import TagSetManager, TagType
-          entity.tpv_tags = TagSetManager([
-              tag for tag in entity.tpv_tags.tags
-              if not (tag.value == 'singularity' and tag.tag_type == TagType.REQUIRE)
-          ])
-
-  toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_plot_profile/deeptools_plot_profile/.*:
-    rules:
-      - id: deeptools_singularity_plot_profile
-        if: |
-          # versions working in conda but not in singularity
-          conda_only_versions = {
-              '3.1.2.0.0',
-          }
-          any(helpers.tool_version_eq(tool, version) for version in conda_only_versions)
-        # remove singularity tag
-        execute: |
-          from tpv.core.entities import TagSetManager, TagType
-          entity.tpv_tags = TagSetManager([
-              tag for tag in entity.tpv_tags.tags
-              if not (tag.value == 'singularity' and tag.tag_type == TagType.REQUIRE)
-          ])
 
   toolshed.g2.bx.psu.edu/repos/iuc/quast/quast/.*:
     cores: 10
@@ -209,12 +138,6 @@ tools:
         cores: 14
         mem: 24
 
-  toolshed.g2.bx.psu.edu/repos/iuc/enasearch_search_data/enasearch_search_data/.*:
-    scheduling:
-      require:
-        - conda
-        - singularity
-
   toolshed.g2.bx.psu.edu/repos/iuc/mummer_mummer/mummer_mummer/.*:
     mem: 8
 
@@ -257,30 +180,6 @@ tools:
     scheduling:
       prefer:
         - condor-tpv
-
-  toolshed.g2.bx.psu.edu/repos/iuc/sleuth/sleuth/.*:
-    cores: 4
-    mem: 16
-    scheduling:
-      require:
-        - conda
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/iuc/rnaquast/rna_quast/.*:
-    cores: 12
-    mem: 40
-    scheduling:
-      require:
-        - conda
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/iuc/mashmap/mashmap/.*:
-    cores: 8
-    mem: 32
-    scheduling:
-      require:
-        - conda
-        - singularity
 
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold/.*:
     cores: 10
@@ -353,6 +252,12 @@ tools:
     params:
       docker_run_extra_arguments: --user 999
 
+  toolshed.g2.bx.psu.edu/repos/peterjc/tmhmm_and_signalp/Psortb/.*:
+    inherits: basic_docker_tool
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/pvactools/pvacbind/.*:
+    inherits: basic_docker_tool
+
   toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_anndata_to_csv/scimap_anndata_to_csv/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_mcmicro_to_anndata/scimap_mcmicro_to_anndata/.*:
@@ -396,6 +301,8 @@ tools:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/artbio/manta/manta/.*:
     inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/ksuderman/stanford_corenlp/stanford_corenlp/.*:
+    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/llm_hub/llm_hub/*:
     mem: 1
     env:
@@ -418,6 +325,9 @@ tools:
     cores: 5
     mem: 5
 
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_py3dtiles/3dtrees_py3dtiles/.*:
+    inherits: basic_docker_tool
+
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_tile_merge/3dtrees_tile_merge/.*:
     inherits: basic_docker_tool
     cores: 10
@@ -428,6 +338,15 @@ tools:
     gpus: 1
     cores: 10
     mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/imgteam/libcarna_render/libcarna_render/.*:
+    inherits: basic_docker_tool
+    gpus: 1
+    cores: 1
+    mem: 4
+    params:
+      docker_run_extra_arguments: " --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,compute "
+
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_standardization/3dtrees_standardization/.*:
     inherits: basic_docker_tool
@@ -482,14 +401,6 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/fgsea/fgsea/.*:
     # any container should work
     inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/iuc/cat_bins/cat_bins/.*:
-    rules:
-      - id: cat_bins_medium_input_rule
-        if: input_size >= 0.03
-        mem: 48
-      - id: cat_bins_large_input_rule
-        if: input_size >= 0.06
-        mem: 72
   toolshed.g2.bx.psu.edu/repos/iuc/chewbbaca.*:
     inherits: basic_docker_tool
 
@@ -498,6 +409,9 @@ tools:
     inherits: basic_docker_tool
     cores: 32
     mem: 248
+
+  toolshed.g2.bx.psu.edu/repos/richard-burhans/ncbi_fcs_adaptor/ncbi_fcs_adaptor/.*:
+    inherits: basic_docker_tool
 
   toolshed.g2.bx.psu.edu/repos/recetox/recetox_msfinder/recetox_msfinder/.*:
     inherits: basic_docker_tool
@@ -531,13 +445,15 @@ tools:
       # the non-NFS /tmp dir is needed to avoid "resource is busy" errors
       _GALAXY_JOB_TMP_DIR: '/tmp'
   toolshed.g2.bx.psu.edu/repos/bgruening/parabricks_fq2bam/parabricks_fq2bam/.*:
+    # 16 mem / 8 cores = 4min for a paired-end 2,5/2,5 GB FASTQ file
+    # 32 mem / 16 cores = 2min for a paired-end 2,5/2,5 GB FASTQ file
     inherits: basic_docker_tool
     mem: 16
     gpus: 1
-    cores: 1
+    cores: 8
     params:
       docker_env_CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
-      docker_run_extra_arguments: ' --gpus all --shm-size 16g --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
+      docker_run_extra_arguments: ' --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
     context:
       exclude_gpu_models: ["Tesla V100-PCIE-32GB"]
       include_gpu_models: ["NVIDIA L40S", "Tesla T4"]
@@ -545,9 +461,7 @@ tools:
       GPU_AVAILABLE: 1
       # the non-NFS /tmp dir is needed to avoid "resource is busy" errors
       _GALAXY_JOB_TMP_DIR: '/tmp'
-    scheduling:
-      require:
-        - embedded-pulsar
+
   toolshed.g2.bx.psu.edu/repos/imgteam/rfove/rfove/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/homer_findmotifs/homer_findMotifs/.*:
@@ -635,6 +549,13 @@ tools:
   toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc/.*:
     # 8 (from the shared TPV) seems to high for me
     cores: 3
+    # https://github.com/usegalaxy-eu/issues/issues/837
+    scheduling:
+      require:
+        - singularity
+    params:
+      # /tmp is not monted in, and is not writeable, this make fastqc crash
+      singularity_run_extra_arguments: " -B /tmp:$TMPDIR "
 
 
   toolshed.g2.bx.psu.edu/repos/iuc/bbtools_tadpole/bbtools_tadpole/.*:
@@ -760,41 +681,6 @@ tools:
             - condor-tpv
       - if: input_size >= 20
         fail: Too much data, please don't use this tool for this.
-
-  toolshed.g2.bx.psu.edu/repos/iuc/beagle/beagle/.*:
-    cores: 1
-    rules:
-      - if: input_size < 1
-        mem: 24
-      - if: input_size >= 1
-        mem: 64
-
-  toolshed.g2.bx.psu.edu/repos/galaxy-australia/smudgeplot/smudgeplot/.*:
-    cores: 8
-    rules:
-      - if: input_size < 1
-        mem: 15
-      - if: 1 <= input_size < 5
-        mem: 75
-      - if: 5 <= input_size < 10
-        cores: 12
-        mem: 150
-      - if: 10 <= input_size < 15
-        cores: 12
-        mem: 225
-      - if: 15 <= input_size < 20
-        cores: 12
-        mem: 300
-      - if: 20 <= input_size < 25
-        mem: 375
-        cores: 16
-      - if: input_size >= 25
-        fail: Too much data, please check if the input is correct.
-
-  toolshed.g2.bx.psu.edu/repos/devteam/freebayes/freebayes/.*:
-    # see https://github.com/usegalaxy-eu/infrastructure-playbook/pull/881 for some numbers
-    cores: 10
-    mem: 9 + input_size * 1
 
   toolshed.g2.bx.psu.edu/repos/iuc/shovill/shovill/.*:
     inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
@@ -1078,28 +964,6 @@ tools:
         - singularity
         - conda
 
-  toolshed.g2.bx.psu.edu/repos/galaxyp/custom_pro_db/custom_pro_db/.*:
-    mem: 16
-
-  toolshed.g2.bx.psu.edu/repos/iuc/data_manager_gtdbtk_database_installer/gtdbtk_database_installer/.*:
-    mem: 128
-
-  toolshed.g2.bx.psu.edu/repos/iuc/semibin/semibin/.*:
-    mem: 32
-    cores: 16
-
-  toolshed.g2.bx.psu.edu/repos/bgruening/nextdenovo/nextdenovo/.*:
-    mem: 128
-    cores: 24
-
-  toolshed.g2.bx.psu.edu/repos/iuc/windowmasker/windowmasker_mkcounts/.*:
-    mem: 64
-    cores: 1
-
-  jbrowse2:
-    mem: 6
-    cores: 1
-
   toolshed.g2.bx.psu.edu/repos/iuc/circos/circos/.*:
     scheduling:
       require:
@@ -1174,17 +1038,6 @@ tools:
       GENEMARK_PATH: "/usr/local/tools/genemark/etp.for_braker/bin/gmes/"
       PROTHINT_PATH: "/usr/local/tools/genemark/etp.for_braker/bin/gmes/ProtHint/bin/"
 
-  toolshed.g2.bx.psu.edu/repos/iuc/checkm_taxonomy_wf/checkm_taxonomy_wf/.*:
-    mem: 8
-    cores: 8
-
-  toolshed.g2.bx.psu.edu/repos/iuc/checkm_lineage_wf/checkm_lineage_wf/.*:
-    mem: 16
-    cores: 16
-  toolshed.g2.bx.psu.edu/repos/iuc/maker/maker/.*:
-    mem: 64
-    cores: 16
-
   ## is in the shared DB - we need to test it here a bit
   toolshed.g2.bx.psu.edu/repos/galaxyp/openms_featurefindermultiplex/FeatureFinderMultiplex/.*:
     cores: 8
@@ -1201,28 +1054,12 @@ tools:
       require:
         - singularity
 
-  toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/.*:
-    cores: 8
-    memory: 24
-    scheduling:
-      require:
-        - conda
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/.*:
-    cores: 1
-    mem: 40
-    scheduling:
-      require:
-        - conda
-        - singularity
-
   # 27:02:2024: We seem to have issues with the tools when loaded from the conda envs.
   # For whatever reason they seem to get stuck in the D state and never finish.
   # The below is an attempt to test whether by running the tools in a singularity container
   # we can avoid the issue.
   toolshed.g2.bx.psu.edu/repos/iuc/abricate/abricate/.*:
-    mem: 30.4
+    mem: 30.40
     scheduling:
       require:
         - singularity
@@ -1237,35 +1074,6 @@ tools:
     scheduling:
       require:
         - singularity
-
-  toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2/.*:
-    cores: 32
-    mem: 244
-    rules:
-      - id: bwa_mem2_small_input_rule
-        if: input_size < 0.25
-        cores: 2
-        mem: 7.6
-      - id: bwa_mem2_medium_input_rule
-        if: 0.25 <= input_size < 16
-        cores: 8
-        mem: 28
-      - id: bwa_mem2_large_input_rule
-        if: 16 <= input_size < 32
-        cores: 16
-        mem: 58
-      - id: bwa_mem2_xlarge_input_rule
-        if: 32 <= input_size < 64
-        cores: 24
-        mem: 120
-      - id: bwa_mem2_history_reference_rule
-        if: |
-          helpers.job_args_match(job, app, {"reference_source": {"reference_source_selector": "history"}})
-        # per https://github.com/bwa-mem2/bwa-mem2/issues/41 it's 28 * reference
-        mem: |
-          options = job.get_param_values(app)
-          size = options["reference_source"]["ref_file"].get_size()
-          min(max(float(size/1024**3) * 28, (input_size - float(size/1024**3)) * 2, 7.6), 120)
 
   toolshed.g2.bx.psu.edu/repos/bgruening/flye/flye/.*:
     cores: 20
@@ -1355,7 +1163,7 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/bgruening/omark/omark/.*:
     cores: 8
-    mem: 4
+    mem: 15
     scheduling:
       require:
         - singularity
@@ -1373,7 +1181,7 @@ tools:
           param_dict = job.get_param_values(app)
           param_dict.get('manipulate', {}).get('function') == 'concatenate'
         mem: 60
-
+  # anndata is already upstream
   toolshed.g2.bx.psu.edu/repos/iuc/anndata_import/anndata_import/.*:
     cores: 1
     mem: 16
@@ -1386,33 +1194,23 @@ tools:
     cores: 1
     mem: 16
 
-  toolshed.g2.bx.psu.edu/repos/iuc/modify_loom/modify_loom/.*:
-    cores: 1
-    mem: 16
-
-  toolshed.g2.bx.psu.edu/repos/iuc/humann/humann/.*:
-    cores: 12
-
   # Tool is same as fastqc so setting the same resources
   toolshed.g2.bx.psu.edu/repos/iuc/falco/falco/.*:
     cores: 3
 
-  toolshed.g2.bx.psu.edu/repos/peterjc/tmhmm_and_signalp/Psortb/.*:
-    scheduling:
-      require:
-        - conda
-        - singularity
-    env:
-      _GALAXY_JOB_TMP_DIR: '/tmp'
+  ## conda in singularity works fine, this tool is just broken in conda
+  #toolshed.g2.bx.psu.edu/repos/peterjc/tmhmm_and_signalp/Psortb/.*:
+  #  scheduling:
+  #    require:
+  #      - conda
+  #      - singularity
+  #  env:
+  #    _GALAXY_JOB_TMP_DIR: '/tmp'
 
   toolshed.g2.bx.psu.edu/repos/bgruening/hicexplorer_hicinfo/hicexplorer_hicinfo/.*:
     scheduling:
       require:
         - singularity
-
-  toolshed.g2.bx.psu.edu/repos/galaxyp/fragpipe/fragpipe/.*:
-    cores: 12
-    mem: 256
 
   toolshed.g2.bx.psu.edu/repos/iuc/episcanpy_build_matrix/episcanpy_build_matrix/.*:
     env:
@@ -1422,10 +1220,6 @@ tools:
     scheduling:
       require:
         - singularity
-
-  toolshed.g2.bx.psu.edu/repos/iuc/optitype/optitype/.*:
-    cores: 12
-    mem: 256
 
   # ppanggolin all tries to remove TMP folders, on NFS this does not always work, so we run this tool in singularity with internal (non-NFS) TMP
   toolshed.g2.bx.psu.edu/repos/iuc/ppanggolin_all/ppanggolin_all/.*:
@@ -1437,14 +1231,16 @@ tools:
       require:
         - singularity
 
-  toolshed.g2.bx.psu.edu/repos/iuc/vapor/vapor/.*:
-    mem: 8
-
-  toolshed.g2.bx.psu.edu/repos/iuc/seurat_preprocessing/seurat_preprocessing/.*:
-    cores: 1
-    mem: 20
-
   toolshed.g2.bx.psu.edu/repos/bgruening/lirasearch/lirasearch/.*:
     inherits: basic_docker_tool
     cores: 24
     mem: 24
+
+  toolshed.g2.bx.psu.edu/repos/ecology/wildlife_megadetector_huggingface/wildlife_megadetector_huggingface/.*:
+    inherits: basic_docker_tool
+    gpus: 1
+    mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/sylph_profile/sylph_profile/.*:
+    cores: 4
+    mem: 16

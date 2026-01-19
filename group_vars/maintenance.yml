@@ -85,8 +85,15 @@ autofs_mount_points:
   - cache
   - misc
 
-# Role: usegalaxy-eu.bashrc
-galaxy_pulsar_app_conf: "{{ galaxy_config_dir }}/pulsar_app.yml"
+# (usegalaxy-eu.bashrc)
+bashrc_galaxy_root: "{{ galaxy_root }}"
+bashrc_galaxy_venv_dir: "{{ galaxy_venv_dir }}"
+bashrc_galaxy_server_dir: "{{ galaxy_server_dir }}"
+bashrc_galaxy_config_dir: "{{ galaxy_config_dir }}"
+bashrc_galaxy_config_file: "{{ galaxy_config_file }}"
+bashrc_galaxy_mutable_config_dir: "{{ galaxy_mutable_config_dir }}"
+bashrc_galaxy_log_dir: "{{ galaxy_log_dir }}"
+bashrc_galaxy_pulsar_app_conf: "{{ galaxy_config_dir }}/pulsar_app.yml"
 bashrc_users:
   - uname: "{{ galaxy_user.name }}"
     uhome: "{{ galaxy_user.home }}"
@@ -144,6 +151,27 @@ fsm_scripts:
       - /data/jwd07/main
       - /data/jwd08/main
     time: "{{ fsm_intervals.long }}"
+fsm_cron_tasks:
+  docker:
+    enable: false
+    name: "Docker clean up"
+    minute: 30
+    hour: 2
+    dom: "*"
+    month: "*"
+    dow: "*"
+    job: "docker system prune -f --all> /dev/null"
+    user: "{{ fsm_galaxy_user.username }}"
+  gxadmin:
+    enable: true
+    name: "Gxadmin Galaxy clean up"
+    minute: 0
+    hour: "*/6"
+    dom: "*"
+    month: "*"
+    dow: "*"
+    job: "/usr/bin/gxadmin galaxy cleanup 60"
+    user: "{{ fsm_galaxy_user.username }}"
 fsm_htcondor_enable: true
 
 # Role: dj-wasabi.telegraf
@@ -235,7 +263,7 @@ telegraf_plugins_extra:
       - commands = ["{{ custom_telegraf_env }} /usr/bin/galaxy_tool_usage_over_time"]
       - timeout = "360s"
       - data_format = "influx"
-      - interval = "24h"
+      - interval = "168h"
   galaxy_job_queue_states_stats:
     plugin: "exec"
     config:

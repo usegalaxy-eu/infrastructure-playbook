@@ -1,4 +1,23 @@
 #jinja2: trim_blocks: True, lstrip_blocks: True
+{% macro galaxy_volumes(exclude_volumes) -%}
+        {%- for vol in dnb.values() %}
+            {%- if vol.name not in exclude_volumes %}
+        {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
+            {%- endif %}
+        {%- endfor %}
+        {%- for vol in cache.values() %}
+            {%- if 'cache' in vol.name %}
+        {{ vol.path }}/object_store_cache/:{{ vol.docker_perm }},
+            {%- endif %}
+        {%- endfor %}
+{%- endmacro %}
+{% macro pulsar_base_volumes() -%}
+        $job_directory:rw,
+        $tool_directory:ro,
+        $job_directory/outputs:rw,
+        $working_directory:rw,
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}
+{%- endmacro %}
 ---
 # NOTE: Use dashes (-) exclusively for tags and underscores (_) exclusively for destinations.
 # submit_request_cpus its called in pulsar and in plain condor only request_cpus
@@ -17,15 +36,7 @@ destinations:
       # $defaults expands to "$galaxy_root:ro,$tool_directory:ro,$job_directory:ro,$working_directory:rw,$default_file_path:rw"
       docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,
         $defaults,
-        {% for vol in dnb.values() %}
-        {% if vol.name not in ['db', 'dnb04', 'dnb-ds01', '5'] %}
-        {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
-        {% endif %}
-        {% endfor %}
-        {% for vol in cache.values() %}{% if 'cache' in vol.name %}
-        {{ vol.path }}/object_store_cache/:{{ vol.docker_perm }},
-        {% endif %}
-        {% endfor %}
+        {{ galaxy_volumes(exclude_volumes=['db', 'dnb04', 'dnb-ds01', '5']) }}
         {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
         {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
@@ -46,14 +57,7 @@ destinations:
         $tool_directory:ro,
         $job_directory/outputs:rw,
         $working_directory:rw,
-        {% for vol in dnb.values() %}{% if vol.name not in ['5', 'dnb04', 'dnb-ds01', 'db'] %}
-        {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
-        {% endif %}
-        {% endfor %}
-        {% for vol in cache.values() %}{% if 'cache' in vol.name %}
-        {{ vol.path }}/object_store_cache/:{{ vol.docker_perm }},
-        {% endif %}
-        {% endfor %}
+        {{ galaxy_volumes(exclude_volumes=['db', 'dnb04', 'dnb-ds01', '5']) }}
         {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
         {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
         {{ tools.tools.path }}/:{{ tools.tools.docker_perm }}"
@@ -126,6 +130,14 @@ destinations:
               else:
                   entity.params['submit_requirements'] = gpu_conditions
 
+  embedded_pulsar_docker_gpu_pxe_div4:
+    inherits: embedded_pulsar_docker_gpu_pxe
+    context:
+      galaxy_group: 'GalaxyGroup == "pxe-gpu-div4"'
+    scheduling:
+      require:
+        - pxe-gpu-div4
+
   #######################
   # PULSAR DESTINATIONS #
   #######################
@@ -151,16 +163,8 @@ destinations:
       dependency_resolution: "none"
       submit_request_cpus: "{cores}"
       submit_request_memory: "{mem}G"
-      docker_volumes: "$job_directory:rw,
-        $tool_directory:ro,
-        $job_directory/outputs:rw,
-        $working_directory:rw,
-        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
-      singularity_volumes: "$job_directory:rw,
-        $tool_directory:ro,
-        $job_directory/outputs:rw,
-        $working_directory:rw,
-        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+      docker_volumes: "{{ pulsar_base_volumes() }}"
+      singularity_volumes: "{{ pulsar_base_volumes() }}"
       singularity_enabled: true
       singularity_default_container_id: "{{ cvmfs.singularity.path }}/all/centos:8.3.2011"
     scheduling:
@@ -190,7 +194,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     params:
-      singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro'
+      singularity_volumes: "{{ pulsar_base_volumes() }}"
     scheduling:
       require:
         - sk-pulsar
@@ -203,7 +207,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     params:
-      singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro'
+      singularity_volumes: "{{ pulsar_base_volumes() }}"
     scheduling:
       require:
         - it-pulsar
@@ -216,7 +220,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     params:
-      singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro'
+      singularity_volumes: "{{ pulsar_base_volumes() }}"
     scheduling:
       require:
         - it02-pulsar
@@ -229,7 +233,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     params:
-      singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro'
+      singularity_volumes: "{{ pulsar_base_volumes() }}"
     scheduling:
       require:
         - it03-pulsar
@@ -242,7 +246,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     params:
-      singularity_volumes: '$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro'
+      singularity_volumes: "{{ pulsar_base_volumes() }}"
     scheduling:
       require:
         - fr-pulsar
@@ -276,7 +280,7 @@ destinations:
     params:
       jobs_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/staging"
       persistence_directory: "/opt/pulsar/files/persistent"
-      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,/cvmfs/data.galaxyproject.org/managed/:/data/db/data_managers/:ro"
+      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }},$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,/cvmfs/data.galaxyproject.org/managed/:/data/db/data_managers/:ro"
       singularity_env__JAVA_OPTIONS: '-Xmx{int(mem)}g -Djava.io.tmpdir=$SCRATCHDIR'
 #      singularity_run_extra_arguments: '--env _JAVA_OPTIONS=\"-Xmx{int(mem)}g -Djava.io.tmpdir=$SCRATCHDIR\"'
       submit_native_specification: "-l select=1:ncpus={int(cores)}:mem={int(mem)}gb:scratch_local=100gb -l walltime=24:00:00 -q galaxyeu@pbs-m1.metacentrum.cz -N pulsar_eu_j{job.id}__{tool.id if '/' not in tool.id else tool.id.split('/')[-2]+'_v'+tool.id.split('/')[-1]}__{user.username if user and hasattr(user, 'username') else 'anonymous'}"
@@ -286,7 +290,7 @@ destinations:
     rules:
       - if: tool.id.startswith("toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta") or tool.id.startswith("toolshed.g2.bx.psu.edu/repos/iuc/plasmidfinder/plasmidfinder")
         params:
-          singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,/cvmfs/data.galaxyproject.org/byhand/:/data/db/data_managers/:ro"
+          singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }},$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,/cvmfs/data.galaxyproject.org/byhand/:/data/db/data_managers/:ro"
 
   pulsar_cz02_tpv:
     inherits: pulsar_default
@@ -401,6 +405,21 @@ destinations:
       require:
         - uca-pulsar
 
+  pulsar_ufz_eve01_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_ufz_eve01
+    max_accepted_cores: 56
+    max_accepted_mem: 360
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    params:
+      jobs_directory: /work/songalax/pulsar/
+      submit_user: $__user_name__
+      submit_native_specification: "--qos=galaxy -p galaxy -t 24:00:00 --cpus-per-task={int(cores)} --mem-per-cpu={int(mem/cores)}"
+    scheduling:
+      require:
+        - ufz-eve-pulsar
+
   #############################
   # LOCAL CONDOR DESTINATIONS #
   #############################
@@ -456,7 +475,7 @@ destinations:
           # Use Centos 7 as a fallback container here
           # Most times this fallback is needed for very old tools
           # Centos 7 has libncurses.so.5.9 and python 2.7
-          identifier: "{{ misc.misc07.path }}/singularity_base_images/centos:7.9.2009"
+          identifier: "{{ misc.misc06.path }}/singularity_base_images/centos:7.9.2009"
     scheduling:
       require:
         - singularity
@@ -531,4 +550,3 @@ destinations:
       requirements: 'GalaxyGroup == "pxe-gpu"'
       request_gpus: "{gpus or 0}"
       singularity_run_extra_arguments: "{entity.params.get('singularity_run_extra_arguments') or ''} --nv --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
-

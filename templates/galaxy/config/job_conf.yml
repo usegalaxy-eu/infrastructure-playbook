@@ -240,7 +240,17 @@ galaxy_jobconf:
         amqp_consumer_timeout: 2.0
         amqp_publish_retry: "true"
         amqp_publish_retry_max_retries: 60    
-
+    - id: pulsar_eu_ufz_eve01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_ufz_eve01:{{ rabbitmq_password_galaxy_ufz_eve01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_ufz_eve01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60   
     
   default_destination: tpv_dispatcher
   destinations:
@@ -257,6 +267,7 @@ galaxy_jobconf:
         - "{{ galaxy_config_dir }}/total_perspective_vortex/destinations.yml"
         - "{{ galaxy_config_dir }}/total_perspective_vortex/tools.yml"
         - "{{ galaxy_config_dir }}/total_perspective_vortex/interactive_tools.yml"
+        - "{{ galaxy_config_dir }}/total_perspective_vortex/conda_in_container.yml"
         - "{{ galaxy_config_dir }}/total_perspective_vortex/users.yml"
         - "{{ galaxy_config_dir }}/total_perspective_vortex/roles.yml"
   tools:
@@ -287,7 +298,7 @@ galaxy_jobconf:
     - type: "output_size"
       value: "'300GB'"
     - type: "registered_user_concurrent_jobs"
-      value: "65"
+      value: "40"
     - type: "anonymous_user_concurrent_jobs"
       value: "3"
     - type: "destination_user_concurrent_jobs"
