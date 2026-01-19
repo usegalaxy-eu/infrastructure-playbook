@@ -38,6 +38,7 @@
         owner: root
         group: root
         mode: 0600
+      diff: false
     
     - name: Sign Keys
       command: "ssh-keygen -s /tmp/server_ca -I key_for_test1 -h -V +520w {{ item.key }}"
