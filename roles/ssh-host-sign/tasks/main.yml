@@ -4,14 +4,6 @@
     file: sign.yml
   with_items: "{{ ssh_host_sign_keys }}"
 
-# Requires dev-sec.ssh-hardening
-- set_fact:
-    sshd_custom_options: >-
-      {{
-        ssh_host_sign | map(attribute="certificate") | map('regex_replace', '^(.*)$', 'HostCertificate \\1') | list
-      }}
-  notify: "restart sshd"
-
 - name: Add CA certificate to known_hosts file
   ansible.builtin.lineinfile:
     line: "@cert-authority {{ ssh_host_sign_cert_domains_ips }} {{ lookup('file', 'server_ca.pub')  }}"
