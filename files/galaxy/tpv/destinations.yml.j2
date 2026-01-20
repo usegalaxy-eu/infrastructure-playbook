@@ -533,14 +533,14 @@ destinations:
     max_accepted_gpus: 0
     params:
       require_container: true
-      container:
+      container_override:
         - type: singularity
           shell: "/bin/bash"
           resolve_dependencies: true
           # Use Centos 7 as a fallback container here
           # Most times this fallback is needed for very old tools
           # Centos 7 has libncurses.so.5.9 and python 2.7
-          identifier: "{{ misc.misc06.path }}/singularity_base_images/centos:7.9.2009"
+          identifier: "/cvmfs/main.galaxyproject.org/singularity/usegalaxy.org-legacy-environment--0"
     scheduling:
       require:
         - singularity

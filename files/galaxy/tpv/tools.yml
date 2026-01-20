@@ -319,6 +319,8 @@ tools:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/artbio/manta/manta/.*:
     inherits: basic_docker_tool
+  toolshed.g2.bx.psu.edu/repos/ksuderman/stanford_corenlp/stanford_corenlp/.*:
+    inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/llm_hub/llm_hub/*:
     inherits: _container_tool
     mem: 1
@@ -371,7 +373,7 @@ tools:
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_standardization/3dtrees_standardization/.*:
     inherits: basic_docker_tool
     cores: 10
-    mem: 20
+    mem: 4
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_detailview/3dtrees_detailview/.*:
     inherits: basic_docker_tool
@@ -1054,7 +1056,7 @@ tools:
   # The below is an attempt to test whether by running the tools in a singularity container
   # we can avoid the issue.
   toolshed.g2.bx.psu.edu/repos/iuc/abricate/abricate/.*:
-    mem: 30.4
+    mem: 30.40
     scheduling:
       require:
         - singularity
@@ -1158,7 +1160,7 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/bgruening/omark/omark/.*:
     cores: 8
-    mem: 4
+    mem: 15
     scheduling:
       require:
         - singularity
@@ -1235,3 +1237,7 @@ tools:
     inherits: basic_docker_tool
     gpus: 1
     mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/sylph_profile/sylph_profile/.*:
+    cores: 4
+    mem: 16
