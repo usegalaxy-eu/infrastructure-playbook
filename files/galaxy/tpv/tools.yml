@@ -123,14 +123,18 @@ tools:
           # return the amount of memory needed
           value
 
+  _container_tool:
+    abstract: true
+    scheduling:
+      require:
+        - condor_container
+
   toolshed.g2.bx.psu.edu/repos/bgruening/keras_train_and_eval/keras_train_and_eval/.*:
     inherits: basic_gpu_resource_param_tool
 
   toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy/.*:
+    inherits: _container_tool
     cores: 2
-    scheduling:
-      require:
-        - condor-tpv
     rules:
       - if: input_size >= 0.015
         cores: 14
@@ -147,11 +151,12 @@ tools:
       singularity_enabled: true
 
   toolshed.g2.bx.psu.edu/repos/rnateam/dewseq/dewseq/.*:
+    inherits: _container_tool
     cores: 2
     mem: 40
-    scheduling:
-      prefer:
-        - condor-tpv
+    #scheduling:
+    #  prefer:
+    #    - condor-tpv
 
   toolshed.g2.bx.psu.edu/repos/iuc/fasta_stats/fasta-stats/.*:
     rules:
@@ -169,17 +174,22 @@ tools:
   toolshed.g2.bx.psu.edu/repos/computational-metabolomics/sirius_csifingerid/sirius_csifingerid/.*:
     cores: 8
     mem: 8
-
+    # python is missing in the container
+    scheduling:
+      require:
+        - conda
+        - singularity
   ## a user exported 100 of files and memory was not enough
   export_remote:
     mem: 8
 
-  toolshed.g2.bx.psu.edu/repos/rnateam/htseq-clip/htseq-clip/.*:
+  toolshed.g2.bx.psu.edu/repos/rnateam/htseq_clip/htseq_clip/.*:
+    inherits: _container_tool
     cores: 4
     mem: 16
-    scheduling:
-      prefer:
-        - condor-tpv
+    #scheduling:
+    #  prefer:
+    #    - condor-tpv
 
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold/.*:
     cores: 10
@@ -247,8 +257,14 @@ tools:
       require:
         - docker
 
+  ##toolshed.g2.bx.psu.edu/repos/bgruening/markitdown/markitdown/.*:
+  ##  inherits: basic_docker_tool
+  ##  params:
+  ##    docker_run_extra_arguments: --user 999
+
+
   toolshed.g2.bx.psu.edu/repos/bgruening/markitdown/markitdown/.*:
-    inherits: basic_docker_tool
+    inherits: _container_tool
     params:
       docker_run_extra_arguments: --user 999
 
@@ -294,9 +310,11 @@ tools:
     inherits: basic_docker_tool
   # conda env not working, trying the container
   toolshed.g2.bx.psu.edu/repos/imgteam/color_deconvolution/ip_color_deconvolution/.*:
-    inherits: basic_docker_tool
+    inherits: _container_tool
+
   toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_point/ggplot2_point/.*:
-    inherits: basic_docker_tool
+    inherits: _container_tool
+
   toolshed.g2.bx.psu.edu/repos/bgruening/mgnify_seqprep/mgnify_seqprep/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/artbio/manta/manta/.*:
@@ -304,14 +322,18 @@ tools:
   toolshed.g2.bx.psu.edu/repos/ksuderman/stanford_corenlp/stanford_corenlp/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/llm_hub/llm_hub/*:
+    inherits: _container_tool
     mem: 1
     env:
       LITELLM_CONFIG_FILE: '/opt/galaxy/config/litellm_config.yaml'
+
   toolshed.g2.bx.psu.edu/repos/goeckslab/squidpy/squidpy_spatial/*:
-    inherits: basic_docker_tool
+    inherits: _container_tool
     mem: 6
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
+
+
   toolshed.g2.bx.psu.edu/repos/goeckslab/gate_finder/gate_finder/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/galaxyp/qupath_roi_splitter/qupath_roi_splitter/.*:
@@ -359,43 +381,18 @@ tools:
     cores: 8
     mem: 20
 
-  3dtrees_sat:
-    # /opt/galaxy/custom-tools/test/3dtrees/sat.xml
-    inherits: basic_docker_tool
-    gpus: 1
-    cores: 8
-    mem: 20
-
-  3dtrees_overviews:
-    # /opt/galaxy/custom-tools/test/3dtrees/overviews.xml
-    inherits: basic_docker_tool
-
-  3dtrees_standard:
-    # /opt/galaxy/custom-tools/test/3dtrees/standard.xml
-    inherits: basic_docker_tool
-
-  3dtrees_tile_merge:
-    # /opt/galaxy/custom-tools/test/3dtrees/tile_merge.xml
-    inherits: basic_docker_tool
-    cores: 10
-    mem: 20
-
-  3dtrees_detailview:
-    # /opt/galaxy/custom-tools/test/3dtrees/detailview.xml
-    inherits: basic_docker_tool
-    gpus: 1
-    cores: 8
-    mem: 20
-
   toolshed.g2.bx.psu.edu/repos/galaxyp/msconvert/msconvert/.*:
-    inherits: basic_docker_tool
+    inherits: _container_tool
+    ## seems to be still needed 2025/12
     params:
       docker_run_extra_arguments: --user 999
 
   toolshed.g2.bx.psu.edu/repos/goeckslab/vitessce_spatial/vitessce_spatial/.*:
     inherits: basic_docker_tool
+    ## seems to be still needed 2025/12
     params:
       docker_run_extra_arguments: --user 999
+
   toolshed.g2.bx.psu.edu/repos/bgruening/cellpose/cellpose/.*:
     inherits: basic_docker_tool
   toolshed.g2.bx.psu.edu/repos/iuc/fgsea/fgsea/.*:
@@ -511,7 +508,7 @@ tools:
         - gpu-divided
 
   toolshed.g2.bx.psu.edu/repos/bgruening/whisper/whisper/.*:
-    inherits: basic_docker_tool
+    inherits: _container_tool
     cores: 1
     mem: 5
     env:
@@ -718,8 +715,6 @@ tools:
 
   # cactus suite
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/cactus_cactus/cactus_cactus/.*:
-    context:
-      test_cores: 4
     cores: 20
     mem: 256
     scheduling:
@@ -727,9 +722,11 @@ tools:
         - condor-tpv
     params:
       singularity_enabled: true
+
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/cactus_export/cactus_export/.*:
     params:
       singularity_enabled: true
+
 
   toolshed.g2.bx.psu.edu/repos/iuc/trinity/trinity/.*:
     cores: 24
@@ -810,8 +807,8 @@ tools:
     cores: 8
     mem: 20
     inherits: basic_docker_tool
-    params:
-      docker_run_extra_arguments: --user 999
+    #params:
+    #  docker_run_extra_arguments: --user 999
 
   toolshed.g2.bx.psu.edu/repos/bgruening/diamond/diamond/.*:
     cores: 6
@@ -833,8 +830,9 @@ tools:
   toolshed.g2.bx.psu.edu/repos/bgruening-util/stress_ng/stress_ng/.*:
     scheduling:
       require:
-        - singularity
         - conda
+        - singularity
+
   toolshed.g2.bx.psu.edu/repos/galaxyp/maxquant/maxquant/.*:
     scheduling:
       require:
