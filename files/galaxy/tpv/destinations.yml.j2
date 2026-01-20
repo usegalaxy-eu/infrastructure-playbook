@@ -139,7 +139,7 @@ destinations:
         - pxe-gpu-div4
 
 
-  condor_tpv_all_in:
+  condor_container:
     runner: condor
     max_accepted_cores: 64
     max_accepted_mem: 1000
@@ -199,7 +199,7 @@ destinations:
 
     scheduling:
       require:
-        - condor_tpv_all_in
+        - condor_container
 
 
 
