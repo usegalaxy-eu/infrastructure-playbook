@@ -3,8 +3,8 @@
   assert:
     that:
       - galaxy_cleanup_scratchstorage | length > 0
-      - galaxy_cleanup_scratchstorage
-        | rejectattr('objectstore_id', 'search', 'scratch')
+      - galaxy_cleanup_scratchstorage | list
+        | reject('search', 'scratch')
         | list
         | length == 0
     fail_msg: "Found objectstore_id entries that do NOT contain 'scratch'"

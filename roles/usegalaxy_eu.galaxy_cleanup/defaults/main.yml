@@ -1,7 +1,7 @@
 ---
 # Example:
 # galaxy_cleanup_scratchstorage:
-#   - objectstore_id: ''
+#   objectstore_id:
 #     days: 60
 
 # *****************************************************************************************
@@ -10,7 +10,7 @@
 #          period (e.g., `days: 60`).  Ensure you only include object stores that are meant
 #          to be cleaned up, and double‑check the `objectstore_id` values before saving.
 # *****************************************************************************************
-galaxy_cleanup_scratchstorage: []
+galaxy_cleanup_scratchstorage: {}
 
 # Cron schedule for galaxy cleanup objectstores script
 # Default: runs daily at 1:00 AM

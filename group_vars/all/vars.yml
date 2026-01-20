@@ -13,8 +13,8 @@ ftp_upload_dir: "{{ misc.misc06.path }}/incoming"
 #          to be cleaned up, and double‑check the `objectstore_id` values before saving.
 # *****************************************************************************************
 galaxy_cleanup_scratchstorage:
-  - objectstore_id: 's3_scratch_netapp01'
-    days: 65
+  - s3_scratch_netapp01:
+      days: 65
 
 # Upload dirs
 upload_dir_test: "{{ misc.misc06.path }}/tus_upload/test"
