@@ -177,8 +177,8 @@ tools:
     # python is missing in the container
     scheduling:
       require:
-        - conda-in-singularity
-
+        - conda
+        - singularity
   ## a user exported 100 of files and memory was not enough
   export_remote:
     mem: 8
@@ -830,7 +830,8 @@ tools:
   toolshed.g2.bx.psu.edu/repos/bgruening-util/stress_ng/stress_ng/.*:
     scheduling:
       require:
-        - conda-in-singularity
+        - conda
+        - singularity
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/maxquant/maxquant/.*:
     scheduling:
