@@ -6,6 +6,16 @@ object_store_cache_dir: "{{ cache.cache07.path }}/object_store_cache/"
 short_term_web_storage_dir: "{{ misc.misc06.path }}/short_term_web_storage/"
 ftp_upload_dir: "{{ misc.misc06.path }}/incoming"
 
+# *****************************************************************************************
+# WARNING: Adding or modifying entries in `galaxy_cleanup_scratchstorage` will cause data
+#          in the specified object stores to be **deleted** after the defined retention
+#          period (e.g., `days: 60`).  Ensure you only include object stores that are meant
+#          to be cleaned up, and double‑check the `objectstore_id` values before saving.
+# *****************************************************************************************
+galaxy_cleanup_scratchstorage:
+  s3_scratch_netapp01:
+    days: 65
+
 # Upload dirs
 upload_dir_test: "{{ misc.misc06.path }}/tus_upload/test"
 upload_dir_main: "{{ misc.misc06.path }}/tus_upload/main" # tus_upload_store

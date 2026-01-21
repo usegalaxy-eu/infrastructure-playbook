@@ -299,7 +299,7 @@ backends:
     store_by: uuid
     device: "scratch"
     name: "Short term storage for e.g. method development"
-    object_expires_after_days: 60
+    object_expires_after_days: {{ galaxy_cleanup_scratchstorage.s3_scratch_netapp01.days }}
     description: |
         S3-based object storage is maintained by the compute center of the University of Freiburg.
         Data on this storage, also called scratch storage, is deleted if it is older than two months (60 days),
@@ -381,4 +381,3 @@ backends:
         path: "{{ jwd.jwd08.path }}/main"
       - type: temp
         path: "{{ jwd.jwd08.path }}/tmp"
-
