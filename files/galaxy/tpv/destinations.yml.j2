@@ -483,18 +483,6 @@ destinations:
       require:
         - singularity
 
-  # Generic destination for tools that don't get any params
-  # and no specified dependency resolution
-  condor_tpv:
-    runner: condor
-    max_accepted_cores: 64
-    max_accepted_mem: 1000
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
-    scheduling:
-      prefer:
-        - condor-tpv
-
   condor_singularity_with_conda:
     inherits: basic_singularity_destination
     runner: condor
