@@ -84,6 +84,9 @@ tools:
 
   interactive_tool_qupath:
     inherits: interactive_tool
+    params:
+      # the USER_ID & GROUP_ID are strincly needed - also because we have NFS root-squash enabled
+      docker_run_extra_arguments: " -e USER_ID=999 -e GROUP_ID=999 "
 
   interactive_tool_pcstudio:
     inherits: interactive_tool
