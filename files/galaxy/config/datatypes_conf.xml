@@ -91,6 +91,20 @@
         <converter file="bedgraph_to_bigwig_converter.xml" target_datatype="bigwig"/>
         <display file="igb/bedgraph.xml"/>
     </datatype>
+
+    <!-- Montreal Forced Aligner datatypes -->
+    <datatype extension="mfa_validate.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
+    <datatype extension="mfa_acoustic_model.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
+    <datatype extension="mfa_corpus_model.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
+    <datatype extension="mfa_g2p_model.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
+    <datatype extension="mfa_ivector_model.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
+    <datatype extension="mfa_language_model.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
+    <datatype extension="mfa_tokenizer_model.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
+    <datatype extension="mfa_textgrids.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
+    <datatype extension="mfa_oov.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
+    <datatype extension="mfa.dict" type="galaxy.datatypes.data:Text" subclass="true" display_in_upload="false"/>
+
+
     <datatype extension="bedstrict" type="galaxy.datatypes.interval:BedStrict" display_in_upload="true"/>
     <datatype extension="bed6" type="galaxy.datatypes.interval:Bed6" display_in_upload="true">
     </datatype>
