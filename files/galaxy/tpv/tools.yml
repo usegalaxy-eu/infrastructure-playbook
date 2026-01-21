@@ -48,8 +48,11 @@ tools:
       - id: braker_genome_sequence_count_rule
         if: |
           options = job.get_param_values(app)
-          sequences = options["genome"].metadata.get("sequences")
-          sequences > 100000
+          if options["genome"]:
+            sequences = options["genome"].metadata.get("sequences")
+            sequences > 100000
+          else:
+            False
         fail: |
           The number of sequences in your genome file is too large (>100K) for this tool.
 
