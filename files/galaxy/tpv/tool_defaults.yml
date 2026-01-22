@@ -45,7 +45,16 @@ tools:
           training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
           training_expr = " || ".join(['(GalaxyGroup == "%s")' % role for role in training_roles])
           training_labels = '"' + ", ".join(training_roles) + '"'
-          entity.params['requirements'] = '(GalaxyGroup == "compute") || (%s)' % training_expr if training_expr else '(GalaxyGroup == "compute")'
+          if training_expr:
+              entity.params['requirements'] = '(GalaxyGroup == "compute") || (%s)' % training_expr
+              # 4. Set Rank (The preference)
+              # This gives a higher rank (1 vs 0) to nodes matching the training expression
+              entity.params['rank'] = '(%s)' % training_expr
+          else:
+              entity.params['requirements'] = '(GalaxyGroup == "compute")'
+              entity.params['rank'] = '0'
+
+          # 5. Metadata and Accounting
           entity.params['+Group'] = training_labels
           entity.params['accounting_group_user'] = str(user.id)
       - if: user is None
