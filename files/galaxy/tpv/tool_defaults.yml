@@ -48,10 +48,7 @@ tools:
           entity.params['requirements'] = '(GalaxyGroup == "compute") || (%s)' % training_expr if training_expr else '(GalaxyGroup == "compute")'
           entity.params['+Group'] = training_labels
           entity.params['accounting_group_user'] = str(user.id)
-          if training_roles:
-             entity.params['rank'] = '(%s)' % training_expr
-          else:
-              entity.params['rank'] = '0'
+          entity.params['rank'] = '(%s)' % training_expr if training_roles else '0'
       - if: user is None
         execute: |
           entity.params['requirements'] = '(GalaxyGroup == "compute")'
