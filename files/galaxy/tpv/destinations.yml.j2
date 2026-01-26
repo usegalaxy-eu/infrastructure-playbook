@@ -139,68 +139,6 @@ destinations:
         - pxe-gpu-div4
 
 
-  condor_container:
-    runner: condor
-    max_accepted_cores: 64
-    max_accepted_mem: 1000
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
-    params:
-      submit_request_cpus: "{cores}"
-      submit_request_memory: "{mem}G"
-      ####require_container: true
-      
-      #
-      # singularity config
-      #
-      singularity_enabled: true
-      singularity_volumes: "$_CONDOR_SCRATCH_DIR:rw,
-        $job_directory:rw,
-        $tool_directory:ro,
-        $job_directory/outputs:rw,
-        $working_directory:rw,
-        {% for vol in dnb.values() %}{% if vol.name not in ['5', 'dnb04', 'dnb-ds01', 'db'] %}
-        {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
-        {% endif %}
-        {% endfor %}
-        {% for vol in cache.values() %}{% if 'cache' in vol.name %}
-        {{ vol.path }}/object_store_cache/:{{ vol.docker_perm }},
-        {% endif %}
-        {% endfor %}
-        {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
-        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
-        {{ tools.tools.path }}/:{{ tools.tools.docker_perm }}"
-      singularity_default_container_id: "{{ cvmfs.singularity.path }}/all/centos:8.3.2011"
-      #
-      # Docker config
-      #
-      docker_enabled: true
-      docker_sudo: false
-      docker_net: bridge
-      docker_auto_rm: true
-      docker_set_user: ""
-      # $defaults expands to "$galaxy_root:ro,$tool_directory:ro,$job_directory:ro,$working_directory:rw,$default_file_path:rw"
-      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,
-        $defaults,
-        {% for vol in dnb.values() %}
-        {% if vol.name not in ['db', 'dnb04', 'dnb-ds01', '5'] %}
-        {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
-        {% endif %}
-        {% endfor %}
-        {% for vol in cache.values() %}{% if 'cache' in vol.name %}
-        {{ vol.path }}/object_store_cache/:{{ vol.docker_perm }},
-        {% endif %}
-        {% endfor %}
-        {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
-        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
-        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
-      ##outputs_to_working_directory: false
-      container_monitor_result: callback
-
-    scheduling:
-      require:
-        - condor_container
-
 
 
   #######################
@@ -488,6 +426,43 @@ destinations:
   #############################
   # LOCAL CONDOR DESTINATIONS #
   #############################
+
+  condor_container:
+    runner: condor
+    max_accepted_cores: 64
+    max_accepted_mem: 1000
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    params:
+      require_container: true
+      #
+      # singularity config
+      #
+      singularity_enabled: true
+      singularity_volumes: "$_CONDOR_SCRATCH_DIR:rw,
+        $job_directory:rw,
+        $tool_directory:ro,
+        $job_directory/outputs:rw,
+        $working_directory:rw,
+        {{ galaxy_volumes(exclude_volumes=['db', 'dnb04', 'dnb-ds01', '5']) }}
+        {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
+        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
+        {{ tools.tools.path }}/:{{ tools.tools.docker_perm }}"
+      singularity_default_container_id: "{{ cvmfs.singularity.path }}/all/centos:8.3.2011"
+      #
+      # Docker config
+      #
+      docker_enabled: true
+      docker_set_user: ""
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,
+        $defaults,
+        {{ galaxy_volumes(exclude_volumes=['db', 'dnb04', 'dnb-ds01', '5']) }}
+        {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
+        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+    scheduling:
+      require:
+        - condor_container
 
   condor_docker:
     inherits: basic_docker_destination
