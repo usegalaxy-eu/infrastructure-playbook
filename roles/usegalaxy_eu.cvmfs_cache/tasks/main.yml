@@ -1,0 +1,26 @@
+- name: Configure CVMFS cache
+  ansible.builtin.blockinfile:
+    path: "{{ cvmfs_cache_cvmfs_config_file }}"
+    block: |
+      CVMFS_CACHE_PRIMARY=cvmfs
+
+      CVMFS_CACHE_cvmfs_TYPE=tiered
+      CVMFS_CACHE_cvmfs_UPPER=disk
+      CVMFS_CACHE_cvmfs_UPPER_READONLY=no
+      CVMFS_CACHE_cvmfs_LOWER=nfs
+      CVMFS_CACHE_cvmfs_LOWER_READONLY=no
+
+      CVMFS_CACHE_disk_TYPE=posix
+      CVMFS_CACHE_disk_QUOTA_LIMIT={{ cvmfs_cache_disk_quota_limit }}
+
+      CVMFS_CACHE_nfs_TYPE=posix
+      CVMFS_CACHE_nfs_ALIEN={{ cmvfs_cache_nfs_cache_dir }}
+      CVMFS_CACHE_nfs_SHARED=no
+      CVMFS_CACHE_nfs_QUOTA_LIMIT=-1
+    marker: "# {mark} ANSIBLE MANAGED BLOCK (`usegalaxy_eu.cvmfs_cache` CVMFS cache)"
+    prepend_newline: true
+    append_newline: true
+    state: present
+    create: false
+
+# TODO: restart/reload CVMFS
