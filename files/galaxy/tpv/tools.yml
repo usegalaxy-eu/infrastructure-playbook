@@ -1,9 +1,10 @@
 ---
 # ALL tags must be with dashes (-) instead of underscores (_)
 tools:
-  basic_gpu_resource_param_tool:
+  _basic_gpu_resource_param_tool:
     # Type of compute resource (CPU or GPU) for the tool depends on user's input from its wrapper.
     # Default resource is CPU.
+    abstract: true
     rules:
       - id: resource_params_gpu
         if: |
@@ -33,6 +34,38 @@ tools:
                 ]
     env:
       TEMP: /data/1/galaxy_db/tmp
+
+  _basic_docker_tool:
+    abstract: true
+    params:
+    scheduling:
+      require:
+        - docker
+
+  _braker_tool:
+    abstract: true
+    rules:
+      - id: braker_genome_sequence_count_rule
+        if: |
+          options = job.get_param_values(app)
+          if options["genome"]:
+            sequences = options["genome"].metadata.get("sequences")
+            sequences > 100000
+          else:
+            False
+        fail: |
+          The number of sequences in your genome file is too large (>100K) for this tool.
+
+  _basic_numba_tool:
+    abstract: true
+    env:
+      NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+      OMP_NUM_THREADS: 4
+      OPENBLAS_NUM_THREADS: 4
+      MKL_NUM_THREADS: 4
+      VECLIB_MAXIMUM_THREADS: 4
+      NUMEXPR_NUM_THREADS: 4
+      NUMBA_NUM_THREADS: 4
 
   toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/.*:
     inherits: basic_gpu_resource_param_tool
@@ -277,18 +310,6 @@ tools:
     scheduling:
       require:
         - singularity
-
-  basic_docker_tool:
-    params:
-    scheduling:
-      require:
-        - docker
-
-  ##toolshed.g2.bx.psu.edu/repos/bgruening/markitdown/markitdown/.*:
-  ##  inherits: basic_docker_tool
-  ##  params:
-  ##    docker_run_extra_arguments: --user 999
-
 
   toolshed.g2.bx.psu.edu/repos/bgruening/markitdown/markitdown/.*:
     inherits: _container_tool
