@@ -54,6 +54,32 @@ tools:
     cores: 1
     mem: 40
 
+  toolshed.g2.bx.psu.edu/repos/computational-metabolomics/sirius_csifingerid/sirius_csifingerid/.*:
+    inherits: _conda_in_container
+    cores: 8
+    mem: 8
+
+  toolshed.g2.bx.psu.edu/repos/bgruening-util/stress_ng/stress_ng/.*:
+    inherits: _conda_in_container
+
+  toolshed.g2.bx.psu.edu/repos/iuc/vardict_java/vardict_java/.*:
+    inherits: _conda_in_container
+
+  toolshed.g2.bx.psu.edu/repos/iuc/idr_download_by_ids/idr_download_by_ids/.*:
+    inherits: _conda_in_container
+
+  toolshed.g2.bx.psu.edu/repos/iuc/chira_map/chira_map/.*:
+    inherits: _conda_in_container
+
+  toolshed.g2.bx.psu.edu/repos/iuc/chira_merge/chira_merge/.*:
+    inherits: _conda_in_container
+
+  toolshed.g2.bx.psu.edu/repos/iuc/chira_quantify/chira_quantify/.*:
+    inherits: _conda_in_container
+
+  toolshed.g2.bx.psu.edu/repos/iuc/chira_extract/chira_extract/.*:
+    inherits: _conda_in_container
+
   # Nate's legacy tools (https://github.com/galaxyproject/usegalaxy-playbook/blob/f1fc7264642a471f5eed55739869bb0d7292c736/env/common/templates/galaxy/config/tpv/tools.yaml.j2#L1889)
   toolshed.g2.bx.psu.edu/repos/arkarachai-fungtammasan/str_fm/GenotypeSTR/2.0.0: {inherits: _conda_in_container}
   toolshed.g2.bx.psu.edu/repos/arkarachai-fungtammasan/str_fm/Profilegenerator/2.0.0: {inherits: _conda_in_container}
