@@ -378,15 +378,6 @@ tools:
     cores: 10
     mem: 20
 
-  toolshed.g2.bx.psu.edu/repos/imgteam/libcarna_render/libcarna_render/.*:
-    inherits: basic_docker_tool
-    gpus: 1
-    cores: 1
-    mem: 4
-    params:
-      docker_run_extra_arguments: " --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,compute "
-
-
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_standardization/3dtrees_standardization/.*:
     inherits: basic_docker_tool
     cores: 10
@@ -397,6 +388,20 @@ tools:
     gpus: 1
     cores: 8
     mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_smart_tile/3dtrees_smart_tile/.*:
+    inherits: basic_docker_tool
+    cores: 10
+    mem: 10
+
+  toolshed.g2.bx.psu.edu/repos/imgteam/libcarna_render/libcarna_render/.*:
+    inherits: basic_docker_tool
+    gpus: 1
+    cores: 1
+    mem: 4
+    params:
+      docker_run_extra_arguments: " --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,compute "
+
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/msconvert/msconvert/.*:
     inherits: _container_tool
