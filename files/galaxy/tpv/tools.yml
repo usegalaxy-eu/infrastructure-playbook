@@ -99,16 +99,6 @@ tools:
           require:
             - singularity
 
-  toolshed.g2.bx.psu.edu/repos/iuc/quast/quast/.*:
-    cores: 10
-    rules:
-      - id: quast_memory
-        # Quast has a vastly greater memory requirement when it generates alignments between scaffolds and a user-
-        # provided reference. This is particularly true if the ref genome is large.
-        if: |
-          helpers.job_args_match(job, app, {"assembly": {"ref": {"use_ref": "true"}}, "large": True})
-        mem: 250
-
   toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/.*:
     cores: 10
     rules:
@@ -416,7 +406,6 @@ tools:
     mem: 4
     params:
       docker_run_extra_arguments: " --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,compute "
-
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_standardization/3dtrees_standardization/.*:
     inherits: _basic_docker_tool
