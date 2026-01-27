@@ -47,12 +47,12 @@ tools:
     rules:
       - id: braker_genome_sequence_count_rule
         if: |
+          retval = False
           options = job.get_param_values(app)
           if options["genome"]:
             sequences = options["genome"].metadata.get("sequences")
-            sequences > 100000
-          else:
-            False
+            retval = sequences > 100000
+          retval
         fail: |
           The number of sequences in your genome file is too large (>100K) for this tool.
 
@@ -428,6 +428,11 @@ tools:
     gpus: 1
     cores: 8
     mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_smart_tile/3dtrees_smart_tile/.*:
+    inherits: _basic_docker_tool
+    cores: 10
+    mem: 10
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/msconvert/msconvert/.*:
     inherits: _container_tool
