@@ -49,9 +49,10 @@ tools:
         if: |
           retval = False
           options = job.get_param_values(app)
-          if options["genome"]:
-            sequences = options["genome"].metadata.get("sequences")
-            retval = sequences > 100000
+          if "genome" in options:
+            if "sequences" in options["genome"].metadata:
+              sequences = options["genome"].metadata.get("sequences")
+              retval = sequences > 100000
           retval
         fail: |
           The number of sequences in your genome file is too large (>100K) for this tool.
