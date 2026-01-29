@@ -7,8 +7,6 @@
     - "secret_group_vars/all.yml"
     - mounts/mountpoints.yml
     - mounts/dest/all.yml
-  collections:
-    - devsec.hardening
   pre_tasks:
     - name: Set default version of Python
       alternatives:
@@ -51,7 +49,6 @@
     - dj-wasabi.telegraf
     # hardening
     - os_hardening
-    - ssh_hardening
 
 #
 #    - hostname
@@ -69,4 +66,3 @@
 #    # END custom
 #    - dj-wasabi.telegraf
 #    - dev-sec.os-hardening
-#    - dev-sec.ssh-hardening
