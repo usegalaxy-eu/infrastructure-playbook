@@ -192,6 +192,8 @@ tools:
     inherits: _container_tool
   mfa_validate:
     inherits: _container_tool
+  new_fave_extract:
+    inherits: _basic_docker_tool
 
   toolshed.g2.bx.psu.edu/repos/iuc/mummer_mummer/mummer_mummer/.*:
     mem: 8
@@ -1261,6 +1263,11 @@ tools:
     inherits: _basic_docker_tool
     gpus: 1
     mem: 20
+
+  # we overwrite here the shared-db, as we seem to need more DB
+  toolshed.g2.bx.psu.edu/repos/iuc/gtdbtk_classify_wf/gtdbtk_classify_wf/.*:
+    cores: 32
+    mem: 200
 
   toolshed.g2.bx.psu.edu/repos/bgruening/sylph_profile/sylph_profile/.*:
     cores: 4
