@@ -1,0 +1,24 @@
+cvmfs_role: client
+
+cvmfs_params:
+  CVMFS_CACHE_PRIMARY: cvmfs
+
+  CVMFS_CACHE_cvmfs_TYPE: tiered
+  CVMFS_CACHE_cvmfs_UPPER: disk
+  CVMFS_CACHE_cvmfs_UPPER_READONLY: no
+  CVMFS_CACHE_cvmfs_LOWER: nfs
+  CVMFS_CACHE_cvmfs_LOWER_READONLY: no
+
+  CVMFS_CACHE_disk_TYPE: posix
+  CVMFS_CACHE_disk_QUOTA_LIMIT: 50000
+
+  CVMFS_CACHE_nfs_TYPE: posix
+  CVMFS_CACHE_nfs_ALIEN: /data/db/cvmfs_cache/
+  CVMFS_CACHE_nfs_SHARED: no
+  CVMFS_CACHE_nfs_QUOTA_LIMIT: -1
+
+galaxy_cvmfs_repos_enabled: config-repo
+galaxy_cvmfs_server_urls:
+  - domain: galaxyproject.org
+    urls:
+      - 'http://cvmfs1-ufr0.galaxyproject.eu/cvmfs/@fqrn@'
