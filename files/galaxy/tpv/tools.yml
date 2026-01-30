@@ -310,45 +310,45 @@ tools:
       docker_run_extra_arguments: --user 999
 
   toolshed.g2.bx.psu.edu/repos/peterjc/tmhmm_and_signalp/Psortb/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/pvactools/pvacbind/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
 
   toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_anndata_to_csv/scimap_anndata_to_csv/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_mcmicro_to_anndata/scimap_mcmicro_to_anndata/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_phenotyping/scimap_phenotyping/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_plotting/scimap_plotting/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_spatial/scimap_spatial/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/mitohifi/mitohifi/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/iuc/brew3r_r/brew3r_r/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/iuc/bellavista_prepare/bellavista_prepare/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/vpt_extract/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/vpt_segment/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/ecology/eml2eal/eml2eal/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/ecology/data_paper_from_eml/data_paper_from_EML/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/ecology/harmonize_insitu_to_netcdf/harmonize_insitu_to_netcdf/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
   toolshed.g2.bx.psu.edu/repos/ecology/tool_odv/tool_odv/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/ecology/tool_odv_history/tool_odv_history/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/ecology/tool_biogeochemical_calibration/tool_biogeochemical_calibration/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   # conda env not working, trying the container
   toolshed.g2.bx.psu.edu/repos/imgteam/color_deconvolution/ip_color_deconvolution/.*:
     inherits: _container_tool
@@ -357,11 +357,11 @@ tools:
     inherits: _container_tool
 
   toolshed.g2.bx.psu.edu/repos/bgruening/mgnify_seqprep/mgnify_seqprep/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/artbio/manta/manta/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/ksuderman/stanford_corenlp/stanford_corenlp/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/llm_hub/llm_hub/*:
     inherits: _container_tool
     mem: 1
@@ -376,23 +376,23 @@ tools:
 
 
   toolshed.g2.bx.psu.edu/repos/goeckslab/gate_finder/gate_finder/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/galaxyp/qupath_roi_splitter/qupath_roi_splitter/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
 
   toolshed.g2.bx.psu.edu/repos/iuc/fileidentification/fileidentification/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_overviews/3dtrees_overviews/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
     cores: 5
     mem: 5
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_py3dtiles/3dtrees_py3dtiles/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_tile_merge/3dtrees_tile_merge/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
     cores: 10
     mem: 20
 
@@ -411,7 +411,7 @@ tools:
       docker_run_extra_arguments: " --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,compute "
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_standardization/3dtrees_standardization/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
     cores: 10
     mem: 4
 
@@ -422,7 +422,7 @@ tools:
     mem: 20
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_smart_tile/3dtrees_smart_tile/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
     cores: 10
     mem: 10
 
@@ -433,48 +433,48 @@ tools:
       docker_run_extra_arguments: --user 999
 
   toolshed.g2.bx.psu.edu/repos/goeckslab/vitessce_spatial/vitessce_spatial/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
     ## seems to be still needed 2025/12
     params:
       docker_run_extra_arguments: --user 999
 
   toolshed.g2.bx.psu.edu/repos/bgruening/cellpose/cellpose/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/iuc/fgsea/fgsea/.*:
     # any container should work
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/iuc/chewbbaca.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
 
   # NCBI recommends AWS r6a.8xlarge: cores: 32, mem:256
   toolshed.g2.bx.psu.edu/repos/richard-burhans/ncbi_egapx/ncbi_egapx/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
     cores: 32
     mem: 248
 
   toolshed.g2.bx.psu.edu/repos/richard-burhans/ncbi_fcs_adaptor/ncbi_fcs_adaptor/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
 
   toolshed.g2.bx.psu.edu/repos/recetox/recetox_msfinder/recetox_msfinder/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/recetox/qcxms_getres/qcxms_getres/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/recetox/qcxms_neutral_run/qcxms_neutral_run/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/recetox/qcxms_production_run/qcxms_production_run/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/imgteam/bioformats2raw/bf2raw/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/biomodels_biomd0000001066/biomodels_biomd0000001066/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/biomodels_biomd0000001076/biomodels_biomd0000001076/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/doclayoutyolo/doclayoutyolo/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/json2yolosegment/json2yolosegment/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/yolo_predict/yolo_predict/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/yolo_training/yolo_training/.*:
     inherits: _basic_docker_tool
     gpus: 1
@@ -505,13 +505,13 @@ tools:
       _GALAXY_JOB_TMP_DIR: '/tmp'
 
   toolshed.g2.bx.psu.edu/repos/imgteam/rfove/rfove/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/iuc/homer_findmotifs/homer_findMotifs/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/gga/repeatexplorer_clustering/repeatexplorer_clustering/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/galaxyp/diann/diann/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/instagraal/instagraal/.*:
     inherits: _basic_docker_tool
     gpus: 1
@@ -524,7 +524,7 @@ tools:
 
   # picrust tries to remove TMP folders, on NFS this does not always work, so we run this tool in a container with internal (non-NFS) TMP
   toolshed.g2.bx.psu.edu/repos/iuc/picrust.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
     cores: 2
     mem: 10
     env:
@@ -607,46 +607,46 @@ tools:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/iuc/pairtools_parse/pairtools_parse/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/ecology/cb_ivr/cb_ivr/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/ecology/taxo_cov_template/taxo_cov_template/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/ecology/makeeml/makeeml/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/ecology/entities_template/entities_template/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/ecology/eal_templates/eal_templates/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/ecology/eal_table_template/eal_table_template/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/ecology/raster_template/raster_template/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/ecology/vector_template/vector_template/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/perssond/basic_illumination/basic_illumination/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/goeckslab/mesmer/mesmer/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/perssond/quantification/quantification/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/perssond/s3segmenter/s3segmenter/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/perssond/coreograph/unet_coreograph/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/perssond/unmicst/unmicst/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/perssond/ashlar/ashlar/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
     params:
       docker_run_extra_arguments: --user 999:999
 
   toolshed.g2.bx.psu.edu/repos/bgruening/qiime2_dbotu_q2/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_train/cherri_train/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
     cores: 10
     mem: 90
 
@@ -686,7 +686,7 @@ tools:
           singularity_run_extra_arguments: ' --nv '
 
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_eval/cherri_eval/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
     cores: 1
     mem: 20
 
@@ -839,7 +839,7 @@ tools:
   toolshed.g2.bx.psu.edu/repos/bgruening/blobtoolkit/blobtoolkit/.*:
     cores: 8
     mem: 20
-    inherits: _basic_docker_tool
+    inherits: _container_tool
     params:
       docker_run_extra_arguments: --user 999
 
@@ -851,7 +851,7 @@ tools:
   toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicates/.*:
     cores: 8
     mem: 20
-    inherits: _basic_docker_tool
+    inherits: _container_tool
     #params:
     #  docker_run_extra_arguments: --user 999
 
@@ -1106,7 +1106,7 @@ tools:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/iuc/funannotate_annotate/funannotate_annotate/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
     cores: 8
     mem: 42
     env:
@@ -1255,7 +1255,7 @@ tools:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/bgruening/lirasearch/lirasearch/.*:
-    inherits: _basic_docker_tool
+    inherits: _container_tool
     cores: 24
     mem: 24
 
