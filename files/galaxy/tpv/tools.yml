@@ -209,9 +209,6 @@ tools:
     mem: 40
 
   toolshed.g2.bx.psu.edu/repos/computational-metabolomics/sirius_csifingerid/sirius_csifingerid/.*:
-    #upstream
-    #cores: 8
-    #mem: 8
     # python is missing in the container
     scheduling:
       require:
@@ -1017,21 +1014,11 @@ tools:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/eggnog_mapper/eggnog_mapper/.*:
-    # upstream
-    #cores: 8
-    #mem: 24
-    #env:
-    #  EGGNOG_DBMEM: "--dbmem"
-    #params:
-    #  singularity_run_extra_arguments: "--env EGGNOG_DBMEM=--dbmem"
     scheduling:
       require:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/bgruening/flye/flye/.*:
-    #upstream
-    #cores: 20
-    #mem: min(max(input_size * 1.2, 3.8), 256)
     scheduling:
       require:
         - singularity
@@ -1069,9 +1056,6 @@ tools:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/iuc/kraken2/kraken2/.*:
-    # upstream
-    #cores: 16
-    #mem: 100
     scheduling:
       require:
         - condor_container
@@ -1117,9 +1101,6 @@ tools:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/bgruening/omark/omark/.*:
-    # upstream
-    #cores: 8
-    #mem: 15
     scheduling:
       require:
         - condor_container
@@ -1127,11 +1108,6 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/red/red/.*:
     cores: 1
     mem: 35
-
-  # anndata is already upstream
-  toolshed.g2.bx.psu.edu/repos/iuc/anndata_import/anndata_import/.*:
-    cores: 1
-    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/anndata_export/anndata_export/.*:
     cores: 1
@@ -1176,9 +1152,6 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/ecology/wildlife_megadetector_huggingface/wildlife_megadetector_huggingface/.*:
     inherits: _basic_docker_tool
-    # upstream
-    #gpus: 1
-    #mem: 20
 
   # we overwrite here the shared-db, as we seem to need more DB
   toolshed.g2.bx.psu.edu/repos/iuc/gtdbtk_classify_wf/gtdbtk_classify_wf/.*:
