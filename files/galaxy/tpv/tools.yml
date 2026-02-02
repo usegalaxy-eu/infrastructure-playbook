@@ -1246,12 +1246,12 @@ tools:
       require:
         - singularity
 
-  # ppanggolin all tries to remove TMP folders, on NFS this does not always work, so we run this tool in singularity with internal (non-NFS) TMP
   toolshed.g2.bx.psu.edu/repos/iuc/ppanggolin_all/ppanggolin_all/.*:
-    env:
-      _GALAXY_JOB_TMP_DIR: '/tmp'
     params:
-      singularity_no_mount: null
+      # ppanggolin tries to remove TMP folders, on NFS this does not always work
+      # it also can write a lot of data to /tmp, so ram-disc does not work
+      # so we run this tool in singularity with a special bind mount
+      singularity_run_extra_arguments: " -B /tmp:$TMPDIR "
     scheduling:
       require:
         - singularity
