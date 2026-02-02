@@ -365,6 +365,8 @@ tools:
   toolshed.g2.bx.psu.edu/repos/bgruening/llm_hub/llm_hub/*:
     inherits: _container_tool
     mem: 1
+    params:
+      docker_env_LITELLM_CONFIG_FILE: '/opt/galaxy/config/litellm_config.yaml'
     env:
       LITELLM_CONFIG_FILE: '/opt/galaxy/config/litellm_config.yaml'
 
