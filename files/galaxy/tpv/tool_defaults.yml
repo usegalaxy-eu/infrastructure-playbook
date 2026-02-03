@@ -23,7 +23,7 @@ tools:
       - name: LC_ALL
         value: C
       - name: SINGULARITYENV_LC_ALL
-        value: \${{LANG:-C}}
+        value: '${LANG:-C}'
       - name: TERM
         value: vt100
       - name: SINGULARITYENV_TERM
