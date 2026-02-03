@@ -1251,7 +1251,7 @@ tools:
       # ppanggolin tries to remove TMP folders, on NFS this does not always work
       # it also can write a lot of data to /tmp, so ram-disc does not work
       # so we run this tool in singularity with a special bind mount
-      singularity_run_extra_arguments: " -B /tmp:$TMPDIR "
+      singularity_run_extra_arguments: " -B $TMPDIR:/tmp "
     scheduling:
       require:
         - singularity
@@ -1274,3 +1274,8 @@ tools:
   toolshed.g2.bx.psu.edu/repos/bgruening/sylph_profile/sylph_profile/.*:
     cores: 4
     mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/iuc/snap_training/snap_training/.*:
+    inherits: _container_tool
+    params:
+      singularity_run_extra_arguments: " -B $TMPDIR:/tmp "
