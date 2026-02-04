@@ -557,7 +557,7 @@ tools:
         - singularity
     params:
       # /tmp is not monted in, and is not writeable, this make fastqc crash
-      singularity_run_extra_arguments: " -B /tmp:$TMPDIR "
+      singularity_run_extra_arguments: " -B $TMPDIR:/tmp "
 
 
   toolshed.g2.bx.psu.edu/repos/iuc/bbtools_tadpole/bbtools_tadpole/.*:
