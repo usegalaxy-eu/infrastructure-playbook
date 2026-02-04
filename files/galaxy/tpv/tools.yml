@@ -384,7 +384,7 @@ tools:
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_potree/3dtrees_potree/.*:
     inherits: _container_tool
     cores: 10
-    mem: 10
+    mem: min(12 + (input_size * 4), 200)
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/msconvert/msconvert/.*:
     inherits: _container_tool
