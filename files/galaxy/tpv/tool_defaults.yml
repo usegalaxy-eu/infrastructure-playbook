@@ -4,6 +4,7 @@ global:
   default_inherits: default
 tools:
   default:
+    abstract: true
     cores: 1
     mem: cores * 3.8
     gpus: 0
@@ -21,9 +22,9 @@ tools:
       - name: AWS_REQUEST_CHECKSUM_CALCULATION
         value: "when_required"
       - name: LC_ALL
-        value: C.UTF-8
+        value: C
       - name: SINGULARITYENV_LC_ALL
-        value: $LC_ALL
+        value: '${{LANG:-C}}'
       - name: TERM
         value: vt100
       - name: SINGULARITYENV_TERM
