@@ -316,7 +316,14 @@ tools:
   toolshed.g2.bx.psu.edu/repos/ksuderman/stanford_corenlp/stanford_corenlp/.*:
     inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/llm_hub/llm_hub/*:
-    inherits: _container_tool
+    ##inherits: _container_tool
+    # can be removed when the singularity container is present
+    # this tool strictly needs singularity, as our Docker container has limited internet access
+    # so either singularity or conda, but not docker
+    scheduling:
+      require:
+        - conda
+        - singularity
     mem: 1
     env:
       docker_env_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
