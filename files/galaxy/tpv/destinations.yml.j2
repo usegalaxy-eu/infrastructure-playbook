@@ -516,6 +516,9 @@ destinations:
           # Most times this fallback is needed for very old tools
           # Centos 7 has libncurses.so.5.9 and python 2.7
           identifier: "/cvmfs/main.galaxyproject.org/singularity/usegalaxy.org-legacy-environment--0"
+          env:
+            - name: SINGULARITYENV_LC_ALL
+              value: C
     scheduling:
       require:
         - singularity
