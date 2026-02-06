@@ -247,6 +247,24 @@
         owner: galaxy
         group: galaxy
         mode: '0755'
+
+    # LLM Hub - We don't have any role to add this stuff
+    - name: Copy LLM Hub Config File
+      ansible.builtin.copy:
+        src: '{{ playbook_dir }}/files/galaxy/config/llm/litellm_config.yml'
+        dest: '/data/db/models/config/litellm_config.yml'
+        owner: galaxy
+        group: galaxy
+        mode: '0755'
+
+    - name: Copy Loc File
+      ansible.builtin.copy:
+        src: '{{ playbook_dir }}/files/galaxy/config/llm/litellm_config.yml'
+        dest: '{{ galaxy_root }}/tool-data/genai_models.loc'
+        owner: root
+        group: root
+        mode: '0755'
+
   roles:
     ## Starting configuration of the operating system
     - role: usegalaxy_eu.handy.os_setup
