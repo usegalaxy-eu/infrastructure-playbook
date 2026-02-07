@@ -819,6 +819,9 @@ tools:
     cores: 8
     mem: 20
     inherits: _container_tool
+    params:
+      # /tmp is not mounted in, and is not writeable, this make markduplicates crash
+      singularity_run_extra_arguments: " -B $TMPDIR:/tmp "
     #params:
     #  docker_run_extra_arguments: --user 999
 
