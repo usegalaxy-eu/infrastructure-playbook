@@ -48,6 +48,10 @@ destinations:
 
   basic_singularity_destination:
     abstract: true
+    env:
+      TMP: $_GALAXY_JOB_TMP_DIR
+      TEMP: $_GALAXY_JOB_TMP_DIR
+      TMPDIR: $_GALAXY_JOB_TMP_DIR
     params:
       submit_request_cpus: "{cores}"
       submit_request_memory: "{mem}G"
