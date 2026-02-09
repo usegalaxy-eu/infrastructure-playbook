@@ -452,9 +452,6 @@ destinations:
         $defaults,
         {{ galaxy_volumes(exclude_volumes=['dnb04', 'dnb-ds01']) }}
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
-    scheduling:
-      require:
-        - condor_container
 
   condor_singularity_with_conda:
     inherits: basic_singularity_destination
