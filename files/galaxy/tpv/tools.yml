@@ -160,34 +160,17 @@ tools:
     inherits: _container_tool
     cores: 2
     mem: 40
-    #scheduling:
-    #  prefer:
-    #    - condor-tpv
-
-  toolshed.g2.bx.psu.edu/repos/iuc/fasta_stats/fasta-stats/.*:
-    rules:
-      - if: input_size >= 0.01
-        cores: 3
-
-  toolshed.g2.bx.psu.edu/repos/iuc/ncbi_fcs_gx/ncbi_fcs_gx/.*:
-    rules:
-      - id: ncbi_fcs_gx
-        if: |
-          helpers.job_args_match(job, app, {"mode": {"mode_selector": "screen"}})
-        mem: 480
-        cores: 64
 
   toolshed.g2.bx.psu.edu/repos/iuc/tesseract/tesseract/.*:
     inherits: _container_tool
 
   toolshed.g2.bx.psu.edu/repos/computational-metabolomics/sirius_csifingerid/sirius_csifingerid/.*:
-    cores: 8
-    mem: 8
     # python is missing in the container
     scheduling:
       require:
         - conda
         - singularity
+
   ## a user exported 100 of files and memory was not enough
   export_remote:
     mem: 8
@@ -639,22 +622,6 @@ tools:
     env:
       BLASTDB: "/data/db/databases/blast/taxdb"
 
-  toolshed.g2.bx.psu.edu/repos/iuc/velocyto_cli/velocyto_cli/.*:
-    cores: 4
-    mem: 100
-
-  toolshed.g2.bx.psu.edu/repos/genouest/helixer/helixer/.*:
-    cores: 4
-    mem: 30
-    scheduling:
-      require:
-        - singularity
-    rules:
-      - if: input_size >= 0.01
-        gpus: 1
-        params:
-          singularity_run_extra_arguments: ' --nv '
-
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_eval/cherri_eval/.*:
     inherits: _container_tool
     cores: 1
@@ -742,24 +709,6 @@ tools:
     params:
       singularity_enabled: true
 
-
-  toolshed.g2.bx.psu.edu/repos/iuc/trinity/trinity/.*:
-    cores: 24
-    mem: 250
-    scheduling:
-      prefer:
-        - condor-tpv
-    rules:
-      - if: input_size < 0.1
-        cores: 1
-        mem: 4
-      - if: 0.1 <= input_size < 1
-        cores: 12
-        mem: 92
-      - if: input_size >= 1
-        fail: |
-          Too much data, we cannot support such large Trinity assemblies. Please use RNAspades instead.
-
   '.*mothur_.*':
     cores: 1
     mem: 90
@@ -812,11 +761,6 @@ tools:
     inherits: _container_tool
     params:
       docker_run_extra_arguments: --user 999
-
-  # 4GB is enough for most of the runs as it seems
-  toolshed.g2.bx.psu.edu/repos/iuc/purge_dups/purge_dups/.*:
-    cores: 1
-    mem: 6
 
   toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicates/.*:
     cores: 8
@@ -919,24 +863,6 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_plot/scanpy_plot/.*:
     inherits: _basic_numba_tool
-
-  toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*:
-    cores: 24
-    mem: 80
-    env:
-      TERM: vt100
-    scheduling:
-      accept:
-        - pulsar
-    rules:
-      - id: unicycler_small_input_rule
-        if: input_size < 0.05
-        cores: 1
-        mem: 3.8
-      - id: unicycler_medium_input_rule
-        if: 0.05 <= input_size < 2
-        cores: 8
-        mem: 28
 
   toolshed.g2.bx.psu.edu/repos/imgteam/unzip/unzip/.*:
     scheduling:
@@ -1061,19 +987,11 @@ tools:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/eggnog_mapper/eggnog_mapper/.*:
-    cores: 8
-    mem: 24
-    env:
-      EGGNOG_DBMEM: "--dbmem"
-    params:
-      singularity_run_extra_arguments: "--env EGGNOG_DBMEM=--dbmem"
     scheduling:
       require:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/bgruening/flye/flye/.*:
-    cores: 20
-    mem: min(max(input_size * 1.2, 3.8), 256)
     scheduling:
       require:
         - singularity
@@ -1111,11 +1029,9 @@ tools:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/iuc/kraken2/kraken2/.*:
-    cores: 16
-    mem: 100
     scheduling:
       require:
-        - singularity
+        - condor_container
 
   toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_compute_graph/scanpy_compute_graph/.*:
     scheduling:
@@ -1158,29 +1074,13 @@ tools:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/bgruening/omark/omark/.*:
-    cores: 8
-    mem: 15
     scheduling:
       require:
-        - singularity
+        - condor_container
 
   toolshed.g2.bx.psu.edu/repos/iuc/red/red/.*:
     cores: 1
     mem: 35
-
-  toolshed.g2.bx.psu.edu/repos/iuc/anndata_manipulate/anndata_manipulate/.*:
-    cores: 1
-    mem: 16
-    rules:
-      - id: anndata_concat
-        if: |
-          param_dict = job.get_param_values(app)
-          param_dict.get('manipulate', {}).get('function') == 'concatenate'
-        mem: 60
-  # anndata is already upstream
-  toolshed.g2.bx.psu.edu/repos/iuc/anndata_import/anndata_import/.*:
-    cores: 1
-    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/anndata_export/anndata_export/.*:
     cores: 1
@@ -1189,10 +1089,6 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/anndata_inspect/anndata_inspect/.*:
     cores: 1
     mem: 16
-
-  # Tool is same as fastqc so setting the same resources
-  toolshed.g2.bx.psu.edu/repos/iuc/falco/falco/.*:
-    cores: 3
 
   ## conda in singularity works fine, this tool is just broken in conda
   #toolshed.g2.bx.psu.edu/repos/peterjc/tmhmm_and_signalp/Psortb/.*:
@@ -1229,15 +1125,8 @@ tools:
       require:
         - singularity
 
-  toolshed.g2.bx.psu.edu/repos/bgruening/lirasearch/lirasearch/.*:
-    inherits: _container_tool
-    cores: 24
-    mem: 24
-
   toolshed.g2.bx.psu.edu/repos/ecology/wildlife_megadetector_huggingface/wildlife_megadetector_huggingface/.*:
     inherits: _basic_docker_tool
-    gpus: 1
-    mem: 20
 
   # we overwrite here the shared-db, as we seem to need more DB
   toolshed.g2.bx.psu.edu/repos/iuc/gtdbtk_classify_wf/gtdbtk_classify_wf/.*:
