@@ -1056,11 +1056,9 @@ tools:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/iuc/kraken2/kraken2/.*:
-    cores: 16
-    mem: 100
     scheduling:
       require:
-        - singularity
+        - condor_container
 
   toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_compute_graph/scanpy_compute_graph/.*:
     scheduling:
