@@ -36,9 +36,7 @@ destinations:
       # $defaults expands to "$galaxy_root:ro,$tool_directory:ro,$job_directory:ro,$working_directory:rw,$default_file_path:rw"
       docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,
         $defaults,
-        {{ galaxy_volumes(exclude_volumes=['db', 'dnb04', 'dnb-ds01', '5']) }}
-        {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
-        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
+        {{ galaxy_volumes(exclude_volumes=['dnb04', 'dnb-ds01']) }}
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
       require_container: true
       submit_request_cpus: "{cores}"
@@ -57,9 +55,7 @@ destinations:
         $tool_directory:ro,
         $job_directory/outputs:rw,
         $working_directory:rw,
-        {{ galaxy_volumes(exclude_volumes=['db', 'dnb04', 'dnb-ds01', '5']) }}
-        {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
-        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
+        {{ galaxy_volumes(exclude_volumes=['dnb04', 'dnb-ds01']) }}
         {{ tools.tools.path }}/:{{ tools.tools.docker_perm }}"
       singularity_default_container_id: "{{ cvmfs.singularity.path }}/all/centos:8.3.2011"
 
@@ -444,9 +440,7 @@ destinations:
         $tool_directory:ro,
         $job_directory/outputs:rw,
         $working_directory:rw,
-        {{ galaxy_volumes(exclude_volumes=['db', 'dnb04', 'dnb-ds01', '5']) }}
-        {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
-        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
+        {{ galaxy_volumes(exclude_volumes=['dnb04', 'dnb-ds01']) }}
         {{ tools.tools.path }}/:{{ tools.tools.docker_perm }}"
       singularity_default_container_id: "{{ cvmfs.singularity.path }}/all/centos:8.3.2011"
       #
@@ -456,48 +450,11 @@ destinations:
       docker_set_user: ""
       docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,
         $defaults,
-        {{ galaxy_volumes(exclude_volumes=['db', 'dnb04', 'dnb-ds01', '5']) }}
-        {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
-        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
+        {{ galaxy_volumes(exclude_volumes=['dnb04', 'dnb-ds01']) }}
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
     scheduling:
       require:
         - condor_container
-
-  condor_docker:
-    inherits: basic_docker_destination
-    runner: condor
-    max_accepted_cores: 36
-    max_accepted_mem: 975
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
-    scheduling:
-      require:
-        - docker
-
-  condor_singularity:
-    inherits: basic_singularity_destination
-    runner: condor
-    max_accepted_cores: 36
-    max_accepted_mem: 975
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
-    params:
-    scheduling:
-      require:
-        - singularity
-
-  # Generic destination for tools that don't get any params
-  # and no specified dependency resolution
-  condor_tpv:
-    runner: condor
-    max_accepted_cores: 64
-    max_accepted_mem: 1000
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
-    scheduling:
-      prefer:
-        - condor-tpv
 
   condor_singularity_with_conda:
     inherits: basic_singularity_destination
@@ -533,19 +490,6 @@ destinations:
     scheduling:
       require:
         - upload
-
-  condor_gpu_pxe:
-    runner: condor
-    max_accepted_cores: 128
-    max_accepted_mem: 500
-    min_accepted_gpus: 1
-    max_accepted_gpus: 4
-    env:
-      GPU_AVAILABLE: 1
-      CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
-    params:
-      requirements: 'GalaxyGroup == "pxe-gpu"'
-      request_gpus: "{gpus or 0}"
 
   condor_docker_gpu_pxe:
     inherits: basic_docker_destination
