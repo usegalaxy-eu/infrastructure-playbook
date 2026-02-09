@@ -4,6 +4,7 @@ global:
   default_inherits: default
 tools:
   default:
+    abstract: true
     cores: 1
     mem: cores * 3.8
     gpus: 0
@@ -23,7 +24,7 @@ tools:
       - name: LC_ALL
         value: C.UTF-8
       - name: SINGULARITYENV_LC_ALL
-        value: $LC_ALL
+        value: '${{LANG:-C}}'
       - name: TERM
         value: vt100
       - name: SINGULARITYENV_TERM

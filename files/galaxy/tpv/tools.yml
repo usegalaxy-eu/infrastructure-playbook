@@ -100,53 +100,6 @@ tools:
           require:
             - singularity
 
-  toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/.*:
-    cores: 10
-    rules:
-      - id: hifiasm_memory
-        # The memory requirement of Hifiasm depends on a wrapper's input
-        if: |
-          parameters = {p.name: p.value for p in job.parameters}
-          parameters = tool.params_from_strings(parameters, app)
-
-          advanced_options = parameters.get("advanced_options", dict())
-          hg_size = advanced_options.get("hg_size", "")
-
-          bool(hg_size)
-        mem: |
-          from math import ceil
-
-          parameters = {p.name: p.value for p in job.parameters}
-          parameters = tool.params_from_strings(parameters, app)
-
-          advanced_options = parameters.get("advanced_options", dict())
-
-          kcov_default = 36
-          kcov = advanced_options.get("kcov", kcov_default)
-
-          hg_size = advanced_options.get("hg_size", "")
-
-          value = 0
-          if hg_size:
-              conversion_factors = {
-                  "k": 1000000,
-                  "M": 1000,
-                  "G": 1,
-              }
-              conversion_factors = {
-                  key.lower(): value for key, value in conversion_factors.items()
-              }
-              suffix = hg_size[-1:].lower()
-              value = hg_size[:len(hg_size) - 1]
-              value = value.replace(",", ".")
-              value = float(value)
-              # compute hg size in Gb
-              value = value / conversion_factors[suffix.lower()]
-              value = ceil(value * (kcov * 2) * 1.75)
-
-          # return the amount of memory needed
-          value
-
   _container_tool:
     abstract: true
     scheduling:
@@ -207,6 +160,9 @@ tools:
     inherits: _container_tool
     cores: 2
     mem: 40
+
+  toolshed.g2.bx.psu.edu/repos/iuc/tesseract/tesseract/.*:
+    inherits: _container_tool
 
   toolshed.g2.bx.psu.edu/repos/computational-metabolomics/sirius_csifingerid/sirius_csifingerid/.*:
     # python is missing in the container
@@ -346,10 +302,19 @@ tools:
   toolshed.g2.bx.psu.edu/repos/ksuderman/stanford_corenlp/stanford_corenlp/.*:
     inherits: _container_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/llm_hub/llm_hub/*:
-    inherits: _container_tool
+    ##inherits: _container_tool
+    # can be removed when the singularity container is present
+    # this tool strictly needs singularity, as our Docker container has limited internet access
+    # so either singularity or conda, but not docker
+    scheduling:
+      require:
+        - conda
+        - singularity
     mem: 1
     env:
-      LITELLM_CONFIG_FILE: '/opt/galaxy/config/litellm_config.yaml'
+      docker_env_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
+      SINGULARITYENV_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
+      LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
 
   toolshed.g2.bx.psu.edu/repos/goeckslab/squidpy/squidpy_spatial/*:
     inherits: _container_tool
@@ -408,6 +373,11 @@ tools:
     inherits: _container_tool
     cores: 10
     mem: 10
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_potree/3dtrees_potree/.*:
+    inherits: _container_tool
+    cores: 10
+    mem: min(12 + (input_size * 4), 200)
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/msconvert/msconvert/.*:
     inherits: _container_tool
@@ -580,7 +550,7 @@ tools:
         - singularity
     params:
       # /tmp is not monted in, and is not writeable, this make fastqc crash
-      singularity_run_extra_arguments: " -B /tmp:$TMPDIR "
+      singularity_run_extra_arguments: " -B $TMPDIR:/tmp "
 
 
   toolshed.g2.bx.psu.edu/repos/iuc/bbtools_tadpole/bbtools_tadpole/.*:
@@ -796,6 +766,9 @@ tools:
     cores: 8
     mem: 20
     inherits: _container_tool
+    params:
+      # /tmp is not mounted in, and is not writeable, this make markduplicates crash
+      singularity_run_extra_arguments: " -B $TMPDIR:/tmp "
     #params:
     #  docker_run_extra_arguments: --user 999
 
@@ -1049,7 +1022,7 @@ tools:
       GENEMARK_PATH: /usr/local/tools/genemark/etp.for_braker/bin/gmes/
       _GALAXY_JOB_TMP_DIR: '/tmp'
     params:
-      singularity_run_extra_arguments: "--env GENEMARK_PATH=/usr/local/tools/genemark/etp.for_braker/bin/gmes/ -B /tmp:/tmp"
+      singularity_run_extra_arguments: "--env GENEMARK_PATH=/usr/local/tools/genemark/etp.for_braker/bin/gmes/ -B $TMPDIR:/tmp"
       singularity_no_mount: null
     scheduling:
       require:
@@ -1140,12 +1113,14 @@ tools:
       require:
         - singularity
 
-  # ppanggolin all tries to remove TMP folders, on NFS this does not always work, so we run this tool in singularity with internal (non-NFS) TMP
   toolshed.g2.bx.psu.edu/repos/iuc/ppanggolin_all/ppanggolin_all/.*:
-    env:
-      _GALAXY_JOB_TMP_DIR: '/tmp'
+    cores: 8
+    mem: 24
     params:
-      singularity_no_mount: null
+      # ppanggolin tries to remove TMP folders, on NFS this does not always work
+      # it also can write a lot of data to /tmp, so ram-disc does not work
+      # so we run this tool in singularity with a special bind mount
+      singularity_run_extra_arguments: " -B $TMPDIR:/tmp "
     scheduling:
       require:
         - singularity
@@ -1161,3 +1136,8 @@ tools:
   toolshed.g2.bx.psu.edu/repos/bgruening/sylph_profile/sylph_profile/.*:
     cores: 4
     mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/iuc/snap_training/snap_training/.*:
+    inherits: _container_tool
+    params:
+      singularity_run_extra_arguments: " -B $TMPDIR:/tmp "
