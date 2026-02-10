@@ -43,12 +43,35 @@ tools:
     rules:
       - if: user is not None
         execute: |
+          import psycopg2
+
           training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
-          training_expr = " || ".join(['(GalaxyGroup == "%s")' % role for role in training_roles])
-          training_labels = '"' + ", ".join(training_roles) + '"'
-          entity.params['requirements'] = '(GalaxyGroup == "compute") || (%s)' % training_expr if training_expr else '(GalaxyGroup == "compute")'
-          entity.params['+Group'] = training_labels
-          entity.params['accounting_group_user'] = str(user.id)
+          training_identifiers =  {
+              training_role.removeprefix("training-")
+              for training_role in training_roles
+          }
+          current_trainings = set()
+          if training_roles:
+              query = """
+                SELECT training_identifier
+                FROM training_training
+                WHERE "start" <= CURRENT_DATE 
+                AND "end" >= CURRENT_DATE
+              """
+              with psycopg2.connect("") as connection:
+                  with connection.cursor() as cursor:
+                      cursor.execute(query)
+                      result = cursor.fetchall()
+                      current_trainings = {
+                          row[0]
+                          for row in result
+                      }
+          if current_trainings & training_identifiers:
+              entity.params['requirements'] = '(GalaxyGroup == "compute") || (GalaxyGroup == "tiaas")'
+              training_labels = '"' + ", ".join(training_roles) + '"'
+              entity.params['+Group'] = training_labels
+              entity.params['accounting_group_user'] = str(user.id)
+
       - if: user is None
         execute: |
           entity.params['requirements'] = '(GalaxyGroup == "compute")'
