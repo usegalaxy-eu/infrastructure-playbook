@@ -497,7 +497,8 @@ destinations:
     min_accepted_gpus: 1
     max_accepted_gpus: 4
     scheduling:
-      require:
+      # Try to make this the default GPU destination if a tool is untagged (e.g. from upstream)
+      accept:
         - docker
     env:
       GPU_AVAILABLE: 1
