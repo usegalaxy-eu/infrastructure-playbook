@@ -55,7 +55,10 @@ destinations:
         $tool_directory:ro,
         $job_directory/outputs:rw,
         $working_directory:rw,
-        {{ galaxy_volumes(exclude_volumes=['dnb04', 'dnb-ds01']) }}
+        $_GALAXY_JOB_TMP_DIR:/tmp:rw,
+        {{ galaxy_volumes(exclude_volumes=['db', 'dnb04', 'dnb-ds01', '5']) }}
+        {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
+        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
         {{ tools.tools.path }}/:{{ tools.tools.docker_perm }}"
       singularity_default_container_id: "{{ cvmfs.singularity.path }}/all/centos:8.3.2011"
 
@@ -440,7 +443,10 @@ destinations:
         $tool_directory:ro,
         $job_directory/outputs:rw,
         $working_directory:rw,
-        {{ galaxy_volumes(exclude_volumes=['dnb04', 'dnb-ds01']) }}
+        $_GALAXY_JOB_TMP_DIR:/tmp:rw,
+        {{ galaxy_volumes(exclude_volumes=['db', 'dnb04', 'dnb-ds01', '5']) }}
+        {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
+        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
         {{ tools.tools.path }}/:{{ tools.tools.docker_perm }}"
       singularity_default_container_id: "{{ cvmfs.singularity.path }}/all/centos:8.3.2011"
       #
