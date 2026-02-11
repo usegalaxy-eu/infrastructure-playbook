@@ -259,7 +259,7 @@
 
     - name: Copy Loc File
       ansible.builtin.copy:
-        src: '{{ playbook_dir }}/files/galaxy/config/llm/litellm_config.yml'
+        src: '{{ playbook_dir }}/files/galaxy/config/llm/genai_models.loc'
         dest: '{{ galaxy_root }}/tool-data/genai_models.loc'
         owner: root
         group: root
