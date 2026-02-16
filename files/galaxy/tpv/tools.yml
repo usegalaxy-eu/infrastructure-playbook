@@ -718,6 +718,8 @@ tools:
     cores: 4
     mem: 16
 
-  toolshed.g2.bx.psu.edu/repos/iuc/snap_training/snap_training/.*:
+  toolshed.g2.bx.psu.edu/repos/bgruening/kmetashot/kmetashot/.*:
+    cores: 2
+    mem: 60
     params:
-      singularity_run_extra_arguments: " -B $TMPDIR:/tmp "
+      docker_run_extra_arguments: --shm-size 22g
