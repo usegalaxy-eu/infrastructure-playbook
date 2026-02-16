@@ -14,6 +14,46 @@ tools:
         - conda
         - singularity
 
+  toolshed.g2.bx.psu.edu/repos/iuc/vardict_java/vardict_java/.*:
+    inherits: _conda_in_container
+
+  toolshed.g2.bx.psu.edu/repos/iuc/idr_download_by_ids/idr_download_by_ids/.*:
+    inherits: _conda_in_container
+
+  toolshed.g2.bx.psu.edu/repos/iuc/chira_map/chira_map/.*:
+    inherits: _conda_in_container
+
+  toolshed.g2.bx.psu.edu/repos/iuc/chira_merge/chira_merge/.*:
+    inherits: _conda_in_container
+
+  toolshed.g2.bx.psu.edu/repos/iuc/chira_quantify/chira_quantify/.*:
+    inherits: _conda_in_container
+
+  toolshed.g2.bx.psu.edu/repos/iuc/chira_extract/chira_extract/.*:
+    inherits: _conda_in_container
+
+  toolshed.g2.bx.psu.edu/repos/iuc/lumpy_prep/lumpy_prep/.*:
+    inherits: _conda_in_container
+
+  toolshed.g2.bx.psu.edu/repos/bgruening-util/stress_ng/stress_ng/.*:
+    inherits: _conda_in_container
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/llm_hub/llm_hub/.*:
+    inhertis: _conda_in_container
+    ##
+    # can be removed when the singularity container is present
+    # this tool strictly needs singularity, as our Docker container has limited internet access
+    # so either singularity or conda, but not docker
+    mem: 1
+    env:
+      docker_env_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
+      SINGULARITYENV_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
+      LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
+
+
+  toolshed.g2.bx.psu.edu/repos/computational-metabolomics/sirius_csifingerid/sirius_csifingerid/.*:
+    inherits: _conda_in_container
+
   toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_compare/deeptools_bam_compare/2.4.1.0:
     inherits: _conda_in_container
 
