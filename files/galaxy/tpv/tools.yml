@@ -96,9 +96,10 @@ tools:
               '3.0.2.0',
           }
           any(helpers.tool_version_eq(tool, version) for version in no_container)
-        execute: |
-          from tpv.core.entities import SchedulingTags
-          entity.tpv_tags = SchedulingTags(require=["conda", "singularity"])
+        scheduling:
+          require:
+            - conda
+            - singularity
 
   toolshed.g2.bx.psu.edu/repos/bgruening/keras_train_and_eval/keras_train_and_eval/.*:
     inherits: _basic_gpu_resource_param_tool
