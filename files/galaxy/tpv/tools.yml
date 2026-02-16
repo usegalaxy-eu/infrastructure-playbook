@@ -367,10 +367,6 @@ tools:
   toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc/.*:
     # 8 (from the shared TPV) seems to high for me
     cores: 3
-    params:
-      # /tmp is not monted in, and is not writeable, this make fastqc crash
-      singularity_run_extra_arguments: " -B $TMPDIR:/tmp "
-
 
   toolshed.g2.bx.psu.edu/repos/iuc/bbtools_tadpole/bbtools_tadpole/.*:
     mem: 8
@@ -518,11 +514,6 @@ tools:
   toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicates/.*:
     cores: 8
     mem: 20
-    params:
-      # /tmp is not mounted in, and is not writeable, this make markduplicates crash
-      singularity_run_extra_arguments: " -B $TMPDIR:/tmp "
-    #params:
-    #  docker_run_extra_arguments: --user 999
 
   toolshed.g2.bx.psu.edu/repos/bgruening/diamond/diamond/.*:
     cores: 6
@@ -703,11 +694,6 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/ppanggolin_all/ppanggolin_all/.*:
     cores: 8
     mem: 24
-    params:
-      # ppanggolin tries to remove TMP folders, on NFS this does not always work
-      # it also can write a lot of data to /tmp, so ram-disc does not work
-      # so we run this tool in singularity with a special bind mount
-      singularity_run_extra_arguments: " -B $TMPDIR:/tmp "
 
   # we overwrite here the shared-db, as we seem to need more DB
   toolshed.g2.bx.psu.edu/repos/iuc/gtdbtk_classify_wf/gtdbtk_classify_wf/.*:
