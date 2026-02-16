@@ -12,6 +12,11 @@ tools:
           param_dict.get('__job_resource', {}).get('__job_resource__select') == 'yes'
         gpus: int(job.get_param_values(app)['__job_resource']['gpu'])
 
+  __.*__:
+    scheduling:
+      require:
+        - upload
+
   __DATA_FETCH__:
     cores: 1
     mem: 3
