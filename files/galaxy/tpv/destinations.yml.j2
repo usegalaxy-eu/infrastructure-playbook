@@ -36,9 +36,7 @@ destinations:
       # $defaults expands to "$galaxy_root:ro,$tool_directory:ro,$job_directory:ro,$working_directory:rw,$default_file_path:rw"
       docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,
         $defaults,
-        {{ galaxy_volumes(exclude_volumes=['db', 'dnb04', 'dnb-ds01', '5']) }}
-        {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
-        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
+        {{ galaxy_volumes(exclude_volumes=['dnb04', 'dnb-ds01']) }}
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
       require_container: true
       submit_request_cpus: "{cores}"
@@ -458,48 +456,12 @@ destinations:
       docker_set_user: ""
       docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,
         $defaults,
-        {{ galaxy_volumes(exclude_volumes=['db', 'dnb04', 'dnb-ds01', '5']) }}
-        {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
-        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
+        {{ galaxy_volumes(exclude_volumes=['dnb04', 'dnb-ds01']) }}
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
-    scheduling:
-      require:
-        - condor_container
-
-  condor_docker:
-    inherits: basic_docker_destination
-    runner: condor
-    max_accepted_cores: 36
-    max_accepted_mem: 975
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
-    scheduling:
-      require:
-        - docker
-
-  condor_singularity:
-    inherits: basic_singularity_destination
-    runner: condor
-    max_accepted_cores: 36
-    max_accepted_mem: 975
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
-    params:
-    scheduling:
-      require:
-        - singularity
-
-  # Generic destination for tools that don't get any params
-  # and no specified dependency resolution
-  condor_tpv:
-    runner: condor
-    max_accepted_cores: 64
-    max_accepted_mem: 1000
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
-    scheduling:
-      prefer:
-        - condor-tpv
+      scheduling:
+        accept:
+          - docker
+          - singularity
 
   condor_singularity_with_conda:
     inherits: basic_singularity_destination
@@ -523,7 +485,7 @@ destinations:
         - singularity
         - conda
 
-  condor_upload:
+  condor_internal:
     runner: condor
     max_accepted_cores: 20
     max_accepted_mem: 10
@@ -531,23 +493,10 @@ destinations:
     max_accepted_gpus: 0
     params:
       requirements: "GalaxyTraining == false"
-      rank: 'GalaxyGroup == "upload"'
+      rank: 'GalaxyGroup == "internal"'
     scheduling:
       require:
-        - upload
-
-  condor_gpu_pxe:
-    runner: condor
-    max_accepted_cores: 128
-    max_accepted_mem: 500
-    min_accepted_gpus: 1
-    max_accepted_gpus: 4
-    env:
-      GPU_AVAILABLE: 1
-      CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
-    params:
-      requirements: 'GalaxyGroup == "pxe-gpu"'
-      request_gpus: "{gpus or 0}"
+        - internal
 
   condor_docker_gpu_pxe:
     inherits: basic_docker_destination
@@ -558,7 +507,8 @@ destinations:
     min_accepted_gpus: 1
     max_accepted_gpus: 4
     scheduling:
-      require:
+      # Try to make this the default GPU destination if a tool is untagged (e.g. from upstream)
+      accept:
         - docker
     env:
       GPU_AVAILABLE: 1
