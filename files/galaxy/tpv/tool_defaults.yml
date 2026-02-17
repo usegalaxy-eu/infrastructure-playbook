@@ -46,7 +46,8 @@ tools:
         execute: |
           import os
           import psycopg2
-          
+          from datetime import date
+
           training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
           training_labels = '"' + ", ".join(training_roles) + '"'
           entity.params['requirements'] = '(GalaxyGroup == "compute")'
@@ -63,8 +64,8 @@ tools:
           }
 
           # ongoing trainings
-          @functools.lru_cache(maxsize=128)
-          def get_ongoing_trainings() -> set[str]:
+          @functools.lru_cache(maxsize=1)
+          def get_ongoing_trainings(date_) -> set[str]:
               dbuser = os.environ['TIAAS_DB_USER']
               dbname = os.environ['TIAAS_DB_NAME']
               dbpass = os.environ['TIAAS_DB_PASSWORD']
@@ -73,19 +74,18 @@ tools:
               query = """
                 SELECT training_identifier
                 FROM training_training
-                WHERE "start" <= CURRENT_DATE
-                AND "end" >= CURRENT_DATE
+                WHERE "start" <= %s AND "end" >= %
               """
               with psycopg2.connect(host=dbhost, user=dbuser, password=dbpass, dbname=dbname) as connection:
                   with connection.cursor() as cursor:
-                      cursor.execute(query)
+                      cursor.execute(query, (date_, date_))
                       result = cursor.fetchall()
                       ongoing_trainings = {
                           row[0]
                           for row in result
                       }
-              return ongoing_trainings
-          ongoing_trainings = get_ongoing_trainings()
+                      return ongoing_trainings
+          ongoing_trainings = get_ongoing_trainings(date.today())
 
           if ongoing_trainings & user_trainings:
               entity.params['requirements'] = '(GalaxyGroup == "compute") || (GalaxyGroup == "tiaas")'
