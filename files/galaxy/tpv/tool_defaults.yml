@@ -41,7 +41,8 @@ tools:
       reject:
         - offline
     rules:
-      - if: user is not None
+      - id: Check TIaaS roles
+        if: user is not None
         execute: |
           import psycopg2
 
