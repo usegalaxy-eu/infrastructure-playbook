@@ -57,12 +57,12 @@ tools:
               return
 
           @functools.lru_cache(maxsize=128)
-          def get_current_trainings() -> set[str]:
+          def get_ongoing_trainings() -> set[str]:
               dbuser = os.environ['TIAAS_DB_USER']
               dbname = os.environ['TIAAS_DB_NAME']
               dbpass = os.environ['TIAAS_DB_PASSWORD']
               dbhost = os.environ['TIAAS_DB_HOST']
-              current_trainings = set()
+              ongoing_trainings = set()
               query = """
                 SELECT training_identifier
                 FROM training_training
@@ -73,18 +73,18 @@ tools:
                   with connection.cursor() as cursor:
                       cursor.execute(query)
                       result = cursor.fetchall()
-                      current_trainings = {
+                      ongoing_trainings = {
                           row[0]
                           for row in result
                       }
-              return current_trainings
-          current_trainings = get_current_trainings()
+              return ongoing_trainings
+          ongoing_trainings = get_ongoing_trainings()
           
           training_identifiers =  {
               training_role.removeprefix("training-")
               for training_role in training_roles
           }
-          if current_trainings & training_identifiers:
+          if ongoing_trainings & training_identifiers:
               entity.params['requirements'] = '(GalaxyGroup == "compute") || (GalaxyGroup == "tiaas")'
 
       - if: user is None
