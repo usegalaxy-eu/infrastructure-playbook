@@ -1,25 +1,28 @@
 ---
 # Config Sample file: https://github.com/galaxyproject/galaxy/blob/dev/lib/galaxy/config/sample/container_resolvers.yml.sample
 
-# get a container description (URI) for an explicit singularity container requirement
+# Run explicit singularity image
 - type: explicit_singularity
 
-# get a container description (URI) for an explicit docker container requirement
-- type: explicit
+# Gets the singularity image from cvac - CVMFS
+- type: cached_mulled_singularity
+  cache_directory: /cvmfs/singularity.galaxyproject.org/all
+  cache_directory_cacher_type: dir_mtime
 
-# get a container description to a cached mulled docker container
-- type: cached_mulled
-  namespace: biocontainers
-
-# Resolves container images from quay.io/NAMESPACE/MULLED_HASH where the
-# mulled hash describes which packages and versions should be in the container
-- type: mulled
+# Pulls image from quay.io but runs in singularity
+- type: mulled_singularity
   namespace: biocontainers
   auto_install: true
 
-# Differences with the docker `mulled` resolver are
-# - when pulling the image file will be stored in the configured cache dir
-# - if auto_install is True the result will point to the cached image file
-- type: mulled_singularity
+# run docker explicit image
+- type: explicit
+
+# Get a container from biocontainers and run in docker
+- type: cached_mulled
+  namespace: biocontainers
+
+# Resolves container images from quay.io/NAMESPACE/MULLED_HASH and run in docker
+# It should never be used
+- type: mulled
   namespace: biocontainers
   auto_install: true
