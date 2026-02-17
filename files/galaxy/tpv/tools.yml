@@ -12,12 +12,7 @@ tools:
           param_dict.get('__job_resource', {}).get('__job_resource__select') == 'yes'
         gpus: int(job.get_param_values(app)['__job_resource']['gpu'])
 
-
   _basic_internal_tool:
-    cores: 1
-    mem: 3
-    env:
-      TEMP: /data/1/galaxy_db/tmp
     rules:
       - id: no-pulsar
         if: user is not None
@@ -34,16 +29,6 @@ tools:
     scheduling:
       require:
         - internal
-
-  __.*__:
-    inherits: _basic_internal_tool
-
-  param_value_from_file:
-    inherits: _basic_internal_tool
-
-  upload1:
-    inherits: _basic_internal_tool
-
 
   _basic_docker_tool:
     abstract: true
@@ -77,6 +62,22 @@ tools:
       VECLIB_MAXIMUM_THREADS: 4
       NUMEXPR_NUM_THREADS: 4
       NUMBA_NUM_THREADS: 4
+
+  __.*__:
+    inherits: _basic_internal_tool
+
+  param_value_from_file:
+    inherits: _basic_internal_tool
+
+  upload1:
+    inherits: _basic_internal_tool
+
+  __DATA_FETCH__:
+    inherits: _basic_internal_tool
+    cores: 1
+    mem: 3
+    env:
+      TEMP: /data/1/galaxy_db/tmp
 
   toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/.*:
     inherits: _basic_gpu_resource_param_tool
