@@ -63,6 +63,7 @@ tools:
                           row[0]
                           for row in result
                       }
+                      return current_trainings
 
           training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
           training_identifiers =  {
