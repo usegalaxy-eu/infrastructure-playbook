@@ -13,6 +13,7 @@ tools:
         gpus: int(job.get_param_values(app)['__job_resource']['gpu'])
 
   _basic_internal_tool:
+    asbtract: true
     rules:
       - id: no-pulsar
         if: user is not None
