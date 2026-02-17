@@ -56,6 +56,12 @@ tools:
           if not training_roles:
               return
 
+          # user trainings
+          user_trainings =  {
+              training_role.removeprefix("training-")
+              for training_role in training_roles
+          }
+
           @functools.lru_cache(maxsize=128)
           def get_ongoing_trainings() -> set[str]:
               dbuser = os.environ['TIAAS_DB_USER']
@@ -80,10 +86,6 @@ tools:
               return ongoing_trainings
           ongoing_trainings = get_ongoing_trainings()
 
-          user_trainings =  {
-              training_role.removeprefix("training-")
-              for training_role in training_roles
-          }
           if ongoing_trainings & user_trainings:
               entity.params['requirements'] = '(GalaxyGroup == "compute") || (GalaxyGroup == "tiaas")'
 
