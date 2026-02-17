@@ -44,18 +44,23 @@ tools:
       - id: Check TIaaS roles
         if: user is not None
         execute: |
+          import os
           import psycopg2
-
+          
           @functools.lru_cache(maxsize=128)
-          def get_current_trainings() -> {}:
-             current_trainings = set()
+          def get_current_trainings() -> set[str]:
+              dbuser = os.environ['TIAAS_DB_USER']
+              dbname = os.environ['TIAAS_DB_NAME']
+              dbpass = os.environ['TIAAS_DB_PASSWORD']
+              dbhost = os.environ['TIAAS_DB_HOST']
+              current_trainings = set()
               query = """
                 SELECT training_identifier
                 FROM training_training
                 WHERE "start" <= CURRENT_DATE
                 AND "end" >= CURRENT_DATE
               """
-              with psycopg2.connect("") as connection:
+              with psycopg2.connect(host=dbhost, user=dbuser, password=dbpass, dbname=dbname) as connection:
                   with connection.cursor() as cursor:
                       cursor.execute(query)
                       result = cursor.fetchall()
@@ -63,8 +68,8 @@ tools:
                           row[0]
                           for row in result
                       }
-                      return current_trainings
-
+              return current_trainings
+          
           training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
           training_identifiers =  {
               training_role.removeprefix("training-")
