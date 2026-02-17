@@ -66,17 +66,18 @@ tools:
           # ongoing trainings
           @functools.lru_cache(maxsize=1)
           def get_ongoing_trainings(date_) -> set[str]:
-              dbuser = os.environ['TIAAS_DB_USER']
-              dbname = os.environ['TIAAS_DB_NAME']
-              dbpass = os.environ['TIAAS_DB_PASSWORD']
-              dbhost = os.environ['TIAAS_DB_HOST']
-              ongoing_trainings = set()
+              connection_params = {
+                  "dbname": os.environ.get("TIAAS_DB_NAME"),
+                  "user": os.environ.get("TIAAS_DB_USER"),
+                  "password": os.environ.get("TIAAS_DB_PASSWORD"),
+                  "host": os.environ.get("TIAAS_DB_HOST"),
+              }
               query = """
                 SELECT training_identifier
                 FROM training_training
                 WHERE "start" <= %s AND "end" >= %
               """
-              with psycopg2.connect(host=dbhost, user=dbuser, password=dbpass, dbname=dbname) as connection:
+              with psycopg2.connect(**connection_params) as connection:
                   with connection.cursor() as cursor:
                       cursor.execute(query, (date_, date_))
                       result = cursor.fetchall()
