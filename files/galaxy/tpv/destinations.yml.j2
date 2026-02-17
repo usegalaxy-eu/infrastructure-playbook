@@ -485,7 +485,7 @@ destinations:
         - singularity
         - conda
 
-  condor_upload:
+  condor_internal:
     runner: condor
     max_accepted_cores: 20
     max_accepted_mem: 10
@@ -493,10 +493,10 @@ destinations:
     max_accepted_gpus: 0
     params:
       requirements: "GalaxyTraining == false"
-      rank: 'GalaxyGroup == "upload"'
+      rank: 'GalaxyGroup == "internal"'
     scheduling:
       require:
-        - upload
+        - internal
 
   condor_docker_gpu_pxe:
     inherits: basic_docker_destination
