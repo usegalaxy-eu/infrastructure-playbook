@@ -62,6 +62,7 @@ tools:
               for training_role in training_roles
           }
 
+          # ongoing trainings
           @functools.lru_cache(maxsize=128)
           def get_ongoing_trainings() -> set[str]:
               dbuser = os.environ['TIAAS_DB_USER']
