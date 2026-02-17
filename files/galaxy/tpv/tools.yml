@@ -236,25 +236,15 @@ tools:
     mem: 20
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_segmentanytree/3dtrees_segmentanytree/.*:
-    inherits: _basic_docker_tool
     gpus: 1
     cores: 10
     mem: 20
-
-  toolshed.g2.bx.psu.edu/repos/imgteam/libcarna_render/libcarna_render/.*:
-    inherits: _basic_docker_tool
-    gpus: 1
-    cores: 1
-    mem: 4
-    params:
-      docker_run_extra_arguments: " --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,compute "
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_standardization/3dtrees_standardization/.*:
     cores: 10
     mem: 4
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_detailview/3dtrees_detailview/.*:
-    inherits: _basic_docker_tool
     gpus: 1
     cores: 8
     mem: 20
@@ -266,6 +256,14 @@ tools:
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_potree/3dtrees_potree/.*:
     cores: 10
     mem: min(12 + (input_size * 4), 200)
+
+  toolshed.g2.bx.psu.edu/repos/imgteam/libcarna_render/libcarna_render/.*:
+    inherits: _basic_docker_tool
+    gpus: 1
+    cores: 1
+    mem: 4
+    params:
+      docker_run_extra_arguments: " --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,compute "
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/msconvert/msconvert/.*:
     ## seems to be still needed 2025/12
