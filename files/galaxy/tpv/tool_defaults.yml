@@ -53,6 +53,9 @@ tools:
           entity.params['+Group'] = training_labels
           entity.params['accounting_group_user'] = str(user.id)
 
+          if not training_roles:
+              return
+
           @functools.lru_cache(maxsize=128)
           def get_current_trainings() -> set[str]:
               dbuser = os.environ['TIAAS_DB_USER']
@@ -75,9 +78,7 @@ tools:
                           for row in result
                       }
               return current_trainings
-          
-          if training_roles:
-            current_trainings = get_current_trainings()
+          current_trainings = get_current_trainings()
           
           training_identifiers =  {
               training_role.removeprefix("training-")
