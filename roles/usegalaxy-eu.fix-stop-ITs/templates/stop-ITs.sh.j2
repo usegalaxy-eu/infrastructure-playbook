@@ -1,0 +1,30 @@
+#!/bin/sh
+TODAY=$(date +"%d-%m-%y %H:%M:%S")
+DAY=86400
+. {{ galaxy_root }}/.bashrc
+cd ~
+for job in $(gxadmin query queue-detail | grep running | grep interactive_tool | awk '{print $3}')
+do
+    # Get job working directory
+    JWD=$(python3 /usr/local/bin/galaxy_jwd get $job)
+
+    # Get external/Condor job ID from either external_id file or job_condor.log file from JWD
+    if [ -f $JWD/external_id ]; then
+        ClusterID=$(cat $JWD/external_id | tr -d '"')
+    elif [ -f $JWD/job_condor.log ]; then
+        ClusterID=$(head -n 1 $JWD/job_condor.log | sed -n 's/.*(\([0-9]*\)\..*/\1/p')
+    fi
+
+    # If cluster ID is found
+    if [ ! -z "$ClusterID" ]; then
+        # Check if job is running for more than 24 hrs and remove it
+        if [ "$(condor_q -global $ClusterID -autoformat JobStartDate)" == "undefined" ] || [ "$(condor_q -global $ClusterID -autoformat JobStartDate)" == "" ]; then
+            echo "Removing condor job $ClusterID (Galaxy job id: $job) on $TODAY"
+            condor_rm $ClusterID
+
+        elif [ $(($(date +"%s") - $(condor_q -global $ClusterID -autoformat JobStartDate))) -ge $DAY ]; then
+            echo "Removing condor job $ClusterID (Galaxy job id: $job) on $TODAY"
+            condor_rm $ClusterID
+        fi
+    fi
+done

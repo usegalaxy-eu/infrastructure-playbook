@@ -1,0 +1,168 @@
+---
+- name: UseGalaxy EU maintenance server
+  hosts: maintenance
+  become: true
+  become_user: root
+  vars_files:
+    - secret_group_vars/db-main.yml
+    - secret_group_vars/all.yml
+    - mounts/dest/all.yml
+    - mounts/mountpoints.yml
+  collections:
+    - devsec.hardening
+  handlers:
+    - name: restart rsyslog
+      service:
+        name: rsyslog
+        state: restarted
+  tasks:
+    - name: Run library permission set for Issue 855
+      ansible.builtin.cron:
+        name: Sets the library permissions of all dataset in Library SPAMR-VET to Role SPAMR-VET
+        user: galaxy
+        job: uvx --from ephemeris set-library-permissions "{{ library_id_spamr_vet }}" -g  https://usegalaxy.eu -a "$GALAXY_API_KEY" --roles "{{ role_id_spamr_vet }}" -y -s
+        hour: "*/4"
+        minute: "0"
+
+  pre_tasks:
+    - name: Install EPEL-release
+      ansible.builtin.package:
+        name: epel-release
+        state: present
+    - name: Set additional local mount point
+      set_fact:
+        autofs_conf_files: "{{ autofs_conf_files | combine({ 'usrlocal': autofs_conf_files['usrlocal'] + galaxy_mount }) }}"
+    - name: Install Dependencies
+      package:
+        name:
+          [
+            'git',
+            'postgresql',
+            'python3-psycopg2',
+            'python3-pip',
+            'bc',
+            'python3',
+            'python3-devel',
+            'bzip2',
+            'firewalld',
+          ]
+      become: true
+  post_tasks:
+    - name: Append some users to the systemd-journal group
+      user:
+        name: '{{ item }}'
+        groups: systemd-journal
+        append: true
+      loop:
+        - '{{ galaxy_user.name }}'
+        - 'telegraf'
+
+    - name: rsyslog configuration
+      copy:
+        content: |
+          # Accept logs on TCP port 514
+          module(load="imtcp")
+          input(type="imtcp" port="514")
+
+          # Create a template for log file naming
+          $template RemoteLogs,"/var/log/remote/%HOSTNAME%/%PROGRAMNAME%.log"
+
+          # Store logs from clients in their own directories
+          if $fromhost-ip != "127.0.0.1" then ?RemoteLogs
+        dest: /etc/rsyslog.d/remote.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        - restart rsyslog
+    - name: Configure OpenStack credentials.
+      become: true
+      block:
+        - name: Get $XDG_CONFIG_HOME for root.
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: "set -u; (echo $XDG_CONFIG_HOME) 2> /dev/null || echo $HOME/.config"
+          changed_when: false
+          register: root_config
+        - name: Ensure $XDG_CONFIG_HOME exists.
+          become: true
+          ansible.builtin.file:
+            path: "{{ root_config.stdout }}"
+            state: directory
+            owner: root
+            group: root
+        - name: Ensure OpenStack configuration directory exists.
+          become: true
+          ansible.builtin.file:
+            path: "{{ root_config.stdout }}/openstack"
+            state: directory
+            owner: root
+            group: root
+            mode: "0700"
+        - name: Copy OpenStack credentials.
+          ansible.builtin.copy:
+            src: clouds.yaml
+            dest: "{{ root_config.stdout }}/openstack/clouds.yaml"
+            owner: root
+            group: root
+            mode: "0600"
+    - name: Copy script to manage VMs.
+      ansible.builtin.copy:
+        src: manage_vms
+        dest: /usr/local/bin/manage_vms
+        owner: root
+        group: root
+        mode: "0555"
+    - name: Ensure firewalld is running
+      ansible.builtin.service:
+        name: firewalld
+        state: started
+        enabled: true
+      become: true
+    - name: Configure firewalld to open ports
+      firewalld:
+        port: "{{ item }}"
+        immediate: true
+        permanent: true
+        state: enabled
+      with_items:
+        - 9628/tcp # HTCondor shared port
+        - 514/tcp  # rsyslog
+    - name: Add the OpenAI API key to the telegraf user's bashrc file
+      ansible.builtin.lineinfile:
+        path: "/etc/telegraf/.bashrc"
+        regexp: "^export OPENAI_API_KEY_TELEGRAF"
+        line: 'export OPENAI_API_KEY_TELEGRAF="{{ openai_api_key_telegraf }}"'
+        create: true
+      no_log: true
+  roles:
+    - usegalaxy-eu.vgcn-monitoring
+    - usegalaxy_eu.handy.os_setup
+    - geerlingguy.repo-epel
+    - usegalaxy-eu.autoupdates
+    - influxdata.chrony
+    - usegalaxy-eu.autofs
+    - hxr.monitor-cluster
+    - hxr.monitor-galaxy
+    - usegalaxy-eu.monitoring
+    - usegalaxy-eu.bashrc
+    - usegalaxy-eu.dynmotd
+    - ssh-host-sign
+    - hxr.postgres-connection
+    - galaxyproject.gxadmin
+    - usegalaxy-eu.galaxy-slurp
+    - usegalaxy_eu.fs_maintenance
+    - usegalaxy_eu.galaxy_cleanup # Cleanup the Galaxy objectstores and old datasets
+    # - usegalaxy-eu.htcondor_release
+    # - usegalaxy-eu.fix-unscheduled-workflows
+    - usegalaxy-eu.fix-ancient-ftp-data
+    # - usegalaxy-eu.fix-user-quotas
+    - usegalaxy-eu.remove-orphan-condor-jobs
+    - ssh_hardening
+    - usegalaxy-eu.job-radar-stats-influxdb
+    - dj-wasabi.telegraf
+    # - usegalaxy-eu.fix-stop-ITs
+    - usegalaxy-eu.logrotate
+    - usegalaxy_eu.walle
+    - usegalaxy_eu.ntfy-notifications
+    - l3d.restic

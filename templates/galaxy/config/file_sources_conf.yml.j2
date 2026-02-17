@@ -1,37 +1,29 @@
-- type: dropbox
-  id: dropbox
-  label: Your Dropbox Files
-  doc: Your Dropbox files - configure an access token via the user preferences
-  accessToken: ${user.preferences['dropbox|access_token']}
-
-#- type: webdav
-#  id: b2drop
-#  doc: B2Drop WebDAV server
-#  url: https://b2drop.eudat.eu
-#  root: /remote.php/dav/files/${user.preferences['b2drop|username']}/
-#  login: ${user.preferences['b2drop|username']} 
-#  password: ${user.preferences['b2drop|password']}
 
 - type: webdav
-  id: generic_nextcloud
-  label: Nextcloud/ownCloud
-  doc: You personal Cloud files
-  writable: true
-  url: ${user.preferences['nextcloud|url']}
-  root: ${user.preferences['nextcloud|root']}
-  login: ${user.preferences['nextcloud|username']}
-  password: ${user.preferences['nextcloud|password']}
-
-- type: webdav
-  id: ergo_nextcloud
+  id: erga_nextcloud
   label: ERGA Nextcloud
   doc: ERGA Pilot storage provided by BSC
   writable: true
   url: 'https://ergapilot.bsc.es'
   root: '/remote.php/webdav'
+  use_temp_files: true
+  temp_path: {{ generic_tmp_dir }}
   login: "{{ erga_nextcloud_login }}"
   password: "{{ erga_nextcloud_password }}"
   requires_groups: erga
+
+- type: huggingface
+  id: huggingface
+  label: Hugging Face Hub 🤗
+  doc: 'Hugging Face Hub is a platform for sharing machine learning models and datasets.'
+  endpoint: 'https://huggingface.co'
+  token: ''
+
+- type: posix
+  root: '/data/db/file_sources/tabula_atlases'
+  id: tabula-atlases
+  doc: "Tabula Sapiens and Tabula Muris senis single-cell transcriptomic atlases, providing comprehensive cell-type–resolved gene expression profiles across multiple tissues and organs in human and mouse."
+  label: "Tabula Atlases"
 
 - type: posix
   root: '/data/5/galaxy_import/galaxy_user_data/covid-19/data/sequences/'
@@ -44,6 +36,20 @@
   id: pdb-gzip             
   doc: Protein Data Bank (PDB)
   label: PDB
+
+- type: posix
+  root: '/data/db/models/'
+  id: ml-models
+  doc: ML/AI models for PyTorch, TensorFlow, Keras ...
+  label: ML models
+
+- type: inveniordm
+  id: zenodo
+  doc: Zenodo is an open-access digital repository created by CERN (the European Organization for Nuclear Research) to enable researchers to share, preserve, and cite research outputs across various disciplines.
+  label: Zenodo
+  url: https://zenodo.org
+  token: ""
+  public_name: ""
 
 - type: ftp
   id: ebi-ftp
@@ -106,15 +112,25 @@
   bucket: genomeark
   anon: true
 
-- type: s3
+- type: s3fs
   label: Genome Ark Test Instance
   id: genomeark_galaxy
   doc: Access to Genome Ark open data on AWS.
-  bucket_name: genomeark
+  bucket: genomeark
   requires_groups: vgp
   writable: true
-  aws_secret_access_key: "{{ genomeark_galaxy_aws_secret_access_key }}"
-  aws_access_key_id: "{{ genomeark_galaxy_aws_access_key_id }}"
+  secret: "{{ genomeark_galaxy_aws_secret_access_key }}"
+  key: "{{ genomeark_galaxy_aws_access_key_id }}"
+
+- type: s3fs
+  label: Gilsbach S3 ElementBio
+  id: gilsback_element_bio
+  doc: Access to an ElementBio S3 bucket
+  bucket: elembio-macro-galaxy
+  requires_groups: gilsbach
+  writable: true
+  secret: "{{ gilsback_element_bio_aws_secret_access_key }}"
+  key: "{{ gilsback_element_bio_aws_access_key_id }}"
 
 - type: s3fs
   label: "ONT open data"
@@ -149,6 +165,20 @@
   id: encode-public
   doc: The Encyclopedia of DNA Elements (ENCODE) Consortium is an international collaboration of research groups funded by the National Human Genome Research Institute (NHGRI)
   bucket: encode-public
+  anon: true
+
+- type: s3fs
+  label: Sentinel-3
+  id: meeo-s3-nrt
+  doc: European Commission’s Copernicus Earth Observation Programme. Sentinel-3 is a polar orbiting satellite that completes 14 orbits of the Earth a day.
+  bucket: meeo-s3/NRT/
+  anon: true
+
+- type: s3fs
+  label: Sentinel-5P Level 2
+  id: meeo-s5p-nrti
+  doc: Observations from the Sentinel-5 Precursor satellite of the Copernicus Earth Observation Programme. It contains a polar orbiting satellite that completes 14 orbits of the Earth a day.
+  bucket: meeo-s5p/RPRO/
   anon: true
 
 - type: s3fs
@@ -194,10 +224,10 @@
   anon: true
 
 - type: s3fs
-  label: ECMWF ERA5 Reanalysis
-  id: era5-pds
+  label: NSF NCAR Curated ECMWF Reanalysis 5 (ERA5)
+  id: nsf-ncar-era5
   doc: ERA5 is the fifth generation of ECMWF atmospheric reanalyses of the global climate created with the best available observation data from satellites, in-situ stations and ECMWF's Integrated Forecast System. The dataset provides atmospheric meteorological parameters.
-  bucket: era5-pds
+  bucket: nsf-ncar-era5
   anon: true
 
 - type: s3fs
@@ -206,6 +236,13 @@
   doc: Global and high-resolution regional atmospheric models from Météo-France.
   bucket: mf-nwp-models
   anon: true
+  
+- type: s3fs
+  label: Argo marine floats data and metadata from Global Data Assembly Centre (Argo GDAC)
+  id: argo-gdac-sandbox
+  doc: Argo is an international program to observe the interior of the ocean with a fleet of profiling floats drifting in the deep ocean currents (https://argo.ucsd.edu). 
+  bucket: argo-gdac-sandbox
+  anon: true
 
 - type: s3fs
   label: Human Pangenome Reference Consortium
@@ -213,3 +250,104 @@
   doc: "This bucket includes sequencing data, assemblies, and pangenomes, and analyses for the Human Pangenome Reference Consortium. Sequencing data includes PacBio, Oxford Nanopore, Illumina, and Hi-C."
   bucket: human-pangenomics
   anon: true
+
+#- type: arcfs
+#  id: arcfs1
+#  label: DataPLANT DataHUB ARCs
+#  doc: Explore ARCs in the DataPLANT GitLab repository.
+#  token: ${user.preferences['gitlabfs|read_access_token']}
+#  server_url: "https://git.nfdi4plants.org"
+#  writable: true
+
+- type: inveniordm
+  id: berd_nfdi
+  doc: "A Single Place for Data in Business, Economics and Related Fields"
+  label: "BERD@NFDI Repository"
+  url: https://berd-platform.de
+  token: ""
+  public_name: ""
+
+- type: onedata
+  id: gtn_public_onedata
+  label: GTN training data
+  doc: Training data from the Galaxy Training Network (powered by Onedata)
+  # The access Token is public and can be shared
+  access_token: "MDAxY2xvY2F00aW9uIGRhdGFodWIuZWdpLmV1CjAwNmJpZGVudGlmaWVyIDIvbm1kL3Vzci00yNmI4ZTZiMDlkNDdjNGFkN2E3NTU00YzgzOGE3MjgyY2NoNTNhNS9hY3QvMGJiZmY1NWU4NDRiMWJjZGEwNmFlODViM2JmYmRhNjRjaDU00YjYKMDAxNmNpZCBkYXRhLnJlYWRvbmx5CjAwNDljaWQgZGF00YS5wYXRoID00gTHpaa1pUTTROMkl4WmpjMllXVmpOMlU00WWpreU5XWmtNV00ZpT1RKbU1ETXlZMmhoWTJReAowMDJmc2lnbmF00dXJlIIQvnXp01Oey02LnaNwEkFJAyArzhHN8SlXSYFsBbSkqdqCg"
+  onezone_domain: "datahub.egi.eu"
+
+- type: inveniordm
+  id: cern_opendata
+  doc: "The CERN Open Data Portal is a repository that enables large scale experimental data releases of curated datasets, accompanying software, supporting documentation and example analyses"
+  label: CERN Open Data
+  url: https://opendata.cern
+  token: ""
+  public_name: ""
+
+- type: omero
+  id: omero_demo
+  label: "OMERO Demo Server"
+  doc: "Browse and import images from OMERO demo server"
+  username: "{{ omero_test_username }}"
+  password: "{{ omero_test_password }}"
+  host: "demo.openmicroscopy.org" # without protocol
+  port: 4064
+  writable: false # OMERO file sources are read-only
+
+
+## Public Dataverse repositories
+
+- type: dataverse
+  id: heidata
+  doc: "Heidelberg University Dataverse instance"
+  label: "HeiDATA"
+  url: https://heidata.uni-heidelberg.de/
+  token: ''
+  public_name: ''
+
+- type: dataverse
+  id: dataverse_harvard
+  doc: "Harvard Dataverse Repository"
+  label: "Publishing your data and code in the Harvard Dataverse Repository"
+  url: https://dataverse.harvard.edu/
+  token: ''
+  public_name: ''
+
+- type: dataverse
+  id: recherchedatagouv
+  doc: "Recherche Data Gouv French Dataverse instance"
+  label: "Recherche Data Gouv"
+  url: https://entrepot.recherche.data.gouv.fr/
+  token: ''
+  public_name: ''
+  
+- type: dataverse
+  id: indorese
+  doc: "InDoRES Dataverse instance"
+  label: "InDoRES"
+  url: https://data.indores.fr/
+  token: ''
+  public_name: ''
+
+- type: dataverse
+  id: cirad
+  doc: "CIRAD Dataverse instance"
+  label: "CIRAD"
+  url: https://dataverse.cirad.fr/
+  token: ''
+  public_name: ''
+
+- type: dataverse
+  id: ird
+  doc: "IRD Dataverse instance"
+  label: "IRD"
+  url: https://dataverse.ird.fr/
+  token: ''
+  public_name: ''
+
+- type: dataverse
+  id: bsc
+  doc: "BSC Dataverse instance"
+  label: "BSC"
+  url: https://dataverse.bsc.es/ 
+  token: ''
+  public_name: ''

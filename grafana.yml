@@ -1,47 +1,73 @@
 ---
 - name: Grafana
   hosts: grafana
-  become: true
-  vars:
-    hostname: stats.galaxyproject.eu
   vars_files:
-    - group_vars/grafana-gitter-bridge.yml
     - secret_group_vars/all.yml
-  # This shouldn't be necessary? but if certs fail, then do this. This is
-  # *supposed* to be properly handled by the nginx role, but the permission
-  # change is likely only applied if a change is detected since it can't figure
-  # out if the rule is there or not.
-  # TODO: make the nginx task check if the rule is in place, rather than a change in path.
-  # pre_tasks:
-  #   - name: Put SELinux in permissive mode, logging actions that would be blocked.
-  #     selinux:
-  #       policy: targeted
-  #       state: permissive
   pre_tasks:
+    #- name: Put SELinux in permissive mode, logging actions that would be blocked.
+    #  # Putting SELinux in permissive mode should not be necessary. But if
+    #  # certs fail, then do it. It is supposed to be properly handled by
+    #  # the `galaxyproject.nginx` role, but the permission change is likely
+    #  # only applied if a change is detected since it can't figure out if
+    #  # the rule is there or not.
+    #  # TODO: make the nginx task check if the rule is in place, rather than a change in path.
+    #  become: true
+    #  ansible.posix.selinux:
+    #    policy: targeted
+    #    state: permissive
     - name: Install Dependencies
-      package:
-        name: ['python3-virtualenv', 'python36']
       become: true
+      ansible.builtin.package:
+        name: ["python3-virtualenv"]
+    - name: Ensure git is installed. (hxr.monitor-ssl)
+      become: true
+      ansible.builtin.package:
+        name:
+          - git
   collections:
     - devsec.hardening
+    - grafana.grafana
   roles:
-    - hostname
-    - usegalaxy-eu.dynmotd
-    - geerlingguy.repo-epel
-    - hxr.admin-tools
-    - influxdata.chrony
-    - hxr.monitor-email
-    - hxr.monitor-ssl
-    - linuxhq.yum_cron
-    - galaxyproject.nginx
-    # - hxr.autofs-format-n-mount
-    # Custom
-    # - hxr.simple-nagios
-    - cloudalchemy.grafana
-    - pgs
-    - hxr.grafana-gitter-bridge
-    # End Custom
+    ## Starting configuration of the operating system
+    - role: usegalaxy_eu.firewall
+      become: true
+    - role: geerlingguy.repo-epel # Install EPEL repository
+      become: true
+    - role: usegalaxy_eu.handy.os_setup
+      become: true
+      vars:
+        hostname: "{{ grafana_domain }}"
+        enable_hostname: true
+        enable_powertools: true # geerlingguy.repo-epel role doesn't enable PowerTools repository
+    - role: usegalaxy-eu.autoupdates # keep all of our packages up to date
+      become: true
+      vars:
+        hostname: "{{ grafana_domain }}"
+    - influxdata.chrony # Keep our time in sync.
+
+    ## Monitoring
     - dj-wasabi.telegraf
-    # - os_hardening
-    # - nginx_hardening
-    # - ssh_hardening
+    - role: hxr.monitor-ssl
+      become: true
+    - role: hxr.monitor-email
+      become: true
+
+    ## Grafana
+    - role: galaxyproject.nginx
+      become: true
+      vars:
+        hostname: "{{ grafana_domain }}"
+    - grafana
+    - role: pgs
+      become: true
+
+  post_tasks:
+    - name: Open nginx ports
+      become: true
+      ansible.posix.firewalld:
+        port: "{{ item }}"
+        permanent: true
+        state: enabled
+      with_items:
+        - 80/tcp
+        - 443/tcp

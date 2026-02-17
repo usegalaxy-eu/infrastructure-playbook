@@ -1,0 +1,25 @@
+---
+- name: Check that all objectstore_id include 'scratch'
+  assert:
+    that:
+      - galaxy_cleanup_scratchstorage | length > 0
+      - galaxy_cleanup_scratchstorage | list
+        | reject('search', 'scratch')
+        | list
+        | length == 0
+    fail_msg: "Found objectstore_id entries that do NOT contain 'scratch'"
+    success_msg: "All objectstore_id values contain 'scratch'"
+
+- name: Install cleanup scratch script
+  template:
+    src: "clean_scratch_storage.sh.j2"
+    dest: "/usr/local/bin/clean_scratch_storage.sh"
+    mode: "0555"
+
+- name: Schedule Galaxy cleanup objectstore script
+  ansible.builtin.cron:
+    name: "Galaxy cleanup scratch"
+    job: "/usr/local/bin/clean_scratch_storage.sh"
+    minute: "{{ galaxy_cleanup_minute }}"
+    hour: "{{ galaxy_cleanup_hour }}"
+    user: "{{ galaxy_user.name }}"

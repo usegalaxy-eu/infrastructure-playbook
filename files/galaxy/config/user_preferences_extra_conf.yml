@@ -7,16 +7,6 @@ preferences:
               type: text
               required: False
 
-    use_cached_job:
-        description: Do you want to be able to re-use previously run jobs ?
-        inputs:
-            - name: use_cached_job_checkbox
-              label: Do you want to be able to re-use  equivalent jobs ?
-              type: boolean
-              checked: false
-              value: false
-              help: If you select yes, you will be able to select for each tool and workflow run if you would like to use this feature.
-
     localization:
         description: Localization
         inputs:
@@ -32,6 +22,27 @@ preferences:
                   - [Français, fr]
                   - [日本語, ja]
 
+    invenio:
+        description: Your Invenio RDM Integration Settings
+        inputs:
+            - name: token
+              label: Personal Token used to create draft records and to upload files
+              type: secret
+              store: vault # Requires setting up vault_config_file in your galaxy.yml
+              required: False
+            - name: public_name
+              label: Creator name to associate with new records (formatted as "Last name, First name"). If left blank "Anonymous Galaxy User" will be used. You can always change this by editing your record directly.
+              type: text
+              required: False
+
+    distributed_arc_compute:
+        description: The URL to your ARC remote HPC compute resource.
+        inputs:
+            - name: remote_arc_resources
+              label: "Add your remote resource url (example: https://arctestcluster-slurm-el9-arc7-ce1.cern-test.uiocloud.no)"
+              type: text
+              required: False
+
     distributed_compute:
         description: Use distributed compute resources
         inputs:
@@ -40,31 +51,34 @@ preferences:
               type: select
               required: False
               options:
-                  - ["Select the remote resources", None]
                   - ["default - Galaxy will decide where to put your job", None]
-                  - ["Freiburg (Germany) - Condor cluster using Singularity with Conda", condor_singularity_with_conda]
-                  - ["Joint remote GPU cluster using docker engine - Galaxy will decide where to put your job", remote_condor_cluster_gpu_docker]
-                  - ["Joint remote CPU cluster using singularity engine - Galaxy will decide where to put your job", remote_condor_cluster_singularity]
-                  - ["Freiburg (Germany) - de.NBI cloud - singularity", remote_cluster_mq_de01]
-                  - ["Freiburg (Germany) - de.NBI cloud - docker", remote_cluster_mq_docker_de01]
-                  - ["Freiburg (Germany) - de.NBI cloud - singularity, 2wd true", remote_cluster_mq_singularity_2wdtrue_de01]
-                  - ["Tübingen (Germany) - de.NBI cloud", remote_cluster_mq_de02]
-                  - ["Freiburg (Germany) - de.NBI cloud GPU", remote_cluster_mq_de03]
-                  - ["Freiburg (Germany) - de.NBI cloud GPU - docker", remote_cluster_mq_docker_de03]
-                  - ["Rennes (France) - GenOuest bioinformatics", remote_cluster_mq_fr01]
-                  - ["Bari (Italy) - RECAS", remote_cluster_mq_it01]
-                  - ["Bari (Italy) - RECAS 2", remote_cluster_mq_it02]
-                  - ["Palermo (Italy) - GARR, 2wd true", remote_cluster_mq_2wdtrue_it03]
-                  - ["Palermo (Italy) - GARR, 2wd falsef", remote_cluster_mq_2wdfalse_it03]
-                  - ["Lisbon (Portugal) - Tecnico ULisboa", remote_cluster_mq_pt01]
-                  - ["Oxfordshire (UK) - Diamond Light Source", remote_cluster_mq_uk01]
-                  - ["Oxfordshire (UK) - Diamond Light Source - GPUs on docker", remote_cluster_mq_docker_uk01]
-                  - ["Brussel (Belgium) - VIB", remote_cluster_mq_be01]
-                  - ["Espoo (Finland) - CSC", remote_cluster_mq_fi01]
-                  - ["Bergen (Norway) - UIB", remote_cluster_mq_no01]
-                  - ["Barcelona (Spain) - BSC", remote_cluster_mq_es01]
-                  - ["Prague (Czech Republic) - MetaCentrum", remote_cluster_mq_cz01]
-                  - ["test extended metadata - DO NOT USE IT", condor_extended]
+                  # - ["Freiburg (Germany) - Condor cluster using Singularity with Conda", condor_singularity_with_conda]
+                  # - ["Joint remote GPU cluster using docker engine - Galaxy will decide where to put your job", remote_condor_cluster_gpu_docker]
+                  # - ["Joint remote CPU cluster using singularity engine - Galaxy will decide where to put your job", remote_condor_cluster_singularity]
+                  - ["Freiburg (Germany) - Mira's test Pulsar", mira-pulsar]
+                  # - ["Freiburg (Germany) - de.NBI cloud - docker", remote_cluster_mq_docker_de01]
+                  #- ["Freiburg (Germany) - de.NBI cloud - singularity, 2wd true", remote_cluster_mq_singularity_2wdtrue_de01]
+                  # - ["Tübingen (Germany) - de.NBI cloud", remote_cluster_mq_de02]
+                  # - ["Freiburg (Germany) - de.NBI cloud GPU", remote_cluster_mq_de03]
+                  # - ["Freiburg (Germany) - de.NBI cloud GPU - docker", remote_cluster_mq_docker_de03]
+                  - ["Rennes (France) - GenOuest bioinformatics", fr-pulsar]
+                  - ["Bari (Italy) - RECAS", it-pulsar]
+                  - ["CINECA (Italy)", it02-pulsar]
+                  - ["GARR (Italy)", it03-pulsar]
+                  # - ["Lisbon (Portugal) - Tecnico ULisboa", remote_cluster_mq_pt01]
+                  # - ["Oxfordshire (UK) - Diamond Light Source", remote_cluster_mq_uk01]
+                  # - ["Oxfordshire (UK) - Diamond Light Source - GPUs on docker", remote_cluster_mq_docker_uk01]
+                  - ["Brussel (Belgium) - VIB", be-pulsar]
+                  # - ["Bergen (Norway) - UIB", no-pulsar]
+                  - ["Prague (Czech Republic) - MetaCentrum", cz-pulsar]
+                  - ["Bratislava (Slovakia) - IISAS", sk-pulsar]
+                  - ["Bari (Italy) - INFN", egi-pulsar]
+                  - ["Barcelona (Spain) - BSC-CNS", bsc-pulsar]
+                  - ["Ankara (Turkey) - TÜBİTAK ULAKBİM", tubitak-pulsar]
+                  - ["Krakow (Poland) - Cyfronet", pl-pulsar]
+                  - ["Heraklion-Crete (Greece) - HCMR", hcmr-gr-pulsar]
+                  - ["EOSC EU Node 01", eosc-eu-node-01-pulsar]
+                  - ["Clermont-Ferrand (France) - UCA", uca-pulsar]
 
     ega_account:
         description: Your EGA (European Genome Archive) account
@@ -78,33 +92,66 @@ preferences:
               type: password
               required: False
 
-    dropbox:
-        description: Your Dropbox account
+    beacon2_account:
+        description: Your own Beacon2 account
         inputs:
-            - name: access_token
-              label: Dropbox access token
+            - name: db_auth_source
+              label: Beacon Database Authentication Source
+              type: text
+              required: False
+            - name: db_user
+              label: Beacon Database Username
+              type: text
+              required: False
+            - name: db_password
+              label: Beacon Database Password
               type: password
               required: False
 
-    # Used in file_sources_conf.yml
-    nextcloud:
-        description: Your Personal Nextcloud / ownCloud account
+    # Used in Qiskit interactive tool
+    ibmq_account:
+        description: IBMQ account information
         inputs:
+            - name: token
+              label: IBMQ token (see https://quantum-computing.ibm.com/account)
+              type: password
+              required: False
             - name: url
-              label: Server Domain (e.g. https://myowncloud.org)
+              label: IBMQ URL (https://auth.quantum-computing.ibm.com/api)
               type: text
               required: False
-            - name: root
-              label: Server Path (should end with /remote.php/webdav, e.g. /a/sub/path/remote.php/webdav)
-              type: text
-              required: False
+              value: https://auth.quantum-computing.ibm.com/api
+
+    # Require to attach pulsar endpoint to the Pulsar Network
+    byoc_pulsar:
+        description: >
+            Bring your own Pulsar endpoint to Galaxy. You can add here your Pulsar credentials and specifications.
+            After 24 hours Galaxy's job scheduling systems will take your Pulsar into account and schedule appropriate jobs to your compute resources.
+            This is an experimental feature. Contact us if you want to learn more about it.
+        inputs:
             - name: username
-              label: Username
+              label: RabbitMQ custom username (e.g. mypulsarendpoint).
               type: text
               required: False
             - name: password
-              label: Password
+              label: RabbitMQ custom alphanumerical password, at least 10 characters long (e.g. MyPulS4rP4ssw0rd).
               type: password
+              required: False
+            - name: max_accepted_cores
+              label: Maximum number of CPU cores available.
+              type: number
+              required: False
+            - name: max_accepted_mem
+              label: Maximum number of RAM available (in GB).
+              type: number
+              required: False
+            - name: min_accepted_gpus
+              label: Minimum number of GPU available (set this to zero if you don't want to share GPUs).
+              type: number
+              required: False
+            - name: max_accepted_gpus
+              label: Maximum number of GPU available (set this to zero if you don't want to share GPUs).
+              type: number
               required: False
 
     omero_account:
@@ -144,5 +191,33 @@ preferences:
         inputs:
             - name: cads_apikey
               label: Copernicus ADS API Key
+              type: password
+              required: False
+
+    cmems_account:
+        description: Your Copernicus CMEMS API Key (Copernicus Marine Service API Key)
+        inputs:
+            - name: cmems_username
+              label: Copernicus CMEMS username
+              type: text
+              required: False
+            - name: cmems_password
+              label: Password
+              type: password
+              required: False
+
+    gitlabfs:
+        description: Your DataPLANT ARC Gitlab access details https://git.nfdi4plants.org
+        inputs:
+            - name: read_access_token
+              label: API Read Access Token
+              type: password
+              required: False
+
+    chatgpt:
+        description: Your OpenAI API key. This will be used for example for ChatGPT.
+        inputs:
+            - name: api_key
+              label: API Key
               type: password
               required: False

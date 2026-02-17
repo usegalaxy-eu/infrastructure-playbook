@@ -1,0 +1,87 @@
+---
+# ALL tags must be with dashes (-) instead of underscores (_)
+global:
+  default_inherits: default
+tools:
+  default:
+    abstract: true
+    cores: 1
+    mem: cores * 3.8
+    gpus: 0
+    env:
+      ## The execute statement should be removed once https://github.com/galaxyproject/galaxy/issues/20562 is fixed
+      - execute: cd $_GALAXY_JOB_DIR
+      - name: GALAXY_MEMORY_MB
+        value: "{int(mem * 1024)}" # set 5/2023 might be moved to runner or tool wrappers, related to Galaxy issue 15952
+      - name: _JAVA_OPTIONS
+        value: -Xmx{round(mem*0.9*1024)}m -Xms256m -Duser.home=/data/2/galaxy_db/tmp -Djava.io.tmpdir=$_GALAXY_JOB_TMP_DIR
+      - name: HDF5_USE_FILE_LOCKING
+        value: "FALSE"
+      - name: SINGULARITYENV_HDF5_USE_FILE_LOCKING
+        value: $HDF5_USE_FILE_LOCKING
+      - name: AWS_REQUEST_CHECKSUM_CALCULATION
+        value: "when_required"
+      - name: LC_ALL
+        value: C.UTF-8
+      - name: SINGULARITYENV_LC_ALL
+        value: C
+      - name: TERM
+        value: vt100
+      - name: SINGULARITYENV_TERM
+        value: $TERM
+    params:
+      metadata_strategy: "extended"
+      tmp_dir: true
+      request_cpus: "{cores}"
+      request_memory: "{mem}G"
+      submit_request_gpus: "{gpus or 0}"
+      docker_memory: "{mem}G"
+      description: "{tool.id if not tool.id.count('/') == 5 else tool.id.split('/')[4]}"
+    scheduling:
+      reject:
+        - offline
+    rules:
+      - if: user is not None
+        execute: |
+          training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
+          training_expr = " || ".join(['(GalaxyGroup == "%s")' % role for role in training_roles])
+          training_labels = '"' + ", ".join(training_roles) + '"'
+          entity.params['requirements'] = '(GalaxyGroup == "compute") || (%s)' % training_expr if training_expr else '(GalaxyGroup == "compute")'
+          entity.params['+Group'] = training_labels
+          entity.params['accounting_group_user'] = str(user.id)
+      - if: user is None
+        execute: |
+          entity.params['requirements'] = '(GalaxyGroup == "compute")'
+      - id: remote_resources
+        if: user is not None
+        execute: |
+          from tpv.core.entities import SchedulingTags, Tag, TagType
+
+          user_preferences = user.extra_preferences
+          pulsar_tag = user_preferences.get("distributed_compute|remote_resources", "None")
+
+          if pulsar_tag != "None":
+              entity.tpv_tags = entity.tpv_tags.combine(
+                  SchedulingTags(require=[pulsar_tag])
+              )
+      - id: removed_remote_resources
+        # This rule displays a meaningful error message when users who have selected remote resources that are no longer available (e.g. because they have been removed) attempt to send jobs to them.
+        if: |
+          retval = False
+          remote_resource_tag = None
+          if user is not None:
+              try:
+                  user_preferences = user.extra_preferences
+                  remote_resource_tag = None if user_preferences.get("distributed_compute|remote_resources") == "None" else user_preferences.get("distributed_compute|remote_resources")
+              except AttributeError:
+                  pass
+              remote_resource_destination = [d.dest_name for d in mapper.destinations.values() if any(d.tpv_dest_tags.filter(tag_value=remote_resource_tag))]
+
+              if not remote_resource_destination:
+                  retval = True
+          retval
+        fail: |
+          Invalid 'Remote resources id' selected in the config menu under 'User -> Preferences -> Manage Information -> Use distributed compute resources'. Please reselect either 'default' or an appropriate remote resource then click 'Save' and rerun your job.
+    rank: |
+      final_destinations = helpers.weighted_random_sampling(candidate_destinations)
+      final_destinations

@@ -1,0 +1,312 @@
+---
+# This is a file of variables that will be processed in job_conf.yml.j2
+# This is needed, because it contains other variables
+
+galaxy_jobconf:
+  plugin_workers: 8
+  handlers:
+    count: "{{ galaxy_systemd_handlers }}"
+    assign_with: db-skip-locked
+    max_grab: 16
+    ready_window_size: 32
+  plugins:
+    #- id: drmaa
+    #load: galaxy.jobs.runners.drmaa:DRMAAJobRunner
+    #workers: 3
+    - id: condor
+      load: galaxy.jobs.runners.condor:CondorJobRunner
+    - id: local
+      load: galaxy.jobs.runners.local:LocalJobRunner
+    - id: pulsar_embedded
+      load: galaxy.jobs.runners.pulsar:PulsarEmbeddedJobRunner
+      pulsar_config: "{{ galaxy_config_dir }}/pulsar_app.yml"
+
+    - id: pulsar_eu_it01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_it01:{{ rabbitmq_password_galaxy_it01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_it01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_mira_runner
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_mira_pulsar:{{ rabbitmq_password_galaxy_mira_pulsar }}@mq.galaxyproject.eu:5671//pulsar/galaxy_mira_pulsar?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_sk01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_sk01:{{ rabbitmq_password_galaxy_sk01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_sk01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_it02
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_it02:{{ rabbitmq_password_galaxy_it02 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_it02?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_it03
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_it03:{{ rabbitmq_password_galaxy_it03 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_it03?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_pt01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_pt01:{{ rabbitmq_password_galaxy_pt01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_pt01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_be01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_be01:{{ rabbitmq_password_galaxy_be01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_be01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_uk01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_uk01:{{ rabbitmq_password_galaxy_uk01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_uk01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_fr01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_fr01:{{ rabbitmq_password_galaxy_fr01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_fr01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_fi01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_fi01:{{ rabbitmq_password_galaxy_fi01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_fi01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_no01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_no01:{{ rabbitmq_password_galaxy_no01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_no01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_es01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_es01:{{ rabbitmq_password_galaxy_es01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_es01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_cz01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_cz01:{{ rabbitmq_password_galaxy_cz01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_cz01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_egi01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_egi01:{{ rabbitmq_password_galaxy_egi01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_egi01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_bsc01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_bsc01:{{ rabbitmq_password_galaxy_bsc01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_bsc01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_tubitak01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_tubitak01:{{ rabbitmq_password_galaxy_tubitak01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_tubitak01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_cyf01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_cyf01:{{ rabbitmq_password_galaxy_cyf01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_cyf01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_hcmr01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_hcmr01:{{ rabbitmq_password_galaxy_hcmr01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_hcmr01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_eosc01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_eosc01:{{ rabbitmq_password_galaxy_eosc01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_eosc01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_uca01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_uca01:{{ rabbitmq_password_galaxy_uca01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_uca01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60    
+    - id: pulsar_eu_ufz_eve01
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        amqp_url: "pyamqp://galaxy_ufz_eve01:{{ rabbitmq_password_galaxy_ufz_eve01 }}@mq.galaxyproject.eu:5671//pulsar/galaxy_ufz_eve01?ssl=1"
+        galaxy_url: "https://usegalaxy.eu"
+        manager: production
+        amqp_acknowledge: "true"
+        amqp_ack_republish_time: 300
+        amqp_consumer_timeout: 2.0
+        amqp_publish_retry: "true"
+        amqp_publish_retry_max_retries: 60   
+    
+  default_destination: tpv_dispatcher
+  destinations:
+    - id: local
+      runner: local
+    - id: tpv_dispatcher
+      runner: dynamic
+      type: python
+      function: map_tool_to_destination
+      rules_module: tpv.rules
+      tpv_config_files:
+        - "{{ galaxy_config_dir }}/total_perspective_vortex/tool_defaults.yml"
+        - "https://raw.githubusercontent.com/galaxyproject/tpv-shared-database/main/tools.yml"
+        - "{{ galaxy_config_dir }}/total_perspective_vortex/destinations.yml"
+        - "{{ galaxy_config_dir }}/total_perspective_vortex/tools.yml"
+        - "{{ galaxy_config_dir }}/total_perspective_vortex/interactive_tools.yml"
+        - "{{ galaxy_config_dir }}/total_perspective_vortex/conda_in_container.yml"
+        - "{{ galaxy_config_dir }}/total_perspective_vortex/users.yml"
+        - "{{ galaxy_config_dir }}/total_perspective_vortex/roles.yml"
+  tools:
+    # TODO(hxr): implement validation that checks that every destination
+    # used here is defined above.
+    - id: keras_train_and_eval
+      resources: usegpu
+    - id: gmx_sim
+      resources: usegpu
+    - id: tabpfn
+      resources: usegpu
+  resources:
+    - id: usegpu
+      names: [gpu]    
+  limits:
+    - type: "destination_user_concurrent_jobs"
+      id: "condor_upload"
+      value: "5"
+    - type: "walltime"
+      value: "'148:00:00'"
+    # Limited time for Interactive tools
+    - type: "destination_user_concurrent_jobs"
+      value: "2"
+      id: "interactive_pulsar"
+    - type: "destination_user_concurrent_jobs"
+      value: "2"
+      id: "interactive_pulsar_hi_mem"
+    - type: "output_size"
+      value: "'300GB'"
+    - type: "registered_user_concurrent_jobs"
+      value: "40"
+    - type: "anonymous_user_concurrent_jobs"
+      value: "3"
+    - type: "destination_user_concurrent_jobs"
+      id: "sh_fdid_condor_docker_ie"
+      value: "3"
+    - type: "destination_user_concurrent_jobs"
+      id: "sh_fdid_condor_docker_ie_interactive"
+      value: "3"
+    - type: "destination_user_concurrent_jobs"
+      id: "sh_fdid_condor_intensive_jobs"
+      value: "10"

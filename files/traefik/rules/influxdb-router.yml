@@ -1,0 +1,11 @@
+http:
+  routers:
+    influxdb-rtr:
+      rule: "Host(`influxdb.galaxyproject.eu`)"
+      service: influxdb
+      entryPoints:
+        - influxdb
+      tls:
+        certResolver: "route53"
+        domains:
+          - main: "influxdb.galaxyproject.eu"

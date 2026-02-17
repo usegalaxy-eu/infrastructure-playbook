@@ -1,0 +1,191 @@
+---
+hostname: traefik.flyingrabb.it
+galaxy_active_users_script: /usr/local/bin/galaxy_active_users
+telegraf_plugins_extra:
+  galaxy_active_users:
+    plugin: 'exec'
+    config:
+      - commands = ["{{ galaxy_active_users_script }}"]
+      - timeout = "15s"
+      - data_format = "influx"
+      - interval = "1m"
+  listen_galaxy_routes:
+    plugin: "prometheus"
+    config:
+      - urls = ["http://127.0.0.1:8082"]
+      - metric_version = 2
+      - name_override = "traefik"
+
+traefik_force_validation: true
+traefik_manage_secrets: true
+
+traefik_no_service_log: false
+
+traefik_log_dir: /var/log/traefik
+traefik_dir: /etc/traefik
+traefik_user: centos
+traefik_group: centos
+lp_logrotate_confd:
+  - path: traefik
+    conf: |
+      {{ traefik_log_dir }}/*.log {
+        daily
+        missingok
+        rotate 1
+        compress
+        delaycompress
+        notifempty
+        create 0644 root root
+        sharedscripts
+        postrotate
+          # kill & restart container which contains "traefik" in name
+          docker kill --signal="USR1" $(docker ps | grep traefik | awk '{print $1}')
+        endscript
+      }
+
+tailscale_tags:
+  - "critical"
+
+traefik_copy_rules: true
+
+traefik_domain: "{{ hostname }}"
+tailscale_domain: springhare-dinosaur.ts.net
+tailscale_authkey: "{{ tailscale_auth_key_usegalaxy_eu }}"
+
+traefik_networks:
+  traefik:
+    internal: false
+    driver: overlay
+traefik_containers:
+  - name: traefik
+    replicas: 1
+    image: traefik:v3.0
+    url: "https://traefik.{{ tailscale_domain }}/dashboard/#/"
+    environment:
+      AWS_SHARED_CREDENTIALS_FILE: "/run/secrets/aws_shared_credentials"
+      AWS_REGION: "us-east-1"
+    networks:
+      - traefik
+    command:
+      - --ping
+      - --ping.entryPoint=websecure
+      - --api=true
+      - "--providers.swarm.exposedByDefault=false"
+      - "--providers.swarm.endpoint=unix:///var/run/docker.sock"
+      - --api.dashboard=true
+      - --api.insecure=false
+      - --global.sendAnonymousUsage=false
+      - --global.checkNewVersion=false
+      - --entryPoints.web.address=:80
+      - --entryPoints.websecure.address=:443
+      - --entryPoints.amqps.address=:5671
+      - --entryPoints.influxdb.address=:8086
+      - --entryPoints.web.http.redirections.entryPoint.to=websecure
+      - --entryPoints.web.http.redirections.entryPoint.scheme=https
+      - --entryPoints.metrics.address=:8082
+      #- "--entryPoints.websecure.http.tls.domains[0].main={{ traefik_domain }}"
+      #- --entryPoints.https.http.tls.certresolver=route53
+      #- "--entryPoints.websecure.http.tls.domains[0].sans=*.{{ traefik_domain }}"
+
+      # Prometheus Metrics
+      - --metrics.prometheus=true
+      - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
+      - --metrics.prometheus.addEntryPointsLabels=true
+      - --metrics.prometheus.addrouterslabels=true
+      - --metrics.prometheus.addServicesLabels=true
+      - --metrics.prometheus.entryPoint=metrics
+      - --metrics.prometheus.headerlabels.origin=Origin
+
+      - "--providers.file.directory=/rules"
+      - "--providers.file.watch=true"
+      ## DNS Challenge
+      - --certificatesResolvers.ts.tailscale=true
+      - --certificatesResolvers.route53.acme.storage=/letsencrypt/acme.json
+      - --certificatesResolvers.route53.acme.dnsChallenge.provider=route53
+      - --certificatesresolvers.route53.acme.caserver=https://acme-v02.api.letsencrypt.org/directory
+      - "--certificatesresolvers.route53.acme.email={{ traefik_letsencrypt_mail }}"
+      # Enable Logging
+      - "--log=true"
+      - "--log.format=json"
+      - --log.filePath={{ traefik_log_dir }}/traefik.log
+      - "--log.level=INFO" # DEBUG, PANIC, FATAL, ERROR, WARN, INFO
+      - --accesslog=true
+      - --accesslog.filepath={{ traefik_log_dir }}/access.log
+    labels:
+      "traefik.enable": "true"
+      "traefik.http.routers.traefik.rule": "Host(`traefik.{{ tailscale_domain }}`)"
+      "traefik.http.routers.traefik.entrypoints": "websecure"
+      "traefik.http.routers.traefik.tls": "true"
+      "traefik.http.routers.traefik.tls.certresolver": "ts"
+      "traefik.http.routers.traefik.tls.domains[0].main": "traefik.{{ tailscale_domain }}"
+      "traefik.http.routers.traefik.service": "api@internal"
+      "traefik.http.services.dummy-svc.loadbalancer.server.port": "9999" # dummy needed by swarm
+
+    security_opts:
+      - "label:type:container_runtime_t"
+
+    mode: global
+
+    mounts:
+      - source: "/var/run/docker.sock"
+        target: "/var/run/docker.sock"
+        type: bind
+        readonly: true
+      - source: "/var/run/tailscale"
+        target: "/var/run/tailscale"
+        type: bind
+        readonly: true
+      - source: "/etc/traefik/rules/"
+        target: "/rules"
+        type: bind
+        readonly: true
+      - source: "/etc/traefik/acme.json"
+        target: "/letsencrypt/acme.json"
+        type: bind
+        readonly: false
+      - source: "{{ traefik_log_dir }}/"
+        target: "{{ traefik_log_dir }}"
+        type: bind
+        readonly: false
+
+    publish:
+      - target_port: 80
+        published_port: 80
+        protocol: tcp
+        mode: host
+      - target_port: 443
+        published_port: 443
+        protocol: tcp
+        mode: host
+      - target_port: 5671
+        published_port: 5671
+        protocol: tcp
+        mode: host
+      - target_port: 8082
+        published_port: 8082
+        protocol: tcp
+        mode: host
+      - target_port: 8086
+        published_port: 8086
+        protocol: tcp
+        mode: host
+
+    secrets:
+      - secret_name: aws_shared_credentials
+
+# Leave for testing and example if more containers are added
+  - name: whoami
+    image: "traefik/whoami"
+    url: "https://traefik.{{ tailscale_domain }}/whoami"
+    replicas: 2
+    mode: replicated
+    labels:
+      "traefik.enable": "true"
+      "traefik.http.routers.whoami.rule": "Host(`traefik.{{ tailscale_domain }}`) && PathPrefix(`/whoami`)"
+      "traefik.http.routers.whoami.entrypoints": "websecure"
+      "traefik.http.routers.whoami.service": "whoami-app"
+      "traefik.http.services.whoami-app.loadbalancer.server.port": "80"
+      "traefik.http.routers.whoami.tls.domains[0].main": "traefik.{{ tailscale_domain }}"
+      "traefik.http.routers.whoami.tls.certresolver": "ts"
+    networks:
+      - traefik

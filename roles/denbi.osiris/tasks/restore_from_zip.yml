@@ -1,0 +1,34 @@
+---
+- name: "Check if Minio client is already installed on the system"
+  ansible.builtin.stat:
+    path: "{{ minio_client_bin }}"
+  register: minio_client_installed_check
+
+- name: "Install Minio client if not already installed"
+  ansible.builtin.get_url:
+    url: "https://dl.min.io/client/mc/release/linux-amd64/mc"
+    dest: "{{ minio_client_bin }}"
+    mode: '0755'
+  when: not minio_client_installed_check.stat.exists
+
+- name: "Add config for s3_alias settings in minio-client"
+  ansible.builtin.command: "{{ minio_client_bin }} alias set {{ s3_alias }} {{ s3_host_url }} {{ s3_access_key }} {{ s3_secret_key }}"
+  register: mc_output
+  changed_when: "'successfully' in mc_output.stdout"
+
+- name: "Fetch backup zip from S3"
+  ansible.builtin.command: "{{ minio_client_bin }} cp {{ s3_alias }}/{{ s3_bucket }}/{{ zip_name }} {{ backup_restore_base_dir }}/{{ zip_name }}"
+
+- name: "Unpack backup zip to tmp restore dir"
+  ansible.builtin.unarchive:
+    src: "{{ backup_restore_base_dir }}/{{ zip_name }}"
+    dest: "{{ backup_restore_base_dir }}"
+    remote_src: true
+
+- name: "Rename osiris php backup file to be compatible with regular backup"
+  ansible.builtin.command: "mv {{ backup_restore_dir }}/denbi {{ backup_restore_dir }}/osiris"
+
+- name: "Delete backup zip"
+  ansible.builtin.file:
+    path: "{{ backup_restore_base_dir }}/{{ zip_name }}"
+    state: absent

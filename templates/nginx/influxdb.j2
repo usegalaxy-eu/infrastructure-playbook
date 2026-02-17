@@ -2,7 +2,7 @@ server {
     listen 80 default_server;
     listen [::]:80 default_server;
 
-    server_name {{ inventory_hostname }};
+    server_name {{ hostname }};
 
     location /.well-known/ {
         root {{ certbot_well_known_root }};

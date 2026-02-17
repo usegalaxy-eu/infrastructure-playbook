@@ -2,15 +2,17 @@
 # Autofs
 autofs_mount_points:
   - data
+  - jwd
+  - misc
 
-autofs_conf_files:
-  data:
-    - jwd     -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/ws01/&
+# autofs_conf_files:
+#   data:
+#     - jwd     -rw,hard,nosuid      denbi.svm.bwsfs.uni-freiburg.de:/ws01/&
+#     - jwd01   -rw,hard,nosuid       noads1.svm.bwsfs.uni-freiburg.de:/galaxy-mwd01/
 
 autofs_service.install: true
 autofs_service.enable: true
 nfs_kernel_tuning: true
-
 
 # GALAXY
 galaxy_group:
@@ -23,11 +25,6 @@ galaxy_user:
   home: /opt/galaxy
   uid: 999
   shell: /bin/bash
-
-galaxy_config:
-  galaxy:
-    ftp_upload_dir: /data/jwd/incoming
-
 
 # Certbot
 server_names:
@@ -75,8 +72,8 @@ proftpd_options:
   - Port: 21
 proftpd_sql_db: "{{ proftpd__galaxy_db_connection }}"
 proftpd_sql_user: ''
-proftpd_conf_ssl_certificate: /etc/ssl/certs/cert.pem
-proftpd_conf_ssl_certificate_key: /etc/ssl/user/privkey-proftpd.pem
+proftpd_conf_ssl_certificate: /etc/letsencrypt/live/ftp.usegalaxy.eu/cert.pem
+proftpd_conf_ssl_certificate_key: /etc/letsencrypt/live/ftp.usegalaxy.eu/privkey.pem
 proftpd_conf_ssl_ca_certificate: /etc/letsencrypt/live/ftp.usegalaxy.eu/chain.pem
 proftpd_global_options:
   - PassivePorts: 49152 65534

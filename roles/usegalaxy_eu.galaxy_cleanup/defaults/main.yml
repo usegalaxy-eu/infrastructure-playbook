@@ -1,0 +1,18 @@
+---
+# Example:
+# galaxy_cleanup_scratchstorage:
+#   objectstore_id:
+#     days: 60
+
+# *****************************************************************************************
+# WARNING: Adding or modifying entries in `galaxy_cleanup_objectstores` will cause data
+#          in the specified object stores to be **deleted** after the defined retention
+#          period (e.g., `days: 60`).  Ensure you only include object stores that are meant
+#          to be cleaned up, and double‑check the `objectstore_id` values before saving.
+# *****************************************************************************************
+galaxy_cleanup_scratchstorage: {}
+
+# Cron schedule for galaxy cleanup objectstores script
+# Default: runs daily at 1:00 AM
+galaxy_cleanup_minute: 0
+galaxy_cleanup_hour: 1

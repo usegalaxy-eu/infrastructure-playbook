@@ -1,0 +1,725 @@
+---
+# ALL tags must be with dashes (-) instead of underscores (_)
+tools:
+  _basic_gpu_resource_param_tool:
+    # Type of compute resource (CPU or GPU) for the tool depends on user's input from its wrapper.
+    # Default resource is CPU.
+    abstract: true
+    rules:
+      - id: resource_params_gpu
+        if: |
+          param_dict = job.get_param_values(app)
+          param_dict.get('__job_resource', {}).get('__job_resource__select') == 'yes'
+        gpus: int(job.get_param_values(app)['__job_resource']['gpu'])
+
+  _basic_internal_tool:
+    rules:
+      - id: no-pulsar
+        if: user is not None
+        execute: |
+            user_preferences = user.extra_preferences
+            pulsar_tag = user_preferences.get("distributed_compute|remote_resources", "None")
+
+            if pulsar_tag != "None":
+                entity.tpv_tags.require = [
+                    tag
+                    for tag in (entity.tpv_tags.require or [])
+                    if tag != pulsar_tag
+                ]
+    scheduling:
+      require:
+        - internal
+
+  _basic_docker_tool:
+    abstract: true
+    params:
+    scheduling:
+      require:
+        - docker
+
+  _basic_braker_tool:
+    abstract: true
+    rules:
+      - id: braker_genome_sequence_count_rule
+        if: |
+          retval = False
+          options = job.get_param_values(app)
+          if "genome" in options:
+            if "sequences" in options["genome"].metadata:
+              sequences = options["genome"].metadata.get("sequences")
+              retval = sequences > 100000
+          retval
+        fail: |
+          The number of sequences in your genome file is too large (>100K) for this tool.
+
+  _basic_numba_tool:
+    abstract: true
+    env:
+      NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+      OMP_NUM_THREADS: 4
+      OPENBLAS_NUM_THREADS: 4
+      MKL_NUM_THREADS: 4
+      VECLIB_MAXIMUM_THREADS: 4
+      NUMEXPR_NUM_THREADS: 4
+      NUMBA_NUM_THREADS: 4
+
+  __.*__:
+    inherits: _basic_internal_tool
+
+  param_value_from_file:
+    inherits: _basic_internal_tool
+
+  upload1:
+    inherits: _basic_internal_tool
+
+  __DATA_FETCH__:
+    inherits: _basic_internal_tool
+    cores: 1
+    mem: 3
+    env:
+      TEMP: /data/1/galaxy_db/tmp
+
+  toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/.*:
+    inherits: _basic_gpu_resource_param_tool
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/tabpfn/tabpfn/.*:
+    inherits: _basic_gpu_resource_param_tool
+    # This tool is using git to get a huggingface model, it seems that git is easily getting into a locked state on NFS.
+    # Here we reset the HOME dir in Galaxy to a non-NFS directory. It is true that now multiple tabpfn jobs are updating/cloning into a global directory,
+    # but since its git, it should work and even be faster for jobs that already find a model. This is not vrey reproducible as the model can change, but this is
+    # also true if the tool runs on NFS.
+    env:
+      HOME: /tmp
+      TABPFN_ALLOW_CPU_LARGE_DATASET: 1
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_.*/deeptools_.*/.*:
+    rules:
+      - id: deeptools_singularity
+        if: |
+          # versions without singularity container available
+          no_container = {
+              '2.0.1.0',
+              '2.1.0.0',
+              '2.2.2.0',  # a container is available but it is broken
+              '2.2.3.0',
+              '2.5.0.0',
+              '3.0.1.0',
+              '3.0.2.0',
+          }
+          any(helpers.tool_version_eq(tool, version) for version in no_container)
+        scheduling:
+          require:
+            - conda
+            - singularity
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/keras_train_and_eval/keras_train_and_eval/.*:
+    inherits: _basic_gpu_resource_param_tool
+
+  toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy/.*:
+    cores: 2
+    rules:
+      - if: input_size >= 0.015
+        cores: 14
+      - if: input_size >= 1
+        cores: 14
+        mem: 24
+
+  toolshed.g2.bx.psu.edu/repos/iuc/mummer_mummer/mummer_mummer/.*:
+    mem: 8
+
+  toolshed.g2.bx.psu.edu/repos/galaxy-australia/hifiasm_meta/hifiasm_meta/.*:
+    cores: 8
+
+  toolshed.g2.bx.psu.edu/repos/rnateam/dewseq/dewseq/.*:
+    cores: 2
+    mem: 40
+
+  ## a user exported 100 of files and memory was not enough
+  export_remote:
+    mem: 8
+
+  toolshed.g2.bx.psu.edu/repos/rnateam/htseq_clip/htseq_clip/.*:
+    cores: 4
+    mem: 16
+    #scheduling:
+    #  prefer:
+    #    - condor-tpv
+
+  toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold/.*:
+    cores: 10
+    mem: 32
+    rules:
+      - if: helpers.tool_version_eq(tool, '2.0.0+galaxy1')
+        # The version number of alphafold may not match the version number of the the tool in this case. The alphafold
+        # version number should in fact be newer than 2.1.0 and older than 2.1.1. Check the links below to verify this
+        # claim:
+        # - https://github.com/usegalaxy-au/tools-au/blob/fae57866fda74c85d405a2db03a82ebfdaed6070/tools/alphafold/docker/Dockerfile#L7
+        # - https://github.com/usegalaxy-au/tools-au/tree/fae57866fda74c85d405a2db03a82ebfdaed6070/tools/alphafold/docker
+        # - https://github.com/usegalaxy-au/tools-au/commit/aa7c146a02df64fcaa8ef03a89a76012227f35d6
+        # - https://github.com/deepmind/alphafold/blob/be37a41d6f83e4145bd4912cbe8bf6a24af80c29/setup.py#L21
+        # However neither, 2.1.0 nor 2.1.1 are still supposed to be able to use the GPU during the relaxation step, yet
+        # there are CUDA errors in the tool tests when no GPU is available. Verify the GPU use claim below:
+        # - https://github.com/deepmind/alphafold/blob/be37a41d6f83e4145bd4912cbe8bf6a24af80c29/alphafold/relax/amber_minimize.py#L93
+        # There seems indeed to have been a mishap when packaging this version of the tool. See the link below.
+        # - https://github.com/usegalaxy-au/tools-au/commit/06dd35df4064c0c3c1272957e46c0df59d24c7fe
+        # Regardless of how things came to be this way, this version of the tool needs a GPU, and the
+        # requirement cannot be disabled) because `ALPHAFOLD_USE_GPU` is not declared in alphafold.xml. Thus we set
+        # gpus to one.
+        gpus: 1
+      - if: helpers.tool_version_eq(tool, '2.0.0+galaxy2')
+        # The same story as above applies to this tool version.
+        # - https://github.com/usegalaxy-au/tools-au/blob/78302ce1d79058f37b24c7b395de450f42631260/tools/alphafold/alphafold.xml#L52
+        gpus: 1
+      - if: helpers.tool_version_eq(tool, '2.1.2+galaxy0')
+        # This version of alphafold already allows to control whether the GPU should be used during the relaxation
+        # step, but the tool developers added `ALPHAFOLD_USE_GPU` in the next tool revision (2.1.2+galaxy1). GPU use
+        # is still mandatory.
+        # - https://github.com/usegalaxy-au/tools-au/commit/6352c107873cf824d83bfe06b368523624746de7
+        gpus: 1
+      - if: helpers.tool_version_lt(tool, '2.3')
+        params:
+          singularity_run_extra_arguments: "--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases/2.2/,ALPHAFOLD_USE_GPU=False"
+      - if: helpers.tool_version_gte(tool, '2.3') and helpers.tool_version_lt(tool, '2.3.1+galaxy2')
+        params:
+          singularity_run_extra_arguments: "--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases/2.3/,ALPHAFOLD_USE_GPU=False"
+      - if: helpers.tool_version_gte(tool, '2.3.1+galaxy2')
+        execute: |
+          from random import SystemRandom
+          if SystemRandom().random() < 0.01 and not job.get_param_values(app).get("model_preset") == "multimer": # Multimer needs more memory than we can currently provide on GPU nodes
+            entity.gpus = 1
+            entity.cores = 8
+            # We are currently utilizing a whole GPU VM (cores 8 mem 40 gpus 1)
+            entity.mem = 32
+            entity.params['singularity_run_extra_arguments'] = '--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases,ALPHAFOLD_USE_GPU=True'
+          else:
+            entity.params['singularity_run_extra_arguments'] = '--env ALPHAFOLD_DB=/data/db/databases/alphafold_databases,ALPHAFOLD_USE_GPU=False'
+        # tweak amount of requested memory depending on the AlphaFold model to be run
+      - id: model_preset_multimer
+        if: job.get_param_values(app).get("model_preset") == "multimer"
+        mem: 69
+      - id: cz-pulsar_alphafold
+        if: |
+          "cz-pulsar" in {tag.value for tag in entity.tpv_tags.tags}
+        gpus: 1
+    scheduling:
+      accept:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/markitdown/markitdown/.*:
+    params:
+      docker_run_extra_arguments: --user 999
+
+  toolshed.g2.bx.psu.edu/repos/ecology/harmonize_insitu_to_netcdf/harmonize_insitu_to_netcdf/.*:
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
+
+
+  toolshed.g2.bx.psu.edu/repos/goeckslab/squidpy/squidpy_spatial/*:
+    mem: 6
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_overviews/3dtrees_overviews/.*:
+    cores: 5
+    mem: 5
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_tile_merge/3dtrees_tile_merge/.*:
+    cores: 10
+    mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_raycloudtools/3dtrees_raycloudtools/.*:
+    cores: 10
+    mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_segmentanytree/3dtrees_segmentanytree/.*:
+    gpus: 1
+    cores: 10
+    mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_standardization/3dtrees_standardization/.*:
+    cores: 10
+    mem: 4
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_detailview/3dtrees_detailview/.*:
+    gpus: 1
+    cores: 8
+    mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_smart_tile/3dtrees_smart_tile/.*:
+    cores: 10
+    mem: 10
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_potree/3dtrees_potree/.*:
+    cores: 10
+    mem: min(12 + (input_size * 4), 200)
+
+  toolshed.g2.bx.psu.edu/repos/imgteam/libcarna_render/libcarna_render/.*:
+    inherits: _basic_docker_tool
+    gpus: 1
+    cores: 1
+    mem: 4
+    params:
+      docker_run_extra_arguments: " --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,compute "
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/msconvert/msconvert/.*:
+    ## seems to be still needed 2025/12
+    params:
+      docker_run_extra_arguments: --user 999
+
+  toolshed.g2.bx.psu.edu/repos/goeckslab/vitessce_spatial/vitessce_spatial/.*:
+    params:
+      docker_run_extra_arguments: --user 999
+
+  # NCBI recommends AWS r6a.8xlarge: cores: 32, mem:256
+  toolshed.g2.bx.psu.edu/repos/richard-burhans/ncbi_egapx/ncbi_egapx/.*:
+    cores: 32
+    mem: 248
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/yolo_training/yolo_training/.*:
+    inherits: _basic_docker_tool
+    gpus: 1
+    cores: 4
+    mem: 32
+    params:
+      docker_run_extra_arguments: ' --gpus all --shm-size 16g '
+    env:
+      GPU_AVAILABLE: 1
+      # the non-NFS /tmp dir is needed to avoid "resource is busy" errors
+      _GALAXY_JOB_TMP_DIR: '/tmp'
+  toolshed.g2.bx.psu.edu/repos/bgruening/parabricks_fq2bam/parabricks_fq2bam/.*:
+    # 16 mem / 8 cores = 4min for a paired-end 2,5/2,5 GB FASTQ file
+    # 32 mem / 16 cores = 2min for a paired-end 2,5/2,5 GB FASTQ file
+    inherits: _basic_docker_tool
+    mem: 16
+    gpus: 1
+    cores: 8
+    params:
+      docker_env_CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
+      docker_run_extra_arguments: ' --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
+    context:
+      exclude_gpu_models: ["Tesla V100-PCIE-32GB"]
+      include_gpu_models: ["NVIDIA L40S", "Tesla T4"]
+    env:
+      GPU_AVAILABLE: 1
+      # the non-NFS /tmp dir is needed to avoid "resource is busy" errors
+      _GALAXY_JOB_TMP_DIR: '/tmp'
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/instagraal/instagraal/.*:
+    inherits: _basic_docker_tool
+    gpus: 1
+    cores: 1
+    mem: 30
+    params:
+      docker_run_extra_arguments: ' --gpus all '
+    env:
+      GPU_AVAILABLE: 1
+
+  # picrust tries to remove TMP folders, on NFS this does not always work, so we run this tool in a container with internal (non-NFS) TMP
+  toolshed.g2.bx.psu.edu/repos/iuc/picrust.*:
+    cores: 2
+    mem: 10
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
+
+  toolshed.g2.bx.psu.edu/repos/iuc/diffdock/diffdock/.*:
+    inherits: _basic_docker_tool
+    gpus: 1
+    cores: 1
+    params:
+      docker_run_extra_arguments: ' --gpus all --user 999 '
+    env:
+      GPU_AVAILABLE: 1
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/black_forest_labs_flux/black_forest_labs_flux/.*:
+    inherits: _basic_docker_tool
+    gpus: 1
+    cores: 1
+    params:
+      ##docker_run_extra_arguments: ' --gpus all  --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
+      docker_run_extra_arguments: ' --gpus all '
+    env:
+      GPU_AVAILABLE: 1
+    scheduling:
+      require:
+        - gpu-divided
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/whisper/whisper/.*:
+    cores: 1
+    mem: 5
+    env:
+      OPENAI_WHISPER_MODEL_DIR: "/data/db/models/openai_whisper/"
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/whisperx/whisperx/.*:
+    inherits: _basic_docker_tool
+    gpus: 1
+    cores: 1
+    mem: 5
+    params:
+      docker_run_extra_arguments: '--gpus all --env WHISPERX_MODEL_DIR=$WHISPERX_MODEL_DIR --env WHISPERX_DEVICE=$WHISPERX_DEVICE --env WHISPERX_COMPUTE_TYPE=$WHISPERX_COMPUTE_TYPE'
+    env:
+      WHISPERX_MODEL_DIR: "/data/db/models/whisperx/whisperx_models/"
+      WHISPERX_DEVICE: "cuda"
+      WHISPERX_COMPUTE_TYPE: "float16"
+    scheduling:
+      require:
+        - gpu-divided
+
+  toolshed.g2.bx.psu.edu/repos/iuc/biapy/biapy/.*:
+    inherits: _basic_docker_tool
+    gpus: 1
+    cores: 1
+    mem: 12
+    params:
+      docker_run_extra_arguments: ' --gpus all --shm-size 16g --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
+      docker_env_CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
+      docker_env_GALAXY_BIAPY_GPU_STRING: "$_CONDOR_AssignedGPUs"
+      docker_env_GPU_AVAILABLE: 1
+    env:
+      GPU_AVAILABLE: 1
+      GALAXY_BIAPY_GPU_STRING: 0
+
+  toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc/.*:
+    # 8 (from the shared TPV) seems to high for me
+    cores: 3
+
+  toolshed.g2.bx.psu.edu/repos/iuc/bbtools_tadpole/bbtools_tadpole/.*:
+    mem: 8
+
+  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_.*:
+    params:
+      docker_run_extra_arguments: --user 999:999
+
+  toolshed.g2.bx.psu.edu/repos/iuc/cherri_train/cherri_train/.*:
+    cores: 10
+    mem: 90
+
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastn_wrapper/.*:
+    env:
+      BLASTDB: "/data/db/databases/blast/taxdb"
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastp_wrapper/.*:
+    env:
+      BLASTDB: "/data/db/databases/blast/taxdb"
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastx_wrapper/.*:
+    env:
+      BLASTDB: "/data/db/databases/blast/taxdb"
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_makeblastdb/.*:
+    env:
+      BLASTDB: "/data/db/databases/blast/taxdb"
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_tblastn_wrapper/.*:
+    env:
+      BLASTDB: "/data/db/databases/blast/taxdb"
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_tblastx_wrapper/.*:
+    env:
+      BLASTDB: "/data/db/databases/blast/taxdb"
+
+  toolshed.g2.bx.psu.edu/repos/iuc/cherri_eval/cherri_eval/.*:
+    cores: 1
+    mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/nml/metaspades/metaspades/.*:
+    cores: 2
+    rules:
+      - if: 0.05 <= input_size < 1
+        cores: 8
+        mem: 100
+      - if: 1 <= input_size < 60
+        cores: 16
+        mem: 350
+      - if: input_size >= 60
+        fail: Too much data, please don't use Spades for this
+
+  toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*:
+    cores: 2
+    rules:
+      - if: 0.005 <= input_size < 1
+        cores: 8
+        mem: 100
+      - if: 1 <= input_size < 2
+        cores: 12
+        mem: 200
+      - if: 2 <= input_size < 20
+        cores: 20
+        mem: 350
+      - if: input_size >= 20
+        fail: Too much data, please don't use this tool for this.
+
+  toolshed.g2.bx.psu.edu/repos/iuc/shovill/shovill/.*:
+    inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
+
+  toolshed.g2.bx.psu.edu/repos/iuc/spades_rnaviralspades/spades_rnaviralspades/.*:
+    inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
+
+  toolshed.g2.bx.psu.edu/repos/iuc/rnaspades/rnaspades/.*:
+    cores: 2
+    rules:
+      - if: 0.005 <= input_size < 1
+        cores: 8
+        mem: 100
+      - if: 1 <= input_size < 2
+        cores: 12
+        mem: 200
+      - if: input_size >= 2
+        cores: 20
+        mem: 350
+
+  toolshed.g2.bx.psu.edu/repos/iuc/spades_plasmidspades/spades_plasmidspades/.*:
+    inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
+  toolshed.g2.bx.psu.edu/repos/iuc/spades_metaviralspades/spades_metaviralspades/.*:
+    inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
+  toolshed.g2.bx.psu.edu/repos/iuc/spades_metaplasmidspades/spades_metaplasmidspades/.*:
+    inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
+  toolshed.g2.bx.psu.edu/repos/iuc/spades_coronaspades/spades_coronaspades/.*:
+    cores: 10
+    mem: 8
+  toolshed.g2.bx.psu.edu/repos/iuc/spades_biosyntheticspades/spades_biosyntheticspades/.*:
+    inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
+
+  # cactus suite
+  toolshed.g2.bx.psu.edu/repos/galaxy-australia/cactus_cactus/cactus_cactus/.*:
+    cores: 20
+    mem: 256
+
+  '.*mothur_.*':
+    cores: 1
+    mem: 90
+    params:
+      docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_default_container_id: centos:8.3.2011
+        # see https://github.com/galaxyproject/galaxy/issues/16121#issuecomment-1555153421
+        ##- embedded-pulsar
+
+  '.*mothur_classify_seqs.*':
+    cores: 2
+    mem: 20
+    params:
+      docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_default_container_id: centos:8.3.2011
+        # see https://github.com/galaxyproject/galaxy/issues/16121#issuecomment-1555153421
+        ##- embedded-pulsar
+
+  '.*bioext_bam2msa.*':
+    params:
+      docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_default_container_id: centos:8.3.2011
+    scheduling:
+      require:
+        - docker
+        - embedded-pulsar
+
+  'last_*':
+    params:
+      docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_default_container_id: centos:8.3.2011
+    scheduling:
+      require:
+        - docker
+        - embedded-pulsar
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/blobtoolkit/blobtoolkit/.*:
+    cores: 8
+    mem: 20
+    params:
+      docker_run_extra_arguments: --user 999
+
+  toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicates/.*:
+    cores: 8
+    mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/diamond/diamond/.*:
+    cores: 6
+    mem: 90
+    rules:
+      - if: input_size >= 30
+        cores: 12
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/openduck_run_smd/openduck_run_smd/.*:
+    env:
+      docker_set_user: 1000
+      docker_run_extra_arguments: '-e "OPENDUCK_GPU_PARAM=$OPENDUCK_GPU_PARAM" --gpus all'
+
+  # is there a way to avoid this
+  ".*pcgr.*":
+    mem: 16
+    cores: 8
+    env:
+      GALAXY_PCGR_DIR: "/data/db/databases/pcgr"
+
+# Not for Pulsar, or is the file copied?
+  toolshed.g2.bx.psu.edu/repos/climate/cds_essential_variability/cds_essential_variability/.*:
+    env:
+      COPERNICUS_CDSAPIRC_KEY_FILE: /data/db/data_managers/COPERNICUS_CDSAPIRC_KEY_FILE
+
+  toolshed.g2.bx.psu.edu/repos/imgteam/overlay_moving_and_fixed_image/ip_viz_overlay_moving_and_fixed_image/.*:
+    cores: 8
+  toolshed.g2.bx.psu.edu/repos/computational-metabolomics/dimspy_process_scans/dimspy_process_scans/.*:
+    inherits: _basic_numba_tool
+  toolshed.g2.bx.psu.edu/repos/computational-metabolomics/dimspy_replicate_filter/dimspy_replicate_filter/.*:
+    inherits: _basic_numba_tool
+  toolshed.g2.bx.psu.edu/repos/computational-metabolomics/dimspy_align_samples/dimspy_align_samples/.*:
+    inherits: _basic_numba_tool
+  toolshed.g2.bx.psu.edu/repos/bgruening/repeat_masker/repeatmasker_wrapper/.*:
+    rules:
+      - if: helpers.tool_version_gte(tool, '4.1.5')
+        env:
+          RM_LIB_PATH: "/data/db/databases/dfam/3.7/"
+      - if: helpers.tool_version_lt(tool, '4.1.5')
+        env:
+          RM_LIB_PATH: "/data/db/databases/dfam/3.4/"
+      - if: helpers.tool_version_gte(tool, '4.1.5')
+        cores: 4
+
+  toolshed.g2.bx.psu.edu/repos/iuc/scanpy_cluster_reduce_dimension/scanpy_cluster_reduce_dimension/.*:
+    inherits: _basic_numba_tool
+
+  toolshed.g2.bx.psu.edu/repos/iuc/scanpy_filter/scanpy_filter/.*:
+    inherits: _basic_numba_tool
+
+  toolshed.g2.bx.psu.edu/repos/iuc/scanpy_inspect/scanpy_inspect/.*:
+    inherits: _basic_numba_tool
+
+  toolshed.g2.bx.psu.edu/repos/iuc/scanpy_normalize/scanpy_normalize/.*:
+    inherits: _basic_numba_tool
+
+  toolshed.g2.bx.psu.edu/repos/iuc/scanpy_remove_confounders/scanpy_remove_confounders/.*:
+    inherits: _basic_numba_tool
+
+  toolshed.g2.bx.psu.edu/repos/iuc/scanpy_plot/scanpy_plot/.*:
+    inherits: _basic_numba_tool
+
+  # Also on add_to_tpv_shared_db.yml but without NUMBA_CACHE_DIR
+  toolshed.g2.bx.psu.edu/repos/iuc/gemini_inheritance/gemini_inheritance/.*:
+    inherits: _basic_numba_tool
+
+  toolshed.g2.bx.psu.edu/repos/iuc/circos/circos/.*:
+    env:
+      - name: SINGULARITYENV_LC_ALL
+        value: C
+
+  toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.6.*:
+    inherits: _basic_braker_tool
+    mem: 4
+    cores: 6
+    params:
+      singularity_container_id_override: "docker://teambraker/braker3:v1.0.6"
+
+  toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.7.*:
+    inherits: _basic_braker_tool
+    mem: 4
+    cores: 6
+    env:
+      AUGUSTUS_CONFIG_PATH: "/opt/Augustus/config/"
+    params:
+      singularity_container_id_override: "docker://teambraker/braker3:v3.0.7.1"
+      ## This should not be needed. Why are ENVs not passed into the container?
+      singularity_cleanenv: true
+
+  toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.8.*:
+    inherits: _basic_braker_tool
+    cores: 6
+    mem: 4
+    params:
+      singularity_container_id_override: "docker://teambraker/braker3:v3.0.7.4"
+      ## This should not be needed. Why are ENVs not passed into the container?
+      singularity_cleanenv: true
+
+  toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.3.*:
+    inherits: _basic_braker_tool
+    mem: 4
+    cores: 6
+    params:
+      singularity_container_id_override: "docker://teambraker/braker3:v.1.0.4"
+
+  # GeneMark is a pain and needs special casing
+  toolshed.g2.bx.psu.edu/repos/genouest/braker/braker/.*:
+    inherits: _basic_braker_tool
+    mem: 4
+    cores: 6
+    env:
+      GENEMARK_PATH: "/usr/local/tools/genemark/etp.for_braker/bin/gmes/"
+      PROTHINT_PATH: "/usr/local/tools/genemark/etp.for_braker/bin/gmes/ProtHint/bin/"
+
+  ## is in the shared DB - we need to test it here a bit
+  toolshed.g2.bx.psu.edu/repos/galaxyp/openms_featurefindermultiplex/FeatureFinderMultiplex/.*:
+    cores: 8
+    mem: 64
+
+  srma_wrapper:
+    mem: 4
+    cores: 1
+    env:
+      GALAXY_DATA_INDEX_DIR: "/opt/galaxy/tool-data/"
+    params:
+      singularity_container_id_override: "quay.io/biocontainers/mulled-v2-56685ecbcd8a92192501538ce5a05b1be490b742:1f13308a8260334d826a999ba1f77b563eccd8a5-0"
+
+  # 27:02:2024: We seem to have issues with the tools when loaded from the conda envs.
+  # For whatever reason they seem to get stuck in the D state and never finish.
+  # The below is an attempt to test whether by running the tools in a singularity container
+  # we can avoid the issue.
+  toolshed.g2.bx.psu.edu/repos/iuc/abricate/abricate/.*:
+    mem: 30.40
+
+  toolshed.g2.bx.psu.edu/repos/iuc/funannotate_annotate/funannotate_annotate/.*:
+    cores: 8
+    mem: 42
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
+    rules:
+      - id: funannotate_annotate_large_input
+        if: input_size > 3.2
+        mem: 62
+
+  toolshed.g2.bx.psu.edu/repos/iuc/funannotate_clean/funannotate_clean/.*:
+    cores: 8
+    mem: 40
+
+  toolshed.g2.bx.psu.edu/repos/iuc/funannotate_predict/funannotate_predict/.*:
+    # we need this here because we need to set the GENEMARK_PATH
+    cores: 12
+    mem: 12
+    env:
+      GENEMARK_PATH: /usr/local/tools/genemark/etp.for_braker/bin/gmes/
+      _GALAXY_JOB_TMP_DIR: '/tmp'
+    params:
+      singularity_run_extra_arguments: "--env GENEMARK_PATH=/usr/local/tools/genemark/etp.for_braker/bin/gmes/ -B $TMPDIR:/tmp"
+      singularity_no_mount: null
+
+  toolshed.g2.bx.psu.edu/repos/iuc/red/red/.*:
+    cores: 1
+    mem: 35
+
+  toolshed.g2.bx.psu.edu/repos/iuc/anndata_export/anndata_export/.*:
+    cores: 1
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/iuc/anndata_inspect/anndata_inspect/.*:
+    cores: 1
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/iuc/episcanpy_build_matrix/episcanpy_build_matrix/.*:
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
+    params:
+      singularity_no_mount: null
+
+  toolshed.g2.bx.psu.edu/repos/iuc/ppanggolin_all/ppanggolin_all/.*:
+    cores: 8
+    mem: 24
+
+  # we overwrite here the shared-db, as we seem to need more DB
+  toolshed.g2.bx.psu.edu/repos/iuc/gtdbtk_classify_wf/gtdbtk_classify_wf/.*:
+    cores: 32
+    mem: 200
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/sylph_profile/sylph_profile/.*:
+    cores: 4
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/kmetashot/kmetashot/.*:
+    cores: 2
+    mem: 60
+    params:
+      docker_run_extra_arguments: --shm-size 22g

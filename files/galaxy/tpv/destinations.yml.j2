@@ -1,0 +1,544 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
+{% macro galaxy_volumes(exclude_volumes) -%}
+        {%- for vol in dnb.values() %}
+            {%- if vol.name not in exclude_volumes %}
+        {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
+            {%- endif %}
+        {%- endfor %}
+        {%- for vol in cache.values() %}
+            {%- if 'cache' in vol.name %}
+        {{ vol.path }}/object_store_cache/:{{ vol.docker_perm }},
+            {%- endif %}
+        {%- endfor %}
+{%- endmacro %}
+{% macro pulsar_base_volumes() -%}
+        $job_directory:rw,
+        $tool_directory:ro,
+        $job_directory/outputs:rw,
+        $working_directory:rw,
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}
+{%- endmacro %}
+---
+# NOTE: Use dashes (-) exclusively for tags and underscores (_) exclusively for destinations.
+# submit_request_cpus its called in pulsar and in plain condor only request_cpus
+destinations:
+  ######################
+  # BASIC DESTINATIONS #
+  ######################
+  basic_docker_destination:
+    abstract: true
+    params:
+      docker_enabled: true
+      docker_sudo: false
+      docker_net: bridge
+      docker_auto_rm: true
+      docker_set_user: ""
+      # $defaults expands to "$galaxy_root:ro,$tool_directory:ro,$job_directory:ro,$working_directory:rw,$default_file_path:rw"
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,
+        $defaults,
+        {{ galaxy_volumes(exclude_volumes=['dnb04', 'dnb-ds01']) }}
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+      require_container: true
+      submit_request_cpus: "{cores}"
+      submit_request_memory: "{mem}G"
+      outputs_to_working_directory: false
+      container_monitor_result: callback
+
+  basic_singularity_destination:
+    abstract: true
+    params:
+      submit_request_cpus: "{cores}"
+      submit_request_memory: "{mem}G"
+      singularity_enabled: true
+      singularity_volumes: "$_CONDOR_SCRATCH_DIR:rw,
+        $job_directory:rw,
+        $tool_directory:ro,
+        $job_directory/outputs:rw,
+        $working_directory:rw,
+        $_GALAXY_JOB_TMP_DIR:/tmp:rw,
+        {{ galaxy_volumes(exclude_volumes=['db', 'dnb04', 'dnb-ds01', '5']) }}
+        {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
+        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
+        {{ tools.tools.path }}/:{{ tools.tools.docker_perm }}"
+      singularity_default_container_id: "{{ cvmfs.singularity.path }}/all/centos:8.3.2011"
+
+  ################################
+  # EMBEDDED PULSAR DESTINATIONS #
+  ################################
+
+  embedded_pulsar_docker:
+    inherits: basic_docker_destination
+    runner: pulsar_embedded
+    max_accepted_cores: 190
+    max_accepted_mem: 1500
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    params:
+      submit_requirements: "{entity.params.get('requirements') or ''}"
+      docker_volumes: "$job_directory:rw,
+        $_CONDOR_SCRATCH_DIR:rw,
+        $tool_directory:ro,
+        $job_directory/outputs:rw,
+        $working_directory:rw,
+        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+    scheduling:
+      require:
+        - docker
+        - embedded-pulsar
+
+  embedded_pulsar_docker_gpu_pxe:
+    inherits: embedded_pulsar_docker
+    max_accepted_cores: 128
+    max_accepted_mem: 500
+    min_accepted_gpus: 1
+    max_accepted_gpus: 1
+    env:
+      GPU_AVAILABLE: "1"
+    context:
+      galaxy_group: 'GalaxyGroup == "pxe-gpu"'
+    params:
+      submit_requirements: "{galaxy_group}"
+      request_gpus: "{gpus or 0}"
+      docker_run_extra_arguments: "{entity.params.get('docker_run_extra_arguments') or ''} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
+    rules:
+      - id: GPU model preferences
+        if: |
+          "exclude_gpu_models" in entity.context or "include_gpu_models" in entity.context
+        execute: |
+          exclude_gpu_models = entity.context.get('exclude_gpu_models', [])
+          include_gpu_models = entity.context.get('include_gpu_models', [])
+          existing_requirements = galaxy_group
+          gpu_conditions_list = []
+          if exclude_gpu_models:
+              exclude_conditions = ' && '.join(
+                  f'(GPUs_DeviceName != "{model}")' for model in exclude_gpu_models
+              )
+              gpu_conditions_list.append(exclude_conditions)
+          if include_gpu_models:
+              include_conditions = ' || '.join(
+                  f'(GPUs_DeviceName == "{model}")' for model in include_gpu_models
+              )
+              gpu_conditions_list.append(f'({include_conditions})')
+          # Combine all GPU conditions with AND
+          if gpu_conditions_list:
+              gpu_conditions = ' && '.join(gpu_conditions_list)
+              # Combine with existing requirements with AND
+              if existing_requirements:
+                  entity.params['submit_requirements'] = f'{gpu_conditions} && ({existing_requirements})'
+              else:
+                  entity.params['submit_requirements'] = gpu_conditions
+
+  embedded_pulsar_docker_gpu_pxe_div4:
+    inherits: embedded_pulsar_docker_gpu_pxe
+    context:
+      galaxy_group: 'GalaxyGroup == "pxe-gpu-div4"'
+    scheduling:
+      require:
+        - pxe-gpu-div4
+
+
+
+
+  #######################
+  # PULSAR DESTINATIONS #
+  #######################
+
+  pulsar_default: # use for remote Pulsar nodes and ALWAYS overwrite the runner.
+    abstract: true
+    runner: pulsar_embedded
+    env:
+      LC_ALL: C
+      SINGULARITY_CACHEDIR: /data/share/var/database/container_cache # On the NFS share on remote Pulsar side
+      TMP: $_GALAXY_JOB_TMP_DIR
+      TEMP: $_GALAXY_JOB_TMP_DIR
+      TMPDIR: $_GALAXY_JOB_TMP_DIR
+    params:
+      jobs_directory: /data/share/staging
+      transport: curl
+      remote_metadata: "false"
+      metadata_strategy: directory
+      default_file_action: remote_transfer
+      rewrite_parameters: "true"
+      persistence_directory: /data/share/persisted_data
+      outputs_to_working_directory: "false"
+      dependency_resolution: "none"
+      submit_request_cpus: "{cores}"
+      submit_request_memory: "{mem}G"
+      docker_volumes: "{{ pulsar_base_volumes() }}"
+      singularity_volumes: "{{ pulsar_base_volumes() }}"
+      singularity_enabled: true
+      singularity_default_container_id: "{{ cvmfs.singularity.path }}/all/centos:8.3.2011"
+    scheduling:
+      accept:
+        - pulsar
+        - conda
+        - singularity
+        - docker
+        - condor-tpv
+
+  pulsar_mira_tpv:
+    inherits: pulsar_default
+    runner: pulsar_mira_runner
+    max_accepted_cores: 8
+    max_accepted_mem: 15
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    scheduling:
+      require:
+        - mira-pulsar
+
+  pulsar_sk01_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_sk01
+    max_accepted_cores: 8
+    max_accepted_mem: 31
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    params:
+      singularity_volumes: "{{ pulsar_base_volumes() }}"
+    scheduling:
+      require:
+        - sk-pulsar
+
+  pulsar_it_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_it01
+    max_accepted_cores: 8
+    max_accepted_mem: 31
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    params:
+      singularity_volumes: "{{ pulsar_base_volumes() }}"
+    scheduling:
+      require:
+        - it-pulsar
+
+  pulsar_it02_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_it02
+    max_accepted_cores: 16
+    max_accepted_mem: 31
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    params:
+      singularity_volumes: "{{ pulsar_base_volumes() }}"
+    scheduling:
+      require:
+        - it02-pulsar
+
+  pulsar_it03_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_it03
+    max_accepted_cores: 32
+    max_accepted_mem: 124
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    params:
+      singularity_volumes: "{{ pulsar_base_volumes() }}"
+    scheduling:
+      require:
+        - it03-pulsar
+
+  pulsar_fr01_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_fr01
+    max_accepted_cores: 8
+    max_accepted_mem: 63
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    params:
+      singularity_volumes: "{{ pulsar_base_volumes() }}"
+    scheduling:
+      require:
+        - fr-pulsar
+
+  pulsar_be_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_be01
+    max_accepted_cores: 8
+    max_accepted_mem: 15
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    scheduling:
+      require:
+        - be-pulsar
+
+  pulsar_cz01_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_cz01
+    max_accepted_cores: 32
+    max_accepted_mem: 256
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    env:
+      LC_ALL: C
+      SINGULARITY_CACHEDIR: "/cvmfs/singularity.galaxyproject.org/all/"
+      SINGULARITY_TMPDIR: "$SCRATCHDIR"
+      TMPDIR: "$SCRATCHDIR"
+      TMP: "$SCRATCHDIR"
+      TEMP: "$SCRATCHDIR"
+      XDG_CACHE_HOME: "$SCRATCHDIR"
+    params:
+      jobs_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/staging"
+      persistence_directory: "/opt/pulsar/files/persistent"
+      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }},$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,/cvmfs/data.galaxyproject.org/managed/:/data/db/data_managers/:ro"
+      singularity_env__JAVA_OPTIONS: '-Xmx{int(mem)}g -Djava.io.tmpdir=$SCRATCHDIR'
+#      singularity_run_extra_arguments: '--env _JAVA_OPTIONS=\"-Xmx{int(mem)}g -Djava.io.tmpdir=$SCRATCHDIR\"'
+      submit_native_specification: "-l select=1:ncpus={int(cores)}:mem={int(mem)}gb:scratch_local=100gb -l walltime=24:00:00 -q galaxyeu@pbs-m1.metacentrum.cz -N pulsar_eu_j{job.id}__{tool.id if '/' not in tool.id else tool.id.split('/')[-2]+'_v'+tool.id.split('/')[-1]}__{user.username if user and hasattr(user, 'username') else 'anonymous'}"
+    scheduling:
+      require:
+        - cz-pulsar
+    rules:
+      - if: tool.id.startswith("toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta") or tool.id.startswith("toolshed.g2.bx.psu.edu/repos/iuc/plasmidfinder/plasmidfinder")
+        params:
+          singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }},$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,/cvmfs/data.galaxyproject.org/byhand/:/data/db/data_managers/:ro"
+
+  pulsar_cz02_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_cz01
+    max_accepted_cores: 32
+    max_accepted_mem: 256
+    min_accepted_gpus: 1
+    max_accepted_gpus: 1
+    env:
+      LC_ALL: C
+      SINGULARITY_CACHEDIR: "/cvmfs/singularity.galaxyproject.org/all/"
+      SINGULARITY_TMPDIR: "$SCRATCHDIR"
+      TMPDIR: "$SCRATCHDIR"
+      TMP: "$SCRATCHDIR"
+      TEMP: "$SCRATCHDIR"
+      MPLCONFIGDIR: "$SCRATCHDIR"
+      ALPHAFOLD_DB: "/scratch.ssd/galaxyeu/permanent/alphafold.db"
+      XDG_CACHE_HOME: "$SCRATCHDIR"
+      GPU_AVAILABLE: "1"
+    params:
+      jobs_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/staging"
+      persistence_directory: "/opt/pulsar/files/persistent"
+      singularity_volumes: "$job_directory:ro,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,$ALPHAFOLD_DB:/data:ro"
+      singularity_run_extra_arguments: "--nv --env ALPHAFOLD_USE_GPU=True --env SCRATCHDIR=$SCRATCHDIR --env SCRATCH=$SCRATCHDIR"
+      submit_native_specification: "-l select=1:ncpus=8:mem={int(mem)}gb:scratch_local=100gb:ngpus=1:gpu_mem=16gb -l walltime=24:00:00 -q galaxy_gpu@pbs-m1.metacentrum.cz -N pulsar_eu_j{job.id}__{tool.id if '/' not in tool.id else tool.id.split('/')[-2]+'_v'+tool.id.split('/')[-1]}__{user.username if user and hasattr(user, 'username') else 'anonymous'}"
+    scheduling:
+      require:
+        - cz-pulsar
+    rules:
+      - if: tool.id.startswith("toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold") and helpers.tool_version_gte(tool, "2.1.2+galaxy0") and helpers.tool_version_lt(tool, "2.3")
+        env:
+          ALPHAFOLD_DB: "/storage/brno11-elixir/projects/alphafold/alphafold.db-2.2"
+      - if: tool.id.startswith("toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold") and helpers.tool_version_gte(tool, "2.3.1+galaxy2")
+        params:
+          singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,$ALPHAFOLD_DB:/data/2.3:ro"
+
+
+  pulsar_egi01_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_egi01
+    max_accepted_cores: 8
+    max_accepted_mem: 15
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    scheduling:
+      require:
+        - egi-pulsar
+
+  pulsar_bsc01_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_bsc01
+    max_accepted_cores: 16
+    max_accepted_mem: 64
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    scheduling:
+      require:
+        - bsc-pulsar
+
+  pulsar_tubitak01_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_tubitak01
+    max_accepted_cores: 16
+    max_accepted_mem: 95
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    scheduling:
+      require:
+        - tubitak-pulsar
+
+  pulsar_cyf01_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_cyf01
+    max_accepted_cores: 4
+    max_accepted_mem: 15
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    scheduling:
+      require:
+        - pl-pulsar
+
+  pulsar_hcmr01_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_hcmr01
+    max_accepted_cores: 8
+    max_accepted_mem: 30
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    scheduling:
+      require:
+        - hcmr-gr-pulsar
+
+  pulsar_eosc01_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_eosc01
+    max_accepted_cores: 4
+    max_accepted_mem: 31
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    scheduling:
+      require:
+        - eosc-eu-node-01-pulsar
+
+  pulsar_uca01_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_uca01
+    max_accepted_cores: 8
+    max_accepted_mem: 31
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    scheduling:
+      require:
+        - uca-pulsar
+
+  pulsar_ufz_eve01_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_ufz_eve01
+    max_accepted_cores: 56
+    max_accepted_mem: 360
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    params:
+      jobs_directory: /work/songalax/pulsar/
+      submit_user: $__user_name__
+      submit_native_specification: "--qos=galaxy -p galaxy -t 24:00:00 --cpus-per-task={int(cores)} --mem-per-cpu={int(mem/cores)}"
+    scheduling:
+      require:
+        - ufz-eve-pulsar
+
+  #############################
+  # LOCAL CONDOR DESTINATIONS #
+  #############################
+
+  condor_container:
+    runner: condor
+    max_accepted_cores: 64
+    max_accepted_mem: 1000
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    params:
+      require_container: true
+      #
+      # singularity config
+      #
+      singularity_enabled: true
+      singularity_volumes: "$_CONDOR_SCRATCH_DIR:rw,
+        $job_directory:rw,
+        $tool_directory:ro,
+        $job_directory/outputs:rw,
+        $working_directory:rw,
+        $_GALAXY_JOB_TMP_DIR:/tmp:rw,
+        {{ galaxy_volumes(exclude_volumes=['db', 'dnb04', 'dnb-ds01', '5']) }}
+        {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
+        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
+        {{ tools.tools.path }}/:{{ tools.tools.docker_perm }}"
+      singularity_default_container_id: "{{ cvmfs.singularity.path }}/all/centos:8.3.2011"
+      #
+      # Docker config
+      #
+      docker_enabled: true
+      docker_set_user: ""
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,
+        $defaults,
+        {{ galaxy_volumes(exclude_volumes=['dnb04', 'dnb-ds01']) }}
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+      scheduling:
+        accept:
+          - docker
+          - singularity
+
+  condor_singularity_with_conda:
+    inherits: basic_singularity_destination
+    runner: condor
+    max_accepted_cores: 64
+    max_accepted_mem: 1000
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    params:
+      require_container: true
+      container_override:
+        - type: singularity
+          shell: "/bin/bash"
+          resolve_dependencies: true
+          # Use Centos 7 as a fallback container here
+          # Most times this fallback is needed for very old tools
+          # Centos 7 has libncurses.so.5.9 and python 2.7
+          identifier: "/cvmfs/main.galaxyproject.org/singularity/usegalaxy.org-legacy-environment--0"
+    scheduling:
+      require:
+        - singularity
+        - conda
+
+  condor_internal:
+    runner: condor
+    max_accepted_cores: 20
+    max_accepted_mem: 10
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    params:
+      requirements: "GalaxyTraining == false"
+      rank: 'GalaxyGroup == "internal"'
+    scheduling:
+      require:
+        - internal
+
+  condor_docker_gpu_pxe:
+    inherits: basic_docker_destination
+    # shorter than inheriting from condor_gpu
+    runner: condor
+    max_accepted_cores: 128
+    max_accepted_mem: 500
+    min_accepted_gpus: 1
+    max_accepted_gpus: 4
+    scheduling:
+      # Try to make this the default GPU destination if a tool is untagged (e.g. from upstream)
+      accept:
+        - docker
+    env:
+      GPU_AVAILABLE: 1
+    params:
+      requirements: 'GalaxyGroup == "pxe-gpu"'
+      request_gpus: "{gpus or 0}"
+      docker_run_extra_arguments: "{entity.params.get('docker_run_extra_arguments') or ''} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
+
+  # This means a GPU can be shared by max 4 jobs at the same time
+  condor_docker_gpu_pxe_divide4:
+    inherits: condor_docker_gpu_pxe
+    max_accepted_gpus: 1
+    params:
+      requirements: 'GalaxyGroup == "pxe-gpu-div4"'
+    scheduling:
+      require:
+        - gpu-divided
+
+  condor_singularity_gpu_pxe:
+    inherits: basic_singularity_destination
+    # shorter than inheriting from condor_gpu
+    runner: condor
+    max_accepted_cores: 128
+    max_accepted_mem: 500
+    min_accepted_gpus: 1
+    max_accepted_gpus: 1
+    scheduling:
+      require:
+        - singularity
+    params:
+      requirements: 'GalaxyGroup == "pxe-gpu"'
+      request_gpus: "{gpus or 0}"
+      singularity_run_extra_arguments: "{entity.params.get('singularity_run_extra_arguments') or ''} --nv --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"

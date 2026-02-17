@@ -1,0 +1,49 @@
+---
+- name: OSIRIS
+  become: true
+  hosts:
+    - osiris
+  vars:
+    # Request certbot SSL when running the playbook
+    request_certbot_ssl: true
+    # This setting will be applied after restoring a backup
+    # If no version change is desired, make sure this version matches that of the backup
+    # Can also be a commit hash so long it is part of a branch
+    # osiris_version: "v1.6.2"
+    osiris_version: "v1.8.1"
+  vars_files:
+    - group_vars/osiris.yml
+    - secret_group_vars/osiris.yml
+  pre_tasks:
+    - name: "Install system packages needed for installation"
+      ansible.builtin.dnf:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - python3-pip
+        # We need these for SELinux but they are installed by mongodb_selinux
+        # - policycoreutils-python-utils
+    - name: "Install system packages needed for installation"
+      ansible.builtin.command: "pip install pymongo"
+  collections:
+    - community.mongodb
+  roles:
+    - hostname
+    - geerlingguy.repo-epel
+    - hxr.admin-tools
+    - geerlingguy.apache
+    - geerlingguy.php
+    - geerlingguy.apache-php-fpm
+
+    - community.mongodb.mongodb_repository
+    - community.mongodb.mongodb_install
+    - community.mongodb.mongodb_linux
+    - community.mongodb.mongodb_selinux
+    - community.mongodb.mongodb_auth
+    - community.mongodb.mongodb_mongod
+    # Custom
+    - denbi.ssh-root-users
+    - denbi.ssh-no-root-with-password
+    - denbi.osiris
+    - denbi.fail2ban-sshd
+    # End Custom

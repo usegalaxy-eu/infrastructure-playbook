@@ -1,21 +1,17 @@
 ---
 - hosts: influxdb
+  name: InfluxDB
   become: true
   vars:
     hostname: influxdb.galaxyproject.eu
   vars_files:
     - "secret_group_vars/all.yml"
+    - secret_group_vars/aws.yml # AWS creds
   pre_tasks:
-    - name: Set default version of Python
-      alternatives:
-        name: python
-        path: /usr/bin/python3
-    - name: Install docker pip package
-      ansible.builtin.pip:
-        name: docker
-    - name: Set docker_users (Docker role)
-      set_fact:
-        docker_users: "centos"
+    - name: Install Dependencies
+      become: true
+      ansible.builtin.package:
+        name: ['python3-virtualenv', 'python3-docker']
     - name: Configure SELinux
       ansible.posix.seboolean:
         name: "{{ item }}"
@@ -23,29 +19,48 @@
         persistent: true
       loop:
         - httpd_can_network_connect
-    - name: Disable firewalld service
+    - name: Create influxdb firewalld service
+      ansible.builtin.copy:
+        dest: /etc/firewalld/services/influxdb.xml
+        content: |
+          <?xml version="1.0" encoding="utf-8"?>
+          <service>
+          <short>influxdb</short>
+            <description>Time-series database for storing metrics and analytics data</description>
+            <port protocol="tcp" port="8086"/>
+          </service>
+        mode: "0600"
+        owner: root
+        group: root
+      notify: copied_service
+  handlers:
+    - name: Reload Firewalld
+      listen: copied_service
       ansible.builtin.service:
         name: firewalld
-        enabled: false
-        state: stopped
+        state: reloaded
   collections:
     - devsec.hardening
   roles:
     ## Starting configuration of the operating system
+    - geerlingguy.swap
+    - role: usegalaxy_eu.firewall
+      become: true
     - role: usegalaxy_eu.handy.os_setup
       vars:
         enable_hostname: true
         enable_powertools: true        # geerlingguy.repo-epel role doesn't enable PowerTools repository
         enable_remap_user: true
         enable_create_user: true
-#    - geerlingguy.repo-epel     # Install EPEL repository
-#    - usegalaxy-eu.autoupdates  # keep all of our packages up to date
-#    - influxdata.chrony         # Keep our time in sync.
-#    - usegalaxy-eu.dynmotd
-#    - hxr.monitor-email
+    - geerlingguy.repo-epel     # Install EPEL repository
+    - usegalaxy-eu.autoupdates  # keep all of our packages up to date
+    - influxdata.chrony         # Keep our time in sync.
+    - usegalaxy-eu.dynmotd
+    - hxr.monitor-email
 #    # Applications
-#    - geerlingguy.docker
-#    - galaxyproject.nginx
+    - geerlingguy.docker
+    - hxr.aws-cli # Setup the AWS client that will be needed for route53 authentication of certbot. MUST come before nginx role
+    - galaxyproject.nginx
     - usegalaxy_eu.influxdbserver
     - dj-wasabi.telegraf
     # hardening

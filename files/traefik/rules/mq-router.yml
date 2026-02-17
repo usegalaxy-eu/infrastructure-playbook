@@ -1,0 +1,9 @@
+tcp:
+  routers:
+    mq-rtr:
+      rule: "HostSNI(`*`)" # || ClientIP(`132.230.224.103`)" Allow by host IP
+      service: "mq"
+      entryPoints:
+        - amqps
+      tls:
+        passthrough: true

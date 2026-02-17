@@ -1,0 +1,246 @@
+---
+# NOTE: Use dashes (-) exclusively for tags and underscores (_) exclusively for destinations.
+# submit_request_cpus its called in pulsar and in plain condor only request_cpus
+destinations:
+  ######################
+  # BASIC DESTINATIONS #
+  ######################
+  basic_docker_destination:
+    abstract: true
+    params:
+      docker_enabled: true
+      docker_sudo: false
+      docker_net: bridge
+      docker_auto_rm: true
+      docker_set_user: ""
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$default,$job_directory:rw,$tool_directory:ro,/cvmfs/data.galaxyproject.org:ro"
+      require_container: true
+      submit_request_cpus: "{cores}"
+      submit_request_memory: "{mem}G"
+      outputs_to_working_directory: false
+      container_monitor_result: callback
+      submit_requirements: "GalaxyDockerHack == True"
+
+  basic_singularity_destination:
+    abstract: true
+    params:
+      submit_request_cpus: "{cores}"
+      submit_request_memory: "{mem}G"
+      singularity_enabled: true
+      singularity_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      singularity_default_container_id: "/cvmfs/singularity.galaxyproject.org/all/centos:8.3.2011"
+
+  ################################
+  # EMBEDDED PULSAR DESTINATIONS #
+  ################################
+
+  interactive_pulsar:
+    inherits: basic_docker_destination
+    runner: pulsar_embedded
+    max_accepted_cores: 24
+    max_accepted_mem: 128
+    scheduling:
+      accept:
+        - docker
+      require:
+        - interactive
+
+  interactive_pulsar_gpu:
+    inherits: interactive_pulsar
+    max_accepted_gpus: 1
+    env:
+      GPU_AVAILABLE: "1"
+    params:
+      requirements: 'GalaxyGroup == "compute_gpu"'
+    scheduling:
+      require:
+        - gpu
+
+  embedded_pulsar_docker:
+    inherits: basic_docker_destination
+    runner: pulsar_embedded
+    max_accepted_cores: 24
+    max_accepted_mem: 128
+    scheduling:
+      require:
+        - docker
+        - embedded-pulsar
+
+  embedded_pulsar_docker_gpu:
+    inherits: embedded_pulsar_docker
+    max_accepted_gpus: 1
+    env:
+      GPU_AVAILABLE: "1"
+    params:
+      requirements: 'GalaxyGroup == "compute_gpu"'
+    scheduling:
+      require:
+        - gpu
+
+  #######################
+  # PULSAR DESTINATIONS #
+  #######################
+
+  pulsar_default: # use for remote Pulsar nodes and ALWAYS overwrite the runner.
+    inherits: basic_singularity_destination
+    abstract: true
+    runner: pulsar_embedded
+    env:
+      LC_ALL: C
+      SINGULARITY_CACHEDIR: /data/share/var/database/container_cache # On the NFS share on remote Pulsar side
+    params:
+      jobs_directory: /data/share/staging
+      transport: curl
+      remote_metadata: "false"
+      metadata_strategy: directory
+      default_file_action: remote_transfer
+      rewrite_parameters: "true"
+      persistence_directory: /data/share/persisted_data
+      outputs_to_working_directory: "false"
+      dependency_resolution: "none"
+      submit_request_cpus: "{cores}"
+      submit_request_memory: "{mem}"
+      docker_volumes: "$default,$job_directory:rw,$tool_directory:ro,/cvmfs/data.galaxyproject.org:ro"
+    scheduling:
+      require:
+        - pulsar
+
+  pulsar_mira_tpv:
+    inherits: pulsar_default
+    runner: pulsar_mira_runner
+    max_accepted_cores: 8
+    max_accepted_mem: 15
+    scheduling:
+      require:
+        - mira-pulsar
+      accept:
+        - docker
+        - condor-tpv
+        - singularity
+
+  pulsar_sk01_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_sk01
+    max_accepted_cores: 8
+    max_accepted_mem: 16
+    scheduling:
+      require:
+        - sk-pulsar
+      accept:
+        - docker
+        - condor-tpv
+        - singularity
+
+  pulsar_it_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_it01
+    max_accepted_cores: 16
+    max_accepted_mem: 31
+    scheduling:
+      require:
+        - it-pulsar
+      accept:
+        - docker
+        - condor-tpv
+        - singularity
+
+  pulsar_fr01_tpv:
+    runner: pulsar_eu_fr01
+    inherits: pulsar_default
+    max_accepted_cores: 8
+    max_accepted_mem: 63
+    scheduling:
+      require:
+        - fr-pulsar
+      accept:
+        - docker
+        - condor-tpv
+        - singularity
+
+  pulsar_be_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_be01
+    max_accepted_cores: 8
+    max_accepted_mem: 15
+    scheduling:
+      require:
+        - be-pulsar
+      accept:
+        - docker
+        - condor-tpv
+        - singularity
+
+  #############################
+  # LOCAL CONDOR DESTINATIONS #
+  #############################
+
+  condor_docker:
+    inherits: basic_docker_destination
+    runner: condor
+    max_accepted_cores: 36
+    max_accepted_mem: 975
+    scheduling:
+      require:
+        - docker
+
+  condor_singularity:
+    inherits: basic_singularity_destination
+    runner: condor
+    max_accepted_cores: 24
+    max_accepted_mem: 128
+    params:
+    scheduling:
+      prefer:
+        - singularity
+      require:
+        - offline
+
+  # Generic destination for tools that don't get any params
+  # and no specified dependency resolution
+  condor_tpv:
+    runner: condor
+    max_accepted_cores: 64
+    max_accepted_mem: 1000
+    scheduling:
+      prefer:
+        - condor-tpv
+
+  condor_singularity_with_conda:
+    inherits: basic_singularity_destination
+    runner: condor
+    max_accepted_cores: 64
+    max_accepted_mem: 1000
+    params:
+      container_override:
+        - type: singularity
+          shell: "/bin/bash"
+          resolve_dependencies: true
+          identifier: "{{ misc.misc07.path }}/singularity_base_images/centos:8.3.2011"
+    scheduling:
+      require:
+        - singularity
+        - conda
+
+  condor_upload:
+    runner: condor
+    max_accepted_cores: 20
+    max_accepted_mem: 10
+    params:
+      requirements: "GalaxyTraining == false"
+      rank: 'GalaxyGroup == "upload"'
+    scheduling:
+      require:
+        - upload
+
+  condor_gpu:
+    runner: condor
+    max_accepted_cores: 8
+    max_accepted_mem: 16
+    max_accepted_gpus: 1
+    env:
+      GPU_AVAILABLE: 1
+    params:
+      requirements: 'GalaxyGroup == "compute_gpu"'
+    scheduling:
+      require:
+        - gpu

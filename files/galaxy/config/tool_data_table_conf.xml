@@ -2,6 +2,10 @@
 <tables>
     <!-- TODO(hxr): test if we can remove path since specified in galaxy.yml -->
     <!-- Locations of all fasta files under genome directory -->
+    <table comment_char="#" name="__dbkeys__">
+        <columns>value, name, len_path</columns>
+        <file path="/opt/galaxy/tool-data/dbkeys.loc"/>
+    </table>
     <table name="all_fasta" comment_char="#" allow_duplicate_entries="False">
         <columns>value, dbkey, name, path</columns>
         <file path="/opt/galaxy/tool-data/all_fasta.loc" />
@@ -66,15 +70,16 @@
         <columns>value, name, path</columns>
         <file path="/opt/galaxy/tool-data/lastz_seqs.loc" />
     </table>
-
-
+    <!-- Locations of DIAMOND reference databases -->
+    <table name="diamond_database" comment_char="#" allow_duplicate_entries="False">
+        <columns>value, name, db_path</columns>
+        <file path="/opt/galaxy/tool-data/diamond_database.loc" />
+    </table>
     <!-- Locations of 2bit sequence files for use in deepTools -->
     <table name="deepTools_seqs" comment_char="#">
         <columns>value, name, path</columns>
         <file path="/opt/galaxy/tool-data/deepTools_seqs.loc" />
     </table>
-
-
     <!-- Locations of PerM base index files -->
     <table name="perm_base_indexes" comment_char="#" allow_duplicate_entries="False">
         <columns>value, name, path</columns>
@@ -190,5 +195,50 @@
     <table name="ffindex_indices" comment_char="#" allow_duplicate_entries="False">
         <columns>value, name, path, type</columns>
         <file path="/opt/galaxy/tool-data/ffindex_indices.loc" />
+    </table>
+    <!-- huggingface models -->    
+    <table name="huggingface" comment_char="#" allow_duplicate_entries="False">
+        <columns>value, name, pipeline_tag, domain, free_tag, version, path</columns>
+        <file path="/opt/galaxy/tool-data/huggingface.loc" />
+    </table>
+    <table name="corenlp_models" comment_char="#" allow_duplicate_entries="False">
+        <columns>value, name, lang_code, models_path</columns>
+        <file path="/opt/galaxy/tool-data/corenlp_models.loc" />
+    </table>
+    <table name="spacy_models" comment_char="#" allow_duplicate_entries="False">
+        <columns>value, name, lang, size, model_name</columns>
+        <file path="/opt/galaxy/tool-data/spacy_models.loc" />
+    </table>
+    <table name="mfa_dictionary" comment_char="#" allow_duplicate_entries="False">
+        <columns>value, dbkey, name, path</columns>
+        <file path="/opt/galaxy/tool-data/mfa_dictionary.loc" />
+    </table>
+    <table name="mfa_acoustic" comment_char="#" allow_duplicate_entries="False">
+        <columns>value, dbkey, name, path</columns>
+        <file path="/opt/galaxy/tool-data/mfa_acoustic.loc" />
+    </table>
+    <table name="mfa_g2p" comment_char="#" allow_duplicate_entries="False">
+        <columns>value, dbkey, name, path</columns>
+        <file path="/opt/galaxy/tool-data/mfa_g2p.loc" />
+    </table>
+    <table name="mfa_ivector" comment_char="#" allow_duplicate_entries="False">
+        <columns>value, dbkey, name, path</columns>
+        <file path="/opt/galaxy/tool-data/mfa_ivector.loc" />
+    </table>
+    <table name="mfa_language_model" comment_char="#" allow_duplicate_entries="False">
+        <columns>value, dbkey, name, path</columns>
+        <file path="/opt/galaxy/tool-data/mfa_language_model.loc" />
+    </table>
+    <table name="mfa_tokenizer" comment_char="#" allow_duplicate_entries="False">
+        <columns>value, dbkey, name, path</columns>
+        <file path="/opt/galaxy/tool-data/mfa_tokenizer.loc" />
+    </table>
+    <table name="llm_models" comment_char="#" allow_duplicate_entries="False">
+        <columns>value, name, domain, provider, free_tag</columns>
+        <file path="/opt/galaxy/tool-data/llm_models.loc"/>
+    </table>
+    <table name="genai_models" comment_char="#" allow_duplicate_entries="False">
+        <columns>value, model_id, name, domain, provider, free_tag</columns>
+        <file path="/opt/galaxy/tool-data/genai_models.loc"/>
     </table>
 </tables>

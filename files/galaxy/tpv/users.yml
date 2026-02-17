@@ -1,0 +1,24 @@
+---
+users:
+  bjoern.gruening@gmail.com:
+    rules:
+      - id: user-specific-notebook
+        if: |
+          'interactive_tool_jupyter_notebook' in tool.id
+        cores: 1
+        mem: 15
+  andreas.kalagasidis@gmail.com:
+    rules:
+      - id: user-specific-notebook
+        if: |
+          'interactive_tool_jupyter_notebook' in tool.id
+        cores: 1
+        mem: 15
+  m.bernt@ufz.de:
+    scheduling:
+      require:
+        - ufz-eve-pulsar
+  conrad.ostertag@ufz.de:
+    scheduling:
+      require:
+        - ufz-eve-pulsar

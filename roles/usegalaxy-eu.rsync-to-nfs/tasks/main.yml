@@ -3,8 +3,12 @@
   copy:
     content: |
         #!/bin/bash
+        if [ "$(whoami)" != "galaxy" ]; then
+          exec sudo -u galaxy bash "$0" "$@"
+          exit
+        fi
         cd {{ galaxy_root }};
-        for dir in {custom-tools,dynamic_rules,mutable-config,mutable-data,server,venv,tool-data}; do
+        for dir in {config,custom-tools,mutable-config,mutable-data,server,venv,tool-data}; do
             if [ -d $dir ]; then
                 echo "Syncing $dir"
                 rsync -avr --delete --exclude node_modules --exclude .git --exclude __pycache__ $dir/ {{ galaxy_nfs_location }}/$dir/
@@ -12,11 +16,11 @@
                 echo "Skipping $dir"
             fi
         done;
-        if [ -d shed_tools-local ]; then
-            echo "Syncing shed_tools-local"
-            rsync -avr --delete --exclude .hg shed_tools-local/ {{ galaxy_nfs_location }}/shed_tools/
+        if [ -d shed_tools ]; then
+            echo "Syncing shed_tools"
+            rsync -avr --delete --exclude .hg shed_tools/ {{ galaxy_nfs_location }}/shed_tools/
         else
-            echo "Skipping shed_tools-local"
+            echo "Skipping shed_tools"
         fi
     dest: /usr/bin/galaxy-sync-to-nfs
     owner: root
