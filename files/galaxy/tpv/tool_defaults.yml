@@ -79,12 +79,12 @@ tools:
                       }
               return ongoing_trainings
           ongoing_trainings = get_ongoing_trainings()
-          
-          training_identifiers =  {
+
+          user_trainings =  {
               training_role.removeprefix("training-")
               for training_role in training_roles
           }
-          if ongoing_trainings & training_identifiers:
+          if ongoing_trainings & user_trainings:
               entity.params['requirements'] = '(GalaxyGroup == "compute") || (GalaxyGroup == "tiaas")'
 
       - if: user is None
