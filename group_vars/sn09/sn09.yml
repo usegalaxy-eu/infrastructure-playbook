@@ -68,7 +68,7 @@ fsm_cron_tasks:
     dom: '*'
     month: '*'
     dow: '*'
-    job: '. {{ galaxy_root }}/.bashrc && docker system prune -f > /dev/null'
+    job: '. {{ galaxy_root }}/.bashrc && docker system prune -f --all> /dev/null'
     user: '{{ fsm_galaxy_user.username }}'
   gxadmin:
     enable: false
@@ -116,6 +116,8 @@ pip_install_dependencies:
   # Used by code_files for apollo
   - biopython
   - bcbio-gff
+  # Needed for huggingface file-source
+  - huggingface-hub
   # Needed for tool watching
   - watchdog
   # Needed gxadmin graphs
@@ -334,6 +336,7 @@ galaxy_backup_configfiles: false
 
 galaxy_server_dir: '{{ galaxy_root }}/server'
 galaxy_config_dir: '{{ galaxy_root }}/config'
+galaxy_config_file: '{{ galaxy_config_dir }}/galaxy.yml'
 galaxy_venv_dir: '{{ galaxy_root }}/venv'
 galaxy_job_working_directory: "{{ galaxy_config['galaxy']['job_working_directory'] }}"
 ucsc_build_sites:
@@ -367,7 +370,7 @@ galaxy_instance_hostname: usegalaxy.eu
 galaxy_config_style: yaml
 
 galaxy_repo: 'https://github.com/usegalaxy-eu/galaxy.git'
-galaxy_commit_id: 'release_25.0_europe'
+galaxy_commit_id: 'release_25.1_europe'
 galaxy_force_checkout: true # discard any modified files
 #galaxy_admin_email_from: 'noreply@usegalaxy.eu'
 
@@ -420,6 +423,8 @@ galaxy_config_files:
     dest: '{{ tpv_mutable_dir }}/tools.yml'
   - src: '{{ galaxy_config_file_src_dir }}/tpv/roles.yml'
     dest: '{{ tpv_mutable_dir }}/roles.yml'
+  - src: '{{ galaxy_config_file_src_dir }}/tpv/conda_in_container.yml'
+    dest: '{{ tpv_mutable_dir }}/conda_in_container.yml'
   - src: '{{ galaxy_config_file_src_dir }}/tpv/interactive_tools.yml'
     dest: '{{ tpv_mutable_dir }}/interactive_tools.yml'
   - src: '{{ galaxy_config_file_src_dir }}/tpv/users.yml'
@@ -474,3 +479,13 @@ galaxy_config_templates:
     dest: "{{ galaxy_config['galaxy']['file_source_templates_config_file'] }}"
   - src: '{{ galaxy_config_template_src_dir }}/config/object_store_templates.yml.j2'
     dest: "{{ galaxy_config['galaxy']['object_store_templates_config_file'] }}"
+
+# (usegalaxy-eu.bashrc)
+bashrc_galaxy_root: "{{ galaxy_root }}/server/"
+bashrc_galaxy_venv_dir: "{{ galaxy_venv_dir }}"
+bashrc_galaxy_server_dir: "{{ galaxy_server_dir }}"
+bashrc_galaxy_config_dir: "{{ galaxy_config_dir }}"
+bashrc_galaxy_config_file: "{{ galaxy_config_file }}"
+bashrc_galaxy_mutable_config_dir: "{{ galaxy_mutable_config_dir }}"
+bashrc_galaxy_log_dir: "{{ galaxy_log_dir }}"
+bashrc_galaxy_pulsar_app_conf: "{{ galaxy_config_dir }}/pulsar_app.yml"

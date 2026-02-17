@@ -23,17 +23,17 @@ backup() {
     rm -rf "$RESTORE"
     mkdir -p "$RESTORE"
 
-    ## Backup OSIRIS MongoDB
-    feedback "Dumping MongoDB"
-
-    mongodump -d "$MONGODB_DATABASE" -o "$RESTORE" "${MONGODB_CONNECTION}"
-
     ## Restic + minio backup
     if [ ! -f "$INIT" ]; then
         feedback "Initializing restic repository"
         "$RESTIC" -r "$URL" init
         touch "$INIT"
     fi
+
+    ## Backup OSIRIS MongoDB
+    feedback "Dumping MongoDB"
+
+    mongodump -d "$MONGODB_DATABASE" -o "$RESTORE" "${MONGODB_CONNECTION}"
 
     rsync -a "$FILES" "$RESTORE"
 

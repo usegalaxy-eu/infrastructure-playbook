@@ -17,7 +17,6 @@
     <tool file="data_source/biomart_test.xml" />
     <tool file="data_source/cbi_rice_mart.xml" />
     <tool file="data_source/gramene_mart.xml" />
-    <tool file="data_source/dorina_galaxy.xml" />
     <tool file="data_source/fly_modencode.xml" />
     <tool file="data_source/intermine.xml" />
     <tool file="data_source/flymine.xml" />
@@ -36,7 +35,6 @@
     <tool file="/opt/galaxy/custom-tools/test/omicsdi/omicsdi.xml" labels="beta" />
   </section>
   <section id="send_data" name="Send Data">
-    <tool file="data_export/send.xml" />
     <tool file="data_export/export_remote.xml" />
   </section>
   <section id="collection_operations" name="Collection Operations">
@@ -51,9 +49,11 @@
     <tool file="${model_tools_path}/keep_success_collection.xml" />
     <tool file="${model_tools_path}/keep_success_collection_1.1.0.xml" />
     <tool file="${model_tools_path}/flatten_collection.xml" />
+    <tool file="${model_tools_path}/nest_collection.xml" />
     <tool file="${model_tools_path}/merge_collection.xml" />
     <tool file="${model_tools_path}/relabel_from_file.xml" />
     <tool file="${model_tools_path}/filter_from_file.xml" />
+    <tool file="${model_tools_path}/filter_from_file_1.1.0.xml" />
     <tool file="${model_tools_path}/sort_collection_list.xml" />
     <tool file="${model_tools_path}/harmonize_two_collections_list.xml" />
     <tool file="${model_tools_path}/cross_product_flat.xml" />
@@ -62,6 +62,7 @@
     <tool file="${model_tools_path}/apply_rules.xml" />
     <tool file="${model_tools_path}/build_list.xml" />
     <tool file="${model_tools_path}/build_list_1.2.0.xml" />
+    <tool file="${model_tools_path}/sample_sheet_to_tabular.xml" />
     <tool file="${model_tools_path}/extract_dataset.xml" />
     <tool file="${model_tools_path}/duplicate_file_to_collection.xml" />
   </section>
@@ -151,8 +152,7 @@
     <label id="bamtools_label" text="bamtools" />
     <label id="samtools_label" text="samtools" />
   </section>
-  <section id="bed" name="BED">
-  </section>
+  <section id="bed" name="BED"/>
   <section id="vcf_bcf" name="VCF/BCF">
     <label id="vcflib_label" text="vcflib" />
   </section>
@@ -270,9 +270,8 @@
   <section id="phylogenetics" name="Phylogenetics" >
   </section>
   <section id="phenotype_association" name="Phenotype Association">
-    <tool file="evolution/codingSnps.xml" />
-    <tool file="evolution/add_scores.xml" />
-    <tool file="phenotype_association/sift.xml" />
+    <!-- has some XML errors -->
+    <!--tool file="phenotype_association/sift.xml" /-->
     <tool file="phenotype_association/linkToGProfile.xml" />
     <tool file="phenotype_association/linkToDavid.xml" />
     <tool file="phenotype_association/ldtools.xml" />
@@ -331,6 +330,7 @@
   </section>
   <section id="rad_seq" name="RAD-seq">
   </section>
+  <section id="digital_humanities" name="Digital Humanities"/>
   <section id="graphclust" name="GraphClust" >
   </section>
   <section id="mimodd" name="MiModD">
@@ -340,7 +340,6 @@
   <section id="qiime" name="Qiime" />
   <section id="mothur" name="Mothur" />
   <section id="dna_metabarcoding" name="DNA Metabarcoding" />
-  <section id="data_and_metadata_management" name="Data and Metadata Management" />
 
   <section id="virology" name="Virology" />
 
@@ -384,11 +383,7 @@
   <section id="graph_display_data" name="Graph/Display Data" >
     <tool file="plotting/bar_chart.xml" />
     <tool file="plotting/boxplot.xml" />
-    <tool file="visualization/LAJ.xml" />
     <tool file="maf/vcf_to_maf_customtrack.xml" />
-    <tool file="chromatra/chromatral.xml" />
-    <tool file="chromatra/chromatrat.xml" />
-    <tool file="plotting/foldchanges_heatmap.xml" />
   </section>
   <section id="single-cell-section-interactivetools" name="Interactive tools">
     <tool file="interactive/interactivetool_jupyter_notebook.xml" />
@@ -419,6 +414,21 @@
   <section id="xas" name="XAS (X-ray Absorption Spectroscopy)">
   </section>
 
+  <label id="ecology_tools" text="Ecology" />
+  <section id="ecoregionalization" name="Ecoregionalization" />
+  <section id="phylodiversity" name="Phylodiversity" />
+  <section id="geom_mean" name="Indicators from geometric mean" />
+  <section id="animal_detection_on_acoustic_recordings" name="Animal Detection on Acoustic Recordings" />
+  <section id="compute_indicators_for_satellite_remote_sensing" name="Compute indicators for satellite remote sensing" />
+  <section id="species_abundance" name="Species abundance" />
+  <section id="compute_indicators_for_turnover_boulders_fields" name="Compute indicators for turnover boulders fields" />
+  <section id="gis_data_handling" name="GIS Data Handling">
+      <tool file="/opt/galaxy/custom-tools/test/ogc/terrabyte_ogc_api_process_wrapper.xml" />
+  </section>
+  <section id="climate_analysis" name="Climate Analysis" />
+  <section id="biodiversity_data_exploration" name="Biodiversity data exploration" />
+  <section id="data_and_metadata_management" name="Data and Metadata Management" />
+  
   <label id="other_and_toolsuites_label" text="Miscellaneous Tools" />
   <!--section id="regional_variation" name="Regional Variation">
     <tool file="regVariation/windowSplitter.xml" />
@@ -434,19 +444,28 @@
     <tool file="regVariation/microsats_mutability.xml" />
   </section-->
   <section id="evolution" name="Evolution">
-    <tool file="evolution/codingSnps.xml" />
-    <tool file="evolution/add_scores.xml" />
+    <!-- tool removed upstream -->
+    <!--tool file="evolution/codingSnps.xml" />
+    <tool file="evolution/add_scores.xml" /-->
   </section>
   <section id="motif_tools" name="Motif Tools">
     <tool file="meme/meme.xml" hidden="True" />
-    <tool file="meme/fimo.xml" hidden="True" />
     </section>
   <section id="test_tools" name="Test Tools">
-    <tool file="/opt/galaxy/custom-tools/test/3dtrees/overviews.xml" />
-    <tool file="/opt/galaxy/custom-tools/test/3dtrees/tile_merge.xml" />
-    <tool file="/opt/galaxy/custom-tools/test/3dtrees/standard.xml" />
-    <tool file="/opt/galaxy/custom-tools/test/3dtrees/detailview.xml" />
-    <tool file="/opt/galaxy/custom-tools/test/3dtrees/sat.xml" />
+    <tool file="/opt/galaxy/custom-tools/test/mfa/mfa_align.xml" labels="alpha" />
+    <tool file="/opt/galaxy/custom-tools/test/mfa/mfa_g2p.xml" labels="alpha" />
+    <tool file="/opt/galaxy/custom-tools/test/mfa/mfa_tokenize.xml" labels="alpha"/>
+    <tool file="/opt/galaxy/custom-tools/test/mfa/mfa_train_dictionary.xml" labels="alpha"/>
+    <tool file="/opt/galaxy/custom-tools/test/mfa/mfa_train_lm.xml" labels="alpha"/>
+    <tool file="/opt/galaxy/custom-tools/test/mfa/mfa_validate.xml" labels="alpha"/>
+    <tool file="/opt/galaxy/custom-tools/test/mfa/mfa_adapt.xml" labels="alpha"/>
+    <tool file="/opt/galaxy/custom-tools/test/mfa/mfa_find_oovs.xml" labels="alpha"/>
+    <tool file="/opt/galaxy/custom-tools/test/mfa/mfa_remap_alignments.xml" labels="alpha"/>
+    <tool file="/opt/galaxy/custom-tools/test/mfa/mfa_train.xml" labels="alpha"/>
+    <tool file="/opt/galaxy/custom-tools/test/mfa/mfa_train_g2p.xml" labels="alpha"/>
+    <tool file="/opt/galaxy/custom-tools/test/mfa/mfa_train_tokenizer.xml" labels="alpha"/>
+    <tool file="/opt/galaxy/custom-tools/test/mfa/mfa_validate_dictionary.xml" labels="alpha"/>
+    <tool file="/opt/galaxy/custom-tools/test/new_fave/newfave.xml" labels="alpha"/>
 
     <tool file="/opt/galaxy/custom-tools/test/zarr/xarray_netcdf2zarr.xml" />
     <tool file="/opt/galaxy/custom-tools/test/interactivetool_zeppelin.xml" labels="alpha" />
@@ -465,7 +484,6 @@
     <tool file="/opt/galaxy/custom-tools/tombo/tombo_plot_most_significant.xml" labels="alpha" />
     <tool file="/opt/galaxy/custom-tools/tombo/tombo_plot_genome_locations.xml" labels="alpha" />
     <tool file="/opt/galaxy/custom-tools/test/tpp/peptide_prophet.xml"  labels="beta" />
-    <tool file="/opt/galaxy/custom-tools/test/tpp/pepxml_and_protxml_to_table.xml" />
     <tool file="/opt/galaxy/custom-tools/test/tpp/protein_prophet.xml"  />
     <tool file="/opt/galaxy/custom-tools/test/tpp/interprophet.xml" />
 
@@ -488,15 +506,6 @@
     <tool file="/opt/galaxy/custom-tools/test/bwtool.xml" />
     <!--tool file="/opt/galaxy/custom-tools/test/bigwig_to_bedgraph.xml" /-->
     <tool file="/opt/galaxy/custom-tools/test/protein_properties.xml" />
-
-    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicBuildMatrix.xml" hidden="True" />
-    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicCorrectMatrix.xml" hidden="True" />
-    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicCorrelate.xml" hidden="True" />
-    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicFindTADs.xml" hidden="True" />
-    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicPlotDistVsCounts.xml" hidden="True" />
-    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicPlotMatrix.xml" hidden="True" />
-    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicPlotTADs.xml" hidden="True" />
-    <tool file="/opt/galaxy/custom-tools/test/HiCExplorer/galaxy/wrapper/hicSumMatrices.xml" hidden="True" />
 
     <tool file="/opt/galaxy/custom-tools/test/biopython/base_distribution.xml" />
     <tool file="/opt/galaxy/custom-tools/test/biopython/codon_count.xml" />
@@ -537,12 +546,6 @@
     <tool file="/opt/galaxy/custom-tools/test/imaging/projective_transformation_points/projective_transformation_points.xml" /-->
   </section>
 
-  <section id="gis_data_handling" name="GIS Data Handling">
-      <tool file="/opt/galaxy/custom-tools/test/ogc/terrabyte_ogc_api_process_wrapper.xml" />
-  </section>
-  <section id="animal_detection_on_acoustic_recordings" name="Animal Detection on Acoustic Recordings" />
-  <section id="compute_indicators_for_satellite_remote_sensing" name="Compute indicators for satellite remote sensing" />
-
   <section id="regional_variation" name="Regional Variation" >
   </section>
   <section id="genome_diversity" name="Genome Diversity" >
@@ -561,26 +564,21 @@
     <tool file="extract/extract_genomic_dna.xml" hidden="True" />
   </section>
 
-  <section id="climate_analysis" name="Climate Analysis" />
   <section id="apollo" name="Apollo" />
   <section id="imaging" name="Imaging" />
-  <section id="species_abundance" name="Species abundance" />
-  <section id="compute_indicators_for_turnover_boulders_fields" name="Compute indicators for turnover boulders fields" />
-  <section id="ecoregionalization" name="Ecoregionalization" />
-  <section id="phylodiversity" name="Phylodiversity" />
-  <section id="geom_mean" name="Indicators from geometric mean" />
   <section id="astronomy" name="Astronomy" />
   <section id="interactivetools" name="Interactive tools">
         <tool file="interactive/interactivetool_source.xml" />
         <tool file="interactive/interactivetool_cellxgene_mouse_sciatic_nerve.xml"/>
         <tool file="interactive/interactivetool_napari.xml" />
+        <tool file="interactive/interactivetool_dot.xml" />
         <tool file="interactive/interactivetool_anylabeling.xml" />
         <tool file="interactive/interactivetool_pretextview.xml" />
         <tool file="interactive/interactivetool_bellavista.xml" />
         <tool file="interactive/interactivetool_cellprofiler.xml" />
         <tool file="interactive/interactivetool_tadviewer.xml" />
         <tool file="interactive/interactivetool_qgis.xml" />
-        <tool file="interactive/interactivetool_escriptorium.xml" />
+        <!--tool file="interactive/interactivetool_escriptorium.xml" /-->
         <tool file="interactive/interactivetool_qupath.xml" />
         <tool file="interactive/interactivetool_qupath_0.6.0.xml" />
         <tool file="interactive/interactivetool_pampa.xml" />

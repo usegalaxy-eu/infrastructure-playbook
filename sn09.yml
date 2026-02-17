@@ -154,13 +154,6 @@
         - 'telegraf'
         - 'stats' # special account to retrieve statistics from the server in read-only mode
 
-    - name: Set temporary cron for cleaning docker images
-      ansible.builtin.cron:
-        name: 'Temporary docker cleanup – needs upstream fix see issue #584'
-        minute: '0'
-        hour: '*/3'
-        job: '/bin/docker system prune --all -f > /dev/null'
-
     # Note (ToDo): We should ensure that the Gunicorn sockets are created with the correct SELinux
     # context to avoid adding or allowing unconfined contexts. This will further tighten
     # the security of the Galaxy instance. (Check the systemd role that is creating the sockets and
@@ -254,6 +247,24 @@
         owner: galaxy
         group: galaxy
         mode: '0755'
+
+    # LLM Hub - We don't have any role to add this stuff
+    - name: Copy LLM Hub Config File
+      ansible.builtin.copy:
+        src: '{{ playbook_dir }}/files/galaxy/config/llm/litellm_config.yml'
+        dest: '/data/db/models/config/litellm_config.yml'
+        owner: galaxy
+        group: galaxy
+        mode: '0644'
+
+    - name: Copy Loc File
+      ansible.builtin.copy:
+        src: '{{ playbook_dir }}/files/galaxy/config/llm/genai_models.loc'
+        dest: '{{ galaxy_root }}/tool-data/genai_models.loc'
+        owner: galaxy
+        group: galaxy
+        mode: '0644'
+
   roles:
     ## Starting configuration of the operating system
     - role: usegalaxy_eu.handy.os_setup

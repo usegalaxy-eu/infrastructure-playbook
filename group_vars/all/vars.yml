@@ -1,19 +1,30 @@
 ---
 # MISC/Generic variables
 generic_tmp_dir: "{{ misc.misc06.path }}/tmp/"
-job_working_root_dir: "{{ jwd.jwd06.path }}" # we set this in gxconfig, but it should not be used, our object_store_conf is overwriting it
-object_store_cache_dir: "{{ cache.cache06.path }}/object_store_cache/"
+job_working_root_dir: "{{ jwd.jwd07.path }}" # we set this in gxconfig, but it should not be used, our object_store_conf is overwriting it
+object_store_cache_dir: "{{ cache.cache07.path }}/object_store_cache/"
 short_term_web_storage_dir: "{{ misc.misc06.path }}/short_term_web_storage/"
 ftp_upload_dir: "{{ misc.misc06.path }}/incoming"
 
+# *****************************************************************************************
+# WARNING: Adding or modifying entries in `galaxy_cleanup_scratchstorage` will cause data
+#          in the specified object stores to be **deleted** after the defined retention
+#          period (e.g., `days: 60`).  Ensure you only include object stores that are meant
+#          to be cleaned up, and double‑check the `objectstore_id` values before saving.
+# *****************************************************************************************
+galaxy_cleanup_scratchstorage:
+  s3_scratch_netapp01:
+    days: 65
+
 # Upload dirs
-upload_dir_test: "{{ misc.misc07.path }}/tus_upload/test"
-upload_dir_main: "{{ misc.misc07.path }}/tus_upload/main" # tus_upload_store
+upload_dir_test: "{{ misc.misc06.path }}/tus_upload/test"
+upload_dir_main: "{{ misc.misc06.path }}/tus_upload/main" # tus_upload_store
 nginx_upload_dir: "{{ misc.misc06.path }}/nginx_upload/"
 
+bashrc_galaxy_job_working_directory: "{{ job_working_root_dir }}/main/"
 galaxy_config:
   galaxy:
-    job_working_directory: "{{ job_working_root_dir }}/main/"
+    job_working_directory: "{{ bashrc_galaxy_job_working_directory }}"
     nginx_upload_store: "{{ nginx_upload_dir }}/main/uploads"
     nginx_upload_job_files_store: "{{ nginx_upload_dir }}/main/jobfiles"
     ftp_upload_dir: "{{ ftp_upload_dir }}"
