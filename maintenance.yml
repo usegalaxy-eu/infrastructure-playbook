@@ -20,7 +20,7 @@
       ansible.builtin.cron:
         name: Sets the library permissions of all dataset in Library SPAMR-VET to Role SPAMR-VET
         user: galaxy
-        job: uvx --from ephemeris set-library-permissions "{{ library_id_spamr_vet }}" -g  https://usegalaxy.eu -a "$GALAXY_API_KEY" --roles "{{ role_id_spamr_vet }}" -y -s
+        job: uvx --from git+https://github.com/mira-miracoli/ephemeris.git@patch-1 set-library-permissions "{{ library_id_spamr_vet }}" -g  https://usegalaxy.eu -a "$GALAXY_API_KEY" --roles "{{ role_id_spamr_vet }}" -y -s
         hour: "*/4"
         minute: "0"
 
