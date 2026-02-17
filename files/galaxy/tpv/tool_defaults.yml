@@ -56,7 +56,7 @@ tools:
               query = """
                 SELECT training_identifier
                 FROM training_training
-                WHERE "start" <= CURRENT_DATE 
+                WHERE "start" <= CURRENT_DATE
                 AND "end" >= CURRENT_DATE
               """
               with psycopg2.connect("") as connection:
