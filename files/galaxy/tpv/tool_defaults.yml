@@ -46,13 +46,9 @@ tools:
         execute: |
           import psycopg2
 
-          training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
-          training_identifiers =  {
-              training_role.removeprefix("training-")
-              for training_role in training_roles
-          }
-          current_trainings = set()
-          if training_roles:
+          @functools.lru_cache(maxsize=128)
+          def get_current_trainings() -> {}:
+             current_trainings = set()
               query = """
                 SELECT training_identifier
                 FROM training_training
@@ -67,6 +63,14 @@ tools:
                           row[0]
                           for row in result
                       }
+
+          training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
+          training_identifiers =  {
+              training_role.removeprefix("training-")
+              for training_role in training_roles
+          }
+          if training_roles:
+            current_trainings = get_current_trainings()
           if current_trainings & training_identifiers:
               entity.params['requirements'] = '(GalaxyGroup == "compute") || (GalaxyGroup == "tiaas")'
               training_labels = '"' + ", ".join(training_roles) + '"'
