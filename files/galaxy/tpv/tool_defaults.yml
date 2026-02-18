@@ -82,6 +82,19 @@ tools:
           retval
         fail: |
           Invalid 'Remote resources id' selected in the config menu under 'User -> Preferences -> Manage Information -> Use distributed compute resources'. Please reselect either 'default' or an appropriate remote resource then click 'Save' and rerun your job.
+      - id: tool_requires_galaxy
+        if: tool.tool_type in ("data_source", "expression") or tool.requires_galaxy_python_environment
+        # ORG has a more fine-grained alternative, we just run all those tools locally with the venv
+        params:
+          container_override:
+            - type: singularity
+              shell: /bin/sh
+              identifier: /cvmfs/main.galaxyproject.org/singularity/rockylinux:9.5.20241118--0
+        env:
+          - name: SINGULARITYENV_PREPEND_PATH
+            value: $GALAXY_VIRTUAL_ENV/bin
+          - name: SINGULARITYENV_PYTHONPATH
+            value: $GALAXY_LIB
     rank: |
       final_destinations = helpers.weighted_random_sampling(candidate_destinations)
       final_destinations
