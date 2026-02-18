@@ -49,9 +49,26 @@ tools:
           entity.params['requirements'] = '(GalaxyGroup == "compute") || (%s)' % training_expr if training_expr else '(GalaxyGroup == "compute")'
           entity.params['+Group'] = training_labels
           entity.params['accounting_group_user'] = str(user.id)
-      - if: user is None
+      - id: anonymous_user
+        if: user is None
         execute: |
           entity.params['requirements'] = '(GalaxyGroup == "compute")'
+      - id: anonymous_user_with_iteractive_tool
+        if: user is None and tool.tool_type == 'interactive'
+        fail: |
+          Interactive tools require registration. Please log-in or register on https://usegalaxy.eu/login
+
+      - id: interactive_tool
+        if: tool.tool_type == 'interactive'
+        cores: 1
+        mem: 4
+        params:
+          docker_volumes: $defaults
+          container_monitor_result: callback
+        scheduling:
+          require:
+            - docker
+            - embedded-pulsar
       - id: remote_resources
         if: user is not None
         execute: |
@@ -82,6 +99,19 @@ tools:
           retval
         fail: |
           Invalid 'Remote resources id' selected in the config menu under 'User -> Preferences -> Manage Information -> Use distributed compute resources'. Please reselect either 'default' or an appropriate remote resource then click 'Save' and rerun your job.
+      - id: tool_requires_galaxy
+        if: tool.tool_type in ("data_source", "expression") or tool.requires_galaxy_python_environment
+        # ORG has a more fine-grained alternative, we just run all those tools locally with the venv
+        params:
+          container_override:
+            - type: singularity
+              shell: /bin/sh
+              identifier: /cvmfs/main.galaxyproject.org/singularity/rockylinux:9.5.20241118--0
+        env:
+          - name: SINGULARITYENV_PREPEND_PATH
+            value: $GALAXY_VIRTUAL_ENV/bin
+          - name: SINGULARITYENV_PYTHONPATH
+            value: $GALAXY_LIB
     rank: |
       final_destinations = helpers.weighted_random_sampling(candidate_destinations)
       final_destinations
