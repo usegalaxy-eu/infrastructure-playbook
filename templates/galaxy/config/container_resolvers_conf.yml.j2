@@ -4,25 +4,19 @@
 # Run explicit singularity image
 - type: explicit_singularity
 
-# Gets the singularity image from cvac - CVMFS
+# Run explicit docker image
+- type: explicit
+
+# Pull singularity image from cvac - CVMFS
 - type: cached_mulled_singularity
   cache_directory: /cvmfs/singularity.galaxyproject.org/all
   cache_directory_cacher_type: dir_mtime
 
-# Pulls image from quay.io but runs in singularity
+# Pull image from quay.io but runs in singularity
 - type: mulled_singularity
   namespace: biocontainers
   auto_install: true
 
-# run docker explicit image
-- type: explicit
-
 # Get a container from biocontainers and run in docker
 - type: cached_mulled
   namespace: biocontainers
-
-# Resolves container images from quay.io/NAMESPACE/MULLED_HASH and run in docker
-# It should never be used
-- type: mulled
-  namespace: biocontainers
-  auto_install: true
