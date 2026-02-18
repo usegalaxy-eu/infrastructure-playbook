@@ -1,13 +1,12 @@
 ---
 # Config Sample file: https://github.com/galaxyproject/galaxy/blob/dev/lib/galaxy/config/sample/container_resolvers.yml.sample
 
+- type: explicit
+
 # Pull singularity image from cvac - CVMFS
 - type: cached_explicit_singularity
   cache_directory: {{ cache.cache08.path }}/container_cache/singularity/explicit/
   cache_directory_cacher_type: dir_mtime
-
-- type: explicit
-  # only kicks in if `singularity_enabled: false`
 
 - type: cached_mulled_singularity
   cache_directory: /cvmfs/singularity.galaxyproject.org/all/
