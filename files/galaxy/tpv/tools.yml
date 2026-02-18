@@ -78,6 +78,8 @@ tools:
 
   export_remote:
     inherits: _basic_internal_tool
+    # a user exported 100 of files and memory was not enough
+    mem: 8
 
   __DATA_FETCH__:
     inherits: _basic_internal_tool
@@ -148,10 +150,6 @@ tools:
   toolshed.g2.bx.psu.edu/repos/rnateam/dewseq/dewseq/.*:
     cores: 2
     mem: 40
-
-  ## a user exported 100 of files and memory was not enough
-  export_remote:
-    mem: 8
 
   toolshed.g2.bx.psu.edu/repos/rnateam/htseq_clip/htseq_clip/.*:
     cores: 4
