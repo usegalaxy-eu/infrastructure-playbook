@@ -9,8 +9,6 @@
     - secret_group_vars/all.yml
     - mounts/mountpoints.yml
     - mounts/dest/all.yml
-  collections:
-    - devsec.hardening
   pre_tasks:
     - name: Set timezone to Europe/Berlin
       community.general.timezone:

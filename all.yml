@@ -1,6 +1,9 @@
 ---
-- name: Manage authorized SSH keys
+- name: Configure SSH service and manage authorized keys
   hosts: all
-  gather_facts: false
+  gather_facts: true
   roles:
     - role: usegalaxy_eu.ssh_manager
+    - ssh-host-sign
+    - role: devsec.hardening.ssh_hardening
+      become: true
