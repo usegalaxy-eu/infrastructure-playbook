@@ -49,9 +49,26 @@ tools:
           entity.params['requirements'] = '(GalaxyGroup == "compute") || (%s)' % training_expr if training_expr else '(GalaxyGroup == "compute")'
           entity.params['+Group'] = training_labels
           entity.params['accounting_group_user'] = str(user.id)
-      - if: user is None
+      - id: anonymous_user
+        if: user is None
         execute: |
           entity.params['requirements'] = '(GalaxyGroup == "compute")'
+      - id: anonymous_user_with_iteractive_tool
+        if: user is None and tool.tool_type == 'interactive'
+        fail: |
+          Interactive tools require registration. Please log-in or register on https://usegalaxy.eu/login
+
+      - id: interactive_tool
+        if: tool.tool_type == 'interactive'
+        cores: 1
+        mem: 4
+        params:
+          docker_volumes: $defaults
+          container_monitor_result: callback
+        scheduling:
+          require:
+            - docker
+            - embedded-pulsar
       - id: remote_resources
         if: user is not None
         execute: |
