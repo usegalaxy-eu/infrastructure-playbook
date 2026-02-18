@@ -1,22 +1,26 @@
 ---
 # Config Sample file: https://github.com/galaxyproject/galaxy/blob/dev/lib/galaxy/config/sample/container_resolvers.yml.sample
 
-# Run explicit singularity image
-- type: explicit_singularity
-
-# Run explicit docker image
-- type: explicit
-
 # Pull singularity image from cvac - CVMFS
-- type: cached_mulled_singularity
-  cache_directory: /cvmfs/singularity.galaxyproject.org/all
+- type: cached_explicit_singularity
+  cache_directory: {{ cache.cache08.path }}/container_cache/singularity/explicit/
   cache_directory_cacher_type: dir_mtime
 
-# Pull image from quay.io but runs in singularity
+- type: explicit
+  # only kicks in if `singularity_enabled: false`
+
+- type: cached_mulled_singularity
+  cache_directory: /cvmfs/singularity.galaxyproject.org/all/
+  cache_directory_cacher_type: dir_mtime
+
 - type: mulled_singularity
-  namespace: biocontainers
+  # kicks in when the mulled image is not available on CVMFS
+  cache_directory: {{ cache.cache08.path }}/container_cache/singularity/mulled/
+  cache_directory_cacher_type: dir_mtime
   auto_install: true
 
-# Get a container from biocontainers and run in docker
 - type: cached_mulled
-  namespace: biocontainers
+  # only kicks in if `singularity_enabled: false`
+
+- type: mulled
+  # only kicks in if `singularity_enabled: false`
