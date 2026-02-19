@@ -134,6 +134,10 @@
       lineinfile:
         path: "{{ item.uhome }}/.bashrc"
         line: "{{ task_item }}"
+        mode: 0640
+        owner: "{{ item.uname }}"
+        group: "{{ item.gname }}"
+      no_log: true
       loop:
         # ENV's for gxadmin and the galaxy_jwd python script
         - "export GALAXY_CONFIG_DIR={{ bashrc_galaxy_config_dir }}"
@@ -143,6 +147,10 @@
         - "export GALAXY_ROOT={{ bashrc_galaxy_root }}"
         - "export VIRTUAL_ENV={{ bashrc_galaxy_venv_dir }}"
         - "export GALAXY_PULSAR_APP_CONF={{ bashrc_galaxy_pulsar_app_conf }}"
+        - "export TIAAS_DB_USER={{ _tiaas_db_user }}"
+        - "export TIAAS_DB_NAME={{ _tiaas_db_name }}"
+        - "export TIAAS_DB_HOST={{ _tiaas_db_host }}"
+        - "export TIAAS_DB_PASSWORD={{ _tiaas_db_pass }}"
       loop_control:
         loop_var: task_item
 

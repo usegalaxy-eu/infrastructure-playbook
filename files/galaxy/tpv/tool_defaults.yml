@@ -41,14 +41,57 @@ tools:
       reject:
         - offline
     rules:
-      - if: user is not None
+      - id: Send TIaaS jobs to training nodes
+        if: user is not None
         execute: |
+          import os
+          import functools
+          import psycopg2
+          from datetime import date
+
           training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
-          training_expr = " || ".join(['(GalaxyGroup == "%s")' % role for role in training_roles])
           training_labels = '"' + ", ".join(training_roles) + '"'
-          entity.params['requirements'] = '(GalaxyGroup == "compute") || (%s)' % training_expr if training_expr else '(GalaxyGroup == "compute")'
+          entity.params['requirements'] = '(GalaxyGroup == "compute")'
           entity.params['+Group'] = training_labels
           entity.params['accounting_group_user'] = str(user.id)
+
+          if not training_roles:
+              return
+
+          # user trainings
+          user_trainings =  {
+              training_role.removeprefix("training-")
+              for training_role in training_roles
+          }
+
+          # ongoing trainings
+          @functools.lru_cache(maxsize=1)
+          def get_ongoing_trainings(date_) -> set[str]:
+              connection_params = {
+                  "dbname": os.environ.get("TIAAS_DB_NAME"),
+                  "user": os.environ.get("TIAAS_DB_USER"),
+                  "password": os.environ.get("TIAAS_DB_PASSWORD"),
+                  "host": os.environ.get("TIAAS_DB_HOST"),
+              }
+              query = """
+                SELECT training_identifier
+                FROM training_training
+                WHERE "start" <= %s AND "end" >= %
+              """
+              with psycopg2.connect(**connection_params) as connection:
+                  with connection.cursor() as cursor:
+                      cursor.execute(query, (date_, date_))
+                      result = cursor.fetchall()
+                      ongoing_trainings = {
+                          row[0]
+                          for row in result
+                      }
+                      return ongoing_trainings
+          ongoing_trainings = get_ongoing_trainings(date.today())
+
+          if ongoing_trainings & user_trainings:
+              entity.params['requirements'] = '(GalaxyGroup == "compute") || (GalaxyGroup == "tiaas")'
+
       - if: user is None
         execute: |
           entity.params['requirements'] = '(GalaxyGroup == "compute")'
