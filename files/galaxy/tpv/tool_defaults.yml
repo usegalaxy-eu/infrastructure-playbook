@@ -83,7 +83,7 @@ tools:
         fail: |
           Invalid 'Remote resources id' selected in the config menu under 'User -> Preferences -> Manage Information -> Use distributed compute resources'. Please reselect either 'default' or an appropriate remote resource then click 'Save' and rerun your job.
       - id: tool_requires_galaxy
-        if: tool.tool_type in ("data_source", "expression") or tool.requires_galaxy_python_environment
+        if: tool.tool_type in ("expression") or tool.requires_galaxy_python_environment
         # ORG has a more fine-grained alternative, we just run all those tools locally with the venv
         params:
           container_override:
