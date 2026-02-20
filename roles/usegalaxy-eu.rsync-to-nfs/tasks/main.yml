@@ -13,7 +13,6 @@
                 echo "Syncing $dir"
                 rsync -avr \
                   --delete \
-                  ## needed to cleanup folders that we excluded later
                   --delete-excluded \
                   --exclude "node_modules/" \
                   --exclude ".git/" \
@@ -22,6 +21,7 @@
                   --exclude "*.sock" \
                   --exclude "tool_search_index/" \
                   --exclude "container_cache/" \
+                  --exclude "biotools/" \
                   --exclude "/opt/galaxy/mutable-data/cache/" \
                   --exclude "test-data/"
                   $dir/ {{ galaxy_nfs_location }}/$dir/
