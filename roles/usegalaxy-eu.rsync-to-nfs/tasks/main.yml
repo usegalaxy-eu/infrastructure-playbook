@@ -11,7 +11,17 @@
         for dir in {config,custom-tools,mutable-config,mutable-data,server,venv,tool-data}; do
             if [ -d $dir ]; then
                 echo "Syncing $dir"
-                rsync -avr --delete --exclude node_modules --exclude .git --exclude __pycache__ $dir/ {{ galaxy_nfs_location }}/$dir/
+                rsync -avr --delete \
+                  --exclude "node_modules/" \
+                  --exclude ".git/" \
+                  --exclude ".hg/" \
+                  --exclude "__pycache__/" \
+                  --exclude "*.sock" \
+                  --exclude "tool_search_index/" \
+                  --exclude "container_cache/" \
+                  --exclude "/opt/galaxy/mutable-data/cache/" \
+                  --exclude "test-data/"
+                  $dir/ {{ galaxy_nfs_location }}/$dir/
             else
                 echo "Skipping $dir"
             fi
