@@ -12,11 +12,11 @@
   cache_directory: /cvmfs/singularity.galaxyproject.org/all/
   cache_directory_cacher_type: dir_mtime
 
-- type: mulled_singularity
-  # kicks in when the mulled image is not available on CVMFS
-  cache_directory: {{ cache.cache08.path }}/container_cache/singularity/mulled/
-  cache_directory_cacher_type: dir_mtime
-  auto_install: true
+#- type: mulled_singularity
+#  # kicks in when the mulled image is not available on CVMFS
+#  cache_directory: {{ cache.cache08.path }}/container_cache/singularity/mulled/
+#  cache_directory_cacher_type: dir_mtime
+#  auto_install: true
 
 - type: cached_mulled
   # only kicks in if `singularity_enabled: false`
