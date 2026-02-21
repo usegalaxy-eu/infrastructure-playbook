@@ -8,20 +8,47 @@
           exit
         fi
         cd {{ galaxy_root }};
-        for dir in {config,custom-tools,mutable-config,mutable-data,server,venv,tool-data}; do
+        for dir in {config,mutable-config,mutable-data,server,venv,tool-data}; do
             if [ -d $dir ]; then
                 echo "Syncing $dir"
-                rsync -avr --delete --exclude node_modules --exclude .git --exclude __pycache__ $dir/ {{ galaxy_nfs_location }}/$dir/
+                rsync -avr \
+                  --delete \
+                  --delete-excluded \
+                  --exclude "node_modules/" \
+                  --exclude ".git/" \
+                  --exclude ".hg/" \
+                  --exclude "*.sock" \
+                  --exclude "tool_search_index/" \
+                  --exclude "container_cache/" \
+                  --exclude "biotools/" \
+                  --exclude "test-data/" \
+                $dir/ {{ galaxy_nfs_location }}/$dir/
             else
                 echo "Skipping $dir"
             fi
         done;
-        if [ -d shed_tools ]; then
-            echo "Syncing shed_tools"
-            rsync -avr --delete --exclude .hg shed_tools/ {{ galaxy_nfs_location }}/shed_tools/
-        else
-            echo "Skipping shed_tools"
-        fi
+        
+        ## The following two dirs are only adding or removing files, never modifying. So we can use the faster --size-only stradegy
+        for dir in {custom-tools,shed_tools}; do
+        
+            if [ -d $dir ]; then
+                echo "Syncing $dir"
+                rsync -avr \
+                   --size-only \
+                   --whole-file \
+                   --delete \
+                   --delete-excluded \
+                   --exclude "node_modules/" \
+                   --exclude ".git/" \
+                   --exclude ".hg/" \
+                   --exclude "__pycache__/" \
+                   --exclude "*.sock" \
+                   --exclude "test-data/" \
+                $dir/ {{ galaxy_nfs_location }}/$dir/
+          else
+                echo "Skipping $dir"
+          fi
+        done;
     dest: /usr/bin/galaxy-sync-to-nfs
     owner: root
     group: root
