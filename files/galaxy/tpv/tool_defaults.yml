@@ -53,7 +53,7 @@ tools:
         execute: |
           entity.params['requirements'] = '(GalaxyGroup == "compute")'
       - id: remote_resources
-        if: user is not None
+        if: user is not None and (tool.tool_type in ("expression") or tool.requires_galaxy_python_environment)
         execute: |
           from tpv.core.entities import SchedulingTags, Tag, TagType
 
@@ -99,16 +99,6 @@ tools:
         scheduling:
           require:
             - internal
-        execute: |
-            user_preferences = user.extra_preferences
-            pulsar_tag = user_preferences.get("distributed_compute|remote_resources", "None")
-
-            if pulsar_tag != "None":
-                entity.tpv_tags.require = [
-                    tag
-                    for tag in (entity.tpv_tags.require or [])
-                    if tag != pulsar_tag
-                ]
     rank: |
       final_destinations = helpers.weighted_random_sampling(candidate_destinations)
       final_destinations
