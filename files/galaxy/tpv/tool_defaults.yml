@@ -98,7 +98,7 @@ tools:
         # Workaround from 23/02/2026
         scheduling:
           require:
-            - upload
+            - internal
         execute: |
             user_preferences = user.extra_preferences
             pulsar_tag = user_preferences.get("distributed_compute|remote_resources", "None")
