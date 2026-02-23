@@ -85,16 +85,30 @@ tools:
       - id: tool_requires_galaxy
         if: tool.tool_type in ("expression") or tool.requires_galaxy_python_environment
         # ORG has a more fine-grained alternative, we just run all those tools locally with the venv
-        params:
-          container_override:
-            - type: singularity
-              shell: /bin/sh
-              identifier: /cvmfs/main.galaxyproject.org/singularity/rockylinux:9.5.20241118--0
-        env:
-          - name: SINGULARITYENV_PREPEND_PATH
-            value: $GALAXY_VIRTUAL_ENV/bin
-          - name: SINGULARITYENV_PYTHONPATH
-            value: $GALAXY_LIB
+        # params:
+        #   container_override:
+        #     - type: singularity
+        #       shell: /bin/sh
+        #       identifier: /cvmfs/main.galaxyproject.org/singularity/rockylinux:9.5.20241118--0
+        # env:
+        #   - name: SINGULARITYENV_PREPEND_PATH
+        #     value: $GALAXY_VIRTUAL_ENV/bin
+        #   - name: SINGULARITYENV_PYTHONPATH
+        #     value: $GALAXY_LIB
+        # Workaround from 23/02/2026
+        scheduling:
+          require:
+            - upload
+        execute: |
+            user_preferences = user.extra_preferences
+            pulsar_tag = user_preferences.get("distributed_compute|remote_resources", "None")
+
+            if pulsar_tag != "None":
+                entity.tpv_tags.require = [
+                    tag
+                    for tag in (entity.tpv_tags.require or [])
+                    if tag != pulsar_tag
+                ]
     rank: |
       final_destinations = helpers.weighted_random_sampling(candidate_destinations)
       final_destinations
