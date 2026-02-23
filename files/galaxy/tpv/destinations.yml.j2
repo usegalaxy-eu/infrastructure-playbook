@@ -426,6 +426,91 @@ destinations:
   # LOCAL CONDOR DESTINATIONS #
   #############################
 
+
+  condor_container_magic:
+    runner: condor
+    max_accepted_cores: 64
+    max_accepted_mem: 1000
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    params:
+      # we could set this to false, and usually, afaik, this would then fallback to conda-resolution, however, I put in here a `container:` fallback, so maybe we can leave that to true
+      require_container: true
+      #
+      # singularity config
+      #
+      singularity_enabled: true
+      singularity_volumes: "$_CONDOR_SCRATCH_DIR:rw,
+        $job_directory:rw,
+        $tool_directory:ro,
+        $job_directory/outputs:rw,
+        $working_directory:rw,
+        $_GALAXY_JOB_TMP_DIR:/tmp:rw,
+        {{ galaxy_volumes(exclude_volumes=['db', 'dnb04', 'dnb-ds01', '5']) }}
+        {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
+        {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
+        {{ tools.tools.path }}/:{{ tools.tools.docker_perm }}"
+
+      # this container will not be used-because we have a fall-back already in place under `container:`
+      singularity_default_container_id: "{{ cvmfs.singularity.path }}/all/centos:8.3.2011"
+      #
+      # Docker config
+      #
+      docker_enabled: true
+      docker_set_user: ""
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,
+        $defaults,
+        {{ galaxy_volumes(exclude_volumes=['dnb04', 'dnb-ds01']) }}
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+
+      # let's move our config to destinations and forget about the global YAML file
+      container_resolvers:
+        ## use Docker if <container type="docker" and use Singularity if <container type="singularity"
+        - type: explicit
+
+        ## it is so nice, they do it twice, with different dirs
+        - type: cached_mulled_singularity
+          cache_directory: /cvmfs/singularity.galaxyproject.org/all/
+          cache_directory_cacher_type: dir_mtime
+        - type: cached_mulled_singularity
+          cache_directory: {{ cache.cache08.path }}/container_cache/singularity/mulled/
+          cache_directory_cacher_type: dir_mtime
+
+        ## this will create a container, the "auto_install: false" will ensure that the function returns a `path` to a sif file and NOT a docker://quay.io/ URL (as with auto_install: true)
+        - type: mulled_singularity
+          cache_directory: {{ cache.cache08.path }}/container_cache/singularity/mulled/
+          auto_install: false
+
+      # If no resolver finds a container, this base container will be taken and resolve_dependencies=true will force conda deps usage
+      ## "container" is a fallback, when no resolver is working - in contrast "container_override" is forcing to come before the any resolver
+      container:
+        - type: singularity
+          shell: "/bin/bash"
+          resolve_dependencies: true
+          # Use Centos 7 as a fallback container here
+          # Most times this fallback is needed for very old tools
+          # Centos 7 has libncurses.so.5.9 and python 2.7
+          identifier: "/cvmfs/main.galaxyproject.org/singularity/usegalaxy.org-legacy-environment--0"
+
+      scheduling:
+        accept:
+          - foo_test_me
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   condor_container:
     runner: condor
     max_accepted_cores: 64
