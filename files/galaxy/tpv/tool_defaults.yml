@@ -53,7 +53,7 @@ tools:
         execute: |
           entity.params['requirements'] = '(GalaxyGroup == "compute")'
       - id: remote_resources
-        if: user is not None and (tool.tool_type in ("expression") or tool.requires_galaxy_python_environment)
+        if: user is not None and not (tool.tool_type in ("expression") or tool.requires_galaxy_python_environment)
         execute: |
           from tpv.core.entities import SchedulingTags, Tag, TagType
 
