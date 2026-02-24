@@ -61,7 +61,12 @@ tools:
           # ongoing trainings
           @functools.lru_cache(maxsize=1)
           def get_ongoing_trainings(date_) -> set[str]:
-              connection_params = app.config.tiaas_db_connection
+              connection_params = {
+                  "dbname": "{{ _tiaas_db_name }}",
+                  "user": "{{ _tiaas_db_user }}",
+                  "password": "{{ _tiaas_db_pass }}",
+                  "host": "{{ _tiaas_db_host }}",
+              }
               query = """
                 SELECT training_identifier
                 FROM training_training
