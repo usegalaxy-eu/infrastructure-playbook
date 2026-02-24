@@ -46,9 +46,11 @@ handling:
 {% endif %}
 {% if galaxy_systemd_handlers is defined and galaxy_systemd_handlers > 0 %}
   processes:
-{% for n in range(galaxy_systemd_handlers) %}
+{% for n in range(galaxy_systemd_handlers) - 1 %}
     {{ galaxy_systemd_handler_prefix }}_{{ n }}:
 {% endfor %}
+    {{ galaxy_systemd_handler_prefix }}_admin:
+        tags: [admin]
 {% elif galaxy_systemd_handlers is defined and galaxy_systemd_handlers == 0 %}
   processes:
     DUMMY_PLACEHOLDER_FOR_HANDLER:
