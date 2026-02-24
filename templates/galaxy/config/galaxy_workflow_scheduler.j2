@@ -2,8 +2,9 @@
 <workflow_schedulers default="core">
     <core id="core" />
     <handlers assign_with="db-preassign" default="schedulers">
-{% for n in range(galaxy_workflow_scheduler_count) %}
+{% for n in range(galaxy_workflow_scheduler_count) - 1 %}
         <handler id="{{ galaxy_systemd_workflow_scheduler_prefix }}_{{ n }}" tags="schedulers"/>
 {% endfor %}
+        <handler id="{{ galaxy_systemd_workflow_scheduler_prefix }}_admin" tags="admin"/>
     </handlers>
 </workflow_schedulers>
