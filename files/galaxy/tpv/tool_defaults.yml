@@ -73,15 +73,22 @@ tools:
                 FROM training_training
                 WHERE "start" <= %s AND "end" >= %s
               """
-              with psycopg2.connect(**connection_params) as connection:
-                  with connection.cursor() as cursor:
-                      cursor.execute(query, (date_, date_))
-                      result = cursor.fetchall()
-                      ongoing_trainings = {
-                          row[0]
-                          for row in result
-                      }
-                      return ongoing_trainings
+              try:
+                  with psycopg2.connect(**connection_params) as connection:
+                      with connection.cursor() as cursor:
+                          cursor.execute(query, (date_, date_))
+                          result = cursor.fetchall()
+                          ongoing_trainings = {
+                              row[0]
+                              for row in result
+                          }
+                          return ongoing_trainings
+              except OperationalError as e:
+                  log.error(
+                      "Querying TIaaS database failed: %s",
+                      unicodify(e),
+                  )
+                  return set()
           ongoing_trainings = get_ongoing_trainings(date.today())
 
           if ongoing_trainings & user_trainings:
