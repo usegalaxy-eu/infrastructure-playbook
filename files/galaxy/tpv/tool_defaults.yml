@@ -71,7 +71,7 @@ tools:
               query = """
                 SELECT training_identifier
                 FROM training_training
-                WHERE "start" <= %s AND "end" >= %
+                WHERE "start" <= %s AND "end" >= %s
               """
               with psycopg2.connect(**connection_params) as connection:
                   with connection.cursor() as cursor:
