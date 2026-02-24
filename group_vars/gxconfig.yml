@@ -34,6 +34,16 @@ base_app_main: &BASE_APP_MAIN
   # <data_dir>.
   #cache_dir: cache
 
+  # TIaaS Database connection
+  # This is not upstream, we use this to check if a user participates
+  # in an ongoing training event.
+  tiaas_db_connection:
+    host: _tiaas_db_host
+    dbname: _tiaas_db_name
+    user: _tiaas_db_user
+    port: _tiaas_db_port
+    password: _tiaas_db_pass
+
   # By default, Galaxy uses a SQLite database at
   # '<data_dir>/universe.sqlite'. You may use a SQLAlchemy connection
   # string to specify an external database instead.
