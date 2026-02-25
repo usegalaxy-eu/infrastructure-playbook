@@ -55,9 +55,6 @@ tools:
           entity.params['+Group'] = training_labels
           entity.params['accounting_group_user'] = str(user.id)
 
-          if not training_roles:
-              return
-
           # ongoing trainings
           @functools.lru_cache(maxsize=1)
           def get_ongoing_trainings(date_) -> set[str]:
