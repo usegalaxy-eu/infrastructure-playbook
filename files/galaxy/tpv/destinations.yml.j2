@@ -436,6 +436,11 @@ destinations:
     max_accepted_mem: 1000
     min_accepted_gpus: 0
     max_accepted_gpus: 0
+    env:
+      - name: SINGULARITY_CACHEDIR
+        value: /scratch/singularity/
+      - name: APPTAINER_CACHEDIR
+        value: /scratch/singularity/
     params:
       # we could set this to false, and usually, afaik, this would then fallback to conda-resolution, however, I put in here a `container:` fallback, so maybe we can leave that to true
       require_container: true
@@ -554,6 +559,11 @@ destinations:
     max_accepted_mem: 500
     min_accepted_gpus: 1
     max_accepted_gpus: 1
+    env:
+      - name: SINGULARITY_CACHEDIR
+        value: /scratch/singularity/
+      - name: APPTAINER_CACHEDIR
+        value: /scratch/singularity/
     scheduling:
       require:
         - singularity
