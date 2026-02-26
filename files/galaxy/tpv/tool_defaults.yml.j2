@@ -98,7 +98,7 @@ tools:
         if: user is None
         execute: |
           entity.params['requirements'] = '(GalaxyGroup == "compute")'
-      - id: anonymous_user_with_iteractive_tool
+      - id: interactive_tool_require_registration
         if: user is None and getattr(tool, 'tool_type', None) == 'interactive'
         fail: |
           Interactive tools require registration. Please log-in or register on https://usegalaxy.eu/login
