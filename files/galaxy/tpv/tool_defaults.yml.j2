@@ -104,7 +104,7 @@ tools:
           Interactive tools require registration. Please log-in or register on https://usegalaxy.eu/login
 
       - id: interactive_tool
-        if: tool.tool_type == 'interactive'
+        if: getattr(tool, 'tool_type', None) == 'interactive'
         cores: 1
         mem: 4
         params:
