@@ -94,7 +94,8 @@ tools:
           if ongoing_trainings & user_trainings:
               entity.params['requirements'] = '(GalaxyGroup == "compute") || (GalaxyGroup == "tiaas")'
 
-      - if: user is None
+      - id: anonymous_user
+        if: user is None
         execute: |
           entity.params['requirements'] = '(GalaxyGroup == "compute")'
       - id: anonymous_user_with_iteractive_tool
