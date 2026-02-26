@@ -274,7 +274,7 @@ container_resolvers:
     cache_directory: /cvmfs/singularity.galaxyproject.org/all/
     cache_directory_cacher_type: dir_mtime
   - type: mulled_singularity
-    cache_directory: /dev/null
+    cache_directory: {{ cache.cache08.path }}/container_cache/singularity/mulled/
     # the `cache_directory` setting may break the resolver if
     # `singularity` is installed to sn09; in that case this
     # configuration should be revised
