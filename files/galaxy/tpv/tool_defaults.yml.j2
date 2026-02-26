@@ -115,7 +115,7 @@ tools:
             - docker
             - embedded-pulsar
       - id: remote_resources
-        if: user is not None and not (tool.tool_type in  ["expression", "data_source"] or tool.requires_galaxy_python_environment)
+        if: user is not None and not (getattr(tool, 'tool_type', None) in ["expression", "data_source"] or getattr(tool, 'requires_galaxy_python_environment', False))
         execute: |
           from tpv.core.entities import SchedulingTags, Tag, TagType
 
