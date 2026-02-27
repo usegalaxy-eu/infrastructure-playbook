@@ -145,7 +145,7 @@ jobs:
 
           shopt -s nullglob
 
-          ansible-playbook --connection=local "$BASENAME"
+          ansible-playbook --connection=local --diff "$BASENAME"
 
       - name: Run Total Perspective Vortex linter.
         run: |
