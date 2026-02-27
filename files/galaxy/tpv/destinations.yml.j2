@@ -18,7 +18,6 @@
         $working_directory:rw,
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}
 {%- endmacro %}
-
 {% macro pulsar_cz_container_resolvers() -%}
 container_resolvers:
   - type: explicit_singularity
