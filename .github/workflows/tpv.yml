@@ -325,13 +325,13 @@ jobs:
           BASENAME="$(basename $PLAYBOOK)"
           DIRNAME="$(dirname $PLAYBOOK)"
           cd "$DIRNAME"
-          ansible-playbook --connection=local "$BASENAME"
+          ansible-playbook --connection=local --diff "$BASENAME"
 
           PLAYBOOK="${{ steps.playbooks.outputs.new }}"
           BASENAME="$(basename $PLAYBOOK)"
           DIRNAME="$(dirname $PLAYBOOK)"
           cd "$DIRNAME"
-          ansible-playbook --connection=local "$BASENAME"
+          ansible-playbook --connection=local --diff "$BASENAME"
 
       - name: Change paths of TPV configuration files in job_conf.yml
         shell: python -u {0}
