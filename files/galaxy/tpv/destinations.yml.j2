@@ -6,6 +6,7 @@
             {%- elif 'db' in vol.name %}
         {{ vol.path }}/databases/:{{ vol.docker_perm }},
             {%- endif %}
+        {%- endfor %}
         {%- for vol in cache.values() %}
             {%- if 'cache' in vol.name %}
         {{ vol.path }}/object_store_cache/:{{ vol.docker_perm }},
