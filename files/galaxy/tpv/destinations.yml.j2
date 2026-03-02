@@ -4,6 +4,9 @@
             {%- if vol.name not in exclude_volumes %}
         {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
             {%- endif %}
+            {%- if 'db' in vol.name %}
+        {{ vol.path }}/databases/:{{ vol.docker_perm }},
+            {%- endif %}
         {%- endfor %}
         {%- for vol in cache.values() %}
             {%- if 'cache' in vol.name %}
