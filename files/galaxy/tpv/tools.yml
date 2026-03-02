@@ -742,3 +742,10 @@ tools:
     mem: 60
     params:
       docker_run_extra_arguments: --shm-size 22g
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/racon/racon/.*:
+    # This tool requires a GPU in the tool wrapper, this is supported since TPV v3.1.0
+    # see https://github.com/galaxyproject/total-perspective-vortex/blob/v3.1.0/tpv/core/resource_requirements.py
+    scheduling:
+      require:
+        - singularity
