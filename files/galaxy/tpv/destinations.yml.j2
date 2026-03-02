@@ -3,8 +3,7 @@
         {%- for vol in dnb.values() %}
             {%- if vol.name not in exclude_volumes and 'db' not in vol.name %}
         {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
-            {%- endif %}
-            {%- if 'db' in vol.name %}
+            {%- elif 'db' in vol.name %}
         {{ vol.path }}/databases/:{{ vol.docker_perm }},
             {%- endif %}
         {%- for vol in cache.values() %}
