@@ -2,10 +2,10 @@
 # The databases are stored under /data/db/databases/, thus the exception adding the path
 {% macro galaxy_volumes(exclude_volumes) -%}
         {%- for vol in dnb.values() %}
-            {%- if 'db' in vol.name %}
-        {{ vol.path }}/databases/:{{ vol.docker_perm }},
-            {%- elif vol.name not in exclude_volumes %}
+            {%- if vol.name not in exclude_volumes and 'db' not in vol.name %}
         {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
+            {%- elif 'db' in vol.name %}
+        {{ vol.path }}/databases/:{{ vol.docker_perm }},
             {%- endif %}
         {%- endfor %}
         {%- for vol in cache.values() %}
