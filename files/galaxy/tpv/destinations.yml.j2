@@ -511,12 +511,6 @@ destinations:
     min_accepted_gpus: 1
     max_accepted_gpus: 4
     params:
-      docker_sudo: false
-      docker_net: bridge
-      docker_auto_rm: true
-      outputs_to_working_directory: false
-      container_monitor_result: callback
-
       requirements: 'GalaxyGroup == "pxe-gpu"'
       docker_run_extra_arguments: "{entity.params.get('docker_run_extra_arguments') or ''} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
       singularity_run_extra_arguments: "{entity.params.get('singularity_run_extra_arguments') or ''} --nv --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
