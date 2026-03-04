@@ -457,6 +457,8 @@ destinations:
       - name: APPTAINER_CACHEDIR
         value: /scratch/singularity/
     params:
+      request_gpus: "{gpus or 0}"
+
       # we could set this to false, and usually, afaik, this would then fallback to conda-resolution, however, I put in here a `container:` fallback, so maybe we can leave that to true
       require_container: true
       #
@@ -502,6 +504,35 @@ destinations:
         - docker
         - singularity
 
+  condor_container_gpu:
+    inherits: condor_container
+    max_accepted_cores: 128
+    max_accepted_mem: 500
+    min_accepted_gpus: 1
+    max_accepted_gpus: 4
+    params:
+      docker_sudo: false
+      docker_net: bridge
+      docker_auto_rm: true
+      outputs_to_working_directory: false
+      container_monitor_result: callback
+
+      requirements: 'GalaxyGroup == "pxe-gpu"'
+      docker_run_extra_arguments: "{entity.params.get('docker_run_extra_arguments') or ''} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
+      singularity_run_extra_arguments: "{entity.params.get('singularity_run_extra_arguments') or ''} --nv --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
+    env:
+      GPU_AVAILABLE: 1
+
+  # This means a GPU can be shared by max 4 jobs at the same time
+  condor_container_gpu_divide4:
+    inherits: condor_container_gpu
+    max_accepted_gpus: 1
+    params:
+      requirements: 'GalaxyGroup == "pxe-gpu-div4"'
+    scheduling:
+      require:
+        - gpu-divided
+
   condor_singularity_with_conda:
     inherits: basic_singularity_destination
     runner: condor
@@ -536,53 +567,3 @@ destinations:
     scheduling:
       require:
         - internal
-
-  condor_docker_gpu_pxe:
-    inherits: basic_docker_destination
-    # shorter than inheriting from condor_gpu
-    runner: condor
-    max_accepted_cores: 128
-    max_accepted_mem: 500
-    min_accepted_gpus: 1
-    max_accepted_gpus: 4
-    scheduling:
-      # Try to make this the default GPU destination if a tool is untagged (e.g. from upstream)
-      accept:
-        - docker
-    env:
-      GPU_AVAILABLE: 1
-    params:
-      requirements: 'GalaxyGroup == "pxe-gpu"'
-      request_gpus: "{gpus or 0}"
-      docker_run_extra_arguments: "{entity.params.get('docker_run_extra_arguments') or ''} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
-
-  # This means a GPU can be shared by max 4 jobs at the same time
-  condor_docker_gpu_pxe_divide4:
-    inherits: condor_docker_gpu_pxe
-    max_accepted_gpus: 1
-    params:
-      requirements: 'GalaxyGroup == "pxe-gpu-div4"'
-    scheduling:
-      require:
-        - gpu-divided
-
-  condor_singularity_gpu_pxe:
-    inherits: basic_singularity_destination
-    # shorter than inheriting from condor_gpu
-    runner: condor
-    max_accepted_cores: 128
-    max_accepted_mem: 500
-    min_accepted_gpus: 1
-    max_accepted_gpus: 1
-    env:
-      - name: SINGULARITY_CACHEDIR
-        value: /scratch/singularity/
-      - name: APPTAINER_CACHEDIR
-        value: /scratch/singularity/
-    scheduling:
-      require:
-        - singularity
-    params:
-      requirements: 'GalaxyGroup == "pxe-gpu"'
-      request_gpus: "{gpus or 0}"
-      singularity_run_extra_arguments: "{entity.params.get('singularity_run_extra_arguments') or ''} --nv --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
