@@ -522,10 +522,13 @@ destinations:
     inherits: condor_container_gpu
     max_accepted_gpus: 1
     params:
+      singularity_enabled: false  # sharing GPUs has not been tested with Singularity
       requirements: 'GalaxyGroup == "pxe-gpu-div4"'
     scheduling:
       require:
         - gpu-divided
+      reject:
+        - singularity  # sharing GPUs has not been tested with Singularity
 
   condor_singularity_with_conda:
     inherits: basic_singularity_destination
