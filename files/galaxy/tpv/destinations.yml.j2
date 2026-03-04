@@ -1,7 +1,11 @@
 #jinja2: trim_blocks: True, lstrip_blocks: True
+# The databases are stored under /data/db/databases/, thus the exception adding the path
 {% macro galaxy_volumes(exclude_volumes) -%}
         {%- for vol in dnb.values() %}
             {%- if vol.name not in exclude_volumes %}
+                {%- if 'db' in vol.name %}
+        {{ vol.path }}/databases/:{{ vol.docker_perm }},
+                {%- endif %}
         {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
             {%- endif %}
         {%- endfor %}
