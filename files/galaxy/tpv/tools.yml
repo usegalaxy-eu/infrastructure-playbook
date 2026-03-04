@@ -91,9 +91,6 @@ tools:
     env:
       TEMP: /data/1/galaxy_db/tmp
 
-  toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/.*:
-    inherits: _basic_gpu_resource_param_tool
-
   toolshed.g2.bx.psu.edu/repos/bgruening/tabpfn/tabpfn/.*:
     inherits: _basic_gpu_resource_param_tool
     # This tool is using git to get a huggingface model, it seems that git is easily getting into a locked state on NFS.
@@ -751,6 +748,7 @@ tools:
         - singularity
 
   toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/.*:
+    inherits: _basic_gpu_resource_param_tool
     scheduling:
       require:
         - singularity
