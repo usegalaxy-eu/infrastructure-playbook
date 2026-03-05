@@ -14,6 +14,10 @@ tools:
         - conda
         - singularity
 
+  # existing singularity image /cvmfs/singularity.galaxyproject.org/all/miranda:3.3a--h7b50bb2_9 doesn't seem to provide python
+  # see https://usegalaxy.eu/datasets/26c75dcccb616ac864833e86f1ffda4a/details
+  toolshed.g2.bx.psu.edu/repos/tgac/miranda/miranda/3.3a:
+    inherits: _conda_in_container
 
   # Quick fix for the last bug fix/ tool doens't finish running
   toolshed.g2.bx.psu.edu/repos/bgruening/canu/canu/2.3\+galaxy0:
