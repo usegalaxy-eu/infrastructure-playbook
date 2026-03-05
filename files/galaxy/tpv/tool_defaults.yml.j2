@@ -94,9 +94,26 @@ tools:
           if ongoing_trainings & user_trainings:
               entity.params['requirements'] = '(GalaxyGroup == "compute") || (GalaxyGroup == "tiaas")'
 
-      - if: user is None
+      - id: anonymous_user
+        if: user is None
         execute: |
           entity.params['requirements'] = '(GalaxyGroup == "compute")'
+      - id: interactive_tool_require_registration
+        if: user is None and getattr(tool, 'tool_type', None) == 'interactive'
+        fail: |
+          Interactive tools require registration. Please log-in or register on https://usegalaxy.eu/login
+
+      - id: interactive_tool
+        if: getattr(tool, 'tool_type', None) == 'interactive'
+        cores: 1
+        mem: 4
+        params:
+          docker_volumes: $defaults
+          container_monitor_result: callback
+        scheduling:
+          require:
+            - docker
+            - embedded-pulsar
       - id: remote_resources
         if: user is not None and not (getattr(tool, 'tool_type', None) in ["expression", "data_source"] or getattr(tool, 'requires_galaxy_python_environment', False))
         execute: |
