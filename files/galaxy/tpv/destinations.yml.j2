@@ -5,7 +5,6 @@
             {%- if vol.name not in exclude_volumes %}
                 {%- if 'db' in vol.name %}
         {{ vol.path }}/databases/:{{ vol.docker_perm }},
-        {{ vol.path }}/data_managers/:{{ vol.docker_perm }},
                 {%- endif %}
         {{ vol.path }}/galaxy_db/:{{ vol.docker_perm }},
             {%- endif %}
