@@ -219,7 +219,7 @@ nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
 dynmotd_custom:
   - name: Condor
     command: 'condor_q -totals | tail -n 2'
-
+dynmotd_extra_text: "{{ disclaimer_text }}"
 # TPV Script
 tpv_config_dir_name: total_perspective_vortex
 
