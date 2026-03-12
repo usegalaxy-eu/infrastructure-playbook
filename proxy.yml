@@ -6,8 +6,6 @@
     hostname: proxy.galaxyproject.eu
   vars_files:
     - secret_group_vars/all.yml
-  collections:
-    - devsec.hardening
   pre_tasks:
     - name: Set default version of Python
       alternatives:
