@@ -2,10 +2,10 @@
 set bootsrv {{ hostvars['dnbd3-primary.galaxyproject.eu']['ansible_default_ipv4']['address'] }}
 set rootdir netboot
 
-kernel http://${bootsrv}/${rootdir}/kernel || shell
-initrd http://${bootsrv}/${rootdir}/initrd || shell
+kernel http://${bootsrv}/${rootdir}/kernel.r{{ vgcn_image_revision_id }} || shell
+initrd http://${bootsrv}/${rootdir}/initrd.r{{ vgcn_image_revision_id }} || shell
 
-imgargs kernel slxprot=http slxsrv={{ hostvars['dnbd3-primary.galaxyproject.eu']['ansible_default_ipv4']['address'] }} slxbase=netboot BOOTIF=01-${mac}
+imgargs kernel.r{{ vgcn_image_revision_id }} slxprot=http slxsrv={{ hostvars['dnbd3-primary.galaxyproject.eu']['ansible_default_ipv4']['address'] }} slxbase=netboot BOOTIF=01-${mac}
 
 # hostname=${hostname} console=tty0 || shell
 boot || shell
