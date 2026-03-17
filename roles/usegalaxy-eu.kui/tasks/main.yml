@@ -1,0 +1,21 @@
+---
+- name: Add Google Cloud SDK repo
+  ansible.builtin.yum_repository:
+    name: google-cloud-cli
+    description: Google Cloud CLI
+    baseurl: https://packages.cloud.google.com/yum/repos/cloud-sdk-el9-x86_64
+    enabled: true
+    gpgcheck: true
+    repo_gpgcheck: false
+    gpgkey: https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    file: google-cloud-sdk
+
+- name: Install google-cloud-cli
+  ansible.builtin.package:
+    name: google-cloud-cli
+    state: present
+
+- name: Clone kui repository
+  ansible.builtin.git:
+    repo: https://github.com/galaxyproject/kui
+    dest: /opt/galaxy/kui
