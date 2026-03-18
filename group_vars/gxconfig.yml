@@ -2802,7 +2802,7 @@ base_app_main: &BASE_APP_MAIN
   # automatically install these dependencies if the tool_dependency_dir
   # is properly configured in the galaxy.yml file. This option should be
   # set to false if containerized versions of tools are used.
-  #install_tool_dependencies: true
+  install_tool_dependencies: false
 
   # Set the default value in the Admin UI to automatically install
   # repository dependencies when installing tools from the Tool Shed.
@@ -2811,7 +2811,7 @@ base_app_main: &BASE_APP_MAIN
   # suites. Repository dependencies ensure that all necessary components
   # are installed for the tool (or suite) to work correctly within the
   # Galaxy environment.
-  #install_repository_dependencies: true
+  install_repository_dependencies: false
 
   # Set the default value in the Admin UI to automatically install
   # resolver dependencies when installing tools from the Tool Shed.
@@ -2820,7 +2820,7 @@ base_app_main: &BASE_APP_MAIN
   # Galaxy uses dependency resolvers (e.g., Conda) to determine how to
   # satisfy these dependencies. This option should be set to false if
   # containerized versions of tools are used.
-  #install_resolver_dependencies: true
+  install_resolver_dependencies: false
 
   # Enables the cleanup of failed Galaxy job's working directories. Runs
   # in a Celery task.
