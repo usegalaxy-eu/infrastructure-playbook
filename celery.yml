@@ -47,6 +47,8 @@
             mode: "0644"
   roles:
     - geerlingguy.repo-epel
+    - role: artis3n.tailscale
+      when: inventory_hostname == "celery-1.galaxyproject.eu"
     - role: usegalaxy_eu.handy.os_setup
       vars:
         enable_remap_user: true
