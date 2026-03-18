@@ -30,7 +30,7 @@
       block:
         - name: Ensure systemd override directory exists
           ansible.builtin.file:
-            dest: /etc/systemd/system/celery-beat.service.d
+            dest: /etc/systemd/system/galaxy-celery-beat.service.d
             state: directory
             owner: root
             group: root
@@ -38,7 +38,7 @@
 
         - name: Deploy systemd override file
           ansible.builtin.copy:
-            dest: /etc/systemd/system/celery-beat.service.d/override.conf
+            dest: /etc/systemd/system/galaxy-celery-beat.service.d/override.conf
             content: |
               [Unit]
               ConditionHost=celery-0.bi.privat
