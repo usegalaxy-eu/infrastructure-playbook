@@ -15,7 +15,8 @@
     name: google-cloud-cli
     state: present
 
-- name: Clone kui repository
-  ansible.builtin.git:
-    repo: https://github.com/galaxyproject/kui
-    dest: /opt/galaxy/kui
+- name: Copy KUI script
+  ansible.builtin.copy:
+    src: kui.sh
+    dest: /opt/kui/kui.sh
+    mode: '0755'
