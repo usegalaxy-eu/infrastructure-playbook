@@ -24,6 +24,17 @@
         sysctl_set: true
         state: present
         reload: true
+
+    - name: Deploy systemd override to run Celery beat only on one host
+      # remove this file before removing this task
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/celery-beat.service.d/override.conf
+        content: |
+          [Unit]
+          ConditionHost=celery-0.bi.privat
+        owner: root
+        group: root
+        mode: "0644"
   roles:
     - artis3n.tailscale
     - role: usegalaxy_eu.handy.os_setup
