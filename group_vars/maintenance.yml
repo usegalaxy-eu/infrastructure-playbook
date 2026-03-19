@@ -172,16 +172,6 @@ fsm_cron_tasks:
     dow: "*"
     job: "/usr/bin/gxadmin galaxy cleanup 60"
     user: "{{ fsm_galaxy_user.username }}"
-  kui:
-    enable: true
-    name: "KUI data update"
-    minute: 0
-    hour: "0"
-    dom: "1"
-    month: "*"
-    dow: "*"
-    job: "/usr/bin/bash /opt/kui/kui.sh"
-    user: "{{ fsm_galaxy_user.username }}"
 fsm_htcondor_enable: true
 
 # Role: dj-wasabi.telegraf

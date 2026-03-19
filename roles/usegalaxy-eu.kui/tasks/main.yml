@@ -20,3 +20,12 @@
     src: kui.sh
     dest: /opt/kui/kui.sh
     mode: '0755'
+
+- name: Run KUI script monthly
+  ansible.builtin.cron:
+    name: Run KUI script
+    job: /opt/kui/kui.sh
+    day: "1"
+    hour: "0"
+    minute: "0"
+    user: galaxy
