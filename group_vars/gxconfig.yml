@@ -2636,7 +2636,7 @@ base_app_main: &BASE_APP_MAIN
 
   # If set to a non-0 value, upper limit on number of tasks that can be
   # executed per user per second.
-  #celery_user_rate_limit: 0.0
+  celery_user_rate_limit: 1
 
   # Allow disabling pbkdf2 hashing of passwords for legacy situations.
   # This should normally be left enabled unless there is a specific
