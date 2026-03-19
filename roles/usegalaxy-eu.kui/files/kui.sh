@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Script retrieved from the Galaxy Project's KUI GitHub repository
+# https://github.com/galaxyproject/kui/blob/091fbf678c84085a7689be0120c722042812e8a7/kui.sh
+
 # Query a Galaxy database to extract values for populating the Key Usage Indicators dashboard, available at gxy.io/kui.
 
 # Before running this script, update the varaibles at top as needed.
