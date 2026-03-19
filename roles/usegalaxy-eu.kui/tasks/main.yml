@@ -15,6 +15,14 @@
     name: google-cloud-cli
     state: present
 
+- name: Ensure /opt/kui directory exists
+  ansible.builtin.file:
+    path: /opt/kui
+    state: directory
+    owner: galaxy
+    group: galaxy
+    mode: '0755'
+
 - name: Copy KUI script
   ansible.builtin.copy:
     src: kui.sh
