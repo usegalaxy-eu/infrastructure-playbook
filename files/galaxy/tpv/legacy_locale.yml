@@ -1,0 +1,669 @@
+# Tools that must run in conda even when using container for isolation.
+tools:
+  _legacy_locale:
+    abstract: true
+    env:
+      - name: SINGULARITYENV_LC_ALL
+        value: C
+
+  aggregate_scores_in_intervals2: {inherits: _legacy_locale}
+  axt_to_concat_fasta: {inherits: _legacy_locale}
+  axt_to_fasta: {inherits: _legacy_locale}
+  bed2gff1: {inherits: _legacy_locale}
+  bed_to_bigBed: {inherits: _legacy_locale}
+  biopython_base_distribution: {inherits: _legacy_locale}
+  ChangeCase: {inherits: _legacy_locale}
+  codon_count: {inherits: _legacy_locale}
+  comp1: {inherits: _legacy_locale}
+  CONVERTER_bed_to_gff_0: {inherits: _legacy_locale}
+  CONVERTER_cml_to_smiles: {inherits: _legacy_locale}
+  CONVERTER_fasta_to_fai: {inherits: _legacy_locale}
+  CONVERTER_fasta_to_tabular: {inherits: _legacy_locale}
+  CONVERTER_gff_to_fli_0: {inherits: _legacy_locale}
+  CONVERTER_gff_to_interval_index_0: {inherits: _legacy_locale}
+  CONVERTER_interval_to_bed_0: {inherits: _legacy_locale}
+  CONVERTER_interval_to_bed12_0: {inherits: _legacy_locale}
+  CONVERTER_interval_to_bed6_0: {inherits: _legacy_locale}
+  CONVERTER_interval_to_bedstrict_0: {inherits: _legacy_locale}
+  CONVERTER_len_to_linecount: {inherits: _legacy_locale}
+  CONVERTER_maf_to_interval_0: {inherits: _legacy_locale}
+  CONVERTER_molecules: {inherits: _legacy_locale}
+  CONVERTER_picard_interval_list_to_bed6: {inherits: _legacy_locale}
+  CONVERTER_ref_to_seq_taxomony: {inherits: _legacy_locale}
+  CONVERTER_sam_to_bigwig_0: {inherits: _legacy_locale}
+  CONVERTER_wiggle_to_interval_0: {inherits: _legacy_locale}
+  csv_to_tabular: {inherits: _legacy_locale}
+  Extract_features1: {inherits: _legacy_locale}
+  Filter1: {inherits: _legacy_locale}
+  gbk_to_orf: {inherits: _legacy_locale}
+  genbank_to_gff: {inherits: _legacy_locale}
+  gene2exon1: {inherits: _legacy_locale}
+  GeneBed_Maf_Fasta2: {inherits: _legacy_locale}
+  gff2bed1: {inherits: _legacy_locale}
+  gff_filter_by_attribute: {inherits: _legacy_locale}
+  gff_filter_by_feature_count: {inherits: _legacy_locale}
+  gff_to_sequence: {inherits: _legacy_locale}
+  Grep1: {inherits: _legacy_locale}
+  Grouping1: {inherits: _legacy_locale}
+  gtf_filter_by_attribute_values_list: {inherits: _legacy_locale}
+  Interval2Maf1: {inherits: _legacy_locale}
+  Interval2Maf_pairwise1: {inherits: _legacy_locale}
+  Interval_Maf_Merged_Fasta2: {inherits: _legacy_locale}
+  join1: {inherits: _legacy_locale}
+  lped2fpedconvert: {inherits: _legacy_locale}
+  maf_by_block_number1: {inherits: _legacy_locale}
+  MAF_filter: {inherits: _legacy_locale}
+  maf_limit_size1: {inherits: _legacy_locale}
+  MAF_Limit_To_Species1: {inherits: _legacy_locale}
+  MAF_Reverse_Complement_1: {inherits: _legacy_locale}
+  MAF_split_blocks_by_species1: {inherits: _legacy_locale}
+  maf_stats1: {inherits: _legacy_locale}
+  MAF_Thread_For_Species1: {inherits: _legacy_locale}
+  MAF_To_BED1: {inherits: _legacy_locale}
+  MAF_To_Fasta1: {inherits: _legacy_locale}
+  MAF_To_Interval1: {inherits: _legacy_locale}
+  master2pgSnp: {inherits: _legacy_locale}
+  mfa_g2p: {inherits: _legacy_locale}
+  mfa_tokenize: {inherits: _legacy_locale}
+  mfa_train_dictionary: {inherits: _legacy_locale}
+  Paste1: {inherits: _legacy_locale}
+  random_lines1: {inherits: _legacy_locale}
+  'Remove beginning1': {inherits: _legacy_locale}
+  __SAMPLE_SHEET_TO_TABULAR__: {inherits: _legacy_locale}
+  sequence_convert: {inherits: _legacy_locale}
+  'Show beginning1': {inherits: _legacy_locale}
+  'Show tail1': {inherits: _legacy_locale}
+  solid2fastq: {inherits: _legacy_locale}
+  solid_qual_stats: {inherits: _legacy_locale}
+  tabular_to_csv: {inherits: _legacy_locale}
+  translate_nucleotides: {inherits: _legacy_locale}
+  trimmer: {inherits: _legacy_locale}
+  ucsc_bigbedtobed: {inherits: _legacy_locale}
+  vcf_to_maf_customtrack1: {inherits: _legacy_locale}
+  wc_gnu: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/astroteam/analyse_short_astro_text_astro_tool/analyse_short_astro_text_astro_tool/0.0.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/astroteam/astropy_csv2fits/astropy_csv2fits/0.1.0+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/astroteam/astropy_fits2csv/astropy_fits2csv/0.2.0+galaxy2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/astroteam/astropy_fitsinfo/astropy_fitsinfo/0.2.0+galaxy2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bebatut/format_cd_hit_output/format_cd_hit_output/1.0.0+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bebatut/format_metaphlan2_output/format_metaphlan2_output/0.2.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/add_line_to_file/add_line_to_file/0.1.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/agat/agat/1.4.0+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/column_arrange_by_header/bg_column_arrange_by_header/0.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/diamond/bg_diamond/2.1.22+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/diamond/bg_diamond_makedb/2.1.22+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/diamond/bg_diamond_view/2.1.22+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/diff/diff/3.10+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/find_subsequences/bg_find_subsequences/0.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.2.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/glimmer_glimmer_to_gff/glimmer_glimmer_to_gff/3.02+galaxy2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/hicexplorer_chicexportdata/hicexplorer_chicexportdata/3.7.6+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/hicup_truncater/hicup_truncater/0.9.2+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/infernal/infernal_cmbuild/1.1.0.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/infernal/infernal_cmsearch/1.1.0.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/infernal/infernal_cmstat/1.1.0.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/itsx/itsx/1.1.3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/join_files_on_column_fuzzy/join_files_on_column_fuzzy/1.0.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/json2yolosegment/json2yolosegment/8.3.0+galaxy4: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/markitdown/markitdown/0.1.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/markitdown/markitdown/0.1.4+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/replace_column_by_key_value_file/replace_column_with_key_value_file/0.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/rnaz_annotate/rnaz_annotate/2.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/split_file_on_column/tp_split_on_column/0.4: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/split_file_to_collection/split_file_to_collection/0.5.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/nl/9.5+galaxy3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.5+galaxy3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.5+galaxy3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_column/9.5+galaxy3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sed_tool/9.5+galaxy3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sort_header_tool/9.5+galaxy3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sort_rows/9.5+galaxy3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_uniq_tool/9.5+galaxy3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/trim_galore/trim_galore/0.6.10+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/bgruening/wordcloud/wordcloud/1.9.4+galaxy4: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/chemteam/gromacs_extract_topology/gromacs_extract_topology/0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/chemteam/gromacs_modify_topology/gromacs_modify_topology/0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/computational-metabolomics/dimspy_hdf5_to_txt/dimspy_hdf5_to_txt/2.0.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/computational-metabolomics/mspurity_createmsp/mspurity_createmsp/1.28.0+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/cpt/cpt_annotation_table/edu.tamu.cpt2.phage.annotation_table/20.0.0.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/cpt/cpt_convert_glimmer/edu.tamu.cpt2.util.glimmer3_to_gff3/19.1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/cpt/cpt_fasta_remove_id/edu.tamu.cpt.fasta.remove_desc/19.1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/cpt/cpt_fasta_translate/edu.tamu.cpt.fasta.seq_trans/19.1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/cpt/cpt_fix_sixpack/edu.tamu.cpt.gff3.fixsixpack/19.1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/cpt/cpt_gbk_renumber/edu.tamu.cpt.genbank.RelabelTags/0.4: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/cpt/cpt_genome_editor/edu.tamu.cpt.gff3.genome_editor/2.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/cpt/cpt_gff_add_parents/edu.tamu.cpt.gff3.cdsParents/19.1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/cpt/cpt_gff_extract_seq/edu.tamu.cpt.gff3.export_seq/19.1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/cpt/cpt_gff_rebase/gff3.rebase/19.1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/cpt/cpt_intersect_adj/edu.tamu.cpt.gff3.intersect_and_adjacent/21.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/cpt/cpt_lipory/edu.tamu.cpt.fasta.lipory/19.1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/cpt/cpt_phageqc_annotations/edu.tamu.cpt2.phage.annotation_validator/1.9.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/cpt/cpt_prep_for_apollo/edu.tamu.cpt.gff3.prepForApollo/20.8.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/cpt/cpt_protein_blast_grouping/edu.tamu.cpt.blast.protein_grouping/0.0.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/cpt/cpt_remove_annotations/edu.tamu.cpt.gff3.remove_annots/19.1.0.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/cpt/cpt_req_phage_start/edu.tamu.cpt.gff3.require_phage_start/19.1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/cpt/cpt_require_shine/edu.tamu.cpt.gff3.require_sd/19.1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/cpt/cpt_shinefind/edu.tamu.cpt.genbank.shinefind/21.1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/cpt/cpt_type_filter/edu.tamu.cpt.gff3.filter_type/19.1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/cpt/cpt_xmfa_to_table/xmfa2tbl/19.1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/1.4: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/compute_motifs_frequency/compute_motifs_frequency/1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/concat/gops_concat_1/1.0.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/count_gff_features/count_gff_features/0.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/delete_overlapping_indels/delete_overlapping_indels/1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/divide_pg_snp/dividePgSnp/1.0.0: {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: backtranseq2/6.6.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: banana3/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: biosed4/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: cai6/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: cai_custom6/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: codcmp12/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: coderet13/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: cpgplot15/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: cusp17/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: cutseq18/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: degapseq20/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: descseq21/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: digest23/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: dreg27/5.0.0+galaxy1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: epestfind29/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: equicktandem31/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: etandem33/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: extractfeat34/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: extractseq35/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: fuzznuc37/5.0.3': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: fuzztran39/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: geecee41/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: getorf42/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: helixturnhelix43/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: iep45/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: infoseq46/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: lindna48/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: marscan49/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: maskfeat50/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: maskseq51/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: megamerger53/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: merger54/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: msbar55/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: needle56/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: newcpgreport57/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: newcpgseek58/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: noreturn60/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: notseq61/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: nthseq62/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: octanol63/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: oddcomp64/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: palindrome65/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: pasteseq66/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: patmatdb67/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: pepinfo69/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: pepstats71/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: pepwheel72/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: pepwindow73/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: pepwindowall74/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: plotorf76/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: preg78/5.0.0+galaxy1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: revseq82/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: seqret84/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: showfeat85/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: shuffleseq87/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: sigcleave88/5.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: skipseq91/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: splitter92/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: supermatcher95/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: tcode97/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: tranalign100/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: transeq101/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: trimest102/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: trimseq103/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: twofeat104/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: union105/5.0.0': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: water107/5.0.0.1': {inherits: _legacy_locale}
+  'toolshed.g2.bx.psu.edu/repos/devteam/emboss_5/EMBOSS: wordmatch110/5.0.0.1': {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/fasta_filter_by_length/fasta_filter_by_length/1.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/fasta_nucleotide_changer/cshl_fasta_nucleotides_changer/1.0.2+galaxy2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/fasta_to_tabular/fasta2tab/1.1.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/fasta_to_tabular/fasta2tab/1.1.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc/0.74+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/fastx_artifacts_filter/cshl_fastx_artifacts_filter/1.0.1+galaxy2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/fastx_barcode_splitter/cshl_fastx_barcode_splitter/1.0.1+galaxy2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/fastx_clipper/cshl_fastx_clipper/1.0.3+galaxy2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/fastx_collapser/cshl_fastx_collapser/1.0.1+galaxy2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/fastx_nucleotides_distribution/cshl_fastx_nucleotides_distribution/1.0.1+galaxy2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/gffread/gffread/2.2.1.4+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/indels_3way/indels_3way/1.0.3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/join/gops_join_1/1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/kraken_report/kraken-mpa-report/1.2.4: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/merge_cols/mergeCols1/1.0.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/blastxml_to_tabular/2.16.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_convert2blastmask_wrapper/2.16.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_dustmasker_wrapper/2.16.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_makeblastdb/2.16.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_makeprofiledb/2.16.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_rpsblast_wrapper/2.16.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_rpstblastn_wrapper/2.16.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_segmasker_wrapper/2.16.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_tblastn_wrapper/2.16.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_tblastx_wrapper/2.16.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_NormalizeFasta/3.1.1.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/pileup_interval/pileup_interval/1.0.3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/pileup_parser/pileup_parser/1.0.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/sam2interval/sam2interval/1.0.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/sam_pileup/sam_pileup/1.1.3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/samtools_mpileup/samtools_mpileup/2.2.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/subtract/gops_subtract_1/1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/tabular_to_fasta/tab2fasta/1.1.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/tabular_to_fasta/tab2fasta/1.1.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/tabular_to_fastq/tabular_to_fastq/1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/tabular_to_fastq/tabular_to_fastq/1.1.5+galaxy2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcf2pgsnp/vcf2pgSnp/1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcf2tsv/vcf2tsv/1.0.0_rc3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfaddinfo/vcfaddinfo/1.0.0_rc3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfallelicprimitives/vcfallelicprimitives/1.0.0_rc1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfallelicprimitives/vcfallelicprimitives/1.0.0_rc3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfannotategenotypes/vcfannotategenotypes/1.0.0_rc1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfannotategenotypes/vcfannotategenotypes/1.0.0_rc3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfannotate/vcfannotate/1.0.0_rc1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfannotate/vcfannotate/1.0.0_rc3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfbedintersect/vcfbedintersect/1.0.0_rc1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfbedintersect/vcfbedintersect/1.0.0_rc3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfbreakcreatemulti/vcfbreakcreatemulti/1.0.0_rc1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfbreakcreatemulti/vcfbreakcreatemulti/1.0.0_rc3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfcheck/vcfcheck/1.0.0_rc3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfcombine/vcfcombine/1.0.0_rc3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfcommonsamples/vcfcommonsamples/1.0.0_rc1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfcommonsamples/vcfcommonsamples/1.0.0_rc3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfdistance/vcfdistance/0.0.3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfdistance/vcfdistance/1.0.0_rc3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcf_filter/vcf_filter/1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcffilter/vcffilter2/1.0.0_rc3+galaxy3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcffixup/vcffixup/1.0.0_rc1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcffixup/vcffixup/1.0.0_rc3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfflatten/vcfflatten2/1.0.0_rc1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfflatten/vcfflatten2/1.0.0_rc3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfgeno2haplo/vcfgeno2haplo/1.0.0_rc1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfgeno2haplo/vcfgeno2haplo/1.0.0_rc3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfgenotypes/vcfgenotypes/1.0.0_rc1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfgenotypes/vcfgenotypes/1.0.0_rc3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfhethom/vcfhethom/1.0.0_rc1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfhethom/vcfhethom/1.0.0_rc3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfleftalign/vcfleftalign/1.0.0_rc3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfprimers/vcfprimers/1.0.0_rc3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfrandomsample/vcfrandomsample/1.0.0_rc1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfrandomsample/vcfrandomsample/1.0.0_rc3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfselectsamples/vcfselectsamples/1.0.0_rc1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfselectsamples/vcfselectsamples/1.0.0_rc3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfsort/vcfsort/1.0.0_rc3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcftools_isec/vcftools_isec/0.1.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfvcfintersect/vcfvcfintersect/1.0.0_rc1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/devteam/vcfvcfintersect/vcfvcfintersect/1.0.0_rc3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/earlhaminst/blast_parser/blast_parser/0.2.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/earlhaminst/ete/ete3_mod/3.1.3+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/earlhaminst/hcluster_sg_parser/hcluster_sg_parser/0.3.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/earlhaminst/replace_chromosome_names/replace_chromosome_names/0.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/earlhaminst/treebest_best/fasta_header_converter/0.1.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/ebi-gxa/gtf2gene_list/_ensembl_gtf2gene_list/1.42.1+galaxy4: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/ecology/aligned_to_consensus/aligned_to_consensus/1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/ecology/eml2eal/eml2eal/0.1.2+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/ecology/makeeml/makeeml/0.1.2+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/ecology/srs_metadata/srs_metadata/0.0.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/ethevenot/checkformat/checkFormat/3.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/fgiacomoni/lipidmaps_textsearch/lipidmaps/2018-10-02: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/fgiacomoni/massbank_ws_searchspectrum/massbank_ws_searchspectrum/2017-02-06: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxy-australia/cactus_export/cactus_export/2.7.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/bed_to_protein_map/bed_to_protein_map/0.2.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/cardinal_data_exporter/cardinal_data_exporter/3.4.3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/decoyfasta/decoyfasta/0.2.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/encyclopedia_fasta_to_prosit_csv/encyclopedia_fasta_to_prosit_csv/1.12.34+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/encyclopedia_prosit_csv_to_library/encyclopedia_prosit_csv_to_library/1.12.34+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/fasta_merge_files_and_filter_unique_sequences/fasta_merge_files_and_filter_unique_sequences/1.2.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/fastg2protlib/fastg2protlib-peptides/1.0.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/fastg2protlib/fastg2protlib-validate/1.0.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/filter_by_fasta_ids/filter_by_fasta_ids/2.3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/fragpipe/fragpipe_manifest_generator/23.0+galaxy3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/gffcompare_to_bed/gffcompare_to_bed/0.2.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/idconvert/idconvert/3.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/idpqonvert/idpqonvert/3.0.21142.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/idpqonvert/idpqonvertEmbedder/3.0.21142.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/idpquery/idpquery/3.0.11579.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/idpquery/idpquery/3.0.21142.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/map_peptides_to_bed/map_peptides_to_bed/0.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/msconvert/idconvert/3.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/mt2mq/mt2mq/1.1.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/openms_databasefilter/DatabaseFilter/3.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/openms_fuzzydiff/FuzzyDiff/3.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/openms_idfileconverter/IDFileConverter/3.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/openms_idripper/IDRipper/3.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/openms_idscoreswitcher/IDScoreSwitcher/3.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/openms_inclusionexclusionlistcreator/InclusionExclusionListCreator/2.3.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/openms_msstatsconverter/MSstatsConverter/3.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/openms_mztabexporter/MzTabExporter/3.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/openms_openswathfeaturexmltotsv/OpenSwathFeatureXMLToTSV/3.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/openms_openswathrewritetofeaturexml/OpenSwathRewriteToFeatureXML/3.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/openms_percolatoradapter/PercolatorAdapter/3.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/openms_targetedfileconverter/TargetedFileConverter/3.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/openms_textexporter/TextExporter/3.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/fasta_cli/4.0.41+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/percolator/batched_set_list_creator/3.3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/percolator/percolator_input_converters/3.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/percolator/pout2mzid/0.3.03: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/pyteomics_mztab2tsv/mztab2tsv/4.4.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/regex_find_replace/regex1/1.0.3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/regex_find_replace/regexColumn1/1.0.3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/translate_bed/translate_bed/0.1.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/validate_fasta_database/validate_fasta_database/0.1.5: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/galaxyp/zeiss_lmd_converter/ZeissLMDconverter/2.0.4+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/gbcs-embl-heidelberg/je_clip/je_clip/1.2.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/gbcs-embl-heidelberg/je_demultiplex_illu/je_demultiplex_illu/1.2.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/gbcs-embl-heidelberg/je_demultiplex/je_demultiplex/1.2.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/gga/apollo_feat_from_gff3/feat_from_gff3/4.2.13+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_anndata_to_csv/scimap_anndata_to_csv/2.1.0+galaxy3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/abricate/abricate_summary/1.0.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/adapter_removal/adapter_removal/2.3.4+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/aegean_canongff3/aegean_canongff3/0.16.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/aegean_canongff3/aegean_canongff3/0.16.0+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/aegean_gaeval/aegean_gaeval/0.16.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/aegean_gaeval/aegean_gaeval/0.16.0+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/aegean_locuspocus/aegean_locuspocus/0.16.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/aegean_locuspocus/aegean_locuspocus/0.16.0+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/aegean_parseval/aegean_parseval/0.16.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/aegean_parseval/aegean_parseval/0.16.0+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/ampvis2_export_fasta/ampvis2_export_fasta/2.8.11+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/ampvis2_load/ampvis2_load/2.8.11+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/ampvis2_merge_ampvis2/ampvis2_merge_ampvis2/2.8.11+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/ampvis2_mergereplicates/ampvis2_mergereplicates/2.8.11+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/ampvis2_setmetadata/ampvis2_setmetadata/2.8.11+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/ampvis2_subset_samples/ampvis2_subset_samples/2.8.11+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/ampvis2_subset_taxa/ampvis2_subset_taxa/2.8.11+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/argnorm/argnorm/1.0.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bcftools_annotate/bcftools_annotate/1.22+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bcftools/bcfview/0.1.19: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bcftools_consensus/bcftools_consensus/1.22+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bcftools_convert_from_vcf/bcftools_convert_from_vcf/1.22+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bcftools_convert_to_vcf/bcftools_convert_to_vcf/1.22+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bcftools_filter/bcftools_filter/1.22+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bcftools_isec/bcftools_isec/1.22+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bcftools_merge/bcftools_merge/1.22+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bcftools_plugin_setgt/bcftools_plugin_setgt/1.22+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bctools_extract_alignment_ends/bctools_extract_alignment_ends/0.2.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bctools_extract_barcodes/bctools_extract_barcodes/0.2.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bctools_merge_pcr_duplicates/bctools_merge_pcr_duplicates/0.2.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bctools_remove_spurious_events/bctools_remove_spurious_events/0.2.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bctools_remove_tail/bctools_remove_tail/0.2.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/beacon2_csv2xlsx/beacon2_csv2xlsx/2.0.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/beacon2_pxf2bff/beacon2_pxf2bff/2.0.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/beacon2_vcf2bff/beacon2_vcf2bff/2.0.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_annotatebed/2.31.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_bamtobed/2.31.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_bed12tobed6/2.31.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_closestbed/2.31.1+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_clusterbed/2.31.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_complementbed/2.31.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_coveragebed/2.31.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_flankbed/2.31.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_genomecoveragebed/2.31.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_jaccard/2.31.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_links/2.31.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_makewindowsbed/2.31.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_multicovtbed/2.31.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_slopbed/2.31.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_sortbed/2.31.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_spacingbed/2.31.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_subtractbed/2.31.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_tagbed/2.31.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_unionbedgraph/2.31.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_windowbed/2.31.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/biom_convert/biom_convert/2.1.15+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/blastxml_to_gapped_gff3/blastxml_to_gapped_gff3/1.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/bp_genbank2gff3/bp_genbank2gff3/1.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/brew3r_r/brew3r_r/1.0.2+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/chewbbaca_joinprofiles/chewbbaca_joinprofiles/3.3.10+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/chewbbaca_prepexternalschema/chewbbaca_prepexternalschema/3.3.10+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/chopper/chopper/0.12.0+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/cialign/cialign/1.1.4+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/circos/circos_aln_to_links/0.69.8+galaxy12: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/circos/circos_binlinks/0.69.8+galaxy12: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/circos/circos_bundlelinks/0.69.8+galaxy12: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/circos/circos_gc_skew/0.69.8+galaxy12: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/circos/circos_interval_to_text/0.69.8+galaxy12: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/circos/circos_interval_to_tile/0.69.8+galaxy12: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/circos/circos_resample/0.69.8+galaxy12: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/circos/circos_tableviewer/0.69.8+galaxy12: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/cnv_phenopacket/cnv_phenopacket/1.0.2+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/collection_column_join/collection_column_join/0.0.3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/collection_column_join/collection_column_join/0.0.3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/column_order_header_sort/column_order_header_sort/0.0.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/column_remove_by_header/column_remove_by_header/1.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/concoct_cut_up_fasta/concoct_cut_up_fasta/1.1.0+galaxy2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/concoct_extract_fasta_bins/concoct_extract_fasta_bins/1.1.0+galaxy2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/concoct_merge_cut_up_clustering/concoct_merge_cut_up_clustering/1.1.0+galaxy2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/cooc_pubmut/cooc_pubmut/0.9.2+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/cooc_tabmut/cooc_tabmut/0.9.2+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/crossmap_wig/crossmap_wig/0.7.3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.9+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/datamash_ops/1.0.6: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/datamash_reverse/datamash_reverse/1.9+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/datamash_transpose/datamash_transpose/1.9+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/deg_annotate/deg_annotate/1.1.0+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/delly_classify/delly_classify/0.9.1+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/delly_filter/delly_filter/0.9.1+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/delly_merge/delly_merge/0.9.1+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/dos2unix/dos2unix/7.5.4+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/dram_distill/dram_distill/1.5.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/dram_merge_annotations/dram_merge_annotations/1.5.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/dram_strainer/dram_strainer/1.5.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/fasta_stats/fasta-stats/2.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/fasta_to_contig2bin/Fasta_to_Contig2Bin/1.1.7+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.1.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/fastplong/fastplong/0.4.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/fastqe/fastqe/0.3.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/fastq_groupmerge/fastq_groupmerge/1.0.2+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/fastreer_dist2tree/fastreer_dist2tree/2.1.3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/fastreer_fasta2dist/fastreer_fasta2dist/2.1.3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/fastreer_vcf2dist/fastreer_vcf2dist/2.1.3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/fastreer_vcf2tree/fastreer_vcf2tree/2.1.3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/filter_tabular/filter_tabular/3.3.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/filtlong/filtlong/0.3.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/flash/flash/1.2.11.4: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/funannotate_clean/funannotate_clean/1.8.17+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/funannotate_compare/funannotate_compare/1.8.15+galaxy5: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/funannotate_sort/funannotate_sort/1.8.17+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/genebed_maf_to_fasta/GeneBed_Maf_Fasta2/1.0.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/getorganelle/get_annotated_regions_from_gb/0.1.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/gfa_to_fa/gfa_to_fa/0.1.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/gffcompare/gffcompare/0.12.10+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/gff_to_prot/gff_to_prot/3.2.3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/goslimmer/goslimmer/1.0.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/gtftobed12/gtftobed12/357: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/hamronize_summarize/hamronize_summarize/1.1.4+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/hmmer_hmmconvert/hmmer_hmmconvert/3.4+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/hyphy_conv/hyphy_conv/2.5.93+galaxy3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/hyphy_strike_ambigs/hyphy_strike_ambigs/2.5.93+galaxy3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/interval2maf/Interval2Maf1/1.0.1+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/jcvi_gff_stats/jcvi_gff_stats/0.8.4: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/krakentools_kreport2krona/krakentools_kreport2krona/1.2.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/length_and_gc_content/length_and_gc_content/0.1.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/magicblast/magicblast/1.7.0+galaxy2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/maker_map_ids/maker_map_ids/2.31.11: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/megahit_contig2fastg/megahit_contig2fastg/1.1.3+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/megan_read_extractor/megan_read_extractor/6.21.7+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/merge_metaphlan_tables/merge_metaphlan_tables/4.2.4+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/metaphlan2krona/metaphlan2krona/2.6.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/microsatbed/microsatbed/1.3.3+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/mothur_biom_info/mothur_biom_info/1.39.5.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/mothur_chimera_uchime/mothur_chimera_uchime/1.39.5.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/mothur_count_groups/mothur_count_groups/1.39.5.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/mothur_create_database/mothur_create_database/1.39.5.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/mothur_get_coremicrobiome/mothur_get_coremicrobiome/1.39.5.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/mothur_get_mimarkspackage/mothur_get_mimarkspackage/1.39.5.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/mothur_get_oturep/mothur_get_oturep/1.39.5.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/mothur_indicator/mothur_indicator/1.39.5.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/mothur_normalize_shared/mothur_normalize_shared/1.39.5.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/mothur_taxonomy_to_krona/mothur_taxonomy_to_krona/1.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/obi_annotate/obi_annotate/1.2.13: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/obi_clean/obi_clean/1.2.13: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/obi_convert/obi_convert/1.2.13: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/obi_grep/obi_grep/1.2.13: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/obi_illumina_pairend/obi_illumina_pairend/1.2.13+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/obi_ngsfilter/obi_ngsfilter/1.2.13: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/obi_sort/obi_sort/1.2.13: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/obi_stat/obi_stat/1.2.13: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/obi_tab/obi_tab/1.2.13: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/obi_uniq/obi_uniq/1.2.13: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/onto_tk_get_ancestor_terms/onto_tk_get_ancestor_terms/1.45.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/onto_tk_get_child_terms/onto_tk_get_child_terms/1.45.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/onto_tk_get_descendent_terms/onto_tk_get_descendent_terms/1.45.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/onto_tk_get_parent_terms_by_relationship_type/onto_tk_get_parent_terms_by_relationship_type/1.45.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/onto_tk_get_parent_terms/onto_tk_get_parent_terms/1.45.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/onto_tk_get_relationship_id_vs_relationship_def/onto_tk_get_relationship_id_vs_relationship_def/1.45.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/onto_tk_get_relationship_id_vs_relationship_name/onto_tk_get_relationship_id_vs_relationship_name/1.45.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/onto_tk_get_relationship_id_vs_relationship_namespace/onto_tk_get_relationship_id_vs_relationship_namespace/1.45.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/onto_tk_get_relationship_types/onto_tk_get_relationship_types/1.45.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/onto_tk_get_root_terms/onto_tk_get_root_terms/1.45.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/onto_tk_get_subontology_from/onto_tk_get_subontology_from/1.45.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/onto_tk_get_terms_by_relationship_type/onto_tk_get_terms_by_relationship_type/1.45.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/onto_tk_get_terms/onto_tk_get_terms/1.45.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/onto_tk_get_term_synonyms/onto_tk_get_term_synonyms/1.45.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/onto_tk_obo2owl/onto_tk_obo2owl/1.45.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/onto_tk_obo2rdf/onto_tk_obo2rdf/1.45.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/onto_tk_term_id_vs_term_name/onto_tk_term_id_vs_term_name/1.45.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/pairtools_dedup/pairtools_dedup/1.1.3+galaxy6: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/pairtools_parse/pairtools_parse/1.1.3+galaxy6: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/pairtools_sort/pairtools_sort/1.1.3+galaxy6: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/pairtools_split/pairtools_split/1.1.3+galaxy6: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/picrust_categorize/picrust_categorize/1.1.1.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/picrust_compare_biom/picrust_compare_biom/1.1.1.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/picrust_format_tree_and_trait_table/picrust_format_tree_and_trait_table/1.1.1.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/pmids_to_pubtator_matrix/pmids_to_pubtator_matrix/0.0.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/porechop/porechop/0.2.4+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/poretools_extract/poretools_extract/0.6.1a1.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/poretools_tabular/poretools_tabular/0.6.1a1.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/poretools_winner/poretools_winner/0.6.1a1.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/prinseq/prinseq/0.20.4+galaxy2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/progressivemauve/xmfa2gff3/2015_02_13.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/proteinortho_grab_proteins/proteinortho_grab_proteins/6.3.6+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/proteinortho/proteinortho/6.3.6+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/proteinortho_summary/proteinortho_summary/6.3.6+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/prot_scriber/prot_scriber/0.1.6: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/qiime_collapse_samples/qiime_collapse_samples/1.9.1.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/query_tabular/query_tabular/3.3.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/read_it_and_keep/read_it_and_keep/0.2.2+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/resize_coordinate_window/resize_coordinate_window/1.0.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.22+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/sarscov2formatter/sarscov2formatter/1.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/schicexplorer_schicdemultiplex/schicexplorer_schicdemultiplex/4.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/semibin_concatenate_fasta/semibin_concatenate_fasta/2.1.0+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqkit_fx2tab/seqkit_fx2tab/2.13.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqkit_grep/seqkit_grep/2.13.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqkit_head/seqkit_head/2.13.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqkit_locate/seqkit_locate/2.13.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqkit_locate/seqkit_locate/2.3.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqkit_sort/seqkit_sort/2.13.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqkit_split2/seqkit_split2/2.13.0+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqkit_stats/seqkit_stats/2.13.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqkit_translate/seqkit_translate/2.13.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqprep/seqprep/1.3.2+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqtk/seqtk_comp/1.5+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqtk/seqtk_cutN/1.5+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqtk/seqtk_dropse/1.5+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqtk/seqtk_fqchk/1.5+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqtk/seqtk_hety/1.5+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqtk/seqtk_listhet/1.5+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqtk/seqtk_mergefa/1.5+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqtk/seqtk_mergepe/1.5+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqtk/seqtk_mutfa/1.5+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqtk/seqtk_randbase/1.5+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqtk/seqtk_sample/1.5+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqtk/seqtk_seq/1.5+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqtk/seqtk_subseq/1.5+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqtk/seqtk_telo/1.5+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/seqtk/seqtk_trimfq/1.5+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/sequali/sequali/1.0.2+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/sickle/sickle/1.33.3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy_clean_full_aln/4.6.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy_core/4.6.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/snp_dists/snp_dists/0.6.3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/snp_sites/snp_sites/2.5.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/sqlite_to_tabular/sqlite_to_tabular/2.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/sra_tools/fastq_dump/3.1.1+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/table_compute/table_compute/1.2.4+galaxy2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/tag_pileup_frequency/tag_pileup_frequency/1.0.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/tag_pileup_frequency/tag_pileup_frequency/1.0.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/tbl2gff3/tbl2gff3/1.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/tbl2gff3/tbl2gff3/1.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/tb_variant_filter/tb_variant_filter/0.4.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/text_to_wordmatrix/text_to_wordmatrix/0.0.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.5+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/tracegroomer/tracegroomer/0.1.4+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/ucsc_axtchain/ucsc_axtchain/482+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/ucsc_chainantirepeat/ucsc_chainantirepeat/482+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/ucsc_chainnet/ucsc_chainnet/482+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/ucsc_fasplit/fasplit/482: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/ucsc_fatovcf/fatovcf/482+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/ucsc_maftoaxt/maftoaxt/482+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/ucsc_netfilter/ucsc_netfilter/482+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/ucsc_nettoaxt/ucsc_nettoaxt/482+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/umi_tools_dedup/umi_tools_dedup/1.1.6+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/umi_tools_extract/umi_tools_extract/1.1.6+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/umi_tools_group/umi_tools_group/1.1.6+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/umi_tools_whitelist/umi_tools_whitelist/1.1.6+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/usher_matutils/usher_matutils/0.6.6+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/vcf2maf/vcf2maf/1.6.21+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/vcfanno/vcfanno/0.3.3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/vcfdistance/vcfdistance/1.0.0_rc1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/vsearch/vsearch_sorting/2.8.3.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/vt_variant_tools/vt_normalize/0.1.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/iuc/xpath/xpath/1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/jjohnson/filter_bed_on_splice_junctions/filter_bed_on_splice_junctions/0.0.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/jjohnson/find_in_reference/find_in_reference/0.1.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/jjohnson/translate_bed_sequences/translate_bed_sequences/0.0.1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/leomrtns/nanofilt/nanofilt/0.1.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/lparsons/fastq_join/fastq_join/1.1.2-806: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/maciek/spamr_vet_tools/quast_get_fasta/0.1.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/mbernt/fasta_regex_finder/fasta_regex_finder/0.1.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/miller-lab/genome_diversity/gd_filter_gd_snp/1.2.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/miller-lab/genome_diversity/gd_gd_snp2vcf/1.1.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/miller-lab/genome_diversity/gd_multiple_to_gd_genotype/1.0.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/miller-lab/genome_diversity/gd_prepare_population_structure/1.2.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/miller-lab/genome_diversity/gd_sum_gd_snp/1.1.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/muon-spectroscopy-computational-project/cif2cell/cif2cell/2.0.0a3+galaxy2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/mvdbeek/add_input_name_as_column/addName/0.2.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/nick/allele_counts/allele_counts_1/1.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/nilesh/rseqc/rseqc_bam2wig/5.0.3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/nilesh/rseqc/rseqc_hexamer/5.0.3+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/peterjc/align_back_trans/align_back_trans/0.0.10: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/peterjc/blast_rbh/blast_reciprocal_best_hits/0.3.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/peterjc/blastxml_to_top_descr/blastxml_to_top_descr/0.1.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/peterjc/sample_seqs/sample_seqs/0.2.6: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/peterjc/seq_filter_by_id/seq_filter_by_id/0.2.9: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/peterjc/seq_filter_by_mapping/seq_filter_by_mapping/0.0.8: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/pjbriggs/trimmomatic/trimmomatic/0.39+galaxy2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/recetox/assign_ri_from_comment/riassigner_from_comment/0.4.1+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/recetox/matchms_add_key/matchms_add_key/0.30.2+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/recetox/matchms_convert/matchms_convert/0.30.2+galaxy2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/recetox/matchms_filtering/matchms_filtering/0.30.2+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/recetox/matchms_formatter/matchms_formatter/0.30.2+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/recetox/matchms_metadata_export/matchms_metadata_export/0.30.2+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/recetox/matchms_metadata_merge/matchms_metadata_merge/0.30.2+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/recetox/matchms_remove_key/matchms_remove_key/0.30.2+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/recetox/matchms_remove_spectra/matchms_remove_spectra/0.30.2+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/recetox/matchms_split/matchms_split/0.30.2+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/recetox/msmetaenhancer/msmetaenhancer/0.4.1+galaxy2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/recetox/rcx_tk/rcx-tk/0.1.0+galaxy1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/recetox/rename_annotated_feature/rename_annotated_feature/1.0.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval/0.0.7+galaxy5: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/rnateam/atactk_trim_adapters/atactk_trim_adapters/0.1.6: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/rnateam/gotohscan/rbc_gotohscan/1.3.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/rnateam/ribotaper/ribotaper_create_annotation/1.3.1a+galaxy2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/rnateam/selectsequencesfrommsa/selectsequencesfrommsa/1.0.2: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/rnateam/splitfasta/rbc_splitfasta/0.5.0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/wolma/mimodd_main/mimodd_vcf_filter/0.1.9: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/workflow4metabolomics/skyline2isocor/skyline2isocor/1.0.0+galaxy0: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/yhoogstrate/segmentation_fold/smf_utils_add-read-counts/smf-v1.7-0_utils-v2.1.1-3: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/yhoogstrate/segmentation_fold/smf_utils_extract-boxed-sequences/smf-v1.7-0_utils-v2.1.1-1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/yhoogstrate/segmentation_fold/smf_utils_filter-annotated-entries/smf-v1.7-0_utils-v2.1.1-1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/yhoogstrate/segmentation_fold/smf_utils_filter-by-energy/smf-v1.7-0_utils-v2.1.1-1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/yhoogstrate/segmentation_fold/smf_utils_find-boxes/smf-v1.7-0_utils-v2.1.1-1: {inherits: _legacy_locale}
+  toolshed.g2.bx.psu.edu/repos/yhoogstrate/segmentation_fold/smf_utils_fix-fasta-headers/smf-v1.7-0_utils-v2.1.1-1: {inherits: _legacy_locale}
