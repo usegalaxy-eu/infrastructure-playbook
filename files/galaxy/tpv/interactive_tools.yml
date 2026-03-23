@@ -12,6 +12,10 @@ tools:
     cores: 4
     mem: 32
 
+  interactive_tool_napari:
+    params:
+      docker_run_extra_arguments: "--user $UID:$GID"
+
   interactive_tool_ideal:
     params:
       docker_run_extra_arguments: "--user $UID:$GID"
