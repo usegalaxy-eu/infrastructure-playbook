@@ -24,8 +24,35 @@
         sysctl_set: true
         state: present
         reload: true
+
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+
+    - name: Deploy systemd override to run Celery beat only on one host
+      # remove these files and folder before removing this block
+      block:
+        - name: Ensure systemd override directory exists
+          ansible.builtin.file:
+            dest: /etc/systemd/system/galaxy-celery-beat.service.d
+            state: directory
+            owner: root
+            group: root
+            mode: "0644"
+
+        - name: Deploy systemd override file
+          ansible.builtin.copy:
+            dest: /etc/systemd/system/galaxy-celery-beat.service.d/override.conf
+            content: |
+              [Unit]
+              ConditionHost=celery-0.bi.privat
+            owner: root
+            group: root
+            mode: "0644"
   roles:
-    - artis3n.tailscale
+    - geerlingguy.repo-epel
+    - role: artis3n.tailscale
+      when: inventory_hostname == "celery-1.galaxyproject.eu"
     - role: usegalaxy_eu.handy.os_setup
       vars:
         enable_remap_user: true
@@ -36,5 +63,6 @@
     - influxdata.chrony
     ## Filesystems
     - usegalaxy-eu.autofs # Set up the mount points which will be needed later
-    - usegalaxy_eu.flower
+    - role: usegalaxy_eu.flower
+      when: inventory_hostname == "celery-1.galaxyproject.eu"
     # - usegalaxy-eu.logrotate # Rotate logs

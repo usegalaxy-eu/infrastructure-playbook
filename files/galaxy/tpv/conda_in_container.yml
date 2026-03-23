@@ -14,13 +14,19 @@ tools:
         - conda
         - singularity
 
-  toolshed.g2.bx.psu.edu/repos/iuc/medaka_consensus_pipeline/medaka_consensus_pipeline/2.1.1+galaxy0:
+  # existing singularity image /cvmfs/singularity.galaxyproject.org/all/miranda:3.3a--h7b50bb2_9 doesn't seem to provide python
+  # see https://usegalaxy.eu/datasets/26c75dcccb616ac864833e86f1ffda4a/details
+  toolshed.g2.bx.psu.edu/repos/tgac/miranda/miranda/3.3a:
+    inherits: _conda_in_container
+
+  # Quick fix for the last bug fix/ tool doens't finish running
+  toolshed.g2.bx.psu.edu/repos/bgruening/canu/canu/2.3\+galaxy0:
+    inherits: _conda_in_container
+
+  toolshed.g2.bx.psu.edu/repos/iuc/medaka_consensus_pipeline/medaka_consensus_pipeline/2.1.1\+galaxy0:
     # /cvmfs/singularity.galaxyproject.org/all/mulled-v2-1d9673528d7dd295349af77d8ecfaad41467ae6d:1ca2f7a3a82b59c664168f0ac84876075ccf17e5-0 seems problematic.
     # Most helpful error message is "import libmedaka ModuleNotFoundError: No module named '_cffi_backend'"
     # for now:
-    inherits: _conda_in_container
-
-  toolshed.g2.bx.psu.edu/repos/maciek/fbqs_integrator/fbqs_integrator/.*:
     inherits: _conda_in_container
 
   gbk_to_orf:
@@ -163,8 +169,6 @@ tools:
   toolshed.g2.bx.psu.edu/repos/devteam/bwa_wrappers/bwa_wrapper/1.2.3: {inherits: _conda_in_container}
   toolshed.g2.bx.psu.edu/repos/devteam/cd_hit_dup/cd_hit_dup/0.0.1: {inherits: _conda_in_container}
   toolshed.g2.bx.psu.edu/repos/devteam/clustalw/clustalw/0.1: {inherits: _conda_in_container}
-  toolshed.g2.bx.psu.edu/repos/devteam/cluster/gops_cluster_1/1.0.0: {inherits: _conda_in_container}
-  toolshed.g2.bx.psu.edu/repos/devteam/complement/gops_complement_1/1.0.0: {inherits: _conda_in_container}
   toolshed.g2.bx.psu.edu/repos/devteam/concat/gops_concat_1/1.0.1: {inherits: _conda_in_container}
   toolshed.g2.bx.psu.edu/repos/devteam/coverage/gops_coverage_1/1.0.0: {inherits: _conda_in_container}
   toolshed.g2.bx.psu.edu/repos/devteam/cuff[^/]*/cuff[^/]*/0.0.[567]: {inherits: _conda_in_container}

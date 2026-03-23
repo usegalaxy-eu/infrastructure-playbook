@@ -10,7 +10,7 @@ tools:
 
   interactive_tool_anylabeling:
     cores: 4
-    mem: 16
+    mem: 32
 
   interactive_tool_ideal:
     params:
@@ -29,6 +29,11 @@ tools:
   interactive_tool_ilastik:
     cores: 3
     mem: 10
+
+  interactive_tool_pretextview:
+    params:
+      # the USER_ID & GROUP_ID are strincly needed - also because we have NFS root-squash enabled
+      docker_run_extra_arguments: " -e USER_ID=999 -e GROUP_ID=999 "
 
   interactive_tool_qupath:
     params:

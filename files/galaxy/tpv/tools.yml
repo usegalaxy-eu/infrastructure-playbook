@@ -91,9 +91,6 @@ tools:
     env:
       TEMP: /data/1/galaxy_db/tmp
 
-  toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/.*:
-    inherits: _basic_gpu_resource_param_tool
-
   toolshed.g2.bx.psu.edu/repos/bgruening/tabpfn/tabpfn/.*:
     inherits: _basic_gpu_resource_param_tool
     # This tool is using git to get a huggingface model, it seems that git is easily getting into a locked state on NFS.
@@ -238,6 +235,12 @@ tools:
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
 
+  toolshed.g2.bx.psu.edu/repos/rnateam/splitfasta/rbc_splitfasta/.*:
+    # this is only implemented in 0.6.0+, consider adding a rule checking that `$inputFile.metadata.sequences` is not bigger than 1000 and the version is less 0.6.0
+    env:
+      - name: SINGULARITYENV_GALAXY_FILE_LIMIT
+        value: "250"
+
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_overviews/3dtrees_overviews/.*:
     cores: 5
     mem: 5
@@ -266,11 +269,11 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_smart_tile/3dtrees_smart_tile/.*:
     cores: 10
-    mem: 10
+    mem: min((input_size * 2), 200)
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_potree/3dtrees_potree/.*:
     cores: 10
-    mem: min(12 + (input_size * 4), 200)
+    mem: min(50 + (input_size * 4), 200)
 
   toolshed.g2.bx.psu.edu/repos/imgteam/libcarna_render/libcarna_render/.*:
     inherits: _basic_docker_tool
@@ -742,3 +745,20 @@ tools:
     mem: 60
     params:
       docker_run_extra_arguments: --shm-size 22g
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/racon/racon/.*:
+    # This tool requires a GPU in the tool wrapper, this is supported since TPV v3.1.0
+    # see https://github.com/galaxyproject/total-perspective-vortex/blob/v3.1.0/tpv/core/resource_requirements.py
+    scheduling:
+      require:
+        - singularity
+
+  toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/.*:
+    inherits: _basic_gpu_resource_param_tool
+    scheduling:
+      require:
+        - singularity  # can be removed after closing https://github.com/usegalaxy-eu/issues/issues/928
+
+  toolshed.g2.bx.psu.edu/repos/genouest/helixer/helixer/.*:
+    params:
+      docker_run_extra_arguments: --user 999
