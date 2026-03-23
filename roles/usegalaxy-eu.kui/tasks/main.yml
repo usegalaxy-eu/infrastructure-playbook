@@ -23,13 +23,34 @@
     group: "{{ galaxy_group.name }}"
     mode: '0755'
 
-- name: Copy KUI script
-  ansible.builtin.copy:
-    src: kui.sh
+- name: Download KUI script
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/galaxyproject/kui/091fbf678c84085a7689be0120c722042812e8a7/kui.sh
     dest: /opt/kui/kui.sh
     owner: "{{ galaxy_user.name }}"
     group: "{{ galaxy_group.name }}"
     mode: '0755'
+
+- name: Configure KUI script variables
+  ansible.builtin.lineinfile:
+    path: /opt/kui/kui.sh
+    regexp: '^{{ item.key }}='
+    line: '{{ item.key }}="{{ item.value }}"'
+  loop:
+    - { key: 'PROJECT_ID', value: "{{ project_id }}" }
+    - { key: 'DATASET', value: "{{ dataset }}" }
+    - { key: 'USERS_TABLE', value: "{{ user_tables }}" }
+    - { key: 'JOBS_TABLE', value: "{{ jobs_table }}" }
+    - { key: 'USAGE_TABLE', value: "{{ usage_table }}" }
+
+- name: Comment out environment variables in KUI script
+  ansible.builtin.replace:
+    path: /opt/kui/kui.sh
+    regexp: '^export {{ item }}'
+    replace: '#export {{ item }}'
+  loop:
+    - PGDATABASE
+    - PATH
 
 - name: Run KUI script monthly
   ansible.builtin.cron:
