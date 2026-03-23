@@ -9,6 +9,8 @@ tools:
         value: -Djava.io.tmpdir=$_GALAXY_JOB_TMP_DIR -Xmx{round(mem*0.9*1024)}m -Xms256m
       - name: SINGULARITYENV__JAVA_OPTIONS
         value: $_JAVA_OPTIONS
+      - name: SINGULARITYENV_LC_ALL
+        value: C
     scheduling:
       require:
         - conda
