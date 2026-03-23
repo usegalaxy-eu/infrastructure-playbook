@@ -219,7 +219,7 @@ nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
 dynmotd_custom:
   - name: Condor
     command: 'condor_q -totals | tail -n 2'
-
+dynmotd_extra_text: "{{ disclaimer_text }}"
 # TPV Script
 tpv_config_dir_name: total_perspective_vortex
 
@@ -393,8 +393,6 @@ galaxy_config_files:
     dest: "{{ galaxy_config['galaxy']['data_manager_config_file'] }}"
   - src: '{{ galaxy_config_file_src_dir }}/config/datatypes_conf.xml'
     dest: "{{ galaxy_config['galaxy']['datatypes_config_file'] }}"
-  - src: '{{ galaxy_config_file_src_dir }}/config/dependency_resolvers_conf.xml'
-    dest: "{{ galaxy_config['galaxy']['dependency_resolvers_config_file'] }}"
   - src: '{{ galaxy_config_file_src_dir }}/config/email_domain_blocklist.conf'
     dest: "{{ galaxy_config['galaxy']['email_domain_blocklist_file'] }}"
   - src: '{{ galaxy_config_file_src_dir }}/config/user_preferences_extra_conf.yml'
