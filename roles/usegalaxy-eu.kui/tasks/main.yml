@@ -19,8 +19,8 @@
   ansible.builtin.file:
     path: /opt/kui
     state: directory
-    owner: galaxy
-    group: galaxy
+    owner: "{{ galaxy_user.name }}"
+    group: "{{ galaxy_group.name }}"
     mode: '0755'
 
 - name: Copy KUI script
