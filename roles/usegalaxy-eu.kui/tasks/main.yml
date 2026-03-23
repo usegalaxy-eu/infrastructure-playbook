@@ -1,0 +1,62 @@
+---
+- name: Add Google Cloud SDK repo
+  ansible.builtin.yum_repository:
+    name: google-cloud-cli
+    description: Google Cloud CLI
+    baseurl: https://packages.cloud.google.com/yum/repos/cloud-sdk-el9-x86_64
+    enabled: true
+    gpgcheck: true
+    repo_gpgcheck: false
+    gpgkey: https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    file: google-cloud-sdk
+
+- name: Install google-cloud-cli
+  ansible.builtin.package:
+    name: google-cloud-cli
+    state: present
+
+- name: Ensure /opt/kui directory exists
+  ansible.builtin.file:
+    path: /opt/kui
+    state: directory
+    owner: "{{ galaxy_user.name }}"
+    group: "{{ galaxy_group.name }}"
+    mode: '0755'
+
+- name: Download KUI script
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/galaxyproject/kui/091fbf678c84085a7689be0120c722042812e8a7/kui.sh
+    dest: /opt/kui/kui.sh
+    owner: "{{ galaxy_user.name }}"
+    group: "{{ galaxy_group.name }}"
+    mode: '0755'
+
+- name: Configure KUI script variables
+  ansible.builtin.lineinfile:
+    path: /opt/kui/kui.sh
+    regexp: '^{{ item.key }}='
+    line: '{{ item.key }}="{{ item.value }}"'
+  loop:
+    - { key: 'PROJECT_ID', value: "{{ project_id }}" }
+    - { key: 'DATASET', value: "{{ dataset }}" }
+    - { key: 'USERS_TABLE', value: "{{ user_tables }}" }
+    - { key: 'JOBS_TABLE', value: "{{ jobs_table }}" }
+    - { key: 'USAGE_TABLE', value: "{{ usage_table }}" }
+
+- name: Comment out environment variables in KUI script
+  ansible.builtin.replace:
+    path: /opt/kui/kui.sh
+    regexp: '^export {{ item }}'
+    replace: '#export {{ item }}'
+  loop:
+    - PGDATABASE
+    - PATH
+
+- name: Run KUI script monthly
+  ansible.builtin.cron:
+    name: Run KUI script
+    job: /opt/kui/kui.sh
+    day: "1"
+    hour: "0"
+    minute: "0"
+    user: "{{ galaxy_user.name }}"
