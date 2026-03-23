@@ -27,6 +27,8 @@
   ansible.builtin.copy:
     src: kui.sh
     dest: /opt/kui/kui.sh
+    owner: "{{ galaxy_user.name }}"
+    group: "{{ galaxy_group.name }}"
     mode: '0755'
 
 - name: Run KUI script monthly
