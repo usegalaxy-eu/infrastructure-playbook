@@ -235,6 +235,12 @@ tools:
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
 
+  toolshed.g2.bx.psu.edu/repos/rnateam/splitfasta/rbc_splitfasta/.*:
+    # this is only implemented in 0.6.0+, consider adding a rule checking that `$inputFile.metadata.sequences` is not bigger than 1000 and the version is less 0.6.0
+    env:
+      - name: SINGULARITYENV_GALAXY_FILE_LIMIT
+        value: "250"
+
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_overviews/3dtrees_overviews/.*:
     cores: 5
     mem: 5
