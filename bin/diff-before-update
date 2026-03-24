@@ -51,3 +51,8 @@ compare files/$folder/config/user_preferences_extra_conf.yml	$GALAXY/config/user
 #compare templates/$folder/config/build_sites.yml.j2	$GALAXY/config/build_sites.yml.sample.sample
 
 compare group_vars/gxconfig${ext}.yml	$GALAXY/config/galaxy.yml.sample
+galaxy_file_templates=$(mktemp)
+infra_file_templates=$(mktemp)
+find $GALAXY/lib/galaxy/files/templates/examples -type f -name "*.y*ml" | cut -d '/' -f 1,2,3,4,5 --complement | sort > $galaxy_file_templates
+sed -n 's/.*files\/\([^"]*\)".*/\1/p' templates/$folder/config/file_source_templates.yml.j2 | sort > $infra_file_templates
+compare $infra_file_templates $galaxy_file_templates
