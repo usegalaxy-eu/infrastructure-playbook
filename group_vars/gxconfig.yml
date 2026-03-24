@@ -2234,7 +2234,6 @@ base_app_main: &BASE_APP_MAIN
   # The syntax, available resolvers, and documentation of their options
   # is explained in detail in the documentation:
   # https://docs.galaxyproject.org/en/master/admin/dependency_resolvers.html
-  #dependency_resolvers: null
   dependency_resolvers:
     - type: tool_shed_packages
     - type: galaxy_packages
@@ -2626,13 +2625,6 @@ base_app_main: &BASE_APP_MAIN
   # disabled on a per-task basis at this time.)
   # For details, see Celery documentation at
   # https://docs.celeryq.dev/en/stable/userguide/configuration.html.
-  #celery_conf:
-  #  broker_url: null
-  #  result_backend: null
-  #  task_routes:
-  #    galaxy.fetch_data: galaxy.external
-  #    galaxy.set_job_metadata: galaxy.external
-
   celery_conf:
     result_backend: "{{ redis_connection_string }}"
     result_expires: 259200 # in sec = 3 days, delete task runs at 4 am, see celery docs
