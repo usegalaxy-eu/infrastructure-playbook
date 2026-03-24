@@ -51,8 +51,23 @@ compare files/$folder/config/user_preferences_extra_conf.yml	$GALAXY/config/user
 #compare templates/$folder/config/build_sites.yml.j2	$GALAXY/config/build_sites.yml.sample.sample
 
 compare group_vars/gxconfig${ext}.yml	$GALAXY/config/galaxy.yml.sample
+
+# Compare file source templates (no edits possible)
 galaxy_file_templates=$(mktemp)
 infra_file_templates=$(mktemp)
-find $GALAXY/lib/galaxy/files/templates/examples -type f -name "*.y*ml" | cut -d '/' -f 1,2,3,4,5 --complement | sort > $galaxy_file_templates
-sed -n 's/.*files\/\([^"]*\)".*/\1/p' templates/$folder/config/file_source_templates.yml.j2 | sort > $infra_file_templates
+find $GALAXY/lib/galaxy/files/templates/examples -type f -name "*.y*ml" | \
+  cut -d '/' -f 1,2,3,4,5 --complement | \
+  sort > $galaxy_file_templates
+sed -n 's/.*files\/\([^"]*\)".*/\1/p' templates/$folder/config/file_source_templates.yml.j2 | \
+  sort > $infra_file_templates
 compare $infra_file_templates $galaxy_file_templates
+
+# Compare object store templates (no edits possible)
+galaxy_object_store_templates=$(mktemp)
+infra_object_store_templates=$(mktemp)
+find $GALAXY/lib/galaxy/objectstore/templates/examples -type f -name "*.y*ml" | \
+  cut -d '/' -f 1,2,3,4,5 --complement | \
+  sort > $galaxy_object_store_templates
+sed -n 's/.*objectstore\/\([^"]*\)".*/\1/p' templates/$folder/config/object_store_templates.yml.j2 | \
+  sort > $infra_object_store_templates
+compare $infra_object_store_templates $galaxy_object_store_templates
