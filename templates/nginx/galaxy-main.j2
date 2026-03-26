@@ -321,3 +321,12 @@ server {
     server_name microgalaxy.usegalaxy.eu microbiome.usegalaxy.eu;
     return 302 $scheme://microbiology.usegalaxy.eu$request_uri;
 }
+
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    server_name graphclust.usegalaxy.eu;
+    return 302 $scheme://rna.usegalaxy.eu$request_uri;
+}
