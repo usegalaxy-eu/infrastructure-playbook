@@ -32,17 +32,18 @@
     - hxr.admin-tools
     - influxdata.chrony
     - hxr.monitor-email
-    - linuxhq.yum_cron
+    #- linuxhq.yum_cron # Deprecated
     - galaxyproject.nginx
     - hxr.autofs
     # BEGIN custom
     - hxr.remap-user
     # Now add custom tomcat user with hardcoded ID. The user info is in group_vars/apollo.yml
-    - hxr.replace-galaxy-user
+    # Tomcat had already ID 999
+    #- hxr.replace-galaxy-user
     - devops.tomcat7
     # - hxr.gx-cookie-proxy # Currently PANICs, the old version deployed is fine tho
     - hxr.apollo
     # END custom
-    - dj-wasabi.telegraf
+#    - dj-wasabi.telegraf # this role needs to be fixed
     # - dev-sec.os-hardening
     # - dev-sec.ssh-hardening
