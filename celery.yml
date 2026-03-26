@@ -45,9 +45,10 @@
         state: present
         reload: true
 
-    - name: Disable SELinux
+    - name: Set SELinux to permissive mode
       selinux:
-        state: disabled
+        policy: targeted
+        state: permissive
 
     - name: Deploy systemd override to run Celery beat only on one host
       # remove these files and folder before removing this block
