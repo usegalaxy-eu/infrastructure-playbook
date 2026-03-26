@@ -8,19 +8,32 @@
     dest: "{{ apollo_tmp_file }}"
   register: download
 
+- name: Check if old apollo exists
+  stat:
+    path: "{{ tomcat_apollo_webapp_dir }}"
+  register: apollo_webapp_stat
+
+
+- name: Check if Apollo classes directory exists
+  stat:
+    path: "{{ tomcat_apollo_webapp_dir }}/WEB-INF/classes"
+  register: apollo_classes_stat
+
 - name: Backup old apollo
   copy:
     src: "{{ tomcat_apollo_webapp_dir }}"
     dest: "/tmp/apollo-backup-{{ ansible_date_time.epoch }}"
     remote_src: true
-  when: download.changed
+  when:
+    - apollo_webapp_stat.stat.exists
+    - (download.changed or not apollo_classes_stat.stat.exists)
   notify: 'restart tomcat'
 
 - name: Wipe out old apollo
   file:
     path: "{{ tomcat_apollo_webapp_dir }}"
     state: absent
-  when: download.changed
+  when: download.changed or not apollo_classes_stat.stat.exists
   notify: 'restart tomcat'
 
 - name: Make new root webapp
@@ -29,7 +42,7 @@
     state: directory
     owner: tomcat
     group: tomcat
-  when: download.changed
+  when: download.changed or not apollo_classes_stat.stat.exists
   notify: 'restart tomcat'
 
 - name: Extract new apollo into root webapp.
@@ -37,12 +50,12 @@
     src: "{{ apollo_tmp_file }}"
     dest: "{{ tomcat_apollo_webapp_dir }}"
     remote_src: true
-  when: download.changed
+  when: download.changed or not apollo_classes_stat.stat.exists
   notify: 'restart tomcat'
 
 - name: Fix perms
   command: "chown tomcat:tomcat -R /usr/share/tomcat/webapps/apollo/"
-  when: download.changed
+  when: download.changed or not apollo_classes_stat.stat.exists
   notify: 'restart tomcat'
 
 - name: Deploy config file
