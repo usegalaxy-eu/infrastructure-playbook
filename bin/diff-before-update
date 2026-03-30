@@ -53,6 +53,8 @@ compare files/$folder/config/user_preferences_extra_conf.yml	$GALAXY/config/user
 compare group_vars/gxconfig${ext}.yml	$GALAXY/config/galaxy.yml.sample
 
 # Compare file source templates (no edits possible)
+echo "File source templates changed last:"
+git -C $GALAXY log lib/galaxy/files/templates/examples/ | grep Date | head -n 1
 galaxy_file_templates=$(mktemp)
 infra_file_templates=$(mktemp)
 find $GALAXY/lib/galaxy/files/templates/examples -type f -name "*.y*ml" | \
@@ -63,6 +65,8 @@ sed -n 's/.*files\/\([^"]*\)".*/\1/p' templates/$folder/config/file_source_templ
 compare $infra_file_templates $galaxy_file_templates
 
 # Compare object store templates (no edits possible)
+echo "Objectstore templates changed last:"
+git -C $GALAXY log lib/galaxy/objectstore/templates/examples/ | grep Date | head -n 1
 galaxy_object_store_templates=$(mktemp)
 infra_object_store_templates=$(mktemp)
 find $GALAXY/lib/galaxy/objectstore/templates/examples -type f -name "*.y*ml" | \
