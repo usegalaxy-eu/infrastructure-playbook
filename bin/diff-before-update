@@ -35,11 +35,11 @@ compare() {
 
 compare files/$folder/config/data_manager_conf.xml	$GALAXY/config/data_manager_conf.xml.sample
 compare files/$folder/config/datatypes_conf.xml	$GALAXY/config/datatypes_conf.xml.sample
-compare files/$folder/config/dependency_resolvers_conf.xml	$GALAXY/config/dependency_resolvers_conf.xml.sample
+#compare files/$folder/config/dependency_resolvers_conf.xml	$GALAXY/config/dependency_resolvers_conf.xml.sample
 #compare files/$folder/config/disposable_email_blacklist.conf	$GALAXY/config/disposable_email_blacklist.conf.sample
 compare files/$folder/config/error_report.yml	$GALAXY/config/error_report.yml.sample
 #compare files/$folder/config/job_metrics_conf.xml	$GALAXY/config/job_metrics_conf.xml.sample
-compare files/$folder/config/migrated_tools_conf.xml	$GALAXY/config/migrated_tools_conf.xml.sample
+#compare files/$folder/config/migrated_tools_conf.xml	$GALAXY/config/migrated_tools_conf.xml.sample
 #compare files/$folder/config/object_store_conf.xml	$GALAXY/config/object_store_conf.xml.sample
 compare templates/$folder/config/oidc_backends_config.xml	$GALAXY/config/oidc_backends_config.xml.sample
 compare templates/$folder/config/oidc_config.xml	$GALAXY/config/oidc_config.xml.sample
@@ -51,3 +51,27 @@ compare files/$folder/config/user_preferences_extra_conf.yml	$GALAXY/config/user
 #compare templates/$folder/config/build_sites.yml.j2	$GALAXY/config/build_sites.yml.sample.sample
 
 compare group_vars/gxconfig${ext}.yml	$GALAXY/config/galaxy.yml.sample
+
+# Compare file source templates (no edits possible)
+echo "File source templates changed last:"
+git -C $GALAXY log lib/galaxy/files/templates/examples/ | grep Date | head -n 1
+galaxy_file_templates=$(mktemp)
+infra_file_templates=$(mktemp)
+find $GALAXY/lib/galaxy/files/templates/examples -type f -name "*.y*ml" | \
+  cut -d '/' -f 1,2,3,4,5 --complement | \
+  sort > $galaxy_file_templates
+sed -n 's/.*files\/\([^"]*\)".*/\1/p' templates/$folder/config/file_source_templates.yml.j2 | \
+  sort > $infra_file_templates
+compare $infra_file_templates $galaxy_file_templates
+
+# Compare object store templates (no edits possible)
+echo "Objectstore templates changed last:"
+git -C $GALAXY log lib/galaxy/objectstore/templates/examples/ | grep Date | head -n 1
+galaxy_object_store_templates=$(mktemp)
+infra_object_store_templates=$(mktemp)
+find $GALAXY/lib/galaxy/objectstore/templates/examples -type f -name "*.y*ml" | \
+  cut -d '/' -f 1,2,3,4,5 --complement | \
+  sort > $galaxy_object_store_templates
+sed -n 's/.*objectstore\/\([^"]*\)".*/\1/p' templates/$folder/config/object_store_templates.yml.j2 | \
+  sort > $infra_object_store_templates
+compare $infra_object_store_templates $galaxy_object_store_templates
