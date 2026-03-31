@@ -72,6 +72,14 @@
             owner: root
             group: root
             mode: "0644"
+
+    - name: Ensure python chache exists (PYTHONPYCACHEPREFIX)
+      ansible.builtin.file:
+        path: /scratch/pythoncache/
+        state: directory
+        owner: galaxy
+        group: galaxy
+        mode: "0700"
   roles:
     - geerlingguy.repo-epel
     - role: artis3n.tailscale  # broken (invalid API key)
