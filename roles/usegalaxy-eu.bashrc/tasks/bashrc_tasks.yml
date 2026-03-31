@@ -145,10 +145,16 @@
         - "export GALAXY_PULSAR_APP_CONF={{ bashrc_galaxy_pulsar_app_conf }}"
         - "export SINGULARITY_CACHEDIR=/scratch/singularity/"
         - "export APPTAINER_CACHEDIR=/scratch/singularity/"
-        - "export PYTHONPYCACHEPREFIX=/scratch/pythoncache/"
-
       loop_control:
         loop_var: task_item
+
+    - name: Ensure PYTHONPYCACHEPREFIX is exported (except on sn09.galaxyproject.eu)
+      ansible.builtin.lineinfile:
+        path: "{{ item.uhome }}/.bashrc"
+        line: 'export PYTHONPYCACHEPREFIX=/scratch/pythoncache/'
+        create: true
+      loop: "{{ users }}"
+      when: inventory_hostname != 'sn09.galaxyproject.eu'
 
     - name: Check for bash_history
       stat:
