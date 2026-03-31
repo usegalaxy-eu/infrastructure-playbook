@@ -2,6 +2,8 @@
 - name: Celery cluster
   vars:
     celerycluster_ansible_group: celerycluster
+    bashrc_extra_exports:
+      - "PYTHONPYCACHEPREFIX=/scratch/pythoncache/"
   hosts: "{{ celerycluster_ansible_group }}"
   gather_facts: true
   become: true

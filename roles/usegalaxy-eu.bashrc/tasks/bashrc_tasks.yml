@@ -148,13 +148,13 @@
       loop_control:
         loop_var: task_item
 
-    - name: Ensure PYTHONPYCACHEPREFIX is exported (except on sn09.galaxyproject.eu)
-      ansible.builtin.lineinfile:
+    - name: Insert specific export vars from group_vars
+      lineinfile:
         path: "{{ item.uhome }}/.bashrc"
-        line: 'export PYTHONPYCACHEPREFIX=/scratch/pythoncache/'
-        create: true
-      loop: "{{ users }}"
-      when: inventory_hostname != 'sn09.galaxyproject.eu'
+        line: "export {{ task_item }}"
+      loop: "{{ bashrc_extra_exports }}"
+      loop_control:
+        loop_var: task_item
 
     - name: Check for bash_history
       stat:
