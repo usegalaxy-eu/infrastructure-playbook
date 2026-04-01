@@ -55,6 +55,22 @@
     group: root
     mode: 0755
 
+- name: Copy the galaxy user-tool-usage over time script
+  ansible.builtin.copy:
+    src: "galaxy_user_tool_usage.sh"
+    dest: "/usr/bin/galaxy_user_tool_usage"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Copy the galaxy user-tool-usage over time script
+  ansible.builtin.copy:
+    src: "galaxy_user_tool_usage_over_time.sh"
+    dest: "/usr/bin/galaxy_user_tool_usage_over_time"
+    owner: root
+    group: root
+    mode: 0755
+
 - name: Copy the galaxy wizard utilization and OpenAI costs-completion script
   ansible.builtin.copy:
     src: "galaxy_wizard_openai_utilization_and_costs.py"
