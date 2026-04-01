@@ -47,15 +47,6 @@
             'firewalld',
           ]
       become: true
-
-    - name: Ensure python chache exists (PYTHONPYCACHEPREFIX)
-      ansible.builtin.file:
-        path: /scratch/pythoncache/
-        state: directory
-        owner: galaxy
-        group: galaxy
-        mode: "0700"
-
   post_tasks:
     - name: Append some users to the systemd-journal group
       user:
