@@ -465,6 +465,8 @@ destinations:
         value: /scratch/singularity/
       - name: APPTAINER_CACHEDIR
         value: /scratch/singularity/
+      - name: PYTHONPYCACHEPREFIX
+        value: /scratch/pythoncache/
     params:
       request_gpus: "{gpus or 0}"
 
@@ -546,6 +548,9 @@ destinations:
     max_accepted_mem: 1000
     min_accepted_gpus: 0
     max_accepted_gpus: 0
+    env:
+      - name: PYTHONPYCACHEPREFIX
+        value: /scratch/pythoncache/
     params:
       require_container: true
       container_override:
@@ -567,6 +572,9 @@ destinations:
     max_accepted_mem: 10
     min_accepted_gpus: 0
     max_accepted_gpus: 0
+    env:
+      - name: PYTHONPYCACHEPREFIX
+        value: /scratch/pythoncache/
     params:
       requirements: "GalaxyTraining == false"
       rank: 'GalaxyGroup == "internal"'
