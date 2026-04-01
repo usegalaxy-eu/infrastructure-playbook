@@ -1,0 +1,5 @@
+ssh_host_certificates: "{{ ssh_host_sign_keys | map(attribute='certificate') }}"
+ssh_permit_root_login: "without-password"
+ssh_use_pam: true
+sftp_enabled: true
+ssh_client_alive_interval: 600
