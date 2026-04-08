@@ -36,6 +36,14 @@ tools:
     # for now:
     inherits: _conda_in_container
 
+  toolshed.g2.bx.psu.edu/repos/gga/apollo_.*:
+    inherits: _conda_in_container
+    env:
+      SINGULARITYENV_GALAXY_WEBAPOLLO_URL: {{ GALAXY_WEBAPOLLO_URL }}
+      SINGULARITYENV_GALAXY_WEBAPOLLO_USER: {{ GALAXY_WEBAPOLLO_USER }}
+      SINGULARITYENV_GALAXY_WEBAPOLLO_PASSWORD:  {{ GALAXY_WEBAPOLLO_PASSWORD }}
+      SINGULARITYENV_GALAXY_SHARED_DIR: {{ GALAXY_SHARED_DIR }}
+
   gbk_to_orf:
     inherits: _conda_in_container
 
