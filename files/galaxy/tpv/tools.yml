@@ -411,6 +411,13 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/bbtools_tadpole/bbtools_tadpole/.*:
     mem: 8
 
+  # the following two rules are really dumb ones, which will allow bbtools to succeed in more cases than with default mem,
+  # but this should really be improved according to https://github.com/usegalaxy-eu/infrastructure-playbook/issues/1994
+  toolshed.g2.bx.psu.edu/repos/iuc/bbtools_bbduk/bbtools_bbduk/.*:
+    mem: 32
+  toolshed.g2.bx.psu.edu/repos/iuc/bbtools_bbmap/bbtools_bbmap/.*:
+    mem: 32
+
   toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_.*:
     params:
       docker_run_extra_arguments: --user 999:999
