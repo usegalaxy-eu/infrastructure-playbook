@@ -74,9 +74,6 @@ nginx_selinux_allow_local_connections: true
 #nginx_servers:
 #  - redirect-ssl
 
-# Allow root login on all machines - TBD
-ssh_allow_root_with_key: true
-
 redis_connection_string: "redis://:{{ redis_requirepass }}@mq02.galaxyproject.eu:6379/0"
 # Chrony
 chrony_server: 'time.ruf.uni-freiburg.de iburst'
@@ -177,28 +174,6 @@ au_random_sleep: 360
 # Do NOT disable ipv6
 sysctl_config:
   net.ipv6.conf.all.disable_ipv6: 0
-
-# SSH
-
-# ALL hosts should have signed SSH keys.
-# ssh-host-(re)sign role
-ssh_host_key_cert_files:
-  - /etc/ssh/ssh_host_rsa_key-cert.pub
-  - /etc/ssh/ssh_host_ecdsa_key-cert.pub
-  - /etc/ssh/ssh_host_ed25519_key-cert.pub
-
-# dev-sec.ssh-hardening role
-# Allow root login on all machines
-ssh_permit_root_login: "without-password"
-sshd_custom_options:
-  - "HostCertificate {{ ssh_host_key_cert_files[0] }}"
-  - "HostCertificate {{ ssh_host_key_cert_files[1] }}"
-  - "HostCertificate {{ ssh_host_key_cert_files[2] }}"
-# Anything else prevents more login
-ssh_use_pam: true
-# Required if you want to run ansible more than once.
-sftp_enabled: true
-ssh_client_alive_interval: 600
 
 # Apollo env vars
 apollo_env: "GALAXY_WEBAPOLLO_URL={{ GALAXY_WEBAPOLLO_URL }} GALAXY_WEBAPOLLO_USER={{ GALAXY_WEBAPOLLO_USER }} GALAXY_WEBAPOLLO_PASSWORD={{ GALAXY_WEBAPOLLO_PASSWORD }} GALAXY_WEBAPOLLO_EXT_URL={{ GALAXY_WEBAPOLLO_EXT_URL }} GALAXY_SHARED_DIR={{ GALAXY_SHARED_DIR }} GALAXY_APOLLO_ORG_SUFFIX=id"
