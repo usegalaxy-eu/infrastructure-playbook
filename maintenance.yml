@@ -31,7 +31,7 @@
         state: present
     - name: Set additional local mount point
       set_fact:
-        autofs_conf_files: "{{ autofs_conf_files | combine({ 'usrlocal': autofs_conf_files['usrlocal'] + galaxy_mount }) }}"
+        autofs_conf_files: "{{ autofs_conf_files | combine({'usrlocal': autofs_conf_files['usrlocal'] + galaxy_mount}) }}"
     - name: Install Dependencies
       package:
         name:
