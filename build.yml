@@ -13,7 +13,7 @@
         enablerepo: crb
         name: ["policycoreutils-python-utils", "python3-wheel-wheel"]
       become: true
-    - name: permit traffic in default zone for http and https service
+    - name: Permit traffic in default zone for HTTP and HTTPS service
       ansible.posix.firewalld:
         service: "{{ item }}"
         permanent: true

@@ -11,7 +11,7 @@
   collections:
     - devsec.hardening
   handlers:
-    - name: restart rsyslog
+    - name: Restart rsyslog
       service:
         name: rsyslog
         state: restarted
@@ -57,7 +57,7 @@
         - '{{ galaxy_user.name }}'
         - 'telegraf'
 
-    - name: rsyslog configuration
+    - name: Rsyslog configuration
       copy:
         content: |
           # Accept logs on TCP port 514

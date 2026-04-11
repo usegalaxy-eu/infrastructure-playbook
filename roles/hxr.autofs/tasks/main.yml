@@ -1,5 +1,5 @@
 ---
-- name: autofs package install
+- name: Autofs package install
   package:
     name: autofs
     state: latest
@@ -52,7 +52,7 @@
   when: '"vdb" in usegalaxy_eu_autofs_mounts'
   notify: autofs restart
 
-- name: autofs service enable
+- name: Autofs service enable
   service:
     name: autofs
     enabled: yes
