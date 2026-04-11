@@ -10,7 +10,7 @@
     - python-pip
 
 - name: "Install credentials for FTP access"
-  template:
+  ansible.builtin.template:
     src: ftp-creds.txt
     dest: /etc/ftp-creds.txt
     owner: telegraf
@@ -18,7 +18,7 @@
     mode: 0640
 
 - name: "Install galaxy API creds"
-  template:
+  ansible.builtin.template:
     src: gx-api-creds.json
     dest: /etc/gx-api-creds.json
     owner: telegraf
@@ -46,7 +46,7 @@
     mode: 0755
 
 - name: "Install simple-nagios-executor script"
-  template:
+  ansible.builtin.template:
     src: simple-nagios.sh
     dest: /usr/bin/simple-nagios
     owner: root

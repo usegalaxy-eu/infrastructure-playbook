@@ -58,7 +58,7 @@
 - name: Template config files
   become: true
   become_user: "{{ hxr_sentry_user }}"
-  template:
+  ansible.builtin.template:
     src: "{{ item }}.j2"
     dest: "{{ hxr_sentry_repodir }}/{{ item }}"
     owner: "{{ hxr_sentry_user }}"

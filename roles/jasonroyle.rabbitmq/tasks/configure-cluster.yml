@@ -6,7 +6,7 @@
   with_items: "{{ ansible_play_hosts }}"
 
 - name: set erlang cookie
-  template:
+  ansible.builtin.template:
     src: erlang.cookie.j2
     dest: "{{ rabbitmq_erlang_cookie_file }}"
     owner: rabbitmq

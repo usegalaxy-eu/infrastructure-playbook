@@ -13,7 +13,7 @@
   notify: reload nginx
 
 - name: Add managed vhost config files.
-  template:
+  ansible.builtin.template:
     src: "{{ item.template|default(nginx_vhost_template) }}"
     dest: "{{ nginx_vhost_path }}/{{ item.filename|default(item.server_name.split(' ')[0] ~ '.conf') }}"
     force: yes

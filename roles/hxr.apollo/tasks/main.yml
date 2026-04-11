@@ -46,7 +46,7 @@
   notify: 'restart tomcat'
 
 - name: Deploy config file
-  template:
+  ansible.builtin.template:
     src: apollo-config.groovy
     dest: "{{ tomcat_apollo_webapp_dir }}/{{ item }}"
     owner: tomcat

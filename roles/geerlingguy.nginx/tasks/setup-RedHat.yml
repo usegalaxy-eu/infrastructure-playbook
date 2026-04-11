@@ -1,6 +1,6 @@
 ---
 - name: Enable nginx repo.
-  template:
+  ansible.builtin.template:
     src: nginx.repo.j2
     dest: /etc/yum.repos.d/nginx.repo
     owner: root

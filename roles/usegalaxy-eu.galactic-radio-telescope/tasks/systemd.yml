@@ -1,6 +1,6 @@
 ---
 - name: Send runner script
-  template:
+  ansible.builtin.template:
     src: "run.sh"
     dest: "{{ grt_dir }}/run.sh"
     owner: "{{ grt_user.name }}"
@@ -9,7 +9,7 @@
   notify: 'reload grt'
 
 - name: Install systemd unit file
-  template:
+  ansible.builtin.template:
     src: grt.service
     dest: /etc/systemd/system/galactic-radio-telescope.service
   notify: setup grt systemd

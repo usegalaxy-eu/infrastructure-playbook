@@ -5,7 +5,7 @@
     state: latest
 
 - name: Copy main autofs file
-  template:
+  ansible.builtin.template:
     src: data.autofs.j2
     dest: "/etc/auto.master.d/data.autofs"
     owner: root
@@ -14,7 +14,7 @@
   notify: autofs restart
 
 - name: Copy data conf file
-  template:
+  ansible.builtin.template:
     src: "data.conf.j2"
     dest: "/etc/auto.data"
     owner: root
@@ -23,7 +23,7 @@
   notify: autofs restart
 
 - name: Copy discontinued conf file
-  template:
+  ansible.builtin.template:
     src: "discontinued.conf.j2"
     dest: "/etc/auto.discontinued"
     owner: root
@@ -33,7 +33,7 @@
   notify: autofs restart
 
 - name: Copy usrlocal conf file
-  template:
+  ansible.builtin.template:
     src: "usrlocal.conf.j2"
     dest: "/etc/auto.usrlocal"
     owner: root
@@ -43,7 +43,7 @@
   notify: autofs restart
 
 - name: Copy vols conf file
-  template:
+  ansible.builtin.template:
     src: "vols.conf.j2"
     dest: "/etc/auto.vols"
     owner: root
