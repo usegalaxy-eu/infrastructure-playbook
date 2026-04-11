@@ -7,7 +7,7 @@
     - "secret_group_vars/all.yml"
   pre_tasks:
     - name: Install telescope database client dependency
-      package:
+      ansible.builtin.package:
         name: ['python-psycopg2']
   roles:
     - hostname

@@ -9,7 +9,7 @@
     - "secret_group_vars/all.yml"
   pre_tasks:
     - name: Install Dependencies
-      package:
+      ansible.builtin.package:
         enablerepo: crb
         name: ["policycoreutils-python-utils", "python3-wheel-wheel"]
       become: true

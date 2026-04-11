@@ -13,7 +13,7 @@
     - "secret_group_vars/all.yml"
   pre_tasks:
     - name: Add CVMFS admin SSH key
-      authorized_key:
+      ansible.posix.authorized_key:
         user: centos
         state: present
         key: https://github.com/natefoo.keys

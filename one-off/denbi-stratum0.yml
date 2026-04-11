@@ -9,7 +9,7 @@
     - "secret_group_vars/all.yml"
   pre_tasks:
     - name: Create /srv symlink to mounted data
-      file:
+      ansible.builtin.file:
         src: /data/vol/
         dest: /srv
         owner: root

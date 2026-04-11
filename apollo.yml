@@ -22,7 +22,7 @@
     #         Allow access by executing:
     #         # setsebool -P daemons_enable_cluster_mode 1
     - name: Put SELinux in permissive mode, logging actions that would be blocked.
-      selinux:
+      ansible.posix.selinux:
         policy: targeted
         state: permissive
   roles:

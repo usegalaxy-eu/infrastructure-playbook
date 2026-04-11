@@ -13,7 +13,7 @@
         name: python
         path: /usr/bin/python3
     - name: Create /srv symlink to cvmfs data
-      file:
+      ansible.builtin.file:
         src: /data/dnb01
         dest: /srv
         owner: root
@@ -22,7 +22,7 @@
         force: true
   post_tasks:
     - name: Disable SELinux
-      selinux:
+      ansible.posix.selinux:
         state: disabled
       register:
         selinux_disabled

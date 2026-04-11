@@ -14,7 +14,7 @@
       community.general.timezone:
         name: Europe/Berlin
     - name: Install Dependencies
-      package:
+      ansible.builtin.package:
         name: ['postgresql', 'proftpd-utils']
     - name: Configure SELinux
       ansible.posix.seboolean:
