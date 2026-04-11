@@ -12,4 +12,5 @@
   ansible.builtin.template:
     src: grt.service
     dest: /etc/systemd/system/galactic-radio-telescope.service
+    mode: "0644"
   notify: setup grt systemd

@@ -91,6 +91,7 @@
             state: directory
             owner: root
             group: root
+            mode: "0755"
         - name: Ensure OpenStack configuration directory exists.
           become: true
           ansible.builtin.file:
@@ -134,6 +135,7 @@
         regexp: "^export OPENAI_API_KEY_TELEGRAF"
         line: 'export OPENAI_API_KEY_TELEGRAF="{{ openai_api_key_telegraf }}"'
         create: true
+        mode: "0644"
       no_log: true
   roles:
     - usegalaxy-eu.vgcn-monitoring
