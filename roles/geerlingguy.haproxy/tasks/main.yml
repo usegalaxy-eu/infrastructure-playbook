@@ -48,4 +48,7 @@
   notify: restart haproxy
 
 - name: Ensure HAProxy is started and enabled on boot.
-  service: name=haproxy state=started enabled=yes
+  ansible.builtin.service:
+    name: haproxy
+    state: started
+    enabled: true
