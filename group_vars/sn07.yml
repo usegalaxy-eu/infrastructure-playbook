@@ -106,7 +106,7 @@ telegraf_plugins_extra:
     plugin: "postgresql"
     config:
       - address = "{{ galaxy_db_connection }}"
-      - databases = ["galaxy", "galaxy-test", "apollo", "chado"]
+      - databases = ["galaxy", "apollo", "chado"]
 
   listen_galaxy_routes:
     plugin: "statsd"
@@ -188,7 +188,6 @@ nginx_ssl_servers:
   - telescope-ssl
   - galaxy-main
   - galaxy-ie-main
-  - galaxy-test-proxy
 nginx_conf_http:
   client_max_body_size: 1g
   proxy_cache_path: "/tmp/nginx-cache levels=1:2 keys_zone=STATIC:10m inactive=24h  max_size=1g"

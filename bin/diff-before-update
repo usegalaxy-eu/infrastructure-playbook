@@ -2,16 +2,12 @@
 GALAXY=../galaxy
 
 if (( $# == 0 )); then
-	echo "specify main or test"
+	echo "specify main"
 	exit 1
 fi
 
 if [[ $1 == "main" ]]; then
 	folder="galaxy"
-	ext=""
-elif [[ $1 == "test" ]]; then
-	folder="galaxy-test"
-	ext="-test"
 else
 	echo "Unknown"
 	exit 1
