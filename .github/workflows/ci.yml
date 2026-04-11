@@ -26,8 +26,9 @@ jobs:
           python-version: '3.x'
 
       - name: Install test dependencies.
-        run: pip3 install yamllint
-
-      - name: Lint code.
         run: |
-          yamllint .
+          pip3 install -r requirements.txt
+          pip3 install -r .github/requirements-python-lint.txt
+
+      - name: Validate repository.
+        run: make validate
