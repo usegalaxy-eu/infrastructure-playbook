@@ -6,7 +6,8 @@
   vars_files:
     - "secret_group_vars/all.yml"
   pre_tasks:
-    - package:
+    - name: Install telescope database client dependency
+      package:
         name: ['python-psycopg2']
   roles:
     - hostname

@@ -13,7 +13,8 @@
     mode: 0755
   notify: 'Restart Telegraf'
 
-- set_fact:
+- name: Build CVMFS telegraf plugin config
+  set_fact:
     check_cvmfs_telegraf:
       check_cvmfs_telegraf:
         plugin: exec
@@ -23,5 +24,6 @@
           - data_format = "influx"
           - interval = "5m"
 
-- set_fact:
+- name: Merge CVMFS telegraf plugin config
+  set_fact:
     telegraf_plugins_extra: "{{ telegraf_plugins_extra | combine(check_cvmfs_telegraf) }}"

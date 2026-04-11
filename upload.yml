@@ -9,7 +9,8 @@
     - mounts/mountpoints.yml
     - mounts/dest/all.yml
   pre_tasks:
-    - ansible.posix.firewalld:
+    - name: Open Rustus firewall ports
+      ansible.posix.firewalld:
         zone: public
         port: 1080-1081/tcp
         permanent: true

@@ -12,7 +12,8 @@
   vars_files:
     - "secret_group_vars/all.yml"
   pre_tasks:
-    - authorized_key:
+    - name: Add CVMFS admin SSH key
+      authorized_key:
         user: centos
         state: present
         key: https://github.com/natefoo.keys

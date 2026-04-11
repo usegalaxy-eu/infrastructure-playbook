@@ -14,7 +14,8 @@
       alternatives:
         name: python
         path: /usr/bin/python3
-    - file:
+    - name: Create /srv symlink to cvmfs data
+      file:
         src: /data/dnb01
         dest: /srv
         owner: root
