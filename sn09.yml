@@ -223,7 +223,7 @@
         path: '{{ galaxy_server_dir }}/compliance.log'
         owner: galaxy
         group: root
-        mode: 0644
+        mode: "0644"
 
     - name: Ensure .config directory exists for galaxy user
       ansible.builtin.file:
