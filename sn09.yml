@@ -233,7 +233,7 @@
         group: galaxy
         mode: '0755'
 
-    - name: Ensure database directory exists and is owned by galaxy user: {{ galaxy_server_dir }}/database
+    - name: "Ensure database directory exists and is owned by galaxy user for {{ galaxy_server_dir }}/database"
       ansible.builtin.file:
         path: "{{ galaxy_server_dir }}/database"
         state: directory
