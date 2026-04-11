@@ -25,8 +25,6 @@
         # - policycoreutils-python-utils
     - name: "Install system packages needed for installation"
       ansible.builtin.command: "pip install pymongo"
-  collections:
-    - community.mongodb
   roles:
     - hostname
     - geerlingguy.repo-epel
