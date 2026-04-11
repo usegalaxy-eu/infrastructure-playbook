@@ -106,7 +106,7 @@
     - name: Add /usr/local/bin to Galaxy's PATH in bashrc file. (usegalaxy-eu.fix-stop-ITs)
       become: true
       when: htcondor_role_submit
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: "{{ galaxy_user.home }}/.bashrc"
         line: 'export PATH="/usr/local/bin:$PATH"'
 

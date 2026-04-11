@@ -25,7 +25,7 @@
             celerycluster_is_main_node: "{{ ansible_nodename == celerycluster_main_node }}"
 
         - name: Print main node information
-          debug:
+          ansible.builtin.debug:
             msg: "This host is the main node for the Celery cluster. It will be the only one running Celery Beat and Flower."
           when: celerycluster_is_main_node
 
@@ -46,7 +46,7 @@
         reload: true
 
     - name: Set SELinux to permissive mode
-      selinux:
+      ansible.posix.selinux:
         policy: targeted
         state: permissive
 
