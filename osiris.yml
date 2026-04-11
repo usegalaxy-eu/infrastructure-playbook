@@ -24,7 +24,8 @@
         # We need these for SELinux but they are installed by mongodb_selinux
         # - policycoreutils-python-utils
     - name: "Install system packages needed for installation"
-      ansible.builtin.command: "pip install pymongo"
+      ansible.builtin.pip:
+        name: pymongo
   roles:
     - hostname
     - geerlingguy.repo-epel

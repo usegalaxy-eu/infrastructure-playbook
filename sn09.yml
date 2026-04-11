@@ -69,8 +69,8 @@
     - mounts/mountpoints.yml
   handlers:
     - name: Restart Galaxy
-      ansible.builtin.shell: |
-        cd /opt/galaxy/ && source /opt/galaxy/.bashrc  && /usr/bin/gxadmin gunicorn handler-restart && sudo -u galaxy /usr/bin/galaxy-sync-to-nfs && systemctl restart galaxy-handler@* && systemctl restart galaxy-workflow-scheduler@*
+      ansible.builtin.command: /bin/bash -lc 'cd /opt/galaxy/ && source /opt/galaxy/.bashrc && /usr/bin/gxadmin gunicorn handler-restart && sudo -u galaxy /usr/bin/galaxy-sync-to-nfs && systemctl restart galaxy-handler@* && systemctl restart galaxy-workflow-scheduler@*'
+      changed_when: false
       listen: 'restart galaxy'
   pre_tasks:
     # This should be the 1st pretask as the rest of the tasks are dependent on it.
@@ -100,7 +100,7 @@
         state: present
 
     - name: Disable SELinux
-      selinux:
+      ansible.posix.selinux:
         state: disabled
 
     - name: Install repository key (PostgreSQL v11 and above)
@@ -146,7 +146,7 @@
         mode: "0644"
 
     - name: Append some users to the systemd-journal group
-      user:
+      ansible.builtin.user:
         name: '{{ item }}'
         groups: systemd-journal
         append: true

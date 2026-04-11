@@ -37,7 +37,7 @@
   pre_tasks:
     # make sure /data exists
     - name: Ensure /data exists
-      file:
+      ansible.builtin.file:
         path: /data
         state: directory
         owner: root
@@ -53,7 +53,7 @@
         opts: defaults
     # Create a symlink in /var/lib/docker to /data/docker
     - name: Create a symlink in /var/lib/docker to /data/docker
-      file:
+      ansible.builtin.file:
         src: /data/docker
         dest: /var/lib/docker
         state: link
@@ -75,51 +75,53 @@
       with_items: "{{ apps }}"
 
     - name: Check if DNAnalyzer postgres exists
-      shell: dokku postgres:exists dnanalyzer
+      ansible.builtin.command: dokku postgres:exists dnanalyzer
       register: pg_exists
       changed_when: false
       ignore_errors: true
 
     - name: Create DNAnalyzer postgres
-      shell: dokku postgres:create dnanalyzer
+      ansible.builtin.command: dokku postgres:create dnanalyzer
+      register: pg_create
       changed_when: pg_exists.rc == 1
       when: pg_exists.rc == 1
 
     - name: Check if DNAnalyzer postgres link exists
-      shell: dokku postgres:exists dnanalyzer
+      ansible.builtin.command: dokku postgres:exists dnanalyzer
       register: pg_link_exists
       changed_when: false
       failed_when: pg_link_exists.rc > 1
 
     - name: Create DNAnalyzer postgres link
-      shell: dokku postgres:link dnanalyzer dnanalyzer
+      ansible.builtin.command: dokku postgres:link dnanalyzer dnanalyzer
       changed_when: "'dnanalyzer' not in pg_link_exists.stdout"
       when: "'dnanalyzer' not in pg_link_exists.stdout"
 
     - name: Check if gtn-slack-bot postgres exists
-      shell: dokku postgres:exists gtn-slack-bot
+      ansible.builtin.command: dokku postgres:exists gtn-slack-bot
       register: pg_exists
       changed_when: false
       ignore_errors: true
 
     - name: Create gtn-slack-bot postgres
-      shell: dokku postgres:create gtn-slack-bot
+      ansible.builtin.command: dokku postgres:create gtn-slack-bot
       changed_when: pg_exists.rc == 1
       when: pg_exists.rc == 1
 
     - name: Check if gtn-slack-bot postgres link exists
-      shell: dokku postgres:exists gtn-slack-bot
+      ansible.builtin.command: dokku postgres:exists gtn-slack-bot
       register: pg_link_exists
       changed_when: false
       failed_when: pg_link_exists.rc > 1
 
     - name: Create gtn-slack-bot postgres link
-      shell: dokku postgres:link gtn-slack-bot gtn-slack-bot
+      ansible.builtin.command: dokku postgres:link gtn-slack-bot gtn-slack-bot
       changed_when: "'gtn-slack-bot' not in pg_link_exists.stdout"
       when: "'gtn-slack-bot' not in pg_link_exists.stdout"
 
     - name: Set LE email
-      command: dokku letsencrypt:set --global email helena.rasche@gmail.com
+      ansible.builtin.command: dokku letsencrypt:set --global email helena.rasche@gmail.com
+      changed_when: true
 
     - name: Setup Certs
       dokku_letsencrypt:
