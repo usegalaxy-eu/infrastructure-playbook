@@ -10,9 +10,14 @@
     usegalaxy_eu_autofs_mounts:
       - vdb
       - data
-  vars_files:
-    - "secret_group_vars/all.yml"
+    playbook_secret_vars_files:
+      - secret_group_vars/all.yml
   pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
     - name: Add CVMFS admin SSH key
       ansible.posix.authorized_key:
         user: centos

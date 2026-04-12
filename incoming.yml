@@ -5,11 +5,17 @@
   vars:
     hostname: incoming.galaxyproject.eu
     proftpd_modules_config_file: /etc/proftpd/modules.conf
+    playbook_secret_vars_files:
+      - secret_group_vars/all.yml
   vars_files:
-    - secret_group_vars/all.yml
     - mounts/mountpoints.yml
     - mounts/dest/all.yml
   pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
     - name: Set timezone to Europe/Berlin
       community.general.timezone:
         name: Europe/Berlin

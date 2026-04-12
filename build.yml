@@ -4,10 +4,15 @@
   become: true
   vars:
     hostname: build.galaxyproject.eu
-  vars_files:
-    - "secret_group_vars/jenkins.yml"
-    - "secret_group_vars/all.yml"
+    playbook_secret_vars_files:
+      - secret_group_vars/jenkins.yml
+      - secret_group_vars/all.yml
   pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
     - name: Install Dependencies
       ansible.builtin.package:
         enablerepo: crb

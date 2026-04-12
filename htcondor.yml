@@ -11,10 +11,17 @@
         name: condor
         state: reloaded
   vars_files:
-    - secret_group_vars/db-main.yml  # PostgreSQL password (galaxyproject.gxadmin)
     - mounts/dest/all.yml
     - mounts/mountpoints.yml
+  vars:
+    playbook_secret_vars_files:
+      - secret_group_vars/db-main.yml
   pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
     - name: Ensure findutils is installed. (handy.os_setup)
       become: true
       ansible.builtin.package:

@@ -4,11 +4,17 @@
   become: true
   vars:
     hostname: cvmfs1-ufr0.internal.galaxyproject.eu
+    playbook_secret_vars_files:
+      - secret_group_vars/all.yml
   vars_files:
-    - "secret_group_vars/all.yml"
     - mounts/mountpoints.yml
     - mounts/dest/all.yml
   pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
     - name: Set default version of Python
       alternatives:
         name: python

@@ -3,9 +3,11 @@
   hosts: maintenance
   become: true
   become_user: root
+  vars:
+    playbook_secret_vars_files:
+      - secret_group_vars/db-main.yml
+      - secret_group_vars/all.yml
   vars_files:
-    - secret_group_vars/db-main.yml
-    - secret_group_vars/all.yml
     - mounts/dest/all.yml
     - mounts/mountpoints.yml
   handlers:
@@ -23,6 +25,11 @@
         minute: "0"
 
   pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
     - name: Install EPEL-release
       ansible.builtin.package:
         name: epel-release

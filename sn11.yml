@@ -4,12 +4,18 @@
   become: true
   vars:
     hostname: sn11.galaxyproject.eu
+    playbook_secret_vars_files:
+      - secret_group_vars/all.yml
   vars_files:
-    - secret_group_vars/all.yml
     - group_vars/sn11.yml
     - mounts/dest/all.yml
     - mounts/mountpoints.yml
   pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
     - name: Add mosh service config for FirewallD
       ansible.builtin.copy:
         content: '{{ firewall_mosh_service }}'

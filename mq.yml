@@ -2,11 +2,17 @@
 - name: MQ
   hosts: mq
   become: true
-  vars_files:
-    - secret_group_vars/all.yml
-    - secret_group_vars/aws.yml # AWS creds
-    - secret_group_vars/pulsar.yml     # Pulsar + MQ Connections
+  vars:
+    playbook_secret_vars_files:
+      - secret_group_vars/all.yml
+      - secret_group_vars/aws.yml
+      - secret_group_vars/pulsar.yml
   pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
     #    - name: Set default version of Python
     #      alternatives:
     #        name: python

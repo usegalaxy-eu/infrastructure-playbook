@@ -3,11 +3,18 @@
   become: true
   hosts:
     - beacon
-  vars_files:
-    - secret_group_vars/all.yml
-    - group_vars/beacon/vars.yml
-    - group_vars/beacon/vault.yml
   vars:
+    playbook_secret_vars_files:
+      - secret_group_vars/all.yml
+      - group_vars/beacon/vault.yml
+  vars_files:
+    - group_vars/beacon/vars.yml
+  pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
   roles:
     - role: usegalaxy_eu.handy.os_setup
       vars:

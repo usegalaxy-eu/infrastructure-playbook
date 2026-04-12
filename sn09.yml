@@ -47,6 +47,16 @@
       - '*.ep.interactivetool.earth-system.usegalaxy.eu'
       - '*.eirene.usegalaxy.eu'
       - '*.ep.interactivetool.eirene.usegalaxy.eu'
+    playbook_secret_vars_files:
+      - secret_group_vars/sentry.yml
+      - secret_group_vars/aws.yml
+      - secret_group_vars/pulsar.yml
+      - secret_group_vars/oidc.yml
+      - secret_group_vars/object_store.yml
+      - secret_group_vars/db-main.yml
+      - secret_group_vars/file_sources.yml
+      - secret_group_vars/all.yml
+      - secret_group_vars/keys.yml
   vars_files:
     - group_vars/sn09/sn09.yml
     - group_vars/sn09/themes_conf.yml
@@ -55,15 +65,6 @@
     - group_vars/tiaas.yml # All of the training infrastructure
     - group_vars/gxconfig.yml # The base galaxy configuration
     - group_vars/toolbox.yml # User controlled toolbox
-    - secret_group_vars/sentry.yml # Sentry SDK init url
-    - secret_group_vars/aws.yml # AWS creds
-    - secret_group_vars/pulsar.yml # Pulsar + MQ Connections
-    - secret_group_vars/oidc.yml # OIDC credentials (ELIXIR, keycloak)
-    - secret_group_vars/object_store.yml # Object Store credentils (S3 etc ...)
-    - secret_group_vars/db-main.yml # DB URL + some postgres stuff
-    - secret_group_vars/file_sources.yml # file_sources_conf.yml creds
-    - secret_group_vars/all.yml # All of the other assorted secrets...
-    - secret_group_vars/keys.yml # SSH keys
     - templates/galaxy/config/job_conf.yml
     - mounts/dest/all.yml
     - mounts/mountpoints.yml
@@ -73,6 +74,12 @@
       changed_when: false
       listen: 'restart galaxy'
   pre_tasks:
+     # We are loading the secrets as pre_task, because the ansible-lint is otherwise failing
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
     # This should be the 1st pretask as the rest of the tasks are dependent on it.
     - name: Install EPEL-release
       ansible.builtin.package:

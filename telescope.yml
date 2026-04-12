@@ -4,9 +4,14 @@
   become: true
   vars:
     hostname: telescope.internal.galaxyproject.eu
-  vars_files:
-    - "secret_group_vars/all.yml"
+    playbook_secret_vars_files:
+      - secret_group_vars/all.yml
   pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
     - name: Install telescope database client dependency
       ansible.builtin.package:
         name: ['python-psycopg2']
@@ -21,7 +26,7 @@
     - galaxyproject.nginx
     - hxr.autofs
     # BEGIN custom
-    - usegalaxy-eu.gxadmin
+    - galaxyproject.gxadmin
     - usegalaxy-eu.galactic-radio-telescope
     # END custom
     - dj-wasabi.telegraf
