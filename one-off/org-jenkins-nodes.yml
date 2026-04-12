@@ -28,13 +28,13 @@
 
     - name: Upgrade packages
       ansible.builtin.apt:
-        packages:
-        - git
-        - docker-engine
-        - openjdk-8-jre-headless
-        - build-essential
-        - curl
-        - pandoc
+        name:
+          - git
+          - docker-engine
+          - openjdk-8-jre-headless
+          - build-essential
+          - curl
+          - pandoc
 
   roles:
     - hxr.autofs-format-n-mount
