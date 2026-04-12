@@ -18,8 +18,13 @@ ignore: |
   files/traefik/rules/template*
 
 rules:
+  braces:
+    max-spaces-inside: 1
   line-length: disable
   comments-indentation: disable  # don't bother me with this rule
   comments:
     require-starting-space: false
     min-spaces-from-content: 1
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
