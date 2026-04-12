@@ -116,7 +116,7 @@
         state: present
 
     - name: Install pgdg repository package (RedHat)
-      ansible.builtin.yum:
+      ansible.builtin.dnf:
         name: >-
           https://download.postgresql.org/pub/repos/yum/reporpms/{{ postgresql_pgdg_shortfamilies[ansible_distribution]
             | default("EL") }}-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-{{
