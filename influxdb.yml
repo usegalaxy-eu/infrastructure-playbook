@@ -1,6 +1,6 @@
 ---
-- hosts: influxdb
-  name: InfluxDB
+- name: InfluxDB
+  hosts: influxdb
   become: true
   vars:
     hostname: influxdb.galaxyproject.eu
@@ -67,5 +67,5 @@
     - usegalaxy_eu.influxdbserver
     - dj-wasabi.telegraf
     # hardening
-    - os_hardening
-    - ssh_hardening
+    - devsec.hardening.os_hardening
+    - devsec.hardening.ssh_hardening
