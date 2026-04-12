@@ -13,7 +13,7 @@
       loop: "{{ playbook_secret_vars_files }}"
       no_log: true
     - name: Set default version of Python
-      alternatives:
+      community.general.alternatives:
         name: python
         path: /usr/bin/python3
   roles:
