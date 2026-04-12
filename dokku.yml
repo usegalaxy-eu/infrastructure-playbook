@@ -45,7 +45,7 @@
         mode: "0755"
     # Mount /dev/vdb1 to /data
     - name: Mount /dev/vdb1 to /data
-      mount:
+      ansible.posix.mount:
         path: /data
         src: /dev/vdb1
         fstype: xfs
