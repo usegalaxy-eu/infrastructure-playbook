@@ -30,5 +30,8 @@ jobs:
           pip3 install -r requirements.txt
           pip3 install -r .github/requirements-python-lint.txt
 
+      - name: Create fake vault password file.
+        run: printf '%s\n' 'fake_password' > .vault_password
+
       - name: Validate repository.
         run: make validate
