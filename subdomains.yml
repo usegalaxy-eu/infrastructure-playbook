@@ -30,6 +30,7 @@
   handlers:
     - name: Restart Galaxy
       ansible.builtin.command: cd /opt/galaxy/ && source /opt/galaxy/.bashrc && /usr/bin/gxadmin gunicorn handler-restart && sudo -u galaxy /usr/bin/galaxy-sync-to-nfs
+      changed_when: false
   pre_tasks:
     - name: Load secret variables
       ansible.builtin.include_vars:
