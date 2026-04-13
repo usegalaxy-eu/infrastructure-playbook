@@ -12,10 +12,14 @@ else
 endif
 
 OTHER :=
+PLAYBOOKS := $(wildcard *.yml)
 
 
 help:
 	@echo "Run 'make [grafana|jenkins|haproxy|...].yml' to re-run ansible for that machine."
+	@echo "Run 'make lint' to yamllint the repository."
+	@echo "Run 'make syntax' to syntax-check all top-level playbooks."
+	@echo "Run 'make validate' to run deps, lint, and syntax in order."
 	@echo ""
 	@echo "Make Variables: (make ... VAR=VALUE)"
 	@echo "  DIFF=1         show changes made"
@@ -42,13 +46,23 @@ pull:
 	git fetch origin
 	git reset --hard origin/master
 
-test.eu:
-	ansible-playbook galaxy-test.yml $(CHECK_C) $(DIFF_C) $(DEBUG) $(OTHER) --extra-vars "__galaxy_dir_perms='0755'"
-
 main.eu: deps
 	ansible-playbook sn09.yml      $(CHECK_C) $(DIFF_C) $(DEBUG) $(OTHER) --extra-vars "__galaxy_dir_perms='0755'"
+
+lint:
+	yamllint .
+	ansible-lint
+
+syntax:
+	set -e; \
+	for playbook in $(PLAYBOOKS); do \
+		echo "Syntax-checking $$playbook"; \
+		ansible-playbook --syntax-check $$playbook; \
+	done
+
+validate: deps lint syntax
 
 %.yml: deps
 	ansible-playbook $@ $(CHECK_C) $(DIFF_C) $(DEBUG) $(OTHER)
 
-.PHONY: test.eu main.eu known_hosts deps pull help
+.PHONY: main.eu lint syntax validate known_hosts deps pull help

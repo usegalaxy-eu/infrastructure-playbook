@@ -176,7 +176,7 @@ telegraf_plugins_extra:
     plugin: "postgresql"
     config:
       - address = "{{ galaxy_db_connection }}"
-      - databases = ["galaxy", "galaxy-test", "apollo", "chado"]
+      - databases = ["galaxy", "apollo", "chado"]
   monitor_nfsstat:
     plugin: "exec"
     config:
