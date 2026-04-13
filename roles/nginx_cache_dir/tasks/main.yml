@@ -1,0 +1,8 @@
+---
+- name: Ensure nginx cache directory exists
+  ansible.builtin.file:
+    path: "{{ nginx_cache_dir }}"
+    state: directory
+    owner: "{{ nginx_cache_dir_owner }}"
+    group: "{{ nginx_cache_dir_group }}"
+    mode: "{{ nginx_cache_dir_mode }}"
