@@ -333,8 +333,16 @@
     ## GALAXY
     - hxr.postgres-connection
     - galaxyproject.gxadmin
+
     - usegalaxy_eu.ansible_nginx_upload_module
+    - role: nginx_cache_dir
+      vars:
+        nginx_cache_dir_owner: root
+        nginx_cache_dir_group: root
+        nginx_cache_dir_mode: "0777"
     - usegalaxy-eu.nginx
+    - nginx_cache_dir
+
     - usegalaxy-eu.gapars-galaxy
 
     # The REAL galaxy role call that will install Galaxy and all of its dependencies.
