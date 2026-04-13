@@ -10,6 +10,17 @@ upstream galaxy {
     {% endfor %}
 }
 
+{% macro upstream_galaxy() -%}
+
+# This is the backend to send the requests to.
+proxy_pass          http://galaxy;
+
+proxy_set_header Host               $host;
+proxy_set_header X-Forwarded-For    $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto  $scheme;
+proxy_set_header Upgrade            $http_upgrade;
+{%- endmacro %}
+
 server {
     listen 443 default_server;
     listen [::]:443 default_server;
@@ -41,12 +52,7 @@ server {
     client_body_buffer_size 1024m;
 
     location / {
-        # This is the backend to send the requests to.
-        proxy_pass       http://galaxy;
-        proxy_set_header Host               $host;
-        proxy_set_header X-Forwarded-For    $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto  $scheme;
-        proxy_set_header Upgrade            $http_upgrade;
+        {{ upstream_galaxy() | indent(8, false) }}
         proxy_set_header Connection         $connection_upgrade;
 
         # Throttle downloads. First 100Mb are free, after that 5Mb/s.
@@ -66,14 +72,11 @@ server {
     #}
 
     location ~ ^/api/dataset_collections/([^/]+)/download/?$ {
+        {{ upstream_galaxy() | indent(8, false) }}
+
         proxy_read_timeout 1200s;
 
         proxy_buffering off;
-        proxy_pass          http://galaxy;
-        proxy_set_header    Host               $host;
-        proxy_set_header    X-Forwarded-For    $proxy_add_x_forwarded_for;
-        proxy_set_header    X-Forwarded-Proto  $scheme;
-        proxy_set_header    Upgrade            $http_upgrade;
     }
 
     location /_x_accel_redirect {
@@ -235,9 +238,9 @@ server {
         rewrite ^/beacon/?(.*)$ /$1 break;
         proxy_pass http://beacon.galaxyproject.eu;
         proxy_http_version 1.1;
-        proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header    X-Real-IP       $remote_addr;
-        proxy_set_header    Host            beacon.galaxyproject.eu;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Real-IP       $remote_addr;
+        proxy_set_header Host            beacon.galaxyproject.eu;
     }
 
     location /external/phdcomics/ {
@@ -289,7 +292,10 @@ server {
     }
 
     location /favicon.ico {
-        alias {{ galaxy_server_dir }}/static/favicon.ico;
+        {{ upstream_galaxy() | indent(8, false) }}
+
+        expires 5d;
+        add_header Cache-Control "public, immutable";
     }
 
     location /robots.txt {
