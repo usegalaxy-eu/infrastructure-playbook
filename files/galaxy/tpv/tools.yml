@@ -133,6 +133,15 @@ tools:
         cores: 14
         mem: 24
 
+  toolshed.g2.bx.psu.edu/repos/iuc/gatk4_mutect2/gatk4_mutect2/.*:
+    cores: 12
+    mem: 36
+    rules:
+      - if: input_size >= 100
+        cores: 18
+        mem: 64
+
+
   toolshed.g2.bx.psu.edu/repos/iuc/mummer_mummer/mummer_mummer/.*:
     mem: 8
 
