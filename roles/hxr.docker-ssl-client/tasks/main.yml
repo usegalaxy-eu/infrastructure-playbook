@@ -1,7 +1,7 @@
 ---
 # Certs
 - name: Create directory
-  file:
+  ansible.builtin.file:
     path: "~/.docker"
     state: directory
     mode: '0750'

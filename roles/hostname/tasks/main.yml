@@ -1,5 +1,5 @@
 ---
 - name: Set system hostname
-  hostname:
+  ansible.builtin.hostname:
     name: "{{ hostname }}"
   #notify: 'Restart Telegraf'
