@@ -1255,6 +1255,13 @@ base_app_main: &BASE_APP_MAIN
   # Path to favicon.ico, not the directory that contains it (the name is
   # a misnomer). Ignored if static_enabled is false.
   static_favicon_dir: static/favicon_eu.ico
+  static_favicon_dir_by_host: >
+    {
+    '{{ galaxy_themes_instance_domain }}': 'static/favicon_eu.ico',
+    {% for subdomain in galaxy_themes_subdomains %}
+    '{{ subdomain.name }}.{{ galaxy_themes_instance_domain }}': '{{ galaxy_themes_static_path }}/static-{{ subdomain.name }}/favicon_eu.ico',
+    {% endfor %}
+    }
 
   # Path to the static scripts directory. Ignored if static_enabled is
   # false.

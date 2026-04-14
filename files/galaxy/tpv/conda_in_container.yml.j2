@@ -43,6 +43,8 @@ tools:
       SINGULARITYENV_GALAXY_WEBAPOLLO_USER: {{ GALAXY_WEBAPOLLO_USER }}
       SINGULARITYENV_GALAXY_WEBAPOLLO_PASSWORD:  {{ GALAXY_WEBAPOLLO_PASSWORD }}
       SINGULARITYENV_GALAXY_SHARED_DIR: {{ GALAXY_SHARED_DIR }}
+    params:
+      singularity_run_extra_arguments: "-B /data/dnb01/apollo:/data/dnb01/apollo:rw"
 
   gbk_to_orf:
     inherits: _conda_in_container
