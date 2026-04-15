@@ -14,11 +14,6 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
-    env:
-      REQUIREMENTS: |
-        infrastructure-playbook/requirements.txt
-        infrastructure-playbook/.github/requirements-python-lint.txt
-
     steps:
       - name: Check out the codebase.
         uses: actions/checkout@v2
@@ -30,7 +25,9 @@ jobs:
         with:
           python-version: '3.x'
           cache: 'pip'
-          cache-dependency-path: ${{ env.REQUIREMENTS }}
+          cache-dependency-path: |
+            infrastructure-playbook/requirements.txt
+            infrastructure-playbook/.github/requirements-python-lint.txt
 
       - name: Cache Ansible Galaxy content
         uses: actions/cache@v4
@@ -44,7 +41,7 @@ jobs:
 
       - name: Install test dependencies.
         run: |
-          pip3 install $(sed 's/^/-r /' <<< "$REQUIREMENTS")
+          pip3 install -r requirements.txt -r .github/requirements-python-lint.txt
 
       - name: Create fake vault password file.
         run: printf '%s\n' 'fake_password' > .vault_password
