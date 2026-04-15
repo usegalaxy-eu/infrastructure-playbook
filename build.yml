@@ -1,17 +1,24 @@
 ---
-- name: Tasks for "jenkins" hosts
-  hosts: build
+- hosts: dnbd3
+  name: Gather facts from dnbd3
+  tasks: [ ]
+- name: Tasks for the 
+  hosts: sn12.galaxyproject.eu
   become: true
   vars:
-    hostname: build.galaxyproject.eu
+    hostname: sn12.galaxyproject.eu
   vars_files:
     - "secret_group_vars/jenkins.yml"
     - "secret_group_vars/all.yml"
+    - secret_group_vars/aws.yml # AWS creds
   pre_tasks:
     - name: Install Dependencies
       package:
         enablerepo: crb
-        name: ["policycoreutils-python-utils", "python3-wheel-wheel"]
+        name: 
+          - policycoreutils-python-utils
+          - python3-wheel-wheel
+          - libvirt
       become: true
     - name: permit traffic in default zone for http and https service
       ansible.posix.firewalld:
@@ -21,8 +28,49 @@
       loop:
         - http
         - https
+    # DNBD3 related Tasks
+    - name: Create dnbd3 user
+      ansible.builtin.group:
+        name: "{{ dnbd3_group }}"
+        state: present
+    - name: Create dnbd3 user
+      ansible.builtin.user:
+        name: "{{ dnbd3_user }}"
+        group: "{{ dnbd3_group }}"
+        shell: /bin/false
+        create_home: false
+    - name: Grant access to dnbd3 root directory
+      ansible.builtin.file:
+        mode: "770"
+        path: "{{ dnbd3_base_path }}"
+        state: directory
+        owner: "{{ dnbd3_user }}"
+        group: "{{ dnbd3_group }}"
+    # Create network setup
+    - name: Create NetworkManager bridge connection
+      community.general.nmcli:
+        conn_name: "Bridge-KVM-V{{ bi_privat_vlan }}"
+        ifname: "virbr1.{{ bi_privat_vlan }}"
+        type: "bridge"
+        autoconnect: true
+        # Bridge Options
+        ageingtime: "0"
+        # IPv4 and IPv6 are disabled per the config file
+        method4: disabled
+        method6: disabled
+        state: present
+    - name: Create VLAN connection bound to the bridge
+      community.general.nmcli:
+        conn_name: "KVM-V{{ bi_privat_vlan }}"
+        ifname: "{{ kvm_nic_name }}.{{ bi_privat_vlan }}"
+        type: vlan
+        vlandev: "{{ kvm_nic_name }}" # Checked and OK
+        vlanid: "{{ bi_privat_vlan | int }}"
+        master: "virbr1.{{ bi_privat_vlan }}"
+        slave_type: "bridge"
+        state: present
   collections:
-    - devsec.hardening
+    #   - devsec.hardening
   roles:
     - hostname
     - usegalaxy-eu.dynmotd
@@ -31,16 +79,19 @@
     - influxdata.chrony
     - hxr.monitor-email
     - usegalaxy-eu.autoupdates
+    - hxr.aws-cli # Setup the AWS client that will be needed for route53 authentication of certbot. MUST come before nginx role
     - galaxyproject.nginx
     - ssh-host-sign
     # - hxr.autofs-format-n-mount
     # CUSTOM
     - geerlingguy.java
-    - geerlingguy.jenkins
-    - usegalaxy-eu.jenkins-ssh-key
+    # - geerlingguy.jenkins
+    # - usegalaxy-eu.jenkins-ssh-key
     ## END CUSTOM
     - dj-wasabi.telegraf
     - galaxyproject.miniconda
-    - os_hardening
+    # - os_hardening
     # - nginx_hardening
-    - ssh_hardening
+    # - ssh_hardening
+    - usegalaxy_eu.dnbd3
+    - usegalaxy_eu.firewall
