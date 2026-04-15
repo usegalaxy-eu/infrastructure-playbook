@@ -14,7 +14,7 @@
   notify: 'Restart Telegraf'
 
 - name: Build CVMFS telegraf plugin config
-  set_fact:
+  ansible.builtin.set_fact:
     check_cvmfs_telegraf:
       check_cvmfs_telegraf:
         plugin: exec
