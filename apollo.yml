@@ -1,12 +1,18 @@
 ---
-- hosts: apollo
+- name: Apollo
+  hosts: apollo
   become: true
-  vars_files:
-    - "secret_group_vars/all.yml"
-    - "secret_group_vars/apollo.yml"
   vars:
     hostname: apollo.internal.galaxyproject.eu
+    playbook_secret_vars_files:
+      - secret_group_vars/all.yml
+      - secret_group_vars/apollo.yml
   pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
     # Apollo / tomcat need several exceptions currently.
     # setsebool -P tomcat_can_network_connect_db 1
     #
@@ -22,7 +28,7 @@
     #         Allow access by executing:
     #         # setsebool -P daemons_enable_cluster_mode 1
     - name: Put SELinux in permissive mode, logging actions that would be blocked.
-      selinux:
+      ansible.posix.selinux:
         policy: targeted
         state: permissive
   roles:

@@ -48,7 +48,7 @@
   when: galaxy_user_gid is undefined
 
 - name: Configure Galaxy authentication options
-  template:
+  ansible.builtin.template:
     src: galaxy_auth.conf.j2
     dest: "{{ proftpd_config_include_dir }}/10_galaxy_auth.conf"
   notify:

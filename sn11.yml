@@ -4,21 +4,26 @@
   become: true
   vars:
     hostname: sn11.galaxyproject.eu
+    playbook_secret_vars_files:
+      - secret_group_vars/all.yml
   vars_files:
-    - secret_group_vars/all.yml
     - group_vars/sn11.yml
     - mounts/dest/all.yml
     - mounts/mountpoints.yml
-  collections:
-    - devsec.hardening
   pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
     - name: Add mosh service config for FirewallD
       ansible.builtin.copy:
         content: '{{ firewall_mosh_service }}'
         dest: /etc/firewalld/services/mosh.xml
+        mode: "0644"
   post_tasks:
     - name: Ensure PostgreSQL is allowed on the firewall
-      ansible.builtin.firewalld:
+      ansible.posix.firewalld:
         service: postgresql
         permanent: true
         state: enabled
@@ -38,6 +43,6 @@
     - ssh-host-sign
     - usegalaxy-eu.ansible-postgresql
     - dj-wasabi.telegraf
-    - ssh_hardening
+    - devsec.hardening.ssh_hardening
     - usegalaxy_eu.disable_memory_overcommit
     - usegalaxy_eu.firewall

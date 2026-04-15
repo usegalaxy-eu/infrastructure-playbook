@@ -11,10 +11,17 @@
         name: condor
         state: reloaded
   vars_files:
-    - secret_group_vars/db-main.yml  # PostgreSQL password (galaxyproject.gxadmin)
     - mounts/dest/all.yml
     - mounts/mountpoints.yml
+  vars:
+    playbook_secret_vars_files:
+      - secret_group_vars/db-main.yml
   pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
     - name: Ensure findutils is installed. (handy.os_setup)
       become: true
       ansible.builtin.package:
@@ -89,24 +96,24 @@
       register: service_facts
   roles:
     - usegalaxy_eu.handy.os_setup
-    - name: usegalaxy-eu.bashrc
+    - role: usegalaxy-eu.bashrc
       when: htcondor_role_submit
-    - name: hxr.postgres-connection
+    - role: hxr.postgres-connection
       when: htcondor_role_submit
-    - name: galaxyproject.gxadmin
+    - role: galaxyproject.gxadmin
       when: htcondor_role_submit
     - grycap.htcondor
-    - name: usegalaxy-eu.htcondor_release
+    - role: usegalaxy-eu.htcondor_release
       when: htcondor_role_submit and inventory_hostname == "sn09.galaxyproject.eu"
-    - name: usegalaxy-eu.fix-stop-ITs
+    - role: usegalaxy-eu.fix-stop-ITs
       when: htcondor_role_submit and inventory_hostname != "maintenance.galaxyproject.eu"
-    - name: usegalaxy-eu.remove-orphan-condor-jobs
+    - role: usegalaxy-eu.remove-orphan-condor-jobs
       when: htcondor_role_submit and inventory_hostname != "maintenance.galaxyproject.eu"
   post_tasks:
     - name: Add /usr/local/bin to Galaxy's PATH in bashrc file. (usegalaxy-eu.fix-stop-ITs)
       become: true
       when: htcondor_role_submit
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: "{{ galaxy_user.home }}/.bashrc"
         line: 'export PATH="/usr/local/bin:$PATH"'
 

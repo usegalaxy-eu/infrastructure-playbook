@@ -2,10 +2,16 @@
 - name: DNBD3 Infrastructure
   hosts: dnbd3primary,dnbd3proxy
   become: true
-  vars_files:
-    - secret_group_vars/all.yml
+  vars:
+    playbook_secret_vars_files:
+      - secret_group_vars/all.yml
 
   pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
     - name: Install dependencies
       ansible.builtin.package:
         name:

@@ -2,13 +2,17 @@
 - name: MQ
   hosts: mq
   become: true
-  vars_files:
-    - secret_group_vars/all.yml
-    - secret_group_vars/aws.yml # AWS creds
-    - secret_group_vars/pulsar.yml     # Pulsar + MQ Connections
-  collections:
-    - devsec.hardening
+  vars:
+    playbook_secret_vars_files:
+      - secret_group_vars/all.yml
+      - secret_group_vars/aws.yml
+      - secret_group_vars/pulsar.yml
   pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
     #    - name: Set default version of Python
     #      alternatives:
     #        name: python
@@ -66,21 +70,21 @@
         #        owner: redis
         #        group: redis
         #        state: directory
-        #        mode: 755
+        #        mode: "0755"
     - name: Create redis log dir
       ansible.builtin.file:
         path: /var/log/redis
         owner: redis
         group: redis
         state: directory
-        mode: 755
+        mode: "0755"
     - name: Touches redis
       ansible.builtin.file:
         path: /var/log/redis/redis-server.log
         owner: redis
         group: redis
         state: touch
-        mode: 644
+        mode: "0644"
   roles:
     ## Starting configuration of the operating system
     - role: usegalaxy_eu.handy.os_setup
@@ -100,5 +104,5 @@
     - geerlingguy.redis
     - dj-wasabi.telegraf
     # hardening
-    - os_hardening
-    - ssh_hardening
+    - devsec.hardening.os_hardening
+    - devsec.hardening.ssh_hardening

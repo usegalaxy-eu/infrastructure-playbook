@@ -4,13 +4,16 @@
   become: true
   vars:
     hostname: proxy.galaxyproject.eu
-  vars_files:
-    - secret_group_vars/all.yml
-  collections:
-    - devsec.hardening
+    playbook_secret_vars_files:
+      - secret_group_vars/all.yml
   pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
     - name: Set default version of Python
-      alternatives:
+      community.general.alternatives:
         name: python
         path: /usr/bin/python3
   roles:
@@ -28,5 +31,5 @@
     - galaxyproject.nginx
     - dj-wasabi.telegraf
     # hardening
-    - os_hardening
-    - ssh_hardening
+    - devsec.hardening.os_hardening
+    - devsec.hardening.ssh_hardening

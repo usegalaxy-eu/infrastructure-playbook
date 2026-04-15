@@ -2,6 +2,11 @@
 extends: default
 
 ignore: |
+  files/clouds.yaml
+  group_vars/all/ssh-keys_vault.yml
+  group_vars/beacon/vault.yml
+  group_vars/grafana/vault.yml
+  group_vars/htcondor/vault.yml
   roles
   collections
   one-off
@@ -13,8 +18,13 @@ ignore: |
   files/traefik/rules/template*
 
 rules:
+  braces:
+    max-spaces-inside: 1
   line-length: disable
   comments-indentation: disable  # don't bother me with this rule
   comments:
     require-starting-space: false
     min-spaces-from-content: 1
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true

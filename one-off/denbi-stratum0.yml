@@ -1,14 +1,21 @@
 ---
-- hosts: denbistratum0
+- name: Denbi stratum0
+  hosts: denbistratum0
   become: true
   vars:
     cvmfs_role: 'stratum0'
     usegalaxy_eu_autofs_mounts:
       - vdb
-  vars_files:
-    - "secret_group_vars/all.yml"
+    playbook_secret_vars_files:
+      - secret_group_vars/all.yml
   pre_tasks:
-    - file:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
+    - name: Create /srv symlink to mounted data
+      ansible.builtin.file:
         src: /data/vol/
         dest: /srv
         owner: root

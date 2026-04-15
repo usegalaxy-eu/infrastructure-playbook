@@ -1,20 +1,26 @@
 ---
-- hosts: cvmfsstratum1servers
+- name: CVMFS stratum1 servers
+  hosts: cvmfsstratum1servers
   become: true
   vars:
     hostname: cvmfs1-ufr0.internal.galaxyproject.eu
+    playbook_secret_vars_files:
+      - secret_group_vars/all.yml
   vars_files:
-    - "secret_group_vars/all.yml"
     - mounts/mountpoints.yml
     - mounts/dest/all.yml
-  collections:
-    - devsec.hardening
   pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
     - name: Set default version of Python
-      alternatives:
+      community.general.alternatives:
         name: python
         path: /usr/bin/python3
-    - file:
+    - name: Create /srv symlink to cvmfs data
+      ansible.builtin.file:
         src: /data/dnb01
         dest: /srv
         owner: root
@@ -23,7 +29,7 @@
         force: true
   post_tasks:
     - name: Disable SELinux
-      selinux:
+      ansible.posix.selinux:
         state: disabled
       register:
         selinux_disabled
@@ -50,8 +56,8 @@
     - hxr.monitor-cvmfs
     - dj-wasabi.telegraf
     # hardening
-    - os_hardening
-    - ssh_hardening
+    - devsec.hardening.os_hardening
+    - devsec.hardening.ssh_hardening
 
 #
 #    - hostname

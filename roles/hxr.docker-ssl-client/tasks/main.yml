@@ -1,7 +1,7 @@
 ---
 # Certs
-- name: mkdir
-  file:
+- name: Create directory
+  ansible.builtin.file:
     path: "~/.docker"
     state: directory
     mode: '0750'
@@ -15,4 +15,3 @@
     - ca.pem
     - cert.pem
     - key.pem
-

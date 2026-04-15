@@ -16,7 +16,8 @@
     line: 'telegraf ALL=(ALL) NOPASSWD: /usr/bin/check_mail_counts'
   notify: 'Restart Telegraf'
 
-- set_fact:
+- name: Build mail counter telegraf plugin config
+  set_fact:
     plugin_config:
       email_counter:
         plugin: "exec"
@@ -26,5 +27,6 @@
           - data_format = "influx"
           - interval = "1h"
 
-- set_fact:
+- name: Merge mail counter telegraf plugin config
+  set_fact:
     telegraf_plugins_extra: "{{ telegraf_plugins_extra | combine(plugin_config) }}"

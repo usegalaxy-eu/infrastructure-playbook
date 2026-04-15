@@ -4,11 +4,15 @@
   become: true
   vars:
     hostname: plausible.galaxyproject.eu
-  vars_files:
-    - secret_group_vars/all.yml
-    - secret_group_vars/plausible.yml
-  collections:
-    - devsec.hardening
+    playbook_secret_vars_files:
+      - secret_group_vars/all.yml
+      - secret_group_vars/plausible.yml
+  pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
   roles:
     - hostname
     - usegalaxy-eu.dynmotd

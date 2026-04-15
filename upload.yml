@@ -3,13 +3,21 @@
   hosts: upload
   become: true
   become_user: root
+  vars:
+    playbook_secret_vars_files:
+      - secret_group_vars/all.yml
+      - secret_group_vars/sentry.yml
   vars_files:
-    - secret_group_vars/all.yml
-    - secret_group_vars/sentry.yml
     - mounts/mountpoints.yml
     - mounts/dest/all.yml
   pre_tasks:
-    - ansible.posix.firewalld:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
+    - name: Open Rustus firewall ports
+      ansible.posix.firewalld:
         zone: public
         port: 1080-1081/tcp
         permanent: true
@@ -36,7 +44,7 @@
 
     - usegalaxy_eu.rustus
   post_tasks:
-    - name: add telegraf to systemd-journal
+    - name: Add telegraf to systemd-journal
       ansible.builtin.user:
         name: telegraf
         groups:

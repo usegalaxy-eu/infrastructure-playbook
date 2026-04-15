@@ -1,9 +1,15 @@
 ---
 - name: Grafana
   hosts: grafana
-  vars_files:
-    - secret_group_vars/all.yml
+  vars:
+    playbook_secret_vars_files:
+      - secret_group_vars/all.yml
   pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
     #- name: Put SELinux in permissive mode, logging actions that would be blocked.
     #  # Putting SELinux in permissive mode should not be necessary. But if
     #  # certs fail, then do it. It is supposed to be properly handled by
@@ -24,9 +30,6 @@
       ansible.builtin.package:
         name:
           - git
-  collections:
-    - devsec.hardening
-    - grafana.grafana
   roles:
     ## Starting configuration of the operating system
     - role: usegalaxy_eu.firewall
@@ -57,7 +60,7 @@
       become: true
       vars:
         hostname: "{{ grafana_domain }}"
-    - grafana
+    - grafana.grafana.grafana
     - role: pgs
       become: true
 

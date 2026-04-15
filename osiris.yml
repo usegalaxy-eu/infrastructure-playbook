@@ -11,10 +11,16 @@
     # Can also be a commit hash so long it is part of a branch
     # osiris_version: "v1.6.2"
     osiris_version: "v1.8.1"
+    playbook_secret_vars_files:
+      - secret_group_vars/osiris.yml
   vars_files:
     - group_vars/osiris.yml
-    - secret_group_vars/osiris.yml
   pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
     - name: "Install system packages needed for installation"
       ansible.builtin.dnf:
         name: "{{ item }}"
@@ -24,9 +30,8 @@
         # We need these for SELinux but they are installed by mongodb_selinux
         # - policycoreutils-python-utils
     - name: "Install system packages needed for installation"
-      ansible.builtin.command: "pip install pymongo"
-  collections:
-    - community.mongodb
+      ansible.builtin.pip:
+        name: pymongo
   roles:
     - hostname
     - geerlingguy.repo-epel

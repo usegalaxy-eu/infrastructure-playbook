@@ -3,16 +3,16 @@
   hosts: maintenance
   become: true
   become_user: root
+  vars:
+    playbook_secret_vars_files:
+      - secret_group_vars/db-main.yml
+      - secret_group_vars/all.yml
   vars_files:
-    - secret_group_vars/db-main.yml
-    - secret_group_vars/all.yml
     - mounts/dest/all.yml
     - mounts/mountpoints.yml
-  collections:
-    - devsec.hardening
   handlers:
-    - name: restart rsyslog
-      service:
+    - name: Restart rsyslog
+      ansible.builtin.service:
         name: rsyslog
         state: restarted
   tasks:
@@ -25,15 +25,20 @@
         minute: "0"
 
   pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
     - name: Install EPEL-release
       ansible.builtin.package:
         name: epel-release
         state: present
     - name: Set additional local mount point
-      set_fact:
-        autofs_conf_files: "{{ autofs_conf_files | combine({ 'usrlocal': autofs_conf_files['usrlocal'] + galaxy_mount }) }}"
+      ansible.builtin.set_fact:
+        autofs_conf_files: "{{ autofs_conf_files | combine({'usrlocal': autofs_conf_files['usrlocal'] + galaxy_mount}) }}"
     - name: Install Dependencies
-      package:
+      ansible.builtin.package:
         name:
           [
             'git',
@@ -49,7 +54,7 @@
       become: true
   post_tasks:
     - name: Append some users to the systemd-journal group
-      user:
+      ansible.builtin.user:
         name: '{{ item }}'
         groups: systemd-journal
         append: true
@@ -57,8 +62,8 @@
         - '{{ galaxy_user.name }}'
         - 'telegraf'
 
-    - name: rsyslog configuration
-      copy:
+    - name: Rsyslog configuration
+      ansible.builtin.copy:
         content: |
           # Accept logs on TCP port 514
           module(load="imtcp")
@@ -91,6 +96,7 @@
             state: directory
             owner: root
             group: root
+            mode: "0755"
         - name: Ensure OpenStack configuration directory exists.
           become: true
           ansible.builtin.file:
@@ -120,7 +126,7 @@
         enabled: true
       become: true
     - name: Configure firewalld to open ports
-      firewalld:
+      ansible.posix.firewalld:
         port: "{{ item }}"
         immediate: true
         permanent: true
@@ -134,6 +140,7 @@
         regexp: "^export OPENAI_API_KEY_TELEGRAF"
         line: 'export OPENAI_API_KEY_TELEGRAF="{{ openai_api_key_telegraf }}"'
         create: true
+        mode: "0644"
       no_log: true
   roles:
     - usegalaxy-eu.vgcn-monitoring
@@ -158,7 +165,7 @@
     - usegalaxy-eu.fix-ancient-ftp-data
     # - usegalaxy-eu.fix-user-quotas
     - usegalaxy-eu.remove-orphan-condor-jobs
-    - ssh_hardening
+    - devsec.hardening.ssh_hardening
     - usegalaxy-eu.job-radar-stats-influxdb
     - dj-wasabi.telegraf
     # - usegalaxy-eu.fix-stop-ITs

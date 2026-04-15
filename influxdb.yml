@@ -1,13 +1,18 @@
 ---
-- hosts: influxdb
-  name: InfluxDB
+- name: InfluxDB
+  hosts: influxdb
   become: true
   vars:
     hostname: influxdb.galaxyproject.eu
-  vars_files:
-    - "secret_group_vars/all.yml"
-    - secret_group_vars/aws.yml # AWS creds
+    playbook_secret_vars_files:
+      - secret_group_vars/all.yml
+      - secret_group_vars/aws.yml
   pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
     - name: Install Dependencies
       become: true
       ansible.builtin.package:
@@ -39,8 +44,6 @@
       ansible.builtin.service:
         name: firewalld
         state: reloaded
-  collections:
-    - devsec.hardening
   roles:
     ## Starting configuration of the operating system
     - geerlingguy.swap
@@ -64,5 +67,5 @@
     - usegalaxy_eu.influxdbserver
     - dj-wasabi.telegraf
     # hardening
-    - os_hardening
-    - ssh_hardening
+    - devsec.hardening.os_hardening
+    - devsec.hardening.ssh_hardening

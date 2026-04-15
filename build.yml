@@ -4,16 +4,21 @@
   become: true
   vars:
     hostname: build.galaxyproject.eu
-  vars_files:
-    - "secret_group_vars/jenkins.yml"
-    - "secret_group_vars/all.yml"
+    playbook_secret_vars_files:
+      - secret_group_vars/jenkins.yml
+      - secret_group_vars/all.yml
   pre_tasks:
+    - name: Load secret variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      loop: "{{ playbook_secret_vars_files }}"
+      no_log: true
     - name: Install Dependencies
-      package:
+      ansible.builtin.package:
         enablerepo: crb
         name: ["policycoreutils-python-utils", "python3-wheel-wheel"]
       become: true
-    - name: permit traffic in default zone for http and https service
+    - name: Permit traffic in default zone for HTTP and HTTPS service
       ansible.posix.firewalld:
         service: "{{ item }}"
         permanent: true
@@ -21,8 +26,6 @@
       loop:
         - http
         - https
-  collections:
-    - devsec.hardening
   roles:
     - hostname
     - usegalaxy-eu.dynmotd
@@ -41,6 +44,6 @@
     ## END CUSTOM
     - dj-wasabi.telegraf
     - galaxyproject.miniconda
-    - os_hardening
+    - devsec.hardening.os_hardening
     # - nginx_hardening
-    - ssh_hardening
+    - devsec.hardening.ssh_hardening

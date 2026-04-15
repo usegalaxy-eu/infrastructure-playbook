@@ -2,7 +2,7 @@
 # tasks file for galaxyprojectdotorg.proftpd
 
 - name: Configure TLS options
-  template:
+  ansible.builtin.template:
     src: tls.conf.j2
     dest: "{{ proftpd_config_include_dir }}/05_tls.conf"
     backup: yes

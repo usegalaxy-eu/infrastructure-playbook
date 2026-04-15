@@ -1,0 +1,17 @@
+---
+profile: null # min, basic, moderate,safety, shared, production
+
+exclude_paths:
+  - collections/
+  - roles/
+  - files/traefik/rules/template-subdomains.yml
+skip_list:
+  - var-naming
+
+enable_list:
+  - args
+  - empty-string-compare # opt-in
+  - no-log-password # opt-in
+  - no-same-owner # opt-in
+  - name[prefix] # opt-in
+  - galaxy-version-incorrect # opt-in

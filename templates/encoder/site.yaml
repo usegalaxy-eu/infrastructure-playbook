@@ -6,7 +6,7 @@
     - vars/apache_test.yaml
   tasks:
     - name: Create test.apache file
-      template:
+      ansible.builtin.template:
         src: templates/test.apache.j2
         dest: /tmp/test.apache
       tags:
@@ -18,7 +18,7 @@
     - vars/erlang_test.yaml
   tasks:
     - name: Create test.erlang file
-      template:
+      ansible.builtin.template:
         src: templates/test.erlang.j2
         dest: /tmp/test.erlang
       tags:
@@ -30,7 +30,7 @@
     - vars/ini_test.yaml
   tasks:
     - name: Create test.ini file
-      template:
+      ansible.builtin.template:
         src: templates/test.ini.j2
         dest: /tmp/test.ini
       tags:
@@ -42,7 +42,7 @@
     - vars/ini_test.yaml
   tasks:
     - name: Create test.simple file
-      template:
+      ansible.builtin.template:
         src: templates/test.ini_simple.j2
         dest: /tmp/test.ini_simple
       tags:
@@ -54,7 +54,7 @@
     - vars/json_test.yaml
   tasks:
     - name: Create test.json file
-      template:
+      ansible.builtin.template:
         src: templates/test.json.j2
         dest: /tmp/test.json
       tags:
@@ -66,7 +66,7 @@
     - vars/logstash_test.yaml
   tasks:
     - name: Create test.logstash file
-      template:
+      ansible.builtin.template:
         src: templates/test.logstash.j2
         dest: /tmp/test.logstash
       tags:
@@ -78,7 +78,7 @@
     - vars/toml_test.yaml
   tasks:
     - name: Create test.toml file
-      template:
+      ansible.builtin.template:
         src: templates/test.toml.j2
         dest: /tmp/test.toml
       tags:
@@ -90,7 +90,7 @@
     - vars/xml_test.yaml
   tasks:
     - name: Create test.xml file
-      template:
+      ansible.builtin.template:
         src: templates/test.xml.j2
         dest: /tmp/test.xml
       tags:
@@ -102,7 +102,7 @@
     - vars/yaml_test.yaml
   tasks:
     - name: Create test.yaml file
-      template:
+      ansible.builtin.template:
         src: templates/test.yaml.j2
         dest: /tmp/test.yaml
       tags:

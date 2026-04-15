@@ -40,7 +40,7 @@
     haproxy_version: "{{ '1.5' if '1.5.' in haproxy_version_result.stdout else '1.4' }}"
 
 - name: Copy HAProxy configuration in place.
-  template:
+  ansible.builtin.template:
     src: haproxy.cfg.j2
     dest: /etc/haproxy/haproxy.cfg
     mode: 0644
@@ -48,4 +48,7 @@
   notify: restart haproxy
 
 - name: Ensure HAProxy is started and enabled on boot.
-  service: name=haproxy state=started enabled=yes
+  ansible.builtin.service:
+    name: haproxy
+    state: started
+    enabled: true

@@ -31,7 +31,7 @@
     - reload proftpd
 
 - name: Create base proftpd.conf options in include
-  template:
+  ansible.builtin.template:
     src: server.conf.j2
     dest: "{{ proftpd_config_include_dir }}/00_server.conf"
     backup: yes
@@ -59,7 +59,7 @@
   when: proftpd_display_connect is defined
 
 - name: Create global config options in include
-  template:
+  ansible.builtin.template:
     src: global.conf.j2
     dest: "{{ proftpd_config_include_dir }}/03_global.conf"
     backup: yes
@@ -76,7 +76,7 @@
   when: proftpd_galaxy_auth is defined
 
 - name: Create VirtualHost configurations
-  template:
+  ansible.builtin.template:
     src: virtualhost.conf.j2
     dest: "{{ proftpd_config_include_dir }}/15_virtualhost_{{ item.id }}.conf"
     backup: yes
