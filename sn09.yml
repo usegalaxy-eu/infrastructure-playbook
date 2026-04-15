@@ -70,7 +70,8 @@
     - mounts/mountpoints.yml
   handlers:
     - name: Restart Galaxy
-      ansible.builtin.command: /bin/bash -lc 'cd /opt/galaxy/ && source /opt/galaxy/.bashrc && /usr/bin/gxadmin gunicorn handler-restart && sudo -u galaxy /usr/bin/galaxy-sync-to-nfs && systemctl restart galaxy-handler@* && systemctl restart galaxy-workflow-scheduler@*'
+      ansible.builtin.shell: |
+        cd /opt/galaxy/ && source /opt/galaxy/.bashrc && /usr/bin/gxadmin gunicorn handler-restart && sudo -u galaxy /usr/bin/galaxy-sync-to-nfs && systemctl restart galaxy-handler@* && systemctl restart galaxy-workflow-scheduler@*
       changed_when: false
       listen: 'restart galaxy'
   pre_tasks:
