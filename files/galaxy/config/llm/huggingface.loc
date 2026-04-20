@@ -1,0 +1,41 @@
+#This is a sample file distributed with Galaxy that is used to define huggingface
+#models, using 7 columns tab separated
+#(longer whitespace are TAB characters):
+#
+#The entries are as follows:
+#
+#<unique_build_id>      <display_name>  <pipeline_tag>  <domain>        <free_tag>      <version>       <folder_base_path>
+#
+#pipeline_tag (see this URL: https://huggingface.co/models?pipeline_tag=text-to-image they call it that way)
+#domain (defined by the Galaxy community, e.g. image / sequence / text)
+#free_tag (not idea yet, but could be freely used by an admin to specify more filter options)
+#version (if available)
+#Your huggingface.loc file should include the huggingface cached model folder you have stored.
+#For example:
+#
+#black-forest-labs/FLUX.1-dev	FLUX.1 [dev] is an open-weight, guidance-distilled model for non-commercial applications.	text-to-image	image	flux	1	/path/to/huggingface/that-contains/hub/models--black-forest-labs--FLU>
+#black-forest-labs/FLUX.1-schnell	FLUX.1 [schnell] is the fastest model, tailored for personal use	text-to-image	image	flux	1	/path/to/huggingface/that-contains/hub/models--black-forest-labs--FLUX.1-schnell
+black-forest-labs-FLUX.1-dev	FLUX.1 [dev] is an open-weight, guidance-distilled model for non-commercial applications	text-to-image	image	flux	1	/data/db/databases/huggingface/flux/black-forest-labs/FLUX.1-dev/hub/>
+black-forest-labs-FLUX.1-schnell	FLUX.1 [schnell] is the fastest model, tailored for personal use	text-to-image	image	flux	1	/data/db/databases/huggingface/flux/black-forest-labs/FLUX.1-schnell/hub/models--blac>
+1038lab-sam3	Segment Anything Model 3 (SAM 3)	mask-generation image	sam3	1	/data/db/models/huggingface/sam3/sam3.pt
+
+# TabPFN
+## Classification models
+tabpfn_2_5/tabpfn-v2.5-classifier-v2.5_default	tabpfn-v2.5-classifier-v2.5_default	tabular-classification	tabular	tabpfn	1	/data/db/models/huggingface/tabpfn_2_5/tabpfn-v2.5-classifier-v2.5_default.ckpt
+tabpfn_2_5/tabpfn-v2.5-classifier-v2.5_default-2	tabpfn-v2.5-classifier-v2.5_default-2	tabular-classification	tabular	tabpfn	1	/data/db/models/huggingface/tabpfn_2_5/tabpfn-v2.5-classifier-v2.5_default-2.ckpt
+tabpfn_2_5/tabpfn-v2.5-classifier-v2.5_large-features-L	tabpfn-v2.5-classifier-v2.5_large-features-L	tabular-classification	tabular	tabpfn	1	/data/db/models/huggingface/tabpfn_2_5/tabpfn-v2.5-classifier-v2.5_large-features-L.ckpt
+tabpfn_2_5/tabpfn-v2.5-classifier-v2.5_large-features-XL	tabpfn-v2.5-classifier-v2.5_large-features-XL	tabular-classification	tabular	tabpfn	1	/data/db/models/huggingface/tabpfn_2_5/tabpfn-v2.5-classifier-v2.5_large-features-XL.ckpt
+tabpfn_2_5/tabpfn-v2.5-classifier-v2.5_large-samples	tabpfn-v2.5-classifier-v2.5_large-samples	tabular-classification	tabular	tabpfn	1	/data/db/models/huggingface/tabpfn_2_5/tabpfn-v2.5-classifier-v2.5_large-samples.ckpt
+tabpfn_2_5/tabpfn-v2.5-classifier-v2.5_real	tabpfn-v2.5-classifier-v2.5_real	tabular-classification	tabular	tabpfn	1	/data/db/models/huggingface/tabpfn_2_5/tabpfn-v2.5-classifier-v2.5_real.ckpt
+tabpfn_2_5/tabpfn-v2.5-classifier-v2.5_real-large-features	tabpfn-v2.5-classifier-v2.5_real-large-features	tabular-classification	tabular	tabpfn	1	/data/db/models/huggingface/tabpfn_2_5/tabpfn-v2.5-classifier-v2.5_real-large-features.ckpt
+tabpfn_2_5/tabpfn-v2.5-classifier-v2.5_real-large-samples-and-features	tabpfn-v2.5-classifier-v2.5_real-large-samples-and-features	tabular-classification	tabular	tabpfn	1	/data/db/models/huggingface/tabpfn_2_5/tabpfn-v2.5-classifier-v2.5_real-large-samples-and-features.ckpt
+tabpfn_2_5/tabpfn-v2.5-classifier-v2.5_variant	tabpfn-v2.5-classifier-v2.5_variant	tabular-classification	tabular	tabpfn	1	/data/db/models/huggingface/tabpfn_2_5/tabpfn-v2.5-classifier-v2.5_variant.ckpt
+
+## Regression models
+tabpfn_2_5/tabpfn-v2.5-regressor-v2.5_default	tabpfn-v2.5-regressor-v2.5_default	tabular-regression	tabular	tabpfn	1	/data/db/models/huggingface/tabpfn_2_5/tabpfn-v2.5-regressor-v2.5_default.ckpt
+tabpfn_2_5/tabpfn-v2.5-regressor-v2.5_low-skew	tabpfn-v2.5-regressor-v2.5_low-skew	tabular-regression	tabular	tabpfn	1	/data/db/models/huggingface/tabpfn_2_5/tabpfn-v2.5-regressor-v2.5_low-skew.ckpt
+tabpfn_2_5/tabpfn-v2.5-regressor-v2.5_quantiles	tabpfn-v2.5-regressor-v2.5_quantiles	tabular-regression	tabular	tabpfn	1	/data/db/models/huggingface/tabpfn_2_5/tabpfn-v2.5-regressor-v2.5_quantiles.ckpt
+tabpfn_2_5/tabpfn-v2.5-regressor-v2.5_real	tabpfn-v2.5-regressor-v2.5_real	tabular-regression	tabular	tabpfn	1	/data/db/models/huggingface/tabpfn_2_5/tabpfn-v2.5-regressor-v2.5_real.ckpt
+tabpfn_2_5/tabpfn-v2.5-regressor-v2.5_real-variant	tabpfn-v2.5-regressor-v2.5_real-variant	tabular-regression	tabular	tabpfn	1	/data/db/models/huggingface/tabpfn_2_5/tabpfn-v2.5-regressor-v2.5_real-variant.ckpt
+tabpfn_2_5/tabpfn-v2.5-regressor-v2.5_small-samples	tabpfn-v2.5-regressor-v2.5_small-samples	tabular-regression	tabular	tabpfn	1	/data/db/models/huggingface/tabpfn_2_5/tabpfn-v2.5-regressor-v2.5_small-samples.ckpt
+tabpfn_2_5/tabpfn-v2.5-regressor-v2.5_variant	tabpfn-v2.5-regressor-v2.5_variant	tabular-regression	tabular	tabpfn	1	/data/db/models/huggingface/tabpfn_2_5/tabpfn-v2.5-regressor-v2.5_variant.ckpt
