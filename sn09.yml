@@ -257,10 +257,18 @@
         group: galaxy
         mode: '0644'
 
-    - name: Copy Loc File
+    - name: Copy location file for the LLM Hub
       ansible.builtin.copy:
         src: '{{ playbook_dir }}/files/galaxy/config/llm/genai_models.loc'
         dest: '{{ galaxy_root }}/tool-data/genai_models.loc'
+        owner: galaxy
+        group: galaxy
+        mode: '0644'
+
+    - name: Copy location file for huggingface models
+      ansible.builtin.copy:
+        src: '{{ playbook_dir }}/files/galaxy/config/llm/huggingface.loc'
+        dest: '{{ galaxy_root }}/tool-data/huggingface.loc'
         owner: galaxy
         group: galaxy
         mode: '0644'
@@ -304,7 +312,7 @@
         galaxy_build_client: false
         galaxy_manage_systemd: false # switch to gravity(?)
         galaxy_manage_gravity: false
-    # The bashrc needs to be created for several later features.
+    # The bashrc needs to be created for several later features.-
     - usegalaxy-eu.bashrc
 
     ## Setup docker
