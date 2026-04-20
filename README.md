@@ -47,7 +47,6 @@ Build           | [![Build Status](https://build.galaxyproject.eu/buildStatus/ic
 Central-Manager | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fsn05)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/sn05/)
 CVMFS           | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fcvmfs)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/cvmfs/)
 Galaxy          | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fsn06)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/sn06/)
-Galaxy/Test     | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fgalaxy-test)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/galaxy-test/)
 Grafana         | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fstats)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/stats/)
 HAProxy         | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fhaproxy-internal)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/haproxy-internal/)
 InfluxDB        | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Finfluxdb)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/influxdb/)
