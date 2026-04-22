@@ -24,7 +24,7 @@ jobs:
         if: (success() || failure()) && steps.pip_install.conclusion == 'success'
 
       - name: Black
-        uses: psf/black@23.1.0
+        uses: psf/black@26.3.1
         with:
           version: "~=23.0"
           options: "--check --diff"
