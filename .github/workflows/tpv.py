@@ -10,7 +10,7 @@ import shutil
 import subprocess
 import tempfile
 from pathlib import Path
-from typing import Iterable, Union
+from typing import Iterable
 
 import yaml
 from jinja2 import Environment, FileSystemLoader, meta
@@ -29,8 +29,8 @@ os.environ["EDITOR"] = "true"
 
 # Tasks to execute in each play.
 def templating_task(
-    src: Union[str, Path],
-    dest: Union[str, Path],
+    src: str | Path,
+    dest: str | Path,
 ) -> dict:
     """Generate an ansible templating task.
 
@@ -50,7 +50,7 @@ def templating_task(
     }
 
 
-def get_variables(path: Union[str, Path]) -> set[str]:
+def get_variables(path: str | Path) -> set[str]:
     """Get names of the variables used in a Jinja template.
 
     Args:
@@ -74,8 +74,8 @@ def get_variables(path: Union[str, Path]) -> set[str]:
 
 
 def make_playbook(
-    model: Union[str, Path],
-    templates: Iterable[tuple[Union[str, Path], Union[str, Path]]],
+    model: str | Path,
+    templates: Iterable[tuple[str | Path, str | Path]],
 ) -> Path:
     """Generate a playbook from a model.
 
