@@ -4,13 +4,13 @@ search_for_missing: true
 id: primary     # is that needed
 order: 0        # is that needed
 backends:
-  - id: secondary
-    type: disk
-    store_by: id
-    weight: 0
-    badges:
-      - type: more_stable
-    files_dir: "/data/0/galaxy_db/files"
+  #- id: secondary
+  #  type: disk
+  #  store_by: id
+  #  weight: 0
+  #  badges:
+  #    - type: more_stable
+  #  files_dir: "/data/0/galaxy_db/files"
 
   - id: files1
     type: disk
@@ -21,14 +21,14 @@ backends:
       - type: more_stable
     files_dir: "/data/1/galaxy_db/files"
 
-  - id: files2
-    type: disk
-    store_by: id
-    name: "University of Freiburg storage (NetApp FabricPool, id=files2)"
-    weight: 0
-    badges:
-      - type: more_stable
-    files_dir: "/data/2/galaxy_db/files"
+  #- id: files2
+  #  type: disk
+  #  store_by: id
+  #  name: "University of Freiburg storage (NetApp FabricPool, id=files2)"
+  #  weight: 0
+  #  badges:
+  #    - type: more_stable
+  #  files_dir: "/data/2/galaxy_db/files"
 
   - id: files3
     type: disk
