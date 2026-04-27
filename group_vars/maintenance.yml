@@ -267,14 +267,14 @@ telegraf_plugins_extra:
   galaxy_user_tool_usage:
     plugin: "exec"
     config:
-      - commands = ["{{ custom_telegraf_env }} /usr/bin/galaxy_user_tool_usage"]
+      - commands = ["{{ custom_telegraf_env }} gxadmin iquery user-tool-usage"]
       - timeout = "3200s"
       - data_format = "influx"
       - interval = "24h"
   galaxy_user_tool_usage_over_time:
     plugin: "exec"
     config:
-      - commands = ["{{ custom_telegraf_env }} /usr/bin/galaxy_user_tool_usage_over_time"]
+      - commands = ["{{ custom_telegraf_env }} gxadmin iquery user-tool-usage-over-time"]
       - timeout = "3200s"
       - data_format = "influx"
       - interval = "168h"
