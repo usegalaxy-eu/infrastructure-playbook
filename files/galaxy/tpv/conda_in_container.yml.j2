@@ -14,6 +14,11 @@ tools:
         - conda
         - singularity
 
+  # python3 instrocuded changes to Gnuplot model more info in the issue bellow
+  # rm after closing: https://github.com/usegalaxy-eu/issues/issues/979
+  barchart_gnuplot:
+    inherits: _conda_in_container
+
   # these wrapper versions do not declare their coreutils requirement; the busybox host of the container brings its own non-standard
   # implementation of the split command, which doesn't offer the -n option that the coreutils version has and which the tool requires.
   toolshed.g2.bx.psu.edu/repos/iuc/datamash_transpose/datamash_transpose/1.8\+galaxy.:
