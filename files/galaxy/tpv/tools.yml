@@ -268,8 +268,9 @@ tools:
     mem: 20
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_raycloudtools/3dtrees_raycloudtools/.*:
-    cores: 10
-    mem: 20
+    # Devereux et al., 2026 (DOI: 10.1016/j.rse.2025.115162): 28 cores, 128 GB
+    cores: min(int(input_size * 2 // 1 + 1), 28)
+    mem: min(19 + (input_size * 8.5 // 1 + 1), 128)
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_segmentanytree/3dtrees_segmentanytree/.*:
     gpus: 1
