@@ -10,7 +10,7 @@ No specific requirements, the role is self-contained.
 # Role variables
 
 Default values are available on
-[defaults/main.yml](https://github.com/usegalaxy-eu/infrastructure-playbook/blob/main/roles/kysrpex.systemd-nspawn/defaults/main.yml).
+[defaults/main.yml](https://github.com/usegalaxy-eu/infrastructure-playbook/blob/main/roles/domgz.systemd-nspawn/defaults/main.yml).
 
 ```yaml
 nspawn_name: container_name
@@ -28,7 +28,7 @@ nspawn_release: "9"
 Distribution to base the container's rootfs on. The root file system of the
 container is built using [DNF](https://en.wikipedia.org/wiki/DNF_(software))
 and one of the configuration files in the
-[templates](https://github.com/usegalaxy-eu/infrastructure-playbook/blob/main/roles/kysrpex.systemd-nspawn/templates)
+[templates](https://github.com/usegalaxy-eu/infrastructure-playbook/blob/main/roles/domgz.systemd-nspawn/templates)
 folder. `nspawn_distro` determines the template to use, and `nspawn_release` is
 passed to DNF so that it installs the correct distribution release.
 
@@ -108,5 +108,5 @@ None.
       ansible.posix.selinux:
         state: disabled
   roles:
-    - kysrpex.systemd_nspawn
+    - domgz.systemd_nspawn
 ```
