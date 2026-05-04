@@ -450,6 +450,34 @@ destinations:
       require:
         - ufz-eve-pulsar
 
+  pulsar_nemo_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_nemo
+    max_accepted_cores: 16
+    max_accepted_mem: 64
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    env:
+      LC_ALL: C
+      SINGULARITY_CACHEDIR: /home/fr/fr_ds722/pulsar/container_cache
+      TMP: $_GALAXY_JOB_TMP_DIR
+      TEMP: $_GALAXY_JOB_TMP_DIR
+      TMPDIR: $_GALAXY_JOB_TMP_DIR
+    params:
+      jobs_directory: /home/fr/fr_ds722/pulsar/jobs_directory
+      singularity_enabled: true
+      singularity_command: apptainer
+      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro"
+      singularity_default_container_id: "/cvmfs/singularity.galaxyproject.org/all/perl:5.26"
+      container_resolvers:
+        - type: explicit_singularity
+        - type: cached_mulled_singularity
+          cache_directory: /cvmfs/singularity.galaxyproject.org/all/
+          cache_directory_cacher_type: dir_mtime
+    scheduling:
+      require:
+        - nemo-pulsar
+
   #############################
   # LOCAL CONDOR DESTINATIONS #
   #############################
