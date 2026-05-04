@@ -99,12 +99,14 @@ tools:
         execute: |
           entity.params['requirements'] = '(GalaxyGroup == "compute")'
       - id: interactive_tool_require_registration
-        if: user is None and getattr(tool, 'tool_type', None) == 'interactive'
+        if: not (dry_run_mode := job_wrapper is None) and (tool.tool_type == 'interactive' and user is None)
+        # `job_wrapper is None` occurs when TPV is launched in dry-run mode
         fail: |
           Interactive tools require registration. Please log-in or register on https://usegalaxy.eu/login
 
       - id: interactive_tool
-        if: getattr(tool, 'tool_type', None) == 'interactive'
+        if: not (dry_run_mode := job_wrapper is None) and (tool.tool_type == 'interactive')
+        # `job_wrapper is None` occurs when TPV is launched in dry-run mode
         cores: 1
         mem: 4
         params:
@@ -115,7 +117,8 @@ tools:
             - docker
             - embedded-pulsar
       - id: remote_resources
-        if: user is not None and not (getattr(tool, 'tool_type', None) in ["expression", "data_source"] or getattr(tool, 'requires_galaxy_python_environment', False))
+        if: not (dry_run_mode := job_wrapper is None) and (user is not None and not (tool.tool_type in ["expression", "data_source"] or tool.requires_galaxy_python_environment))
+        # `job_wrapper is None` occurs when TPV is launched in dry-run mode
         execute: |
           from tpv.core.entities import SchedulingTags, Tag, TagType
 
@@ -145,7 +148,8 @@ tools:
         fail: |
           Invalid 'Remote resources id' selected in the config menu under 'User -> Preferences -> Manage Information -> Use distributed compute resources'. Please reselect either 'default' or an appropriate remote resource then click 'Save' and rerun your job.
       - id: tool_requires_galaxy
-        if: tool.tool_type in ["expression", "data_source"] or tool.requires_galaxy_python_environment
+        if: not (dry_run_mode := job_wrapper is None) and (tool.tool_type in ["expression", "data_source"] or tool.requires_galaxy_python_environment)
+        # `job_wrapper is None` occurs when TPV is launched in dry-run mode
         # ORG has a more fine-grained alternative, we just run all those tools locally with the venv
         # params:
         #   container_override:
