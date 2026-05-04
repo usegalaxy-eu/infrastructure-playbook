@@ -793,6 +793,15 @@ tools:
       require:
         - singularity  # can be removed after closing https://github.com/usegalaxy-eu/issues/issues/928
 
+  toolshed.g2.bx.psu.edu/repos/bgruening/flexynesis/flexynesis/.*:
+    rules:
+      - id: flexynesis_gnn_high_mem
+        if: |
+          params = job.get_param_values(app)
+          params.get('training_type', {}).get('model_class', {}).get('model_class') == 'GNN'
+        cores: 4
+        mem: 100
+
   toolshed.g2.bx.psu.edu/repos/genouest/helixer/helixer/.*:
     params:
       docker_run_extra_arguments: --user 999
