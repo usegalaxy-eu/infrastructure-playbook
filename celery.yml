@@ -72,8 +72,7 @@
             mode: "0644"
   roles:
     - geerlingguy.repo-epel
-    - role: artis3n.tailscale  # broken (invalid API key)
-      when: celerycluster_is_main_node  # mitigates breakage (doesn't fail on the main node)
+    # - artis3n.tailscale  # broken (invalid API key)
     - role: usegalaxy_eu.handy.os_setup
       vars:
         enable_remap_user: true
