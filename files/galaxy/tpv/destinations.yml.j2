@@ -445,7 +445,7 @@ destinations:
       jobs_directory: /work/songalax/pulsar-eu/staging
       persistence_directory: /work/songalax/pulsar-eu/persisted_data
       tool_dependency_dir: /data/galaxy_server/pulsar/deps
-      submit_user: $__user_name__
+      submit_user: $__user_email__
       submit_native_specification: "--qos=galaxy -p galaxy -t 24:00:00 --cpus-per-task={int(cores)} --mem-per-cpu={int(mem/cores)}"
     scheduling:
       require:
