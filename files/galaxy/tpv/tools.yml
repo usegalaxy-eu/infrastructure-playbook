@@ -91,6 +91,9 @@ tools:
     env:
       TEMP: /data/1/galaxy_db/tmp
 
+  CONVERTER_gff_to_bed_0:
+    inherits: _basic_internal_tool
+
   toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/*:
     env:
       - name: SINGULARITYENV_LC_ALL
