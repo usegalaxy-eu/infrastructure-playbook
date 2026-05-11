@@ -30,6 +30,7 @@ deps: requirements.yaml
 	ansible-galaxy install -r requirements.yaml
 
 known_hosts:
+	grep --quiet '^influxdb.bi.privat' ~/.ssh/known_hosts || echo "influxdb.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJLhLsIO61hj8Kk6VQWTq5JU+PRm5/so1k44yZQTwvVO" >> ~/.ssh/known_hosts
 	grep --quiet '^celery-1.bi.privat' ~/.ssh/known_hosts || echo "celery-1.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFeiWwfhHxx2OVzHvaOQxWnCwlngRD26DxrCKYKMWQD1" >> ~/.ssh/known_hosts
 	grep --quiet '^apps.galaxyproject.eu' ~/.ssh/known_hosts || echo "[apps.galaxyproject.eu]:8080 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPqyqSMGttoZKjzVQh9deKhdX0CxWGjn0v2hHIzM1Fbt" >> ~/.ssh/known_hosts
 	grep --quiet '^osiris.denbi.de' ~/.ssh/known_hosts || echo "osiris.denbi.de ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINZMRlC7VfGh2XBExqH74UZZg6ZUc1d/Ok2adr5ostBV" >> ~/.ssh/known_hosts
