@@ -583,6 +583,8 @@ tools:
   toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicates/.*:
     cores: 8
     mem: 20
+    env:
+      SINGULARITYENV__JAVA_OPTIONS: -Xmx{int(mem)}G
 
   toolshed.g2.bx.psu.edu/repos/devteam/sam_merge/sam_merge2/(1\.1\.2|1\.2\.0):
     env:
