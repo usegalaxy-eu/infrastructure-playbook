@@ -14,6 +14,10 @@ tools:
         - conda
         - singularity
 
+  # there seem to be fonts missing from the current containers
+  toolshed.g2.bx.psu.edu/repos/iuc/snpfreqplot/snpfreqplot/.*:
+    inherits: _conda_in_container
+
   # python3 introduced changes to Gnuplot model more info in the issue bellow
   # rm after closing: https://github.com/usegalaxy-eu/issues/issues/979
   barchart_gnuplot:
