@@ -91,6 +91,9 @@ tools:
     env:
       TEMP: /data/1/galaxy_db/tmp
 
+  CONVERTER_gff_to_bed_0:
+    inherits: _basic_internal_tool
+
   toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/*:
     env:
       - name: SINGULARITYENV_LC_ALL
@@ -580,6 +583,8 @@ tools:
   toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicates/.*:
     cores: 8
     mem: 20
+    env:
+      SINGULARITYENV__JAVA_OPTIONS: -Xmx{int(mem)}G
 
   toolshed.g2.bx.psu.edu/repos/devteam/sam_merge/sam_merge2/(1\.1\.2|1\.2\.0):
     env:
@@ -805,3 +810,11 @@ tools:
   toolshed.g2.bx.psu.edu/repos/genouest/helixer/helixer/.*:
     params:
       docker_run_extra_arguments: --user 999
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/search_protein_search_database/search_protein_search_database/.*:
+    cores: 4
+    mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/logan_protein_embed_query/logan_protein_embed_query/.*:
+    cores: 4
+    mem: 20
