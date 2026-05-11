@@ -29,6 +29,8 @@ tools:
         value: vt100
       - name: SINGULARITYENV_TERM
         value: $TERM
+      - name: SINGULARITYENV__JAVA_OPTIONS
+        value: -Xmx{int(mem) - 0.5}G  # here we reserve 512MB for the JVM overhead (https://docs.uabgrid.uab.edu/wiki/Java)
     params:
       metadata_strategy: "extended"
       tmp_dir: true
