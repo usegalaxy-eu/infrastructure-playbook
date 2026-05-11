@@ -469,6 +469,8 @@ destinations:
         value: /scratch/singularity/
       - name: PYTHONPYCACHEPREFIX
         value: /scratch/pythoncache/
+      - name: singularity_env__JAVA_OPTIONS
+        value: '-Xmx{int(mem)}g'
     params:
       request_gpus: "{gpus or 0}"
 
