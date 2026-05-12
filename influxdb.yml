@@ -37,7 +37,8 @@
       ansible.builtin.pip:
         name: docker
         version: 7.1.0
-        break_system_packages: true
+        # needed for ansible-core >= 2.17
+        # break_system_packages: true
   handlers:
     - name: Reload Firewalld
       listen: copied_service
