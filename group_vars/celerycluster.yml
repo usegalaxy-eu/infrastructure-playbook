@@ -84,3 +84,9 @@ lp_logrotate_confd:
           /usr/bin/systemctl reload rsyslog >/dev/null 2>&1 || true
         endscript
       }
+
+# (handy.os_setup)
+software_groups_to_install:
+  - admin
+  - editors
+  - utils

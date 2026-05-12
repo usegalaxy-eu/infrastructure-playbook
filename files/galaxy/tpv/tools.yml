@@ -91,6 +91,14 @@ tools:
     env:
       TEMP: /data/1/galaxy_db/tmp
 
+  CONVERTER_gff_to_bed_0:
+    inherits: _basic_internal_tool
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/*:
+    env:
+      - name: SINGULARITYENV_LC_ALL
+        value: C.UTF-8
+
   toolshed.g2.bx.psu.edu/repos/bgruening/tabpfn/tabpfn/.*:
     inherits: _basic_gpu_resource_param_tool
     # This tool is using git to get a huggingface model, it seems that git is easily getting into a locked state on NFS.
@@ -263,8 +271,9 @@ tools:
     mem: 20
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_raycloudtools/3dtrees_raycloudtools/.*:
-    cores: 10
-    mem: 20
+    # Devereux et al., 2026 (DOI: 10.1016/j.rse.2025.115162): 28 cores, 128 GB
+    cores: min(int(input_size * 2 // 1 + 1), 28)
+    mem: min(19 + (input_size * 8.5 // 1 + 1), 128)
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_segmentanytree/3dtrees_segmentanytree/.*:
     gpus: 1
@@ -364,6 +373,10 @@ tools:
       docker_run_extra_arguments: ' --gpus all --user 999 '
     env:
       GPU_AVAILABLE: 1
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/.*:
+    cores: 12
+    mem: 32
 
   toolshed.g2.bx.psu.edu/repos/bgruening/black_forest_labs_flux/black_forest_labs_flux/.*:
     inherits: _basic_docker_tool
@@ -570,6 +583,12 @@ tools:
   toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicates/.*:
     cores: 8
     mem: 20
+    env:
+      SINGULARITYENV__JAVA_OPTIONS: -Xmx{int(mem)}G
+
+  toolshed.g2.bx.psu.edu/repos/devteam/sam_merge/sam_merge2/(1\.1\.2|1\.2\.0):
+    env:
+      SINGULARITYENV_JAVA_JAR_PATH: /usr/local/share/picard-1.56-1/
 
   toolshed.g2.bx.psu.edu/repos/bgruening/diamond/diamond/.*:
     cores: 6
@@ -779,6 +798,23 @@ tools:
       require:
         - singularity  # can be removed after closing https://github.com/usegalaxy-eu/issues/issues/928
 
+  toolshed.g2.bx.psu.edu/repos/bgruening/flexynesis/flexynesis/.*:
+    rules:
+      - id: flexynesis_gnn_high_mem
+        if: |
+          params = job.get_param_values(app)
+          params.get('training_type', {}).get('model_class', {}).get('model_class') == 'GNN'
+        cores: 4
+        mem: 100
+
   toolshed.g2.bx.psu.edu/repos/genouest/helixer/helixer/.*:
     params:
       docker_run_extra_arguments: --user 999
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/search_protein_search_database/search_protein_search_database/.*:
+    cores: 4
+    mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/logan_protein_embed_query/logan_protein_embed_query/.*:
+    cores: 4
+    mem: 20
