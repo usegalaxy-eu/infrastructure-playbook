@@ -126,7 +126,7 @@
         permanent: true
         state: enabled
       with_items:
-        - 9628/tcp # HTCondor shared port
+        - 9618/tcp # HTCondor shared port
         - 514/tcp  # rsyslog
     - name: Add the OpenAI API key to the telegraf user's bashrc file
       ansible.builtin.lineinfile:
