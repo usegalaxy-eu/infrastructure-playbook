@@ -11,7 +11,7 @@
     - name: Install Dependencies
       become: true
       ansible.builtin.package:
-        name: ['python3-virtualenv', 'python3-docker']
+        name: ['python3-virtualenv']
     - name: Configure SELinux
       ansible.posix.seboolean:
         name: "{{ item }}"
@@ -33,6 +33,12 @@
         owner: root
         group: root
       notify: copied_service
+    - name: Install docker with pip
+      ansible.builtin.pip:
+        name: docker
+        version: 7.1.0
+        # needed for ansible-core >= 2.17
+        # break_system_packages: true
   handlers:
     - name: Reload Firewalld
       listen: copied_service
