@@ -19,3 +19,4 @@
     group: "{{ item.group | default('root') }}"
     mode: 0400
   with_items: "{{ aws_cli_credentials }}"
+  no_log: true
