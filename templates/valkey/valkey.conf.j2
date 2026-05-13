@@ -30,9 +30,6 @@ appendonly {{ valkey_appendonly }}
 appendfsync {{ valkey_appendfsync }}
 no-appendfsync-on-rewrite no
 
-{% for include in valkey_includes %}
-include {{ include }}
-{% endfor %}
 
 {% if valkey_requirepass %}
 requirepass {{ valkey_requirepass }}
