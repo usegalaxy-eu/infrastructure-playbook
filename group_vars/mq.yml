@@ -163,21 +163,6 @@ rabbitmq_container:
   image: rabbitmq:4.0.6-management-alpine
   hostname: "{{ inventory_hostname }}"
 
-# valkey
-valkey_port: 6379
-valkey_bind_interface: 0.0.0.0
-valkey_rdbcompression: "yes"
-valkey_dbfilename: dump.rdb
-valkey_dbdir: /var/lib/valkey
-valkey_loglevel: "notice"
-valkey_logfile: /var/log/valkey/valkey.log
-valkey_databases: 16
-valkey_appendonly: "no"
-valkey_appendfsync: "everysec"
-valkey_save:
-  - 900 1
-  - 300 10
-  - 60 10000
 # Telegraf
 telegraf_plugins_extra:
   prometheus:

@@ -8,10 +8,17 @@
   ansible.builtin.package:
     name: valkey
     state: present
+- name: Create a directory if it does not exist
+  ansible.builtin.file:
+    path: /etc/valkey/valkey.conf.d
+    state: directory
+    mode: '0755'
+    owner: valkey
+    group: root
 - name: Ensure Valkey is configured.
   template:
-    src: templates/valkey/valkey.conf.j2
-    dest: "/etc/valkey/valkey.conf"
+    src: valkey.conf.j2
+    dest: "/etc/valkey/valkey.conf.d/valkey-local.conf"
     mode: 0640
     notify: restart valkey
 - name: Ensure Valkey is running.

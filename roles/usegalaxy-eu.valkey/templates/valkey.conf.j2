@@ -1,0 +1,36 @@
+# {{ ansible_managed }}
+
+include /etc/valkey/valkey.conf.d/valkey-local.conf
+
+daemonize yes
+pidfile /run/valkey/valkey.pid
+port {{ valkey_port }}
+bind {{ valkey_bind_interface }}
+
+loglevel {{ valkey_loglevel }}
+logfile {{ valkey_logfile }}
+
+# To enable logging to the system logger, just set 'syslog-enabled' to yes,
+# and optionally update the other syslog parameters to suit your needs.
+# syslog-enabled no
+# syslog-ident valkey
+# syslog-facility local0
+
+databases {{ valkey_databases }}
+
+save{% for save in valkey_save %} {{ save }}{% endfor %}
+
+rdbcompression {{ valkey_rdbcompression }}
+dbfilename {{ valkey_dbfilename }}
+dir {{ valkey_dbdir }}
+
+# maxclients 128
+
+appendonly {{ valkey_appendonly }}
+appendfsync {{ valkey_appendfsync }}
+no-appendfsync-on-rewrite no
+
+
+{% if valkey_requirepass %}
+requirepass {{ valkey_requirepass }}
+{% endif %}
