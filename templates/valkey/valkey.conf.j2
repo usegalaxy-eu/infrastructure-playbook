@@ -1,0 +1,45 @@
+# {{ ansible_managed }}
+
+daemonize yes
+pidfile /run/valkey/valkey.pid
+port {{ valkey_port }}
+bind {{ valkey_bind_interface }}
+
+loglevel {{ valkey_loglevel }}
+logfile {{ valkey_logfile }}
+
+# To enable logging to the system logger, just set 'syslog-enabled' to yes,
+# and optionally update the other syslog parameters to suit your needs.
+# syslog-enabled no
+# syslog-ident valkey
+# syslog-facility local0
+
+databases {{ valkey_databases }}
+
+{% for save in valkey_save %}
+save {{ save }}
+{% endfor %}
+
+rdbcompression {{ valkey_rdbcompression }}
+dbfilename {{ valkey_dbfilename }}
+dir {{ valkey_dbdir }}
+
+# maxclients 128
+
+{% if valkey_maxmemory %}
+maxmemory {{ valkey_maxmemory }}
+maxmemory-policy {{ valkey_maxmemory_policy }}
+maxmemory-samples {{ valkey_maxmemory_samples }}
+{% endif %}
+
+appendonly {{ valkey_appendonly }}
+appendfsync {{ valkey_appendfsync }}
+no-appendfsync-on-rewrite no
+
+{% for include in valkey_includes %}
+include {{ include }}
+{% endfor %}
+
+{% if valkey_requirepass %}
+requirepass {{ valkey_requirepass }}
+{% endif %}
