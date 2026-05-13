@@ -12,7 +12,7 @@
   ansible.builtin.file:
     path: /etc/valkey/valkey.conf.d
     state: directory
-    mode: '0755'
+    mode: '0750'
     owner: valkey
     group: root
 - name: Ensure Valkey is configured.
