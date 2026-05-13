@@ -16,9 +16,7 @@ logfile {{ valkey_logfile }}
 
 databases {{ valkey_databases }}
 
-{% for save in valkey_save %}
-save {{ save }}
-{% endfor %}
+save{% for save in valkey_save %} {{ save }}{% endfor %}
 
 rdbcompression {{ valkey_rdbcompression }}
 dbfilename {{ valkey_dbfilename }}
