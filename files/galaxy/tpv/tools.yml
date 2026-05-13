@@ -804,8 +804,9 @@ tools:
         if: |
           params = job.get_param_values(app)
           params.get('training_type', {}).get('model_class', {}).get('model_class') == 'GNN'
-        cores: 4
+        cores: 20
         mem: 100
+        gpus: 1
 
   toolshed.g2.bx.psu.edu/repos/genouest/helixer/helixer/.*:
     params:
