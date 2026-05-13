@@ -451,11 +451,6 @@ destinations:
       tool_dependency_dir: /data/galaxy_server/pulsar/deps
       submit_user: $__user_email__
       submit_native_specification: "--qos=galaxy -p galaxy -t 24:00:00 --cpus-per-task={int(cores)} --mem-per-cpu={int(mem/cores)}"
-      container_resolvers:
-        - type: cached_explicit_singularity
-          cache_directory: /data/galaxy_server/pulsar_container_cache/
-        - type: cached_mulled_singularity
-          cache_directory: /data/galaxy_server/pulsar_container_cache/
     scheduling:
       require:
         - ufz-eve-pulsar
