@@ -26,12 +26,6 @@ dir {{ valkey_dbdir }}
 
 # maxclients 128
 
-{% if valkey_maxmemory %}
-maxmemory {{ valkey_maxmemory }}
-maxmemory-policy {{ valkey_maxmemory_policy }}
-maxmemory-samples {{ valkey_maxmemory_samples }}
-{% endif %}
-
 appendonly {{ valkey_appendonly }}
 appendfsync {{ valkey_appendfsync }}
 no-appendfsync-on-rewrite no
@@ -43,3 +37,23 @@ include {{ include }}
 {% if valkey_requirepass %}
 requirepass {{ valkey_requirepass }}
 {% endif %}
+
+# Default Valkey Values
+always-show-logo no
+hide-user-data-from-log yes
+set-proc-title yes
+proc-title-template "{title} {listen-addr} {server-mode}"
+locale-collate ""
+stop-writes-on-bgsave-error yes
+rdbchecksum yes
+rdb-del-sync-files no
+replica-serve-stale-data yes
+replica-read-only yes
+repl-diskless-sync yes
+repl-diskless-sync-delay 5
+repl-diskless-sync-max-replicas 0
+repl-diskless-load disabled
+dual-channel-replication-enabled no
+repl-disable-tcp-nodelay no
+replica-priority 100
+acllog-max-len 128
