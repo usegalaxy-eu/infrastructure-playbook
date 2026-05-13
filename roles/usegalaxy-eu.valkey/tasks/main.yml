@@ -20,7 +20,7 @@
     src: valkey.conf.j2
     dest: "/etc/valkey/valkey.conf.d/valkey-local.conf"
     mode: 0640
-    notify: restart valkey
+  notify: restart valkey
 - name: Ensure Valkey is running.
   service:
     name: "valkey"
