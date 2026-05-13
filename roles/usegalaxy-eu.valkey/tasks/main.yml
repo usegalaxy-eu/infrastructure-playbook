@@ -1,0 +1,21 @@
+---
+- name: Open ports for Valkey
+  ansible.posix.firewalld:
+    port: 6379/tcp
+    permanent: true
+    state: enabled
+- name: Install Valkey
+  ansible.builtin.package:
+    name: valkey
+    state: present
+- name: Ensure Valkey is configured.
+  template:
+    src: templates/valkey/valkey.conf.j2
+    dest: "/etc/valkey/valkey.conf"
+    mode: 0640
+    notify: restart valkey
+- name: Ensure Valkey is running.
+  service:
+    name: "valkey"
+    state: started
+    enabled: true
