@@ -41,7 +41,7 @@ collections:
     source: https://galaxy.ansible.com
     type: galaxy
   - name: usegalaxy_eu.handy
-    version: 3.1.1
+    version: 3.3.0
     source: https://galaxy.ansible.com
   - name: ansible.windows
     version: 1.14.0
@@ -114,7 +114,7 @@ roles:
     version: 1.0.1
   - name: grycap.htcondor
     src: https://github.com/usegalaxy-eu/ansible-htcondor-grycap
-    version: d9a4aab0052dfb31d48c986d39a7f5e3692abba4
+    version: 33ea3aafd9c5d33a1063534e0604631696c052f9
   - name: usegalaxy-eu.update-hosts
     src: https://github.com/usegalaxy-eu/ansible-update-hosts
     version: 0.4.0
@@ -131,7 +131,7 @@ roles:
   - name: usegalaxy_eu.rabbitmqserver
     version: 1.5.0
   - name: usegalaxy_eu.influxdbserver
-    version: 1.1.1
+    version: 1.2.0
   - name: usegalaxy_eu.flower
     version: 2.1.1
   - name: usegalaxy_eu.walle
@@ -145,15 +145,18 @@ roles:
   - name: geerlingguy.pip
     version: 2.2.0
   - name: paprikant.beacon
-    src: https://github.com/Paprikant/ansible-role-beacon
+    src: https://github.com/gsaudade99/ansible-role-beacon/ # CHANGE ME ONCE MERGED https://github.com/Paprikant/ansible-role-beacon/pull/4
+    version: 2639596e9c0af8084272e60579ccddeb5a411bbf
   - name: paprikant.beacon-importer
-    src: https://github.com/Paprikant/ansible-role-beacon_importer
+    src: https://github.com/usegalaxy-eu/ansible-role-beacon_importer
   - name: galaxyproject.miniconda
     version: 0.3.1
   - name: usegalaxy_eu.tpv_auto_lint
     version: 0.4.5
   - name: geerlingguy.redis
     version: 1.9.1
+  - name: artis3n.tailscale
+    version: v4.5.0
   - name: dokku_bot.ansible_dokku
     version: v2024.4.11
   - src: https://github.com/usegalaxy-eu/ansible-traefik
