@@ -805,7 +805,7 @@ tools:
           retval = False
           options = job.get_param_values(app)
           training_type = options.get('training_type', {})
-          if isinstance(training_type, dict):
+          if training_type and isinstance(training_type, dict):
             retval = training_type.get('model_class', {}).get('model_class') == 'GNN'
           retval
         cores: 20
