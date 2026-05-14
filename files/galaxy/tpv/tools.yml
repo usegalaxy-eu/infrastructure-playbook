@@ -802,8 +802,12 @@ tools:
     rules:
       - id: flexynesis_gnn_high_mem
         if: |
-          params = job.get_param_values(app)
-          params.get('training_type', {}).get('model_class', {}).get('model_class') == 'GNN'
+          retval = False
+          options = job.get_param_values(app)
+          training_type = options.get('training_type', {})
+          if training_type and isinstance(training_type, dict):
+            retval = training_type.get('model_class', {}).get('model_class') == 'GNN'
+          retval
         cores: 20
         mem: 100
         gpus: 1
