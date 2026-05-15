@@ -1,4 +1,4 @@
-read_only_partition="/dev/loop0p1"
+read_only_partition="/dev/disk/by-label/system"
 SLX_DNBD3_SERVERS='{{ hostvars['dnbd3-primary.galaxyproject.eu']['ansible_default_ipv4']['address'] }} {{ hostvars['sn12.galaxyproject.eu']['ansible_default_ipv4']['address'] }}'
 SLX_DNBD3_IMAGE='rockylinux-10-latest-x86_64-workers-internal.qcow2'
 SLX_DNBD3_RID='{{ vgcn_image_revision_id }}'
