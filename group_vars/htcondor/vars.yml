@@ -14,6 +14,7 @@ htcondor_role_submit: false
 htcondor_password: "{{ vault_htcondor_password }}"
 
 # Settings specific to the `condor_config.local.j2` configuration file.
+# 132.230.153.0/28 is the BI RNA server's CIDR prefix
 htcondor_allow_write: "10.4.68.0/24,132.230.153.0/28"
 htcondor_allow_negotiator: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }},$(CONDOR_HOST),$(ALLOW_WRITE)"
 htcondor_allow_administrator: "$(ALLOW_NEGOTIATOR)"
