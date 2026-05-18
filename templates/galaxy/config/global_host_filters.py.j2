@@ -56,6 +56,8 @@ def per_host_tool_labels( context, label ):
         return label.id in valid_labels
     if "astronomy.usegalaxy.eu" in host:
         return False
+    if "ssh.usegalaxy.eu" in host:
+        return label.id in valid_labels
     return True
 
 
@@ -188,7 +190,8 @@ DOMAIN_SECTIONS = {
         "phylogenetics",
         "evolution",
         "metagenomic_analysis"
-    ]
+    ],
+    'ssh': []
 }
 
 def per_host_tool_sections( context, section ):
