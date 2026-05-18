@@ -54,7 +54,7 @@ firewall_htcondor_shared_port_service: >
   <service>
     <short>HTCondor Shared Port</short>
     <description>HTCondor shared port service.</description>
-    <port protocol="tcp" port="9628"/>
+    <port protocol="tcp" port="9618"/>
   </service>
 
 # fs-maintenance
@@ -237,6 +237,9 @@ galaxy_systemd_workflow_scheduler_env: '{{ galaxy_systemd_gunicorn_env }}'
 galaxy_systemd_memory_limit: 35
 galaxy_systemd_memory_limit_handler: 40
 galaxy_systemd_memory_limit_workflow: 15
+
+galaxy_systemd_gunicorn_max_requests: 25920000  # 24h assuming 300 Requests per second
+galaxy_systemd_gunicorn_max_requests_jitter: 3240000  # 3h assuming 300 Requests per second
 
 # gie_proxy
 gie_proxy_dir: '{{ galaxy_root }}/gie-proxy/proxy'

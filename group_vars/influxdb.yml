@@ -36,6 +36,8 @@ influxdb_container_standalone_setup_details:
       'INFLUXDB_DATA_MAX_VALUES_PER_TAG': '3000000',
       'INFLUXDB_LOGGING_LEVEL': "error"
     }
+  ulimits:
+    - "nofile:10240:10240"
 # see:
 # https://docs.influxdata.com/influxdb/v1.8/administration/config/
 
