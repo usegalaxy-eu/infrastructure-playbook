@@ -238,6 +238,9 @@ galaxy_systemd_memory_limit: 35
 galaxy_systemd_memory_limit_handler: 40
 galaxy_systemd_memory_limit_workflow: 15
 
+galaxy_systemd_gunicorn_max_requests: 25920000  # 24h assuming 300 Requests per second
+galaxy_systemd_gunicorn_max_requests_jitter: 3240000  # 3h assuming 300 Requests per second
+
 # gie_proxy
 gie_proxy_dir: '{{ galaxy_root }}/gie-proxy/proxy'
 gie_proxy_git_version: v0.1.0
