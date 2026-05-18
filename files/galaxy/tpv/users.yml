@@ -14,11 +14,3 @@ users:
           'interactive_tool_jupyter_notebook' in tool.id
         cores: 1
         mem: 15
-  dmitrijs.sizovs@gmail.com:
-    rules:
-      - id: route-to-nemo-pulsar
-        if: |
-          tool.id == 'ChangeCase'
-        scheduling:
-          require:
-            - nemo-pulsar      
