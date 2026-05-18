@@ -1,10 +1,14 @@
 ---
+hostname: influxdb.galaxyproject.eu
+
 swap_file_size_mb: '5120'
 swap_file_path: /data/swapfile
 
 docker_users:
   - centos
+
 # influxdb
+influxdb_hostname: "{{ hostname }}"
 influxdb_https_enabled: "true"
 
 influxdb_users:
