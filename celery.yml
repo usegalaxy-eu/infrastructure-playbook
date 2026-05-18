@@ -2,7 +2,6 @@
 - name: Celery cluster
   vars:
     celerycluster_ansible_group: celerycluster
-    tailscale_node_ipv4: "100.111.134.66"
   hosts: "{{ celerycluster_ansible_group }}"
   gather_facts: true
   become: true
