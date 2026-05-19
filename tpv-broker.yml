@@ -7,7 +7,9 @@
     hostname: '{{ inventory_hostname }}'
     nginx_conf_user: galaxy
     server_names:
-      - '{{ inventory_hostname }}'
+      - 'tpv-broker.galaxyproject.eu'
+    certbot_hostname_override:
+      - 'tpv-broker.galaxyproject.eu'
   vars_files:
     - group_vars/tpv-broker.yml
     - secret_group_vars/all.yml
@@ -53,6 +55,7 @@
     - galaxyproject.miniconda
     - influxdata.chrony
     - hxr.aws-cli
-    - usegalaxy_eu.ansible_nginx_upload_module
-    - usegalaxy-eu.nginx
+    - usegalaxy_eu.ansible_nginx_upload_module  # This role is broken for el10
+    #- usegalaxy-eu.nginx # ssl.conf is not compatible with our setup, wrong ssl cert path
+                          # Note that we will still use the nginx role to install nginx, but we will not use its configuration
     - usegalaxy_eu.ansible_tpv_broker
