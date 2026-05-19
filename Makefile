@@ -37,7 +37,7 @@ known_hosts:
 	grep --quiet '^worker-0.gold.build.galaxyproject.eu' ~/.ssh/known_hosts || echo "worker-0.gold.build.galaxyproject.eu ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAjC0YY4V6gDjvIyFb1qyszQn+Jr2GtLImSJO5BVoeHq" >> ~/.ssh/known_hosts
 	grep --quiet '^worker-0.bronze.build.galaxyproject.eu' ~/.ssh/known_hosts || echo "worker-0.bronze.build.galaxyproject.eu ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKE2VMZbiOf4NHTVyNj9FyCu2P71YF/RHHO97lrsPC46" >> ~/.ssh/known_hosts
 	grep --quiet '^beacon.bi.privat' ~/.ssh/known_hosts || echo "beacon.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJLhLsIO61hj8Kk6VQWTq5JU+PRm5/so1k44yZQTwvVO" >> ~/.ssh/known_hosts
-	grep --quiet '^upload.galaxyproject.eu' ~/.ssh/known_hosts || echo "upload.galaxyproject.eu ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHMz9KPAC6tZwxoBE0tcqDVA29mPtE3K+so9MYGsNkNU" >> ~/.ssh/known_hosts
+	grep --quiet '^upload.bi.privat' ~/.ssh/known_hosts || echo "upload.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHMz9KPAC6tZwxoBE0tcqDVA29mPtE3K+so9MYGsNkNU" >> ~/.ssh/known_hosts
 	grep --quiet '^sn10.galaxyproject.eu' ~/.ssh/known_hosts || echo "sn10.galaxyproject.eu ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC49py5wws/7FhAfRDRS8byDMbSaqxNj3ddigSoXJM/y" >> ~/.ssh/known_hosts
 	grep --quiet '^central-manager.bi.privat' ~/.ssh/known_hosts || echo "central-manager.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMoOla00b8+03VlVu9TOHJbij41jFILenJ2zWHsZE8fh" >> ~/.ssh/known_hosts
 	grep --quiet '^sn12.galaxyproject.eu' ~/.ssh/known_hosts || echo "sn12.galaxyproject.eu ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMoOla00b8+03VlVu9TOHJbij41jFILenJ2zWHsZE8fh" >> ~/.ssh/known_hosts
