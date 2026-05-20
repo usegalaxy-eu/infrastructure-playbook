@@ -59,7 +59,7 @@ traefik_networks:
 traefik_containers:
   - name: traefik
     replicas: 1
-    image: traefik:v3.0
+    image: traefik:v3.7.0
     url: "https://traefik.{{ tailscale_domain }}/dashboard/#/"
     environment:
       AWS_SHARED_CREDENTIALS_FILE: "/run/secrets/aws_shared_credentials"
