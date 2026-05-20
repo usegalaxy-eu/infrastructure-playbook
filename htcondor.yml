@@ -99,9 +99,9 @@
     - name: usegalaxy-eu.htcondor_release
       when: htcondor_role_submit and inventory_hostname == "sn09.galaxyproject.eu"
     - name: usegalaxy-eu.fix-stop-ITs
-      when: htcondor_role_submit and inventory_hostname != "maintenance.galaxyproject.eu"
+      when: htcondor_role_submit and inventory_hostname != "maintenance.bi.privat"
     - name: usegalaxy-eu.remove-orphan-condor-jobs
-      when: htcondor_role_submit and inventory_hostname != "maintenance.galaxyproject.eu"
+      when: htcondor_role_submit and inventory_hostname != "maintenance.bi.privat"
   post_tasks:
     - name: Add /usr/local/bin to Galaxy's PATH in bashrc file. (usegalaxy-eu.fix-stop-ITs)
       become: true

@@ -13,7 +13,7 @@ worker-0.bronze.build.galaxyproject.eu
 beacon.bi.privat ansible_ssh_user=root
 
 [influxdb]
-influxdb.galaxyproject.eu ansible_host=influxdb.bi.privat
+influxdb.bi.privat
 
 [mq]
 mq.bi.privat
@@ -22,7 +22,7 @@ mq.bi.privat
 incoming.galaxyproject.eu
 
 [upload]
-upload.galaxyproject.eu
+upload.bi.privat
 
 [proxy]
 proxy.galaxyproject.eu
@@ -56,7 +56,7 @@ celery-cloud-2.galaxyproject.eu ansible_ssh_user=rocky
 sn09.galaxyproject.eu
 
 [maintenance]
-maintenance.galaxyproject.eu
+maintenance.bi.privat
 
 [traefik]
 traefik.galaxyproject.eu ansible_ssh_user=rocky
@@ -75,7 +75,7 @@ central-manager.bi.privat ansible_ssh_user=root
 ansible_group_priority=4
 
 [htcondor-submit]
-maintenance.galaxyproject.eu
+maintenance.bi.privat
 sn09.galaxyproject.eu
 
 [htcondor-submit:vars]
@@ -95,7 +95,7 @@ dnbd3-primary.galaxyproject.eu ansible_ssh_user=root
 sn12.galaxyproject.eu
 
 [tpvbroker]
-tpv-broker.galaxyproject.eu ansible_host=10.4.68.199 ansible_ssh_user=root
+tpv-broker.bi.privat
 
 [sn09]
 sn09.galaxyproject.eu

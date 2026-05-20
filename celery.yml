@@ -2,7 +2,6 @@
 - name: Celery cluster
   vars:
     celerycluster_ansible_group: celerycluster
-    tailscale_node_ipv4: "100.111.134.66"
   hosts: "{{ celerycluster_ansible_group }}"
   gather_facts: true
   become: true
@@ -73,7 +72,8 @@
             mode: "0644"
   roles:
     - geerlingguy.repo-epel
-    # - artis3n.tailscale  # broken (invalid API key)
+    - role: artis3n.tailscale
+      when: celerycluster_is_main_node
     - role: usegalaxy_eu.handy.os_setup
       vars:
         enable_remap_user: true

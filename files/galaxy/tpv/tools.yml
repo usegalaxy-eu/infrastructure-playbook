@@ -256,6 +256,14 @@ tools:
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
 
+  # this is for tabular learner tool 
+  toolshed.g2.bx.psu.edu/repos/goeckslab/pycaret_[^/]*/pycaret_[^/]*/3.3.2.*:
+    params:
+      container_override: [{type: singularity, shell: '/bin/sh', identifier: "/cvmfs/main.galaxyproject.org/singularity/galaxy-pycaret:3.3.2--0"}]
+  
+  toolshed.g2.bx.psu.edu/repos/goeckslab/tabular_learner/tabular_learner/0\.1\..*:
+    inherits: toolshed.g2.bx.psu.edu/repos/goeckslab/pycaret_[^/]*/pycaret_[^/]*/3.3.2.*
+
   toolshed.g2.bx.psu.edu/repos/rnateam/splitfasta/rbc_splitfasta/.*:
     # this is only implemented in 0.6.0+, consider adding a rule checking that `$inputFile.metadata.sequences` is not bigger than 1000 and the version is less 0.6.0
     env:
@@ -802,10 +810,18 @@ tools:
     rules:
       - id: flexynesis_gnn_high_mem
         if: |
-          params = job.get_param_values(app)
-          params.get('training_type', {}).get('model_class', {}).get('model_class') == 'GNN'
-        cores: 4
+          retval = False
+          options = job.get_param_values(app)
+          if options:
+            training_type = options.get('training_type', {})
+            if training_type and isinstance(training_type, dict):
+              model_select = training_type.get('model_class', {})
+              if model_select and isinstance(model_select, dict):
+                retval = model_select.get('model_class') == 'GNN'
+          retval
+        cores: 20
         mem: 100
+        gpus: 1
 
   toolshed.g2.bx.psu.edu/repos/genouest/helixer/helixer/.*:
     params:
