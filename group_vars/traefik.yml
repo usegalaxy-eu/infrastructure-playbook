@@ -43,14 +43,11 @@ lp_logrotate_confd:
         endscript
       }
 
-tailscale_tags:
-  - "critical"
+tailscale_tags: "{{ tailscale_tags_default + ['critical'] }}"
 
 traefik_copy_rules: true
 
 traefik_domain: "{{ hostname }}"
-tailscale_domain: springhare-dinosaur.ts.net
-tailscale_authkey: "{{ tailscale_auth_key_usegalaxy_eu }}"
 
 traefik_networks:
   traefik:
