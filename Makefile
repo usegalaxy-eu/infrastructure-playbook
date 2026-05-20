@@ -46,6 +46,7 @@ known_hosts:
 	grep --quiet '^sn04.bi.uni-freiburg.de' ~/.ssh/known_hosts || echo "sn04.bi.uni-freiburg.de,132.230.68.5 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBNC78hpzimTnM3yI8EiW1UPOwUOflHyWHJhTsxv3RD0EMtOajnQQLwjuO7KZUgPpT0JabBxsrtTL+prny8IpB3Y=" >> ~/.ssh/known_hosts
 	grep --quiet '^mq.bi.privat' ~/.ssh/known_hosts || echo "mq.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJLhLsIO61hj8Kk6VQWTq5JU+PRm5/so1k44yZQTwvVO" >> ~/.ssh/known_hosts
 	grep --quiet '^maintenance.bi.privat' ~/.ssh/known_hosts || echo "maintenance.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJLhLsIO61hj8Kk6VQWTq5JU+PRm5/so1k44yZQTwvVO" >> ~/.ssh/known_hosts
+	grep --quiet '^tpv-broker.bi.privat' ~/.ssh/known_hosts || echo "tpv-broker.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJLhLsIO61hj8Kk6VQWTq5JU+PRm5/so1k44yZQTwvVO" >> ~/.ssh/known_hosts
 
 pull:
 	git fetch origin
