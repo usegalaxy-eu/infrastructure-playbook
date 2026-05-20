@@ -43,8 +43,6 @@ lp_logrotate_confd:
         endscript
       }
 
-tailscale_tags: "{{ tailscale_tags_default + ['critical'] }}"
-
 traefik_copy_rules: true
 
 traefik_domain: "{{ hostname }}"
