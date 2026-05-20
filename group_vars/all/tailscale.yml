@@ -1,6 +1,13 @@
+tailscale_tags_default:
+  # assigned to all hosts that connect to the Tailscale network if you want to assign
+  # extra tags to a host, append them to the default tags:
+  # `tailscale_tags: "{{ tailscale_tags_default + ['my_tag'] }}"`
+  - galaxy
+
 tailscale_args: "--accept-dns=false"
 tailscale_authkey: "{{ vault_tailscale_authkey }}"
 tailscale_oauth_ephemeral: true
 tailscale_oauth_preauthorized: true
-tailscale_tags:
-  - galaxy
+tailscale_tags: "{{ tailscale_tags_default }}"
+
+tailscale_domain: springhare-dinosaur.ts.net
