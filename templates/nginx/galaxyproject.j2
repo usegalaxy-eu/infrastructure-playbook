@@ -8,25 +8,28 @@ server {
 	location = / {
 		return 301 https://galaxyproject.org/eu/;
 	}
-	location = /freiburg/ {
+	location ~* ^/eu/? {
+		return 301 https://galaxyproject.org/eu/;
+	}
+	location ~* ^/freiburg/? {
 		return 301 https://galaxyproject.org/freiburg/;
 	}
-	location = /erasmusmc/ {
+	location ~* ^/erasmusmc/? {
 		return 301 https://galaxyproject.org/erasmusmc/;
 	}
-	location = /belgium/ {
+	location ~* ^/belgium/? {
 		return 301 https://galaxyproject.org/belgium/;
 	}
-	location = /pasteur/ {
+	location ~* ^/pasteur/? {
 		return 301 https://galaxyproject.org/pasteur/;
 	}
-	location = /genouest/ {
+	location ~* ^/genouest/? {
 		return 301 https://galaxyproject.org/genouest/;
 	}
-	location = /elixir-it/ {
+	location ~* ^/elixir-it/? {
 		return 301 https://galaxyproject.org/elixir-it/;
 	}
-	location = /ifb/ {
+	location ~* ^/ifb/? {
 		return 301 https://galaxyproject.org/ifb/;
 	}
 
