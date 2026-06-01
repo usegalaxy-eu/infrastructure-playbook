@@ -822,13 +822,6 @@ tools:
         cores: 20
         mem: 100
         gpus: 1
-        params:
-          docker_env_CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
-          docker_env_GALAXY_FLEXYNESIS_GPU_STRING: "$_CONDOR_AssignedGPUs"
-          docker_env_GPU_AVAILABLE: 1
-        env:
-          GPU_AVAILABLE: 1
-          GALAXY_FLEXYNESIS_GPU_STRING: 0
 
   toolshed.g2.bx.psu.edu/repos/genouest/helixer/helixer/.*:
     params:
