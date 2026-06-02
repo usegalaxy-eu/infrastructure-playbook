@@ -103,7 +103,7 @@ server {
     #client_body_temp_path  /data/dnb01/nginx_upload_store/;
     client_body_buffer_size 1024m;
 
-		{{ sse_galaxy() | indent(6, false) }}
+		{{ sse_galaxy() | indent(4, false) }}
 
     location / {
         {{ upstream_galaxy() | indent(8, false) }}
