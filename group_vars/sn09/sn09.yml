@@ -434,6 +434,8 @@ galaxy_config_files:
 
 galaxy_config_template_src_dir: templates/galaxy
 galaxy_config_templates:
+  - src: '{{ galaxy_config_template_src_dir }}/config/agent_model_capabilities.yml.j2'
+    dest: '{{ galaxy_config_dir }}/agent_model_capabilities.yml'
   - src: '{{ galaxy_config_template_src_dir }}/config/build_sites.yml.j2'
     dest: "{{ galaxy_config['galaxy']['build_sites_config_file'] }}"
   - src: '{{ galaxy_config_template_src_dir }}/config/global_host_filters.py.j2'
