@@ -1,8 +1,64 @@
 ---
-- hosts: dnbd3
-  name: Gather facts from dnbd3
-  tasks: [ ]
-- name: Tasks for the 
+#- name: DNBD3 Infrastructure
+#  hosts: dnbd3primary,dnbd3proxy
+#  become: true
+#  vars_files:
+#    - secret_group_vars/all.yml
+#
+#  pre_tasks:
+#    - name: Install dependencies
+#      ansible.builtin.package:
+#        name:
+#          - git
+#        state: present
+#    - name: Create dnbd3 user
+#      ansible.builtin.group:
+#        name: "{{ dnbd3_group }}"
+#        state: present
+#    - name: Create dnbd3 user
+#      ansible.builtin.user:
+#        name: "{{ dnbd3_user }}"
+#        group: "{{ dnbd3_group }}"
+#        shell: /bin/false
+#        create_home: false
+#    - name: Grant access to dnbd3 root directory
+#      ansible.builtin.file:
+#        mode: "770"
+#        path: "{{ dnbd3_base_path }}"
+#        state: directory
+#        owner: "{{ dnbd3_user }}"
+#        group: "{{ dnbd3_group }}"
+#
+#  post_tasks:
+#    - name: Create SELinux rule for apache to access http dir
+#      community.general.sefcontext:
+#        target: '{{ dnbd3_base_path }}/http(/.*)?'
+#        setype: httpd_sys_rw_content_t
+#        state: present
+#
+#  roles:
+#    - usegalaxy-eu.dynmotd
+#    - usegalaxy-eu.autoupdates # keep all of our packages up to date
+#    - influxdata.chrony # Keep our time in sync.
+#    - dj-wasabi.telegraf
+#    - role: usegalaxy-eu.autofs
+#      when: "'dnbd3primary' in group_names"
+#    - role: usegalaxy_eu.handy.os_setup
+#      vars:
+#        hostname: "{{ inventory_hostname }}"
+#        enable_hostname: true
+#        enable_powertools: true
+#      when: "'dnbd3_primary' in group_names"
+#    - role: usegalaxy_eu.dnbd3
+#    - role: usegalaxy_eu.tftp
+#      when: "'dnbd3primary' in group_names"
+#    - role: geerlingguy.apache
+#      when: "'dnbd3primary' in group_names"
+#    - role: usegalaxy_eu.dnbd3-primary
+#      when: "'dnbd3primary' in group_names"
+#    - role: usegalaxy_eu.firewall
+
+- name: Libvirt
   hosts: sn12.galaxyproject.eu
   become: true
   vars:
@@ -59,16 +115,47 @@
         method4: disabled
         method6: disabled
         state: present
-    - name: Create VLAN connection bound to the bridge
+    - name: Create connection bound to the bridge
       community.general.nmcli:
         conn_name: "KVM-V{{ bi_privat_vlan }}"
-        ifname: "{{ kvm_nic_name }}.{{ bi_privat_vlan }}"
-        type: vlan
-        vlandev: "{{ kvm_nic_name }}" # Checked and OK
-        vlanid: "{{ bi_privat_vlan | int }}"
+        ifname: "{{ kvm_nic_name }}"
+        type: bridge-slave
         master: "virbr1.{{ bi_privat_vlan }}"
         slave_type: "bridge"
         state: present
+    - name: Set rp_filter for enp1s0f1 to loose mode, because two NICs on the same net wont work otherwise
+      ansible.posix.sysctl:
+        name: "net.ipv4.conf.{{ kvm_nic_name }}.rp_filter"
+        value: '2'
+        sysctl_set: true
+        state: present
+        reload: true
+    - name: Create mountpoint for Libvirt
+      ansible.builtin.copy:
+        content: |
+          [Unit]
+          Description=Mount NFS Share for Libvirt
+          Requires=network-online.target
+          After=network-online.target
+          Before=virtstoraged.service
+          
+          [Mount]
+          What=ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/dnb01/vms
+          Where=/mnt
+          Type=nfs
+          Options=hard,rw,nosuid,nconnect=2,nodev,vers=3
+          
+          [Install]
+          RequiredBy=virtstoraged.service
+        dest: /etc/systemd/system/data.mount
+  post_tasks:
+    - name: Enable the service
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+        state: started
+        enabled: true
+        name: data.mount
+
   collections:
     #   - devsec.hardening
   roles:
@@ -79,6 +166,7 @@
     - influxdata.chrony
     - hxr.monitor-email
     - usegalaxy-eu.autoupdates
+    - usegalaxy-eu.autofs
     - hxr.aws-cli # Setup the AWS client that will be needed for route53 authentication of certbot. MUST come before nginx role
     - galaxyproject.nginx
     - ssh-host-sign
@@ -93,5 +181,4 @@
     # - os_hardening
     # - nginx_hardening
     # - ssh_hardening
-    - usegalaxy_eu.dnbd3
     - usegalaxy_eu.firewall
