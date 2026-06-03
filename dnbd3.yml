@@ -35,6 +35,34 @@
         target: '{{ dnbd3_base_path }}/http(/.*)?'
         setype: httpd_sys_rw_content_t
         state: present
+    - name: Make autofs RequiredBy tftp, httpd, dnbd3
+      ansible.builtin.copy:
+        content: |
+          [Unit]
+          Description=Make sure services that depend on autofs only start once it is up
+          Requires=autofs.service
+          After=autofs.service
+          Before=tftp.service
+          Before=dnbd3-server.service
+          Before=httpd.service
+          StartLimitInterval=200
+          StartLimitBurst=5
+          [Service]
+          Restart=always
+          RestartSec=15
+          Type=oneshot
+          ExecStart=/bin/ls "{{ dnbd3_base_path }}"
+          [Install]
+          RequiredBy=tftp.service
+          RequiredBy=dnbd3-server.service
+          RequiredBy=httpd.service
+        dest: /etc/systemd/system/require-autofs.service
+    - name: Enable the service
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+        state: started
+        enabled: true
+        name: require-autofs.service
 
   roles:
     - usegalaxy-eu.dynmotd
