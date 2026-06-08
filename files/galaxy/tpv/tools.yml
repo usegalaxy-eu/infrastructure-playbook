@@ -808,6 +808,10 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/bgruening/flexynesis/flexynesis/.*:
     rules:
+      - if: helpers.tool_version_eq(tool, '1.1.11+galaxy0')
+        gpus: 1
+        params:
+          docker_run_extra_arguments: --user 999
       - id: flexynesis_gnn_high_mem
         if: |
           retval = False
@@ -821,7 +825,6 @@ tools:
           retval
         cores: 20
         mem: 100
-        gpus: 1
 
   toolshed.g2.bx.psu.edu/repos/genouest/helixer/helixer/.*:
     params:
