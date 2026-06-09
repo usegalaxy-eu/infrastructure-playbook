@@ -35,8 +35,8 @@ location /api/events/stream {
     gzip off;
 
     # Keepalives fire every 30s; allow generous slack on top.
-    proxy_read_timeout 1h;
-    proxy_send_timeout 1h;
+    proxy_read_timeout 10m;
+    proxy_send_timeout 10m;
 }
 {%- endmacro %}
 
