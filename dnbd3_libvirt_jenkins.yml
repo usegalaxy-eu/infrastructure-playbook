@@ -82,6 +82,8 @@
 - name: Libvirt/KVM
   hosts: libvirt
   become: true
+  vars_files:
+    - "secret_group_vars/all.yml"
   pre_tasks:
     - name: Install Dependencies
       package:
@@ -157,7 +159,7 @@
         daemon_reload: true
         state: started
         enabled: true
-        name: 
+        name: "{{ item }}"
       loop:
         - images.mount
         - data.mount
