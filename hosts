@@ -2,9 +2,8 @@
 [grafana]
 stats.galaxyproject.eu
 
-[build]
-build.galaxyproject.eu ansible_ssh_user=root
-sn12.galaxyproject.eu
+[build:children]
+sn12
 
 [build-workers]
 worker-0.gold.build.galaxyproject.eu
@@ -84,6 +83,9 @@ ansible_group_priority=4
 
 [dokku]
 apps.galaxyproject.eu ansible_ssh_user=ubuntu ansible_port=8080
+
+[libvirt:children]
+sn12
 
 [dnbd3:children]
 dnbd3primary
