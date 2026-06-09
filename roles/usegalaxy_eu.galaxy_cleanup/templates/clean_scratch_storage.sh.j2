@@ -14,3 +14,16 @@ set -e
 # Stage 3: Purge datasets at day 120
 {{ galaxy_venv_dir }}/bin/python {{ galaxy_server_dir }}/scripts/cleanup_datasets/pgcleanup.py -c {{ galaxy_config_file }} -o {{ (config.days | int) + 60 }} -l {{ galaxy_log_dir }} -w 128MB --object-store-id {{ objectstore_id }} purge_datasets 2>&1 | tee -a {{ galaxy_log_dir }}/cleanup-$(date --rfc-3339=seconds)-purgeDatasets.log
 {% endfor %}
+
+# Stage 4: Galaxy Default Cleanup
+for action in {delete_userless_histories,delete_exported_histories,purge_deleted_users,purge_deleted_histories,purge_deleted_hdas,purge_historyless_hdas,purge_hdas_of_purged_histories}; do
+		{{ galaxy_venv_dir }}/bin/python \
+			"{{ galaxy_server_dir }}/scripts/cleanup_datasets/pgcleanup.py" \
+			-U \
+			-o "65" \
+			-l "{{ galaxy_log_dir }}" \
+			-s $action \
+			-w 128MB \
+			 >> "{{ galaxy_log_dir }}/cleanup-$(date --rfc-3339=seconds)-${action}.log" \
+			2>> "{{ galaxy_log_dir }}/cleanup-$(date --rfc-3339=seconds)-${action}.err";
+	done
