@@ -21,6 +21,7 @@ for action in {delete_userless_histories,delete_exported_histories,purge_deleted
 			"{{ galaxy_server_dir }}/scripts/cleanup_datasets/pgcleanup.py" \
 			-U \
 			-o "65" \
+			-b "5000" \
 			-l "{{ galaxy_log_dir }}" \
 			-s $action \
 			-w 128MB \
