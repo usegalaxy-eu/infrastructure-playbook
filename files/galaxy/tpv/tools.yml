@@ -132,6 +132,25 @@ tools:
   toolshed.g2.bx.psu.edu/repos/bgruening/keras_train_and_eval/keras_train_and_eval/.*:
     inherits: _basic_gpu_resource_param_tool
 
+  toolshed.g2.bx.psu.edu/repos/iuc/kaiju_kaiju/kaiju_kaiju/.*:
+    mem: |
+      # kaiju has memory requirements depending on its input reference database
+      # according to: https://github.com/bioinformatics-centre/kaiju#creating-the-kaiju-index
+      # the calculation below should pick sufficient memory as long as no new potentially
+      # larger databases are provided.
+      mem_reqs = {
+          "viruses": 4,
+          "plasmids": 4,
+          "fungi": 8,
+          "refseq": 128,
+          "refseq_nr": 164,
+          "nr": 256,
+          "nr_euk": 256,
+      }
+      ref = job.get_param_values(app).get("reference", "")
+      ref_type = ref.split("_", maxsplit=1)[-1]
+      mem_reqs.get(ref_type, 4)
+
   toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy/.*:
     cores: 2
     rules:
