@@ -830,17 +830,22 @@ tools:
       - id: flexynesis_gnn_high_mem
         if: |
           retval = False
-          options = job.get_param_values(app)
-          if options:
-            training_type = options.get('training_type', {})
-            if training_type and isinstance(training_type, dict):
-              model_select = training_type.get('model_class', {})
-              if model_select and isinstance(model_select, dict):
-                retval = model_select.get('model_class') == 'GNN'
+          if helpers.tool_version_gte(tool, '1.1.11+galaxy0'):
+            options = job.get_param_values(app)
+            if options:
+              training_type = options.get('training_type', {})
+              if training_type and isinstance(training_type, dict):
+                model_select = training_type.get('model_class', {})
+                if model_select and isinstance(model_select, dict):
+                  retval = model_select.get('model_class') == 'GNN'
           retval
+        gpus: 1
         cores: 20
         mem: 100
-        gpus: 1
+        params:
+          docker_run_extra_arguments: --user 999
+        context:
+          exclude_gpu_models: ["Tesla T4"] # T4 GPUs have only 16 GB of memory, which is not enough for the GNN model
 
   toolshed.g2.bx.psu.edu/repos/genouest/helixer/helixer/.*:
     params:
