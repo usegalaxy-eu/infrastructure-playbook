@@ -43,14 +43,9 @@ lp_logrotate_confd:
         endscript
       }
 
-tailscale_tags:
-  - "critical"
-
 traefik_copy_rules: true
 
 traefik_domain: "{{ hostname }}"
-tailscale_domain: springhare-dinosaur.ts.net
-tailscale_authkey: "{{ tailscale_auth_key_usegalaxy_eu }}"
 
 traefik_networks:
   traefik:
@@ -59,7 +54,7 @@ traefik_networks:
 traefik_containers:
   - name: traefik
     replicas: 1
-    image: traefik:v3.0
+    image: traefik:v3.7.0
     url: "https://traefik.{{ tailscale_domain }}/dashboard/#/"
     environment:
       AWS_SHARED_CREDENTIALS_FILE: "/run/secrets/aws_shared_credentials"
@@ -105,12 +100,9 @@ traefik_containers:
       - --certificatesresolvers.route53.acme.caserver=https://acme-v02.api.letsencrypt.org/directory
       - "--certificatesresolvers.route53.acme.email={{ traefik_letsencrypt_mail }}"
       # Enable Logging
-      - "--log=true"
-      - "--log.format=json"
-      - --log.filePath={{ traefik_log_dir }}/traefik.log
       - "--log.level=INFO" # DEBUG, PANIC, FATAL, ERROR, WARN, INFO
-      - --accesslog=true
-      - --accesslog.filepath={{ traefik_log_dir }}/access.log
+      - "--accesslog=true"
+      - "--accesslog.filepath={{ traefik_log_dir }}/access.log"
     labels:
       "traefik.enable": "true"
       "traefik.http.routers.traefik.rule": "Host(`traefik.{{ tailscale_domain }}`)"

@@ -1,0 +1,35 @@
+hostname: sn12.galaxyproject.eu
+admin_packages:
+  - vim
+  - htop
+  - btop
+  - strace
+  - jq
+  - iftop
+  - wget
+  - curl
+  - tmux
+  - git
+  - nmap
+  - tcpdump
+  - net-tools
+  - unzip
+  - mutt
+  - byobu
+  - tmpwatch
+  - rclone
+  # centos specific
+  - setools-console
+  - yum-utils
+  - bind-utils
+  - tree
+autofs_conf_files:
+  usrlocal:
+    - /data       -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/dnb01/vms
+autofs_service:
+  install: true
+  enable: true
+nfs_kernel_tuning: true
+
+autofs_mount_points:
+  - usrlocal

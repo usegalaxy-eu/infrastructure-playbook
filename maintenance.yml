@@ -126,7 +126,7 @@
         permanent: true
         state: enabled
       with_items:
-        - 9628/tcp # HTCondor shared port
+        - 9618/tcp # HTCondor shared port
         - 514/tcp  # rsyslog
     - name: Add the OpenAI API key to the telegraf user's bashrc file
       ansible.builtin.lineinfile:
@@ -158,7 +158,7 @@
     - usegalaxy-eu.fix-ancient-ftp-data
     # - usegalaxy-eu.fix-user-quotas
     - usegalaxy-eu.remove-orphan-condor-jobs
-    - ssh_hardening
+    # - ssh_hardening
     - usegalaxy-eu.job-radar-stats-influxdb
     - dj-wasabi.telegraf
     # - usegalaxy-eu.fix-stop-ITs
@@ -166,3 +166,4 @@
     - usegalaxy_eu.walle
     - usegalaxy_eu.ntfy-notifications
     - l3d.restic
+    - usegalaxy-eu.kui

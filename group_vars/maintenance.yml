@@ -162,16 +162,6 @@ fsm_cron_tasks:
     dow: "*"
     job: "docker system prune -f --all> /dev/null"
     user: "{{ fsm_galaxy_user.username }}"
-  gxadmin:
-    enable: true
-    name: "Gxadmin Galaxy clean up"
-    minute: 0
-    hour: "*/6"
-    dom: "*"
-    month: "*"
-    dow: "*"
-    job: "/usr/bin/gxadmin galaxy cleanup 60"
-    user: "{{ fsm_galaxy_user.username }}"
 fsm_htcondor_enable: true
 
 # Role: dj-wasabi.telegraf
@@ -186,7 +176,7 @@ telegraf_plugins_extra:
     plugin: "postgresql"
     config:
       - address = "{{ galaxy_db_connection }}"
-      - databases = ["galaxy", "galaxy-test", "apollo", "chado"]
+      - databases = ["galaxy", "apollo", "chado"]
   monitor_nfsstat:
     plugin: "exec"
     config:
@@ -262,6 +252,20 @@ telegraf_plugins_extra:
     config:
       - commands = ["{{ custom_telegraf_env }} /usr/bin/galaxy_tool_usage_over_time"]
       - timeout = "360s"
+      - data_format = "influx"
+      - interval = "168h"
+  galaxy_user_tool_usage:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery user-tool-usage"]
+      - timeout = "3200s"
+      - data_format = "influx"
+      - interval = "24h"
+  galaxy_user_tool_usage_over_time:
+    plugin: "exec"
+    config:
+      - commands = ["{{ custom_telegraf_env }} /usr/bin/gxadmin iquery user-tool-usage-over-time"]
+      - timeout = "3200s"
       - data_format = "influx"
       - interval = "168h"
   galaxy_job_queue_states_stats:
