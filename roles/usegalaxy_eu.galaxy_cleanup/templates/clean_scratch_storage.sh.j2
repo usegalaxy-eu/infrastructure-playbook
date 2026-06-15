@@ -14,17 +14,17 @@ set -e
 
 {% for objectstore_id, config in galaxy_cleanup_scratchstorage.items() %}
 # Stage 1: Purge old HDAs at day 60 for our Scratch storage - short term storage
-{{ galaxy_venv_dir }}/bin/python {{ galaxy_server_dir }}/scripts/cleanup_datasets/pgcleanup.py -c {{ galaxy_config_file }} -o {{ (config.days | int) }} -l {{ galaxy_log_dir }} -w 128MB --object-store-id {{ objectstore_id }} purge_old_hdas 2>&1 | tee -a {{ galaxy_log_dir }}/cleanup-$(date --rfc-3339=seconds)-purgeOldHdas.log
+{{ galaxy_venv_dir }}/bin/python {{ galaxy_server_dir }}/scripts/cleanup_datasets/pgcleanup.py -c {{ galaxy_config_file }} -U -b 5000 -o {{ (config.days | int) }} -l {{ galaxy_log_dir }} -w 128MB --object-store-id {{ objectstore_id }} purge_old_hdas 2>&1 | tee -a {{ galaxy_log_dir }}/cleanup-$(date --rfc-3339=seconds)-purgeOldHdas.log
 
 
 ## the following two stages don't make sense to me, because stage 4 will clean all of that (for all object stores) after 65 days, no matter what
 ## if we want to be slightly more friendly to scratch-users, we should purge the old HDAs at day 70, but at that time "I assume" that the Stage for will remove all data, because we run it with 65.
 
 # Stage 2: Delete datasets at day 90
-##{{ galaxy_venv_dir }}/bin/python {{ galaxy_server_dir }}/scripts/cleanup_datasets/pgcleanup.py -c {{ galaxy_config_file }} -o {{ (config.days | int) + 30 }} -l {{ galaxy_log_dir }} -w 128MB --object-store-id {{ objectstore_id }} delete_datasets 2>&1 | tee -a {{ galaxy_log_dir }}/cleanup-$(date --rfc-3339=seconds)-deleteDatasets.log
+##{{ galaxy_venv_dir }}/bin/python {{ galaxy_server_dir }}/scripts/cleanup_datasets/pgcleanup.py -c {{ galaxy_config_file }} -U -b 5000 -o {{ (config.days | int) + 30 }} -l {{ galaxy_log_dir }} -w 128MB --object-store-id {{ objectstore_id }} delete_datasets 2>&1 | tee -a {{ galaxy_log_dir }}/cleanup-$(date --rfc-3339=seconds)-deleteDatasets.log
 
 # Stage 3: Purge datasets at day 120
-##{{ galaxy_venv_dir }}/bin/python {{ galaxy_server_dir }}/scripts/cleanup_datasets/pgcleanup.py -c {{ galaxy_config_file }} -o {{ (config.days | int) + 60 }} -l {{ galaxy_log_dir }} -w 128MB --object-store-id {{ objectstore_id }} purge_datasets 2>&1 | tee -a {{ galaxy_log_dir }}/cleanup-$(date --rfc-3339=seconds)-purgeDatasets.log
+##{{ galaxy_venv_dir }}/bin/python {{ galaxy_server_dir }}/scripts/cleanup_datasets/pgcleanup.py -c {{ galaxy_config_file }} -U -b 5000 -o {{ (config.days | int) + 60 }} -l {{ galaxy_log_dir }} -w 128MB --object-store-id {{ objectstore_id }} purge_datasets 2>&1 | tee -a {{ galaxy_log_dir }}/cleanup-$(date --rfc-3339=seconds)-purgeDatasets.log
 
 
 
