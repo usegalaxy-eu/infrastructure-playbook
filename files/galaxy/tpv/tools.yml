@@ -13,7 +13,7 @@ tools:
         gpus: int(job.get_param_values(app)['__job_resource']['gpu'])
 
   _basic_internal_tool:
-    asbtract: true
+    abstract: true
     rules:
       - id: no-pulsar
         if: user is not None
@@ -275,11 +275,11 @@ tools:
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
 
-  # this is for tabular learner tool 
+  # this is for tabular learner tool
   toolshed.g2.bx.psu.edu/repos/goeckslab/pycaret_[^/]*/pycaret_[^/]*/3.3.2.*:
     params:
       container_override: [{type: singularity, shell: '/bin/sh', identifier: "/cvmfs/main.galaxyproject.org/singularity/galaxy-pycaret:3.3.2--0"}]
-  
+
   toolshed.g2.bx.psu.edu/repos/goeckslab/tabular_learner/tabular_learner/0\.1\..*:
     inherits: toolshed.g2.bx.psu.edu/repos/goeckslab/pycaret_[^/]*/pycaret_[^/]*/3.3.2.*
 
@@ -625,7 +625,7 @@ tools:
         cores: 12
 
   toolshed.g2.bx.psu.edu/repos/bgruening/openduck_run_smd/openduck_run_smd/.*:
-    env:
+    params:
       docker_set_user: 1000
       docker_run_extra_arguments: '-e "OPENDUCK_GPU_PARAM=$OPENDUCK_GPU_PARAM" --gpus all'
 
