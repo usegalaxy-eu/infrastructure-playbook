@@ -364,7 +364,7 @@ galaxy_instance_hostname: usegalaxy.eu
 galaxy_config_style: yaml
 
 galaxy_repo: 'https://github.com/usegalaxy-eu/galaxy.git'
-galaxy_commit_id: 'release_26.0_europe'
+galaxy_commit_id: 'release_26.1_europe'
 galaxy_force_checkout: true # discard any modified files
 #galaxy_admin_email_from: 'noreply@usegalaxy.eu'
 
@@ -434,6 +434,8 @@ galaxy_config_files:
 
 galaxy_config_template_src_dir: templates/galaxy
 galaxy_config_templates:
+  - src: '{{ galaxy_config_template_src_dir }}/config/agent_model_capabilities.yml.j2'
+    dest: '{{ galaxy_config_dir }}/agent_model_capabilities.yml'
   - src: '{{ galaxy_config_template_src_dir }}/config/build_sites.yml.j2'
     dest: "{{ galaxy_config['galaxy']['build_sites_config_file'] }}"
   - src: '{{ galaxy_config_template_src_dir }}/config/global_host_filters.py.j2'

@@ -138,6 +138,7 @@ rabbitmq_users:
 rabbitmq_plugins:
   - rabbitmq_management
 
+rabbitmq_ulimits: "nofile:10240:10240"
 rabbitmq_config:
   consumer_timeout: 21600000 # 6 hours in milliseconds
   listeners:
