@@ -2676,7 +2676,7 @@ base_app_main: &BASE_APP_MAIN
   # (`/api/jobs`) when available. The client falls back to the legacy
   # `/api/tools` endpoint when this is disabled, when Celery is not
   # enabled, or when the tool does not provide a typed parameter schema.
-  #enable_tool_requests: true
+  enable_tool_requests: false
 
   # Configuration options passed to Celery.
   # To refer to a task by name, use the template `galaxy.foo` where
@@ -2702,7 +2702,7 @@ base_app_main: &BASE_APP_MAIN
 
   # If set to a non-0 value, upper limit on number of tasks that can be
   # executed per user per second.
-  celery_user_rate_limit: 0.5 # 1 task every 2 seconds
+  #celery_user_rate_limit: 0.0
 
   # Maximum number of Celery tasks that can execute concurrently for a
   # single user. If set to 0 (default), no concurrency limit is
@@ -2710,7 +2710,7 @@ base_app_main: &BASE_APP_MAIN
   # retried until a slot becomes available. A periodic cleanup task
   # reclaims slots from crashed workers by inspecting active tasks on
   # all workers.
-  celery_user_concurrency_limit: 5
+  #celery_user_concurrency_limit: 0
 
   # When both `celery_user_rate_limit` and `celery_user_concurrency_limit` 
   # are set, rate limiting runs first (to schedule the timeslot) and concurrency 
@@ -3020,6 +3020,10 @@ base_app_main: &BASE_APP_MAIN
   # default) if enable_failed_jobs_working_directory_cleanup is
   # ``true``. Runs in a Celery task.
   #failed_jobs_working_directory_cleanup_interval: 86400
+
+  # Enable beta tool formats (yaml, cwl, ...) which is a prerequisite
+  # for user defined tools.
+  enable_beta_tool_formats: true
 
  # TODO(hxr): UNDOCUMENTED
   ucsc_build_sites: "{{ galaxy_config_dir }}/ucsc_build_sites.txt"
