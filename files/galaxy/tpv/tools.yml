@@ -64,6 +64,23 @@ tools:
       NUMEXPR_NUM_THREADS: 4
       NUMBA_NUM_THREADS: 4
 
+
+  # User Defined Tools will be used for GCC ppresentaion and
+  # we may want to comment out after sense is a beta feature
+  # lets run in embedded pulsar to reduce the jwd scope and make it more secure
+  # running docker is fine here
+  user_defined-.*:
+      cores: 1
+      mem: 3.7
+      rules:
+      - id: require_login_user_defined
+        if: user is None
+        fail: An account is required to run this tool. Please log in or create an account.
+      scheduling:
+        require:
+          - docker
+          - embedded-pulsar
+
   __.*__:
     inherits: _basic_internal_tool
 
