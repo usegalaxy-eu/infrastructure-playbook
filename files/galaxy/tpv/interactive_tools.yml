@@ -8,15 +8,6 @@ tools:
         fail: |
           Interactive tools require registration. Moreover, this tool has restricted access even for registered users. Please log-in or register on https://usegalaxy.eu/login and then request access by visiting https://usegalaxy.eu/gpu-request.
 
-  # User Defined Tools
-  user_defined-.*:
-      cores: 1
-      mem: 3.7
-      rules:
-      - id: require_login_user_defined
-        if: user is None
-        fail: An account is required to run this tool. Please log in or create an account.
-
   interactive_tool_anylabeling:
     cores: 4
     mem: 32
