@@ -105,9 +105,9 @@ destinations:
         {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
     scheduling:
-    accept:
+      accept:
         - tool_type_user_defined
-    require:
+      require:
         - docker
         - embedded-pulsar
 
