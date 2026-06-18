@@ -70,29 +70,9 @@
             owner: root
             group: root
             mode: "0644"
-
-    - name: Install RPMFusion and ffmpeg if ffmpeg is missing
-      block:
-        # see https://github.com/usegalaxy-eu/issues/issues/550
-        - name: Import RPMFusion Free GPG Key
-          ansible.builtin.rpm_key:
-            state: present
-            key: "https://rpmfusion.org/keys?action=AttachFile&do=get&target=RPM-GPG-KEY-rpmfusion-free-el-{{ ansible_distribution_major_version }}"
-
-        - name: Install RPMFusion
-          ansible.builtin.dnf:
-            name: "https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-{{ ansible_distribution_major_version }}.noarch.rpm"
-            state: present
-            disable_gpg_check: no
-
-        - name: Install ffmpeg
-          ansible.builtin.dnf:
-            name: ffmpeg
-            state: present
-      when: "'ffmpeg' not in ansible_facts.packages"
-
   roles:
     - geerlingguy.repo-epel
+    - usegalaxy_eu.ffmpeg
     - role: artis3n.tailscale
       when: celerycluster_is_main_node
     - role: usegalaxy_eu.handy.os_setup
