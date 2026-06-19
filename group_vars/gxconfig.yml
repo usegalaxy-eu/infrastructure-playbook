@@ -2764,7 +2764,16 @@ base_app_main: &BASE_APP_MAIN
   # ``structured_output_override: true|false`` beats the model
   # capability table -- see ``agent_model_capabilities_file`` for the
   # table's location and contents.
-  #inference_services: null
+  inference_services:
+    default:
+      model: "gpt-oss-120b-llmlb"
+      api_base_url: "{{ galaxy_infrastructure_llm_url }}"
+      api_key: "{{ galaxy_infrastructure_llm_api_key }}"
+    custom_tool:
+      model: "qwen-3.5-397b-llmlb"
+      api_base_url: "{{ galaxy_infrastructure_llm_url }}"
+      api_key: "{{ galaxy_infrastructure_llm_api_key }}"
+      quality_critic_enabled: true
 
   # YAML file with capability hints for agent inference models. Maps
   # fnmatch-style globs against model names to features such as
