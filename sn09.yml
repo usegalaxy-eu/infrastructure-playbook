@@ -273,6 +273,14 @@
         group: galaxy
         mode: '0644'
 
+    - name: Download tool tag mappings from GitHub
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/usegalaxy-eu/tool-annotations/main/tool_tag_mappings.yml
+        dest: '{{ galaxy_config_dir }}/tool_tag_mappings.yml'
+        owner: galaxy
+        group: galaxy
+        mode: '0644'
+
   roles:
     ## Starting configuration of the operating system
     - role: usegalaxy_eu.handy.os_setup
