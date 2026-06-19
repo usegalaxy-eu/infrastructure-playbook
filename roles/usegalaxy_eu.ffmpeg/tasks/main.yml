@@ -6,6 +6,11 @@
 
 - name: Install RPMFusion and ffmpeg if ffmpeg is missing
   block:
+    - name: Enable CRB repository for EL9 dependencies
+      ansible.builtin.command: dnf config-manager --set-enabled crb
+      changed_when: false
+      when: ansible_distribution_major_version == "9"
+
     - name: Import RPMFusion Free GPG Key
       ansible.builtin.rpm_key:
         state: present
