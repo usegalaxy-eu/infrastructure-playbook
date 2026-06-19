@@ -1,5 +1,9 @@
 ---
 # see https://github.com/usegalaxy-eu/issues/issues/550
+- name: Gather installed package facts
+  ansible.builtin.package_facts:
+    manager: auto
+
 - name: Install RPMFusion and ffmpeg if ffmpeg is missing
   block:
     - name: Import RPMFusion Free GPG Key
