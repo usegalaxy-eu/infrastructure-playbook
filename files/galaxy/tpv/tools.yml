@@ -875,3 +875,9 @@ tools:
   toolshed.g2.bx.psu.edu/repos/bgruening/logan_protein_embed_query/logan_protein_embed_query/.*:
     cores: 4
     mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/recetox/aoptk_.*:
+    env:
+      docker_env_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
+      SINGULARITYENV_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
+      LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
