@@ -1,7 +1,13 @@
 http:
   routers:
     usegalaxy-eu-sse-rtr:
-      rule: "Host(`*.usegalaxy.eu`) && PathPrefix(`/api/events/stream`)"
+      rule: "HostRegexp(`[a-z0-9]*\\.?usegalaxy\\.eu`) && PathPrefix(`/api/events/stream`)"
       entryPoints:
         - websecure
+      tls:
+        certResolver: "route53"
+        domains:
+          - main: "usegalaxy.eu"
+            sans:
+              - "*.usegalaxy.eu"
       service: usegalaxy-eu-sse
