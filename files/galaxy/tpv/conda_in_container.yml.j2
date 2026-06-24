@@ -85,19 +85,6 @@ tools:
   toolshed.g2.bx.psu.edu/repos/bgruening-util/stress_ng/stress_ng/.*:
     inherits: _conda_in_container
 
-  toolshed.g2.bx.psu.edu/repos/bgruening/llm_hub/llm_hub/.*:
-    inherits: _conda_in_container
-    ##
-    # can be removed when the singularity container is present
-    # this tool strictly needs singularity, as our Docker container has limited internet access
-    # so either singularity or conda, but not docker
-    mem: 1
-    env:
-      docker_env_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
-      SINGULARITYENV_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
-      LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
-
-
   toolshed.g2.bx.psu.edu/repos/computational-metabolomics/sirius_csifingerid/sirius_csifingerid/.*:
     inherits: _conda_in_container
 
