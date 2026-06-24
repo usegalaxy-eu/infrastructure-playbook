@@ -176,7 +176,7 @@ services:
       - --entryPoints.websecure.http.tls=true
       - --providers.docker=true
       - --providers.docker.exposedByDefault=false
-      - --providers.docker.network=traefik
+      - --providers.docker.network=zammad-docker-compose_traefik
       - --certificatesResolvers.ts.tailscale=true
       - --log.level=INFO
       - --accesslog=true
