@@ -355,9 +355,9 @@ tools:
       docker_run_extra_arguments: " --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,compute "
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/msconvert/msconvert/.*:
-    ## seems to be still needed 2025/12
+    ## seems to be still needed 2026/06
     params:
-      docker_run_extra_arguments: --user 999
+      docker_run_extra_arguments: --user 999 -v /bin/false:/usr/bin/sudo:ro
 
   toolshed.g2.bx.psu.edu/repos/goeckslab/vitessce_spatial/vitessce_spatial/.*:
     params:
