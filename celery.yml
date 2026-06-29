@@ -82,10 +82,10 @@
         enable_kernel_5: true
         enable_install_software: true
         hostname: "{{ inventory_hostname }}"
-    - usegalaxy_eu.galaxy_systemd
-    - influxdata.chrony
     ## Filesystems
     - usegalaxy-eu.autofs # Set up the mount points which will be needed later
+    - usegalaxy_eu.galaxy_systemd
+    - influxdata.chrony
     - role: usegalaxy_eu.flower
       when: celerycluster_is_main_node
     # - usegalaxy-eu.logrotate # Rotate logs
