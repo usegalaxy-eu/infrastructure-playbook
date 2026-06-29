@@ -1,0 +1,70 @@
+---
+- name: Ticket System with Traefik and Zammad
+  become: true
+  hosts: ticketsystem
+  vars_files:
+    - secret_group_vars/all.yml
+    - group_vars/ticket_system.yml
+
+  pre_tasks:
+    - name: Install Ansible dependencies
+      ansible.builtin.package:
+        name:
+          - python3-policycoreutils
+          - python3-libselinux
+          - policycoreutils-python-utils
+          - python3-pip
+        state: present
+
+    - name: Install python docker
+      become: true
+      ansible.builtin.pip:
+        name: "{{ item }}"
+        virtualenv_command: "python3 -m venv"
+      loop:
+        - docker
+        - selinux
+
+  roles:
+    - geerlingguy.repo-epel
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        enable_hostname: true
+        enable_powertools: false
+        enable_remap_user: false
+        enable_exclude_packages: true
+        enable_pam_limits: true
+        enable_install_software: true
+    - artis3n.tailscale
+    - geerlingguy.docker
+    - usegalaxy_eu.firewall
+
+  tasks:
+    - name: Ensure Zammad compose directory exists
+      ansible.builtin.file:
+        path: "{{ zammad_compose_dir }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Clone zammad-docker-compose repository
+      ansible.builtin.git:
+        repo: "https://github.com/zammad/zammad-docker-compose.git"
+        dest: "{{ zammad_compose_dir }}"
+        version: "{{ zammad_compose_version }}"
+        force: false
+
+    - name: Template Docker Compose file
+      ansible.builtin.template:
+        src: ticket_system/docker_compose.yml.j2
+        dest: "{{ zammad_compose_dir }}/docker-compose.yml"
+        owner: root
+        group: root
+        mode: '0644'
+      register: zammad_compose_templated
+
+    - name: Start Zammad services
+      community.docker.docker_compose_v2:
+        project_src: "{{ zammad_compose_dir }}"
+        state: present
