@@ -72,18 +72,29 @@
             mode: "0644"
   roles:
     - geerlingguy.repo-epel
-    - role: artis3n.tailscale  # broken (invalid API key)
-      when: celerycluster_is_main_node  # mitigates breakage (doesn't fail on the main node)
+    - usegalaxy_eu.ffmpeg
+    - role: artis3n.tailscale
+      when: celerycluster_is_main_node
     - role: usegalaxy_eu.handy.os_setup
       vars:
         enable_remap_user: true
         enable_create_user: true
         enable_kernel_5: true
         enable_install_software: true
-    - usegalaxy_eu.galaxy_systemd
-    - influxdata.chrony
+        hostname: "{{ inventory_hostname }}"
     ## Filesystems
     - usegalaxy-eu.autofs # Set up the mount points which will be needed later
+    - usegalaxy_eu.galaxy_systemd
+    - influxdata.chrony
     - role: usegalaxy_eu.flower
       when: celerycluster_is_main_node
     # - usegalaxy-eu.logrotate # Rotate logs
+    - usegalaxy_eu.firewall
+  post_tasks:
+    - name: add tailscale0 to trusted
+      ansible.posix.firewalld:
+        interface: tailscale0
+        zone: trusted
+        state: enabled
+      when: celerycluster_is_main_node
+

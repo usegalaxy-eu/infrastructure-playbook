@@ -14,6 +14,15 @@ tools:
         - conda
         - singularity
 
+  # there seem to be fonts missing from the current containers
+  toolshed.g2.bx.psu.edu/repos/iuc/snpfreqplot/snpfreqplot/.*:
+    inherits: _conda_in_container
+
+  # python3 introduced changes to Gnuplot model more info in the issue bellow
+  # rm after closing: https://github.com/usegalaxy-eu/issues/issues/979
+  barchart_gnuplot:
+    inherits: _conda_in_container
+
   # these wrapper versions do not declare their coreutils requirement; the busybox host of the container brings its own non-standard
   # implementation of the split command, which doesn't offer the -n option that the coreutils version has and which the tool requires.
   toolshed.g2.bx.psu.edu/repos/iuc/datamash_transpose/datamash_transpose/1.8\+galaxy.:
@@ -76,19 +85,6 @@ tools:
   toolshed.g2.bx.psu.edu/repos/bgruening-util/stress_ng/stress_ng/.*:
     inherits: _conda_in_container
 
-  toolshed.g2.bx.psu.edu/repos/bgruening/llm_hub/llm_hub/.*:
-    inhertis: _conda_in_container
-    ##
-    # can be removed when the singularity container is present
-    # this tool strictly needs singularity, as our Docker container has limited internet access
-    # so either singularity or conda, but not docker
-    mem: 1
-    env:
-      docker_env_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
-      SINGULARITYENV_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
-      LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
-
-
   toolshed.g2.bx.psu.edu/repos/computational-metabolomics/sirius_csifingerid/sirius_csifingerid/.*:
     inherits: _conda_in_container
 
@@ -125,12 +121,15 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/.*:
     inherits: _conda_in_container
     cores: 8
-    memory: 24
+    mem: 24
 
   toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/.*:
     inherits: _conda_in_container
     cores: 1
     mem: 40
+
+  toolshed.g2.bx.psu.edu/repos/iuc/qiime_pick_otus/qiime_pick_otus/.*:
+    inherits: _conda_in_container
 
   # Nate's legacy tools (https://github.com/galaxyproject/usegalaxy-playbook/blob/f1fc7264642a471f5eed55739869bb0d7292c736/env/common/templates/galaxy/config/tpv/tools.yaml.j2#L1889)
   toolshed.g2.bx.psu.edu/repos/arkarachai-fungtammasan/str_fm/GenotypeSTR/2.0.0: {inherits: _conda_in_container}

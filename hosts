@@ -2,8 +2,8 @@
 [grafana]
 stats.galaxyproject.eu
 
-[build]
-build.galaxyproject.eu ansible_ssh_user=root
+[build:children]
+sn12
 
 [build-workers]
 worker-0.gold.build.galaxyproject.eu
@@ -13,16 +13,16 @@ worker-0.bronze.build.galaxyproject.eu
 beacon.bi.privat ansible_ssh_user=root
 
 [influxdb]
-influxdb.galaxyproject.eu ansible_host=influxdb.bi.privat
+influxdb.bi.privat
 
 [mq]
-mq02.galaxyproject.eu
+mq.bi.privat
 
 [incoming]
 incoming.galaxyproject.eu
 
 [upload]
-upload.galaxyproject.eu
+upload.bi.privat
 
 [proxy]
 proxy.galaxyproject.eu
@@ -43,20 +43,24 @@ cvmfs1-ufr0.internal.galaxyproject.eu
 cvmfs-stratum0.galaxyproject.eu
 
 [plausible]
-plausible.galaxyproject.eu
+plausible.bi.privat
 
 [celerycluster]
-celery-1.galaxyproject.eu
+celery-1.bi.privat
+celery-2.bi.privat
+celery-3.bi.privat
+celery-4.bi.privat
 celery-cloud-0.galaxyproject.eu ansible_ssh_user=rocky
 celery-cloud-1.galaxyproject.eu ansible_ssh_user=rocky
 celery-cloud-2.galaxyproject.eu ansible_ssh_user=rocky
+celery-cloud-3.galaxyproject.eu ansible_ssh_user=rocky
 
 # Baremetal
 [galaxyservers]
 sn09.galaxyproject.eu
 
 [maintenance]
-maintenance.galaxyproject.eu
+maintenance.bi.privat
 
 [traefik]
 traefik.galaxyproject.eu ansible_ssh_user=rocky
@@ -69,13 +73,13 @@ htcondor-manager
 htcondor-submit
 
 [htcondor-manager]
-build.galaxyproject.eu ansible_ssh_user=root
+central-manager.bi.privat ansible_ssh_user=root
 
 [htcondor-manager:vars]
 ansible_group_priority=4
 
 [htcondor-submit]
-maintenance.galaxyproject.eu
+maintenance.bi.privat
 sn09.galaxyproject.eu
 
 [htcondor-submit:vars]
@@ -83,6 +87,9 @@ ansible_group_priority=4
 
 [dokku]
 apps.galaxyproject.eu ansible_ssh_user=ubuntu ansible_port=8080
+
+[libvirt:children]
+sn12
 
 [dnbd3:children]
 dnbd3primary
@@ -95,7 +102,7 @@ dnbd3-primary.galaxyproject.eu ansible_ssh_user=root
 sn12.galaxyproject.eu
 
 [tpvbroker]
-tpv-broker.galaxyproject.eu ansible_host=10.4.68.199 ansible_ssh_user=root
+tpv-broker.bi.privat
 
 [sn09]
 sn09.galaxyproject.eu

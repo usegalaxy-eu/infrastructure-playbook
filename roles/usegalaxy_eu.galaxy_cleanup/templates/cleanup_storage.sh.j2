@@ -1,0 +1,34 @@
+#!/bin/sh
+##
+## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
+##
+set -e
+
+{#
+## Under normal curcumstances the (non-scratch storage) the pgcleanup script will never purge data, that has not been deleted before.
+## Data can be marked as "deleted" in a chain of "actions", e.g. if a user object is deleted/purged,
+## all associated histories can be marked as deleted/purged, then all HDAs in those histories can deleted/purged etc...
+## and only if in the end a dataset is marked as deleted it will be purged.
+## There is one big exception and that is the action called "purge_old_hdas". This is a special action and dangerous.
+## It will purge HDAs that are older than X days. They do not need to be marked as deleted by any other action or manual trigger before.
+## The use case for "purge_old_hdas" is the scratch storage.
+#}
+
+{% for objectstore_id, config in galaxy_cleanup_scratchstorage.items() %}
+# Stage 1: Purge old HDAs at day 60 for our Scratch storage - short term storage
+{{ galaxy_venv_dir }}/bin/python {{ galaxy_server_dir }}/scripts/cleanup_datasets/pgcleanup.py -c {{ galaxy_config_file }} -U -b 5000 -o {{ (config.days | int) }} -l {{ galaxy_log_dir }} -w 128MB --object-store-id {{ objectstore_id }} purge_old_hdas 2>&1 | tee -a {{ galaxy_log_dir }}/cleanup-$(date --rfc-3339=seconds)-purgeOldHdas.log
+{% endfor %}
+
+# Stage 4: Galaxy Default Cleanup
+for action in {delete_userless_histories,delete_exported_histories,purge_deleted_users,purge_deleted_histories,purge_deleted_hdas,purge_historyless_hdas,purge_hdas_of_purged_histories,delete_datasets,purge_datasets}; do
+		{{ galaxy_venv_dir }}/bin/python \
+			"{{ galaxy_server_dir }}/scripts/cleanup_datasets/pgcleanup.py" \
+			-U \
+			-o "60" \
+			-b "5000" \
+			-l "{{ galaxy_log_dir }}" \
+			-s $action \
+			-w 128MB \
+			 >> "{{ galaxy_log_dir }}/cleanup-$(date --rfc-3339=seconds)-${action}.log" \
+			2>> "{{ galaxy_log_dir }}/cleanup-$(date --rfc-3339=seconds)-${action}.err";
+	done

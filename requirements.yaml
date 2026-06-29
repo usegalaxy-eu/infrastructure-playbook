@@ -16,7 +16,7 @@ collections:
     # (https://github.com/grafana/grafana-ansible-collection/blob/5.2.0/requirements.yml)
     # that have not been defined as they should
     # (https://docs.ansible.com/ansible/latest/dev_guide/developing_collections_shared.html#listing-collection-dependencies).
-    # Therefore, they have to be included in this file. @kysrpex opened an issue on the repository of the Grafana Ansible collection
+    # Therefore, they have to be included in this file. @domgz opened an issue on the repository of the Grafana Ansible collection
     # https://github.com/grafana/grafana-ansible-collection/issues/222
     # notifying the developers of this issue.
     version: 5.3.0
@@ -41,7 +41,7 @@ collections:
     source: https://galaxy.ansible.com
     type: galaxy
   - name: usegalaxy_eu.handy
-    version: 3.1.1
+    version: 3.3.0
     source: https://galaxy.ansible.com
   - name: ansible.windows
     version: 1.14.0
@@ -64,7 +64,8 @@ roles:
     src: https://github.com/dj-wasabi/ansible-telegraf
     version: 0.14.2
   - name: galaxyproject.galaxy
-    version: 0.12.5
+    src: https://github.com/galaxyproject/ansible-galaxy
+    version: cd835d778891539934c3da3b90d9b2ed4914c86f
   - name: galaxyproject.cvmfs
     src: https://github.com/usegalaxy-eu/ansible-cvmfs
     version: master
@@ -99,7 +100,7 @@ roles:
     src: https://github.com/usegalaxy-eu/ansible-certbot
     version: 0.1.5
   - name: usegalaxy_eu.galaxy_systemd
-    version: 2.2.0
+    version: 2.3.0
   - name: usegalaxy-eu.dynmotd
     src: https://github.com/usegalaxy-eu/ansible-dynmotd
     version: 0.1.0
@@ -112,7 +113,7 @@ roles:
     version: 1.0.1
   - name: grycap.htcondor
     src: https://github.com/usegalaxy-eu/ansible-htcondor-grycap
-    version: d9a4aab0052dfb31d48c986d39a7f5e3692abba4
+    version: 33ea3aafd9c5d33a1063534e0604631696c052f9
   - name: usegalaxy-eu.update-hosts
     src: https://github.com/usegalaxy-eu/ansible-update-hosts
     version: 0.4.0
@@ -127,9 +128,10 @@ roles:
   - name: usegalaxy_eu.rustus
     version: 0.3.0
   - name: usegalaxy_eu.rabbitmqserver
-    version: 1.5.0
+    version: ulimits
+    src: https://github.com/usegalaxy-eu/ansible-rabbitmq
   - name: usegalaxy_eu.influxdbserver
-    version: 1.1.1
+    version: 2.0.0
   - name: usegalaxy_eu.flower
     version: 2.1.1
   - name: usegalaxy_eu.walle
@@ -143,15 +145,14 @@ roles:
   - name: geerlingguy.pip
     version: 2.2.0
   - name: paprikant.beacon
-    src: https://github.com/Paprikant/ansible-role-beacon
+    src: https://github.com/gsaudade99/ansible-role-beacon/ # CHANGE ME ONCE MERGED https://github.com/Paprikant/ansible-role-beacon/pull/4
+    version: 2639596e9c0af8084272e60579ccddeb5a411bbf
   - name: paprikant.beacon-importer
-    src: https://github.com/Paprikant/ansible-role-beacon_importer
+    src: https://github.com/usegalaxy-eu/ansible-role-beacon_importer
   - name: galaxyproject.miniconda
     version: 0.3.1
   - name: usegalaxy_eu.tpv_auto_lint
     version: 0.4.5
-  - name: geerlingguy.redis
-    version: 1.9.1
   - name: artis3n.tailscale
     version: v4.5.0
   - name: dokku_bot.ansible_dokku

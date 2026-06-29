@@ -65,8 +65,6 @@ flower_persistent: true
 flower_broker_api: "https://flower:{{ rabbitmq_password_flower }}@{{ rabbitmq_url }}/api/"
 flower_broker_url: "amqp://flower:{{ rabbitmq_password_flower }}@{{ rabbitmq_url }}:5671/galaxy?ssl=true"
 
-tailscale_authkey: "{{ tailacale_auth_key_usegalaxy_eu }}"
-
 # Role: usegalaxy-eu.logrotate
 lp_logrotate_confd:
   - path: rsyslogd-messages
@@ -84,3 +82,9 @@ lp_logrotate_confd:
           /usr/bin/systemctl reload rsyslog >/dev/null 2>&1 || true
         endscript
       }
+
+# (handy.os_setup)
+software_groups_to_install:
+  - admin
+  - editors
+  - utils

@@ -105,6 +105,8 @@ destinations:
         {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
     scheduling:
+      accept:
+        - tool_type_user_defined
       require:
         - docker
         - embedded-pulsar
@@ -307,7 +309,7 @@ destinations:
     params:
       jobs_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/staging"
       persistence_directory: "/opt/pulsar/files/persistent"
-      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }},$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,/cvmfs/data.galaxyproject.org/managed/:/data/db/data_managers/:ro"
+      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }},$SCRATCHDIR,$SCRATCHDIR:/tmp,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,/cvmfs/data.galaxyproject.org/managed/:/data/db/data_managers/:ro"
       singularity_env__JAVA_OPTIONS: '-Xmx{int(mem)}g -Djava.io.tmpdir=$SCRATCHDIR'
 #      singularity_run_extra_arguments: '--env _JAVA_OPTIONS=\"-Xmx{int(mem)}g -Djava.io.tmpdir=$SCRATCHDIR\"'
       submit_native_specification: "-l select=1:ncpus={int(cores)}:mem={int(mem)}gb:scratch_local=100gb -l walltime=24:00:00 -q galaxyeu@pbs-m1.metacentrum.cz -N pulsar_eu_j{job.id}__{tool.id if '/' not in tool.id else tool.id.split('/')[-2]+'_v'+tool.id.split('/')[-1]}__{user.username if user and hasattr(user, 'username') else 'anonymous'}"
@@ -341,7 +343,7 @@ destinations:
     params:
       jobs_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/staging"
       persistence_directory: "/opt/pulsar/files/persistent"
-      singularity_volumes: "$job_directory:ro,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,$ALPHAFOLD_DB:/data:ro"
+      singularity_volumes: "$job_directory:ro,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,$SCRATCHDIR,$SCRATCHDIR:/tmp,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,$ALPHAFOLD_DB:/data:ro"
       singularity_run_extra_arguments: "--nv --env ALPHAFOLD_USE_GPU=True --env SCRATCHDIR=$SCRATCHDIR --env SCRATCH=$SCRATCHDIR"
       submit_native_specification: "-l select=1:ncpus=8:mem={int(mem)}gb:scratch_local=100gb:ngpus=1:gpu_mem=16gb -l walltime=24:00:00 -q galaxy_gpu@pbs-m1.metacentrum.cz -N pulsar_eu_j{job.id}__{tool.id if '/' not in tool.id else tool.id.split('/')[-2]+'_v'+tool.id.split('/')[-1]}__{user.username if user and hasattr(user, 'username') else 'anonymous'}"
       {{ pulsar_cz_container_resolvers() | indent(6, false) }}
@@ -441,9 +443,47 @@ destinations:
     max_accepted_mem: 360
     min_accepted_gpus: 0
     max_accepted_gpus: 0
+    env:
+      LC_ALL: C
+    params:
+      jobs_directory: /work/songalax/pulsar-eu/staging
+      persistence_directory: /work/songalax/pulsar-eu/persisted_data
+      tool_dependency_dir: /data/galaxy_server/pulsar/deps
+      # TODO: remove once CVMFS is available / containers are synced in another way
+      singularity_run_extra_arguments: --disable-cache
+      submit_user: $__user_email__
+      submit_native_specification: "--qos=galaxy -p galaxy -t 24:00:00 --cpus-per-task={int(cores)} --mem-per-cpu={int(mem/cores)}"
     scheduling:
       require:
         - ufz-eve-pulsar
+
+  pulsar_nemo_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_nemo
+    max_accepted_cores: 16
+    max_accepted_mem: 64
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    env:
+      LC_ALL: C
+      SINGULARITY_CACHEDIR: /home/fr/fr_ds722/pulsar/container_cache
+      TMP: $_GALAXY_JOB_TMP_DIR
+      TEMP: $_GALAXY_JOB_TMP_DIR
+      TMPDIR: $_GALAXY_JOB_TMP_DIR
+    params:
+      jobs_directory: /home/fr/fr_ds722/pulsar/jobs_directory
+      singularity_enabled: true
+      singularity_command: apptainer
+      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro"
+      singularity_default_container_id: "/cvmfs/singularity.galaxyproject.org/all/perl:5.26"
+      container_resolvers:
+        - type: explicit_singularity
+        - type: cached_mulled_singularity
+          cache_directory: /cvmfs/singularity.galaxyproject.org/all/
+          cache_directory_cacher_type: dir_mtime
+    scheduling:
+      require:
+        - nemo-pulsar
 
   #############################
   # LOCAL CONDOR DESTINATIONS #
@@ -517,12 +557,43 @@ destinations:
     max_accepted_mem: 500
     min_accepted_gpus: 1
     max_accepted_gpus: 4
-    params:
-      requirements: 'GalaxyGroup == "pxe-gpu"'
-      docker_run_extra_arguments: "{entity.params.get('docker_run_extra_arguments') or ''} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
-      singularity_run_extra_arguments: "{entity.params.get('singularity_run_extra_arguments') or ''} --nv --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
     env:
       GPU_AVAILABLE: 1
+    context:
+      galaxy_group: 'GalaxyGroup == "pxe-gpu"'
+    params:
+      requirements: "{galaxy_group}"
+      request_gpus: "{gpus or 0}"
+      docker_run_extra_arguments: "{entity.params.get('docker_run_extra_arguments') or ''} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
+      singularity_run_extra_arguments: "{entity.params.get('singularity_run_extra_arguments') or ''} --nv --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
+    rules:
+      - id: GPU model preferences
+        if: |
+          "exclude_gpu_models" in entity.context or "include_gpu_models" in entity.context
+        execute: |
+          exclude_gpu_models = entity.context.get('exclude_gpu_models', [])
+          include_gpu_models = entity.context.get('include_gpu_models', [])
+          existing_requirements = galaxy_group
+          gpu_conditions_list = []
+          if exclude_gpu_models:
+              exclude_conditions = ' && '.join(
+                  f'(GPUs_DeviceName != "{model}")' for model in exclude_gpu_models
+              )
+              gpu_conditions_list.append(exclude_conditions)
+          if include_gpu_models:
+              include_conditions = ' || '.join(
+                  f'(GPUs_DeviceName == "{model}")' for model in include_gpu_models
+              )
+              gpu_conditions_list.append(f'({include_conditions})')
+          # Combine all GPU conditions with AND
+          if gpu_conditions_list:
+              gpu_conditions = ' && '.join(gpu_conditions_list)
+              # Combine with existing requirements with AND
+              if existing_requirements:
+                  entity.params['requirements'] = f'{gpu_conditions} && ({existing_requirements})'
+              else:
+                  entity.params['requirements'] = gpu_conditions
+
 
   # This means a GPU can be shared by max 4 jobs at the same time
   condor_container_gpu_divide4:
