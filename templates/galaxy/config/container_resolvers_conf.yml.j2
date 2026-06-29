@@ -1,7 +1,7 @@
 ---
 # WARNING: Job destinations may override this configuration.
 
-# use Docker if <container type="docker"> and use Singularity if <container type="singularity">
+# resolvers for docker destinations
 - type: explicit
 
 # it is so nice, they do it twice, with different dirs
@@ -16,3 +16,4 @@
 - type: mulled_singularity
   cache_directory: {{ cache.cache08.path }}/container_cache/singularity/mulled/
   auto_install: true
+
