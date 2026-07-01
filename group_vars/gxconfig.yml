@@ -2710,7 +2710,7 @@ base_app_main: &BASE_APP_MAIN
 
   # If set to a non-0 value, upper limit on number of tasks that can be
   # executed per user per second.
-  celery_user_rate_limit: 0.5 # 1 task every 2 seconds
+  celery_user_rate_limit: 50
 
   # Maximum number of Celery tasks that can execute concurrently for a
   # single user. If set to 0 (default), no concurrency limit is
