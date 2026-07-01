@@ -2707,6 +2707,9 @@ base_app_main: &BASE_APP_MAIN
       galaxy.fetch_data: disabled
       # galaxy.fetch_data: galaxy.external
       galaxy.set_job_metadata: galaxy.external
+    task_serializer: pickle
+    accept_content: ["pickle", "json"]
+    result_serializer: "pickle"
 
   # If set to a non-0 value, upper limit on number of tasks that can be
   # executed per user per second.
