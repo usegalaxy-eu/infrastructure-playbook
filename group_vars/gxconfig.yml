@@ -2710,7 +2710,7 @@ base_app_main: &BASE_APP_MAIN
 
   # If set to a non-0 value, upper limit on number of tasks that can be
   # executed per user per second.
-  celery_user_rate_limit: 50
+  #celery_user_rate_limit: 0.0
 
   # Maximum number of Celery tasks that can execute concurrently for a
   # single user. If set to 0 (default), no concurrency limit is
@@ -2718,7 +2718,7 @@ base_app_main: &BASE_APP_MAIN
   # retried until a slot becomes available. A periodic cleanup task
   # reclaims slots from crashed workers by inspecting active tasks on
   # all workers.
-  celery_user_concurrency_limit: 5
+  #celery_user_concurrency_limit: 0
 
   # When both `celery_user_rate_limit` and `celery_user_concurrency_limit` 
   # are set, rate limiting runs first (to schedule the timeslot) and concurrency 
