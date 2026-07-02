@@ -40,16 +40,20 @@ autofs_mount_points:
 # SystemD
 galaxy_systemd_mode: ""
 galaxy_systemd_celery: true
-galaxy_systemd_celery_internal_max_tasks: 250000
 galaxy_systemd_celery_beat_schedule_path: "/opt/galaxy/celery/celery-beat-schedule"
 galaxy_systemd_watchdog: false
 galaxy_systemd_celery_env: "GALAXY_DROPBOX_APP_CLIENT_ID={{ dropbox_app_client_id }} GALAXY_DROPBOX_APP_CLIENT_SECRET={{ dropbox_app_client_secret }} GALAXY_GOOGLE_DRIVE_APP_CLIENT_ID={{ google_drive_oauth_client_id }} GALAXY_GOOGLE_DRIVE_APP_CLIENT_SECRET={{ google_drive_oauth_client_secret }}"
 
+galaxy_systemd_celery_internal_pool: threads
+galaxy_systemd_celery_internal_max_tasks: 250000
 galaxy_systemd_celery_internal_workers: 1
+galaxy_systemd_celery_internal_concurrency: 8
+galaxy_systemd_memory_limit_celery_internal: "{{ galaxy_systemd_celery_internal_concurrency * 6 }}"
+galaxy_systemd_celery_external_pool: threads
+galaxy_systemd_celery_external_max_tasks: 250000
 galaxy_systemd_celery_external_workers: 1
-galaxy_systemd_memory_limit_celery_internal: 32
-galaxy_systemd_memory_limit_celery_external: 10
-galaxy_systemd_celery_internal_concurrency: 16
+galaxy_systemd_celery_external_concurrency: 2
+galaxy_systemd_memory_limit_celery_external: "{{ galaxy_systemd_celery_external_concurrency * 6 }}"
 
 # Flower
 flower_bind_address: "{{ tailscale_node_ipv4 }}"
