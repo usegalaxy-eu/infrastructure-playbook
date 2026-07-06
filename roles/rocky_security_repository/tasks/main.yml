@@ -1,0 +1,10 @@
+- name: Ensure the latest Rocky Linux repository definitions are installed
+  ansible.builtin.dnf:
+    name: rocky-repos
+    state: latest
+
+- name: Enable the Rocky Linux security repository
+  # https://rockylinux.org/news/2026-05-14-introducing-security-repository
+  community.general.dnf_config_manager:
+    name: security
+    state: enabled
