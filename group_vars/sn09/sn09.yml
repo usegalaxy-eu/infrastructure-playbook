@@ -234,7 +234,7 @@ galaxy_systemd_gunicorn_env: '{{ apollo_env }} GALAXY_DROPBOX_APP_CLIENT_ID={{ d
 galaxy_systemd_handler_env: '{{ galaxy_systemd_gunicorn_env }}'
 galaxy_systemd_workflow_scheduler_env: '{{ galaxy_systemd_gunicorn_env }}'
 
-galaxy_systemd_sse_monitor: false
+galaxy_systemd_sse_monitor: true
 
 galaxy_systemd_memory_limit: 35
 galaxy_systemd_memory_limit_handler: 40
