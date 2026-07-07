@@ -112,7 +112,6 @@ services:
     command: memcached -m 256M
     image: memcached:${MEMCACHE_VERSION:-1.6.41-alpine}
     restart: ${RESTART:-always}
-
   zammad-nginx:
     <<: *zammad-service
     command: ["zammad-nginx"]
@@ -125,12 +124,13 @@ services:
       - traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.zammad.rule=Host(`{{ hostname }}`)"
-      - "traefik.http.routers.zammad.entrypoints=websecure"
-      - "traefik.http.routers.zammad.tls=true"
-      - "traefik.http.routers.zammad.tls.certresolver=ts"
-      - "traefik.http.routers.zammad.tls.domains[0].main={{ hostname }}"
-      - "traefik.http.routers.zammad.service=zammad-app"
+      - "traefik.http.routers.tailscale.rule=Host(`ticketsystem.springhare-dinosaur.ts.net`)||Host(`ticketsystem.galaxyproject.eu`)"
+      - "traefik.http.routers.tailscale.entrypoints=websecure"
+      - "traefik.http.routers.tailscale.tls.certresolver=ts"
+      - "traefik.http.routers.tailscale.service=zammad-app"
+      - "traefik.http.routers.galaxyproject.rule=Host(`ticketsystem.galaxyproject.eu`)"
+      - "traefik.http.routers.galaxyproject.entrypoints=web"
+      - "traefik.http.routers.galaxyproject.service=zammad-app"
       - "traefik.http.services.zammad-app.loadbalancer.server.port=${NGINX_PORT:-8080}"
 
   zammad-postgresql:
@@ -173,6 +173,7 @@ services:
       - --global.sendAnonymousUsage=false
       - --global.checkNewVersion=false
       - --entryPoints.websecure.address=:443
+      - --entryPoints.web.address=:80
       - --entryPoints.websecure.http.tls=true
       - --providers.docker=true
       - --providers.docker.exposedByDefault=false
@@ -184,6 +185,7 @@ services:
       - "traefik.enable=false"
     ports:
       - "443:443"
+      - "80:80"
     networks:
       - traefik
     volumes:
@@ -207,3 +209,4 @@ volumes:
     driver: local
   zammad-storage:
     driver: local
+
