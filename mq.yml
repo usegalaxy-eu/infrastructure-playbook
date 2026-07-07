@@ -26,20 +26,11 @@
         persistent: true
       loop:
         - httpd_can_network_connect
-    - name: Change the redis_t domain to permissive
-      community.general.selinux_permissive:
-        name: redis_t
-        permissive: true
     - name: Disable firewalld service
       ansible.builtin.service:
         name: firewalld
         enabled: true
         state: started
-    - name: Open ports for redis
-      ansible.posix.firewalld:
-        port: 6379/tcp
-        permanent: true
-        state: enabled
     - name: Open ports for rabbitmq
       ansible.posix.firewalld:
         service: "{{ item }}"
@@ -50,37 +41,10 @@
         - amqps
         - https
         - http
-    - name: Create redis group
-      ansible.builtin.group:
-        name: redis
-    - name: Create redis user
-      ansible.builtin.user:
-        name: redis
-        group: redis
-        home: /var/lib/redis
-        create_home: true
-        shell: /bin/false
-        #    - name: Create redis db dir
-        #      ansible.builtin.file:
-        #        path: /var/lib/redis
-        #        owner: redis
-        #        group: redis
-        #        state: directory
-        #        mode: 755
-    - name: Create redis log dir
-      ansible.builtin.file:
-        path: /var/log/redis
-        owner: redis
-        group: redis
-        state: directory
-        mode: 755
-    - name: Touches redis
-      ansible.builtin.file:
-        path: /var/log/redis/redis-server.log
-        owner: redis
-        group: redis
-        state: touch
-        mode: 644
+    - name: Change `redis_t` domain to permissive (for Valkey)
+      community.general.selinux_permissive:
+        name: redis_t
+        permissive: true
   roles:
     ## Starting configuration of the operating system
     - role: usegalaxy_eu.handy.os_setup
@@ -97,8 +61,8 @@
     - hxr.aws-cli # Setup the AWS client that will be needed for route53 authentication of certbot. MUST come before nginx role
     - galaxyproject.nginx
     - usegalaxy_eu.rabbitmqserver
-    - geerlingguy.redis
+    - usegalaxy-eu.valkey
     - dj-wasabi.telegraf
     # hardening
-    - os_hardening
-    - ssh_hardening
+    # - os_hardening
+    # - ssh_hardening
