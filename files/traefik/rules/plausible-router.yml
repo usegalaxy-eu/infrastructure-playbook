@@ -1,0 +1,11 @@
+http:
+  routers:
+    plausible-rtr:
+      rule: "Host(`plausible.galaxyproject.eu`)"
+      service: plausible
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: "route53"
+        domains:
+          - main: "plausible.galaxyproject.eu"
