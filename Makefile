@@ -34,6 +34,7 @@ known_hosts:
 	grep --quiet '^celery-1.bi.privat' ~/.ssh/known_hosts || echo "celery-1.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFeiWwfhHxx2OVzHvaOQxWnCwlngRD26DxrCKYKMWQD1" >> ~/.ssh/known_hosts
 	grep --quiet '^apps.galaxyproject.eu' ~/.ssh/known_hosts || echo "[apps.galaxyproject.eu]:8080 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPqyqSMGttoZKjzVQh9deKhdX0CxWGjn0v2hHIzM1Fbt" >> ~/.ssh/known_hosts
 	grep --quiet '^osiris.denbi.de' ~/.ssh/known_hosts || echo "osiris.denbi.de ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINZMRlC7VfGh2XBExqH74UZZg6ZUc1d/Ok2adr5ostBV" >> ~/.ssh/known_hosts
+	grep --quiet '^plausible.bi.privat' ~/.ssh/known_hosts || echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJLhLsIO61hj8Kk6VQWTq5JU+PRm5/so1k44yZQTwvVO" >> ~/.ssh/known_hosts
 	grep --quiet '^worker-0.gold.build.galaxyproject.eu' ~/.ssh/known_hosts || echo "worker-0.gold.build.galaxyproject.eu ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAjC0YY4V6gDjvIyFb1qyszQn+Jr2GtLImSJO5BVoeHq" >> ~/.ssh/known_hosts
 	grep --quiet '^worker-0.bronze.build.galaxyproject.eu' ~/.ssh/known_hosts || echo "worker-0.bronze.build.galaxyproject.eu ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKE2VMZbiOf4NHTVyNj9FyCu2P71YF/RHHO97lrsPC46" >> ~/.ssh/known_hosts
 	grep --quiet '^beacon.bi.privat' ~/.ssh/known_hosts || echo "beacon.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJLhLsIO61hj8Kk6VQWTq5JU+PRm5/so1k44yZQTwvVO" >> ~/.ssh/known_hosts
