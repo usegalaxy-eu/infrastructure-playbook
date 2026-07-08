@@ -4,7 +4,6 @@
   hosts: ticketsystem
   vars_files:
     - secret_group_vars/all.yml
-    - group_vars/ticket_system.yml
 
   pre_tasks:
     - name: Install Ansible dependencies
@@ -48,16 +47,9 @@
         group: root
         mode: '0755'
 
-    - name: Clone zammad-docker-compose repository
-      ansible.builtin.git:
-        repo: "https://github.com/zammad/zammad-docker-compose.git"
-        dest: "{{ zammad_compose_dir }}"
-        version: "{{ zammad_compose_version }}"
-        force: false
-
     - name: Template Docker Compose file
       ansible.builtin.template:
-        src: ticket_system/docker_compose.yml.j2
+        src: ticketsystem/docker_compose.yml.j2
         dest: "{{ zammad_compose_dir }}/docker-compose.yml"
         owner: root
         group: root
