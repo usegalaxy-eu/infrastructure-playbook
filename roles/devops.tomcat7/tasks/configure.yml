@@ -21,6 +21,13 @@
     backup: yes
   notify: restart tomcat
 
+- name: Comment out JasperListener in server.xml
+  ansible.builtin.lineinfile:
+    path: /usr/share/tomcat/conf/server.xml
+    regexp: '^\s*<Listener className="org\.apache\.catalina\.core\.JasperListener" />\s*$'
+    line: '    <!-- <Listener className="org.apache.catalina.core.JasperListener" /> -->'
+    backup: yes
+
 - name: Ensure tomcat services is started and enabled at boot.
   service:
     name: "{{ tomcat7_service }}"
