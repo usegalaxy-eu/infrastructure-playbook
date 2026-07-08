@@ -266,7 +266,7 @@ server {
     {{ gapars_nginx_config }}
 
     location /apollo/ {
-        proxy_pass http://apollo.internal.galaxyproject.eu/apollo/;
+        proxy_pass http://apollo.bi.privat/apollo/;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
@@ -274,7 +274,7 @@ server {
     }
 
     location /apollo-permapol/ {
-        proxy_pass http://apollo.internal.galaxyproject.eu/apollo-permapol/;
+        proxy_pass http://apollo.bi.privat/apollo-permapol/;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
@@ -282,7 +282,7 @@ server {
     }
 
     location /apollo_api/ {
-        proxy_pass http://apollo.internal.galaxyproject.eu/apollo_api/;
+        proxy_pass http://apollo.bi.privat/apollo_api/;
         proxy_read_timeout 300;
     }
 
