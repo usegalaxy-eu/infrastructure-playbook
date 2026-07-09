@@ -1,0 +1,50 @@
+ucsc_genome_browser_setup_script: https://raw.githubusercontent.com/ucscGenomeBrowser/kent/fdded708bc8405da6d0ff43d42f0092a872a0a97/src/product/installer/browserSetup.sh
+ucsc_genome_browser_setup_script_checksum: sha256:e47cd21c479a53d3157a4cd54f867dc26420d5f825d0b6954257e3ee3054882d
+
+ucsc_genome_browser_assemblies: []
+ucsc_genome_browser_assemblies_env: "OS=linux MACH=x86_64"  # works around a bug in the installation script
+
+ucsc_genome_browser_vm_name: ucsc_genome_browser
+ucsc_genome_browser_vm_state: present  # use `absent` to remove the VM
+
+ucsc_genome_browser_vm_cpus: 2
+ucsc_genome_browser_vm_memory: 16384
+ucsc_genome_browser_vm_ports: []
+ucsc_genome_browser_vm_shares:
+  - host: /data/misc08/gbdb/
+    guest: "{{ ucsc_genome_browser_setting_GBDBDIR | default('/gbdb/')}}"
+    readonly: true
+  #  # TODO: default settings should be retrieved from the installation script
+
+ucsc_genome_browser_vm_vagrant_project_dir: "/opt/ucsc_genome_browser/"
+ucsc_genome_browser_vm_vagrantfile: |
+    Vagrant.configure("2") do |config|
+      config.vm.define "{{ ucsc_genome_browser_vm_name }}"
+
+      config.vm.box = "generic/rocky9"
+
+      config.vm.provider "libvirt" do |libvirt|
+        libvirt.default_prefix = ""
+
+        libvirt.memory = {{ ucsc_genome_browser_vm_memory }}
+        libvirt.cpus = {{ ucsc_genome_browser_vm_cpus }}
+  
+        # required to use `virtiofs` for synced folders
+        libvirt.memorybacking :access, :mode => "shared"
+      end
+
+    {% for port in ucsc_genome_browser_vm_ports %}
+      config.vm.network "forwarded_port", guest: {{ port.guest }}, host: {{ port.host }}
+    {% endfor %}
+
+    {% for share in ucsc_genome_browser_vm_shares %}
+      config.vm.synced_folder "{{ share.host }}", "{{ share.guest }}",
+      type: "virtiofs",
+      readonly: {{ share.readonly | default(false) | lower }},
+    {# ensure no performance loss is caused by virtiofs #}
+      accessmode: "passthrough",
+      cache: "always",
+      queue_size: 1024,
+      mount_options: ["dax=always"]
+    {% endfor %}
+    end

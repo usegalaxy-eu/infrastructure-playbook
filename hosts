@@ -45,6 +45,9 @@ cvmfs-stratum0.galaxyproject.eu
 [plausible]
 plausible.bi.privat
 
+[ucsc_genome_browser]
+ucsc-genome-browser.bi.privat ansible_ssh_user=vagrant ansible_ssh_common_args='-o ProxyCommand="ssh -W %h:%p root@sn10.bi.privat"'
+
 [celerycluster]
 celery-1.bi.privat
 celery-2.bi.privat
