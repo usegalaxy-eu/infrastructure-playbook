@@ -328,6 +328,9 @@ tools:
     gpus: 1
     cores: 10
     mem: 20
+    params:
+      docker_env_CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
+      docker_run_extra_arguments: ' --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
     context:
       exclude_gpu_models: ["Tesla T4"]
       include_gpu_models: ["NVIDIA L40S", "Tesla V100-PCIE-32GB"]
