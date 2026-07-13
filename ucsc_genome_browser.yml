@@ -89,6 +89,9 @@
   tasks:
     - name: Manage UCSC Genome Browser VM
       block:
+        - name: Gather system service facts
+          ansible.builtin.service_facts:
+
         - name: Ensure UCSC Genome Browser Vagrant project directory exists
           ansible.builtin.file:
             path: "{{ ucsc_genome_browser_vm_vagrant_project_dir }}"
@@ -101,6 +104,19 @@
           ansible.builtin.copy:
             dest: "{{ ucsc_genome_browser_vm_vagrant_project_dir }}/Vagrantfile"
             content: "{{ ucsc_genome_browser_vm_vagrantfile }}"
+
+        - name: Open forwarded ports for UCSC Genome Browser VM
+          ansible.posix.firewalld:
+            port: "{{ port }}/tcp"
+            immediate: true
+            permanent: true
+            state: enabled
+          loop: "{{ ucsc_genome_browser_vm_ports | map(attribute='host') | list }}"
+          loop_control:
+            loop_var: port
+          when:
+            - ucsc_genome_browser_vm_state == "present"
+            - "'firewalld.service' in ansible_facts.services"
 
         - name: Start UCSC Genome Browser VM
           when: ucsc_genome_browser_vm_state == "present"
@@ -119,6 +135,20 @@
           ansible.builtin.file:
             path: "{{ ucsc_genome_browser_vm_vagrant_project_dir }}"
             state: absent
+
+        - name: Close forwarded ports for UCSC Genome Browser VM
+          ansible.posix.firewalld:
+            port: "{{ port }}/tcp"
+            immediate: true
+            permanent: true
+            state: disabled
+          loop: "{{ ucsc_genome_browser_vm_ports | map(attribute='host') | list }}"
+          loop_control:
+            loop_var: port
+          when:
+            - ucsc_genome_browser_vm_state == "absent"
+            - "'firewalld.service' in ansible_facts.services"
+
   post_tasks:
     - name: Retrieve IP address for UCSC Genome Browser VM
       when: ucsc_genome_browser_vm_state == "present"
