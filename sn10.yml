@@ -1,0 +1,15 @@
+- name: Set up sn10 server
+  hosts: sn10
+  become: true
+  vars_files:
+    - mounts/dest/all.yml
+    - mounts/mountpoints.yml
+  roles:
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        enable_hostname: true
+    - usegalaxy-eu.dynmotd
+    - usegalaxy-eu.autoupdates
+    - influxdata.chrony
+
+    - usegalaxy-eu.autofs
