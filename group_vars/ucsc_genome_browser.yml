@@ -9,7 +9,9 @@ ucsc_genome_browser_vm_state: present  # use `absent` to remove the VM
 
 ucsc_genome_browser_vm_cpus: 2
 ucsc_genome_browser_vm_memory: 16384
-ucsc_genome_browser_vm_ports: []
+ucsc_genome_browser_vm_ports:
+  - host: 8030
+    guest: 80
 ucsc_genome_browser_vm_shares:
   - host: /data/misc08/gbdb/
     guest: "{{ ucsc_genome_browser_setting_GBDBDIR | default('/gbdb/')}}"
