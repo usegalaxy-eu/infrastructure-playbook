@@ -427,6 +427,16 @@ lp_logrotate_confd:
         notifempty
         compress
       }
+  - path: galaxy
+    conf: |
+      /var/log/galaxy/ {
+        compress
+      	copytruncate
+      	daily
+      	notifempty
+      	missingok
+      	rotate 1
+      }
 
 # WallE
 walle_verbose: false
