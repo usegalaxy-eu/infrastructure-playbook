@@ -16,6 +16,24 @@
     dest: "/usr/local/bin/cleanup_storage.sh"
     mode: "0555"
 
+- name: Create cleanup status directory
+  ansible.builtin.file:
+    path: "{{ galaxy_cleanup_status_file | dirname }}"
+    state: directory
+    owner: "{{ galaxy_user.name }}"
+    group: root
+    mode: "0755"
+
+- name: Initialize cleanup status metric
+  ansible.builtin.file:
+    path: "{{ galaxy_cleanup_status_file }}"
+    state: touch
+    owner: "{{ galaxy_user.name }}"
+    group: root
+    mode: "0644"
+    access_time: preserve
+    modification_time: preserve
+
 - name: Schedule Galaxy cleanup objectstore script
   ansible.builtin.cron:
     name: "Galaxy cleanup scratch"
