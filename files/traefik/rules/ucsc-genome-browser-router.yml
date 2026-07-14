@@ -4,7 +4,7 @@ http:
       rule: "Host(`genome.galaxyproject.eu`)"
       service: ucsc-genome-browser
       entryPoints:
-        - ucsc-genome-browser
+        - websecure
       tls:
         certResolver: "route53"
         domains:
