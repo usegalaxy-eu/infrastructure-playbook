@@ -28,6 +28,10 @@ _______________
 
 - require_create_confirmation:            A boolean value that decides whether a NewUserConfirmation page shows up.
 
+- require_user_activation:                A boolean value that requires Galaxy email activation for accounts
+                                          created through this provider. Defaults to false because the IdP email
+                                          address is trusted.
+
 - require_session_refresh:                A boolean value that decides whether failed token refresh requires the
                                           user to reauthenticate with this provider.
 
@@ -63,6 +67,7 @@ Please mind `http` and `https`.
         <client_id>{{ elixir_aai.usegalaxy_eu.client_id }}</client_id>
         <client_secret>{{ elixir_aai.usegalaxy_eu.client_secret }}</client_secret>
         <redirect_uri>https://usegalaxy.eu/authnz/lifescience/callback</redirect_uri>
+        <require_user_activation>false</require_user_activation>
         <prompt>consent</prompt>
         <icon>https://lifescience-ri.eu/fileadmin/lifescience-ri/media/Images/button-login-small.png</icon>
         <!-- (Optional) Extra scopes you need to request for your implementation -->
@@ -76,6 +81,7 @@ Please mind `http` and `https`.
         <client_id>{{ nfdi_aai.usegalaxy_eu.client_id }}</client_id>
         <client_secret>{{ nfdi_aai.usegalaxy_eu.client_secret }}</client_secret>
         <redirect_uri>https://usegalaxy.eu/authnz/nfdi/callback</redirect_uri>
+        <require_user_activation>false</require_user_activation>
         <prompt>consent</prompt>
         <well_known_oidc_config_uri>https://infraproxy.nfdi-aai.dfn.de/idp/profile/oidc/configuration</well_known_oidc_config_uri>
         <icon>https://doc.nfdi-aai.de/images/Logo_IAM4NFDI_lang_rgb.png</icon>
@@ -88,6 +94,7 @@ Please mind `http` and `https`.
         <client_id>{{ dataplant_keycloak.usegalaxy_eu.client_id }}</client_id>
         <client_secret>{{ dataplant_keycloak.usegalaxy_eu.client_secret }}</client_secret>
         <well_known_oidc_config_uri>https://auth.nfdi4plants.org/realms/dataplant/.well-known/openid-configuration</well_known_oidc_config_uri>
+        <require_user_activation>false</require_user_activation>
         <redirect_uri>https://usegalaxy.eu/authnz/keycloak/callback</redirect_uri>
         <prompt>consent</prompt>
         <icon>https://galaxyproject.eu/assets/media/DataPLANT_logo.png</icon>
@@ -99,6 +106,7 @@ Please mind `http` and `https`.
         <client_secret>{{ eosc_keycloak.usegalaxy_eu.client_secret }}</client_secret>
         <well_known_oidc_config_uri>https://proxy.testing.eosc-federation.eu/.well-known/openid-configuration</well_known_oidc_config_uri>
         <redirect_uri>https://usegalaxy.eu/authnz/keycloak/callback</redirect_uri>
+        <require_user_activation>false</require_user_activation>
         <prompt>consent</prompt>
         <icon>https://usegalaxy.eu/static/share/eosc-aai-logo.png</icon>
     </provider>
@@ -110,6 +118,7 @@ Please mind `http` and `https`.
         <client_id>{{ egi_checkin.usegalaxy_eu.client_id }}</client_id>
         <client_secret>{{ egi_checkin.usegalaxy_eu.client_secret }}</client_secret>
         <redirect_uri>https://usegalaxy.eu/authnz/egi_checkin/callback</redirect_uri>
+        <require_user_activation>false</require_user_activation>
         <icon>https://im.egi.eu/im-dashboard/static/images/egicheckin.png</icon>
         <prompt>consent</prompt>
         <!-- (Optional) Which Check-in environment to use (prod, demo, dev), default is prod -->
