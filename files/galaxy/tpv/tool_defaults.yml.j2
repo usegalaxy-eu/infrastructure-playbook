@@ -41,6 +41,17 @@ tools:
       reject:
         - offline
     rules:
+      - id: Set accounting group user for jobs
+        if: user is not None
+        execute: |
+          entity.params['accounting_group_user'] = str(user.id)
+
+      - id: Send jobs to compute nodes
+        # but not to the v100 node
+        if: "True"
+        execute: |
+          entity.params['requirements'] = '((GalaxyGroup == "compute") && (GalaxyGroup != "pxe-gpu-div4"))'
+
       - id: Send TIaaS jobs to training nodes
         if: user is not None
         execute: |
@@ -51,9 +62,7 @@ tools:
 
           training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
           training_labels = '"' + ", ".join(training_roles) + '"'
-          entity.params['requirements'] = '(GalaxyGroup == "compute")'
           entity.params['+Group'] = training_labels
-          entity.params['accounting_group_user'] = str(user.id)
 
           # ongoing trainings
           @functools.lru_cache(maxsize=1)
@@ -92,12 +101,8 @@ tools:
               for training_role in training_roles
           }
           if ongoing_trainings & user_trainings:
-              entity.params['requirements'] = '(GalaxyGroup == "compute") || (GalaxyGroup == "tiaas")'
+              entity.params['requirements'] = f'(({entity.params["requirements"]}) || (GalaxyGroup == "tiaas"))'
 
-      - id: anonymous_user
-        if: user is None
-        execute: |
-          entity.params['requirements'] = '(GalaxyGroup == "compute")'
       - id: interactive_tool_require_registration
         if: not (dry_run_mode := job_wrapper is None) and (tool.tool_type == 'interactive' and user is None)
         # `job_wrapper is None` occurs when TPV is launched in dry-run mode
@@ -110,13 +115,17 @@ tools:
         cores: 1
         mem: 4
         params:
-          requirements: '(GalaxyGroup == "pxe-gpu-div4")'
           docker_volumes: $defaults
           container_monitor_result: callback
         scheduling:
           require:
             - docker
             - embedded-pulsar
+
+      - id: interactive_tool_v100
+        if: not (dry_run_mode := job_wrapper is None) and (tool.tool_type == 'interactive')
+        execute: |
+          entity.params['requirements'] = '(GalaxyGroup == "pxe-gpu-div4")'
 
       - id: remote_resources
         if: not (dry_run_mode := job_wrapper is None) and (user is not None and not (tool.tool_type in ["expression", "data_source"] or tool.requires_galaxy_python_environment))
