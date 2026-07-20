@@ -443,9 +443,9 @@ tools:
       docker_run_extra_arguments: ' --gpus all '
     env:
       GPU_AVAILABLE: 1
-    scheduling:
-      require:
-        - gpu-divided
+    # scheduling:
+    #   require:
+    #     - gpu-divided
 
   toolshed.g2.bx.psu.edu/repos/bgruening/whisper/whisper/.*:
     cores: 1
@@ -464,9 +464,9 @@ tools:
       WHISPERX_MODEL_DIR: "/data/db/models/whisperx/whisperx_models/"
       WHISPERX_DEVICE: "cuda"
       WHISPERX_COMPUTE_TYPE: "float16"
-    scheduling:
-      require:
-        - gpu-divided
+    # scheduling:
+    #   require:
+    #     - gpu-divided
 
   toolshed.g2.bx.psu.edu/repos/iuc/biapy/biapy/.*:
     inherits: _basic_docker_tool
