@@ -33,6 +33,43 @@ server {
 		return 301 https://galaxyproject.org/bare/eu/usegalaxy/main/;
 	}
 
+	# Storage / data policy. content/eu/common/data-policy.md is an include
+	# fragment, not a page; the hub publishes it inside /eu/storage/ and
+	# content/redirects.yaml declares /galaxy/data-policy.html -> /eu/storage/.
+	location ~* "^/galaxy/data-policy(?:\.html|/)?$" {
+		return 301 https://galaxyproject.org/eu/storage/;
+	}
+
+	# EU-wide feeds. These are subscription endpoints -- a 301 to an HTML page
+	# silently breaks every reader, so they must reach a real feed.
+	# /feed.xml was jekyll-feed's site-wide posts feed; /eu/feed.atom is the hub
+	# equivalent. RSS -> Atom is a format change, but every mainstream reader
+	# follows the 301 and parses Atom.
+	location ~* "^/feed\.xml$" {
+		return 301 https://galaxyproject.org/eu/feed.atom;
+	}
+	# /events-ical served the site-wide calendar (as text/html on the legacy
+	# host, so lenient clients worked and strict ones never did); the hub serves
+	# a correctly-typed text/calendar document.
+	location ~* "^/events-ical(?:\.html|/)?$" {
+		return 301 https://galaxyproject.org/eu/events/calendar.ics;
+	}
+
+	# EU-wide people page -- generated on the hub by [subsite]/people/index.astro.
+	location ~* "^/people(?:\.html|/)?$" {
+		return 301 https://galaxyproject.org/eu/people/;
+	}
+
+	# No hub equivalent exists for these; recorded explicitly so that a future
+	# reader can see they were considered rather than overlooked.
+	# /livestream was a GCC livestream landing page, /wall a tweet wall.
+	location ~* "^/livestream(?:-plain)?(?:\.html|/)?$" {
+		return 301 https://galaxyproject.org/eu/;
+	}
+	location ~* "^/wall(?:/.*)?$" {
+		return 301 https://galaxyproject.org/eu/;
+	}
+
 	# ---------------------------------------------------------------------------
 	# Legacy galaxyproject.eu -> galaxyproject.org (hub) 301 redirect table.
 	# Generated from the galaxy-eu-migration-audit manifest (schema v3).
@@ -111,6 +148,37 @@ server {
 	location ~* "^/ifb/events(?:\.html|/)?$" { return 301 https://galaxyproject.org/ifb/events/; }
 	location ~* "^/pasteur/news(?:\.html|/)?$" { return 301 https://galaxyproject.org/pasteur/news/; }
 	location ~* "^/pasteur/events(?:\.html|/)?$" { return 301 https://galaxyproject.org/pasteur/events/; }
+
+	# Subsite people and publications pages. The hub generates a people page for
+	# every subsite ([subsite]/people/index.astro) and renames publications ->
+	# citations (content/redirects.yaml: /freiburg/publications -> /freiburg/citations/).
+	# All 14 targets verified 200. Without these they are swallowed by the
+	# subsite fallback below and land on the subsite home page.
+	location ~* "^/belgium/people(?:\.html|/)?$" { return 301 https://galaxyproject.org/belgium/people/; }
+	location ~* "^/belgium/publications(?:\.html|/)?$" { return 301 https://galaxyproject.org/belgium/citations/; }
+	location ~* "^/elixir-it/people(?:\.html|/)?$" { return 301 https://galaxyproject.org/elixir-it/people/; }
+	location ~* "^/elixir-it/publications(?:\.html|/)?$" { return 301 https://galaxyproject.org/elixir-it/citations/; }
+	location ~* "^/erasmusmc/people(?:\.html|/)?$" { return 301 https://galaxyproject.org/erasmusmc/people/; }
+	location ~* "^/erasmusmc/publications(?:\.html|/)?$" { return 301 https://galaxyproject.org/erasmusmc/citations/; }
+	location ~* "^/freiburg/people(?:\.html|/)?$" { return 301 https://galaxyproject.org/freiburg/people/; }
+	location ~* "^/freiburg/publications(?:\.html|/)?$" { return 301 https://galaxyproject.org/freiburg/citations/; }
+	location ~* "^/genouest/people(?:\.html|/)?$" { return 301 https://galaxyproject.org/genouest/people/; }
+	location ~* "^/genouest/publications(?:\.html|/)?$" { return 301 https://galaxyproject.org/genouest/citations/; }
+	location ~* "^/ifb/people(?:\.html|/)?$" { return 301 https://galaxyproject.org/ifb/people/; }
+	location ~* "^/ifb/publications(?:\.html|/)?$" { return 301 https://galaxyproject.org/ifb/citations/; }
+	location ~* "^/pasteur/people(?:\.html|/)?$" { return 301 https://galaxyproject.org/pasteur/people/; }
+	location ~* "^/pasteur/publications(?:\.html|/)?$" { return 301 https://galaxyproject.org/pasteur/citations/; }
+
+	# Freiburg-specific pages that exist on the hub.
+	location ~* "^/freiburg/projects(?:\.html|/)?$" { return 301 https://galaxyproject.org/freiburg/projects/; }
+	location ~* "^/freiburg/services(?:\.html|/)?$" { return 301 https://galaxyproject.org/freiburg/services/; }
+	# /freiburg/jobs and its three ads have no hub page, but the hub declares
+	# /freiburg/jobs -> /careers/ (content/redirects.yaml) and the global careers
+	# page is live. Without this the subsite fallback would send job ads to the
+	# Freiburg home page -- the one URL where this map would otherwise be worse
+	# than the status quo.
+	location ~* "^/freiburg/jobs(?:/.*)?$" { return 301 https://galaxyproject.org/careers/; }
+
 	location ~* "^/belgium(?:/.*)?$" { return 301 https://galaxyproject.org/belgium/; }
 	location ~* "^/elixir-it(?:/.*)?$" { return 301 https://galaxyproject.org/elixir-it/; }
 	location ~* "^/erasmusmc(?:/.*)?$" { return 301 https://galaxyproject.org/erasmusmc/; }
