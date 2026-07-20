@@ -4,70 +4,943 @@ server {
 
 	server_name galaxyproject.eu;
 
-	# Redirect homepages.
+	# Homepage.
 	location = / {
 		return 301 https://galaxyproject.org/eu/;
 	}
-	location = /freiburg/ {
-		return 301 https://galaxyproject.org/freiburg/;
-	}
-	location = /erasmusmc/ {
-		return 301 https://galaxyproject.org/erasmusmc/;
-	}
-	location = /belgium/ {
-		return 301 https://galaxyproject.org/belgium/;
-	}
-	location = /pasteur/ {
-		return 301 https://galaxyproject.org/pasteur/;
-	}
-	location = /genouest/ {
-		return 301 https://galaxyproject.org/genouest/;
-	}
-	location = /elixir-it/ {
-		return 301 https://galaxyproject.org/elixir-it/;
-	}
-	location = /ifb/ {
-		return 301 https://galaxyproject.org/ifb/;
+	location ~* "^/eu/?$" {
+		return 301 https://galaxyproject.org/eu/;
 	}
 
 	# EU-wide news/events feeds.
-	location ~ ^/news(\.html)?$ {
+	location ~* "^/news(?:\.html|/)?$" {
 		return 301 https://galaxyproject.org/eu/news/;
 	}
-	location ~ ^/events(\.html)?$ {
+	location ~* "^/events(?:\.html|/)?$" {
 		return 301 https://galaxyproject.org/eu/events/;
 	}
 
-	# Redirect other pages used by Galaxy servers to .org
-	location = /widgets/news.html {
-		return 301 https://galaxyproject.org/bare/eu/latest/news/;
-	}
-	location = /widgets/events.html {
-		return 301 https://galaxyproject.org/bare/eu/latest/events/;
-	}
-	location = /galaxy/news.html {
+	# Pages embedded by Galaxy servers.
+	location ~* "^/galaxy/news(?:\.html|/)?$" {
 		return 301 https://galaxyproject.org/bare/eu/news/;
 	}
-	location = /galaxy/events.html {
+	location ~* "^/galaxy/events(?:\.html|/)?$" {
 		return 301 https://galaxyproject.org/bare/eu/events/;
 	}
 
-	# Galaxy server middle pane homepages.
+	# Galaxy server middle pane homepage.
 	location = /galaxy/ {
 		return 301 https://galaxyproject.org/bare/eu/usegalaxy/main/;
 	}
-	location = /index-metabolomics.html {
-		return 301 https://galaxyproject.org/bare/eu/usegalaxy/metabolomics/;
-	}
-	location = /index-proteomics.html {
-		return 301 https://galaxyproject.org/bare/eu/usegalaxy/proteomics/;
-	}
 
+	# ---------------------------------------------------------------------------
+	# Legacy galaxyproject.eu -> galaxyproject.org (hub) 301 redirect table.
+	# Generated from the galaxy-eu-migration-audit manifest (schema v3).
+	#
+	# Exact `location =` blocks are used for news posts and events: the hub does
+	# not normalise slug case/spelling (and several events were re-dated on
+	# migration), while stock nginx cannot lower-case in a rewrite. Each key is
+	# the real published legacy URL and each target was verified to resolve.
+	# Regex rules are used only where the transform is provably deterministic.
+	# ---------------------------------------------------------------------------
+
+	# Fold plain-text / ICS variants onto the canonical path so that a single
+	# exact block per item suffices (URI case is preserved by the rewrite).
+	rewrite "^/posts/(\d{4})/(\d{2})/(\d{2})/(.+?)(?:-plain|/plain\.html)/?$" /posts/$1/$2/$3/$4/ last;
+	rewrite "^/event/(.+?)(?:-plain|/plain\.html|/event\.ics(?:\.html)?)/?$" /event/$1/ last;
+
+	# Galaxy subdomain landing pages: /index-<name>[.html] -> /bare/eu/usegalaxy/<name>/
+	# Overrides first (exact match always beats regex in nginx).
+	location = /index-microgalaxy.html { return 301 https://microbiology.usegalaxy.eu/; }
+	location = /index-microgalaxy/ { return 301 https://microbiology.usegalaxy.eu/; }
+	location = /index-microbiome.html { return 301 https://galaxyproject.org/eu/; }
+	location = /index-microbiome/ { return 301 https://galaxyproject.org/eu/; }
+	location = /index-ssh.html { return 301 https://galaxyproject.org/eu/; }
+	location = /index-ssh/ { return 301 https://galaxyproject.org/eu/; }
+	location = /index-test.html { return 301 https://galaxyproject.org/eu/; }
+	location = /index-test/ { return 301 https://galaxyproject.org/eu/; }
+	# Case-sensitive: the capture is interpolated into the target.
+	location ~ "^/index-([a-z0-9][a-z0-9-]*)(?:\.html|/)?$" { return 301 https://galaxyproject.org/bare/eu/usegalaxy/$1/; }
+
+	# Core EU informational pages.
+	location ~* "^/about(?:\.html|/)?$" { return 301 https://galaxyproject.org/eu/about/; }
+	location ~* "^/tools(?:\.html|/)?$" { return 301 https://galaxyproject.org/eu/tools/; }
+	location ~* "^/citations(?:\.html|/)?$" { return 301 https://galaxyproject.org/eu/citations/; }
+	location ~* "^/tiaas(?:\.html|/)?$" { return 301 https://galaxyproject.org/eu/tiaas/; }
+	location ~* "^/gga(?:\.html|/)?$" { return 301 https://galaxyproject.org/use/gga/; }
+	location ~* "^/ftp/?$" { return 301 https://galaxyproject.org/ftp-upload/; }
+	location ~* "^/widgets/?$" { return 301 https://galaxyproject.org/eu/widgets/; }
+	location ~* "^/widgets/news(?:\.html|/)?$" { return 301 https://galaxyproject.org/bare/eu/latest/news/; }
+	location ~* "^/widgets/events(?:\.html|/)?$" { return 301 https://galaxyproject.org/bare/eu/latest/events/; }
+
+	# Member (subsite) pages: news/events keep their feed, anything else that was
+	# not migrated falls back to the subsite home page on the hub.
+	location ~* "^/belgium/news(?:\.html|/)?$" { return 301 https://galaxyproject.org/belgium/news/; }
+	location ~* "^/belgium/events(?:\.html|/)?$" { return 301 https://galaxyproject.org/belgium/events/; }
+	location ~* "^/elixir-it/news(?:\.html|/)?$" { return 301 https://galaxyproject.org/elixir-it/news/; }
+	location ~* "^/elixir-it/events(?:\.html|/)?$" { return 301 https://galaxyproject.org/elixir-it/events/; }
+	location ~* "^/erasmusmc/news(?:\.html|/)?$" { return 301 https://galaxyproject.org/erasmusmc/news/; }
+	location ~* "^/erasmusmc/events(?:\.html|/)?$" { return 301 https://galaxyproject.org/erasmusmc/events/; }
+	location ~* "^/freiburg/news(?:\.html|/)?$" { return 301 https://galaxyproject.org/freiburg/news/; }
+	location ~* "^/freiburg/events(?:\.html|/)?$" { return 301 https://galaxyproject.org/freiburg/events/; }
+	location ~* "^/genouest/news(?:\.html|/)?$" { return 301 https://galaxyproject.org/genouest/news/; }
+	location ~* "^/genouest/events(?:\.html|/)?$" { return 301 https://galaxyproject.org/genouest/events/; }
+	location ~* "^/ifb/news(?:\.html|/)?$" { return 301 https://galaxyproject.org/ifb/news/; }
+	location ~* "^/ifb/events(?:\.html|/)?$" { return 301 https://galaxyproject.org/ifb/events/; }
+	location ~* "^/pasteur/news(?:\.html|/)?$" { return 301 https://galaxyproject.org/pasteur/news/; }
+	location ~* "^/pasteur/events(?:\.html|/)?$" { return 301 https://galaxyproject.org/pasteur/events/; }
+	location ~* "^/belgium(?:/.*)?$" { return 301 https://galaxyproject.org/belgium/; }
+	location ~* "^/elixir-it(?:/.*)?$" { return 301 https://galaxyproject.org/elixir-it/; }
+	location ~* "^/erasmusmc(?:/.*)?$" { return 301 https://galaxyproject.org/erasmusmc/; }
+	location ~* "^/freiburg(?:/.*)?$" { return 301 https://galaxyproject.org/freiburg/; }
+	location ~* "^/genouest(?:/.*)?$" { return 301 https://galaxyproject.org/genouest/; }
+	location ~* "^/ifb(?:/.*)?$" { return 301 https://galaxyproject.org/ifb/; }
+	location ~* "^/pasteur(?:/.*)?$" { return 301 https://galaxyproject.org/pasteur/; }
+
+	# --- 574 news posts (exact legacy URL -> verified hub target) ---
+	location = /posts/2017/01/01/blast2myDB/ { return 301 https://galaxyproject.org/news/2017-01-01-blast2mydb/; }
+	location = /posts/2017/01/23/parsesnp/ { return 301 https://galaxyproject.org/news/2017-01-23-parsesnp/; }
+	location = /posts/2017/01/24/TXSSCAN/ { return 301 https://galaxyproject.org/news/2017-01-24-txsscan/; }
+	location = /posts/2017/01/26/conjdb/ { return 301 https://galaxyproject.org/news/2017-01-26-conjdb/; }
+	location = /posts/2017/02/07/capsuleFinder/ { return 301 https://galaxyproject.org/news/2017-02-07-capsule-finder/; }
+	location = /posts/2017/02/13/phageterm/ { return 301 https://galaxyproject.org/news/2017-02-13-phageterm/; }
+	location = /posts/2017/02/15/breseq/ { return 301 https://galaxyproject.org/news/2017-02-15-breseq/; }
+	location = /posts/2017/02/20/elp/ { return 301 https://galaxyproject.org/news/2017-02-20-elp/; }
+	location = /posts/2017/02/20/xxr/ { return 301 https://galaxyproject.org/news/2017-02-20-xxr/; }
+	location = /posts/2017/03/01/Booster/ { return 301 https://galaxyproject.org/news/2017-03-01-booster/; }
+	location = /posts/2017/03/16/STAR/ { return 301 https://galaxyproject.org/news/2017-03-16-star/; }
+	location = /posts/2017/03/16/featureCounts/ { return 301 https://galaxyproject.org/news/2017-03-16-feature-counts/; }
+	location = /posts/2017/04/28/IGblast/ { return 301 https://galaxyproject.org/news/2017-04-28-igblast/; }
+	location = /posts/2017/05/10/dsrc/ { return 301 https://galaxyproject.org/news/2017-05-10-dsrc/; }
+	location = /posts/2017/06/16/macs2/ { return 301 https://galaxyproject.org/news/2017-06-16-macs2/; }
+	location = /posts/2017/06/30/gcc/ { return 301 https://galaxyproject.org/news/2017-06-30-gcc/; }
+	location = /posts/2017/07/02/w4m/ { return 301 https://galaxyproject.org/news/2017-07-02-w4m/; }
+	location = /posts/2017/07/23/ismb/ { return 301 https://galaxyproject.org/news/2017-07-23-ismb/; }
+	location = /posts/2017/08/02/star-ultrafast-aligner/ { return 301 https://galaxyproject.org/news/2017-08-02-star-ultrafast-aligner/; }
+	location = /posts/2017/08/31/metadata-issue/ { return 301 https://galaxyproject.org/news/2017-08-31-metadata-issue/; }
+	location = /posts/2017/08/31/search-and-get-data-from-ena-with-enasearch/ { return 301 https://galaxyproject.org/news/2017-08-31-search-and-get-data-from-ena-with-enasearch/; }
+	location = /posts/2017/09/14/2m-jobs/ { return 301 https://galaxyproject.org/news/2017-09-14-2m-jobs/; }
+	location = /posts/2017/09/20/gcb-posters/ { return 301 https://galaxyproject.org/news/2017-09-20-gcb-posters/; }
+	location = /posts/2017/09/22/bioinformatics-galaxy-workshop/ { return 301 https://galaxyproject.org/news/2017-09-22-bioinformatics-galaxy-workshop/; }
+	location = /posts/2017/09/26/growthpread/ { return 301 https://galaxyproject.org/news/2017-09-26-growthpread/; }
+	location = /posts/2017/09/26/mitochondrial-mutations/ { return 301 https://galaxyproject.org/news/2017-09-26-mitochondrial-mutations/; }
+	location = /posts/2017/09/27/pindel/ { return 301 https://galaxyproject.org/news/2017-09-27-pindel/; }
+	location = /posts/2017/09/28/pindel2vcf/ { return 301 https://galaxyproject.org/news/2017-09-28-pindel2vcf/; }
+	location = /posts/2017/09/28/upload-issue/ { return 301 https://galaxyproject.org/news/2017-09-28-upload-issue/; }
+	location = /posts/2017/09/29/cloud-vms/ { return 301 https://galaxyproject.org/news/2017-09-29-cloud-vms/; }
+	location = /posts/2017/09/29/denbi-summer-school/ { return 301 https://galaxyproject.org/news/2017-09-29-denbi-summer-school/; }
+	location = /posts/2017/10/10/biocontainer-hackathon/ { return 301 https://galaxyproject.org/news/2017-10-10-biocontainer-hackathon/; }
+	location = /posts/2017/10/11/preprint-about-reproducibility/ { return 301 https://galaxyproject.org/news/2017-10-11-preprint-about-reproducibility/; }
+	location = /posts/2017/10/13/Clip/ { return 301 https://galaxyproject.org/news/2017-10-13-clip/; }
+	location = /posts/2017/10/13/Oases_optimiser/ { return 301 https://galaxyproject.org/news/2017-10-13-oases-optimiser/; }
+	location = /posts/2017/10/13/Parse/ { return 301 https://galaxyproject.org/news/2017-10-13-parse/; }
+	location = /posts/2017/10/13/Retrieve/ { return 301 https://galaxyproject.org/news/2017-10-13-retrieve/; }
+	location = /posts/2017/10/13/blast_to_scaffold/ { return 301 https://galaxyproject.org/news/2017-10-13-blast-to-scaffold/; }
+	location = /posts/2017/10/13/fasta/ { return 301 https://galaxyproject.org/news/2017-10-13-fasta/; }
+	location = /posts/2017/10/14/Get/ { return 301 https://galaxyproject.org/news/2017-10-14-get/; }
+	location = /posts/2017/10/17/cap3/ { return 301 https://galaxyproject.org/news/2017-10-17-cap3/; }
+	location = /posts/2017/10/17/metaboflow-meeting/ { return 301 https://galaxyproject.org/news/2017-10-17-metaboflow-meeting/; }
+	location = /posts/2017/10/19/sR_bowtie/ { return 301 https://galaxyproject.org/news/2017-10-19-s-r-bowtie/; }
+	location = /posts/2017/10/19/swc-workshop/ { return 301 https://galaxyproject.org/news/2017-10-19-swc-workshop/; }
+	location = /posts/2017/10/20/NCBI/ { return 301 https://galaxyproject.org/news/2017-10-20-ncbi/; }
+	location = /posts/2017/10/21/bioconda-preprint/ { return 301 https://galaxyproject.org/news/2017-10-21-bioconda-preprint/; }
+	location = /posts/2017/10/23/poster-about-the-galaxy-training-infrastructure-de-nbi-symposium/ { return 301 https://galaxyproject.org/news/2017-10-23-poster-about-the-galaxy-training-infrastructure-de-nbi-symposium/; }
+	location = /posts/2017/10/24/Normalize/ { return 301 https://galaxyproject.org/news/2017-10-24-normalize/; }
+	location = /posts/2017/10/24/ngs-symposium-talk/ { return 301 https://galaxyproject.org/news/2017-10-24-ngs-symposium-talk/; }
+	location = /posts/2017/10/25/multiqc/ { return 301 https://galaxyproject.org/news/2017-10-25-multiqc/; }
+	location = /posts/2017/10/27/Filter/ { return 301 https://galaxyproject.org/news/2017-10-27-filter/; }
+	location = /posts/2017/10/27/Pick/ { return 301 https://galaxyproject.org/news/2017-10-27-pick/; }
+	location = /posts/2017/11/02/maldi/ { return 301 https://galaxyproject.org/news/2017-11-02-maldi/; }
+	location = /posts/2017/11/07/vre-denbi/ { return 301 https://galaxyproject.org/news/2017-11-07-vre-denbi/; }
+	location = /posts/2017/11/08/Annotate/ { return 301 https://galaxyproject.org/news/2017-11-08-annotate/; }
+	location = /posts/2017/11/08/Trinity/ { return 301 https://galaxyproject.org/news/2017-11-08-trinity/; }
+	location = /posts/2017/11/08/tools-update-11-2017/ { return 301 https://galaxyproject.org/news/2017-11-08-tools-update-11-2017/; }
+	location = /posts/2017/11/09/FASTQ/ { return 301 https://galaxyproject.org/news/2017-11-09-fastq/; }
+	location = /posts/2017/11/10/Salmonella/ { return 301 https://galaxyproject.org/news/2017-11-10-salmonella/; }
+	location = /posts/2017/11/15/galaxy-memory-upgrade/ { return 301 https://galaxyproject.org/news/2017-11-15-galaxy-memory-upgrade/; }
+	location = /posts/2017/11/16/Base/ { return 301 https://galaxyproject.org/news/2017-11-16-base/; }
+	location = /posts/2017/11/16/Cluster/ { return 301 https://galaxyproject.org/news/2017-11-16-cluster/; }
+	location = /posts/2017/11/16/Complement/ { return 301 https://galaxyproject.org/news/2017-11-16-complement/; }
+	location = /posts/2017/11/16/Concatenate/ { return 301 https://galaxyproject.org/news/2017-11-16-concatenate/; }
+	location = /posts/2017/11/16/Coverage/ { return 301 https://galaxyproject.org/news/2017-11-16-coverage/; }
+	location = /posts/2017/11/16/Intersect/ { return 301 https://galaxyproject.org/news/2017-11-16-intersect/; }
+	location = /posts/2017/11/16/Join/ { return 301 https://galaxyproject.org/news/2017-11-16-join/; }
+	location = /posts/2017/11/16/Merge/ { return 301 https://galaxyproject.org/news/2017-11-16-merge/; }
+	location = /posts/2017/11/16/Subtract/ { return 301 https://galaxyproject.org/news/2017-11-16-subtract/; }
+	location = /posts/2017/11/17/Fetch/ { return 301 https://galaxyproject.org/news/2017-11-17-fetch/; }
+	location = /posts/2017/11/17/Galaxy-HTS-WS-2018/ { return 301 https://galaxyproject.org/news/2017-11-17-galaxy-hts-ws-2018/; }
+	location = /posts/2017/11/17/Get/ { return 301 https://galaxyproject.org/news/2017-11-17-get/; }
+	location = /posts/2017/11/21/upload-failures/ { return 301 https://galaxyproject.org/news/2017-11-21-upload-failures/; }
+	location = /posts/2017/11/22/methylation-natcom/ { return 301 https://galaxyproject.org/news/2017-11-22-methylation-natcom/; }
+	location = /posts/2017/11/23/DESeq2/ { return 301 https://galaxyproject.org/news/2017-11-23-deseq2/; }
+	location = /posts/2017/11/24/Generate/ { return 301 https://galaxyproject.org/news/2017-11-24-generate/; }
+	location = /posts/2017/11/24/Small/ { return 301 https://galaxyproject.org/news/2017-11-24-small/; }
+	location = /posts/2017/11/24/small_rna_maps/ { return 301 https://galaxyproject.org/news/2017-11-24-small-rna-maps/; }
+	location = /posts/2017/11/28/sci-reports/ { return 301 https://galaxyproject.org/news/2017-11-28-sci-reports/; }
+	location = /posts/2017/11/30/multiqc/ { return 301 https://galaxyproject.org/news/2017-11-30-multiqc/; }
+	location = /posts/2017/11/30/training-preprint/ { return 301 https://galaxyproject.org/news/2017-11-30-training-preprint/; }
+	location = /posts/2017/12/10/b3africa/ { return 301 https://galaxyproject.org/news/2017-12-10-b3africa/; }
+	location = /posts/2017/12/11/job-conf-error/ { return 301 https://galaxyproject.org/news/2017-12-11-job-conf-error/; }
+	location = /posts/2017/12/30/GraphClust/ { return 301 https://galaxyproject.org/news/2017-12-30-graph-clust/; }
+	location = /posts/2017/12/30/hicexplorer/ { return 301 https://galaxyproject.org/news/2017-12-30-hicexplorer/; }
+	location = /posts/2018/01/12/ELIXIR-Galaxy-admin-workshop/ { return 301 https://galaxyproject.org/news/2018-01-12-elixir-galaxy-admin-workshop/; }
+	location = /posts/2018/01/13/kerstin-mcp-paper/ { return 301 https://galaxyproject.org/news/2018-01-13-kerstin-mcp-paper/; }
+	location = /posts/2018/01/16/tads/ { return 301 https://galaxyproject.org/news/2018-01-16-tads/; }
+	location = /posts/2018/01/17/ASaiM/ { return 301 https://galaxyproject.org/news/2018-01-17-asaim/; }
+	location = /posts/2018/01/18/Galaxy-workshop-2.2018/ { return 301 https://galaxyproject.org/news/2018-01-18-galaxy-workshop-2-2018/; }
+	location = /posts/2018/01/26/Galaxy-workshop-9.2018/ { return 301 https://galaxyproject.org/news/2018-01-26-galaxy-workshop-9-2018/; }
+	location = /posts/2018/01/26/Salmonella/ { return 301 https://galaxyproject.org/news/2018-01-26-salmonella/; }
+	location = /posts/2018/01/30/COST/ { return 301 https://galaxyproject.org/news/2018-01-30-cost/; }
+	location = /posts/2018/01/30/Gilsbach_NatCom/ { return 301 https://galaxyproject.org/news/2018-01-30-gilsbach-nat-com/; }
+	location = /posts/2018/02/01/metaproteomics/ { return 301 https://galaxyproject.org/news/2018-02-01-metaproteomics/; }
+	location = /posts/2018/02/11/genome-annotation-reloaded/ { return 301 https://galaxyproject.org/news/2018-02-11-genome-annotation-reloaded/; }
+	location = /posts/2018/02/13/ELIXIR-Galaxy-kickoff/ { return 301 https://galaxyproject.org/news/2018-02-13-elixir-galaxy-kickoff/; }
+	location = /posts/2018/02/13/Galaxy-User-Conf/ { return 301 https://galaxyproject.org/news/2018-02-13-galaxy-user-conf/; }
+	location = /posts/2018/03/03/deepTools/ { return 301 https://galaxyproject.org/news/2018-03-03-deep-tools/; }
+	location = /posts/2018/03/06/Foell-publication-Reproducibleproteomics/ { return 301 https://galaxyproject.org/news/2018-03-06-foell-publication-reproducibleproteomics/; }
+	location = /posts/2018/03/08/MiModD/ { return 301 https://galaxyproject.org/news/2018-03-08-mi-modd/; }
+	location = /posts/2018/03/09/propagate-history-hashtags/ { return 301 https://galaxyproject.org/news/2018-03-09-propagate-history-hashtags/; }
+	location = /posts/2018/03/14/PhageTerm/ { return 301 https://galaxyproject.org/news/2018-03-14-phage-term/; }
+	location = /posts/2018/03/14/elixir-galaxy-kickoff-meeting/ { return 301 https://galaxyproject.org/news/2018-03-14-elixir-galaxy-kickoff-meeting/; }
+	location = /posts/2018/03/16/galaxy-user-conference-second-day/ { return 301 https://galaxyproject.org/news/2018-03-16-galaxy-user-conference-second-day/; }
+	location = /posts/2018/04/11/galaxy-africa/ { return 301 https://galaxyproject.org/news/2018-04-11-galaxy-africa/; }
+	location = /posts/2018/04/23/Fabio-Cumbo/ { return 301 https://galaxyproject.org/news/2018-04-23-fabio-cumbo/; }
+	location = /posts/2018/04/24/fileserver-outage/ { return 301 https://galaxyproject.org/news/2018-04-24-fileserver-outage/; }
+	location = /posts/2018/04/26/outage/ { return 301 https://galaxyproject.org/news/2018-04-26-outage/; }
+	location = /posts/2018/05/03/emc-nanopolish/ { return 301 https://galaxyproject.org/news/2018-05-03-emc-nanopolish/; }
+	location = /posts/2018/05/07/death-christophe-caron/ { return 301 https://galaxyproject.org/news/2018-05-07-death-christophe-caron/; }
+	location = /posts/2018/05/25/galaxy-1805-and-gdpr/ { return 301 https://galaxyproject.org/news/2018-05-25-galaxy-1805-and-gdpr/; }
+	location = /posts/2018/05/28/Galaxy-NAR/ { return 301 https://galaxyproject.org/news/2018-05-28-galaxy-nar/; }
+	location = /posts/2018/05/30/nanopolish/ { return 301 https://galaxyproject.org/news/2018-05-30-nanopolish/; }
+	location = /posts/2018/06/04/temporary-quota-issue/ { return 301 https://galaxyproject.org/news/2018-06-04-temporary-quota-issue/; }
+	location = /posts/2018/06/05/gtn-hackathon/ { return 301 https://galaxyproject.org/news/2018-06-05-gtn-hackathon/; }
+	location = /posts/2018/06/06/carpentry-con/ { return 301 https://galaxyproject.org/news/2018-06-06-carpentry-con/; }
+	location = /posts/2018/06/18/database-outage/ { return 301 https://galaxyproject.org/news/2018-06-18-database-outage/; }
+	location = /posts/2018/07/03/circ-research-rommel/ { return 301 https://galaxyproject.org/news/2018-07-03-circ-research-rommel/; }
+	location = /posts/2018/07/03/tool-usage-graphs/ { return 301 https://galaxyproject.org/news/2018-07-03-tool-usage-graphs/; }
+	location = /posts/2018/07/04/Bioconda/ { return 301 https://galaxyproject.org/news/2018-07-04-bioconda/; }
+	location = /posts/2018/07/04/HiCExplorer-NAR/ { return 301 https://galaxyproject.org/news/2018-07-04-hicexplorer-nar/; }
+	location = /posts/2018/07/12/workflow-outage/ { return 301 https://galaxyproject.org/news/2018-07-12-workflow-outage/; }
+	location = /posts/2018/07/18/gccbosc/ { return 301 https://galaxyproject.org/news/2018-07-18-gccbosc/; }
+	location = /posts/2018/09/21/downtime/ { return 301 https://galaxyproject.org/news/2018-09-21-downtime/; }
+	location = /posts/2018/09/24/galaxy-hts-data-analysis-workshop/ { return 301 https://galaxyproject.org/news/2018-09-24-galaxy-hts-data-analysis-workshop/; }
+	location = /posts/2018/09/25/GCB2018_presentations/ { return 301 https://galaxyproject.org/news/2018-09-25-gcb2018-presentations/; }
+	location = /posts/2018/09/26/DNS-handover-postmortem/ { return 301 https://galaxyproject.org/news/2018-09-26-dns-handover-postmortem/; }
+	location = /posts/2018/10/05/Galaxy_Prague_Proteomics/ { return 301 https://galaxyproject.org/news/2018-10-05-galaxy-prague-proteomics/; }
+	location = /posts/2018/10/08/gxadmin/ { return 301 https://galaxyproject.org/news/2018-10-08-gxadmin/; }
+	location = /posts/2018/10/10/AchimLother/ { return 301 https://galaxyproject.org/news/2018-10-10-achim-lother/; }
+	location = /posts/2018/10/10/Indepth_Lucerne/ { return 301 https://galaxyproject.org/news/2018-10-10-indepth-lucerne/; }
+	location = /posts/2018/10/10/Laborjournal/ { return 301 https://galaxyproject.org/news/2018-10-10-laborjournal/; }
+	location = /posts/2018/10/15/totm/ { return 301 https://galaxyproject.org/news/2018-10-totm/; }
+	location = /posts/2018/10/30/Laborpraxis/ { return 301 https://galaxyproject.org/news/2018-10-30-laborpraxis/; }
+	location = /posts/2018/10/31/tiaas-feedback/ { return 301 https://galaxyproject.org/news/2018-10-31-tiaas-feedback/; }
+	location = /posts/2018/11/01/elixirnl-workshop/ { return 301 https://galaxyproject.org/news/2018-11-01-elixirnl-workshop/; }
+	location = /posts/2018/11/05/ThomasNuehrenberg/ { return 301 https://galaxyproject.org/news/2018-11-05-thomas-nuehrenberg/; }
+	location = /posts/2018/11/07/migration/ { return 301 https://galaxyproject.org/news/2018-11-07-migration/; }
+	location = /posts/2018/11/15/totm/ { return 301 https://galaxyproject.org/news/2018-11-totm/; }
+	location = /posts/2018/11/21/workflow-testing/ { return 301 https://galaxyproject.org/news/2018-11-21-workflow-testing/; }
+	location = /posts/2018/11/23/biohackathon/ { return 301 https://galaxyproject.org/news/2018-11-23-biohackathon/; }
+	location = /posts/2018/11/26/european-galaxy-days/ { return 301 https://galaxyproject.org/news/2018-11-26-european-galaxy-days/; }
+	location = /posts/2018/11/30/beerdecoded/ { return 301 https://galaxyproject.org/news/2018-11-30-beerdecoded/; }
+	location = /posts/2018/12/19/autorerun/ { return 301 https://galaxyproject.org/news/2018-12-19-autorerun/; }
+	location = /posts/2018/12/25/merry-christmas/ { return 301 https://galaxyproject.org/news/2018-12-25-merry-christmas/; }
+	location = /posts/2019/01/08/new-compute-nodes/ { return 301 https://galaxyproject.org/news/2019-01-08-new-compute-nodes/; }
+	location = /posts/2019/01/10/Galaxyworkshop-full/ { return 301 https://galaxyproject.org/news/2019-01-10-galaxyworkshop-full/; }
+	location = /posts/2019/01/18/queue-clearing/ { return 301 https://galaxyproject.org/news/2019-01-18-queue-clearing/; }
+	location = /posts/2019/01/19/rna-seq-workshop-belgrade/ { return 301 https://galaxyproject.org/news/2019-01-19-rna-seq-workshop-belgrade/; }
+	location = /posts/2019/01/26/NASA-Galaxy-and-training/ { return 301 https://galaxyproject.org/news/2019-01-26-nasa-galaxy-and-training/; }
+	location = /posts/2019/01/27/GCC-training-vote/ { return 301 https://galaxyproject.org/news/2019-01-27-gcc-training-vote/; }
+	location = /posts/2019/02/09/tool-quest/ { return 301 https://galaxyproject.org/news/2019-02-09-tool-quest/; }
+	location = /posts/2019/02/11/Veil-Pou5f3/ { return 301 https://galaxyproject.org/news/2019-02-11-veil-pou5f3/; }
+	location = /posts/2019/02/11/Walz/ { return 301 https://galaxyproject.org/news/2019-02-11-walz/; }
+	location = /posts/2019/02/15/BioDATEN/ { return 301 https://galaxyproject.org/news/2019-02-15-biodaten/; }
+	location = /posts/2019/02/21/GraphClust2-Publication/ { return 301 https://galaxyproject.org/news/2019-02-21-graph-clust2-publication/; }
+	location = /posts/2019/03/04/galaxy-hts-workshop/ { return 301 https://galaxyproject.org/news/2019-03-04-galaxy-hts-workshop/; }
+	location = /posts/2019/03/14/chimera-and-the-cyborg/ { return 301 https://galaxyproject.org/news/2019-03-14-chimera-and-the-cyborg/; }
+	location = /posts/2019/03/15/bridge/ { return 301 https://galaxyproject.org/news/2019-03-15-bridge/; }
+	location = /posts/2019/03/18/galaxy-downtime/ { return 301 https://galaxyproject.org/news/2019-03-18-galaxy-downtime/; }
+	location = /posts/2019/03/19/galaxy-1901/ { return 301 https://galaxyproject.org/news/2019-03-19-galaxy-1901/; }
+	location = /posts/2019/03/20/Teikari/ { return 301 https://galaxyproject.org/news/2019-03-20-teikari/; }
+	location = /posts/2019/04/04/streetscience-first-public-workshop/ { return 301 https://galaxyproject.org/news/2019-04-04-streetscience-first-public-workshop/; }
+	location = /posts/2019/04/06/tool-update/ { return 301 https://galaxyproject.org/news/2019-04-06-tool-update/; }
+	location = /posts/2019/04/23/diamond/ { return 301 https://galaxyproject.org/news/2019-04-23-diamond/; }
+	location = /posts/2019/04/23/tool-update/ { return 301 https://galaxyproject.org/news/2019-04-23-tool-update/; }
+	location = /posts/2019/04/24/GCC-registration/ { return 301 https://galaxyproject.org/news/2019-04-24-gcc-registration/; }
+	location = /posts/2019/04/26/elixir-galaxy-roscoff-ws/ { return 301 https://galaxyproject.org/news/2019-04-26-elixir-galaxy-roscoff-ws/; }
+	location = /posts/2019/05/10/Galaxy-HTS-registration/ { return 301 https://galaxyproject.org/news/2019-05-10-galaxy-hts-registration/; }
+	location = /posts/2019/05/10/rna-workbench-2/ { return 301 https://galaxyproject.org/news/2019-05-10-rna-workbench-2/; }
+	location = /posts/2019/05/24/gcc-queue/ { return 301 https://galaxyproject.org/news/2019-05-24-gcc-queue/; }
+	location = /posts/2019/06/06/galaxy-upgrade/ { return 301 https://galaxyproject.org/news/2019-06-06-galaxy-upgrade/; }
+	location = /posts/2019/06/06/tool-update/ { return 301 https://galaxyproject.org/news/2019-06-06-tool-update/; }
+	location = /posts/2019/06/08/tool-update/ { return 301 https://galaxyproject.org/news/2019-06-08-tool-update/; }
+	location = /posts/2019/06/10/tiaas-feedback/ { return 301 https://galaxyproject.org/news/2019-06-10-tiaas-feedback/; }
+	location = /posts/2019/06/13/elixir-aai-done/ { return 301 https://galaxyproject.org/news/2019-06-aai/; }
+	location = /posts/2019/06/15/tool-update/ { return 301 https://galaxyproject.org/news/2019-06-15-tool-update/; }
+	location = /posts/2019/06/17/tiaas-queue/ { return 301 https://galaxyproject.org/news/2019-06-tiaas-queue/; }
+	location = /posts/2019/06/21/tool-update/ { return 301 https://galaxyproject.org/news/2019-06-usegalaxy-eu-tool-update/; }
+	location = /posts/2019/06/27/tool-update/ { return 301 https://galaxyproject.org/news/2019-06-27-tool-update/; }
+	location = /posts/2019/06/30/livestream/ { return 301 https://galaxyproject.org/news/2019-06-30-livestream/; }
+	location = /posts/2019/07/06/tool-update/ { return 301 https://galaxyproject.org/news/2019-07-06-tool-update/; }
+	location = /posts/2019/07/13/tool-update/ { return 301 https://galaxyproject.org/news/2019-07-13-tool-update/; }
+	location = /posts/2019/07/19/tool-update/ { return 301 https://galaxyproject.org/news/2019-07-19-tool-update/; }
+	location = /posts/2019/07/22/ISCB/ { return 301 https://galaxyproject.org/news/2019-07-22-iscb/; }
+	location = /posts/2019/07/27/tool-update/ { return 301 https://galaxyproject.org/news/2019-07-27-tool-update/; }
+	location = /posts/2019/08/01/galactic-news/ { return 301 https://galaxyproject.org/news/2019-08-galaxy-update/; }
+	location = /posts/2019/08/02/max-quant/ { return 301 https://galaxyproject.org/news/2019-08-02-max-quant/; }
+	location = /posts/2019/08/03/tool-update/ { return 301 https://galaxyproject.org/news/2019-08-03-tool-update/; }
+	location = /posts/2019/08/06/gcc/ { return 301 https://galaxyproject.org/news/2019-08-06-gcc/; }
+	location = /posts/2019/08/10/tool-update/ { return 301 https://galaxyproject.org/news/2019-08-10-tool-update/; }
+	location = /posts/2019/08/17/Slamdunk/ { return 301 https://galaxyproject.org/news/2019-08-17-slamdunk/; }
+	location = /posts/2019/08/18/tool-update/ { return 301 https://galaxyproject.org/news/2019-08-18-tool-update/; }
+	location = /posts/2019/08/20/PathwayMatcher/ { return 301 https://galaxyproject.org/news/2019-08-20-pathway-matcher/; }
+	location = /posts/2019/08/24/tool-update/ { return 301 https://galaxyproject.org/news/2019-08-24-tool-update/; }
+	location = /posts/2019/08/28/TIaaS-update/ { return 301 https://galaxyproject.org/news/2019-08-28-tiaa-s-update/; }
+	location = /posts/2019/08/30/galactic-news/ { return 301 https://galaxyproject.org/news/2019-09-galaxy-update/; }
+	location = /posts/2019/08/31/tool-update/ { return 301 https://galaxyproject.org/news/2019-08-31-tool-update/; }
+	location = /posts/2019/09/06/ATACseqTutorial/ { return 301 https://galaxyproject.org/news/2019-09-06-atacseq-tutorial/; }
+	location = /posts/2019/09/07/tool-update/ { return 301 https://galaxyproject.org/news/2019-09-07-tool-update/; }
+	location = /posts/2019/09/14/tool-update/ { return 301 https://galaxyproject.org/news/2019-09-14-tool-update/; }
+	location = /posts/2019/09/15/Galaxy-part-of-EOSC-marketplace/ { return 301 https://galaxyproject.org/news/2019-09-15-galaxy-part-of-eosc-marketplace/; }
+	location = /posts/2019/09/16/Scientists-must-act-on-our-own-warnings-to-humanity/ { return 301 https://galaxyproject.org/news/2019-09-16-scientists-must-act-on-our-own-warnings-to-humanity/; }
+	location = /posts/2019/09/19/we-are-striking/ { return 301 https://galaxyproject.org/news/2019-09-19-we-are-striking/; }
+	location = /posts/2019/09/21/tool-update/ { return 301 https://galaxyproject.org/news/2019-09-21-tool-update/; }
+	location = /posts/2019/09/29/tool-update/ { return 301 https://galaxyproject.org/news/2019-09-29-tool-update/; }
+	location = /posts/2019/09/30/Summary_GalaxyworkshopFR/ { return 301 https://galaxyproject.org/news/2019-09-30-summary-galaxyworkshopfr/; }
+	location = /posts/2019/10/02/downtime/ { return 301 https://galaxyproject.org/news/2019-10-02-downtime/; }
+	location = /posts/2019/10/02/galactic-news/ { return 301 https://galaxyproject.org/news/2019-10-galaxy-update/; }
+	location = /posts/2019/10/05/tool-update/ { return 301 https://galaxyproject.org/news/2019-10-05-tool-update/; }
+	location = /posts/2019/10/12/tool-update/ { return 301 https://galaxyproject.org/news/2019-10-12-tool-update/; }
+	location = /posts/2019/10/15/tiaas-feedback-embl-course/ { return 301 https://galaxyproject.org/news/2019-10-15-tiaas-feedback-embl-course/; }
+	location = /posts/2019/10/17/tool-update/ { return 301 https://galaxyproject.org/news/2019-10-17-tool-update/; }
+	location = /posts/2019/10/18/parent-instance-error/ { return 301 https://galaxyproject.org/news/2019-10-18-parent-instance-error/; }
+	location = /posts/2019/10/19/tool-update/ { return 301 https://galaxyproject.org/news/2019-10-19-tool-update/; }
+	location = /posts/2019/11/07/tiaas-feedback-uea-course/ { return 301 https://galaxyproject.org/news/2019-11-07-tiaas-feedback-uea-course/; }
+	location = /posts/2019/11/08/Galaxyuser_feedback/ { return 301 https://galaxyproject.org/news/2019-11-08-galaxyuser-feedback/; }
+	location = /posts/2019/11/10/tool-update/ { return 301 https://galaxyproject.org/news/2019-11-10-tool-update/; }
+	location = /posts/2019/11/11/sina/ { return 301 https://galaxyproject.org/news/2019-11-11-sina/; }
+	location = /posts/2019/11/15/tool-update/ { return 301 https://galaxyproject.org/news/2019-11-15-tool-update/; }
+	location = /posts/2019/11/20/gProfiler/ { return 301 https://galaxyproject.org/news/2019-11-20-g-profiler/; }
+	location = /posts/2019/11/22/tool-update/ { return 301 https://galaxyproject.org/news/2019-11-22-tool-update/; }
+	location = /posts/2019/11/23/we-are-striking-really/ { return 301 https://galaxyproject.org/news/2019-11-23-we-are-striking-really/; }
+	location = /posts/2019/11/30/denbi.elixirtraining.paper/ { return 301 https://galaxyproject.org/news/2019-11-30-denbi-elixirtraining-paper/; }
+	location = /posts/2019/11/30/paper.GraphClust2/ { return 301 https://galaxyproject.org/news/2019-11-30-paper-graph-clust2/; }
+	location = /posts/2019/11/30/tool-update/ { return 301 https://galaxyproject.org/news/2019-11-30-tool-update/; }
+	location = /posts/2019/12/01/tiaas-feedback-aracatuba/ { return 301 https://galaxyproject.org/news/2019-12-01-tiaas-feedback-aracatuba/; }
+	location = /posts/2019/12/03/tiaas-feedback-m2_genomics/ { return 301 https://galaxyproject.org/news/2019-12-03-tiaas-feedback-m2-genomics/; }
+	location = /posts/2019/12/07/tool-update/ { return 301 https://galaxyproject.org/news/2019-12-07-tool-update/; }
+	location = /posts/2019/12/09/galactic-news/ { return 301 https://galaxyproject.org/news/2019-12-galaxy-update/; }
+	location = /posts/2019/12/10/gallantries-popup/ { return 301 https://galaxyproject.org/news/2019-12-10-gallantries-popup/; }
+	location = /posts/2019/12/14/tool-update/ { return 301 https://galaxyproject.org/news/2019-12-14-tool-update/; }
+	location = /posts/2019/12/21/tool-update/ { return 301 https://galaxyproject.org/news/2019-12-21-tool-update/; }
+	location = /posts/2019/12/28/tool-update/ { return 301 https://galaxyproject.org/news/2019-12-28-tool-update/; }
+	location = /posts/2020/01/04/tool-update/ { return 301 https://galaxyproject.org/news/2020-01-04-tool-update/; }
+	location = /posts/2020/01/05/laborjournal/ { return 301 https://galaxyproject.org/news/2020-01-05-laborjournal/; }
+	location = /posts/2020/01/05/plant-reference-genomes/ { return 301 https://galaxyproject.org/news/2020-01-05-plant-reference-genomes/; }
+	location = /posts/2020/01/08/galactic-news/ { return 301 https://galaxyproject.org/news/2020-01-galaxy-update/; }
+	location = /posts/2020/01/08/paper-metaproteomics-software/ { return 301 https://galaxyproject.org/news/2020-01-08-paper-metaproteomics-software/; }
+	location = /posts/2020/01/11/tool-update/ { return 301 https://galaxyproject.org/news/2020-01-11-tool-update/; }
+	location = /posts/2020/01/16/pgp/ { return 301 https://galaxyproject.org/news/2020-01-16-pgp/; }
+	location = /posts/2020/01/18/tool-update/ { return 301 https://galaxyproject.org/news/2020-01-18-tool-update/; }
+	location = /posts/2020/01/20/tiaas-feedback-popp/ { return 301 https://galaxyproject.org/news/2020-01-20-tiaas-feedback-popp/; }
+	location = /posts/2020/01/22/Talk_Uniklinik/ { return 301 https://galaxyproject.org/news/2020-01-22-talk-uniklinik/; }
+	location = /posts/2020/01/25/tool-update/ { return 301 https://galaxyproject.org/news/2020-01-25-tool-update/; }
+	location = /posts/2020/01/30/elixir-tools-platform-meeting/ { return 301 https://galaxyproject.org/news/2020-01-30-elixir-tools-platform-meeting/; }
+	location = /posts/2020/02/01/tool-update/ { return 301 https://galaxyproject.org/news/2020-02-01-tool-update/; }
+	location = /posts/2020/02/06/paper-ms-imaging/ { return 301 https://galaxyproject.org/news/2020-02-06-paper-ms-imaging/; }
+	location = /posts/2020/02/07/DataPlant/ { return 301 https://galaxyproject.org/news/2020-02-07-data-plant/; }
+	location = /posts/2020/02/08/idr-galaxy-hackathon/ { return 301 https://galaxyproject.org/news/2020-02-08-idr-galaxy-hackathon/; }
+	location = /posts/2020/02/08/tool-update/ { return 301 https://galaxyproject.org/news/2020-02-08-tool-update/; }
+	location = /posts/2020/02/10/tiaas-feedback-Scholtz/ { return 301 https://galaxyproject.org/news/2020-02-10-tiaas-feedback-scholtz/; }
+	location = /posts/2020/02/11/AchimLother-Paper/ { return 301 https://galaxyproject.org/news/2020-02-11-achim-lother-paper/; }
+	location = /posts/2020/02/11/elixir-post/ { return 301 https://galaxyproject.org/news/2020-02-elixir-progress/; }
+	location = /posts/2020/02/17/tool-update/ { return 301 https://galaxyproject.org/news/2020-02-17-tool-update/; }
+	location = /posts/2020/02/19/Symposion-deNBI-Verlaengerung/ { return 301 https://galaxyproject.org/news/2020-02-19-symposion-denbi-verlaengerung/; }
+	location = /posts/2020/02/21/tool-update/ { return 301 https://galaxyproject.org/news/2020-02-21-tool-update/; }
+	location = /posts/2020/02/26/coronavirus-data-analysis/ { return 301 https://galaxyproject.org/news/2020-02-26-coronavirus-data-analysis/; }
+	location = /posts/2020/02/27/TIaaS-update/ { return 301 https://galaxyproject.org/news/2020-02-tiaas/; }
+	location = /posts/2020/02/28/laniakea-on-eosc-marketplace/ { return 301 https://galaxyproject.org/news/2020-02-28-laniakea-on-eosc-marketplace/; }
+	location = /posts/2020/02/28/open-infrastructure-for-public-health-care/ { return 301 https://galaxyproject.org/news/2020-02-28-open-infrastructure-for-public-health-care/; }
+	location = /posts/2020/02/29/tool-update/ { return 301 https://galaxyproject.org/news/2020-02-29-tool-update/; }
+	location = /posts/2020/03/01/laniakea-release/ { return 301 https://galaxyproject.org/news/2020-03-01-laniakea-release/; }
+	location = /posts/2020/03/06/admin-training-success/ { return 301 https://galaxyproject.org/news/2020-03-admin-finishes/; }
+	location = /posts/2020/03/07/tool-update/ { return 301 https://galaxyproject.org/news/2020-03-07-tool-update/; }
+	location = /posts/2020/03/09/devops-storage-issues/ { return 301 https://galaxyproject.org/news/2020-03-09-devops-storage-issues/; }
+	location = /posts/2020/03/10/tool-update/ { return 301 https://galaxyproject.org/news/2020-03-10-tool-update/; }
+	location = /posts/2020/03/11/virtual-screening/ { return 301 https://galaxyproject.org/news/2020-03-covid-protease/; }
+	location = /posts/2020/03/14/tool-update/ { return 301 https://galaxyproject.org/news/2020-03-14-tool-update/; }
+	location = /posts/2020/03/19/wirvsvirus/ { return 301 https://galaxyproject.org/news/2020-03-wir-vs-virus/; }
+	location = /posts/2020/03/21/tool-update/ { return 301 https://galaxyproject.org/news/2020-03-21-tool-update/; }
+	location = /posts/2020/03/24/rna-interactome/ { return 301 https://galaxyproject.org/news/2020-03-chira/; }
+	location = /posts/2020/03/24/scientific-infrastructure-for-virus-research/ { return 301 https://galaxyproject.org/news/2020-03-24-scientific-infrastructure-for-virus-research/; }
+	location = /posts/2020/03/28/tool-update/ { return 301 https://galaxyproject.org/news/2020-03-28-tool-update/; }
+	location = /posts/2020/04/02/WMS-workshop/ { return 301 https://galaxyproject.org/news/2020-04-02-wms-workshop/; }
+	location = /posts/2020/04/03/james-taylor-rip/ { return 301 https://galaxyproject.org/news/2020-04-james-taylor/; }
+	location = /posts/2020/04/04/tool-update/ { return 301 https://galaxyproject.org/news/2020-04-04-tool-update/; }
+	location = /posts/2020/04/11/tool-update/ { return 301 https://galaxyproject.org/news/2020-04-11-tool-update/; }
+	location = /posts/2020/04/14/integrative-meta-omics/ { return 301 https://galaxyproject.org/news/2020-04-14-integrative-meta-omics/; }
+	location = /posts/2020/04/18/tool-update/ { return 301 https://galaxyproject.org/news/2020-04-18-tool-update/; }
+	location = /posts/2020/04/23/mvp/ { return 301 https://galaxyproject.org/news/2020-04-23-mvp/; }
+	location = /posts/2020/04/25/tool-update/ { return 301 https://galaxyproject.org/news/2020-04-25-tool-update/; }
+	location = /posts/2020/05/02/tool-update/ { return 301 https://galaxyproject.org/news/2020-05-02-tool-update/; }
+	location = /posts/2020/05/15/tool-update/ { return 301 https://galaxyproject.org/news/2020-05-15-tool-update/; }
+	location = /posts/2020/05/24/tool-update/ { return 301 https://galaxyproject.org/news/2020-05-24-tool-update/; }
+	location = /posts/2020/05/30/tool-update/ { return 301 https://galaxyproject.org/news/2020-05-30-tool-update/; }
+	location = /posts/2020/06/06/tool-update/ { return 301 https://galaxyproject.org/news/2020-06-06-tool-update/; }
+	location = /posts/2020/06/08/tiaas-feedback-schulz/ { return 301 https://galaxyproject.org/news/2020-06-08-tiaas-feedback-schulz/; }
+	location = /posts/2020/06/13/tool-update/ { return 301 https://galaxyproject.org/news/2020-06-13-tool-update/; }
+	location = /posts/2020/06/16/tool-update/ { return 301 https://galaxyproject.org/news/2020-06-16-tool-update/; }
+	location = /posts/2020/06/20/tool-update/ { return 301 https://galaxyproject.org/news/2020-06-20-tool-update/; }
+	location = /posts/2020/07/01/galactic-news/ { return 301 https://galaxyproject.org/news/2020-07-galaxy-update/; }
+	location = /posts/2020/07/13/tool-update/ { return 301 https://galaxyproject.org/news/2020-07-13-tool-update/; }
+	location = /posts/2020/07/18/tool-update/ { return 301 https://galaxyproject.org/news/2020-07-18-tool-update/; }
+	location = /posts/2020/07/22/tool-update/ { return 301 https://galaxyproject.org/news/2020-07-22-tool-update/; }
+	location = /posts/2020/07/23/compchem-at-bcc/ { return 301 https://galaxyproject.org/news/2020-07-23-compchem-at-bcc/; }
+	location = /posts/2020/07/25/tiaas_feedback_rodrigo/ { return 301 https://galaxyproject.org/news/2020-07-25-tiaas-feedback-rodrigo/; }
+	location = /posts/2020/07/25/tool-update/ { return 301 https://galaxyproject.org/news/2020-07-25-tool-update/; }
+	location = /posts/2020/07/27/climate-at-bcc/ { return 301 https://galaxyproject.org/news/2020-07-27-climate-at-bcc/; }
+	location = /posts/2020/07/29/galaxy-20-05/ { return 301 https://galaxyproject.org/news/2020-07-29-galaxy-20-05/; }
+	location = /posts/2020/07/30/galaxy-africa/ { return 301 https://galaxyproject.org/news/2020-07-30-galaxy-africa/; }
+	location = /posts/2020/08/01/tool-update/ { return 301 https://galaxyproject.org/news/2020-08-01-tool-update/; }
+	location = /posts/2020/08/08/tool-update/ { return 301 https://galaxyproject.org/news/2020-08-08-tool-update/; }
+	location = /posts/2020/08/15/tool-update/ { return 301 https://galaxyproject.org/news/2020-08-15-tool-update/; }
+	location = /posts/2020/08/22/DataPLANT/ { return 301 https://galaxyproject.org/news/2020-08-dataplant/; }
+	location = /posts/2020/08/22/tool-update/ { return 301 https://galaxyproject.org/news/2020-08-22-tool-update/; }
+	location = /posts/2020/08/29/tool-update/ { return 301 https://galaxyproject.org/news/2020-08-29-tool-update/; }
+	location = /posts/2020/08/30/paper-malaria/ { return 301 https://galaxyproject.org/news/2020-08-30-paper-malaria/; }
+	location = /posts/2020/08/31/paper-parasites/ { return 301 https://galaxyproject.org/news/2020-08-31-paper-parasites/; }
+	location = /posts/2020/09/01/paper-pyGenomeTracks/ { return 301 https://galaxyproject.org/news/2020-09-01-paper-py-genome-tracks/; }
+	location = /posts/2020/09/02/paper-covid-open-data/ { return 301 https://galaxyproject.org/news/2020-09-02-paper-covid-open-data/; }
+	location = /posts/2020/09/05/tool-update/ { return 301 https://galaxyproject.org/news/2020-09-05-tool-update/; }
+	location = /posts/2020/09/07/ols/ { return 301 https://galaxyproject.org/news/2020-09-07-ols/; }
+	location = /posts/2020/09/08/training-wp9-eosc-life/ { return 301 https://galaxyproject.org/news/2020-09-eosc-life-grants/; }
+	location = /posts/2020/09/10/tools-platform-covid/ { return 301 https://galaxyproject.org/news/2020-09-10-tools-platform-covid/; }
+	location = /posts/2020/09/11/we-are-striking-really/ { return 301 https://galaxyproject.org/news/2020-09-11-we-are-striking-really/; }
+	location = /posts/2020/09/12/tool-update/ { return 301 https://galaxyproject.org/news/2020-09-12-tool-update/; }
+	location = /posts/2020/09/23/eosc-life-open-calls/ { return 301 https://galaxyproject.org/news/2020-09-eosc-calls/; }
+	location = /posts/2020/09/26/tool-update/ { return 301 https://galaxyproject.org/news/2020-09-26-tool-update/; }
+	location = /posts/2020/10/03/tool-update/ { return 301 https://galaxyproject.org/news/2020-10-03-tool-update/; }
+	location = /posts/2020/10/07/galactic-news/ { return 301 https://galaxyproject.org/news/2020-10-galaxy-update/; }
+	location = /posts/2020/10/08/news-DRS/ { return 301 https://galaxyproject.org/news/2020-10-08-news-drs/; }
+	location = /posts/2020/10/10/tool-update/ { return 301 https://galaxyproject.org/news/2020-10-10-tool-update/; }
+	location = /posts/2020/10/17/tool-update/ { return 301 https://galaxyproject.org/news/2020-10-17-tool-update/; }
+	location = /posts/2020/10/22/bioconda-update/ { return 301 https://galaxyproject.org/news/2020-10-biocon/; }
+	location = /posts/2020/10/22/eosc-newsletter/ { return 301 https://galaxyproject.org/news/2020-10-eosc-news/; }
+	location = /posts/2020/10/23/paper-nanogalaxy/ { return 301 https://galaxyproject.org/news/2020-10-nano/; }
+	location = /posts/2020/10/23/paper-scrnagalaxy/ { return 301 https://galaxyproject.org/news/2020-10-23-paper-scrnagalaxy/; }
+	location = /posts/2020/10/24/tool-update/ { return 301 https://galaxyproject.org/news/2020-10-24-tool-update/; }
+	location = /posts/2020/10/29/first-papercuts/ { return 301 https://galaxyproject.org/news/2020-10-papercuts-1/; }
+	location = /posts/2020/10/31/tool-update/ { return 301 https://galaxyproject.org/news/2020-10-31-tool-update/; }
+	location = /posts/2020/11/03/galactic-news/ { return 301 https://galaxyproject.org/news/2020-11-galaxy-update/; }
+	location = /posts/2020/11/07/tool-update/ { return 301 https://galaxyproject.org/news/2020-11-07-tool-update/; }
+	location = /posts/2020/11/14/tool-update/ { return 301 https://galaxyproject.org/news/2020-11-14-tool-update/; }
+	location = /posts/2020/11/16/biohackathon/ { return 301 https://galaxyproject.org/news/2020-11-eu-biohack/; }
+	location = /posts/2020/11/17/new-compute-nodes/ { return 301 https://galaxyproject.org/news/2020-11-eu-hardware/; }
+	location = /posts/2020/11/18/DataPLANT/ { return 301 https://galaxyproject.org/news/2020-11-18-dataplant/; }
+	location = /posts/2020/11/19/OS-sw-strategy-EC/ { return 301 https://galaxyproject.org/news/2020-11-19-os-sw-strategy-ec/; }
+	location = /posts/2020/11/20/elixir-post/ { return 301 https://galaxyproject.org/news/2020-11-20-elixir-post/; }
+	location = /posts/2020/11/21/paper-diabetes/ { return 301 https://galaxyproject.org/news/2020-11-21-paper-diabetes/; }
+	location = /posts/2020/11/21/tool-update/ { return 301 https://galaxyproject.org/news/2020-11-21-tool-update/; }
+	location = /posts/2020/11/22/paper-cancer/ { return 301 https://galaxyproject.org/news/2020-11-22-paper-cancer/; }
+	location = /posts/2020/11/23/OMERO-post/ { return 301 https://galaxyproject.org/news/2020-11-omero/; }
+	location = /posts/2020/11/24/5years-report/ { return 301 https://galaxyproject.org/news/2020-11-24-5years-report/; }
+	location = /posts/2020/11/27/eosc-nordic-article/ { return 301 https://galaxyproject.org/news/2020-11-27-eosc-nordic-article/; }
+	location = /posts/2020/11/27/tiaas_feedback_Ambre/ { return 301 https://galaxyproject.org/news/2020-11-27-tiaas-feedback-ambre/; }
+	location = /posts/2020/11/28/tool-update/ { return 301 https://galaxyproject.org/news/2020-11-28-tool-update/; }
+	location = /posts/2020/12/03/galaxy-20-09/ { return 301 https://galaxyproject.org/news/2020-12-03-galaxy-20-09/; }
+	location = /posts/2020/12/08/galactic-news/ { return 301 https://galaxyproject.org/news/2020-12-galaxy-update/; }
+	location = /posts/2020/12/08/tiaas_feedback_Melanie-Matthias/ { return 301 https://galaxyproject.org/news/2020-12-08-tiaas-feedback-melanie-matthias/; }
+	location = /posts/2020/12/15/paper-cardio/ { return 301 https://galaxyproject.org/news/2020-12-15-paper-cardio/; }
+	location = /posts/2020/12/16/paper-clip-explorer/ { return 301 https://galaxyproject.org/news/2020-12-16-paper-clip-explorer/; }
+	location = /posts/2020/12/22/ols/ { return 301 https://galaxyproject.org/news/2020-12-22-ols/; }
+	location = /posts/2020/12/24/tool-update/ { return 301 https://galaxyproject.org/news/2020-12-24-tool-update/; }
+	location = /posts/2020/12/26/tool-update/ { return 301 https://galaxyproject.org/news/2020-12-26-tool-update/; }
+	location = /posts/2021/01/02/tool-update/ { return 301 https://galaxyproject.org/news/2021-01-02-tool-update/; }
+	location = /posts/2021/01/04/plant-trainings/ { return 301 https://galaxyproject.org/news/2021-01-04-plant-trainings/; }
+	location = /posts/2021/01/11/paper-tool-recommendation/ { return 301 https://galaxyproject.org/news/2021-01-tool-recommender/; }
+	location = /posts/2021/01/12/gcc-training-nomination/ { return 301 https://galaxyproject.org/news/2021-01-12-gcc-training-nomination/; }
+	location = /posts/2021/01/15/galaxy-wg/ { return 301 https://galaxyproject.org/news/2021-01-15-galaxy-wg/; }
+	location = /posts/2021/01/18/sg-ps-update/ { return 301 https://galaxyproject.org/news/2021-01-18-sg-ps-update/; }
+	location = /posts/2021/01/18/usegalaxy-fr-hiring/ { return 301 https://galaxyproject.org/news/2021-01-18-usegalaxy-fr-hiring/; }
+	location = /posts/2021/01/26/tool-update/ { return 301 https://galaxyproject.org/news/2021-01-26-tool-update/; }
+	location = /posts/2021/01/28/tiaas_Lachlan/ { return 301 https://galaxyproject.org/news/2021-01-28-tiaas-lachlan/; }
+	location = /posts/2021/01/30/ismb2020-videos/ { return 301 https://galaxyproject.org/news/2021-01-30-ismb2020-videos/; }
+	location = /posts/2021/01/30/tool-update/ { return 301 https://galaxyproject.org/news/2021-01-30-tool-update/; }
+	location = /posts/2021/02/01/denbi-brochure/ { return 301 https://galaxyproject.org/news/2021-02-denbi-covid/; }
+	location = /posts/2021/02/04/admin-training-Gallantries/ { return 301 https://galaxyproject.org/news/2021-02-04-admin-training-gallantries/; }
+	location = /posts/2021/02/05/covid-data-portal/ { return 301 https://galaxyproject.org/news/2021-02-05-covid-data-portal/; }
+	location = /posts/2021/02/05/new-hw/ { return 301 https://galaxyproject.org/news/2021-02-05-new-hw/; }
+	location = /posts/2021/02/06/tool-update/ { return 301 https://galaxyproject.org/news/2021-02-06-tool-update/; }
+	location = /posts/2021/02/08/galactic-news/ { return 301 https://galaxyproject.org/news/2021-02-galaxy-update/; }
+	location = /posts/2021/02/13/tool-update/ { return 301 https://galaxyproject.org/news/2021-02-13-tool-update/; }
+	location = /posts/2021/02/17/czech-community/ { return 301 https://galaxyproject.org/news/2021-02-czech-questionnaire/; }
+	location = /posts/2021/02/18/paper-covid/ { return 301 https://galaxyproject.org/news/2021-02-18-paper-covid/; }
+	location = /posts/2021/02/20/elixir-aai-login/ { return 301 https://galaxyproject.org/news/2021-02-20-elixir-aai-login/; }
+	location = /posts/2021/02/20/tool-update/ { return 301 https://galaxyproject.org/news/2021-02-20-tool-update/; }
+	location = /posts/2021/02/22/tiaas-Mali-Salmon/ { return 301 https://galaxyproject.org/news/2021-02-22-tiaas-mali-salmon/; }
+	location = /posts/2021/02/25/2nd-elixir-webinar-series-covid/ { return 301 https://galaxyproject.org/news/2021-02-25-2nd-elixir-webinar-series-covid/; }
+	location = /posts/2021/02/27/tool-update/ { return 301 https://galaxyproject.org/news/2021-02-27-tool-update/; }
+	location = /posts/2021/02/28/gtn-video/ { return 301 https://galaxyproject.org/news/2021-02-28-gtn-video/; }
+	location = /posts/2021/03/06/eu-server-in-catris/ { return 301 https://galaxyproject.org/news/2021-03-06-eu-server-in-catris/; }
+	location = /posts/2021/03/07/paper-chira/ { return 301 https://galaxyproject.org/news/2021-03-07-paper-chira/; }
+	location = /posts/2021/03/09/HealthyCloud/ { return 301 https://galaxyproject.org/news/2021-03-09-healthy-cloud/; }
+	location = /posts/2021/03/10/eosc-life-d6/ { return 301 https://galaxyproject.org/news/2021-03-eosc-life/; }
+	location = /posts/2021/03/13/radseq-analysis/ { return 301 https://galaxyproject.org/news/2021-03-rad-seq/; }
+	location = /posts/2021/03/16/galaxy-21-01/ { return 301 https://galaxyproject.org/news/2021-03-16-galaxy-21-01/; }
+	location = /posts/2021/03/16/smorg-report/ { return 301 https://galaxyproject.org/news/2021-03-16-smorg-report/; }
+	location = /posts/2021/03/16/tool-update/ { return 301 https://galaxyproject.org/news/2021-03-16-tool-update/; }
+	location = /posts/2021/03/19/career-center/ { return 301 https://galaxyproject.org/news/2021-03-19-career-center/; }
+	location = /posts/2021/03/20/tool-update/ { return 301 https://galaxyproject.org/news/2021-03-20-tool-update/; }
+	location = /posts/2021/03/22/tiaas-martin-cech/ { return 301 https://galaxyproject.org/news/2021-03-22-tiaas-martin-cech/; }
+	location = /posts/2021/03/25/elixir-webinar-series-advanced-features/ { return 301 https://galaxyproject.org/news/2021-03-25-elixir-webinar-series-advanced-features/; }
+	location = /posts/2021/03/25/tiaas-Ricardo-Gonzalo-Sanz/ { return 301 https://galaxyproject.org/news/2021-03-25-tiaas-ricardo-gonzalo-sanz/; }
+	location = /posts/2021/03/25/wfh-video/ { return 301 https://galaxyproject.org/news/2021-03-25-wfh-video/; }
+	location = /posts/2021/03/27/tool-update/ { return 301 https://galaxyproject.org/news/2021-03-27-tool-update/; }
+	location = /posts/2021/03/28/tiaas-Fotis-Psomopoulos/ { return 301 https://galaxyproject.org/news/2021-03-28-tiaas-fotis-psomopoulos/; }
+	location = /posts/2021/04/03/tiaas-Simon-Gladman/ { return 301 https://galaxyproject.org/news/2021-04-03-tiaas-simon-gladman/; }
+	location = /posts/2021/04/03/tool-update/ { return 301 https://galaxyproject.org/news/2021-04-03-tool-update/; }
+	location = /posts/2021/04/08/scpost/ { return 301 https://galaxyproject.org/news/2021-04-08-scpost/; }
+	location = /posts/2021/04/10/tool-update/ { return 301 https://galaxyproject.org/news/2021-04-10-tool-update/; }
+	location = /posts/2021/04/12/galactic-news/ { return 301 https://galaxyproject.org/news/2021-04-galaxy-update/; }
+	location = /posts/2021/04/14/tool-update/ { return 301 https://galaxyproject.org/news/2021-04-14-tool-update/; }
+	location = /posts/2021/04/17/tool-update/ { return 301 https://galaxyproject.org/news/2021-04-17-tool-update/; }
+	location = /posts/2021/04/19/elixir-is/ { return 301 https://galaxyproject.org/news/2021-04-elixir-impl/; }
+	location = /posts/2021/04/25/30000user/ { return 301 https://galaxyproject.org/news/2021-04-25-30000user/; }
+	location = /posts/2021/04/26/tool-update/ { return 301 https://galaxyproject.org/news/2021-04-26-tool-update/; }
+	location = /posts/2021/04/29/sars-cov-2-monitoring/ { return 301 https://galaxyproject.org/news/2021-04-29-sars-cov-2-monitoring/; }
+	location = /posts/2021/05/03/plant-summary/ { return 301 https://galaxyproject.org/news/2021-04-30-plant-summary/; }
+	location = /posts/2021/05/04/galactic-news/ { return 301 https://galaxyproject.org/news/2021-05-galaxy-update/; }
+	location = /posts/2021/05/04/gcc-extended/ { return 301 https://galaxyproject.org/news/2021-05-gcc-extended/; }
+	location = /posts/2021/05/11/B-1-617-2-detected/ { return 301 https://galaxyproject.org/news/2021-05-b-1-617-2/; }
+	location = /posts/2021/05/11/tool-update/ { return 301 https://galaxyproject.org/news/2021-05-11-tool-update/; }
+	location = /posts/2021/05/13/paper-cardio/ { return 301 https://galaxyproject.org/news/2021-05-13-paper-cardio/; }
+	location = /posts/2021/05/13/tool-update/ { return 301 https://galaxyproject.org/news/2021-05-13-tool-update/; }
+	location = /posts/2021/05/14/papers-teaching/ { return 301 https://galaxyproject.org/news/2021-05-training-papers/; }
+	location = /posts/2021/05/19/apollo-update/ { return 301 https://galaxyproject.org/news/2021-05-19-apollo-update/; }
+	location = /posts/2021/05/20/spanish_project_begins/ { return 301 https://galaxyproject.org/news/2021-05-20-spanish-project-begins/; }
+	location = /posts/2021/05/25/abbreviations-tag/ { return 301 https://galaxyproject.org/news/2021-05-25-abbreviations-tag/; }
+	location = /posts/2021/05/25/new-dev-tutorial/ { return 301 https://galaxyproject.org/news/2021-05-25-new-dev-tutorial/; }
+	location = /posts/2021/05/25/paper-hi-c/ { return 301 https://galaxyproject.org/news/2021-05-25-paper-hi-c/; }
+	location = /posts/2021/05/28/webinar-series-gr4/ { return 301 https://galaxyproject.org/news/2021-05-28-webinar-series-gr4/; }
+	location = /posts/2021/05/29/paper-tryptophan-metabolism/ { return 301 https://galaxyproject.org/news/2021-05-29-paper-tryptophan-metabolism/; }
+	location = /posts/2021/05/29/tool-update/ { return 301 https://galaxyproject.org/news/2021-05-29-tool-update/; }
+	location = /posts/2021/06/01/archive-menu/ { return 301 https://galaxyproject.org/news/2021-06-01-archive-menu/; }
+	location = /posts/2021/06/04/apollo/ { return 301 https://galaxyproject.org/news/2021-06-04-apollo/; }
+	location = /posts/2021/06/05/tool-update/ { return 301 https://galaxyproject.org/news/2021-06-05-tool-update/; }
+	location = /posts/2021/06/07/GalaxyML/ { return 301 https://galaxyproject.org/news/2021-06-ml-paper/; }
+	location = /posts/2021/06/09/terra-and-galaxy/ { return 301 https://galaxyproject.org/news/2021-06-09-terra-and-galaxy/; }
+	location = /posts/2021/06/10/tiaas-Abdus-Salam/ { return 301 https://galaxyproject.org/news/2021-06-10-tiaas-abdus-salam/; }
+	location = /posts/2021/06/11/galaxy-21-05/ { return 301 https://galaxyproject.org/news/2021-06-11-galaxy-21-05/; }
+	location = /posts/2021/06/12/tool-update/ { return 301 https://galaxyproject.org/news/2021-06-12-tool-update/; }
+	location = /posts/2021/06/18/use-case-harry-bulstrode/ { return 301 https://galaxyproject.org/news/2021-06-18-use-case-harry-bulstrode/; }
+	location = /posts/2021/06/19/tool-update/ { return 301 https://galaxyproject.org/news/2021-06-19-tool-update/; }
+	location = /posts/2021/06/21/tool-update/ { return 301 https://galaxyproject.org/news/2021-06-21-tool-update/; }
+	location = /posts/2021/06/25/gitpod/ { return 301 https://galaxyproject.org/news/2021-06-25-gitpod/; }
+	location = /posts/2021/06/25/use-case-tomas-klingstrom/ { return 301 https://galaxyproject.org/news/2021-06-25-use-case-tomas-klingstrom/; }
+	location = /posts/2021/06/26/tool-update/ { return 301 https://galaxyproject.org/news/2021-06-26-tool-update/; }
+	location = /posts/2021/06/26/tutorial-volcanoplot-r/ { return 301 https://galaxyproject.org/news/2021-06-26-tutorial-volcanoplot-r/; }
+	location = /posts/2021/06/30/tutorial-sars-cov-2-variant-discovery/ { return 301 https://galaxyproject.org/news/2021-06-30-tutorial-sars-cov-2-variant-discovery/; }
+	location = /posts/2021/07/02/bvcn/ { return 301 https://galaxyproject.org/news/2021-07-02-bvcn/; }
+	location = /posts/2021/07/02/use-case-yi-yang/ { return 301 https://galaxyproject.org/news/2021-07-02-use-case-yi-yang/; }
+	location = /posts/2021/07/03/tool-update/ { return 301 https://galaxyproject.org/news/2021-07-03-tool-update/; }
+	location = /posts/2021/07/05/use-case-amir/ { return 301 https://galaxyproject.org/news/2021-07-05-use-case-amir/; }
+	location = /posts/2021/07/09/use-case-shaobin-zhong/ { return 301 https://galaxyproject.org/news/2021-07-09-use-case-shaobin-zhong/; }
+	location = /posts/2021/07/10/tool-update/ { return 301 https://galaxyproject.org/news/2021-07-10-tool-update/; }
+	location = /posts/2021/07/13/gcc2021/ { return 301 https://galaxyproject.org/news/2021-07-gcc-summary/; }
+	location = /posts/2021/07/16/use-case-mzwanele-ngubo/ { return 301 https://galaxyproject.org/news/2021-07-16-use-case-mzwanele-ngubo/; }
+	location = /posts/2021/07/17/tool-update/ { return 301 https://galaxyproject.org/news/2021-07-17-tool-update/; }
+	location = /posts/2021/07/23/use-case-tsai-sang/ { return 301 https://galaxyproject.org/news/2021-07-23-use-case-tsai-sang/; }
+	location = /posts/2021/07/25/tool-update/ { return 301 https://galaxyproject.org/news/2021-07-25-tool-update/; }
+	location = /posts/2021/07/27/a11y/ { return 301 https://galaxyproject.org/news/2021-07-27-a11y/; }
+	location = /posts/2021/07/27/tool-update/ { return 301 https://galaxyproject.org/news/2021-07-27-tool-update/; }
+	location = /posts/2021/07/28/feedback/ { return 301 https://galaxyproject.org/news/2021-07-28-feedback/; }
+	location = /posts/2021/07/30/use-case-akanksha-bafna/ { return 301 https://galaxyproject.org/news/2021-07-30-use-case-akanksha-bafna/; }
+	location = /posts/2021/08/07/tool-update/ { return 301 https://galaxyproject.org/news/2021-08-07-tool-update/; }
+	location = /posts/2021/08/13/use-case-joelle-lafond/ { return 301 https://galaxyproject.org/news/2021-08-13-use-case-joelle-lafond/; }
+	location = /posts/2021/08/14/tool-update/ { return 301 https://galaxyproject.org/news/2021-08-14-tool-update/; }
+	location = /posts/2021/08/20/use-case-carol-verheecke-vaessen/ { return 301 https://galaxyproject.org/news/2021-08-20-use-case-carol-verheecke-vaessen/; }
+	location = /posts/2021/08/21/tool-update/ { return 301 https://galaxyproject.org/news/2021-08-21-tool-update/; }
+	location = /posts/2021/08/24/new-elixir-galaxy-community-website/ { return 301 https://galaxyproject.org/news/2021-08-elixir-update/; }
+	location = /posts/2021/08/24/tiaas-flyer/ { return 301 https://galaxyproject.org/news/2021-08-tiass-eosc-life/; }
+	location = /posts/2021/08/26/covid-workshop-summary/ { return 301 https://galaxyproject.org/news/2021-08-covid-outcomes/; }
+	location = /posts/2021/08/27/use-case-carolyn-nielsen/ { return 301 https://galaxyproject.org/news/2021-08-27-use-case-carolyn-nielsen/; }
+	location = /posts/2021/08/28/tool-update/ { return 301 https://galaxyproject.org/news/2021-08-28-tool-update/; }
+	location = /posts/2021/09/01/donation-galaxy-community/ { return 301 https://galaxyproject.org/news/2021-09-01-donation-galaxy-community/; }
+	location = /posts/2021/09/03/use-case-liam-whitmore/ { return 301 https://galaxyproject.org/news/2021-09-03-use-case-liam-whitmore/; }
+	location = /posts/2021/09/04/tool-update/ { return 301 https://galaxyproject.org/news/2021-09-04-tool-update/; }
+	location = /posts/2021/09/10/reports-ifb-elixir/ { return 301 https://galaxyproject.org/news/2021-09-eu-annual-reports/; }
+	location = /posts/2021/09/11/tool-update/ { return 301 https://galaxyproject.org/news/2021-09-11-tool-update/; }
+	location = /posts/2021/09/14/new-hub/ { return 301 https://galaxyproject.org/news/2021-09-hub2/; }
+	location = /posts/2021/09/17/we-are-striking-really/ { return 301 https://galaxyproject.org/news/2021-09-17-we-are-striking-really/; }
+	location = /posts/2021/09/20/tool-update/ { return 301 https://galaxyproject.org/news/2021-09-20-tool-update/; }
+	location = /posts/2021/09/23/paper-covid/ { return 301 https://galaxyproject.org/news/2021-09-23-paper-covid/; }
+	location = /posts/2021/09/26/tool-update/ { return 301 https://galaxyproject.org/news/2021-09-26-tool-update/; }
+	location = /posts/2021/09/29/training-survey/ { return 301 https://galaxyproject.org/news/2021-09-29-training-survey/; }
+	location = /posts/2021/10/02/tool-update/ { return 301 https://galaxyproject.org/news/2021-10-02-tool-update/; }
+	location = /posts/2021/10/05/ftp-server-update/ { return 301 https://galaxyproject.org/news/2021-10-05-ftp-server-update/; }
+	location = /posts/2021/10/06/elixir-de-brochure/ { return 301 https://galaxyproject.org/news/2021-10-06-elixir-de-brochure/; }
+	location = /posts/2021/10/08/metadata-representation-for-multiomics-integration/ { return 301 https://galaxyproject.org/news/2021-10-08-metadata-representation-for-multiomics-integration/; }
+	location = /posts/2021/10/11/use-case-ileana-duran/ { return 301 https://galaxyproject.org/news/2021-10-11-use-case-ileana-duran/; }
+	location = /posts/2021/10/12/data-science/ { return 301 https://galaxyproject.org/news/2021-10-12-data-science/; }
+	location = /posts/2021/10/12/use-case-sarah-bowden/ { return 301 https://galaxyproject.org/news/2021-10-12-use-case-sarah-bowden/; }
+	location = /posts/2021/10/13/bycovid-kickoff/ { return 301 https://galaxyproject.org/news/2021-10-13-bycovid-kickoff/; }
+	location = /posts/2021/10/16/tool-update/ { return 301 https://galaxyproject.org/news/2021-10-16-tool-update/; }
+	location = /posts/2021/10/18/tiaas-Theodora-Tsirka/ { return 301 https://galaxyproject.org/news/2021-10-18-tiaas-theodora-tsirka/; }
+	location = /posts/2021/10/23/tool-update/ { return 301 https://galaxyproject.org/news/2021-10-23-tool-update/; }
+	location = /posts/2021/10/30/tool-update/ { return 301 https://galaxyproject.org/news/2021-10-30-tool-update/; }
+	location = /posts/2021/11/06/tool-update/ { return 301 https://galaxyproject.org/news/2021-11-06-tool-update/; }
+	location = /posts/2021/11/10/api/ { return 301 https://galaxyproject.org/news/2021-11-10-api/; }
+	location = /posts/2021/11/13/tiaas-anne/ { return 301 https://galaxyproject.org/news/2021-11-13-tiaas-anne/; }
+	location = /posts/2021/11/13/tool-update/ { return 301 https://galaxyproject.org/news/2021-11-13-tool-update/; }
+	location = /posts/2021/11/15/elixir-biohackathon/ { return 301 https://galaxyproject.org/news/2021-11-15-elixir-biohackathon/; }
+	location = /posts/2021/11/17/4th-denbi-cloud-meeting/ { return 301 https://galaxyproject.org/news/2021-11-17-4th-denbi-cloud-meeting/; }
+	location = /posts/2021/11/21/tool-update/ { return 301 https://galaxyproject.org/news/2021-11-21-tool-update/; }
+	location = /posts/2021/11/23/video-library/ { return 301 https://galaxyproject.org/news/2021-11-23-video-library/; }
+	location = /posts/2021/11/25/galaxy-21-09/ { return 301 https://galaxyproject.org/news/2021-11-25-galaxy-21-09/; }
+	location = /posts/2021/11/25/ghelp-stats/ { return 301 https://galaxyproject.org/news/2021-11-25-ghelp-stats/; }
+	location = /posts/2021/11/27/tool-update/ { return 301 https://galaxyproject.org/news/2021-11-27-tool-update/; }
+	location = /posts/2021/11/29/omicron-and-galaxy/ { return 301 https://galaxyproject.org/news/2021-11-29-omicron-and-galaxy/; }
+	location = /posts/2021/12/01/FAIR/ { return 301 https://galaxyproject.org/news/2021-12-01-fair/; }
+	location = /posts/2021/12/01/assembly-annotation/ { return 301 https://galaxyproject.org/news/2021-12-01-assembly-annotation/; }
+	location = /posts/2021/12/08/pathogen-detection-eosc-life-grant/ { return 301 https://galaxyproject.org/news/2021-12-08-pathogen-detection-eosc-life-grant/; }
+	location = /posts/2021/12/14/funding/ { return 301 https://galaxyproject.org/news/2021-12-14-funding/; }
+	location = /posts/2021/12/14/smorgasbord/ { return 301 https://galaxyproject.org/news/2021-12-14-smorgasbord/; }
+	location = /posts/2021/12/16/log4j/ { return 301 https://galaxyproject.org/news/2021-12-16-log4j/; }
+	location = /posts/2021/12/17/tool-update/ { return 301 https://galaxyproject.org/news/2021-12-17-tool-update/; }
+	location = /posts/2022/01/14/tool-update/ { return 301 https://galaxyproject.org/news/2022-01-14-tool-update/; }
+	location = /posts/2022/01/20/reached-4000-users/ { return 301 https://galaxyproject.org/news/2022-01-20-reached-4000-users/; }
+	location = /posts/2022/01/23/tool-update/ { return 301 https://galaxyproject.org/news/2022-01-23-tool-update/; }
+	location = /posts/2022/01/28/rmarkdown/ { return 301 https://galaxyproject.org/news/2022-01-28-rmarkdown/; }
+	location = /posts/2022/01/29/tool-update/ { return 301 https://galaxyproject.org/news/2022-01-29-tool-update/; }
+	location = /posts/2022/02/01/27001-certifiation/ { return 301 https://galaxyproject.org/news/2022-02-01-27001-certification/; }
+	location = /posts/2022/02/06/tool-update/ { return 301 https://galaxyproject.org/news/2022-02-06-tool-update/; }
+	location = /posts/2022/02/13/tool-update/ { return 301 https://galaxyproject.org/news/2022-02-13-tool-update/; }
+	location = /posts/2022/02/14/tool-update/ { return 301 https://galaxyproject.org/news/2022-02-14-tool-update/; }
+	location = /posts/2022/02/15/zauberkugel/ { return 301 https://galaxyproject.org/news/2022-02-15-zauberkugel/; }
+	location = /posts/2022/02/20/tool-update/ { return 301 https://galaxyproject.org/news/2022-02-20-tool-update/; }
+	location = /posts/2022/02/21/paper-dead-box-rna-helicase/ { return 301 https://galaxyproject.org/news/2022-02-21-paper-dead-box-rna-helicase/; }
+	location = /posts/2022/02/24/alphafold/ { return 301 https://galaxyproject.org/news/2022-02-24-alphafold/; }
+	location = /posts/2022/02/25/paper-democratizing-data-independent-acquisition-proteomics/ { return 301 https://galaxyproject.org/news/2022-02-25-paper-democratizing-data-independent-acquisition-proteomics/; }
+	location = /posts/2022/02/27/tool-update/ { return 301 https://galaxyproject.org/news/2022-02-27-tool-update/; }
+	location = /posts/2022/02/28/paper-pluripotency-factors-determine-gene-expression-repertoire/ { return 301 https://galaxyproject.org/news/2022-02-28-paper-pluripotency-factors-determine-gene-expression-repertoire/; }
+	location = /posts/2022/03/05/paper-impact-of-high-platelet-turnover/ { return 301 https://galaxyproject.org/news/2022-03-05-paper-impact-of-high-platelet-turnover/; }
+	location = /posts/2022/03/06/tool-update/ { return 301 https://galaxyproject.org/news/2022-03-06-tool-update/; }
+	location = /posts/2022/03/07/paper-distal-and-proximal-cis-regulatory-elements/ { return 301 https://galaxyproject.org/news/2022-03-07-paper-distal-and-proximal-cis-regulatory-elements/; }
+	location = /posts/2022/03/07/paper-gut-microbiota-microglia-aging/ { return 301 https://galaxyproject.org/news/2022-03-07-paper-gut-microbiota-microglia-aging/; }
+	location = /posts/2022/03/13/workflow_commnity_inititive/ { return 301 https://galaxyproject.org/news/2022-03-13-workflow-commnity-inititive/; }
+	location = /posts/2022/03/14/VGP-training/ { return 301 https://galaxyproject.org/news/2022-03-14-vgp-training/; }
+	location = /posts/2022/03/14/tool-update/ { return 301 https://galaxyproject.org/news/2022-03-14-tool-update/; }
+	location = /posts/2022/03/20/azure-galaxy/ { return 301 https://galaxyproject.org/news/2022-03-20-azure-galaxy/; }
+	location = /posts/2022/03/20/tool-update/ { return 301 https://galaxyproject.org/news/2022-03-20-tool-update/; }
+	location = /posts/2022/03/23/we-are-striking-really/ { return 301 https://galaxyproject.org/news/2022-03-23-we-are-striking-really/; }
+	location = /posts/2022/03/28/tool-update/ { return 301 https://galaxyproject.org/news/2022-03-28-tool-update/; }
+	location = /posts/2022/04/03/tool-update/ { return 301 https://galaxyproject.org/news/2022-04-03-tool-update/; }
+	location = /posts/2022/04/10/tool-update/ { return 301 https://galaxyproject.org/news/2022-04-10-tool-update/; }
+	location = /posts/2022/04/11/T2T-human-genome/ { return 301 https://galaxyproject.org/news/2022-04-11-t2t-human-genome/; }
+	location = /posts/2022/04/12/cyot/ { return 301 https://galaxyproject.org/news/2022-04-12-cyot/; }
+	location = /posts/2022/04/17/tool-update/ { return 301 https://galaxyproject.org/news/2022-04-17-tool-update/; }
+	location = /posts/2022/04/24/tool-update/ { return 301 https://galaxyproject.org/news/2022-04-24-tool-update/; }
+	location = /posts/2022/04/28/tiaas-hans-rudolf-lucille/ { return 301 https://galaxyproject.org/news/2022-04-28-tiaas-hans-rudolf-lucille/; }
+	location = /posts/2022/05/01/tool-update/ { return 301 https://galaxyproject.org/news/2022-05-01-tool-update/; }
+	location = /posts/2022/05/08/tool-update/ { return 301 https://galaxyproject.org/news/2022-05-08-tool-update/; }
+	location = /posts/2022/05/15/tool-update/ { return 301 https://galaxyproject.org/news/2022-05-15-tool-update/; }
+	location = /posts/2022/05/23/tool-update/ { return 301 https://galaxyproject.org/news/2022-05-23-tool-update/; }
+	location = /posts/2022/05/27/paper-tnbc/ { return 301 https://galaxyproject.org/news/2022-05-27-paper-tnbc/; }
+	location = /posts/2022/05/29/tool-update/ { return 301 https://galaxyproject.org/news/2022-05-29-tool-update/; }
+	location = /posts/2022/06/05/tool-update/ { return 301 https://galaxyproject.org/news/2022-06-05-tool-update/; }
+	location = /posts/2022/06/07/tiaas-stefanie-dukowic-schulze/ { return 301 https://galaxyproject.org/news/2022-06-07-tiaas-stefanie-dukowic-schulze/; }
+	location = /posts/2022/06/12/tool-update/ { return 301 https://galaxyproject.org/news/2022-06-12-tool-update/; }
+	location = /posts/2022/06/19/tool-update/ { return 301 https://galaxyproject.org/news/2022-06-19-tool-update/; }
+	location = /posts/2022/06/23/Repurposing-COVID-19-pipelines-for-the-monkeypox-virus/ { return 301 https://galaxyproject.org/news/2022-06-23-repurposing-covid-19-pipelines-for-the-monkeypox-virus/; }
+	location = /posts/2022/06/27/tool-update/ { return 301 https://galaxyproject.org/news/2022-06-27-tool-update/; }
+	location = /posts/2022/07/03/tool-update/ { return 301 https://galaxyproject.org/news/2022-07-03-tool-update/; }
+	location = /posts/2022/07/10/tool-update/ { return 301 https://galaxyproject.org/news/2022-07-10-tool-update/; }
+	location = /posts/2022/07/18/tool-update/ { return 301 https://galaxyproject.org/news/2022-07-18-tool-update/; }
+	location = /posts/2022/07/19/tool-update/ { return 301 https://galaxyproject.org/news/2022-07-19-tool-update/; }
+	location = /posts/2022/07/24/tool-update/ { return 301 https://galaxyproject.org/news/2022-07-24-tool-update/; }
+	location = /posts/2022/07/31/tool-update/ { return 301 https://galaxyproject.org/news/2022-07-31-tool-update/; }
+	location = /posts/2022/08/07/tool-update/ { return 301 https://galaxyproject.org/news/2022-08-07-tool-update/; }
+	location = /posts/2022/08/15/tool-update/ { return 301 https://galaxyproject.org/news/2022-08-15-tool-update/; }
+	location = /posts/2022/08/16/tool-update/ { return 301 https://galaxyproject.org/news/2022-08-16-tool-update/; }
+	location = /posts/2022/08/21/tool-update/ { return 301 https://galaxyproject.org/news/2022-08-21-tool-update/; }
+	location = /posts/2022/08/28/tool-update/ { return 301 https://galaxyproject.org/news/2022-08-28-tool-update/; }
+	location = /posts/2022/09/04/tool-update/ { return 301 https://galaxyproject.org/news/2022-09-04-tool-update/; }
+	location = /posts/2022/09/11/tool-update/ { return 301 https://galaxyproject.org/news/2022-09-11-tool-update/; }
+	location = /posts/2022/09/18/tool-update/ { return 301 https://galaxyproject.org/news/2022-09-18-tool-update/; }
+	location = /posts/2022/09/25/tool-update/ { return 301 https://galaxyproject.org/news/2022-09-25-tool-update/; }
+	location = /posts/2022/10/02/tool-update/ { return 301 https://galaxyproject.org/news/2022-10-02-tool-update/; }
+	location = /posts/2022/10/03/tool-update/ { return 301 https://galaxyproject.org/news/2022-10-03-tool-update/; }
+	location = /posts/2022/10/09/tool-update/ { return 301 https://galaxyproject.org/news/2022-10-09-tool-update/; }
+	location = /posts/2022/10/16/tool-update/ { return 301 https://galaxyproject.org/news/2022-10-16-tool-update/; }
+	location = /posts/2022/10/23/tool-update/ { return 301 https://galaxyproject.org/news/2022-10-23-tool-update/; }
+
+	# --- 258 events (exact legacy URL -> verified hub target) ---
+	location = /event/2016-01-19-Registry-hackathon/ { return 301 https://galaxyproject.org/events/2016-01-19-registry-hackathon/; }
+	location = /event/2016-02-18-Galaxy-HTS-WS/ { return 301 https://galaxyproject.org/events/2016-02-22-galaxy-hts-ws/; }
+	location = /event/2016-03-08-RADseq-hackathon/ { return 301 https://galaxyproject.org/events/2016-03-08-radseq-hackathon/; }
+	location = /event/2016-04-04-conda/ { return 301 https://galaxyproject.org/events/2016-04-04-conda/; }
+	location = /event/2016-04-06-Galaxy-DevOps/ { return 301 https://galaxyproject.org/events/2016-04-06-galaxy-dev-ops/; }
+	location = /event/2016-04-27-HPC/ { return 301 https://galaxyproject.org/events/2016-04-18-hpc/; }
+	location = /event/2016-05-18-MIOSS2016/ { return 301 https://galaxyproject.org/events/2016-05-18-mioss2016/; }
+	location = /event/2016-06-25-GCC2016/ { return 301 https://galaxyproject.org/events/2016-06-25-gcc2016/; }
+	location = /event/2016-07-25-RBC-kickoff/ { return 301 https://galaxyproject.org/events/2016-07-25-rbc-kickoff/; }
+	location = /event/2016-09-01-HEC/ { return 301 https://galaxyproject.org/events/2016-09-01-hec/; }
+	location = /event/2016-09-07-ECCB2016/ { return 301 https://galaxyproject.org/events/2016-09-03-eccb2016/; }
+	location = /event/2016-09-13-BFSS2016/ { return 301 https://galaxyproject.org/events/2016-09-13-bfss2016/; }
+	location = /event/2016-09-13-GCB2016/ { return 301 https://galaxyproject.org/events/2016-09-13-gcb2016/; }
+	location = /event/2016-09-19-HTS-Galaxy-workshop-FR/ { return 301 https://galaxyproject.org/events/2016-09-19-hts-galaxy-workshop-fr/; }
+	location = /event/2016-09-27-conda-hackathon/ { return 301 https://galaxyproject.org/events/2016-09-27-conda-hackathon/; }
+	location = /event/2016-10-06-Training-hackathon/ { return 301 https://galaxyproject.org/events/2016-10-06-training-hackathon/; }
+	location = /event/2016-10-06-gtn-codefest/ { return 301 https://galaxyproject.org/events/2016-10-06-gtn-codefest/; }
+	location = /event/2016-10-20-Swiss-German-Galaxy-workshop/ { return 301 https://galaxyproject.org/events/2016-10-20-swiss-german-galaxy-workshop/; }
+	location = /event/2016-10-24-NETTAB/ { return 301 https://galaxyproject.org/events/2016-10-24-nettab/; }
+	location = /event/2016-11-02-bioconda-hack/ { return 301 https://galaxyproject.org/events/2016-11-02-bioconda-hack/; }
+	location = /event/2016-11-07-denbi-symposium/ { return 301 https://galaxyproject.org/events/2016-11-07-denbi-symposium/; }
+	location = /event/2016-11-20-Hannover/ { return 301 https://galaxyproject.org/events/2016-11-20-hannover/; }
+	location = /event/2016-12-01-FAIRDOM/ { return 301 https://galaxyproject.org/events/2016-12-01-fairdom/; }
+	location = /event/2016-12-10-rna-seq-workshop/ { return 301 https://galaxyproject.org/events/2016-12-15-rna-seq-workshop/; }
+	location = /event/2016-12-16-Galaxy-admin/ { return 301 https://galaxyproject.org/events/2016-12-16-galaxy-admin/; }
+	location = /event/2017-01-09-QIIME/ { return 301 https://galaxyproject.org/events/2017-01-09-qiime/; }
+	location = /event/2017-01-16-European-developer-WS/ { return 301 https://galaxyproject.org/events/2017-01-16-european-developer-ws/; }
+	location = /event/2017-01-26-Galaxy-RNAseq-Mainz/ { return 301 https://galaxyproject.org/events/2017-01-26-galaxy-rnaseq-mainz/; }
+	location = /event/2017-02-01-software-carpentry/ { return 301 https://galaxyproject.org/events/2017-03-09-software-carpentry/; }
+	location = /event/2017-02-02-Galaxy-Australasia_Meeting/ { return 301 https://galaxyproject.org/events/2017-02-02-galaxy-australasia-meeting/; }
+	location = /event/2017-02-12-galaxy-workshop-2017-01/ { return 301 https://galaxyproject.org/events/2017-02-13-galaxy-workshop-2017-01/; }
+	location = /event/2017-02-23-Bioconda-BioContainers/ { return 301 https://galaxyproject.org/events/2017-02-23-bioconda-bio-containers/; }
+	location = /event/2017-03-15-webinar-elixir/ { return 301 https://galaxyproject.org/events/2017-03-15-webinar-elixir/; }
+	location = /event/2017-03-28-miracum-webinar/ { return 301 https://galaxyproject.org/events/2017-03-28-miracum-webinar/; }
+	location = /event/2017-04-04-ELIXIR-AAI/ { return 301 https://galaxyproject.org/events/2017-04-04-elixir-aai/; }
+	location = /event/2017-05-22-EXLIXIR-cambridge/ { return 301 https://galaxyproject.org/events/2017-05-22-exlixir-cambridge/; }
+	location = /event/2017-06-01-reprohackathon/ { return 301 https://galaxyproject.org/events/2017-06-01-reprohackathon/; }
+	location = /event/2017-06-26-GCC2017/ { return 301 https://galaxyproject.org/events/2017-06-28-gcc2017/; }
+	location = /event/2017-07-21-ISMB/ { return 301 https://galaxyproject.org/events/2017-07-21-ismb/; }
+	location = /event/2017-07-23-BOSC/ { return 301 https://galaxyproject.org/events/2017-07-22-bosc/; }
+	location = /event/2017-07-25-BFSS2017/ { return 301 https://galaxyproject.org/events/2017-07-25-bfss2017/; }
+	location = /event/2017-08-01-bioinformatics-workshop-reg/ { return 301 https://galaxyproject.org/events/2017-09-18-bioinformatics-workshop-reg/; }
+	location = /event/2017-09-04-primer-rna-seq-workshop-de-stairs/ { return 301 https://galaxyproject.org/events/2017-10-04-primer-rna-seq-workshop-de-stairs/; }
+	location = /event/2017-09-18-GCB/ { return 301 https://galaxyproject.org/events/2017-03-28-gcb/; }
+	location = /event/2017-09-25-de.nbi-summerschool/ { return 301 https://galaxyproject.org/events/2017-09-25-de-nbi-summerschool/; }
+	location = /event/2017-10-09-BioContainer-hackathon/ { return 301 https://galaxyproject.org/events/2017-10-09-bio-container-hackathon/; }
+	location = /event/2017-10-16-MetaboFlow/ { return 301 https://galaxyproject.org/events/2017-10-16-metabo-flow/; }
+	location = /event/2017-10-18-SCW-HD/ { return 301 https://galaxyproject.org/events/2017-10-18-scw-hd/; }
+	location = /event/2017-10-23-denbi-symposium-HD/ { return 301 https://galaxyproject.org/events/2017-10-19-denbi-symposium-hd/; }
+	location = /event/2017-11-06-vice/ { return 301 https://galaxyproject.org/events/2017-11-06-vice/; }
+	location = /event/2017-11-16-Announcement-Galaxy-course/ { return 301 https://galaxyproject.org/events/2018-02-26-announcement-galaxy-course/; }
+	location = /event/2017-11-29-vre-nest/ { return 301 https://galaxyproject.org/events/2017-12-04-vre-nest/; }
+	location = /event/2017-11-30-HUB-EMBL/ { return 301 https://galaxyproject.org/events/2017-11-30-hub-embl/; }
+	location = /event/2018-01-08-Admin-norway/ { return 301 https://galaxyproject.org/events/2018-01-08-admin-norway/; }
+	location = /event/2018-02-13-ELIXIR-Galaxy-kickoff/ { return 301 https://galaxyproject.org/events/2018-03-14-elixir-galaxy-kickoff/; }
+	location = /event/2018-02-15-ELIXIR-Galaxy-user-conference/ { return 301 https://galaxyproject.org/events/2018-03-15-elixir-galaxy-user-conference/; }
+	location = /event/2018-04-02-Galaxy-Africa/ { return 301 https://galaxyproject.org/events/2018-04-03-galaxy-africa/; }
+	location = /event/2018-04-13-ELIXIR-all-hands/ { return 301 https://galaxyproject.org/events/2018-06-04-elixir-all-hands/; }
+	location = /event/2018-04-13-GCC-BOSC/ { return 301 https://galaxyproject.org/events/2018-06-25-gcc-bosc/; }
+	location = /event/2018-04-13-carpentry-con/ { return 301 https://galaxyproject.org/events/2018-05-30-carpentry-con/; }
+	location = /event/2018-04-13-training-workshop/ { return 301 https://galaxyproject.org/events/2018-05-21-training-workshop/; }
+	location = /event/2018-04-18-Announcement-Galaxy-course/ { return 301 https://galaxyproject.org/events/2018-09-17-announcement-galaxy-course/; }
+	location = /event/2018-05-18-de.STAIR-primer-rna-seq/ { return 301 https://galaxyproject.org/events/2018-06-27-de-stair-primer-rna-seq/; }
+	location = /event/2018-06-12-MGC-NGS-analysis-course/ { return 301 https://galaxyproject.org/events/2018-08-27-mgc-ngs-analysis-course/; }
+	location = /event/2018-06-26-GCC/ { return 301 https://galaxyproject.org/events/2018-06-26-gcc/; }
+	location = /event/2018-07-03-Elixir-Biohackathon/ { return 301 https://galaxyproject.org/events/2018-11-12-elixir-biohackathon/; }
+	location = /event/2018-07-03-ElixirNL-course/ { return 301 https://galaxyproject.org/events/2018-10-17-elixirnl-course/; }
+	location = /event/2018-07-03-Sysadmin-appreciation-day/ { return 301 https://galaxyproject.org/events/2018-07-27-sysadmin-appreciation-day/; }
+	location = /event/2018-09-04-GMDS2018/ { return 301 https://galaxyproject.org/events/2018-09-04-gmds2018/; }
+	location = /event/2018-09-13-Announcement-Galaxy-course/ { return 301 https://galaxyproject.org/events/2018-12-06-announcement-galaxy-course/; }
+	location = /event/2018-09-25-GCB2018/ { return 301 https://galaxyproject.org/events/2018-09-25-gcb2018/; }
+	location = /event/2018-10-05-Galaxy_Prague/ { return 301 https://galaxyproject.org/events/2018-10-04-galaxy-prague/; }
+	location = /event/2018-10-19-EGD/ { return 301 https://galaxyproject.org/events/2018-11-19-egd/; }
+	location = /event/2018-10-29-VIB-NGS-course/ { return 301 https://galaxyproject.org/events/2018-11-06-vib-ngs-course/; }
+	location = /event/2018-11-07-Galaxy-admin-workshop/ { return 301 https://galaxyproject.org/events/2019-01-28-galaxy-admin-workshop/; }
+	location = /event/2018-12-01-gcc2019/ { return 301 https://galaxyproject.org/events/gcc2019/; }
+	location = /event/2018-12-07-Announcement-Galaxy-course/ { return 301 https://galaxyproject.org/events/2019-01-17-announcement-galaxy-course/; }
+	location = /event/2018-12-14-galaxy-training-rostock/ { return 301 https://galaxyproject.org/events/2019-03-06-galaxy-training-rostock/; }
+	location = /event/2019-01-21-GTN/ { return 301 https://galaxyproject.org/events/2019-02-gtn/; }
+	location = /event/2019-01-28-roscoff-workshop/ { return 301 https://galaxyproject.org/events/2019-04-23-roscoff-workshop/; }
+	location = /event/2019-02-08-Galaxy-VC-workshop-March2019/ { return 301 https://galaxyproject.org/events/2019-03-13-galaxy-vc-workshop-march2019/; }
+	location = /event/2019-03-16-ebsf/ { return 301 https://galaxyproject.org/events/2019-05-07-ebsf/; }
+	location = /event/2019-04-16-gtn/ { return 301 https://galaxyproject.org/events/2019-05-gtn/; }
+	location = /event/2019-05-14-gallantries-ws/ { return 301 https://galaxyproject.org/events/2019-06-gallantries/; }
+	location = /event/2019-06-12-ELIXIR-all-hands/ { return 301 https://galaxyproject.org/events/2018-06-17-elixir-all-hands/; }
+	location = /event/2019-08-05-destair-training-freiburg/ { return 301 https://galaxyproject.org/events/2019-10-09-destair-training-freiburg/; }
+	location = /event/2019-08-05-gmds2019/ { return 301 https://galaxyproject.org/events/2019-09-08-gmds2019/; }
+	location = /event/2019-08-08-gtn-cofest/ { return 301 https://galaxyproject.org/events/2019-09-gtn/; }
+	location = /event/2019-08-08-microscopy-imaging-analysis/ { return 301 https://galaxyproject.org/events/2019-09-19-microscopy-imaging-analysis/; }
+	location = /event/2019-08-19-bioconda-cofest/ { return 301 https://galaxyproject.org/events/2019-09-bioconda/; }
+	location = /event/2019-08-21-cloud-meeting/ { return 301 https://galaxyproject.org/events/2019-09-03-cloud-meeting/; }
+	location = /event/2019-08-30-GalaxyTalk/ { return 301 https://galaxyproject.org/events/2019-09-10-galaxy-talk/; }
+	location = /event/2019-09-09-gallantries-ws/ { return 301 https://galaxyproject.org/events/2019-10-gallantries/; }
+	location = /event/2019-09-18-htcondor-ws/ { return 301 https://galaxyproject.org/events/2019-09-24-htcondor-ws/; }
+	location = /event/2019-10-01-metabolomics-ws/ { return 301 https://galaxyproject.org/events/2019-10-02-metabolomics-ws/; }
+	location = /event/2019-10-05-ELIXIR-Biohackathin/ { return 301 https://galaxyproject.org/events/2019-11-18-elixir-biohackathin/; }
+	location = /event/2019-10-18-gtn-cofest/ { return 301 https://galaxyproject.org/events/2019-11-gtn/; }
+	location = /event/2020-01-20-GalaxyWS_scrna_FR/ { return 301 https://galaxyproject.org/events/2020-03-23-galaxyws-scrna-fr/; }
+	location = /event/2020-02-04-ABRF/ { return 301 https://galaxyproject.org/events/2020-abrf/; }
+	location = /event/2020-02-06-talk-EBI/ { return 301 https://galaxyproject.org/events/2020-02-06-talk-ebi/; }
+	location = /event/2020-02-08-proteomics-rna-workshop/ { return 301 https://galaxyproject.org/events/2020-03-23-proteomics-rna-workshop/; }
+	location = /event/2020-02-24-Climate/ { return 301 https://galaxyproject.org/events/2020-03-climate/; }
+	location = /event/2020-02-25-teaching-Tuan/ { return 301 https://galaxyproject.org/events/2020-02-25-teaching-tuan/; }
+	location = /event/2020-03-02-Galaxy-Admin/ { return 301 https://galaxyproject.org/events/2020-03-02-galaxy-admin/; }
+	location = /event/2020-03-19-wirvsvirus/ { return 301 https://galaxyproject.org/events/2020-03-20-wirvsvirus/; }
+	location = /event/2020-04-28-Elixir-industry-forum/ { return 301 https://galaxyproject.org/events/2020-04-28-elixir-industry-forum/; }
+	location = /event/2020-07-17-single-cell-BCC2020/ { return 301 https://galaxyproject.org/events/2020-07-17-single-cell-bcc2020/; }
+	location = /event/2020-07-18-CVMFS-pulsar-BCC2020/ { return 301 https://galaxyproject.org/events/2020-07-18-cvmfs-pulsar-bcc2020/; }
+	location = /event/2020-07-19-HT-molecular-dynamics-BCC2020/ { return 301 https://galaxyproject.org/events/2020-07-19-ht-molecular-dynamics-bcc2020/; }
+	location = /event/2020-07-19-single-cell-BCC2020/ { return 301 https://galaxyproject.org/events/2020-07-19-single-cell-bcc2020/; }
+	location = /event/2020-07-30-galaxy-africa/ { return 301 https://galaxyproject.org/events/2020-07-30-galaxy-africa/; }
+	location = /event/2020-09-02-FAIR-wf/ { return 301 https://galaxyproject.org/events/2020-09-02-fair-wf/; }
+	location = /event/2020-09-08-tools-platform-covid/ { return 301 https://galaxyproject.org/events/2020-09-08-tools-platform-covid/; }
+	location = /event/2020-09-17-devs-roundtable/ { return 301 https://galaxyproject.org/events/2020-09-17-devs-roundtable/; }
+	location = /event/2020-09-30-biohackathon/ { return 301 https://galaxyproject.org/events/2020-11-09-biohackathon/; }
+	location = /event/2020-09-30-deNBI-cloud-user-meeting/ { return 301 https://galaxyproject.org/events/2020-10-08-denbi-cloud-user-meeting/; }
+	location = /event/2020-09-30-devs-roundtable/ { return 301 https://galaxyproject.org/events/2020-10-01-devs-roundtable/; }
+	location = /event/2020-10-08-FATES-workshop/ { return 301 https://galaxyproject.org/events/2020-10-26-fates-workshop/; }
+	location = /event/2020-10-08-paper-cuts/ { return 301 https://galaxyproject.org/events/2020-10-papercuts/; }
+	location = /event/2020-10-12-devs-climate-jupyter-lab/ { return 301 https://galaxyproject.org/events/2020-10-jupytercon/; }
+	location = /event/2020-10-13-gtn-cofest/ { return 301 https://galaxyproject.org/events/2020-11-gtn/; }
+	location = /event/2020-10-14-ask-us-anything/ { return 301 https://galaxyproject.org/events/2020-10-15-ask-us-anything/; }
+	location = /event/2020-10-14-devs-roundtable/ { return 301 https://galaxyproject.org/events/2020-10-15-dev-roundtable/; }
+	location = /event/2020-10-21-egi-keynote/ { return 301 https://galaxyproject.org/events/2020-11-03-egi-keynote/; }
+	location = /event/2020-10-21-hackathon-interactive-tools/ { return 301 https://galaxyproject.org/events/2020-12-07-hackathon-interactive-tools/; }
+	location = /event/2020-10-28-devs-roundtable/ { return 301 https://galaxyproject.org/events/2020-10-29-dev-roundtable/; }
+	location = /event/2020-10-29-paper-cuts-2/ { return 301 https://galaxyproject.org/events/2020-11-papercuts/; }
+	location = /event/2020-11-04-Galaxy-Admin/ { return 301 https://galaxyproject.org/events/2021-01-admin-training/; }
+	location = /event/2020-11-04-devs-roundtable/ { return 301 https://galaxyproject.org/events/2020-11-12-dev-roundtable/; }
+	location = /event/2020-11-04-proteomics/ { return 301 https://galaxyproject.org/events/2020-12-vib-proteomics/; }
+	location = /event/2020-11-05-devs-roundtable/ { return 301 https://galaxyproject.org/events/2020-12-10-dev-roundtable/; }
+	location = /event/2020-11-26-Global-Galaxy/ { return 301 https://galaxyproject.org/events/2021-02-smorgasbord/; }
+	location = /event/2020-12-03-Webinar/ { return 301 https://galaxyproject.org/events/2020-12-webinar-where/; }
+	location = /event/2020-12-03-devs-roundtable/ { return 301 https://galaxyproject.org/events/2021-01-21-dev-roundtable/; }
+	location = /event/2020-12-03-paper-cuts-3/ { return 301 https://galaxyproject.org/events/2020-12-papercuts/; }
+	location = /event/2020-12-07-2nd-Galaxy-ELIXIR-Covid19-session1/ { return 301 https://galaxyproject.org/events/2021-01-20-2nd-galaxy-elixir-covid19-session1/; }
+	location = /event/2020-12-15-devs-roundtable/ { return 301 https://galaxyproject.org/events/2021-01-07-dev-roundtable/; }
+	location = /event/2020-12-16-devs-roundtable/ { return 301 https://galaxyproject.org/events/2021-02-04-dev-roundtable/; }
+	location = /event/2021-01-08-SIB-Galaxy-intro/ { return 301 https://galaxyproject.org/events/2021-04-28-sib-galaxy-intro/; }
+	location = /event/2021-01-08-course-Galaxy-INRAE-2/ { return 301 https://galaxyproject.org/events/2021-03-migale-rna-seq/; }
+	location = /event/2021-01-08-course-Galaxy-INRAE/ { return 301 https://galaxyproject.org/events/2021-02-migale-ngs/; }
+	location = /event/2021-01-08-course-W4E/ { return 301 https://galaxyproject.org/events/2021-10-11-course-w4e/; }
+	location = /event/2021-01-08-course-bacterial-genomes/ { return 301 https://galaxyproject.org/events/2021-05-migale-bacterial/; }
+	location = /event/2021-01-08-course-metabarcoding/ { return 301 https://galaxyproject.org/events/2021-04-migale-metabarcoding/; }
+	location = /event/2021-01-08-course-microbial-genomes/ { return 301 https://galaxyproject.org/events/2021-05-migale-comparison/; }
+	location = /event/2021-01-08-intro-Galaxy/ { return 301 https://galaxyproject.org/events/2021-02-migale-intro/; }
+	location = /event/2021-01-08-paper-cuts-4/ { return 301 https://galaxyproject.org/events/2021-01-papercuts/; }
+	location = /event/2021-01-08-training-Bordeaux/ { return 301 https://galaxyproject.org/events/2021-05-cnrs/; }
+	location = /event/2021-02-05-GCC2021/ { return 301 https://galaxyproject.org/events/2021-06-28-gcc2021/; }
+	location = /event/2021-02-05-paper-cuts-5/ { return 301 https://galaxyproject.org/events/2021-02-25-paper-cuts-5/; }
+	location = /event/2021-03-04-devs-roundtable/ { return 301 https://galaxyproject.org/events/2021-03-04-dev-roundtable/; }
+	location = /event/2021-03-05-devs-roundtable/ { return 301 https://galaxyproject.org/events/2021-03-18-dev-roundtable/; }
+	location = /event/2021-03-05-training-Norway-1/ { return 301 https://galaxyproject.org/events/2021-03-usegalaxy-no/; }
+	location = /event/2021-03-05-training-Norway-2/ { return 301 https://galaxyproject.org/events/2021-04-07-usegalaxy-no/; }
+	location = /event/2021-03-05-training-Norway-3/ { return 301 https://galaxyproject.org/events/2021-04-13-usegalaxy-no/; }
+	location = /event/2021-03-05-training-bioinfo-carpentry/ { return 301 https://galaxyproject.org/events/2021-04-destair-jupyter/; }
+	location = /event/2021-03-15-paper-cuts-6/ { return 301 https://galaxyproject.org/events/2021-03-papercuts/; }
+	location = /event/2021-03-28-plant-transcriptomics/ { return 301 https://galaxyproject.org/events/2021-04-plant-transcriptome/; }
+	location = /event/2021-04-01-webinar-gr4-1/ { return 301 https://galaxyproject.org/events/2021-04-gr4-researchers/; }
+	location = /event/2021-04-01-webinar-gr4-2/ { return 301 https://galaxyproject.org/events/2021-04-gr4-education/; }
+	location = /event/2021-04-01-webinar-gr4-3/ { return 301 https://galaxyproject.org/events/2021-05-gr4-tool-devs/; }
+	location = /event/2021-04-01-webinar-gr4-4/ { return 301 https://galaxyproject.org/events/2021-05-gr4-admins/; }
+	location = /event/2021-04-09-bioinfo-norway/ { return 301 https://galaxyproject.org/events/2021-04-immuneml/; }
+	location = /event/2021-04-09-course-analyse-avancee-de-sequences/ { return 301 https://galaxyproject.org/events/2021-10-cnrs/; }
+	location = /event/2021-04-09-course-metabarcoding/ { return 301 https://galaxyproject.org/events/2021-09-migale-metabarcoding/; }
+	location = /event/2021-04-09-elixir-and-galaxy/ { return 301 https://galaxyproject.org/events/2021-04-elixir-cz/; }
+	location = /event/2021-04-09-galaxy-nl-meeting/ { return 301 https://galaxyproject.org/events/2021-05-galaxynl/; }
+	location = /event/2021-04-09-hbamr/ { return 301 https://galaxyproject.org/events/2021-06-bvcn/; }
+	location = /event/2021-04-09-ismb-eccb/ { return 301 https://galaxyproject.org/events/2021-ismb-eccb-bosc/; }
+	location = /event/2021-04-09-metabolomics-call/ { return 301 https://galaxyproject.org/events/2021-05-06-metabolomics-call/; }
+	location = /event/2021-04-09-metatranscriptomics-vib/ { return 301 https://galaxyproject.org/events/2021-05-vib-metatranscriptomics/; }
+	location = /event/2021-04-09-paper-cuts-7/ { return 301 https://galaxyproject.org/events/2021-04-papercuts/; }
+	location = /event/2021-04-09-single-cell-ebi/ { return 301 https://galaxyproject.org/events/2021-04-26-single-cell-ebi/; }
+	location = /event/2021-04-20-ELIXIR-all-hands/ { return 301 https://galaxyproject.org/events/2021-06-03-elixir-all-hands/; }
+	location = /event/2021-04-29-devs-roundtable/ { return 301 https://galaxyproject.org/events/2021-04-29-dev-roundtable/; }
+	location = /event/2021-05-03-agrocampus-1/ { return 301 https://galaxyproject.org/events/2021-06-25-agrocampus-1/; }
+	location = /event/2021-05-03-agrocampus-2/ { return 301 https://galaxyproject.org/events/2021-07-rennes/; }
+	location = /event/2021-05-03-devs-roundtable/ { return 301 https://galaxyproject.org/events/2021-05-13-dev-roundtable/; }
+	location = /event/2021-05-03-galaxy-training-workshop/ { return 301 https://galaxyproject.org/events/2021-06-21-galaxy-training-workshop/; }
+	location = /event/2021-05-03-paper-cuts-8/ { return 301 https://galaxyproject.org/events/2021-05-papercuts/; }
+	location = /event/2021-05-03-repeatexplorer/ { return 301 https://galaxyproject.org/events/2021-05-repeatexplorer/; }
+	location = /event/2021-05-14-talk-ome2021/ { return 301 https://galaxyproject.org/events/2021-06-ome-imaging/; }
+	location = /event/2021-05-25-devs-roundtable/ { return 301 https://galaxyproject.org/events/2021-05-27-dev-roundtable/; }
+	location = /event/2021-06-12-galaxy-e/ { return 301 https://galaxyproject.org/events/2021-07-sortee/; }
+	location = /event/2021-06-12-paper-cuts-9/ { return 301 https://galaxyproject.org/events/2021-06-papercuts/; }
+	location = /event/2021-06-15-nfdi4bi/ { return 301 https://galaxyproject.org/events/2021-07-15-nfdi4bi/; }
+	location = /event/2021-06-23-CUBiDA_colloquium_Erlangen/ { return 301 https://galaxyproject.org/events/2021-06-24-cubida-colloquium-erlangen/; }
+	location = /event/2021-07-28-CUBiDA_colloquium_Erlangen_July/ { return 301 https://galaxyproject.org/events/2021-07-29-cubida-colloquium-erlangen-july/; }
+	location = /event/2021-08-23-comparaison-genomes-microbiens/ { return 301 https://galaxyproject.org/events/2021-09-migale-comparison/; }
+	location = /event/2021-08-23-elixir-biohackathon/ { return 301 https://galaxyproject.org/events/2021-11-biohackathon-europe/; }
+	location = /event/2021-08-23-paper-cuts-10/ { return 301 https://galaxyproject.org/events/2021-09-papercuts/; }
+	location = /event/2021-08-26-hackathon-fdo/ { return 301 https://galaxyproject.org/events/2021-09-06-hackathon-fdo/; }
+	location = /event/2021-09-14-metabolomics-call/ { return 301 https://galaxyproject.org/events/2021-11-metabolomics/; }
+	location = /event/2021-09-14-microgalaxy-call/ { return 301 https://galaxyproject.org/events/2021-09-microgalaxy/; }
+	location = /event/2021-09-18-talk-eubi-virtualpub/ { return 301 https://galaxyproject.org/events/2021-10-imaging/; }
+	location = /event/2021-09-28-genome-assembly-annotation/ { return 301 https://galaxyproject.org/events/2021-12-roscoff-assembly-annotation/; }
+	location = /event/2021-09-28-paper-cuts-11/ { return 301 https://galaxyproject.org/events/2021-10-papercuts/; }
+	location = /event/2021-09-28-single-cell-ebi/ { return 301 https://galaxyproject.org/events/2022-03-ebi-scrna/; }
+	location = /event/2021-10-07-devs-roundtable/ { return 301 https://galaxyproject.org/events/2021-10-28-dev-roundtable/; }
+	location = /event/2021-10-07-training-spanish/ { return 301 https://galaxyproject.org/events/2021-11-spanscriptomics/; }
+	location = /event/2021-10-12-talk-NRZ-authent/ { return 301 https://galaxyproject.org/events/2021-11-nrz-authent/; }
+	location = /event/2021-10-14-GCC2022/ { return 301 https://galaxyproject.org/events/gcc2022/; }
+	location = /event/2021-10-14-eosc-life-training-series/ { return 301 https://galaxyproject.org/events/2021-10-eosc-gtn/; }
+	location = /event/2021-10-14-genome-annotation-workshop/ { return 301 https://galaxyproject.org/events/2021-11-cz-elixir-repeatexplorer/; }
+	location = /event/2021-10-14-microbial-workshop/ { return 301 https://galaxyproject.org/events/2022-03-microbial/; }
+	location = /event/2021-10-14-proteomics-meetings-series/ { return 301 https://galaxyproject.org/events/2021-10-proteomics/; }
+	location = /event/2021-10-14-training-sc-rna-seq/ { return 301 https://galaxyproject.org/events/2021-11-scrna/; }
+	location = /event/2021-11-02-training-climate-forces/ { return 301 https://galaxyproject.org/events/2021-11-02-training-climate-forces/; }
+	location = /event/2021-11-07-devs-roundtable/ { return 301 https://galaxyproject.org/events/2021-11-11-dev-roundtable/; }
+	location = /event/2021-11-07-paper-cuts-12/ { return 301 https://galaxyproject.org/events/2021-11-papercuts/; }
+	location = /event/2021-11-09-inbix-compchem/ { return 301 https://galaxyproject.org/events/2021-11-09-inbix-compchem/; }
+	location = /event/2021-11-29-frogs-formation/ { return 301 https://galaxyproject.org/events/2021-11-frogs/; }
+	location = /event/2021-11-29-workshop-scRNA-seq-trainers/ { return 301 https://galaxyproject.org/events/2021-11-30-workshop-scrna-seq-trainers/; }
+	location = /event/2021-12-08-microgalaxy-call/ { return 301 https://galaxyproject.org/events/2021-12-09-microgalaxy-call/; }
+	location = /event/2022-01-08-microgalaxy-call/ { return 301 https://galaxyproject.org/events/2022-03-10-microgalaxy-call/; }
+	location = /event/2022-01-12-Papercuts_January/ { return 301 https://galaxyproject.org/events/2022-01-papercuts/; }
+	location = /event/2022-01-17-galaxy-initiation/ { return 301 https://galaxyproject.org/events/2022-01-abims/; }
+	location = /event/2022-01-18-small-scale-galaxy-admins/ { return 301 https://galaxyproject.org/events/2022-01-small-scale/; }
+	location = /event/2022-03-02-Welcome-to-Galaxy-Mentor-Network/ { return 301 https://galaxyproject.org/events/2022-03-03-welcome-to-galaxy-mentor-network/; }
+	location = /event/2022-04-27-SIB-Galaxy-intro/ { return 301 https://galaxyproject.org/events/2022-04-sib-introduction/; }
+	location = /event/2022-04-28-Galaxy-Community-Call/ { return 301 https://galaxyproject.org/events/2022-04-28-community-call/; }
+	location = /event/2022-05-04-Galaxy-RNASeq-Workshop-Freiburg/ { return 301 https://galaxyproject.org/events/2022-07-04-galaxy-rnaseq-workshop-freiburg/; }
+	location = /event/2022-05-05-WiDS/ { return 301 https://galaxyproject.org/events/2022-05-18-wids/; }
+	location = /event/2022-05-07-Earth-biodiversity/ { return 301 https://galaxyproject.org/events/2022-06-07-elixir-biodiversity/; }
+	location = /event/2022-05-09-Galaxy-Community-Call-tools-WF/ { return 301 https://galaxyproject.org/events/2022-06-09-community-call/; }
+	location = /event/2022-05-09-interactive-tools-metabo-call/ { return 301 https://galaxyproject.org/events/2022-06-02-metabolomics/; }
+	location = /event/2022-05-11-Galaxy-Community-Call-AnVIL/ { return 301 https://galaxyproject.org/events/2022-05-26-community-call/; }
+	location = /event/2022-05-12-Galaxy-Admin-Meeting/ { return 301 https://galaxyproject.org/events/2022-05-small-scale/; }
+	location = /event/2022-05-12-Galaxy-Community-Call-GCCDemo/ { return 301 https://galaxyproject.org/events/2022-05-12-community-call/; }
+	location = /event/2022-05-12-Galaxy-Community-Call-Jupyter/ { return 301 https://galaxyproject.org/events/2022-07-07-community-call/; }
+	location = /event/2022-05-12-Galaxy-Community-Call-release/ { return 301 https://galaxyproject.org/events/2022-06-23-community-call/; }
+	location = /event/2022-05-12-Metabolomics/ { return 301 https://galaxyproject.org/events/2022-05-24-metabolomics/; }
+	location = /event/2022-05-12-Mini-symposium/ { return 301 https://galaxyproject.org/events/2022-05-17-mini-symposium/; }
+	location = /event/2022-05-12-Proteomics-Community/ { return 301 https://galaxyproject.org/events/2022-04-international-proteomics/; }
+	location = /event/2022-05-13-Summerschool/ { return 301 https://galaxyproject.org/events/2022-06-summer-schools-bioinformatics/; }
+	location = /event/2022-05-19-AI-Galaxy/ { return 301 https://galaxyproject.org/events/2022-06-07-ai-galaxy/; }
+	location = /event/2022-05-19-EGD/ { return 301 https://galaxyproject.org/events/2022-10-egd/; }
+	location = /event/2022-05-19-GTN-Papercuts/ { return 301 https://galaxyproject.org/events/2022-05-papercuts/; }
+	location = /event/2022-05-19-Galaxy-EOSClife/ { return 301 https://galaxyproject.org/events/2022-06-09-elixir-eosc-life/; }
+	location = /event/2022-05-19-community-training/ { return 301 https://galaxyproject.org/events/2022-06-07-community-training/; }
+	location = /event/2022-05-19-covid/ { return 301 https://galaxyproject.org/events/2022-06-08-covid/; }
+	location = /event/2022-05-19-elixir-communities/ { return 301 https://galaxyproject.org/events/2022-06-08-elixir-communities/; }
+	location = /event/2022-05-19-enabling-science/ { return 301 https://galaxyproject.org/events/2022-06-09-elixir-infrastructure/; }
+	location = /event/2022-05-19-run-your-own-wf-GA4GH/ { return 301 https://galaxyproject.org/events/2022-06-07-run-your-own-wf-ga4gh/; }
+	location = /event/2022-05-19-tool-ecosystem/ { return 301 https://galaxyproject.org/events/2022-06-09-tool-ecosystem/; }
+	location = /event/2022-05-24-Metabolomics-EBI/ { return 301 https://galaxyproject.org/events/2022-05-ebi-metabolomics/; }
+	location = /event/2022-07-05-Covid19-training/ { return 301 https://galaxyproject.org/events/2022-07-making-sense-genomic-data/; }
+	location = /event/2022-07-05-Galaxy-Community-Call-GTN/ { return 301 https://galaxyproject.org/events/2022-10-27-community-call/; }
+	location = /event/2022-07-05-Galaxy-Community-Call-Muon/ { return 301 https://galaxyproject.org/events/2022-10-13-community-call/; }
+	location = /event/2022-07-05-Galaxy-Community-Call/ { return 301 https://galaxyproject.org/events/2022-08-04-community-call/; }
+	location = /event/2022-07-05-cloud-computing-WS/ { return 301 https://galaxyproject.org/events/2022-10-03-cloud-computing-ws/; }
+	location = /event/2022-07-05-community-call/ { return 301 https://galaxyproject.org/events/2022-09-15-community-call/; }
+	location = /event/2022-07-05-iRODS/ { return 301 https://galaxyproject.org/events/2022-07-05-irods/; }
+	location = /event/2022-07-05-outreachy/ { return 301 https://galaxyproject.org/events/2022-08-18-community-call/; }
+	location = /event/2022-08-16-EuroScienceGateway-KickoffMeeting/ { return 301 https://galaxyproject.org/events/2022-10-06-euro-science-gateway-kickoff-meeting/; }
+	location = /event/2022-10-28-analysis-biological-data-Galaxy/ { return 301 https://galaxyproject.org/events/2022-11-23-bgu/; }
+	location = /event/2022-10-28-community-call/ { return 301 https://galaxyproject.org/events/2022-11-17-community-call/; }
+	location = /event/2022-10-28-single-cell-RNA-seq/ { return 301 https://galaxyproject.org/events/2023-02-ebi-single-cell/; }
+
+	# Blanket rules for content that was never migrated individually -- chiefly the
+	# ~220 autogenerated "tool-update" posts, which collapse to the news index
+	# rather than getting one rule each (galaxy-hub#1480).
+	location ~* "^/posts/\d{4}/\d{2}/\d{2}/" { return 301 https://galaxyproject.org/news/; }
+	location ~* "^/event/" { return 301 https://galaxyproject.org/eu/events/; }
+
+	# Anything not matched above is legacy content with no hub equivalent.
 	location / {
-		# Subsite-specific news and events pages.
-		rewrite ^/([^/]+)/(news|events)(\.html)?$  https://galaxyproject.org/$1/$2/  permanent;
-
-		# The rest should continue to be served by the European website, but under the github.io domain.
-		return 301 https://usegalaxy-eu.github.io$request_uri;
+		return 301 https://galaxyproject.org/eu/;
 	}
 }
