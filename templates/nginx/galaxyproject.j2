@@ -65,12 +65,22 @@ server {
 	# Overrides first (exact match always beats regex in nginx).
 	location = /index-microgalaxy.html { return 301 https://microbiology.usegalaxy.eu/; }
 	location = /index-microgalaxy/ { return 301 https://microbiology.usegalaxy.eu/; }
-	location = /index-microbiome.html { return 301 https://galaxyproject.org/eu/; }
-	location = /index-microbiome/ { return 301 https://galaxyproject.org/eu/; }
-	location = /index-ssh.html { return 301 https://galaxyproject.org/eu/; }
-	location = /index-ssh/ { return 301 https://galaxyproject.org/eu/; }
-	location = /index-test.html { return 301 https://galaxyproject.org/eu/; }
-	location = /index-test/ { return 301 https://galaxyproject.org/eu/; }
+	# The overrides below must cover the BARE form too -- that is the canonical
+	# published URL (/index-ssh 200, /index-ssh/ 404 on the legacy host). Keying
+	# only on .html and the trailing slash left the bare form to the generic rule
+	# underneath, which sent it to /bare/eu/usegalaxy/<name>/ and 404ed. Regex is
+	# used here so one block covers all three forms; these are ordered ahead of
+	# the generic index- rule, and regex rules are evaluated in file order.
+	#
+	# index-microbiome.md is a symlink to index-metagenomics.md in the legacy
+	# repo, so it is the metagenomics page; the hub agrees -- content/redirects.yaml
+	# declares /index-microbiome.html -> /bare/eu/usegalaxy/metagenomics/.
+	location ~ "^/index-microbiome(?:\.html|/)?$" { return 301 https://galaxyproject.org/bare/eu/usegalaxy/metagenomics/; }
+	# index-ssh and index-test have no hub counterpart (index-ssh does not even
+	# exist in the legacy source tree -- it is deployed-only), so the EU landing
+	# page is the least-bad target. See "known gaps" in the PR body.
+	location ~ "^/index-ssh(?:\.html|/)?$" { return 301 https://galaxyproject.org/eu/; }
+	location ~ "^/index-test(?:\.html|/)?$" { return 301 https://galaxyproject.org/eu/; }
 	# Case-sensitive: the capture is interpolated into the target.
 	location ~ "^/index-([a-z0-9][a-z0-9-]*)(?:\.html|/)?$" { return 301 https://galaxyproject.org/bare/eu/usegalaxy/$1/; }
 
