@@ -49,6 +49,18 @@ server {
 	rewrite "^/posts/(\d{4})/(\d{2})/(\d{2})/(.+?)(?:-plain|/plain\.html)/?$" /posts/$1/$2/$3/$4/ last;
 	rewrite "^/event/(.+?)(?:-plain|/plain\.html|/event\.ics(?:\.html)?)/?$" /event/$1/ last;
 
+	# Normalise the slashless (and .html) form onto the canonical trailing-slash
+	# key. Every exact block below is keyed on the trailing-slash URL, but the
+	# legacy host also answers the slashless form -- GitHub Pages 301s
+	# /posts/2018/10/08/gxadmin -> /posts/2018/10/08/gxadmin/ -- so it is a real,
+	# linked, working URL out in the wild. Without this normalisation a slashless
+	# request matches no exact block and silently falls through to the blanket
+	# index redirect, bypassing the entire rule table below.
+	# `[^/]+?` cannot match the trailing slash, so the rewritten URI does not
+	# re-enter these two rules: no rewrite loop.
+	rewrite "^/posts/(\d{4})/(\d{2})/(\d{2})/([^/]+?)(?:\.html)?$" /posts/$1/$2/$3/$4/ last;
+	rewrite "^/event/([^/]+?)(?:\.html)?$" /event/$1/ last;
+
 	# Galaxy subdomain landing pages: /index-<name>[.html] -> /bare/eu/usegalaxy/<name>/
 	# Overrides first (exact match always beats regex in nginx).
 	location = /index-microgalaxy.html { return 301 https://microbiology.usegalaxy.eu/; }
