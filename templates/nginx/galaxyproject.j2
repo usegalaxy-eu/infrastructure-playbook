@@ -113,10 +113,14 @@ server {
 	# repo, so it is the metagenomics page; the hub agrees -- content/redirects.yaml
 	# declares /index-microbiome.html -> /bare/eu/usegalaxy/metagenomics/.
 	location ~ "^/index-microbiome(?:\.html|/)?$" { return 301 https://galaxyproject.org/bare/eu/usegalaxy/metagenomics/; }
-	# index-ssh and index-test have no hub counterpart (index-ssh does not even
-	# exist in the legacy source tree -- it is deployed-only), so the EU landing
-	# page is the least-bad target. See "known gaps" in the PR body.
-	location ~ "^/index-ssh(?:\.html|/)?$" { return 301 https://galaxyproject.org/eu/; }
+	# index-ssh (Social Sciences and Humanities) has now been migrated to the hub,
+	# so it points at its own page rather than the EU landing page. Kept explicit
+	# rather than folded into the generic rule below: this one was the long-
+	# standing gap in the map and the target is worth stating outright.
+	location ~ "^/index-ssh(?:\.html|/)?$" { return 301 https://galaxyproject.org/bare/eu/usegalaxy/ssh/; }
+	# index-test is intentionally retired: it was a throwaway page for a test
+	# server and has no hub counterpart by decision, so the EU landing page is the
+	# permanent target. Do not "fix" this into /bare/eu/usegalaxy/test/.
 	location ~ "^/index-test(?:\.html|/)?$" { return 301 https://galaxyproject.org/eu/; }
 	# Case-sensitive: the capture is interpolated into the target.
 	location ~ "^/index-([a-z0-9][a-z0-9-]*)(?:\.html|/)?$" { return 301 https://galaxyproject.org/bare/eu/usegalaxy/$1/; }
