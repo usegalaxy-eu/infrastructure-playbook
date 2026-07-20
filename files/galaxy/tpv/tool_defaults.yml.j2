@@ -41,18 +41,26 @@ tools:
       reject:
         - offline
     rules:
-      - id: Set accounting group user for jobs
+        # Set accounting group user for jobs
+      - id: jobs_user_accounting_group
         if: user is not None
         execute: |
           entity.params['accounting_group_user'] = str(user.id)
 
-      - id: Send jobs to compute nodes
-        # but not to the v100 node
+        # Send all jobs to compute nodes by default
+      - id: jobs_cluster_group_compute
         if: "True"
         execute: |
-          entity.params['requirements'] = '((GalaxyGroup == "compute") && (GalaxyGroup != "pxe-gpu-div4"))'
+          entity.params['requirements'] = '(GalaxyGroup == "compute")'
 
-      - id: Send TIaaS jobs to training nodes
+        # Send interactive tools to "interactive" nodes by default
+      - id: jobs_cluster_group_interactive
+        if: not (dry_run_mode := job_wrapper is None) and (tool.tool_type == 'interactive')
+        execute: |
+          entity.params['requirements'] = '(GalaxyGroup == "interactive")'
+
+        # Send TIaaS jobs to training nodes
+      - id: jobs_cluster_group_tiaas
         if: user is not None
         execute: |
           import os
@@ -103,6 +111,7 @@ tools:
           if ongoing_trainings & user_trainings:
               entity.params['requirements'] = f'(({entity.params["requirements"]}) || (GalaxyGroup == "tiaas"))'
 
+        # Require registration to use interactive tools
       - id: interactive_tool_require_registration
         if: not (dry_run_mode := job_wrapper is None) and (tool.tool_type == 'interactive' and user is None)
         # `job_wrapper is None` occurs when TPV is launched in dry-run mode
@@ -121,11 +130,6 @@ tools:
           require:
             - docker
             - embedded-pulsar
-
-      - id: interactive_tool_v100
-        if: not (dry_run_mode := job_wrapper is None) and (tool.tool_type == 'interactive')
-        execute: |
-          entity.params['requirements'] = '(GalaxyGroup == "pxe-gpu-div4")'
 
       - id: remote_resources
         if: not (dry_run_mode := job_wrapper is None) and (user is not None and not (tool.tool_type in ["expression", "data_source"] or tool.requires_galaxy_python_environment))
