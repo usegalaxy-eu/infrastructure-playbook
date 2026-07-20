@@ -40,7 +40,7 @@ tools:
     scheduling:
       reject:
         - offline
-    rules:
+    rules:  # executed in order
         # Set accounting group user for jobs
       - id: jobs_user_accounting_group
         if: user is not None
@@ -61,6 +61,7 @@ tools:
 
         # Send TIaaS jobs to training nodes
       - id: jobs_cluster_group_tiaas
+        # Note: Interactive tools can be sent to training nodes according o this rule.
         if: user is not None
         execute: |
           import os
