@@ -40,8 +40,28 @@ tools:
     scheduling:
       reject:
         - offline
-    rules:
-      - id: Send TIaaS jobs to training nodes
+    rules:  # executed in order
+        # Set accounting group user for jobs
+      - id: jobs_user_accounting_group
+        if: user is not None
+        execute: |
+          entity.params['accounting_group_user'] = str(user.id)
+
+        # Send all jobs to compute nodes by default
+      - id: jobs_cluster_group_compute
+        if: "True"
+        execute: |
+          entity.params['requirements'] = '(GalaxyGroup == "compute")'
+
+        # Send interactive tools to "interactive" nodes by default
+      - id: jobs_cluster_group_interactive
+        if: not (dry_run_mode := job_wrapper is None) and (tool.tool_type == 'interactive')
+        execute: |
+          entity.params['requirements'] = '(GalaxyGroup == "interactive")'
+
+        # Send TIaaS jobs to training nodes
+      - id: jobs_cluster_group_tiaas
+        # Note: Interactive tools can be sent to training nodes according o this rule.
         if: user is not None
         execute: |
           import os
@@ -51,9 +71,7 @@ tools:
 
           training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
           training_labels = '"' + ", ".join(training_roles) + '"'
-          entity.params['requirements'] = '(GalaxyGroup == "compute")'
           entity.params['+Group'] = training_labels
-          entity.params['accounting_group_user'] = str(user.id)
 
           # ongoing trainings
           @functools.lru_cache(maxsize=1)
@@ -92,12 +110,9 @@ tools:
               for training_role in training_roles
           }
           if ongoing_trainings & user_trainings:
-              entity.params['requirements'] = '(GalaxyGroup == "compute") || (GalaxyGroup == "tiaas")'
+              entity.params['requirements'] = f'(({entity.params["requirements"]}) || (GalaxyGroup == "tiaas"))'
 
-      - id: anonymous_user
-        if: user is None
-        execute: |
-          entity.params['requirements'] = '(GalaxyGroup == "compute")'
+        # Require registration to use interactive tools
       - id: interactive_tool_require_registration
         if: not (dry_run_mode := job_wrapper is None) and (tool.tool_type == 'interactive' and user is None)
         # `job_wrapper is None` occurs when TPV is launched in dry-run mode
@@ -110,7 +125,6 @@ tools:
         cores: 1
         mem: 4
         params:
-          requirements: '(GalaxyGroup == "pxe-gpu-div4")'
           docker_volumes: $defaults
           container_monitor_result: callback
         scheduling:
