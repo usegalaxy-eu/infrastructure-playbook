@@ -4,3 +4,6 @@
   gather_facts: false
   roles:
     - role: usegalaxy_eu.ssh_manager
+    - role: usegalaxy_eu.rocky_security_repository
+      become: true
+      when: ansible_facts['distribution'] == "Rocky"
