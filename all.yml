@@ -1,9 +1,13 @@
 ---
 - name: Manage authorized SSH keys
   hosts: all
-  gather_facts: true
+  gather_facts: false
   roles:
     - role: usegalaxy_eu.ssh_manager
-    - role: rocky_security_repository
-      become: true
+  tasks:
+    - name: Enable the Rocky Linux security repository
+      # https://rockylinux.org/news/2026-05-14-introducing-security-repository
+      ansible.builtin.dnf_config_manager:
+        name: security
+        state: enabled
       when: ansible_facts['distribution'] == "Rocky"
