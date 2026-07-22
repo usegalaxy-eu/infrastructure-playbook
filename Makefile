@@ -34,10 +34,12 @@ known_hosts:
 	grep --quiet '^celery-1.bi.privat' ~/.ssh/known_hosts || echo "celery-1.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFeiWwfhHxx2OVzHvaOQxWnCwlngRD26DxrCKYKMWQD1" >> ~/.ssh/known_hosts
 	grep --quiet '^apps.galaxyproject.eu' ~/.ssh/known_hosts || echo "[apps.galaxyproject.eu]:8080 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPqyqSMGttoZKjzVQh9deKhdX0CxWGjn0v2hHIzM1Fbt" >> ~/.ssh/known_hosts
 	grep --quiet '^osiris.denbi.de' ~/.ssh/known_hosts || echo "osiris.denbi.de ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINZMRlC7VfGh2XBExqH74UZZg6ZUc1d/Ok2adr5ostBV" >> ~/.ssh/known_hosts
+	grep --quiet '^plausible.bi.privat' ~/.ssh/known_hosts || echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJLhLsIO61hj8Kk6VQWTq5JU+PRm5/so1k44yZQTwvVO" >> ~/.ssh/known_hosts
 	grep --quiet '^worker-0.gold.build.galaxyproject.eu' ~/.ssh/known_hosts || echo "worker-0.gold.build.galaxyproject.eu ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAjC0YY4V6gDjvIyFb1qyszQn+Jr2GtLImSJO5BVoeHq" >> ~/.ssh/known_hosts
 	grep --quiet '^worker-0.bronze.build.galaxyproject.eu' ~/.ssh/known_hosts || echo "worker-0.bronze.build.galaxyproject.eu ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKE2VMZbiOf4NHTVyNj9FyCu2P71YF/RHHO97lrsPC46" >> ~/.ssh/known_hosts
 	grep --quiet '^beacon.bi.privat' ~/.ssh/known_hosts || echo "beacon.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJLhLsIO61hj8Kk6VQWTq5JU+PRm5/so1k44yZQTwvVO" >> ~/.ssh/known_hosts
 	grep --quiet '^upload.bi.privat' ~/.ssh/known_hosts || echo "upload.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHMz9KPAC6tZwxoBE0tcqDVA29mPtE3K+so9MYGsNkNU" >> ~/.ssh/known_hosts
+	grep --quiet '^sn10.bi.privat' ~/.ssh/known_hosts || echo "sn10.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC49py5wws/7FhAfRDRS8byDMbSaqxNj3ddigSoXJM/y" >> ~/.ssh/known_hosts
 	grep --quiet '^sn10.galaxyproject.eu' ~/.ssh/known_hosts || echo "sn10.galaxyproject.eu ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC49py5wws/7FhAfRDRS8byDMbSaqxNj3ddigSoXJM/y" >> ~/.ssh/known_hosts
 	grep --quiet '^central-manager.bi.privat' ~/.ssh/known_hosts || echo "central-manager.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMoOla00b8+03VlVu9TOHJbij41jFILenJ2zWHsZE8fh" >> ~/.ssh/known_hosts
 	grep --quiet '^sn12.galaxyproject.eu' ~/.ssh/known_hosts || echo "sn12.galaxyproject.eu ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMoOla00b8+03VlVu9TOHJbij41jFILenJ2zWHsZE8fh" >> ~/.ssh/known_hosts
@@ -48,6 +50,7 @@ known_hosts:
 	grep --quiet '^maintenance.bi.privat' ~/.ssh/known_hosts || echo "maintenance.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJLhLsIO61hj8Kk6VQWTq5JU+PRm5/so1k44yZQTwvVO" >> ~/.ssh/known_hosts
 	grep --quiet '^tpv-broker.bi.privat' ~/.ssh/known_hosts || echo "tpv-broker.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJLhLsIO61hj8Kk6VQWTq5JU+PRm5/so1k44yZQTwvVO" >> ~/.ssh/known_hosts
 	grep --quiet '^github.com' ~/.ssh/known_hosts || echo "github.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCj7ndNxQowgcQnjshcLrqPEiiphnt+VTTvDP6mHBL9j1aNUkY4Ue1gvwnGLVlOhGeYrnZaMgRK6+PKCUXaDbC7qtbW8gIkhL7aGCsOr/C56SJMy/BCZfxd1nWzAOxSDPgVsmerOBYfNqltV9/hWCqBywINIR+5dIg6JTJ72pcEpEjcYgXkE2YEFXV1JHnsKgbLWNlhScqb2UmyRkQyytRLtL+38TGxkxCflmO+5Z8CSSNY7GidjMIZ7Q4zMjA2n1nGrlTDkzwDCsw+wqFPGQA179cnfGWOWRVruj16z6XyvxvjJwbz0wQZ75XK5tKSb7FNyeIEs4TT4jk+S4dhPeAUC5y+bDYirYgM4GC7uEnztnZyaVWQ7B381AK4Qdrwt51ZqExKbQpTUNn+EjqoTwvqNj4kqx5QUCI0ThS/YkOxJCXmPUWZbhjpCg56i+2aB6CmK2JGhn57K5mj0MNdBXA4/WnwH6XoPWJzK5Nyu2zB3nAZp+S5hpQs+p1vN1/wsjk=" >> ~/.ssh/known_hosts
+	grep --quiet '^apollo.bi.privat' ~/.ssh/known_hosts || echo "apollo.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJLhLsIO61hj8Kk6VQWTq5JU+PRm5/so1k44yZQTwvVO" >> ~/.ssh/known_hosts
 
 pull:
 	git fetch origin

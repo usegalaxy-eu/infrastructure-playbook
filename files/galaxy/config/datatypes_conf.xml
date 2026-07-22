@@ -17,6 +17,9 @@
     <datatype extension="afg" type="galaxy.datatypes.assembly:Amos" display_in_upload="false"/>
     <datatype extension="agp" type="galaxy.datatypes.goldenpath:GoldenPath" display_in_upload="true" description="UCSC GoldenPath assembly"/>
     <datatype extension="alto" type="galaxy.datatypes.xml:GenericXml" mimetype="application/xml" subclass="true" description="Analyzed Layout and Text Object" description_url="https://github.com/altoxml/documentation/wiki/Versions"/>
+    <datatype extension="page.xml" type="galaxy.datatypes.xml:GenericXml" mimetype="application/xml" subclass="true" description="XML format for encoding the layout and text of digitised documents, comparable to ALTO" description_url="https://github.com/PRImA-Research-Lab/PAGE-XML/wiki"/>
+    <datatype extension="abbyy.xml" type="galaxy.datatypes.xml:GenericXml" mimetype="application/xml" subclass="true" description="ABBYY FineReader XML" description_url="https://support.abbyy.com/hc/en-us/articles/360017270080-Output-XML-document"/>
+    <datatype extension="hocr" type="galaxy.datatypes.html:GenericHtml" mimetype="text/html" subclass="true" description="HTML format for representing OCR output." description_url="https://kba.github.io/hocr-spec/1.2/"/>
     <datatype extension="anvio_cog_profile" type="galaxy.datatypes.anvio:AnvioComposite" display_in_upload="false" subclass="true" />
     <datatype extension="anvio_composite" type="galaxy.datatypes.anvio:AnvioComposite" display_in_upload="false" />
     <datatype extension="anvio_classifier" type="galaxy.datatypes.data:Data" display_in_upload="false" subclass="true" />
@@ -88,20 +91,6 @@
         <converter file="bedgraph_to_bigwig_converter.xml" target_datatype="bigwig"/>
         <display file="igb/bedgraph.xml"/>
     </datatype>
-
-    <!-- Montreal Forced Aligner datatypes -->
-    <datatype extension="mfa_validate.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
-    <datatype extension="mfa_acoustic_model.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
-    <datatype extension="mfa_corpus_model.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
-    <datatype extension="mfa_g2p_model.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
-    <datatype extension="mfa_ivector_model.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
-    <datatype extension="mfa_language_model.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
-    <datatype extension="mfa_tokenizer_model.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
-    <datatype extension="mfa_textgrids.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
-    <datatype extension="mfa_oov.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
-    <datatype extension="mfa.dict" type="galaxy.datatypes.data:Text" subclass="true" display_in_upload="false"/>
-
-
     <datatype extension="bedstrict" type="galaxy.datatypes.interval:BedStrict" display_in_upload="true"/>
     <datatype extension="bed6" type="galaxy.datatypes.interval:Bed6" display_in_upload="true">
     </datatype>
@@ -118,6 +107,7 @@
     <datatype extension="parquet" type="galaxy.datatypes.binary:Parquet" display_in_upload="true">
       <converter file="parquet_to_csv_converter.xml" target_datatype="csv"/>
     </datatype>
+    <datatype extension="arrow" type="galaxy.datatypes.binary:Binary" subclass="true" display_in_upload="true" description="Apache Arrow IPC file format" description_url="https://arrow.apache.org/docs/format/Columnar.html#ipc-file-format"/>
     <datatype extension="idat" type="galaxy.datatypes.binary:Idat" display_in_upload="true"/>
     <datatype extension="bigbed" type="galaxy.datatypes.binary:BigBed" mimetype="application/octet-stream" display_in_upload="true">
       <converter file="bigbed_to_bed_converter.xml" target_datatype="bed"/>
@@ -337,6 +327,19 @@
     <datatype extension="svs" type="galaxy.datatypes.images:Tiff" subclass="true" display_in_upload="false"/>
     <datatype extension="scn" type="galaxy.datatypes.images:Tiff" subclass="true" display_in_upload="false"/>
     <datatype extension="bif" type="galaxy.datatypes.images:Tiff" subclass="true" display_in_upload="false"/>
+
+    <!-- Montreal Forced Aligner datatypes -->
+    <datatype extension="mfa_validate.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
+    <datatype extension="mfa_acoustic_model.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
+    <datatype extension="mfa_corpus_model.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
+    <datatype extension="mfa_g2p_model.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
+    <datatype extension="mfa_ivector_model.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
+    <datatype extension="mfa_language_model.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
+    <datatype extension="mfa_tokenizer_model.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
+    <datatype extension="mfa_textgrids.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
+    <datatype extension="mfa_oov.zip" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="false"/>
+    <datatype extension="mfa.dict" type="galaxy.datatypes.data:Text" subclass="true" display_in_upload="false"/>
+
     <datatype extension="ome.tiff" type="galaxy.datatypes.images:OMETiff" display_in_upload="true">
       <display file="image/avivator.xml"/>
     </datatype>
@@ -647,6 +650,11 @@
     <datatype extension="vg.dist" type="galaxy.datatypes.binary:Binary" subclass="true" description="VG distance index storing minimum distances between graph positions." description_url="https://github.com/vgteam/vg/wiki/File-Types#miscellaneous-formats" display_in_upload="true"/>
     <datatype extension="vg.snarls" type="galaxy.datatypes.binary:Binary" subclass="true" description="VG snarl decomposition index defining nested variation sites in a graph." description_url="https://github.com/vgteam/vg/wiki/File-Types#miscellaneous-formats" display_in_upload="true"/>
     <datatype extension="vg.gamp" type="galaxy.datatypes.binary:Binary" subclass="true" description="VG GAM position index enabling random access to graph alignments." description_url="https://github.com/vgteam/vg/wiki/File-Types#read-and-alignment-formats" display_in_upload="true"/>
+    <datatype extension="vg.min" type="galaxy.datatypes.binary:Binary" subclass="true" description="VG minimizer index used to find minimizer substrings in a graph." description_url="https://github.com/vgteam/vg/wiki/File-Types#miscellaneous-formats" display_in_upload="true"/>
+    <datatype extension="vg.zipcodes" type="galaxy.datatypes.binary:Binary" subclass="true" description="VG zipcodes stores supplemental distance information for substrings in a graph." description_url="https://github.com/vgteam/vg/wiki/File-Types#miscellaneous-formats" display_in_upload="true"/>
+    <datatype extension="vg.gg" type="galaxy.datatypes.binary:Binary" subclass="true" description="A supplemental information to turn a GBWT file into a graph." description_url="https://github.com/vgteam/vg/wiki/File-Types#reference-formats" display_in_upload="true"/>
+    <datatype extension="gbz" type="galaxy.datatypes.binary:Binary" subclass="true" description="A compressed format storing a graph as traversed by sample haplotypes." description_url="https://github.com/vgteam/vg/wiki/File-Types#reference-formats" display_in_upload="true"/>
+    <datatype extension="gbwt" type="galaxy.datatypes.binary:Binary" subclass="true" description="A multi-string FM-index for indexing large collections of similar paths over a graph." description_url="https://github.com/jltsiren/gbwt/blob/master/README.md" display_in_upload="true"/>
     <datatype extension="hal" type="galaxy.datatypes.binary:Binary" subclass="true" description="Hierarchical Alignment Format" display_in_upload="true" description_url="https://github.com/ComparativeGenomicsToolkit/hal"/>
     <datatype extension="hal.pg" type="galaxy.datatypes.binary:Binary" subclass="true" description="Pairwise genome alignment graph." display_in_upload="true"/>
     <datatype extension="hal.hg" type="galaxy.datatypes.binary:Binary" subclass="true" description="Hierarchical multi-genome alignment graph." display_in_upload="true"/>
@@ -791,6 +799,7 @@
     <datatype extension="fuzznuc" type="galaxy.datatypes.data:Text" subclass="true"/>
     <datatype extension="fuzzpro" type="galaxy.datatypes.data:Text" subclass="true"/>
     <datatype extension="fuzztran" type="galaxy.datatypes.data:Text" subclass="true"/>
+    <datatype extension="gaf" type="galaxy.datatypes.data:Text" subclass="true" description="Graph Alignment Format. A tab-delimited file format for sequence alignments to bidirected sequence graphs." description_url="https://github.com/vgteam/vg/blob/master/doc/static/GAF.md"/>
     <datatype extension="garnier" type="galaxy.datatypes.data:Text" subclass="true"/>
     <datatype extension="geecee" type="galaxy.datatypes.data:Text" subclass="true"/>
     <datatype extension="helixturnhelix" type="galaxy.datatypes.data:Text" subclass="true"/>
@@ -1246,6 +1255,7 @@
     <!-- rdeval types -->
     <datatype extension="rd" type="galaxy.datatypes.binary:Binary" mimetype="application/octet-stream" display_in_upload="true" subclass="true" description="Rdeval read sketch"/>
     <datatype extension="safetensors" type="galaxy.datatypes.binary:Safetensors" mimetype="application/octet-stream" display_in_upload="true" description="A simple format for storing tensors safely (as opposed to pickle) and that is still fast (zero-copy)" description_url="https://huggingface.co/docs/safetensors/index"/>
+    <datatype extension="mlmodel" type="galaxy.datatypes.binary:Binary" mimetype="application/octet-stream" display_in_upload="true" description="A Protocol Buffers-based (Protobuf) format developed by Apple for storing machine learning models" description_url="https://apple.github.io/coremltools/mlmodel/index.html"/>
     <datatype extension="deacon.idx" type="galaxy.datatypes.binary:Binary" subclass="true" mimetype="application/octet-stream" display_in_upload="true" description="Binary index format which is compatible with Deacon."/>
   </registration>
 

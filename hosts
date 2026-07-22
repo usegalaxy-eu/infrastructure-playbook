@@ -31,7 +31,7 @@ proxy.galaxyproject.eu
 #ftp.usegalaxy.eu
 
 [apollo]
-apollo.internal.galaxyproject.eu
+apollo.bi.privat
 
 #[sentry]
 #sentry.galaxyproject.eu
@@ -44,6 +44,9 @@ cvmfs-stratum0.galaxyproject.eu
 
 [plausible]
 plausible.bi.privat
+
+[ucsc_genome_browser]
+ucsc-genome-browser.bi.privat ansible_ssh_user=vagrant ansible_ssh_common_args='-o ProxyCommand="ssh -W %h:%p root@sn10.bi.privat"'
 
 [celerycluster]
 celery-1.bi.privat
@@ -108,7 +111,7 @@ tpv-broker.bi.privat
 sn09.galaxyproject.eu
 
 [sn10]
-sn10.galaxyproject.eu ansible_ssh_user=root
+sn10.bi.privat ansible_ssh_user=root
 
 [sn11]
 sn11.galaxyproject.eu ansible_ssh_user=root
