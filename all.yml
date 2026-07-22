@@ -4,10 +4,3 @@
   gather_facts: false
   roles:
     - role: usegalaxy_eu.ssh_manager
-  tasks:
-    - name: Enable the Rocky Linux security repository
-      # https://rockylinux.org/news/2026-05-14-introducing-security-repository
-      ansible.builtin.dnf_config_manager:
-        name: security
-        state: enabled
-      when: ansible_facts['distribution'] == "Rocky"
