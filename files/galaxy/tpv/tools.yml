@@ -504,24 +504,12 @@ tools:
     cores: 10
     mem: 90
 
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastn_wrapper/.*:
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/.*:
     env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastp_wrapper/.*:
-    env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastx_wrapper/.*:
-    env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_makeblastdb/.*:
-    env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_tblastn_wrapper/.*:
-    env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_tblastx_wrapper/.*:
-    env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
+      - name: BLASTDB
+        value: /data/db/databases/blast/taxdb
+      - name: SINGULARITYENV_BLASTDB
+        value: $BLASTDB
 
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_eval/cherri_eval/.*:
     cores: 1
@@ -901,3 +889,12 @@ tools:
       SINGULARITYENV_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
       LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
 
+  toolshed.g2.bx.psu.edu/tools/bgruening/kraken_ocr/kraken_ocr/.*:
+    env:
+      TORCHINDUCTOR_CACHE_DIR: "$_GALAXY_JOB_TMP_DIR"
+
+  toolshed.g2.bx.psu.edu/repos/imgteam/bfconvert/ip_convertimage/.*:
+    cores: 12
+    mem: 30
+    env:
+      SINGULARITYENV__JAVA_OPTIONS: -Xmx{int(mem)}G
