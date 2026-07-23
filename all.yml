@@ -4,3 +4,10 @@
   gather_facts: false
   roles:
     - role: usegalaxy_eu.ssh_manager
+
+- name: Manage repositories and packages
+  hosts: all
+  become: true
+  roles:
+    - role: usegalaxy-eu.autoupdates
+      when: ansible_facts['os_family'] == "RedHat"
