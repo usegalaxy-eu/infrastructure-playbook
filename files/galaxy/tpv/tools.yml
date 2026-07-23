@@ -892,3 +892,9 @@ tools:
   toolshed.g2.bx.psu.edu/tools/bgruening/kraken_ocr/kraken_ocr/.*:
     env:
       TORCHINDUCTOR_CACHE_DIR: "$_GALAXY_JOB_TMP_DIR"
+
+  toolshed.g2.bx.psu.edu/repos/imgteam/bfconvert/ip_convertimage/.*:
+    cores: 12
+    mem: 30
+    env:
+      SINGULARITYENV__JAVA_OPTIONS: -Xmx{int(mem)}G
