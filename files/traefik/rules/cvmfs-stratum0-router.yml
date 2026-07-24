@@ -1,0 +1,7 @@
+tcp:
+  routers:
+    cvmfs-stratum0-rsync:
+      rule: "HostSNI(`*`)"
+      service: cvmfs-stratum0-rsync
+      entryPoints:
+        - cvmfs-rsync
