@@ -1,8 +1,22 @@
-#!/bin/sh
+#!/bin/bash
 ##
 ## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
 ##
-set -e
+set -uo pipefail
+umask 022
+
+status=0
+run_timestamp="$(date --rfc-3339=seconds)"
+status_file="{{ galaxy_cleanup_status_file }}"
+status_file_tmp="${status_file}.tmp.$$"
+
+trap 'rm -f "$status_file_tmp"' EXIT
+
+record_failure() {
+	if [ "$status" -eq 0 ]; then
+		status="$1"
+	fi
+}
 
 {#
 ## Under normal curcumstances the (non-scratch storage) the pgcleanup script will never purge data, that has not been deleted before.
@@ -16,19 +30,33 @@ set -e
 
 {% for objectstore_id, config in galaxy_cleanup_scratchstorage.items() %}
 # Stage 1: Purge old HDAs at day 60 for our Scratch storage - short term storage
-{{ galaxy_venv_dir }}/bin/python {{ galaxy_server_dir }}/scripts/cleanup_datasets/pgcleanup.py -c {{ galaxy_config_file }} -U -b 5000 -o {{ (config.days | int) }} -l {{ galaxy_log_dir }} -w 128MB --object-store-id {{ objectstore_id }} purge_old_hdas 2>&1 | tee -a {{ galaxy_log_dir }}/cleanup-$(date --rfc-3339=seconds)-purgeOldHdas.log
+"{{ galaxy_venv_dir }}/bin/python" "{{ galaxy_server_dir }}/scripts/cleanup_datasets/pgcleanup.py" -c "{{ galaxy_config_file }}" -U -b 5000 -o "{{ config.days | int }}" -l "{{ galaxy_log_dir }}" -w 128MB --object-store-id "{{ objectstore_id }}" purge_old_hdas 2>&1 | tee -a "{{ galaxy_log_dir }}/cleanup-${run_timestamp}-purgeOldHdas.log"
+command_status=$?
+if [ "$command_status" -ne 0 ]; then
+	record_failure "$command_status"
+fi
 {% endfor %}
 
 # Stage 4: Galaxy Default Cleanup
 for action in {delete_userless_histories,delete_exported_histories,purge_deleted_users,purge_deleted_histories,purge_deleted_hdas,purge_historyless_hdas,purge_hdas_of_purged_histories,delete_datasets,purge_datasets}; do
-		{{ galaxy_venv_dir }}/bin/python \
-			"{{ galaxy_server_dir }}/scripts/cleanup_datasets/pgcleanup.py" \
-			-U \
-			-o "60" \
-			-b "5000" \
-			-l "{{ galaxy_log_dir }}" \
-			-s $action \
-			-w 128MB \
-			 >> "{{ galaxy_log_dir }}/cleanup-$(date --rfc-3339=seconds)-${action}.log" \
-			2>> "{{ galaxy_log_dir }}/cleanup-$(date --rfc-3339=seconds)-${action}.err";
-	done
+	"{{ galaxy_venv_dir }}/bin/python" \
+		"{{ galaxy_server_dir }}/scripts/cleanup_datasets/pgcleanup.py" \
+		-U \
+		-o "60" \
+		-b "5000" \
+		-l "{{ galaxy_log_dir }}" \
+		-s "$action" \
+		-w 128MB \
+		>> "{{ galaxy_log_dir }}/cleanup-${run_timestamp}-${action}.log" \
+		2>> "{{ galaxy_log_dir }}/cleanup-${run_timestamp}-${action}.err"
+	command_status=$?
+	if [ "$command_status" -ne 0 ]; then
+		record_failure "$command_status"
+	fi
+done
+
+printf 'galaxy_cleanup_storage exit_code=%di %s\n' "$status" "$(date +%s%N)" > "$status_file_tmp"
+mv "$status_file_tmp" "$status_file"
+trap - EXIT
+
+exit "$status"

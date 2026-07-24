@@ -193,6 +193,13 @@ telegraf_plugins_extra:
       - timeout = "10s"
       - data_format = "influx"
       - interval = "15s"
+  galaxy_cleanup_storage:
+    plugin: "exec"
+    config:
+      - commands = ["/usr/bin/cat {{ galaxy_cleanup_status_file }}"]
+      - timeout = "10s"
+      - data_format = "influx"
+      - interval = "15s"
   galaxy_uploaded:
     plugin: "exec"
     config:
@@ -426,6 +433,16 @@ lp_logrotate_confd:
         dateext
         notifempty
         compress
+      }
+  - path: galaxy
+    conf: |
+      /var/log/galaxy/ {
+        compress
+      	copytruncate
+      	daily
+      	notifempty
+      	missingok
+      	rotate 1
       }
 
 # WallE
