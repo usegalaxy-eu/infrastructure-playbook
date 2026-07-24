@@ -25,25 +25,27 @@
       selinux:
         policy: targeted
         state: permissive
+
+    - name: Open Apollo HTTP and Tomcat ports in the firewall
+      ansible.posix.firewalld:
+        port: "{{ item }}"
+        permanent: true
+        immediate: true
+        state: enabled
+      loop:
+        - 80/tcp
+        - 8080/tcp
   roles:
     - hostname
     - usegalaxy-eu.dynmotd
     - geerlingguy.repo-epel
     - hxr.admin-tools
     - influxdata.chrony
-    #- hxr.monitor-email
-    #- linuxhq.yum_cron # Deprecated
+
     - galaxyproject.nginx
     - hxr.autofs
-    # BEGIN custom
-    # Now add custom tomcat user with hardcoded ID. The user info is in group_vars/apollo.yml
-    # Tomcat had already ID 999
-    #- hxr.replace-galaxy-user
+
     - devops.tomcat7
-    - hxr.gx-cookie-proxy # Currently PANICs, the old version deployed is fine tho
-                          # It started fine for now
+    - hxr.gx-cookie-proxy
+
     - hxr.apollo
-    # END custom
-    #- dj-wasabi.telegraf # this role needs to be fixed
-    # - dev-sec.os-hardening
-    # - dev-sec.ssh-hardening
