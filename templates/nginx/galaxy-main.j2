@@ -266,7 +266,7 @@ server {
     {{ gapars_nginx_config }}
 
     location /apollo/ {
-        proxy_pass http://apollo.bi.privat/apollo/;
+        proxy_pass http://apollo.bi.privat:8080/apollo/;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
