@@ -254,6 +254,12 @@ server {
             proxy_pass          http://127.0.0.1:{{ gie_proxy_port }};
         }
 
+    location = /.well-known/security.txt {
+        alias /etc/nginx/security.txt;
+        default_type text/plain;
+        add_header Cache-Control "no-store";
+    }
+
     location /.well-known/ {
         proxy_pass          http://127.0.0.1:8118;
         proxy_set_header    Host                $host;
