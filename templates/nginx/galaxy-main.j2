@@ -369,6 +369,13 @@ server {
     return 302 $scheme://singlecell.usegalaxy.eu$request_uri;
 }
 
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    server_name climate.usegalaxy.eu;
+    return 302 $scheme://earth-system.usegalaxy.eu$request_uri;
+}
 
 server {
     listen 443 ssl;
