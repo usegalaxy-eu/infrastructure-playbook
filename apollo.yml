@@ -54,7 +54,7 @@
       block:
         - name: Check if Apollo is accessible
           ansible.builtin.uri:
-            url: "http://127.0.0.1:8080"
+            url: "http://127.0.0.1:8080/apollo/annotator/index"
             method: GET
             return_content: no
           register: apollo_status
