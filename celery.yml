@@ -12,6 +12,11 @@
     - mounts/mountpoints.yml
     - mounts/dest/all.yml
   pre_tasks:
+    - name: Install `firewalld` package
+      ansible.builtin.package:
+        name: firewalld
+        state: present
+
     - name: Select main node for the Celery cluster
       # The main node is the only one that runs Flower and Celery Beat. It is the first host defined in the inventory
       # for Celery Cluster group.
