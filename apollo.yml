@@ -25,6 +25,21 @@
       selinux:
         policy: targeted
         state: permissive
+
+    - name: Ensure mount point exists
+      ansible.builtin.file:
+        path: /data/dnb01
+        state: directory
+        mode: '0755'
+
+    - name: Mount dnb01 NFS share
+      ansible.posix.mount:
+        path: /data/dnb01
+        src: "ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/dnb01"
+        fstype: nfs
+        opts: "hard,rw,nosuid,nodev,nconnect=2,vers=3,_netdev"
+        state: mounted
+
   roles:
     - hostname
     - usegalaxy-eu.dynmotd
@@ -47,3 +62,9 @@
     #- dj-wasabi.telegraf # this role needs to be fixed
     # - dev-sec.os-hardening
     # - dev-sec.ssh-hardening
+  post_install:
+    - name: Ensure to restart tomcat service
+      ansible.builtin.service:
+        name: tomcat
+        state: restarted
+        enabled: true
