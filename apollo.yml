@@ -43,9 +43,16 @@
     - influxdata.chrony
 
     - galaxyproject.nginx
-    - hxr.autofs
+    - usegalaxy-eu.autofs
 
     - devops.tomcat7
     - hxr.gx-cookie-proxy
 
     - hxr.apollo
+  post_install:
+    - name: Ensure to restart tomcat service
+      # serves as workaround for Apollo not coming back up after a reboot
+      ansible.builtin.service:
+        name: tomcat
+        state: restarted
+        enabled: true
