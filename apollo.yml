@@ -43,9 +43,25 @@
     - influxdata.chrony
 
     - galaxyproject.nginx
-    - hxr.autofs
+    - usegalaxy-eu.autofs
 
     - devops.tomcat7
     - hxr.gx-cookie-proxy
 
     - hxr.apollo
+  post_tasks:
+    - name: Restart Tomcat service if Apollo is not accessible
+      block:
+        - name: Check if Apollo is accessible
+          ansible.builtin.uri:
+            url: "http://127.0.0.1:8080/apollo/annotator/index"
+            method: GET
+            return_content: no
+          register: apollo_status
+
+        - name: Restart Tomcat service
+          ansible.builtin.service:
+            name: tomcat
+            state: restarted
+            enabled: true
+          when: apollo_status.status >= 400
