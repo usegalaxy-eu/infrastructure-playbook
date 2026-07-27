@@ -49,7 +49,7 @@
     - hxr.gx-cookie-proxy
 
     - hxr.apollo
-  post_install:
+  post_tasks:
     - name: Restart Tomcat service if Apollo is not accessible
       block:
         - name: Check if Apollo is accessible
