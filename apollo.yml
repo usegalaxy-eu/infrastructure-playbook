@@ -50,9 +50,18 @@
 
     - hxr.apollo
   post_install:
-    - name: Ensure to restart tomcat service
-      # serves as workaround for Apollo not coming back up after a reboot
-      ansible.builtin.service:
-        name: tomcat
-        state: restarted
-        enabled: true
+    - name: Restart Tomcat service if Apollo is not accessible
+      block:
+        - name: Check if Apollo is accessible
+          ansible.builtin.uri:
+            url: "http://127.0.0.1:8080"
+            method: GET
+            return_content: no
+          register: apollo_status
+
+        - name: Restart Tomcat service
+          ansible.builtin.service:
+            name: tomcat
+            state: restarted
+            enabled: true
+          when: apollo_status.status >= 400
