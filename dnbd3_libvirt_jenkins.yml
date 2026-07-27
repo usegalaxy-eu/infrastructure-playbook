@@ -118,16 +118,13 @@
         content: |
           [Unit]
           Description=Mount NFS Share for Libvirt
-          Requires=network-online.target
-          After=network-online.target
-          Before=virtstoraged.service
           
           [Mount]
           What=/dev/mapper/vg_images-images
           Where=/images
           
           [Install]
-          RequiredBy=virtstoraged.service
+          RequiredBy=libvirtd.service
         dest: /etc/systemd/system/images.mount
     - name: Create mountpoint for Libvirt
       ansible.builtin.copy:
@@ -136,7 +133,6 @@
           Description=Mount NFS Share for Libvirt
           Requires=network-online.target
           After=network-online.target
-          Before=virtstoraged.service
           
           [Mount]
           What=ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/dnb01/vms
@@ -145,7 +141,7 @@
           Options=hard,rw,nosuid,nconnect=2,nodev,vers=3
           
           [Install]
-          RequiredBy=virtstoraged.service
+          WantedBy=remote-fs.target
         dest: /etc/systemd/system/data.mount
   post_tasks:
     - name: Enable the service
