@@ -58,6 +58,7 @@
             method: GET
             return_content: no
           register: apollo_status
+          ignore_errors: true
 
         - name: Restart Tomcat service
           ansible.builtin.service:
