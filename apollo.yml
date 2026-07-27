@@ -2,6 +2,8 @@
 - hosts: apollo
   become: true
   vars_files:
+    - mounts/dest/all.yml
+    - mounts/mountpoints.yml
     - "secret_group_vars/all.yml"
     - "secret_group_vars/apollo.yml"
   vars:
