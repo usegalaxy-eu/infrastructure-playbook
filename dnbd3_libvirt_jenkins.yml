@@ -124,7 +124,7 @@
           Where=/images
           
           [Install]
-          RequiredBy=libvirtd.service
+          RequiredBy=libvirtd.socket
         dest: /etc/systemd/system/images.mount
     - name: Create mountpoint for Libvirt
       ansible.builtin.copy:
