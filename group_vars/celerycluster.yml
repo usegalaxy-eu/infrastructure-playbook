@@ -48,12 +48,12 @@ galaxy_systemd_celery_internal_pool: threads
 galaxy_systemd_celery_internal_max_tasks: 250000
 galaxy_systemd_celery_internal_workers: 1
 galaxy_systemd_celery_internal_concurrency: 8
-galaxy_systemd_memory_limit_celery_internal: "{{ galaxy_systemd_celery_internal_concurrency * 6 }}"
+galaxy_systemd_memory_limit_celery_internal: 10
 galaxy_systemd_celery_external_pool: threads
 galaxy_systemd_celery_external_max_tasks: 250000
 galaxy_systemd_celery_external_workers: 1
 galaxy_systemd_celery_external_concurrency: 2
-galaxy_systemd_memory_limit_celery_external: "{{ galaxy_systemd_celery_external_concurrency * 6 }}"
+galaxy_systemd_memory_limit_celery_external: 10
 
 # Flower
 flower_bind_address: "{{ tailscale_node_ipv4 }}"
