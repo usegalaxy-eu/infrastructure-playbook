@@ -33,8 +33,11 @@ nginx_ssl_role: usegalaxy-eu.certbot
 nginx_conf_ssl_certificate: /etc/ssl/certs/fullchain.pem
 nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
 
+# Autoupdates
+au_hostname: "{{ grafana_domain }}"
+
 # Grafana
-grafana_version: "11.4.0"
+grafana_version: "13.1.1"
 
 # patch from https://github.com/grafana/grafana-ansible-collection/pull/414;
 # once merged upstream, update the collection version in requirements.yml and

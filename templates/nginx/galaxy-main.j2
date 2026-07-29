@@ -254,6 +254,12 @@ server {
             proxy_pass          http://127.0.0.1:{{ gie_proxy_port }};
         }
 
+    location = /.well-known/security.txt {
+        alias /etc/nginx/security.txt;
+        default_type text/plain;
+        add_header Cache-Control "no-store";
+    }
+
     location /.well-known/ {
         proxy_pass          http://127.0.0.1:8118;
         proxy_set_header    Host                $host;
@@ -266,7 +272,7 @@ server {
     {{ gapars_nginx_config }}
 
     location /apollo/ {
-        proxy_pass http://apollo.bi.privat/apollo/;
+        proxy_pass http://apollo.bi.privat:8080/apollo/;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
@@ -369,6 +375,13 @@ server {
     return 302 $scheme://singlecell.usegalaxy.eu$request_uri;
 }
 
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    server_name climate.usegalaxy.eu;
+    return 302 $scheme://earth-system.usegalaxy.eu$request_uri;
+}
 
 server {
     listen 443 ssl;

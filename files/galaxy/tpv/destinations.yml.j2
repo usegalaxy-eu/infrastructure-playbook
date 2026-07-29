@@ -153,13 +153,13 @@ destinations:
               else:
                   entity.params['submit_requirements'] = gpu_conditions
 
-  embedded_pulsar_docker_gpu_pxe_div4:
-    inherits: embedded_pulsar_docker_gpu_pxe
-    context:
-      galaxy_group: 'GalaxyGroup == "pxe-gpu-div4"'
-    scheduling:
-      require:
-        - pxe-gpu-div4
+  # embedded_pulsar_docker_gpu_pxe_div4:
+  #   inherits: embedded_pulsar_docker_gpu_pxe
+  #   context:
+  #     galaxy_group: 'GalaxyGroup == "pxe-gpu-div4"'
+  #   scheduling:
+  #     require:
+  #       - pxe-gpu-div4
 
 
 
@@ -596,17 +596,17 @@ destinations:
 
 
   # This means a GPU can be shared by max 4 jobs at the same time
-  condor_container_gpu_divide4:
-    inherits: condor_container_gpu
-    max_accepted_gpus: 1
-    params:
-      singularity_enabled: false  # sharing GPUs has not been tested with Singularity
-      requirements: 'GalaxyGroup == "pxe-gpu-div4"'
-    scheduling:
-      require:
-        - gpu-divided
-      reject:
-        - singularity  # sharing GPUs has not been tested with Singularity
+  # condor_container_gpu_divide4:
+  #   inherits: condor_container_gpu
+  #   max_accepted_gpus: 1
+  #   params:
+  #     singularity_enabled: false  # sharing GPUs has not been tested with Singularity
+  #     requirements: 'GalaxyGroup == "pxe-gpu-div4"'
+  #   scheduling:
+  #     require:
+  #       - gpu-divided
+  #     reject:
+  #       - singularity  # sharing GPUs has not been tested with Singularity
 
   condor_singularity_with_conda:
     inherits: basic_singularity_destination

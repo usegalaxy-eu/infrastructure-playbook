@@ -2,6 +2,8 @@
 - hosts: apollo
   become: true
   vars_files:
+    - mounts/dest/all.yml
+    - mounts/mountpoints.yml
     - "secret_group_vars/all.yml"
     - "secret_group_vars/apollo.yml"
   vars:
@@ -25,25 +27,44 @@
       selinux:
         policy: targeted
         state: permissive
+
+    - name: Open Apollo HTTP and Tomcat ports in the firewall
+      ansible.posix.firewalld:
+        port: "{{ item }}"
+        permanent: true
+        immediate: true
+        state: enabled
+      loop:
+        - 80/tcp
+        - 8080/tcp
   roles:
     - hostname
     - usegalaxy-eu.dynmotd
     - geerlingguy.repo-epel
     - hxr.admin-tools
     - influxdata.chrony
-    #- hxr.monitor-email
-    #- linuxhq.yum_cron # Deprecated
+
     - galaxyproject.nginx
-    - hxr.autofs
-    # BEGIN custom
-    # Now add custom tomcat user with hardcoded ID. The user info is in group_vars/apollo.yml
-    # Tomcat had already ID 999
-    #- hxr.replace-galaxy-user
+    - usegalaxy-eu.autofs
+
     - devops.tomcat7
-    - hxr.gx-cookie-proxy # Currently PANICs, the old version deployed is fine tho
-                          # It started fine for now
+    - hxr.gx-cookie-proxy
+
     - hxr.apollo
-    # END custom
-    #- dj-wasabi.telegraf # this role needs to be fixed
-    # - dev-sec.os-hardening
-    # - dev-sec.ssh-hardening
+  post_tasks:
+    - name: Restart Tomcat service if Apollo is not accessible
+      block:
+        - name: Check if Apollo is accessible
+          ansible.builtin.uri:
+            url: "http://127.0.0.1:8080/apollo/annotator/index"
+            method: GET
+            return_content: no
+          register: apollo_status
+          ignore_errors: true
+
+        - name: Restart Tomcat service
+          ansible.builtin.service:
+            name: tomcat
+            state: restarted
+            enabled: true
+          when: apollo_status.status >= 400
