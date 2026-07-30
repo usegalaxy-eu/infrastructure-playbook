@@ -1,5 +1,5 @@
 - name: Install all of the necessary dependencies
-  become_user: "{{ galaxy_user }}"
+  become_user: "{{ galaxy_user.name }}"
   pip:
     name: "{{ pip_install_dependencies }}"
     virtualenv: "{{ pip_venv_path }}"
