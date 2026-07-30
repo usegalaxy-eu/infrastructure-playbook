@@ -185,6 +185,11 @@ tools:
         cores: 18
         mem: 64
 
+  # safety net, it seems a few MQC versions try to cleanup directories, but fail due to NFS locks.
+  # Here we try to use a in-container /tmp dir, that should not be on any NFS
+  toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/.*:
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
 
   toolshed.g2.bx.psu.edu/repos/iuc/mummer_mummer/mummer_mummer/.*:
     mem: 8
