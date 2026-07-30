@@ -859,6 +859,8 @@ tools:
                 if model_select and isinstance(model_select, dict):
                   retval = model_select.get('model_class') == 'GNN'
           retval
+        params:
+          docker_run_extra_arguments: --user 999 --gpus all
         gpus: 1
         cores: 20
         mem: 100
