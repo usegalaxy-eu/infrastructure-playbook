@@ -1155,19 +1155,10 @@ server {
 	location = /event/2022-10-28-single-cell-RNA-seq/ { return 301 https://galaxyproject.org/events/2023-02-ebi-single-cell/; }
 	location = /event/2022-10-31-Galaxy-biohackaton-Europe/ { return 301 https://galaxyproject.org/events/2022-11-bh2022/; }
 
-	# Static assets keep their path on the hub, so map the prefix straight across.
-	# 163 of the 467 legacy asset URLs already resolve at the identical path
-	# (e.g. /assets/media/tk_besoek.jpg -> 200 image/jpeg). Without this they hit
-	# the catch-all and 301 to /eu/, which answers an image request with a 52 KB
-	# HTML page -- strictly worse than a 404, because nothing can detect the
-	# breakage. The ~290 assets that were not migrated now 404 honestly instead.
-	# css/, fonts/ and js/ are deliberately included: none of them exist on the
-	# hub (it ships its own theme chrome), but a 301 that ends in a 404 is still
-	# a truthful answer, whereas the catch-all would return HTTP 200 text/html
-	# for a stylesheet. `^~` beats the regex rules regardless of file position.
-	location ^~ /assets/ {
-		return 301 https://galaxyproject.org$request_uri;
-	}
+	# Legacy /assets/ URLs are intentionally NOT redirected here: nothing on the
+	# hub references old-site assets (verified against the whole content tree),
+	# and the old site still serves its own /assets/, so these fall through to
+	# the github.io catch-all below and resolve there.
 
 	# Anything not matched above is legacy content with no individual hub
 	# equivalent. The old site is kept online with a deprecation banner, so fall
