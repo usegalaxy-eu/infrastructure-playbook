@@ -316,7 +316,9 @@ galaxy_user:
   home: /opt/galaxy
   uid: 999
   shell: /bin/bash
-
+galaxy_webhook_dir: "{{ galaxy_mutable_data_dir }}/webhooks"
+galaxy_tour_dir: "{{ galaxy_mutable_data_dir }}/tours"
+tpv_mutable_dir: "{{ galaxy_mutable_data_dir }}/total_perspective_vortex"
 # Galaxy configuration files will be written with these permissions (mode argument to Ansible copy/template module)
 galaxy_config_perms: 0644
 
