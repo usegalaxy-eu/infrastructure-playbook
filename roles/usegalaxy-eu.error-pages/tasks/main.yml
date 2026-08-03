@@ -1,13 +1,11 @@
 ---
 - name: "Deploy error pages"
-  copy:
-    src: "{{ item }}"
-    dest: "/usr/share/nginx/html/{{ item }}"
-    owner: nginx
-    group: nginx
-    mode: 0755
-  loop:
-    - 404.html
-    - 502.html
-    - 503.html
-    - 504.html
+  template:
+    src: error.html.j2
+    dest: "{{ error_pages_dest }}/{{ item.code }}.html"
+    owner: "{{ error_pages_owner }}"
+    group: "{{ error_pages_group }}"
+    mode: 0644
+  loop: "{{ error_pages }}"
+  loop_control:
+    label: "{{ item.code }}.html"
