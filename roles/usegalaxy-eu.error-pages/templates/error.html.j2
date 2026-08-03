@@ -5,25 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ item.code }} &ndash; {{ item.title }} | Galaxy Europe</title>
 <style>
-  /* Galaxy Community Hub design system, inlined so this page needs no network.
-     Tokens: galaxy-dark #2c3143, galaxy-primary #25537b, gold #ffd700, light-bg #edf4fa
-     Icons: Lucide (https://lucide.dev), ISC licensed, inlined as SVG. */
+{{ lookup('file', 'brand-tokens.css') }}
+  /* Galaxy Community Hub design system (galaxyproject/galaxy-hub astro/DESIGN.md),
+     inlined so this page needs no network. Colors and the font stack come from the
+     brand tokens above; Lucide icons (https://lucide.dev, ISC) are inlined as SVG. */
   :root {
-    --galaxy-dark: #2c3143;
-    --galaxy-primary: #25537b;
-    --galaxy-gold: #ffd700;
-    --light-bg: #edf4fa;
-    --muted: #55607a;
-    --hairline: rgba(37, 83, 123, 0.1);
+    --hairline: color-mix(in srgb, var(--color-galaxy-primary) 10%, transparent);
   }
   * { box-sizing: border-box; }
   body {
     margin: 0;
     padding: 1.5rem 1rem;
-    background-color: var(--light-bg);
-    color: var(--galaxy-dark);
-    font-family: "Atkinson Hyperlegible", ui-sans-serif, system-ui, -apple-system,
-                 "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--color-light-bg);
+    color: var(--color-galaxy-dark);
+    font-family: var(--font-sans);
     line-height: 1.5;
     min-height: 100vh;
     display: flex;
@@ -46,8 +41,8 @@
     gap: 0.875rem;
     padding: 1.25rem 1.5rem;
     color: #fff;
-    background: linear-gradient(135deg, var(--galaxy-dark) 0%, var(--galaxy-primary) 100%);
-    border-bottom: 4px solid var(--galaxy-gold);
+    background: linear-gradient(135deg, var(--color-galaxy-dark) 0%, var(--color-galaxy-primary) 100%);
+    border-bottom: 4px solid var(--color-galaxy-gold);
   }
   header::before {
     content: "";
@@ -65,7 +60,7 @@
     height: 2.75rem;
     padding: 0.625rem;
     border-radius: 0.5rem;
-    color: var(--galaxy-gold);
+    color: var(--color-galaxy-gold);
     background-color: rgba(255, 215, 0, 0.12);
     border: 1px solid rgba(255, 215, 0, 0.35);
   }
@@ -84,8 +79,8 @@
   .content { padding: 1.25rem 1.5rem 1.5rem; }
   p { margin: 0 0 0.75rem; }
   .lead { font-size: 1.0625rem; font-weight: 700; }
-  a { color: var(--galaxy-primary); }
-  a:hover, a:focus { color: var(--galaxy-gold); }
+  a { color: var(--color-galaxy-primary); }
+  a:hover, a:focus { color: var(--color-galaxy-gold); }
   ul { margin: 0.375rem 0 0; padding-left: 1.125rem; }
   li { margin: 0.125rem 0; }
   .cta {
@@ -93,12 +88,12 @@
     margin-bottom: 0;
     padding: 0.5rem 1.25rem;
     border-radius: 0.5rem;
-    background-color: var(--galaxy-gold);
-    color: var(--galaxy-dark);
+    background-color: var(--color-galaxy-gold);
+    color: var(--color-galaxy-dark);
     font-weight: 700;
     text-decoration: none;
   }
-  .cta:hover, .cta:focus { background-color: #e6c200; color: var(--galaxy-dark); }
+  .cta:hover, .cta:focus { background-color: var(--color-galaxy-gold-dark); color: var(--color-galaxy-dark); }
   .panel {
     margin-top: 1.25rem;
     padding-top: 1rem;
@@ -111,7 +106,7 @@
     margin: 0 0 0.5rem;
     font-size: 0.9375rem;
     font-weight: 700;
-    color: var(--galaxy-primary);
+    color: var(--color-galaxy-primary);
   }
   .panel h2 svg { width: 1rem; height: 1rem; flex: none; }
   .panel iframe {
@@ -120,19 +115,19 @@
     height: 260px;
     border: 1px solid var(--hairline);
     border-radius: 0.5rem;
-    background-color: var(--light-bg);
+    background-color: var(--color-light-bg);
   }
   .panel__note {
     margin: 0.5rem 0 0;
     font-size: 0.8125rem;
-    color: var(--muted);
+    color: var(--color-galaxy-grey);
   }
   footer {
     margin-top: 1.25rem;
     padding-top: 0.75rem;
     border-top: 1px solid var(--hairline);
     font-size: 0.875rem;
-    color: var(--muted);
+    color: var(--color-galaxy-grey);
   }
   footer p { margin: 0; }
   @media (max-width: 30rem) {
