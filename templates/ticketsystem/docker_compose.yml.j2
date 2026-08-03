@@ -45,8 +45,8 @@ x-shared:
       NGINX_SERVER_NAME:
       NGINX_SERVER_SCHEME: "https"
       RAILS_TRUSTED_PROXIES: "['132.230.103.37','127.0.0.1','172.16.0.0/16','localhost',]"
-      ZAMMAD_HTTP_TYPE: https
-      ZAMMAD_FQDN: ticketsystem.galaxyproject.eu
+      ZAMMAD_HTTP_TYPE:
+      ZAMMAD_FQDN: ticketsystem.bi.privat
       ZAMMAD_WEB_CONCURRENCY:
       ZAMMAD_MANAGE_SESSIONS_JOBS_WORKERS:
       ZAMMAD_PROCESS_SESSIONS_JOBS_WORKERS:
@@ -59,6 +59,7 @@ x-shared:
       ZAMMAD_PROCESS_DELAYED_COMMUNICATION_INBOUND_JOBS_WORKER_THREADS:
       ZAMMAD_OTRS_IMPORT_READ_TIMEOUT:
       ZAMMAD_OTRS_IMPORT_TOTAL_TIMEOUT:
+
 
       # ZAMMAD_SESSION_JOBS_CONCURRENT is deprecated, please use ZAMMAD_PROCESS_SESSIONS_JOBS_WORKERS instead.
       ZAMMAD_SESSION_JOBS_CONCURRENT:
@@ -107,6 +108,8 @@ services:
       - zammad-postgresql
     restart: on-failure
     user: 0:0
+      #    environment:
+      #      - RAILS_TRUSTED_PROXIES=['132.230.103.37','127.0.0.1','172.16.0.0/16','localhost','172.18.0.3']
 
   zammad-memcached:
     command: memcached -m 256M
@@ -119,6 +122,8 @@ services:
       - "${NGINX_PORT:-8080}"
     depends_on:
       - zammad-railsserver
+    volumes:
+      - "/opt/zammad-docker-compose/zammad.conf.fix:/opt/zammad/contrib/nginx/zammad.conf"
     networks:
       - default
       - traefik
@@ -181,11 +186,13 @@ services:
       - --certificatesResolvers.ts.tailscale=true
       - --log.level=INFO
       - --accesslog=true
+# Test
     labels:
       - "traefik.enable=false"
     ports:
       - "443:443"
       - "80:80"
+      - "8080:8080"
     networks:
       - traefik
     volumes:
