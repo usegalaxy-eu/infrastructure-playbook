@@ -7,12 +7,32 @@ server {
 	listen 80 default_server;
 	listen [::]:80 default_server;
 
+	error_page 400 /400.html;
+	error_page 403 /403.html;
 	error_page 404 /404.html;
+	error_page 408 /408.html;
+	error_page 500 /500.html;
 	error_page 502 /502.html;
 	error_page 503 /503.html;
 	error_page 504 /503.html;
 
+	location /400.html {
+		root /usr/share/nginx/html;
+		internal;
+	}
+	location /403.html {
+		root /usr/share/nginx/html;
+		internal;
+	}
 	location /404.html {
+		root /usr/share/nginx/html;
+		internal;
+	}
+	location /408.html {
+		root /usr/share/nginx/html;
+		internal;
+	}
+	location /500.html {
 		root /usr/share/nginx/html;
 		internal;
 	}
