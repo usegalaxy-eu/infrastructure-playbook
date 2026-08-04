@@ -28,7 +28,14 @@
         - http
         - https
         - ntp
-        - postgresql
+
+    - name: Configure CVMFS rsync port
+      ansible.posix.firewalld:
+        port: 9087/tcp
+        permanent: true
+        immediate: true
+        zone: public
+        state: enabled
 
     - name: Install python docker
       become: true
