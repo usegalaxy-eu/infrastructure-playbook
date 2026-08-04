@@ -1,4 +1,14 @@
 ---
+- name: Deploy canonical Galaxy brand design tokens
+  ansible.builtin.get_url:
+    url: "{{ error_pages_brand_tokens_url }}"
+    dest: "{{ error_pages_dest }}/brand-tokens.css"
+    owner: "{{ error_pages_owner }}"
+    group: "{{ error_pages_group }}"
+    mode: 0644
+    checksum: "{{ error_pages_brand_tokens_checksum | default(omit) }}"
+    force: false  # do not re-download if the local checksum matches (default)
+
 - name: "Deploy error pages"
   template:
     src: error.html.j2

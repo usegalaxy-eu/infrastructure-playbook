@@ -197,6 +197,10 @@ server {
         {{ upstream_galaxy_cache() | indent(8, false) }}
     }
 
+    location = /static/error_pages/brand-tokens.css {
+        alias {{ error_pages_dest }}/brand-tokens.css;
+    }
+
     location /static/vgcn {
         expires 24h;
         autoindex on;
