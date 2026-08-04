@@ -53,8 +53,8 @@ server {
 
     error_page {{ error_code }} /{{ error_code }}.html;
 
-    location /{{ error_code }}.html {
-        root /usr/share/nginx/html;
+    location = /{{ error_code }}.html {
+        alias {{ error_pages_dest }}/{{ error_code }}.html;
         internal;
     }
 
