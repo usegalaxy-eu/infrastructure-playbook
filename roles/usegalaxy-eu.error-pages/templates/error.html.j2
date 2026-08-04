@@ -8,7 +8,12 @@
 <style>
   /* Galaxy Community Hub design system (galaxyproject/galaxy-hub astro/DESIGN.md),
      inlined so this page needs no network. Colors and the font stack come from the
-     brand tokens above; Lucide icons (https://lucide.dev, ISC) are inlined as SVG. */
+     brand tokens above.
+
+     Lucide icons (https://lucide.dev, ISC) are inlined as SVG.
+
+     {{ "> " ~ error_pages_icons_license.split('\n') | join('\n> ') | indent(5, false) }}
+  */
   :root {
     --hairline: color-mix(in srgb, var(--color-galaxy-primary) 10%, transparent);
   }
