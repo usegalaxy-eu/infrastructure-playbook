@@ -60,6 +60,7 @@ destinations:
         $defaults,
         {{ galaxy_volumes(exclude_volumes=['dnb04', 'dnb-ds01']) }}
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+      docker_run_extra_arguments: "--memory={mem}g --cpus={cores} {entity.params.get('docker_run_extra_arguments') or ''}"
       require_container: true
       submit_request_cpus: "{cores}"
       submit_request_memory: "{mem}G"
