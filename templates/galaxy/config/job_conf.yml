@@ -6,15 +6,26 @@ galaxy_jobconf:
   plugin_workers: 8
   handlers:
     count: "{{ galaxy_systemd_handlers }}"
-    assign_with: db-skip-locked
+    assign: db-skip-locked
     max_grab: 16
     ready_window_size: 32
+    handler_definitions:
+      0:
+        tags:
+          - htcondor-apiv2
+        plugins:
+          - htcondor_apiv2
+    default_process:
+      exclude_plugins:
+        - htcondor_apiv2
   plugins:
     #- id: drmaa
     #load: galaxy.jobs.runners.drmaa:DRMAAJobRunner
     #workers: 3
     - id: condor
       load: galaxy.jobs.runners.condor:CondorJobRunner
+    - id: htcondor_apiv2
+      load: galaxy.jobs.runners.htcondor:HTCondorJobRunner
     - id: local
       load: galaxy.jobs.runners.local:LocalJobRunner
     - id: pulsar_embedded

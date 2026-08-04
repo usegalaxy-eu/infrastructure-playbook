@@ -31,9 +31,9 @@ runners:
 # Job handler configuration
 #
 handling:
-{% if galaxy_jobconf.handlers.assign_with is defined %}
-  assign_with:
-    - {{ galaxy_jobconf.handlers.assign_with }}
+{% if galaxy_jobconf.handlers.assign is defined %}
+  assign:
+    - {{ galaxy_jobconf.handlers.assign }}
 {% endif %}
 {% if galaxy_jobconf.handlers.default is defined %}
   default: {{ galaxy_jobconf.handlers.default }}
@@ -46,8 +46,28 @@ handling:
 {% endif %}
 {% if galaxy_systemd_handlers is defined and galaxy_systemd_handlers > 0 %}
   processes:
+{% set handler_definitions = galaxy_jobconf.handlers.handler_definitions | default({}) %}
+{% set default_handler_definition = galaxy_jobconf.handlers.default_process | default({}) %}
 {% for n in range(galaxy_systemd_handlers) %}
+{% set handler_definition = handler_definitions.get(n, default_handler_definition) %}
     {{ galaxy_systemd_handler_prefix }}_{{ n }}:
+{% if handler_definition.tags is defined %}
+      tags:
+{% for tag in handler_definition.tags %}
+        - {{ tag }}
+{% endfor %}
+{% endif %}
+{% if handler_definition.plugins is defined %}
+      plugins:
+{% for plugin in handler_definition.plugins %}
+        - {{ plugin }}
+{% endfor %}
+{% elif handler_definition.exclude_plugins is defined %}
+      plugins:
+{% for plugin in galaxy_jobconf.plugins | sort(attribute='id') if plugin.id not in handler_definition.exclude_plugins %}
+        - {{ plugin.id }}
+{% endfor %}
+{% endif %}
 {% endfor %}
 {% elif galaxy_systemd_handlers is defined and galaxy_systemd_handlers == 0 %}
   processes:
@@ -113,6 +133,9 @@ tools:
   - id: {{ tool['id'] }}
 {% if 'destination' in tool %}
     environment: {{ tool['destination'] }}
+{% endif %}
+{% if 'handler' in tool %}
+    handler: {{ tool['handler'] }}
 {% endif %}
 {% if 'resources' in tool %}
     resources: {{ tool['resources'] }}
