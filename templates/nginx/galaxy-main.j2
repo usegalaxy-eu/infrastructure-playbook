@@ -49,27 +49,16 @@ server {
     listen 443 default_server;
     listen [::]:443 default_server;
 
-    error_page 404 /404.html;
-    error_page 502 /502.html;
-    error_page 503 /503.html;
-    error_page 504 /503.html;
+    {% for error_code in [400, 403, 404, 408, 500, 502, 503, 504] %}
 
-    location /404.html {
-        root /usr/share/nginx/html;
+    error_page {{ error_code }} /{{ error_code }}.html;
+
+    location = /{{ error_code }}.html {
+        alias {{ error_pages_dest }}/{{ error_code }}.html;
         internal;
     }
-    location /502.html {
-        root /usr/share/nginx/html;
-        internal;
-    }
-    location /503.html {
-        root /usr/share/nginx/html;
-        internal;
-    }
-    location /504.html {
-        root /usr/share/nginx/html;
-        internal;
-    }
+
+    {% endfor %}
 
     # Move to remote storage, hopefully hammer local disk slightly less?
     #client_body_temp_path  /data/dnb01/nginx_upload_store/;
@@ -206,6 +195,10 @@ server {
     location /static {
         {{ upstream_galaxy() | indent(8, false) }}
         {{ upstream_galaxy_cache() | indent(8, false) }}
+    }
+
+    location = /static/error_pages/brand-tokens.css {
+        alias {{ error_pages_dest }}/brand-tokens.css;
     }
 
     location /static/vgcn {
