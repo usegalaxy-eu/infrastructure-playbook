@@ -4,6 +4,7 @@ ucsc_genome_browser_setup_script_checksum: sha256:e47cd21c479a53d3157a4cd54f867d
 ucsc_genome_browser_assemblies: []
 ucsc_genome_browser_assemblies_env: "OS=linux MACH=x86_64"  # works around a bug in the installation script
 
+ucsc_genome_browser_vm_gbd_dir: /srv/ucsc_genome_browser/
 ucsc_genome_browser_vm_name: ucsc_genome_browser
 ucsc_genome_browser_vm_state: present  # use `absent` to remove the VM
 
@@ -13,8 +14,8 @@ ucsc_genome_browser_vm_ports:
   - host: 8030
     guest: 80
 ucsc_genome_browser_vm_shares:
-  - host: /data/misc08/gbdb/
-    guest: "{{ ucsc_genome_browser_setting_GBDBDIR | default('/gbdb/')}}"
+  - host: /data/misc08/gbd/
+    guest: "{{ ucsc_genome_browser_vm_gbd_dir }}"
     readonly: true
   #  # TODO: default settings should be retrieved from the installation script
 
