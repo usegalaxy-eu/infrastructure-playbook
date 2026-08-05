@@ -552,6 +552,17 @@ destinations:
         - docker
         - singularity
 
+  # TEMPORARY FOR TESTING PURPOSES
+  condor_container_v2:
+    inherits: condor_container
+    runner: condorv2
+    scheduling:
+      require:
+        - condorv2
+      accept:
+        - docker
+        - singularity
+
   condor_container_gpu:
     inherits: condor_container
     max_accepted_cores: 128
@@ -634,6 +645,16 @@ destinations:
         - singularity
         - conda
 
+  # TEMPORARY FOR TESTING PURPOSES
+  condor_singularity_with_conda_v2:
+    inherits: condor_singularity_with_conda
+    runner: condorv2
+    scheduling:
+      require:
+        - condorv2
+        - singularity
+        - conda
+
   condor_internal:
     runner: condor
     max_accepted_cores: 20
@@ -649,3 +670,11 @@ destinations:
     scheduling:
       require:
         - internal
+
+  # TEMPORARY FOR TESTING PURPOSES
+  condor_internal_v2:
+    inherits: condor_singularity_with_conda
+    runner: condorv2
+    scheduling:
+      require:
+        - condorv2
