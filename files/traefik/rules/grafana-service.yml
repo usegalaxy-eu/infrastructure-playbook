@@ -1,0 +1,7 @@
+http:
+  services:
+    grafana:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: "http://stats.bi.privat:3000"
