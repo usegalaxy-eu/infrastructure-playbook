@@ -1,7 +1,7 @@
 http:
   routers:
     usegalaxy-eu-rtr:
-      rule: "Host(`usegalaxy.eu`) || Host(`galaxyprojecy.eu`) || HostRegexp(`^.+\\.usegalaxy\\.eu`)"
+      rule: "Host(`usegalaxy.eu`) || HostRegexp(`^.+\\.usegalaxy\\.eu`)"
       service: "usegalaxy-eu"
       entryPoints:
         - websecure
