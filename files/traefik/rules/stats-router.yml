@@ -1,8 +1,8 @@
 http:
   routers:
-    grafana-rtr:
+    stats-rtr:
       rule: "Host(`stats.galaxyproject.eu`)"
-      service: grafana
+      service: stats
       entryPoints:
         - websecure
       tls:

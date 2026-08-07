@@ -1,0 +1,11 @@
+http:
+  routers:
+    galaxyproject-eu-rtr:
+      rule: "Host(`galaxyproject.eu`)"
+      service: galaxyproject-eu
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: "route53"
+        domains:
+          - main: "galaxyproject.eu"
