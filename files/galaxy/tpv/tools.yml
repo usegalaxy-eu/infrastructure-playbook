@@ -867,6 +867,30 @@ tools:
         context:
           exclude_gpu_models: ["Tesla T4"] # T4 GPUs have only 16 GB of memory, which is not enough for the GNN model
 
+  toolshed.g2.bx.psu.edu/repos/bgruening/flexynesis/flexynesis_cbioportal_import/.*:
+    rules:
+      - if: helpers.tool_version_gte(tool, '1.1.11+galaxy0')
+        params:
+          docker_run_extra_arguments: --user 999
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/flexynesis/flexynesis_plot/.*:
+    rules:
+      - if: helpers.tool_version_gte(tool, '1.1.11+galaxy0')
+        params:
+          docker_run_extra_arguments: --user 999
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/flexynesis/flexynesis_utils/.*:
+    rules:
+      - if: helpers.tool_version_gte(tool, '1.1.11+galaxy0')
+        params:
+          docker_run_extra_arguments: --user 999
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/flexynesis/flexynesis_infer/.*:
+    rules:
+      - if: helpers.tool_version_gte(tool, '1.1.11+galaxy0')
+        params:
+          docker_run_extra_arguments: --user 999
+
   toolshed.g2.bx.psu.edu/repos/genouest/helixer/helixer/.*:
     params:
       docker_run_extra_arguments: --user 999
