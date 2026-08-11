@@ -32,6 +32,13 @@
         name: firewalld
         enabled: false
         state: stopped
+    - name: Add misc06 NFS mount to /etc/fstab
+      ansible.posix.mount:
+        path: /data/misc06
+        src: zfs06.bi.privat:/export/misc06
+        fstype: nfs
+        opts: hard,rw,nosuid
+        state: mounted
   post_tasks:
     - name: Replace sql
       ansible.builtin.replace:
@@ -58,12 +65,9 @@
     - geerlingguy.repo-epel     # Install EPEL repository
     - influxdata.chrony         # Keep our time in sync.
     - usegalaxy-eu.dynmotd
-    ## Filesystems
-    - usegalaxy-eu.autofs  # Setup the mount points which will be needed later
     # User
     - usegalaxy-eu.create-user
     # Services
-    - galaxyproject.nginx
     - galaxyproject.proftpd
 
     - dj-wasabi.telegraf
