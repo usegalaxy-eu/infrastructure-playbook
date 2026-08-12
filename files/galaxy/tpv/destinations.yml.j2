@@ -108,7 +108,8 @@ destinations:
     scheduling:
       accept:
         - tool_type_user_defined
-        - condorv2
+        - condorv2                  # Temp fix for condorv2 destributed compute
+                                    # If a user have any other location, they won't be able to run ITs
       require:
         - docker
         - embedded-pulsar
