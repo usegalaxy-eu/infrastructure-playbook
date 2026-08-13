@@ -5,3 +5,12 @@ tcp:
       service: cvmfs-stratum0-rsync
       entryPoints:
         - cvmfs-rsync
+
+http:
+  routers:
+    cvmfs-stratum0:
+      rule: "Host(`cvmfs-stratum0.galaxyproject.eu`)"
+      priority: 100
+      service: cvmfs-stratum0
+      entryPoints:
+        - web
