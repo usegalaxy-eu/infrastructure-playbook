@@ -23,7 +23,7 @@ set -e
 for action in {delete_userless_histories,delete_exported_histories,purge_deleted_users,purge_deleted_histories,purge_error_hdas,purge_deleted_hdas,purge_historyless_hdas,purge_hdas_of_purged_histories,delete_datasets,purge_datasets}; do
 		{{ galaxy_venv_dir }}/bin/python \
 			"{{ galaxy_server_dir }}/scripts/cleanup_datasets/pgcleanup.py" \
-			-c "purge_error_hdas,{{ galaxy_config_file }}" \
+			-c "{{ galaxy_config_file }}" \
 			-U \
 			-o "60" \
 			-b "5000" \
