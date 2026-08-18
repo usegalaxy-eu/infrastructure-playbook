@@ -203,7 +203,6 @@ destinations:
         - conda
         - singularity
         - docker
-        - condor-tpv
 
   pulsar_mira_tpv:
     inherits: pulsar_default
@@ -492,7 +491,7 @@ destinations:
 
 
   condor_container:
-    runner: condor
+    runner: condorv2
     max_accepted_cores: 64
     max_accepted_mem: 1000
     min_accepted_gpus: 0
@@ -551,14 +550,6 @@ destinations:
       accept:
         - docker
         - singularity
-
-  # TEMPORARY FOR TESTING PURPOSES
-  condor_container_v2:
-    inherits: condor_container
-    runner: condorv2
-    scheduling:
-      require:
-        - condorv2
 
   condor_container_gpu:
     inherits: condor_container
@@ -619,7 +610,7 @@ destinations:
 
   condor_singularity_with_conda:
     inherits: basic_singularity_destination
-    runner: condor
+    runner: condorv2
     max_accepted_cores: 64
     max_accepted_mem: 1000
     min_accepted_gpus: 0
@@ -642,16 +633,8 @@ destinations:
         - singularity
         - conda
 
-  # TEMPORARY FOR TESTING PURPOSES
-  condor_singularity_with_conda_v2:
-    inherits: condor_singularity_with_conda
-    runner: condorv2
-    scheduling:
-      require:
-        - condorv2
-
   condor_internal:
-    runner: condor
+    runner: condorv2
     max_accepted_cores: 20
     max_accepted_mem: 10
     min_accepted_gpus: 0
@@ -665,11 +648,3 @@ destinations:
     scheduling:
       require:
         - internal
-
-  # TEMPORARY FOR TESTING PURPOSES
-  condor_internal_v2:
-    inherits: condor_internal
-    runner: condorv2
-    scheduling:
-      require:
-        - condorv2

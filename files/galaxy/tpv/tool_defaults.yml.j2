@@ -124,8 +124,6 @@ tools:
       - id: interactive_tool
         if: not (dry_run_mode := job_wrapper is None) and (tool.tool_type == 'interactive')
         # `job_wrapper is None` occurs when TPV is launched in dry-run mode
-        cores: 1
-        mem: 4
         params:
           docker_volumes: $defaults
           container_monitor_result: callback
