@@ -14,12 +14,6 @@ au_hostname: "{{ grafana_ini.server.domain }}"
 # Grafana
 grafana_version: "13.1.1"
 
-# patch from https://github.com/grafana/grafana-ansible-collection/pull/414;
-# once merged upstream, update the collection version in requirements.yml and
-# remove the next two lines
-grafana_yum_repo: "https://rpm.grafana.com"
-grafana_yum_key: "https://rpm.grafana.com/gpg.key"
-
 grafana_ini:
   server:
     http_addr: "0.0.0.0"
