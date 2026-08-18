@@ -75,51 +75,61 @@ grafana_datasources:
     access: proxy
     url: "{{ influxdb.url }}"
     isDefault: true
-    version: 1
     editable: false
-    database: galaxy
     user: "{{ influxdb.grafana.username }}"
-    password: "{{ influxdb.grafana.password }}"
+    jsonData:
+      version: InfluxQL
+      dbName: galaxy
+    secureJsonData:
+      password: "{{ influxdb.grafana.password }}"
     uid: P9B81C0353945995B
   - name: Galaxy Historical
     type: influxdb
     access: proxy
     url: "{{ influxdb.url }}"
-    version: 1
     editable: false
-    database: galaxy_stats
     user: "{{ influxdb.grafana.username }}"
-    password: "{{ influxdb.grafana.password }}"
+    jsonData:
+      version: InfluxQL
+      dbName: galaxy_stats
+    secureJsonData:
+      password: "{{ influxdb.grafana.password }}"
     uid: PEBD82B4560F292BD
   - name: GRT Tool Usage
     type: influxdb
     access: proxy
     url: "{{ influxdb.url }}"
-    version: 1
     editable: false
-    database: grt
     user: "{{ influxdb.grafana.username }}"
-    password: "{{ influxdb.grafana.password }}"
+    jsonData:
+      version: InfluxQL
+      dbName: grt
+    secureJsonData:
+      password: "{{ influxdb.grafana.password }}"
     uid: PA4245ACF5D5D4D2B
   - name: InfluxDB - internal
     type: influxdb
     access: proxy
     url: "{{ influxdb.url }}"
-    version: 1
     editable: false
-    database: _internal
     user: "{{ influxdb.grafana.username }}"
-    password: "{{ influxdb.grafana.password }}"
+    jsonData:
+      version: InfluxQL
+      dbName: _internal
+    secureJsonData:
+      password: "{{ influxdb.grafana.password }}"
     uid: P97EDD1499B7D2981
   - name: Notifications
     type: influxdb
     access: proxy
     url: "{{ influxdb.url }}"
-    version: 1
     editable: false
-    database: notifications
     user: "{{ influxdb.grafana.username }}"
-    password: "{{ influxdb.grafana.password }}"
+    jsonData:
+      version: InfluxQL
+      dbName: notifications
+    secureJsonData:
+      password: "{{ influxdb.grafana.password }}"
     uid: P788011833A5A0F22
 
 hxr_monitor_ssl_expiry:
