@@ -12,23 +12,8 @@ collections:
     source: https://galaxy.ansible.com
     type: galaxy
   - name: grafana.grafana
-    # This collection has dependencies
-    # (https://github.com/grafana/grafana-ansible-collection/blob/5.2.0/requirements.yml)
-    # that have not been defined as they should
-    # (https://docs.ansible.com/ansible/latest/dev_guide/developing_collections_shared.html#listing-collection-dependencies).
-    # Therefore, they have to be included in this file. @domgz opened an issue on the repository of the Grafana Ansible collection
-    # https://github.com/grafana/grafana-ansible-collection/issues/222
-    # notifying the developers of this issue.
     version: 6.1.0
-  # - name: community.general  # required by `grafana.grafana` (already specified above)
-  #   source: https://github.com/ansible-collections/community.general.git
-  #   version: 9.0.1
-  #   type: git
-  - name: community.grafana # required by `grafana.grafana`
-    source: https://github.com/ansible-collections/community.grafana.git
-    version: 2.0.0
-    type: git
-  - name: ansible.posix # required by `grafana.grafana`
+  - name: ansible.posix
     source: https://github.com/ansible-collections/ansible.posix.git
     version: 1.5.2
     type: git
