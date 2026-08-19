@@ -4,3 +4,11 @@ tcp:
       loadBalancer:
         servers:
           - address: "10.4.68.179:22"
+
+http:
+  services:
+    cvmfs-stratum0:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: "http://10.4.68.179:80"
