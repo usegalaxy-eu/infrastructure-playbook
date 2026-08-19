@@ -8,112 +8,64 @@ certbot_virtualenv_package_name: python3-virtualenv
 certbot_post_renewal: |
     systemctl restart nginx || true
 
-# NGINX
-nginx_enable_default_server: false
-nginx_servers:
-  - redirect-ssl
-nginx_ssl_servers:
-  - grafana-ssl
-
-nginx_conf_http:
-  gzip: "on"
-  gzip_vary: "on"
-  gzip_min_length: 256
-  gzip_proxied: any
-  gzip_comp_level: 6
-  gzip_http_version: "1.1"
-  gzip_types: text/plain text/css text/xml text/javascript application/javascript application/x-javascript application/xml image/png image/jpg
-  gzip_disable: '"MSIE [1-6]\."'
-  client_max_body_size: 1g
-
-nginx_remove_default_vhost: true
-
-# Nginx Letsencrypt bindings
-nginx_ssl_role: usegalaxy-eu.certbot
-nginx_conf_ssl_certificate: /etc/ssl/certs/fullchain.pem
-nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
-
 # Autoupdates
-au_hostname: "{{ grafana_domain }}"
+au_hostname: "{{ grafana_ini.server.domain }}"
 
 # Grafana
 grafana_version: "13.1.1"
 
-# patch from https://github.com/grafana/grafana-ansible-collection/pull/414;
-# once merged upstream, update the collection version in requirements.yml and
-# remove the next two lines
-grafana_yum_repo: "https://rpm.grafana.com"
-grafana_yum_key: "https://rpm.grafana.com/gpg.key"
+grafana_ini:
+  server:
+    http_addr: "0.0.0.0"
+    domain: stats.galaxyproject.eu
+    root_url: "https://stats.galaxyproject.eu"
 
-grafana_address: "127.0.0.1"
-grafana_domain: stats.galaxyproject.eu
-grafana_url: "https://{{ grafana_domain }}"
+  users:
+    default_theme: light
 
-grafana_users:
-  default_theme: "light"
+  security:
+    admin_user: admin
+    admin_password: "{{ vault_grafana_auth_admin_password }}"
+    secret_key: "{{ vault_grafana_security_secret_key }}"
+    allow_embedding: true
+    cookie_secure: true
 
-grafana_security:
-  admin_user: admin
-  admin_password: "{{ vault_grafana_auth_admin_password }}"
-  allow_embedding: "true"
-  cookie_secure: "true"
-grafana_security_secret_key: "{{ vault_grafana_security_secret_key }}"
+  database:
+    type: postgres
+    host: sn11.galaxyproject.eu:5432
+    name: "{{ vault_grafana_database_name }}"
+    user: "{{ vault_grafana_database_user }}"
+    password: "{{ vault_grafana_database_password }}"
 
-grafana_database:
-  type: postgres
-  host: sn11.galaxyproject.eu:5432
-  name: "{{ vault_grafana_database_name }}"
-  user: "{{ vault_grafana_database_user }}"
-  password: "{{ vault_grafana_database_password }}"
+  auth:
+    anonymous:
+      enabled: true
+      org_name: UseGalaxy.eu
+      org_role: Viewer
+    github:
+      enabled: true
+      allow_sign_up: true
+      client_id: "{{ vault_grafana_auth__github_client_id }}"
+      client_secret: "{{ vault_grafana_auth__github_client_secret }}"
+      scopes: user:email,read:org
+      auth_url: https://github.com/login/oauth/authorize
+      token_url: https://github.com/login/oauth/access_token
+      api_url: https://api.github.com/user
+      allowed_organisations: usegalaxy.eu galaxyproject
 
-grafana_auth:
-  anonymous:
-    enabled: "true"
-    org_name: "UseGalaxy.eu"
-    org_role: "Viewer"
+  external_image_storage:
+    provider: local
 
-  github:
-    enabled: "true"
-    allow_sign_up: "true"
-    client_id: "{{ vault_grafana_auth__github_client_id }}"
-    client_secret: "{{ vault_grafana_auth__github_client_secret }}"
-    scopes: "user:email,read:org"
-    auth_url: "https://github.com/login/oauth/authorize"
-    token_url: "https://github.com/login/oauth/access_token"
-    api_url: "https://api.github.com/user"
-    allowed_organisations: "usegalaxy.eu galaxyproject"
-grafana_auth_admin_password: "{{ vault_grafana_auth_admin_password }}"
+  panels:
+    disable_sanitize_html: true
 
-grafana_image_storage:
-  provider: local
+  unified_alerting:
+    enabled: true
+    execute_alerts: true
 
-grafana_panels:
-  disable_sanitize_html: "true"
-
-# This setting is not yet used by the role `grafana.grafana.grafana`. It will
-# be when PR [1] is merged.
-#
-# References:
-# - [1] https://github.com/grafana/grafana-ansible-collection/pull/215
-grafana_unified_alerting:
-  enabled: "true"
-  execute_alerts: "true"
-
-# Legacy alerting was removed in Grafana 11 [1]. However, the Ansible role
-# `grafana.grafana.grafana` still populates the [alerting] section [2] unless
-# `grafana_alerting` is empty. The setting can be removed from this file as
-# soon as PR [3] is merged.
-#
-# References:
-# - [1] https://grafana.com/blog/2024/04/04/legacy-alerting-removal-what-you-need-to-know-about-upgrading-to-grafana-alerting/
-# - [2] https://github.com/grafana/grafana-ansible-collection/blob/2e7fd0591d8ad1700186174213b8142047525b88/roles/grafana/templates/grafana.ini.j2#L116-L127
-# - [3] https://github.com/grafana/grafana-ansible-collection/pull/215
-grafana_alerting: {}
-
-grafana_plugins:
-  - grafana-worldmap-panel
-  - grafana-piechart-panel
-  - natel-discrete-panel
+# Grafana 13 does not support the legacy Angular plugins previously listed
+# here. Their dashboards must use supported visualizations instead.
+grafana_plugins: []
 
 grafana_dashboards_dir: "files/grafana"
 
@@ -123,51 +75,61 @@ grafana_datasources:
     access: proxy
     url: "{{ influxdb.url }}"
     isDefault: true
-    version: 1
     editable: false
-    database: galaxy
     user: "{{ influxdb.grafana.username }}"
-    password: "{{ influxdb.grafana.password }}"
+    jsonData:
+      version: InfluxQL
+      dbName: galaxy
+    secureJsonData:
+      password: "{{ influxdb.grafana.password }}"
     uid: P9B81C0353945995B
   - name: Galaxy Historical
     type: influxdb
     access: proxy
     url: "{{ influxdb.url }}"
-    version: 1
     editable: false
-    database: galaxy_stats
     user: "{{ influxdb.grafana.username }}"
-    password: "{{ influxdb.grafana.password }}"
+    jsonData:
+      version: InfluxQL
+      dbName: galaxy_stats
+    secureJsonData:
+      password: "{{ influxdb.grafana.password }}"
     uid: PEBD82B4560F292BD
   - name: GRT Tool Usage
     type: influxdb
     access: proxy
     url: "{{ influxdb.url }}"
-    version: 1
     editable: false
-    database: grt
     user: "{{ influxdb.grafana.username }}"
-    password: "{{ influxdb.grafana.password }}"
+    jsonData:
+      version: InfluxQL
+      dbName: grt
+    secureJsonData:
+      password: "{{ influxdb.grafana.password }}"
     uid: PA4245ACF5D5D4D2B
   - name: InfluxDB - internal
     type: influxdb
     access: proxy
     url: "{{ influxdb.url }}"
-    version: 1
     editable: false
-    database: _internal
     user: "{{ influxdb.grafana.username }}"
-    password: "{{ influxdb.grafana.password }}"
+    jsonData:
+      version: InfluxQL
+      dbName: _internal
+    secureJsonData:
+      password: "{{ influxdb.grafana.password }}"
     uid: P97EDD1499B7D2981
   - name: Notifications
     type: influxdb
     access: proxy
     url: "{{ influxdb.url }}"
-    version: 1
     editable: false
-    database: notifications
     user: "{{ influxdb.grafana.username }}"
-    password: "{{ influxdb.grafana.password }}"
+    jsonData:
+      version: InfluxQL
+      dbName: notifications
+    secureJsonData:
+      password: "{{ influxdb.grafana.password }}"
     uid: P788011833A5A0F22
 
 hxr_monitor_ssl_expiry:

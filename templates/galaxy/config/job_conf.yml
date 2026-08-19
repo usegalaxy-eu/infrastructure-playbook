@@ -15,6 +15,8 @@ galaxy_jobconf:
     #workers: 3
     - id: condor
       load: galaxy.jobs.runners.condor:CondorJobRunner
+    - id: htcondor
+      load: galaxy.jobs.runners.htcondor:HTCondorJobRunner
     - id: local
       load: galaxy.jobs.runners.local:LocalJobRunner
     - id: pulsar_embedded
@@ -299,6 +301,6 @@ galaxy_jobconf:
     - type: "output_size"
       value: "'300GB'"
     - type: "registered_user_concurrent_jobs"
-      value: "40"
+      value: "20"
     - type: "anonymous_user_concurrent_jobs"
       value: "3"

@@ -74,7 +74,9 @@ traefik_containers:
       - --entryPoints.web.address=:80
       - --entryPoints.websecure.address=:443
       - --entryPoints.amqps.address=:5671
+      - --entryPoints.ftp.address=:21
       - --entryPoints.influxdb.address=:8086
+      - --entryPoints.cvmfs-rsync.address=:9087
       - --entryPoints.web.http.redirections.entryPoint.to=websecure
       - --entryPoints.web.http.redirections.entryPoint.scheme=https
       - --entryPoints.metrics.address=:8082
@@ -153,12 +155,20 @@ traefik_containers:
         published_port: 5671
         protocol: tcp
         mode: host
+      - target_port: 21
+        published_port: 21
+        protocol: tcp
+        mode: host
       - target_port: 8082
         published_port: 8082
         protocol: tcp
         mode: host
       - target_port: 8086
         published_port: 8086
+        protocol: tcp
+        mode: host
+      - target_port: 9087
+        published_port: 9087
         protocol: tcp
         mode: host
 
