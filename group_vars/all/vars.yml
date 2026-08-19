@@ -1,5 +1,6 @@
 ---
 # MISC/Generic variables
+bi_privat_vlan: 2068 # the vlan tag for 10.5.68.0/24 network
 generic_tmp_dir: "{{ misc.misc06.path }}/tmp/"
 job_working_root_dir: "{{ jwd.jwd07.path }}" # we set this in gxconfig, but it should not be used, our object_store_conf is overwriting it
 object_store_cache_dir: "{{ cache.cache07.path }}/object_store_cache/"
@@ -77,7 +78,7 @@ nginx_selinux_allow_local_connections: true
 # Allow root login on all machines - TBD
 ssh_allow_root_with_key: true
 
-redis_connection_string: "redis://:{{ redis_requirepass }}@mq02.galaxyproject.eu:6379/0"
+redis_connection_string: "redis://default:{{ valkey_requirepass }}@mq.bi.privat:6379/0"
 # Chrony
 chrony_server: 'time.ruf.uni-freiburg.de iburst'
 chrony_acquisitionport: 0
@@ -91,9 +92,6 @@ dc: ufr-rz
 os_auditd_max_log_file_action: rotate
 os_auditd_space_left: 500
 os_auditd_space_left_action: suspend
-
-# Tailscale
-tailscale_args: "--accept-dns=false"
 
 # Telegraf
 telegraf_agent_package_state: latest

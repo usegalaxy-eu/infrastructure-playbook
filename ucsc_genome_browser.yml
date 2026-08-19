@@ -1,0 +1,224 @@
+# - name: Import sn10 playbook
+#   # crucially, the misc08 mount must be available before the UCSC Genome
+#   # browser VM is deployed
+  # import_playbook: sn10.yml
+
+- name: Manage UCSC Genome Browser VM
+  # provisional deployment, to be replaced either by a bare-metal or a
+  # Terraform-based virtual machine
+  hosts: sn10
+  become: true
+  vars_files:
+    - group_vars/ucsc_genome_browser.yml
+  pre_tasks:
+    - name: Install Vagrant
+      block:
+        - name: Install yum-utils
+          ansible.builtin.package:
+            name: yum-utils
+            state: present
+
+        - name: Import HashiCorp GPG key
+          ansible.builtin.rpm_key:
+            state: present
+            key: https://rpm.releases.hashicorp.com/gpg
+
+        - name: Add HashiCorp YUM repository
+          ansible.builtin.yum_repository:
+            name: hashicorp
+            description: HashiCorp Stable - $basearch
+            baseurl: "https://rpm.releases.hashicorp.com/RHEL/$releasever/$basearch/stable"
+            enabled: true
+            gpgcheck: true
+            gpgkey: "https://rpm.releases.hashicorp.com/gpg"
+            state: present
+
+        - name: Install `vagrant` package
+          ansible.builtin.dnf:
+            name: vagrant
+            state: present
+            update_cache: true
+
+        - name: Install QEMU and Vagrant libvirt plugin
+          block:
+            - name: Ensure KVM, `libvirt` and QEMU are available
+              ansible.builtin.package:
+                name:
+                  - qemu-kvm
+                  - libvirt
+                state: present
+
+            - name: Enable and start all modular Libvirt sockets
+              ansible.builtin.systemd:
+                name: "{{ item }}"
+                state: started
+                enabled: true
+              with_items:
+                - virtqemud.socket
+                - virtnetworkd.socket
+                - virtstoraged.socket
+                - virtnodedevd.socket
+                - virtnwfilterd.socket
+                - virtsecretd.socket
+                - virtinterfaced.socket
+                # - virtproxyd.socket
+              become: true
+
+            - name: Check if Vagrant libvirt plugin is already installed
+              ansible.builtin.command:
+                cmd: vagrant plugin list
+              register: vagrant_plugins
+              changed_when: false
+
+            - name: Install build dependencies for Vagrant libvirt plugin
+              ansible.builtin.package:
+                name:
+                  - make
+                  - gcc
+                  - libvirt-devel
+                state: present
+                enablerepo: crb
+              when: "'vagrant-libvirt' not in vagrant_plugins.stdout"
+
+            - name: Build Vagrant libvirt plugin
+              ansible.builtin.command:
+                cmd: vagrant plugin install vagrant-libvirt
+              register: vagrant_plugin_install
+              failed_when: vagrant_plugin_install.rc != 0
+              when: "'vagrant-libvirt' not in vagrant_plugins.stdout"
+  tasks:
+    - name: Manage UCSC Genome Browser VM
+      block:
+        - name: Gather system service facts
+          ansible.builtin.service_facts:
+
+        - name: Ensure UCSC Genome Browser Vagrant project directory exists
+          ansible.builtin.file:
+            path: "{{ ucsc_genome_browser_vm_vagrant_project_dir }}"
+            state: directory
+            owner: root
+            group: root
+            mode: "0750"
+
+        - name: Deploy Vagrantfile for UCSC Genome Browser VM
+          ansible.builtin.copy:
+            dest: "{{ ucsc_genome_browser_vm_vagrant_project_dir }}/Vagrantfile"
+            content: "{{ ucsc_genome_browser_vm_vagrantfile }}"
+
+        - name: Open forwarded ports for UCSC Genome Browser VM
+          ansible.posix.firewalld:
+            port: "{{ port }}/tcp"
+            immediate: true
+            permanent: true
+            state: enabled
+          loop: "{{ ucsc_genome_browser_vm_ports | map(attribute='host') | list }}"
+          loop_control:
+            loop_var: port
+          when:
+            - ucsc_genome_browser_vm_state == "present"
+            - "'firewalld.service' in ansible_facts.services"
+
+        - name: Start UCSC Genome Browser VM
+          when: ucsc_genome_browser_vm_state == "present"
+          ansible.builtin.command:
+            cmd: vagrant up
+            chdir: "{{ ucsc_genome_browser_vm_vagrant_project_dir }}"
+
+        - name: Destroy UCSC Genome Browser VM
+          when: ucsc_genome_browser_vm_state == "absent"
+          ansible.builtin.command:
+            cmd: vagrant destroy -f
+            chdir: "{{ ucsc_genome_browser_vm_vagrant_project_dir }}"
+
+        - name: Clear UCSC Genome Browser Vagrant project directory
+          when: ucsc_genome_browser_vm_state == "absent"
+          ansible.builtin.file:
+            path: "{{ ucsc_genome_browser_vm_vagrant_project_dir }}"
+            state: absent
+
+        - name: Close forwarded ports for UCSC Genome Browser VM
+          ansible.posix.firewalld:
+            port: "{{ port }}/tcp"
+            immediate: true
+            permanent: true
+            state: disabled
+          loop: "{{ ucsc_genome_browser_vm_ports | map(attribute='host') | list }}"
+          loop_control:
+            loop_var: port
+          when:
+            - ucsc_genome_browser_vm_state == "absent"
+            - "'firewalld.service' in ansible_facts.services"
+
+  post_tasks:
+    - name: Retrieve IP address for UCSC Genome Browser VM
+      when: ucsc_genome_browser_vm_state == "present"
+      block:
+        - name: Get IP address for UCSC Genome Browser VM
+          ansible.builtin.shell:
+            cmd: vagrant ssh-config | grep HostName | awk '{print $2}'
+            chdir: "{{ ucsc_genome_browser_vm_vagrant_project_dir }}"
+          register: ucsc_genome_browser_vm_ip_address
+          changed_when: false
+
+        - name: Set fact for UCSC Genome Browser VM IP address (on controller)
+          become: false
+          delegate_to: localhost
+          delegate_facts: true
+          ansible.builtin.set_fact:
+            ucsc_genome_browser_vm_ip_address: "{{ ucsc_genome_browser_vm_ip_address.stdout }}"
+
+    - name: Retrieve SSH access key for UCSC Genome Browser VM
+      when: ucsc_genome_browser_vm_state == "present"
+      block:
+        - name: Locate SSH access key for UCSC Genome Browser VM
+          ansible.builtin.shell:
+            cmd: vagrant ssh-config | grep IdentityFile | awk '{print $2}'
+            chdir: "{{ ucsc_genome_browser_vm_vagrant_project_dir }}"
+          register: ucsc_genome_browser_vm_ssh_key_path
+          changed_when: false
+
+        - name: Slurp SSH access key for UCSC Genome Browser VM
+          ansible.builtin.slurp:
+            src: "{{ ucsc_genome_browser_vm_ssh_key_path.stdout }}"
+          register: ucsc_genome_browser_vm_private_key_slurp
+
+        - name: Decode SSH access key for UCSC Genome Browser VM
+          ansible.builtin.set_fact:
+            ucsc_genome_browser_vm_private_key_content: "{{ ucsc_genome_browser_vm_private_key_slurp.content | b64decode }}"
+
+        - name: Create temporary setup directory for UCSC Genome Browser role on controller
+          become: false
+          delegate_to: localhost
+          delegate_facts: true
+          ansible.builtin.tempfile:
+            state: directory
+            prefix: ucsc_genome_browser
+          changed_when: false
+          register: ucsc_genome_browser_tmpdir_controller
+
+        - name: Write SSH access key for UCSC Genome Browser VM to temporary file on controller
+          become: false
+          delegate_to: localhost
+          delegate_facts: true
+          ansible.builtin.copy:
+            content: "{{ ucsc_genome_browser_vm_private_key_content }}"
+            dest: "{{ ucsc_genome_browser_tmpdir_controller.path }}/ucsc_genome_browser_vm_private_key"
+            mode: "0600"
+          no_log: true
+
+        - name: Set UCSC Genome Browser VM SSH key file path (on controller)
+          become: false
+          delegate_to: localhost
+          delegate_facts: true
+          ansible.builtin.set_fact:
+            ucsc_genome_browser_vm_private_key_path: "{{ ucsc_genome_browser_tmpdir_controller.path }}/ucsc_genome_browser_vm_private_key"
+
+- name: Install UCSC Genome Browser
+  hosts: ucsc_genome_browser
+  tags: ucsc_genome_browser
+  vars:
+    ansible_host: "{{ hostvars['localhost']['ucsc_genome_browser_vm_ip_address'] }}"
+    ansible_ssh_private_key_file: "{{ hostvars['localhost']['ucsc_genome_browser_vm_private_key_path'] }}"
+  roles:
+    - name: usegalaxy_eu.ucsc_genome_browser
+      become: true

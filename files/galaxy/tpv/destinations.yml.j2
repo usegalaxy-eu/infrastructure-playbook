@@ -60,6 +60,7 @@ destinations:
         $defaults,
         {{ galaxy_volumes(exclude_volumes=['dnb04', 'dnb-ds01']) }}
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+      docker_run_extra_arguments: "--memory={mem}g --cpus={cores} {entity.params.get('docker_run_extra_arguments') or ''}"
       require_container: true
       submit_request_cpus: "{cores}"
       submit_request_memory: "{mem}G"
@@ -105,6 +106,8 @@ destinations:
         {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
     scheduling:
+      accept:
+        - tool_type_user_defined
       require:
         - docker
         - embedded-pulsar
@@ -151,13 +154,13 @@ destinations:
               else:
                   entity.params['submit_requirements'] = gpu_conditions
 
-  embedded_pulsar_docker_gpu_pxe_div4:
-    inherits: embedded_pulsar_docker_gpu_pxe
-    context:
-      galaxy_group: 'GalaxyGroup == "pxe-gpu-div4"'
-    scheduling:
-      require:
-        - pxe-gpu-div4
+  # embedded_pulsar_docker_gpu_pxe_div4:
+  #   inherits: embedded_pulsar_docker_gpu_pxe
+  #   context:
+  #     galaxy_group: 'GalaxyGroup == "pxe-gpu-div4"'
+  #   scheduling:
+  #     require:
+  #       - pxe-gpu-div4
 
 
 
@@ -200,7 +203,6 @@ destinations:
         - conda
         - singularity
         - docker
-        - condor-tpv
 
   pulsar_mira_tpv:
     inherits: pulsar_default
@@ -441,15 +443,47 @@ destinations:
     max_accepted_mem: 360
     min_accepted_gpus: 0
     max_accepted_gpus: 0
+    env:
+      LC_ALL: C
     params:
       jobs_directory: /work/songalax/pulsar-eu/staging
       persistence_directory: /work/songalax/pulsar-eu/persisted_data
       tool_dependency_dir: /data/galaxy_server/pulsar/deps
+      # TODO: remove once CVMFS is available / containers are synced in another way
+      singularity_run_extra_arguments: --disable-cache
       submit_user: $__user_email__
       submit_native_specification: "--qos=galaxy -p galaxy -t 24:00:00 --cpus-per-task={int(cores)} --mem-per-cpu={int(mem/cores)}"
     scheduling:
       require:
         - ufz-eve-pulsar
+
+  pulsar_nemo_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_nemo
+    max_accepted_cores: 16
+    max_accepted_mem: 64
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    env:
+      LC_ALL: C
+      SINGULARITY_CACHEDIR: /home/fr/fr_ds722/pulsar/container_cache
+      TMP: $_GALAXY_JOB_TMP_DIR
+      TEMP: $_GALAXY_JOB_TMP_DIR
+      TMPDIR: $_GALAXY_JOB_TMP_DIR
+    params:
+      jobs_directory: /home/fr/fr_ds722/pulsar/jobs_directory
+      singularity_enabled: true
+      singularity_command: apptainer
+      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/cvmfs/data.galaxyproject.org:ro"
+      singularity_default_container_id: "/cvmfs/singularity.galaxyproject.org/all/perl:5.26"
+      container_resolvers:
+        - type: explicit_singularity
+        - type: cached_mulled_singularity
+          cache_directory: /cvmfs/singularity.galaxyproject.org/all/
+          cache_directory_cacher_type: dir_mtime
+    scheduling:
+      require:
+        - nemo-pulsar
 
   #############################
   # LOCAL CONDOR DESTINATIONS #
@@ -457,7 +491,7 @@ destinations:
 
 
   condor_container:
-    runner: condor
+    runner: htcondor
     max_accepted_cores: 64
     max_accepted_mem: 1000
     min_accepted_gpus: 0
@@ -523,29 +557,60 @@ destinations:
     max_accepted_mem: 500
     min_accepted_gpus: 1
     max_accepted_gpus: 4
-    params:
-      requirements: 'GalaxyGroup == "pxe-gpu"'
-      docker_run_extra_arguments: "{entity.params.get('docker_run_extra_arguments') or ''} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
-      singularity_run_extra_arguments: "{entity.params.get('singularity_run_extra_arguments') or ''} --nv --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
     env:
       GPU_AVAILABLE: 1
+    context:
+      galaxy_group: 'GalaxyGroup == "pxe-gpu"'
+    params:
+      requirements: "{galaxy_group}"
+      request_gpus: "{gpus or 0}"
+      docker_run_extra_arguments: "{entity.params.get('docker_run_extra_arguments') or ''} --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
+      singularity_run_extra_arguments: "{entity.params.get('singularity_run_extra_arguments') or ''} --nv --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
+    rules:
+      - id: GPU model preferences
+        if: |
+          "exclude_gpu_models" in entity.context or "include_gpu_models" in entity.context
+        execute: |
+          exclude_gpu_models = entity.context.get('exclude_gpu_models', [])
+          include_gpu_models = entity.context.get('include_gpu_models', [])
+          existing_requirements = galaxy_group
+          gpu_conditions_list = []
+          if exclude_gpu_models:
+              exclude_conditions = ' && '.join(
+                  f'(GPUs_DeviceName != "{model}")' for model in exclude_gpu_models
+              )
+              gpu_conditions_list.append(exclude_conditions)
+          if include_gpu_models:
+              include_conditions = ' || '.join(
+                  f'(GPUs_DeviceName == "{model}")' for model in include_gpu_models
+              )
+              gpu_conditions_list.append(f'({include_conditions})')
+          # Combine all GPU conditions with AND
+          if gpu_conditions_list:
+              gpu_conditions = ' && '.join(gpu_conditions_list)
+              # Combine with existing requirements with AND
+              if existing_requirements:
+                  entity.params['requirements'] = f'{gpu_conditions} && ({existing_requirements})'
+              else:
+                  entity.params['requirements'] = gpu_conditions
+
 
   # This means a GPU can be shared by max 4 jobs at the same time
-  condor_container_gpu_divide4:
-    inherits: condor_container_gpu
-    max_accepted_gpus: 1
-    params:
-      singularity_enabled: false  # sharing GPUs has not been tested with Singularity
-      requirements: 'GalaxyGroup == "pxe-gpu-div4"'
-    scheduling:
-      require:
-        - gpu-divided
-      reject:
-        - singularity  # sharing GPUs has not been tested with Singularity
+  # condor_container_gpu_divide4:
+  #   inherits: condor_container_gpu
+  #   max_accepted_gpus: 1
+  #   params:
+  #     singularity_enabled: false  # sharing GPUs has not been tested with Singularity
+  #     requirements: 'GalaxyGroup == "pxe-gpu-div4"'
+  #   scheduling:
+  #     require:
+  #       - gpu-divided
+  #     reject:
+  #       - singularity  # sharing GPUs has not been tested with Singularity
 
   condor_singularity_with_conda:
     inherits: basic_singularity_destination
-    runner: condor
+    runner: htcondor
     max_accepted_cores: 64
     max_accepted_mem: 1000
     min_accepted_gpus: 0
@@ -569,7 +634,7 @@ destinations:
         - conda
 
   condor_internal:
-    runner: condor
+    runner: htcondor
     max_accepted_cores: 20
     max_accepted_mem: 10
     min_accepted_gpus: 0

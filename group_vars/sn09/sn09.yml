@@ -54,7 +54,7 @@ firewall_htcondor_shared_port_service: >
   <service>
     <short>HTCondor Shared Port</short>
     <description>HTCondor shared port service.</description>
-    <port protocol="tcp" port="9628"/>
+    <port protocol="tcp" port="9618"/>
   </service>
 
 # fs-maintenance
@@ -205,6 +205,10 @@ nginx_ssl_role: usegalaxy-eu.certbot
 nginx_conf_ssl_certificate: /etc/ssl/certs/fullchain.pem
 nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
 
+# Error pages, served by Nginx
+error_pages_brand_tokens_url: https://cdn.jsdelivr.net/npm/@galaxyproject/brand-tokens@0.1.0/dist/tokens.css
+error_pages_brand_tokens_checksum: sha256:5f53be010da7adaad575c706956657102c7cd6353c31130714dd6c750041369e
+
 # Dynmotd
 dynmotd_custom:
   - name: Condor
@@ -230,13 +234,18 @@ galaxy_systemd_gunicorn_timeout: 600
 galaxy_systemd_handlers: 6
 galaxy_systemd_workflow_schedulers: 3
 
-galaxy_systemd_gunicorn_env: '{{ apollo_env }} GALAXY_DROPBOX_APP_CLIENT_ID={{ dropbox_app_client_id }} GALAXY_DROPBOX_APP_CLIENT_SECRET={{ dropbox_app_client_secret }} GALAXY_GOOGLE_DRIVE_APP_CLIENT_ID={{ google_drive_oauth_client_id }} GALAXY_GOOGLE_DRIVE_APP_CLIENT_SECRET={{ google_drive_oauth_client_secret }} GALAXY_VIRTUAL_ENV={{ galaxy_venv_dir }} GALAXY_LIB={{ galaxy_server_dir }}/lib'
-galaxy_systemd_handler_env: '{{ galaxy_systemd_gunicorn_env }}'
+galaxy_systemd_gunicorn_env: '{{ apollo_env }} GALAXY_ONEDRIVE_CLIENT_ID={{ onedrive_client_id }} GALAXY_ONEDRIVE_CLIENT_SECRET={{ onedrive_client_secret }} GALAXY_DROPBOX_APP_CLIENT_ID={{ dropbox_app_client_id }} GALAXY_DROPBOX_APP_CLIENT_SECRET={{ dropbox_app_client_secret }} GALAXY_GOOGLE_DRIVE_APP_CLIENT_ID={{ google_drive_oauth_client_id }} GALAXY_GOOGLE_DRIVE_APP_CLIENT_SECRET={{ google_drive_oauth_client_secret }} GALAXY_VIRTUAL_ENV={{ galaxy_venv_dir }} GALAXY_LIB={{ galaxy_server_dir }}/lib'
+galaxy_systemd_handler_env: '{{ galaxy_systemd_gunicorn_env }} PULSAR_RELAY_ALLOW_INSECURE=1'
 galaxy_systemd_workflow_scheduler_env: '{{ galaxy_systemd_gunicorn_env }}'
+
+galaxy_systemd_sse_monitor: false
 
 galaxy_systemd_memory_limit: 35
 galaxy_systemd_memory_limit_handler: 40
 galaxy_systemd_memory_limit_workflow: 15
+
+galaxy_systemd_gunicorn_max_requests: 25920000  # 24h assuming 300 Requests per second
+galaxy_systemd_gunicorn_max_requests_jitter: 3240000  # 3h assuming 300 Requests per second
 
 # gie_proxy
 gie_proxy_dir: '{{ galaxy_root }}/gie-proxy/proxy'
@@ -311,7 +320,9 @@ galaxy_user:
   home: /opt/galaxy
   uid: 999
   shell: /bin/bash
-
+galaxy_webhook_dir: "{{ galaxy_mutable_data_dir }}/webhooks"
+galaxy_tour_dir: "{{ galaxy_mutable_data_dir }}/tours"
+tpv_mutable_dir: "{{ galaxy_mutable_data_dir }}/total_perspective_vortex"
 # Galaxy configuration files will be written with these permissions (mode argument to Ansible copy/template module)
 galaxy_config_perms: 0644
 
@@ -361,7 +372,7 @@ galaxy_instance_hostname: usegalaxy.eu
 galaxy_config_style: yaml
 
 galaxy_repo: 'https://github.com/usegalaxy-eu/galaxy.git'
-galaxy_commit_id: 'release_26.0_europe'
+galaxy_commit_id: 'release_26.1_europe'
 galaxy_force_checkout: true # discard any modified files
 #galaxy_admin_email_from: 'noreply@usegalaxy.eu'
 
@@ -372,7 +383,8 @@ galaxy_config: '{{ galaxy_config_hash }}'
 # Galaxy Subdomains
 galaxy_themes_ansible_file_path: '{{ playbook_dir }}/files/galaxy/subdomains'
 galaxy_themes_default_welcome: https://galaxyproject.org/bare/eu/usegalaxy/main/
-galaxy_themes_welcome_url_prefix: https://usegalaxy-eu.github.io/index-
+# the subdomain key (e.g. earth-system) will be added after the prefix
+galaxy_themes_welcome_url_prefix: https://galaxyproject.org/bare/eu/usegalaxy/
 
 galaxy_config_file_src_dir: files/galaxy
 galaxy_config_files:
@@ -431,6 +443,8 @@ galaxy_config_files:
 
 galaxy_config_template_src_dir: templates/galaxy
 galaxy_config_templates:
+  - src: '{{ galaxy_config_template_src_dir }}/config/agent_model_capabilities.yml.j2'
+    dest: '{{ galaxy_config_dir }}/agent_model_capabilities.yml'
   - src: '{{ galaxy_config_template_src_dir }}/config/build_sites.yml.j2'
     dest: "{{ galaxy_config['galaxy']['build_sites_config_file'] }}"
   - src: '{{ galaxy_config_template_src_dir }}/config/global_host_filters.py.j2'

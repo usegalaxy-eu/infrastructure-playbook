@@ -13,7 +13,7 @@ tools:
         gpus: int(job.get_param_values(app)['__job_resource']['gpu'])
 
   _basic_internal_tool:
-    asbtract: true
+    abstract: true
     rules:
       - id: no-pulsar
         if: user is not None
@@ -56,13 +56,30 @@ tools:
   _basic_numba_tool:
     abstract: true
     env:
-      NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+      NUMBA_CACHE_DIR: /data/misc06/tmp
       OMP_NUM_THREADS: 4
       OPENBLAS_NUM_THREADS: 4
       MKL_NUM_THREADS: 4
       VECLIB_MAXIMUM_THREADS: 4
       NUMEXPR_NUM_THREADS: 4
       NUMBA_NUM_THREADS: 4
+
+
+  # User Defined Tools will be used for GCC ppresentaion and
+  # we may want to comment out after sense is a beta feature
+  # lets run in embedded pulsar to reduce the jwd scope and make it more secure
+  # running docker is fine here
+  user_defined-.*:
+      cores: 1
+      mem: 3.7
+      rules:
+      - id: require_login_user_defined
+        if: user is None
+        fail: An account is required to run this tool. Please log in or create an account.
+      scheduling:
+        require:
+          - docker
+          - embedded-pulsar
 
   __.*__:
     inherits: _basic_internal_tool
@@ -89,7 +106,7 @@ tools:
     cores: 1
     mem: 3
     env:
-      TEMP: /data/1/galaxy_db/tmp
+      TEMP: /data/misc06/tmp
 
   CONVERTER_gff_to_bed_0:
     inherits: _basic_internal_tool
@@ -132,6 +149,25 @@ tools:
   toolshed.g2.bx.psu.edu/repos/bgruening/keras_train_and_eval/keras_train_and_eval/.*:
     inherits: _basic_gpu_resource_param_tool
 
+  toolshed.g2.bx.psu.edu/repos/iuc/kaiju_kaiju/kaiju_kaiju/.*:
+    mem: |
+      # kaiju has memory requirements depending on its input reference database
+      # according to: https://github.com/bioinformatics-centre/kaiju#creating-the-kaiju-index
+      # the calculation below should pick sufficient memory as long as no new potentially
+      # larger databases are provided.
+      mem_reqs = {
+          "viruses": 4,
+          "plasmids": 4,
+          "fungi": 8,
+          "refseq": 128,
+          "refseq_nr": 164,
+          "nr": 256,
+          "nr_euk": 256,
+      }
+      ref = job.get_param_values(app).get("reference", "")
+      ref_type = ref.split("_", maxsplit=1)[-1]
+      mem_reqs.get(ref_type, 4)
+
   toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy/.*:
     cores: 2
     rules:
@@ -149,6 +185,8 @@ tools:
         cores: 18
         mem: 64
 
+  toolshed.g2.bx.psu.edu/repos/iuc/gem_check_memote/gem_check_memote/.*:
+    mem: 24
 
   toolshed.g2.bx.psu.edu/repos/iuc/mummer_mummer/mummer_mummer/.*:
     mem: 8
@@ -178,9 +216,6 @@ tools:
   toolshed.g2.bx.psu.edu/repos/rnateam/htseq_clip/htseq_clip/.*:
     cores: 4
     mem: 16
-    #scheduling:
-    #  prefer:
-    #    - condor-tpv
 
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold/.*:
     cores: 10
@@ -256,6 +291,14 @@ tools:
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
 
+  # this is for tabular learner tool
+  toolshed.g2.bx.psu.edu/repos/goeckslab/pycaret_[^/]*/pycaret_[^/]*/3.3.2.*:
+    params:
+      container_override: [{type: singularity, shell: '/bin/sh', identifier: "/cvmfs/main.galaxyproject.org/singularity/galaxy-pycaret:3.3.2--0"}]
+
+  toolshed.g2.bx.psu.edu/repos/goeckslab/tabular_learner/tabular_learner/0\.1\..*:
+    inherits: toolshed.g2.bx.psu.edu/repos/goeckslab/pycaret_[^/]*/pycaret_[^/]*/3.3.2.*
+
   toolshed.g2.bx.psu.edu/repos/rnateam/splitfasta/rbc_splitfasta/.*:
     # this is only implemented in 0.6.0+, consider adding a rule checking that `$inputFile.metadata.sequences` is not bigger than 1000 and the version is less 0.6.0
     env:
@@ -279,6 +322,17 @@ tools:
     gpus: 1
     cores: 10
     mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_forestmamba/3dtrees_forestmamba/.*:
+    gpus: 1
+    cores: 10
+    mem: 20
+    params:
+      docker_env_CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
+      docker_run_extra_arguments: ' --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
+    context:
+      exclude_gpu_models: ["Tesla T4"]
+      include_gpu_models: ["NVIDIA L40S", "Tesla V100-PCIE-32GB"]
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_standardization/3dtrees_standardization/.*:
     cores: 10
@@ -306,9 +360,10 @@ tools:
       docker_run_extra_arguments: " --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,compute "
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/msconvert/msconvert/.*:
-    ## seems to be still needed 2025/12
+    ## seems to be still needed 2026/06
+    ## https://github.com/usegalaxy-eu/infrastructure-playbook/pull/2154
     params:
-      docker_run_extra_arguments: --user 999
+      docker_run_extra_arguments: --user 999 -v /bin/false:/usr/bin/sudo:ro
 
   toolshed.g2.bx.psu.edu/repos/goeckslab/vitessce_spatial/vitessce_spatial/.*:
     params:
@@ -387,9 +442,9 @@ tools:
       docker_run_extra_arguments: ' --gpus all '
     env:
       GPU_AVAILABLE: 1
-    scheduling:
-      require:
-        - gpu-divided
+    # scheduling:
+    #   require:
+    #     - gpu-divided
 
   toolshed.g2.bx.psu.edu/repos/bgruening/whisper/whisper/.*:
     cores: 1
@@ -408,9 +463,9 @@ tools:
       WHISPERX_MODEL_DIR: "/data/db/models/whisperx/whisperx_models/"
       WHISPERX_DEVICE: "cuda"
       WHISPERX_COMPUTE_TYPE: "float16"
-    scheduling:
-      require:
-        - gpu-divided
+    # scheduling:
+    #   require:
+    #     - gpu-divided
 
   toolshed.g2.bx.psu.edu/repos/iuc/biapy/biapy/.*:
     inherits: _basic_docker_tool
@@ -448,24 +503,12 @@ tools:
     cores: 10
     mem: 90
 
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastn_wrapper/.*:
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/.*:
     env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastp_wrapper/.*:
-    env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastx_wrapper/.*:
-    env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_makeblastdb/.*:
-    env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_tblastn_wrapper/.*:
-    env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_tblastx_wrapper/.*:
-    env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
+      - name: BLASTDB
+        value: /data/db/databases/blast/taxdb
+      - name: SINGULARITYENV_BLASTDB
+        value: $BLASTDB
 
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_eval/cherri_eval/.*:
     cores: 1
@@ -539,7 +582,7 @@ tools:
     mem: 90
     params:
       docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
-      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb13/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/1/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
       docker_default_container_id: centos:8.3.2011
         # see https://github.com/galaxyproject/galaxy/issues/16121#issuecomment-1555153421
         ##- embedded-pulsar
@@ -549,7 +592,7 @@ tools:
     mem: 20
     params:
       docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
-      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb13/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/1/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
       docker_default_container_id: centos:8.3.2011
         # see https://github.com/galaxyproject/galaxy/issues/16121#issuecomment-1555153421
         ##- embedded-pulsar
@@ -557,7 +600,7 @@ tools:
   '.*bioext_bam2msa.*':
     params:
       docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
-      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb13/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/1/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
       docker_default_container_id: centos:8.3.2011
     scheduling:
       require:
@@ -567,7 +610,7 @@ tools:
   'last_*':
     params:
       docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
-      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb13/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/1/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
       docker_default_container_id: centos:8.3.2011
     scheduling:
       require:
@@ -598,7 +641,7 @@ tools:
         cores: 12
 
   toolshed.g2.bx.psu.edu/repos/bgruening/openduck_run_smd/openduck_run_smd/.*:
-    env:
+    params:
       docker_set_user: 1000
       docker_run_extra_arguments: '-e "OPENDUCK_GPU_PARAM=$OPENDUCK_GPU_PARAM" --gpus all'
 
@@ -800,12 +843,52 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/bgruening/flexynesis/flexynesis/.*:
     rules:
+      - if: helpers.tool_version_gte(tool, '1.1.11+galaxy0')
+        params:
+          docker_run_extra_arguments: --user 999
       - id: flexynesis_gnn_high_mem
         if: |
-          params = job.get_param_values(app)
-          params.get('training_type', {}).get('model_class', {}).get('model_class') == 'GNN'
-        cores: 4
+          retval = False
+          if helpers.tool_version_gte(tool, '1.1.11+galaxy0'):
+            options = job.get_param_values(app)
+            if options:
+              training_type = options.get('training_type', {})
+              if training_type and isinstance(training_type, dict):
+                model_select = training_type.get('model_class', {})
+                if model_select and isinstance(model_select, dict):
+                  retval = model_select.get('model_class') == 'GNN'
+          retval
+        params:
+          docker_run_extra_arguments: --user 999 --gpus all
+        gpus: 1
+        cores: 20
         mem: 100
+        context:
+          exclude_gpu_models: ["Tesla T4"] # T4 GPUs have only 16 GB of memory, which is not enough for the GNN model
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/flexynesis_cbioportal_import/flexynesis_cbioportal_import/.*:
+    rules:
+      - if: helpers.tool_version_gte(tool, '1.1.11+galaxy0')
+        params:
+          docker_run_extra_arguments: --user 999
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/flexynesis_plot/flexynesis_plot/.*:
+    rules:
+      - if: helpers.tool_version_gte(tool, '1.1.11+galaxy0')
+        params:
+          docker_run_extra_arguments: --user 999
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/flexynesis_utils/flexynesis_utils/.*:
+    rules:
+      - if: helpers.tool_version_gte(tool, '1.1.11+galaxy0')
+        params:
+          docker_run_extra_arguments: --user 999
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/flexynesis_infer/flexynesis_infer/.*:
+    rules:
+      - if: helpers.tool_version_gte(tool, '1.1.11+galaxy0')
+        params:
+          docker_run_extra_arguments: --user 999
 
   toolshed.g2.bx.psu.edu/repos/genouest/helixer/helixer/.*:
     params:
@@ -818,3 +901,29 @@ tools:
   toolshed.g2.bx.psu.edu/repos/bgruening/logan_protein_embed_query/logan_protein_embed_query/.*:
     cores: 4
     mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/recetox/aoptk_.*:
+    env:
+      docker_env_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
+      SINGULARITYENV_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
+      LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/llm_hub/llm_hub/.*:
+    mem: 1
+    env:
+      docker_env_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
+      SINGULARITYENV_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
+      LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
+
+  toolshed.g2.bx.psu.edu/tools/bgruening/kraken_ocr/kraken_ocr/.*:
+    env:
+      TORCHINDUCTOR_CACHE_DIR: "$_GALAXY_JOB_TMP_DIR"
+
+  toolshed.g2.bx.psu.edu/repos/imgteam/bfconvert/ip_convertimage/.*:
+    cores: 12
+    mem: 30
+    env:
+      SINGULARITYENV__JAVA_OPTIONS: -Xmx{int(mem)}G
+
+  toolshed.g2.bx.psu.edu/repos/iuc/wgcna_network/wgcna_network/.*:
+    cores: 4

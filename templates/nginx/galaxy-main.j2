@@ -49,31 +49,43 @@ server {
     listen 443 default_server;
     listen [::]:443 default_server;
 
-    error_page 404 /404.html;
-    error_page 502 /502.html;
-    error_page 503 /503.html;
-    error_page 504 /503.html;
+    {% for error_code in [400, 403, 404, 408, 500, 502, 503, 504] %}
 
-    location /404.html {
-        root /usr/share/nginx/html;
+    error_page {{ error_code }} /{{ error_code }}.html;
+
+    location = /{{ error_code }}.html {
+        alias {{ error_pages_dest }}/{{ error_code }}.html;
         internal;
     }
-    location /502.html {
-        root /usr/share/nginx/html;
-        internal;
-    }
-    location /503.html {
-        root /usr/share/nginx/html;
-        internal;
-    }
-    location /504.html {
-        root /usr/share/nginx/html;
-        internal;
-    }
+
+    {% endfor %}
 
     # Move to remote storage, hopefully hammer local disk slightly less?
     #client_body_temp_path  /data/dnb01/nginx_upload_store/;
     client_body_buffer_size 1024m;
+
+    # Long-lived Server-Sent Events stream.
+    # Galaxy sends ``X-Accel-Buffering: no`` on the response, which
+    # disables nginx response buffering just for this endpoint.
+    # The keepalive comment fires every 30s so the read timeout
+    # only needs to be a comfortable margin above that.
+    location /api/events/stream {
+        {{ upstream_galaxy() | indent(8, false) }}
+
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+
+        # Disable buffering and gzip explicitly. ``X-Accel-Buffering``
+        # already does this, but pinning it here also covers setups
+        # where a sub-filter strips upstream headers.
+        proxy_buffering off;
+        proxy_cache off;
+        gzip off;
+
+        # Keepalives fire every 30s; allow generous slack on top.
+        proxy_read_timeout 10m;
+        proxy_send_timeout 10m;
+    }
 
     location / {
         {{ upstream_galaxy() | indent(8, false) }}
@@ -173,7 +185,7 @@ server {
         proxy_set_header         Upgrade $http_upgrade;
         proxy_set_header         Connection "upgrade";
         client_max_body_size     0;
-        proxy_pass http://upload.galaxyproject.eu:1081/api/upload/resumable_upload;
+        proxy_pass http://upload.bi.privat:1081/api/upload/resumable_upload;
     }
 
     location /phinch {
@@ -183,6 +195,10 @@ server {
     location /static {
         {{ upstream_galaxy() | indent(8, false) }}
         {{ upstream_galaxy_cache() | indent(8, false) }}
+    }
+
+    location = /static/error_pages/brand-tokens.css {
+        alias {{ error_pages_dest }}/brand-tokens.css;
     }
 
     location /static/vgcn {
@@ -231,6 +247,12 @@ server {
             proxy_pass          http://127.0.0.1:{{ gie_proxy_port }};
         }
 
+    location = /.well-known/security.txt {
+        alias /etc/nginx/security.txt;
+        default_type text/plain;
+        add_header Cache-Control "no-store";
+    }
+
     location /.well-known/ {
         proxy_pass          http://127.0.0.1:8118;
         proxy_set_header    Host                $host;
@@ -243,7 +265,7 @@ server {
     {{ gapars_nginx_config }}
 
     location /apollo/ {
-        proxy_pass http://apollo.internal.galaxyproject.eu/apollo/;
+        proxy_pass http://apollo.bi.privat:8080/apollo/;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
@@ -251,7 +273,7 @@ server {
     }
 
     location /apollo-permapol/ {
-        proxy_pass http://apollo.internal.galaxyproject.eu/apollo-permapol/;
+        proxy_pass http://apollo.bi.privat/apollo-permapol/;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
@@ -259,7 +281,7 @@ server {
     }
 
     location /apollo_api/ {
-        proxy_pass http://apollo.internal.galaxyproject.eu/apollo_api/;
+        proxy_pass http://apollo.bi.privat/apollo_api/;
         proxy_read_timeout 300;
     }
 
@@ -346,6 +368,13 @@ server {
     return 302 $scheme://singlecell.usegalaxy.eu$request_uri;
 }
 
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    server_name climate.usegalaxy.eu;
+    return 302 $scheme://earth-system.usegalaxy.eu$request_uri;
+}
 
 server {
     listen 443 ssl;

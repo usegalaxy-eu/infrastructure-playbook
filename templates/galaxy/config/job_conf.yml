@@ -15,6 +15,8 @@ galaxy_jobconf:
     #workers: 3
     - id: condor
       load: galaxy.jobs.runners.condor:CondorJobRunner
+    - id: htcondor
+      load: galaxy.jobs.runners.htcondor:HTCondorJobRunner
     - id: local
       load: galaxy.jobs.runners.local:LocalJobRunner
     - id: pulsar_embedded
@@ -250,8 +252,15 @@ galaxy_jobconf:
         amqp_consumer_timeout: 2.0
         amqp_publish_retry: "true"
         amqp_publish_retry_max_retries: 60
+    - id: pulsar_eu_nemo
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        relay_url: "{{ pulsar_nemo_relay_url }}"
+        relay_username: "{{ pulsar_nemo_relay_username }}"
+        relay_password: "{{ pulsar_nemo_relay_password }}"
+        galaxy_url: "https://usegalaxy.eu"
 
-    
+
   default_destination: tpv_dispatcher
   destinations:
     - id: local
@@ -283,30 +292,15 @@ galaxy_jobconf:
     - id: usegpu
       names: [gpu]    
   limits:
-    - type: "destination_user_concurrent_jobs"
-      id: "condor_upload"
-      value: "5"
     - type: "walltime"
       value: "'148:00:00'"
     # Limited time for Interactive tools
     - type: "destination_user_concurrent_jobs"
       value: "2"
-      id: "interactive_pulsar"
-    - type: "destination_user_concurrent_jobs"
-      value: "2"
-      id: "interactive_pulsar_hi_mem"
+      id: "pulsar_embedded"
     - type: "output_size"
       value: "'300GB'"
     - type: "registered_user_concurrent_jobs"
-      value: "40"
+      value: "20"
     - type: "anonymous_user_concurrent_jobs"
       value: "3"
-    - type: "destination_user_concurrent_jobs"
-      id: "sh_fdid_condor_docker_ie"
-      value: "3"
-    - type: "destination_user_concurrent_jobs"
-      id: "sh_fdid_condor_docker_ie_interactive"
-      value: "3"
-    - type: "destination_user_concurrent_jobs"
-      id: "sh_fdid_condor_intensive_jobs"
-      value: "10"

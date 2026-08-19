@@ -105,6 +105,7 @@ fsm_intervals:
   short: "3d"
   medium: "7d"
   long: "31d"
+  s3_cache: "15d"
 fsm_scripts:
   temporary_dirs:
     enable: true
@@ -118,8 +119,16 @@ fsm_scripts:
       - /data/dnb06/galaxy_db/tmp
       - "{{ generic_tmp_dir }}"
       - "{{ short_term_web_storage_dir }}"
-      - "{{ object_store_cache_dir }}"
     time: "{{ fsm_intervals.long }}"
+  s3_cache_dirs:
+    enable: true
+    src: "s3_cache_dirs.sh.j2"
+    dst: "{{ fsm_maintenance_dir }}/s3_cache_dirs.sh"
+    user: "{{ fsm_galaxy_user.username }}"
+    group: "{{ fsm_galaxy_user.groupname }}"
+    paths:
+      - "{{ object_store_cache_dir }}"
+    time: "{{ fsm_intervals.s3_cache }}"
   upload_dirs:
     enable: true
     src: "uploads.sh.j2"

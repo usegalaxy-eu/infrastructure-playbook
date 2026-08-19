@@ -1,10 +1,14 @@
 ---
+hostname: influxdb.galaxyproject.eu
+
 swap_file_size_mb: '5120'
 swap_file_path: /data/swapfile
 
 docker_users:
   - centos
+
 # influxdb
+influxdb_hostname: "{{ hostname }}"
 influxdb_https_enabled: "true"
 
 influxdb_users:
@@ -18,8 +22,8 @@ influxdb_data_dir: /data/monitoring/influxdb_data
 influxdb_container_standalone_setup_details:
   volumes:
     - "{{ influxdb_data_dir }}:/var/lib/influxdb"
-    - "/etc/pki/tls/certs:/etc/ssl/certs/"
-    - "/etc/ssl/user:/etc/ssl/user"
+    - "/etc/pki/tls/certs:/etc/ssl/user/influxdb/public/"
+    - "/etc/ssl/user:/etc/ssl/user/influxdb/private/"
   ports:
     - 8086:8086
   env:
@@ -27,8 +31,8 @@ influxdb_container_standalone_setup_details:
       'INFLUXDB_HTTP_AUTH_ENABLED': "true",
       'INFLUXDB_HTTP_ENABLED': "true",
       'INFLUXDB_HTTP_HTTPS_ENABLED': "{{ influxdb_https_enabled }}",
-      'INFLUXDB_HTTP_HTTPS_CERTIFICATE': "/etc/ssl/certs/fullchain.pem",
-      'INFLUXDB_HTTP_HTTPS_PRIVATE_KEY': "/etc/ssl/user/privkey-influxdb.pem",
+      'INFLUXDB_HTTP_HTTPS_CERTIFICATE': "/etc/ssl/user/influxdb/public/fullchain.pem",
+      'INFLUXDB_HTTP_HTTPS_PRIVATE_KEY': "/etc/ssl/user/influxdb/private/privkey-influxdb.pem",
       'INFLUXDB_HTTP_LOG_ENABLED': "false",
       'INFLUXDB_DATA_INDEX_VERSION': "tsi1",
       'INFLUXDB_DATA_CACHE_MAX_MEMORY_SYZE': '1048576000',
@@ -36,6 +40,8 @@ influxdb_container_standalone_setup_details:
       'INFLUXDB_DATA_MAX_VALUES_PER_TAG': '3000000',
       'INFLUXDB_LOGGING_LEVEL': "error"
     }
+  ulimits:
+    - "nofile:10240:10240"
 # see:
 # https://docs.influxdata.com/influxdb/v1.8/administration/config/
 

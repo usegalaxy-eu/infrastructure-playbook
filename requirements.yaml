@@ -1,7 +1,7 @@
 ---
 collections:
   - name: community.general
-    version: 8.0.2
+    version: 8.2.0
     source: https://galaxy.ansible.com
   - name: amazon.aws
     version: 1.5.0
@@ -12,25 +12,10 @@ collections:
     source: https://galaxy.ansible.com
     type: galaxy
   - name: grafana.grafana
-    # This collection has dependencies
-    # (https://github.com/grafana/grafana-ansible-collection/blob/5.2.0/requirements.yml)
-    # that have not been defined as they should
-    # (https://docs.ansible.com/ansible/latest/dev_guide/developing_collections_shared.html#listing-collection-dependencies).
-    # Therefore, they have to be included in this file. @domgz opened an issue on the repository of the Grafana Ansible collection
-    # https://github.com/grafana/grafana-ansible-collection/issues/222
-    # notifying the developers of this issue.
-    version: 5.3.0
-  # - name: community.general  # required by `grafana.grafana` (already specified above)
-  #   source: https://github.com/ansible-collections/community.general.git
-  #   version: 9.0.1
-  #   type: git
-  - name: community.grafana # required by `grafana.grafana`
-    source: https://github.com/ansible-collections/community.grafana.git
-    version: 2.0.0
-    type: git
-  - name: ansible.posix # required by `grafana.grafana`
+    version: 6.1.0
+  - name: ansible.posix
     source: https://github.com/ansible-collections/ansible.posix.git
-    version: 1.5.2
+    version: 1.5.4
     type: git
   - name: community.rabbitmq
     version: 1.1.0
@@ -64,7 +49,8 @@ roles:
     src: https://github.com/dj-wasabi/ansible-telegraf
     version: 0.14.2
   - name: galaxyproject.galaxy
-    version: 0.12.5
+    src: https://github.com/galaxyproject/ansible-galaxy
+    version: ede09c4db04f37cbd51b9de060e70db58d6a2681
   - name: galaxyproject.cvmfs
     src: https://github.com/usegalaxy-eu/ansible-cvmfs
     version: master
@@ -99,7 +85,7 @@ roles:
     src: https://github.com/usegalaxy-eu/ansible-certbot
     version: 0.1.5
   - name: usegalaxy_eu.galaxy_systemd
-    version: 2.2.0
+    version: 2.4.0
   - name: usegalaxy-eu.dynmotd
     src: https://github.com/usegalaxy-eu/ansible-dynmotd
     version: 0.1.0
@@ -112,7 +98,7 @@ roles:
     version: 1.0.1
   - name: grycap.htcondor
     src: https://github.com/usegalaxy-eu/ansible-htcondor-grycap
-    version: d9a4aab0052dfb31d48c986d39a7f5e3692abba4
+    version: 33ea3aafd9c5d33a1063534e0604631696c052f9
   - name: usegalaxy-eu.update-hosts
     src: https://github.com/usegalaxy-eu/ansible-update-hosts
     version: 0.4.0
@@ -122,14 +108,15 @@ roles:
     src: https://github.com/usegalaxy-eu/ansible-autofs
     version: 1.3.0
   - name: usegalaxy_eu.fs_maintenance
-    version: 0.0.9
+    version: 0.1.0
     src: https://github.com/usegalaxy-eu/ansible-fs-maintenance
   - name: usegalaxy_eu.rustus
     version: 0.3.0
   - name: usegalaxy_eu.rabbitmqserver
-    version: 1.5.0
+    version: ulimits
+    src: https://github.com/usegalaxy-eu/ansible-rabbitmq
   - name: usegalaxy_eu.influxdbserver
-    version: 1.1.1
+    version: 2.0.0
   - name: usegalaxy_eu.flower
     version: 2.1.1
   - name: usegalaxy_eu.walle
@@ -151,8 +138,6 @@ roles:
     version: 0.3.1
   - name: usegalaxy_eu.tpv_auto_lint
     version: 0.4.5
-  - name: geerlingguy.redis
-    version: 1.9.1
   - name: artis3n.tailscale
     version: v4.5.0
   - name: dokku_bot.ansible_dokku
@@ -162,7 +147,7 @@ roles:
     version: 2.0.0
   - src: https://github.com/usegalaxy-eu/ansible-fw-glxeu-generic
     name: usegalaxy_eu.firewall
-    version: 2.0.0
+    version: 2.1.0
   - name: usegalaxy_eu.dnbd3
     src: https://github.com/usegalaxy-eu/ansible-dnbd3
     version: main
@@ -188,3 +173,9 @@ roles:
   - name: l3d.restic
     version: v0.9.2
     src: https://github.com/roles-ansible/ansible_role_restic
+  - name: usegalaxy_eu.rocky_security_repository
+    src: https://github.com/usegalaxy-eu/ansible-rocky-security-repository
+    version: v0.1.0
+  - name: usegalaxy_eu.ucsc_genome_browser
+    version: a0ca168cc0bd0bf8ff7b1df97b7a8b4e797f7524
+    src: https://github.com/usegalaxy-eu/ansible-ucsc-genome-browser

@@ -3,12 +3,6 @@
 tools:
   _conda_in_container:
     abstract: true
-    env:
-      # TPV is not passing ENV vars into the containers as it seems (2026-01), so lets set this for all containers and pass in with "SINGULARITYENV_"
-      - name: _JAVA_OPTIONS
-        value: -Djava.io.tmpdir=$_GALAXY_JOB_TMP_DIR -Xmx{round(mem*0.9*1024)}m -Xms256m
-      - name: SINGULARITYENV__JAVA_OPTIONS
-        value: $_JAVA_OPTIONS
     scheduling:
       require:
         - conda
@@ -85,19 +79,6 @@ tools:
   toolshed.g2.bx.psu.edu/repos/bgruening-util/stress_ng/stress_ng/.*:
     inherits: _conda_in_container
 
-  toolshed.g2.bx.psu.edu/repos/bgruening/llm_hub/llm_hub/.*:
-    inhertis: _conda_in_container
-    ##
-    # can be removed when the singularity container is present
-    # this tool strictly needs singularity, as our Docker container has limited internet access
-    # so either singularity or conda, but not docker
-    mem: 1
-    env:
-      docker_env_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
-      SINGULARITYENV_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
-      LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
-
-
   toolshed.g2.bx.psu.edu/repos/computational-metabolomics/sirius_csifingerid/sirius_csifingerid/.*:
     inherits: _conda_in_container
 
@@ -134,7 +115,7 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/.*:
     inherits: _conda_in_container
     cores: 8
-    memory: 24
+    mem: 24
 
   toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/.*:
     inherits: _conda_in_container

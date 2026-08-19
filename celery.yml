@@ -2,7 +2,6 @@
 - name: Celery cluster
   vars:
     celerycluster_ansible_group: celerycluster
-    tailscale_node_ipv4: "100.111.134.66"
   hosts: "{{ celerycluster_ansible_group }}"
   gather_facts: true
   become: true
@@ -73,7 +72,9 @@
             mode: "0644"
   roles:
     - geerlingguy.repo-epel
-    # - artis3n.tailscale  # broken (invalid API key)
+    - usegalaxy_eu.ffmpeg
+    - role: artis3n.tailscale
+      when: celerycluster_is_main_node
     - role: usegalaxy_eu.handy.os_setup
       vars:
         enable_remap_user: true
@@ -81,10 +82,10 @@
         enable_kernel_5: true
         enable_install_software: true
         hostname: "{{ inventory_hostname }}"
-    - usegalaxy_eu.galaxy_systemd
-    - influxdata.chrony
     ## Filesystems
     - usegalaxy-eu.autofs # Set up the mount points which will be needed later
+    - usegalaxy_eu.galaxy_systemd
+    - influxdata.chrony
     - role: usegalaxy_eu.flower
       when: celerycluster_is_main_node
     # - usegalaxy-eu.logrotate # Rotate logs
