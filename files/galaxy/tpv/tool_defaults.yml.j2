@@ -2,6 +2,10 @@
 # ALL tags must be with dashes (-) instead of underscores (_)
 global:
   default_inherits: default
+  context:
+    # Default multiplier applied when HTCondor reports an OOM and Galaxy
+    # resubmits the job through TPV.
+    OOM_Scaling_Factor: 2
 tools:
   default:
     abstract: true
@@ -43,6 +47,12 @@ tools:
       reject:
         - offline
     rules:  # executed in order
+        # Increase memory on HTCondor OOM resubmission.
+      - id: oom_resubmit_increase_memory
+        if: job is not None and job.state == "resubmitted"
+        execute: |
+          entity.mem = f"({entity.mem}) * {OOM_Scaling_Factor}"
+
         # Set accounting group user for jobs
       - id: jobs_user_accounting_group
         if: user is not None
