@@ -2,6 +2,11 @@
 # ALL tags must be with dashes (-) instead of underscores (_)
 global:
   default_inherits: default
+  context:
+    # Base multiplier applied on each OOM resubmission. The accumulated
+    # factor is persisted in the OOM_MEM_SCALE destination param (see
+    # params below), which Galaxy carries across resubmissions.
+    OOM_SCALING_FACTOR: 2
 tools:
   default:
     abstract: true
@@ -39,10 +44,24 @@ tools:
       submit_request_gpus: "{gpus or 0}"
       docker_memory: "{mem}G"
       description: "{tool.id if not tool.id.count('/') == 5 else tool.id.split('/')[4]}"
+      # We persist OOM_MEM_SCALE across resubmissions by using job.destination_params.
+      # On the first run this records the base factor (OOM_SCALING_FACTOR).
+      # On each resubmit TPV re-evaluates this expression, reading the
+      # previously persisted value and multiplying by OOM_SCALING_FACTOR.
+      OOM_MEM_SCALE: "{OOM_SCALING_FACTOR * int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else OOM_SCALING_FACTOR}"
     scheduling:
       reject:
         - offline
     rules:  # executed in order
+        # The accumulated scaling factor is read from the
+        # persisted OOM_MEM_SCALE destination param,
+        # which Galaxy carries across resubmissions.
+      - id: oom_resubmit_increase_memory
+        if: job is not None and job.state == "resubmitted"
+        execute: |
+          _scale = int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else 1
+          entity.mem = f"{entity.mem} * {_scale}"
+
         # Set accounting group user for jobs
       - id: jobs_user_accounting_group
         if: user is not None
