@@ -30,6 +30,7 @@
         - service: http
         - service: https
         - service: ntp
+        - service: ftp  # passive ports are not managed by Traefik
         - port: 9087/tcp  # CVMFS rsync port
 
     - name: Install python docker
