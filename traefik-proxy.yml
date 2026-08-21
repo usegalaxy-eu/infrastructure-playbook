@@ -1,4 +1,25 @@
 ---
+- name: Configure firewall
+  become: true
+  hosts: traefik
+  tasks:
+    - name: Allow access to Traefik entry points
+      ansible.posix.firewalld:
+        port: "{{ item.port | default(omit) }}"
+        service: "{{ item.service | default(omit) }}"
+        permanent: true
+        immediate: true
+        zone: public
+        state: enabled
+      loop:
+        - service: ssh
+        - service: amqps
+        - service: http
+        - service: https
+        - service: ntp
+        - service: ftp  # passive ports are not managed by Traefik
+        - port: 9087/tcp  # CVMFS rsync port
+
 - name: Traefik
   become: true
   hosts: traefik
@@ -15,23 +36,6 @@
         - python3-libselinux
         - policycoreutils-python-utils
         - python3-pip
-
-    - name: Configure firewall to allow access to Traefik entry points
-      ansible.posix.firewalld:
-        port: "{{ item.port | default(omit) }}"
-        service: "{{ item.service | default(omit) }}"
-        permanent: true
-        immediate: true
-        zone: public
-        state: enabled
-      with_items:
-        - service: ssh
-        - service: amqps
-        - service: http
-        - service: https
-        - service: ntp
-        - service: ftp  # passive ports are not managed by Traefik
-        - port: 9087/tcp  # CVMFS rsync port
 
     - name: Install python docker
       become: true
