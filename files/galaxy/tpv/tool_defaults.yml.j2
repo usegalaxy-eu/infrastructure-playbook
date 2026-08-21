@@ -14,7 +14,7 @@ tools:
       - name: GALAXY_MEMORY_MB
         value: "{int(mem * 1024)}" # set 5/2023 might be moved to runner or tool wrappers, related to Galaxy issue 15952
       - name: _JAVA_OPTIONS
-        value: -Xmx{round(mem*0.9*1024)}m -Xms256m -Duser.home=/data/2/galaxy_db/tmp -Djava.io.tmpdir=$_GALAXY_JOB_TMP_DIR
+        value: -Xmx{round(mem*0.9*1024)}m -Xms256m -Duser.home=/data/misc06/tmp -Djava.io.tmpdir=$_GALAXY_JOB_TMP_DIR
       - name: SINGULARITYENV__JAVA_OPTIONS
         value: "$_JAVA_OPTIONS"
       - name: HDF5_USE_FILE_LOCKING
@@ -124,8 +124,6 @@ tools:
       - id: interactive_tool
         if: not (dry_run_mode := job_wrapper is None) and (tool.tool_type == 'interactive')
         # `job_wrapper is None` occurs when TPV is launched in dry-run mode
-        cores: 1
-        mem: 4
         params:
           docker_volumes: $defaults
           container_monitor_result: callback
