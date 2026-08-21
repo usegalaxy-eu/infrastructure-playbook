@@ -191,3 +191,9 @@ traefik_containers:
       "traefik.http.routers.whoami.tls.certresolver": "ts"
     networks:
       - traefik
+
+# `firewalld` policy for FTP passive ports, which are not managed by Traefik
+ftp_policy_name: ftp-passive-ports
+ftp_policy_passive_ports: "5000-5100"
+ftp_policy_ingress_zone: public
+ftp_policy_egress_zone: public

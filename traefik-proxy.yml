@@ -3,6 +3,14 @@
   become: true
   hosts: traefik
   tasks:
+    - name: Ensure IPv4 forwarding is enabled
+      ansible.posix.sysctl:
+        name: net.ipv4.ip_forward
+        value: "1"
+        state: present
+        sysctl_set: yes
+        reload: true
+
     - name: Allow access to Traefik entry points
       ansible.posix.firewalld:
         port: "{{ item.port | default(omit) }}"
@@ -19,6 +27,149 @@
         - service: ntp
         - service: ftp  # passive ports are not managed by Traefik
         - port: 9087/tcp  # CVMFS rsync port
+
+    - name: Configure passive FTP port forwarding
+      vars:
+        ftp_node_hostname: "{{ groups['incoming'][0] }}"
+      block:
+        - name: Resolve FTP node IPv4 address
+          ansible.builtin.command: "getent ahostsv4 {{ ftp_node_hostname }}"
+          register: ftp_getent_ahostsv4
+          changed_when: false
+          check_mode: false
+          failed_when: ftp_getent_ahostsv4.rc != 0 or ftp_getent_ahostsv4.stdout_lines | length == 0
+
+        - name: Read FTP node IPv4 address
+          ansible.builtin.set_fact:
+            ftp_node_address: >-
+              {{
+                ftp_getent_ahostsv4.stdout_lines
+                | select('search', '\s+STREAM\s+')
+                | map('split')
+                | map('first')
+                | first
+              }}
+          check_mode: false
+
+        - name: Validate FTP node IPv4 address
+          ansible.builtin.assert:
+            that:
+              - ftp_node_address is ansible.utils.ipv4
+            fail_msg: >-
+              {{ ftp_node_hostname }} did not resolve to a valid IPv4 address.
+          check_mode: false
+
+        - name: Read permanent firewalld policy names
+          ansible.builtin.command: "firewall-cmd --permanent --get-policies"
+          register: ftp_read_firewalld_policies
+          changed_when: false
+          check_mode: false
+
+        - name: Read existing permanent FTP policy
+          ansible.builtin.command: >-
+            firewall-cmd
+            --permanent
+            --policy={{ ftp_policy_name }}
+            --list-all
+          register: ftp_policy_existing
+          when: ftp_policy_name in ftp_read_firewalld_policies.stdout.split()
+          changed_when: false
+          check_mode: false
+
+        - name: Remove existing permanent FTP policy
+          # no service interruption, changes will be applied on next reload
+          ansible.builtin.command: "firewall-cmd --permanent --delete-policy={{ ftp_policy_name }}"
+          when: ftp_policy_name in ftp_read_firewalld_policies.stdout.split()
+          changed_when: false
+
+        - name: Create permanent passive FTP policy
+          ansible.builtin.command: "firewall-cmd --permanent --new-policy={{ ftp_policy_name }}"
+          changed_when: false
+
+        - name: Configure permanent passive FTP policy
+          ansible.builtin.command:
+            argv: "{{ item.argv }}"
+          loop:
+            - name: Add ingress zone
+              argv:
+                - firewall-cmd
+                - --permanent
+                - "--policy={{ ftp_policy_name }}"
+                - "--add-ingress-zone={{ ftp_policy_ingress_zone }}"
+
+            - name: Add egress zone
+              argv:
+                - firewall-cmd
+                - --permanent
+                - "--policy={{ ftp_policy_name }}"
+                - "--add-egress-zone={{ ftp_policy_egress_zone }}"
+
+            - name: Forward passive FTP ports
+              argv:
+                - firewall-cmd
+                - --permanent
+                - "--policy={{ ftp_policy_name }}"
+                - >-
+                  --add-rich-rule='rule family="ipv4"
+                  forward-port port="{{ ftp_policy_passive_ports }}"
+                  protocol="tcp"
+                  to-port="{{ ftp_policy_passive_ports }}"
+                  to-addr="{{ ftp_node_address }}"'
+
+            - name: Masquerade traffic to FTP node
+              argv:
+                - firewall-cmd
+                - --permanent
+                - "--policy={{ ftp_policy_name }}"
+                - >-
+                  --add-rich-rule='rule family="ipv4"
+                  destination address="{{ ftp_node_address }}/32"
+                  masquerade'
+          loop_control:
+            label: "{{ item.name }}"
+          changed_when: false
+
+        - name: Read configured permanent FTP policy
+          ansible.builtin.command: >-
+            firewall-cmd
+            --permanent
+            --policy={{ ftp_policy_name }}
+            --list-all
+          register: ftp_policy_content
+          changed_when: false
+          when: not ansible_check_mode
+          check_mode: false
+
+        - name: Determine whether FTP policy changed
+          ansible.builtin.set_fact:
+            ftp_policy_changed: >-
+              {{
+                ftp_policy_existing is skipped
+                or
+                (
+                  ftp_policy_existing.stdout_lines
+                  | default([])
+                  | map('trim')
+                  | reject('equalto', '')
+                  | sort
+                  | list
+                )
+                !=
+                (
+                  ftp_policy_content.stdout_lines
+                  | map('trim')
+                  | reject('equalto', '')
+                  | sort
+                  | list
+                )
+              }}
+          changed_when: false
+          when: not ansible_check_mode
+
+        - name: Apply firewall configuration changes
+          ansible.builtin.command: "firewall-cmd --reload"
+          when: ftp_policy_changed is defined and ftp_policy_changed
+          changed_when: true
 
 - name: Traefik
   become: true
