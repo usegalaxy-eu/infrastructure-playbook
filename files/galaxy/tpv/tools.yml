@@ -934,3 +934,27 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/iuc/wgcna_network/wgcna_network/.*:
     cores: 4
+
+  toolshed.g2.bx.psu.edu/repos/iuc/celltypist/celltypist/.*:
+    mem: 8
+    cores: 4
+    rules:
+      - id: celltypist_train
+        if: |
+          retval = False
+          options = job.get_param_values(app)
+          if options:
+            model_source = options.get('model_source', {})
+            if model_source and isinstance(model_source, dict):
+              model_select = model_source.get('history', {})
+              if model_select and isinstance(model_select, dict):
+                retval = model_select.get('history_model_source') == 'train_model'
+          retval
+        mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_operation/spatialdata_operation/.*:
+    mem: 10
+
+  toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_io/spatialdata_io/.*:
+    mem: 10
+    cores: 5
