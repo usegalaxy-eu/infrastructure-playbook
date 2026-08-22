@@ -3,8 +3,9 @@
 global:
   default_inherits: default
   context:
-    # Default multiplier applied when HTCondor reports an OOM and Galaxy
-    # resubmits the job through TPV.
+    # Base multiplier applied on each OOM resubmission. The accumulated
+    # factor is persisted in the OOM_Mem_Scale destination param (see
+    # params below), which Galaxy carries across resubmissions.
     OOM_Scaling_Factor: 2
 tools:
   default:
@@ -43,15 +44,28 @@ tools:
       submit_request_gpus: "{gpus or 0}"
       docker_memory: "{mem}G"
       description: "{tool.id if not tool.id.count('/') == 5 else tool.id.split('/')[4]}"
+      # Persisted by Galaxy across resubmissions (job.destination_params).
+      # On the first run this records the base factor (OOM_Scaling_Factor).
+      # On each resubmit TPV re-evaluates this expression, reading the
+      # previously persisted value and multiplying by OOM_Scaling_Factor,
+      # so the factor grows geometrically (2 -> 4 -> 8 ...). The rule
+      # below reads the same persisted value to scale mem. Mirrors the
+      # SCALING_FACTOR pattern from the TPV docs (tpv_by_example.rst).
+      OOM_Mem_Scale: "{OOM_Scaling_Factor * int(job.destination_params.get('OOM_Mem_Scale', OOM_Scaling_Factor)) if job.destination_params else OOM_Scaling_Factor}"
     scheduling:
       reject:
         - offline
     rules:  # executed in order
-        # Increase memory on HTCondor OOM resubmission.
+        # Scale memory on HTCondor OOM resubmission. Each resubmit is a
+        # fresh TPV mapping run, so entity.mem resets to the configured
+        # base value. The accumulated scaling factor is read from the
+        # persisted OOM_Mem_Scale destination param (see params above),
+        # which Galaxy carries across resubmissions.
       - id: oom_resubmit_increase_memory
         if: job is not None and job.state == "resubmitted"
         execute: |
-          entity.mem = f"({entity.mem}) * {OOM_Scaling_Factor}"
+          _scale = int(job.destination_params.get('OOM_Mem_Scale', OOM_Scaling_Factor)) if job.destination_params else 1
+          entity.mem = f"{entity.mem} * {_scale}"
 
         # Set accounting group user for jobs
       - id: jobs_user_accounting_group
