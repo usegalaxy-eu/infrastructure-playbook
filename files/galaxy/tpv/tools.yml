@@ -946,9 +946,9 @@ tools:
           if options:
             model_source = options.get('model_source', {})
             if model_source and isinstance(model_source, dict):
-              model_select = model_source.get('history', {})
+              model_select = model_source.get('history_model_source', {})
               if model_select and isinstance(model_select, dict):
-                retval = model_select.get('history_model_source') == 'train_model'
+                retval = model_select.get('history_model_select') == 'train_model'
           retval
         mem: 20
 
