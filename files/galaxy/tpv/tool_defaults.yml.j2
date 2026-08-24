@@ -18,6 +18,9 @@ tools:
     resubmit:
       oom_retry:
         condition: memory_limit_reached and attempt <= 3 and (mem * OOM_SCALING_FACTOR ** (attempt - 2)) < OOM_SCALING_CAP
+        # `(mem * OOM_SCALING_FACTOR ** (attempt - 2)) < OOM_SCALING_CAP`
+        # allows only one resubmission capped at OOM_SCALING_CAP, subsequent
+        # resubmission attempts are rejected.
         environment: tpv_dispatcher
         # Delay is in seconds before Galaxy dispatches the resubmitted job.
         delay: 60
