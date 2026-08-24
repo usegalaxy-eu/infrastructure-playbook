@@ -66,7 +66,8 @@ tools:
         if: job is not None and job.state == "resubmitted"
         execute: |
           _scale = int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else 1
-          entity.mem = f"min(({entity.mem}) * {_scale}, 512)
+          entity.mem = int(min(entity.mem * _scale, 512))
+          # memory is capped at 512GB
 
         # Set accounting group user for jobs
       - id: jobs_user_accounting_group
