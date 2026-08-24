@@ -5,8 +5,10 @@ global:
   context:
     # Base multiplier applied on each OOM resubmission. The accumulated
     # factor is persisted in the OOM_MEM_SCALE destination param (see
-    # params below), which Galaxy carries across resubmissions.
+    # params below), which Galaxy carries across resubmissions. Memory
+    # requirements for resubmitted jobs are capped at OOM_SCALING_CAP.
     OOM_SCALING_FACTOR: 2
+    OOM_SCALING_CAP: 512
 tools:
   default:
     abstract: true
@@ -66,8 +68,7 @@ tools:
         if: job is not None and job.state == "resubmitted"
         execute: |
           _scale = int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else 1
-          entity.mem = int(min(entity.mem * _scale, 512))
-          # memory is capped at 512GB
+          entity.mem = int(min(entity.mem * _scale, OOM_SCALING_CAP))
 
         # Set accounting group user for jobs
       - id: jobs_user_accounting_group
