@@ -17,7 +17,7 @@ tools:
     gpus: 0
     resubmit:
       oom_retry:
-        condition: memory_limit_reached and attempt <= 3
+        condition: memory_limit_reached and attempt <= 3 and (mem * OOM_SCALING_FACTOR ** (attempt - 2)) < OOM_SCALING_CAP
         environment: tpv_dispatcher
         # Delay is in seconds before Galaxy dispatches the resubmitted job.
         delay: 60
