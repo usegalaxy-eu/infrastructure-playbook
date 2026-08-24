@@ -546,12 +546,6 @@ destinations:
           # Most times this fallback is needed for very old tools
           # Centos 7 has libncurses.so.5.9 and python 2.7
           identifier: "/cvmfs/main.galaxyproject.org/singularity/usegalaxy.org-legacy-environment--0"
-    resubmit:
-      oom_retry:
-        condition: memory_limit_reached and attempt <= 3
-        environment: tpv_dispatcher
-        # Delay is in seconds before Galaxy dispatches the resubmitted job.
-        delay: 60
     scheduling:
       accept:
         - docker
@@ -634,12 +628,6 @@ destinations:
           # Most times this fallback is needed for very old tools
           # Centos 7 has libncurses.so.5.9 and python 2.7
           identifier: "/cvmfs/main.galaxyproject.org/singularity/usegalaxy.org-legacy-environment--0"
-    resubmit:
-      oom_retry:
-        condition: memory_limit_reached and attempt <= 3
-        environment: tpv_dispatcher
-        # Delay is in seconds before Galaxy dispatches the resubmitted job.
-        delay: 60
     scheduling:
       require:
         - singularity
@@ -657,12 +645,6 @@ destinations:
     params:
       requirements: "GalaxyTraining == false"
       rank: 'GalaxyGroup == "internal"'
-    resubmit:
-      oom_retry:
-        condition: memory_limit_reached and attempt <= 3
-        environment: tpv_dispatcher
-        # Delay is in seconds before Galaxy dispatches the resubmitted job.
-        delay: 60
     scheduling:
       require:
         - internal
