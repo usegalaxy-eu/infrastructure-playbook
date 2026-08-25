@@ -17,7 +17,7 @@ tools:
     gpus: 0
     resubmit:
       oom_retry:
-        condition: memory_limit_reached and attempt <= 3 and (mem * OOM_SCALING_FACTOR ** (attempt - 2)) < OOM_SCALING_CAP
+        condition: memory_limit_reached and attempt <= 3
         # `(mem * OOM_SCALING_FACTOR ** (attempt - 2)) < OOM_SCALING_CAP`
         # allows only one resubmission capped at OOM_SCALING_CAP, subsequent
         # resubmission attempts are rejected.
@@ -71,7 +71,7 @@ tools:
         if: job is not None and job.state == "resubmitted"
         execute: |
           _scale = int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else 1
-          entity.mem = int(min(entity.mem * _scale, OOM_SCALING_CAP))
+          entity.mem = f"min(({entity.mem}) * {_scale}, {OOM_SCALING_CAP})"
 
         # Set accounting group user for jobs
       - id: jobs_user_accounting_group
