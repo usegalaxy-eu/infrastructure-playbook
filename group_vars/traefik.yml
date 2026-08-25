@@ -193,7 +193,5 @@ traefik_containers:
       - traefik
 
 # `firewalld` policy for FTP passive ports, which are not managed by Traefik
-ftp_policy_name: ftp-passive-ports
-ftp_policy_passive_ports: "5000-5100"
-ftp_policy_ingress_zone: public
-ftp_policy_egress_zone: public
+ftp_firewall_rules_tag: FTP_PASSIVE_PORTS
+ftp_passive_ports: "5000-5100"
