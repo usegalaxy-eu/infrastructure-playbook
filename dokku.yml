@@ -6,12 +6,12 @@
     hostname: apps.galaxyproject.eu
     apps:
       - ptdk
-      - pwdk
+      # - pwdk
       - oembed
-      - certificates
-      - gtn-slack-bot
+      # - certificates
+      # - gtn-slack-bot
       - dnanalyzer
-      - cors
+      # - cors
     dokku_plugins:
       - name: postgres
         url: https://github.com/dokku/dokku-postgres.git
@@ -22,18 +22,21 @@
       # - name: acl
       #   url: https://github.com/dokku/dokku-acl.git
     dokku_users:
-      - name: hexylena
-        username: hexylena
-        ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEEurxSQW4BrpP9FLXqiz/H6Ewclln68oc/oFAVqH5xu"
-      - name: github
-        username: github
-        ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG0UpPcbt0ytqZSRiqC38cgT1Ey2jWqc/oEgzTpUncA8"
-      - name: github2
-        username: github2
-        ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFGzr8JWnnCQo+565kzpXKYP12kLt2oyWzFCF/cueIvO"
-      - name: oembed
-        username: oembed
-        ssh_key: "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBLkuOlVUXxCqABoQbTEvW3A8nSSici89C10lEg1F4Cmvv/q8YRGYaoDayuqifFJERWvRA8yVcIH7/XCPzmMrLM0="
+      # - name: hexylena
+      #   username: hexylena
+      #   ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEEurxSQW4BrpP9FLXqiz/H6Ewclln68oc/oFAVqH5xu"
+      - name: mira
+        username: mira
+        ssh_key: "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIEUzGzHldVS8TNywBdlFL9D5FCvgEPBdoHzRpmk/42K/AAAABHNzaDo= mk@galaxy-mira"
+        # - name: github
+        #   username: github
+        #   ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG0UpPcbt0ytqZSRiqC38cgT1Ey2jWqc/oEgzTpUncA8"
+        # - name: github2
+        #   username: github2
+        #   ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFGzr8JWnnCQo+565kzpXKYP12kLt2oyWzFCF/cueIvO"
+        # - name: oembed
+        #   username: oembed
+        #   ssh_key: "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBLkuOlVUXxCqABoQbTEvW3A8nSSici89C10lEg1F4Cmvv/q8YRGYaoDayuqifFJERWvRA8yVcIH7/XCPzmMrLM0="
     dokku_daemon_install: false
     dokku_docker_install: true
   pre_tasks:
@@ -53,9 +56,9 @@
         fstype: xfs
         state: mounted
         opts: defaults
-    - name: Install Docker
-      ansible.builtin.include_role:
-        name: geerlingguy.docker
+        # - name: Install Docker
+        #   ansible.builtin.include_role:
+        #     name: geerlingguy.docker
     # Create a symlink in /var/lib/docker to /data/docker
     - name: Create a symlink in /var/lib/docker to /data/docker
       file:
@@ -75,7 +78,7 @@
     - name: Setup domains
       community.docker.docker_container_exec:
         container: dokku
-        command: "dokku domains:add {{ item }} {{ item }}.galaxyproject.eu"
+        command: "dokku domains:add {{ item }} {{ item }}.apps.galaxyproject.eu"
       with_items: "{{ apps }}"
     
     - name: Check if DNAnalyzer postgres exists
