@@ -1,0 +1,16 @@
+http:
+  middlewares:
+    https-redirect:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+  routers:
+    http-catchall:
+      rule: "HostRegexp(`^.+`)"
+      entryPoints:
+        - web
+      middlewares:
+        - https-redirect
+      priority: 1
+      service: noop@internal

@@ -77,8 +77,6 @@ traefik_containers:
       - --entryPoints.ftp.address=:21
       - --entryPoints.influxdb.address=:8086
       - --entryPoints.cvmfs-rsync.address=:9087
-      - --entryPoints.web.http.redirections.entryPoint.to=websecure
-      - --entryPoints.web.http.redirections.entryPoint.scheme=https
       - --entryPoints.metrics.address=:8082
       #- "--entryPoints.websecure.http.tls.domains[0].main={{ traefik_domain }}"
       #- --entryPoints.https.http.tls.certresolver=route53

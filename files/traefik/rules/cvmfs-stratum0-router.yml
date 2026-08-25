@@ -1,3 +1,13 @@
+http:
+  routers:
+    cvmfs-stratum0-rtr:
+      # cvmfs-stratum0 is served over plain HTTP, exempt it from the
+      rule: "Host(`cvmfs-stratum0.galaxyproject.eu`)"
+      service: cvmfs-stratum0
+      entryPoints:
+        - web
+      priority: 10
+
 tcp:
   routers:
     cvmfs-stratum0-rsync:
