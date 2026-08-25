@@ -17,10 +17,11 @@ DisallowAITraining: /
 Content-Usage: ai=n
 Content-Signal: search=yes, ai-input=no, ai-train=no
 
-# --- AI / LLM training crawlers (disallowed site-wide) ---
+# --- AI / LLM training/search crawlers (disallowed for expensive endpoints) ---
 # Source: https://robotstxt.com/ai
 User-agent: GPTBot
 User-agent: ClaudeBot
+User-agent: Claude-SearchBot
 User-agent: CCBot
 User-agent: Google-Extended
 User-agent: Applebot-Extended
@@ -40,9 +41,11 @@ User-agent: Youbot
 User-agent: SemrushBot-OCOB
 User-agent: SemrushBot-FT
 User-agent: SemrushBot-ESI
+User-agent: Petalbot
 User-agent: VelenPublicWebCrawler
 User-agent: TurnitinBot
 User-agent: Timpibot
+User-agent: OAI-SearchBot
 User-agent: ICC-Crawler
 User-agent: AI2Bot
 User-agent: AI2Bot-Dolma
@@ -60,6 +63,7 @@ User-agent: Seekr
 User-agent: peer39_crawler
 User-agent: cohere-ai
 User-agent: cohere-training-data-crawler
+User-agent: DuckAssistBot
 User-agent: Scrapy
 User-agent: Cotoyogi
 User-agent: aiHitBot
@@ -68,11 +72,13 @@ User-agent: FirecrawlAgent
 User-agent: bedrockbot
 User-agent: DeepSeekBot
 User-agent: Google-Firebase
+User-agent: AddSearchBot
 User-agent: bigsur.ai
 User-agent: Brightbot
 User-agent: Crawlspace
 User-agent: EchoboxBot
 User-agent: FriendlyCrawler
+User-agent: LinerBot
 User-agent: Panscient
 User-agent: Panscient.com
 User-agent: Poseidon Research Crawler
@@ -82,16 +88,6 @@ User-agent: Thinkbot
 User-agent: Yak
 User-agent: YandexAdditional
 User-agent: YandexAdditionalBot
-Disallow: /
-
-# --- AI / LLM search crawlers (partially allowed) ---
-# Source: https://robotstxt.com/ai
-User-agent: OAI-SearchBot
-User-agent: Claude-SearchBot
-User-agent: AddSearchBot
-User-agent: Petalbot
-User-agent: DuckAssistBot
-User-agent: LinerBot
 Disallow: /display?
 Disallow: /display_as?
 Disallow: /training-material/
@@ -112,6 +108,7 @@ Disallow: /workflows/
 Disallow: /published/
 Disallow: /visualizations/
 Disallow: /display_application/
+DisallowAITraining: /
 Content-Signal: search=yes, ai-input=yes, ai-train=no
 
 # --- AI / LLM agents (allowed site-wide) ---
