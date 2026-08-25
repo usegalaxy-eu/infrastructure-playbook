@@ -1,0 +1,13 @@
+tcp:
+  routers:
+    ftp:
+      rule: "HostSNI(`*`)"
+      service: ftp
+      entryPoints:
+        - ftp
+
+  services:
+    ftp:
+      loadBalancer:
+        servers:
+          - address: "ftp.bi.privat:21"

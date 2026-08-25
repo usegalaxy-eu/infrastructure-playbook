@@ -15,7 +15,7 @@ galaxy_jobconf:
     #workers: 3
     - id: condor
       load: galaxy.jobs.runners.condor:CondorJobRunner
-    - id: condorv2
+    - id: htcondor
       load: galaxy.jobs.runners.htcondor:HTCondorJobRunner
     - id: local
       load: galaxy.jobs.runners.local:LocalJobRunner
@@ -292,30 +292,15 @@ galaxy_jobconf:
     - id: usegpu
       names: [gpu]    
   limits:
-    - type: "destination_user_concurrent_jobs"
-      id: "condor_upload"
-      value: "5"
     - type: "walltime"
       value: "'148:00:00'"
     # Limited time for Interactive tools
     - type: "destination_user_concurrent_jobs"
       value: "2"
-      id: "interactive_pulsar"
-    - type: "destination_user_concurrent_jobs"
-      value: "2"
-      id: "interactive_pulsar_hi_mem"
+      id: "pulsar_embedded"
     - type: "output_size"
       value: "'300GB'"
     - type: "registered_user_concurrent_jobs"
-      value: "40"
+      value: "20"
     - type: "anonymous_user_concurrent_jobs"
       value: "3"
-    - type: "destination_user_concurrent_jobs"
-      id: "sh_fdid_condor_docker_ie"
-      value: "3"
-    - type: "destination_user_concurrent_jobs"
-      id: "sh_fdid_condor_docker_ie_interactive"
-      value: "3"
-    - type: "destination_user_concurrent_jobs"
-      id: "sh_fdid_condor_intensive_jobs"
-      value: "10"

@@ -89,6 +89,19 @@ Please mind `http` and `https`.
         <extra_scopes>offline_access</extra_scopes>
     </provider>
 
+    <provider name="helmholtz">
+        <client_id>{{ helmholtz_aai.usegalaxy_eu.client_id }}</client_id>
+        <client_secret>{{ helmholtz_aai.usegalaxy_eu.client_secret }}</client_secret>
+        <redirect_uri>https://usegalaxy.eu/authnz/helmholtz/callback</redirect_uri>
+        <require_user_activation>true</require_user_activation>
+        <require_session_refresh>true</require_session_refresh>
+        <prompt>consent</prompt>
+        <well_known_oidc_config_uri>https://login.helmholtz.de/oauth2/.well-known/openid-configuration</well_known_oidc_config_uri>
+        <icon>https://codebase.helmholtz.cloud/hifis/overall/cdm/hifis-corporate-design/-/raw/main/assets/sign-in-button-white-ex.png</icon>
+        <!-- (Optional) Extra scopes you need to request for your implementation -->
+        <extra_scopes>offline_access</extra_scopes>
+    </provider>
+
     <!--provider name="Keycloak">
         <url>https://auth.nfdi4plants.org/realms/dataplant</url>
         <client_id>{{ dataplant_keycloak.usegalaxy_eu.client_id }}</client_id>

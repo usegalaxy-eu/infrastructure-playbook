@@ -1,0 +1,13 @@
+http:
+  routers:
+    stats-rtr:
+      rule: "Host(`stats.galaxyproject.eu`)"
+      service: stats
+      entryPoints:
+        - websecure
+      middlewares:
+        - stats-compress
+      tls:
+        certResolver: "route53"
+        domains:
+          - main: "stats.galaxyproject.eu"
