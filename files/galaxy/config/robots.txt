@@ -21,8 +21,6 @@ Content-Signal: search=yes, ai-input=no, ai-train=no
 # Source: https://robotstxt.com/ai
 User-agent: GPTBot
 User-agent: ClaudeBot
-User-agent: Claude-User
-User-agent: Claude-SearchBot
 User-agent: CCBot
 User-agent: Google-Extended
 User-agent: Applebot-Extended
@@ -31,7 +29,6 @@ User-agent: Meta-ExternalAgent
 User-agent: Meta-ExternalFetcher
 User-agent: diffbot
 User-agent: PerplexityBot
-User-agent: Perplexity-User
 User-agent: Omgili
 User-agent: Omgilibot
 User-agent: webzio-extended
@@ -43,11 +40,9 @@ User-agent: Youbot
 User-agent: SemrushBot-OCOB
 User-agent: SemrushBot-FT
 User-agent: SemrushBot-ESI
-User-agent: Petalbot
 User-agent: VelenPublicWebCrawler
 User-agent: TurnitinBot
 User-agent: Timpibot
-User-agent: OAI-SearchBot
 User-agent: ICC-Crawler
 User-agent: AI2Bot
 User-agent: AI2Bot-Dolma
@@ -65,7 +60,6 @@ User-agent: Seekr
 User-agent: peer39_crawler
 User-agent: cohere-ai
 User-agent: cohere-training-data-crawler
-User-agent: DuckAssistBot
 User-agent: Scrapy
 User-agent: Cotoyogi
 User-agent: aiHitBot
@@ -73,20 +67,12 @@ User-agent: Factset_spyderbot
 User-agent: FirecrawlAgent
 User-agent: bedrockbot
 User-agent: DeepSeekBot
-User-agent: GoogleAgent-Mariner
-User-agent: Gemini-Deep-Research
-User-agent: Google-NotebookLM
-User-agent: Google-Agent
-User-agent: GoogleAgent-URLContext
 User-agent: Google-Firebase
-User-agent: MistralAI-User
-User-agent: AddSearchBot
 User-agent: bigsur.ai
 User-agent: Brightbot
 User-agent: Crawlspace
 User-agent: EchoboxBot
 User-agent: FriendlyCrawler
-User-agent: LinerBot
 User-agent: Panscient
 User-agent: Panscient.com
 User-agent: Poseidon Research Crawler
@@ -97,3 +83,47 @@ User-agent: Yak
 User-agent: YandexAdditional
 User-agent: YandexAdditionalBot
 Disallow: /
+
+# --- AI / LLM search crawlers (partially allowed) ---
+# Source: https://robotstxt.com/ai
+User-agent: OAI-SearchBot
+User-agent: Claude-SearchBot
+User-agent: AddSearchBot
+User-agent: Petalbot
+User-agent: DuckAssistBot
+User-agent: LinerBot
+Disallow: /display?
+Disallow: /display_as?
+Disallow: /training-material/
+Disallow: /tool_runner?
+Disallow: /api/
+Disallow: /register
+Disallow: /login
+Disallow: /collection/
+Disallow: /dataset/
+Disallow: /datasets/
+Disallow: /jobs/
+Disallow: /?job_id=
+Disallow: /libraries/
+Disallow: /history/
+Disallow: /histories/
+Disallow: /workflow/
+Disallow: /workflows/
+Disallow: /published/
+Disallow: /visualizations/
+Disallow: /display_application/
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
+# --- AI / LLM agents (allowed site-wide) ---
+# Source: https://robotstxt.com/ai
+User-agent: Claude-User
+User-agent: Perplexity-User
+User-agent: MistralAI-User
+User-agent: GoogleAgent-Mariner
+User-agent: Google-Agent
+User-Agent: Gemini-Deep-Research
+User-Agent: Google-NotebookLM
+User-Agent: GoogleAgent-URLContext
+Allow: /
+DisallowAITraining: /
+Content-Signal: ai-input=yes, ai-train=no
