@@ -77,8 +77,6 @@ proftpd_conf_ssl_certificate_key: /etc/letsencrypt/live/ftp.usegalaxy.eu/privkey
 proftpd_conf_ssl_ca_certificate: /etc/letsencrypt/live/ftp.usegalaxy.eu/chain.pem
 proftpd_global_options:
   - PassivePorts: 49152 65534
-    # format: "<min_port> <max_port>", multiple whitespaces break `firewalld`
-    # on traefik-proxy.yml playbook
   - TransferLog: /var/log/proftpd/xfer.log
 proftpd_use_mod_tls_shmcache: false
 proftpd_tls_options: NoSessionReuseRequired
