@@ -29,70 +29,54 @@
         - port: 9087/tcp  # CVMFS rsync port
 
     - name: Configure passive FTP port forwarding
-      vars:
-        ftp_node_hostname: "{{ groups['incoming'][0] }}"
-        ftp_node_address: "{{ hostvars[ftp_node_hostname].ansible_host }}"
       block:
-        - name: Read existing firewall rules
-          ansible.builtin.shell: "firewall-cmd --permanent --direct --get-all-rules | grep '{{ ftp_firewall_rules_tag }}'"
-          register: ftp_firewall_rules_existing
-          failed_when: false
-          changed_when: false
-          check_mode: false
+        - name: Clear stale firewall rules
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: |
+              set -e
+              IFS=$'\n'
 
-        - name: Delete existing firewall rules
-          # no service interruption, changes will be applied on next reload
-          ansible.builtin.shell: "firewall-cmd --permanent --direct --remove-rule {{ item }}"
-          when: ftp_firewall_rules_existing.stdout_lines | length > 0
-          loop: "{{ ftp_firewall_rules_existing.stdout_lines }}"
-          loop_control:
-            label: "{{ item }}"
-          changed_when: false
+              current_rules=$(firewall-cmd --permanent --direct --get-all-rules | grep "{{ ftp_firewall_rules_tag }}_" || true)
+              for rule in $current_rules; do
+                rule_name=$(echo "$rule" | awk '{print $NF}' | sed 's/{{ ftp_firewall_rules_tag }}_//')
+                if ! echo "{{ ftp_firewall_rules | map(attribute='name') | list }}" | grep -q "'$rule_name'"; then
+                  # `$rule` cannot be passed directly to remove the rule because it will be treated as a
+                  # single argument, so split it into an array to pass each part as a separate argument
+                  IFS=' ' read -r -a rule_parts <<< "$rule"
+                  firewall-cmd --permanent --direct --remove-rule "${rule_parts[@]}"
+                  echo "Rule removed: '$rule_name'"
+                fi
+              done
+          register: ftp_firewall_rules_cleanup
+          changed_when: "'Rule removed' in ftp_firewall_rules_cleanup.stdout"
 
-        - name: Create new firewall rules
-          ansible.builtin.command: >-
-            firewall-cmd --permanent --direct --add-rule {{ item.rule }}
-            -m comment --comment "{{ ftp_firewall_rules_tag }}_{{ item.name }}"
-          loop:
-            - name: FORWARD
-              rule: "ipv4 nat PREROUTING 0 -d {{ ansible_default_ipv4.address }} -p tcp --dport {{ ftp_passive_ports.replace('-', ':') }} -j DNAT --to-destination {{ ftp_node_address }}"
-            - name: MASQUERADE
-              rule: "ipv4 nat POSTROUTING 0 -d {{ ftp_node_address }} -p tcp --dport {{ ftp_passive_ports.replace('-', ':') }} -j MASQUERADE"
-            - name: FORWARD_PATH
-              rule: "ipv4 filter FORWARD 0 -d {{ ftp_node_address }} -p tcp --dport {{ ftp_passive_ports.replace('-', ':') }} -j ACCEPT"
-            - name: RETURN_PATH
-              rule: "ipv4 filter FORWARD 0 -s {{ ftp_node_address }} -p tcp --sport {{ ftp_passive_ports.replace('-', ':') }} -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT"
+        - name: Deploy firewall rules
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: |
+              set -e
+
+              existing_rule=$(firewall-cmd --permanent --direct --get-all-rules | grep "{{ ftp_firewall_rules_tag }}_{{ item.name }}$" || true)
+              if [[ -n "$existing_rule" ]]; then
+                firewall-cmd --permanent --direct --remove-rule $existing_rule
+              fi
+
+              firewall-cmd --permanent --direct --add-rule {{ item.rule }} -m comment --comment "{{ ftp_firewall_rules_tag }}_{{ item.name }}"
+              new_rule=$(firewall-cmd --permanent --direct --get-all-rules | grep "{{ ftp_firewall_rules_tag }}_{{ item.name }}$")
+
+              if [[ "$new_rule" != "$existing_rule" ]]; then
+                echo "Rule changed: '{{ item.name }}'"
+              fi
+          loop: "{{ ftp_firewall_rules }}"
           loop_control:
             label: "{{ item.name }}"
-          changed_when: false
-
-        - name: Read configured firewall rules
-          ansible.builtin.shell: >-
-            firewall-cmd
-            --permanent
-            --direct
-            --get-all-rules
-            | grep "{{ ftp_firewall_rules_tag }}"
-          register: ftp_firewall_rules_configured
-          changed_when: false
-          when: not ansible_check_mode
-          check_mode: false
-
-        - name: Determine whether firewall rules have changed
-          ansible.builtin.set_fact:
-            ftp_firewall_rules_changed: >-
-              {{
-                ftp_firewall_rules_existing.stdout_lines | difference(ftp_firewall_rules_configured.stdout_lines) | length > 0
-                or
-                ftp_firewall_rules_configured.stdout_lines | difference(ftp_firewall_rules_existing.stdout_lines) | length > 0
-              }}
-          changed_when: false
-          when: not ansible_check_mode
+          register: ftp_firewall_rules_deploy
+          changed_when: "'Rule changed' in ftp_firewall_rules_deploy.stdout"
 
         - name: Apply firewall configuration changes
           ansible.builtin.command: "firewall-cmd --reload"
-          when: ftp_firewall_rules_changed is defined and ftp_firewall_rules_changed
-          changed_when: true
+          when: ftp_firewall_rules_deploy is defined and ftp_firewall_rules_deploy.results | selectattr('changed', 'equalto', true) | list | length > 0
 
 - name: Traefik
   become: true
