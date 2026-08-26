@@ -2,6 +2,8 @@
 - name: Configure firewall
   become: true
   hosts: traefik
+  vars_files:
+    - group_vars/incoming.yml  #  FTP passive ports are defined under `proftpd_global_options`
   tasks:
     - name: Ensure IPv4 forwarding is enabled
       ansible.posix.sysctl:
