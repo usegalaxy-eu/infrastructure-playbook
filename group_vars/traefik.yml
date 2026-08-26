@@ -16,6 +16,13 @@ telegraf_plugins_extra:
       - metric_version = 2
       - name_override = "traefik"
 
+traefik_cvmfs_rsync_port:
+  port: 9087
+  protocol: tcp
+traefik_dokku_ssh_port:
+  port: 3022
+  protocol: tcp
+
 traefik_force_validation: true
 traefik_manage_secrets: true
 
@@ -76,7 +83,8 @@ traefik_containers:
       - --entryPoints.amqps.address=:5671
       - --entryPoints.ftp.address=:21
       - --entryPoints.influxdb.address=:8086
-      - --entryPoints.cvmfs-rsync.address=:9087
+      - "--entryPoints.cvmfs-rsync.address=:{{ traefik_cvmfs_rsync_port.port }}"
+      - "--entryPoints.dokku-ssh.address=:{{ traefik_dokku_ssh_port.port }}"
       - --entryPoints.web.http.redirections.entryPoint.to=websecure
       - --entryPoints.web.http.redirections.entryPoint.scheme=https
       - --entryPoints.metrics.address=:8082
@@ -167,9 +175,13 @@ traefik_containers:
         published_port: 8086
         protocol: tcp
         mode: host
-      - target_port: 9087
-        published_port: 9087
-        protocol: tcp
+      - target_port: "{{ traefik_cvmfs_rsync_port.port }}"
+        published_port: "{{ traefik_cvmfs_rsync_port.port }}"
+        protocol: "{{ traefik_cvmfs_rsync_port.protocol }}"
+        mode: host
+      - target_port: "{{ traefik_dokku_ssh_port.port }}"
+        published_port: "{{ traefik_dokku_ssh_port.port }}"
+        protocol: "{{ traefik_dokku_ssh_port.protocol }}"
         mode: host
 
     secrets:
