@@ -37,8 +37,8 @@
         zone: public
         state: enabled
       with_items:
-        - traefik_cvmfs_rsync_port
-        - traefik_dokku_ssh_port
+        - "{{ traefik_cvmfs_rsync_port }}"
+        - "{{ traefik_dokku_ssh_port }}"
 
     - name: Install python docker
       become: true
