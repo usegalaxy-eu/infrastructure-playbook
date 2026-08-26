@@ -78,7 +78,9 @@
 
         - name: Apply firewall configuration changes
           ansible.builtin.command: "firewall-cmd --reload"
-          when: ftp_firewall_rules_deploy is defined and ftp_firewall_rules_deploy.results | selectattr('changed', 'equalto', true) | list | length > 0
+          when: >-
+            ftp_firewall_rules_cleanup is defined and ftp_firewall_rules_cleanup.changed or
+            ftp_firewall_rules_deploy is defined and ftp_firewall_rules_deploy.results | selectattr('changed', 'equalto', true) | list | length > 0
 
 - name: Traefik
   become: true
