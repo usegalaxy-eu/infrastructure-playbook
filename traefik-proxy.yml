@@ -29,13 +29,16 @@
         - https
         - ntp
 
-    - name: Configure CVMFS rsync port
+    - name: Configure extra ports
       ansible.posix.firewalld:
-        port: 9087/tcp
+        port: "{{ item.port }}/{{ item.protocol }}"
         permanent: true
         immediate: true
         zone: public
         state: enabled
+      with_items:
+        - "{{ traefik_cvmfs_rsync_port }}"
+        - "{{ traefik_dokku_ssh_port }}"
 
     - name: Install python docker
       become: true
