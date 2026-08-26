@@ -1,6 +1,7 @@
 #jinja2: trim_blocks: True, lstrip_blocks: True
 # The databases are stored under /data/db/databases/, thus the exception adding the path
 {% macro galaxy_volumes(exclude_volumes) -%}
+        /opt/galaxy/tool-data/shared/ucsc/chrom/:ro,
         {%- for vol in dnb.values() %}
             {%- if vol.name not in exclude_volumes %}
                 {%- if 'db' in vol.name %}
@@ -57,7 +58,6 @@ destinations:
       docker_set_user: ""
       # $defaults expands to "$galaxy_root:ro,$tool_directory:ro,$job_directory:ro,$working_directory:rw,$default_file_path:rw"
       docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,
-        /opt/galaxy/tool-data/shared/ucsc/chrom/:ro,
         $defaults,
         {{ galaxy_volumes(exclude_volumes=['dnb04', 'dnb-ds01']) }}
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
@@ -75,7 +75,6 @@ destinations:
       submit_request_memory: "{mem}G"
       singularity_enabled: true
       singularity_volumes: "$_CONDOR_SCRATCH_DIR:rw,
-        /opt/galaxy/tool-data/shared/ucsc/chrom/:ro,
         $job_directory:rw,
         $tool_directory:ro,
         $job_directory/outputs:rw,
