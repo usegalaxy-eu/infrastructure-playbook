@@ -196,7 +196,7 @@ traefik_containers:
 ftp_firewall_rules_node_hostname: "{{ groups['incoming'][0] }}"
 ftp_firewall_rules_node_address: "{{ hostvars[ftp_firewall_rules_node_hostname].ansible_host }}"
 ftp_firewall_rules_tag: FTP_PASSIVE_PORTS
-ftp_firewall_rules_passive_ports: >-  # e.g. "5000-5100"
+ftp_firewall_rules_passive_ports: >-  # e.g. "5000:5100"
   {{
     proftpd_global_options
     | selectattr('PassivePorts', 'defined')
