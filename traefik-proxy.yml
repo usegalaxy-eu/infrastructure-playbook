@@ -31,34 +31,8 @@
     - name: Configure passive FTP port forwarding
       vars:
         ftp_node_hostname: "{{ groups['incoming'][0] }}"
+        ftp_node_address: "{{ hostvars[ftp_node_hostname].ansible_host }}"
       block:
-        - name: Resolve FTP node IPv4 address
-          ansible.builtin.command: "getent ahostsv4 {{ ftp_node_hostname }}"
-          register: ftp_getent_ahostsv4
-          changed_when: false
-          check_mode: false
-          failed_when: ftp_getent_ahostsv4.rc != 0 or ftp_getent_ahostsv4.stdout_lines | length == 0
-
-        - name: Read FTP node IPv4 address
-          ansible.builtin.set_fact:
-            ftp_node_address: >-
-              {{
-                ftp_getent_ahostsv4.stdout_lines
-                | select('search', '\s+STREAM\s+')
-                | map('split')
-                | map('first')
-                | first
-              }}
-          check_mode: false
-
-        - name: Validate FTP node IPv4 address
-          ansible.builtin.assert:
-            that:
-              - ftp_node_address is ansible.utils.ipv4
-            fail_msg: >-
-              {{ ftp_node_hostname }} did not resolve to a valid IPv4 address.
-          check_mode: false
-
         - name: Read existing firewall rules
           ansible.builtin.shell: "firewall-cmd --permanent --direct --get-all-rules | grep '{{ ftp_firewall_rules_tag }}'"
           register: ftp_firewall_rules_existing
