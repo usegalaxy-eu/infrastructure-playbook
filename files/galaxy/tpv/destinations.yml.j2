@@ -121,7 +121,7 @@ destinations:
     env:
       GPU_AVAILABLE: "1"
     context:
-      galaxy_group: 'GalaxyGroup == "pxe-gpu"'
+      galaxy_group: 'GalaxyGroup == "interactive"'
     params:
       submit_requirements: "{galaxy_group}"
       request_gpus: "{gpus or 0}"
