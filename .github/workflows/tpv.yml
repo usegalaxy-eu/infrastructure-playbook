@@ -11,7 +11,7 @@ name: Total Perspective Vortex
 
 jobs:
   orchestrator:
-    name: Total Perspective Vortex orchestrator
+    name: Orchestrator
     runs-on: ubuntu-latest
     outputs:
       changed: ${{ steps.detect.outputs.changed }}
@@ -35,7 +35,7 @@ jobs:
           fi
 
   lint:
-    name: Total Perspective Vortex linter
+    name: Lint
     needs: orchestrator
     if: needs.orchestrator.outputs.changed == 'true'
     runs-on: ubuntu-latest
@@ -188,7 +188,7 @@ jobs:
           done
 
   dry-run:
-    name: Total Perspective Vortex dry-run
+    name: Dry-run
     needs: orchestrator
     if: needs.orchestrator.outputs.changed == 'true'
     runs-on: ubuntu-latest
