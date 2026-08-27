@@ -76,7 +76,6 @@ proftpd_conf_ssl_certificate: /etc/letsencrypt/live/ftp.usegalaxy.eu/cert.pem
 proftpd_conf_ssl_certificate_key: /etc/letsencrypt/live/ftp.usegalaxy.eu/privkey.pem
 proftpd_conf_ssl_ca_certificate: /etc/letsencrypt/live/ftp.usegalaxy.eu/chain.pem
 proftpd_global_options:
-  - MasqueradeAddress: "{{ hostvars[groups['traefik'][0]].ansible_host }}"
   - PassivePorts: 49152 65534
   - TransferLog: /var/log/proftpd/xfer.log
 proftpd_use_mod_tls_shmcache: false
