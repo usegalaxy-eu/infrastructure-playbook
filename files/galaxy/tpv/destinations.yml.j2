@@ -1,6 +1,7 @@
 #jinja2: trim_blocks: True, lstrip_blocks: True
 # The databases are stored under /data/db/databases/, thus the exception adding the path
 {% macro galaxy_volumes(exclude_volumes) -%}
+        {{ galaxy_tool_data_path }}/shared/ucsc/chrom/:ro,
         {%- for vol in dnb.values() %}
             {%- if vol.name not in exclude_volumes %}
                 {%- if 'db' in vol.name %}
