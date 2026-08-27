@@ -7,6 +7,7 @@
     proftpd_modules_config_file: /etc/proftpd/modules.conf
   vars_files:
     - secret_group_vars/all.yml
+    - secret_group_vars/aws.yml # AWS creds
     - mounts/mountpoints.yml
     - mounts/dest/all.yml
   collections:
@@ -59,11 +60,12 @@
     - influxdata.chrony         # Keep our time in sync.
     - usegalaxy-eu.dynmotd
     ## Filesystems
-    - usegalaxy-eu.autofs  # Setup the mount points which will be needed later
+    - usegalaxy-eu.autofs
     # User
     - usegalaxy-eu.create-user
     # Services
-    - galaxyproject.nginx
+    - hxr.aws-cli # Configure Route53 credentials before requesting the certificate.
+    - usegalaxy-eu.certbot
     - galaxyproject.proftpd
 
     - dj-wasabi.telegraf
