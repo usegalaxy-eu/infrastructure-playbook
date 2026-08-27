@@ -222,3 +222,84 @@
   roles:
     - name: usegalaxy_eu.ucsc_genome_browser
       become: true
+  tasks:
+    - name: Symlink databases in UCSC Genome Browser database meta directory
+      become: true
+      # TODO: move block into an Ansible module, inspiration can be taken from
+      # https://github.com/galaxyproject/ansible-galaxy/blob/c4eefedde405bfa8fe5e55899f8e851986b5aa5f/library/symlink_clone.py
+      # but please note the logic is different (in this case, directories are
+      # actually symlinked).
+      block:
+        - name: Get all symlinks in MariaDB directory
+          ansible.builtin.find:
+              paths: "/var/lib/mysql/"
+              file_type: link
+              hidden: false
+          register: ucsc_genome_browser_vm_mariadb_contents_links
+
+        - name: Get all directories in UCSC Genome Browser database meta directory
+          ansible.builtin.find:
+            paths: "{{ ucsc_genome_browser_vm_gbd_dir }}/meta/"
+            file_type: directory
+            hidden: false
+          register: ucsc_genome_browser_vm_gbd_dir_meta_contents_directories
+
+        - name: Get all links in UCSC Genome Browser database meta directory
+          ansible.builtin.find:
+            paths: "{{ ucsc_genome_browser_vm_gbd_dir }}/meta/"
+            file_type: link
+            hidden: false
+          register: ucsc_genome_browser_vm_gbd_dir_meta_contents_links
+
+        - name: Map expected symlinks in MariaDB directory to their expected sources
+          ansible.builtin.set_fact:
+            ucsc_genome_browser_vm_mariadb_symlink_map: >-
+              {{
+                ucsc_genome_browser_vm_mariadb_symlink_map | default({}) | combine({
+                  '/var/lib/mysql/' ~ (item.path | basename): item.path
+                })
+              }}
+          loop: "{{ ucsc_genome_browser_vm_gbd_dir_meta_contents_directories.files + ucsc_genome_browser_vm_gbd_dir_meta_contents_links.files }}"
+          loop_control:
+            label: "{{ item.path | basename }}"
+          when:
+            - (item.path | basename) not in ['hgcentral', 'hgTemp']
+
+        - name: Run `stat` on symlink target paths in MariaDB directory
+          ansible.builtin.stat:
+            path: "/var/lib/mysql/{{ item.key | basename }}"
+          loop: "{{ ucsc_genome_browser_vm_mariadb_symlink_map | dict2items }}"
+          loop_control:
+            label: "{{ item.key }}"
+          register: ucsc_genome_browser_vm_mariadb_contents_hg_paths_stat
+
+        - name: Remove incorrect files/directories/links in MariaDB directory
+          ansible.builtin.file:
+            path: "/var/lib/mysql/{{ item.stat.path | basename }}"
+            state: absent
+          loop: "{{ ucsc_genome_browser_vm_mariadb_contents_hg_paths_stat.results }}"
+          loop_control:
+            label: "{{ item.item.key | basename }}"
+          vars:
+            intended_source: "{{ expected_symlink_map[item.stat.path] }}"
+          when:
+            - item.stat.exists
+            - (not item.stat.islnk) or (item.stat.lnk_source != intended_source)
+
+        - name: Create symlinks in MariaDB directory
+          # TODO: symlinks should also be removed when the source files are removed
+          ansible.builtin.file:
+              src: "{{ item.value }}"
+              dest: "/var/lib/mysql/{{ item.key | basename }}"
+              state: link
+          loop: "{{ ucsc_genome_browser_vm_mariadb_symlink_map | dict2items }}"
+          loop_control:
+              label: "{{ item.key | basename }}"
+
+    - name: Ensure DBs as symbolic-links are enabled in MariaDB configuration
+      become: true
+      community.general.ini_file:
+        path: /etc/my.cnf.d/mariadb-server.cnf
+        section: mariadb
+        option: symbolic-links
+        value: "1"

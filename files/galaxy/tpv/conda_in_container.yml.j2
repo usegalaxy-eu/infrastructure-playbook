@@ -76,9 +76,6 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/lumpy_prep/lumpy_prep/.*:
     inherits: _conda_in_container
 
-  toolshed.g2.bx.psu.edu/repos/bgruening-util/stress_ng/stress_ng/.*:
-    inherits: _conda_in_container
-
   toolshed.g2.bx.psu.edu/repos/computational-metabolomics/sirius_csifingerid/sirius_csifingerid/.*:
     inherits: _conda_in_container
 
@@ -123,6 +120,10 @@ tools:
     mem: 40
 
   toolshed.g2.bx.psu.edu/repos/iuc/qiime_pick_otus/qiime_pick_otus/.*:
+    inherits: _conda_in_container
+
+  # toolshed.g2.bx.psu.edu/repos/iuc/arriba/arriba/2.5.1+galaxy0 and lower needs conda, some ugly find hack needs the directory structure of conda
+  toolshed.g2.bx.psu.edu/repos/iuc/arriba/arriba/.*:
     inherits: _conda_in_container
 
   # Nate's legacy tools (https://github.com/galaxyproject/usegalaxy-playbook/blob/f1fc7264642a471f5eed55739869bb0d7292c736/env/common/templates/galaxy/config/tpv/tools.yaml.j2#L1889)

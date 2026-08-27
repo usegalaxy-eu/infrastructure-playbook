@@ -93,6 +93,11 @@ tools:
   ucsc_table_direct1:
     inherits: _basic_internal_tool
 
+  # example for overwriting the OOM memory multiplier for a specific tool
+  # toolshed.g2.bx.psu.edu/repos/example_owner/example_tool/example_tool/.*:
+  #   context:
+  #     OOM_SCALING_FACTOR: 3
+
   toolshed.g2.bx.psu.edu/repos/iuc/compose_text_param/compose_text_param/.*:
     inherits: _basic_internal_tool
 
@@ -435,6 +440,9 @@ tools:
       docker_run_extra_arguments: ' --gpus all --user 999 '
     env:
       GPU_AVAILABLE: 1
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_peptidedb/proteomiqon_peptidedb/.*:
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/.*:
     cores: 12
@@ -934,3 +942,27 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/iuc/wgcna_network/wgcna_network/.*:
     cores: 4
+
+  toolshed.g2.bx.psu.edu/repos/iuc/celltypist/celltypist/.*:
+    mem: 8
+    cores: 4
+    rules:
+      - id: celltypist_train
+        if: |
+          retval = False
+          options = job.get_param_values(app)
+          if options:
+            model_source = options.get('model_source', {})
+            if model_source and isinstance(model_source, dict):
+              history_model_type = model_source.get('history_model_source', {})
+              if history_model_type and isinstance(history_model_type, dict):
+                retval = history_model_type.get('history_model_select') == 'train_model'
+          retval
+        mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_operation/spatialdata_operation/.*:
+    mem: 10
+
+  toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_io/spatialdata_io/.*:
+    mem: 10
+    cores: 5
