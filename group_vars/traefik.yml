@@ -203,3 +203,25 @@ traefik_containers:
       "traefik.http.routers.whoami.tls.certresolver": "ts"
     networks:
       - traefik
+
+# `firewalld` policy for FTP passive ports, which are not managed by Traefik
+ftp_firewall_rules_node_hostname: "{{ groups['incoming'][0] }}"
+ftp_firewall_rules_node_address: "{{ hostvars[ftp_firewall_rules_node_hostname].ansible_host }}"
+ftp_firewall_rules_tag: FTP_PASSIVE_PORTS
+ftp_firewall_rules_passive_ports: >-  # e.g. "5000:5100"
+  {{
+    proftpd_global_options
+    | selectattr('PassivePorts', 'defined')
+    | map(attribute='PassivePorts')
+    | list | first
+    | regex_replace('^\s*([0-9]+)\s+([0-9]+)\s*$', '\1:\2')
+  }}
+ftp_firewall_rules:
+  - name: FORWARD
+    rule: "ipv4 nat PREROUTING 0 -d {{ ansible_default_ipv4.address }} -p tcp --dport {{ ftp_firewall_rules_passive_ports }} -j DNAT --to-destination {{ ftp_firewall_rules_node_address }}"
+  - name: MASQUERADE
+    rule: "ipv4 nat POSTROUTING 0 -d {{ ftp_firewall_rules_node_address }} -p tcp --dport {{ ftp_firewall_rules_passive_ports }} -j MASQUERADE"
+  - name: FORWARD_PATH
+    rule: "ipv4 filter FORWARD 0 -d {{ ftp_firewall_rules_node_address }} -p tcp --dport {{ ftp_firewall_rules_passive_ports }} -j ACCEPT"
+  - name: RETURN_PATH
+    rule: "ipv4 filter FORWARD 0 -s {{ ftp_firewall_rules_node_address }} -p tcp --sport {{ ftp_firewall_rules_passive_ports }} -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT"

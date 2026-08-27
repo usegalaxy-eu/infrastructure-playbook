@@ -1,4 +1,88 @@
 ---
+- name: Configure firewall
+  become: true
+  hosts: traefik
+  vars_files:
+    - group_vars/incoming.yml  #  FTP passive ports are defined under `proftpd_global_options`
+  tasks:
+    - name: Ensure IPv4 forwarding is enabled
+      ansible.posix.sysctl:
+        name: net.ipv4.ip_forward
+        value: "1"
+        state: present
+        sysctl_set: yes
+        reload: true
+
+    - name: Allow access to Traefik entry points
+      ansible.posix.firewalld:
+        port: "{{ item.port | default(omit) }}"
+        service: "{{ item.service | default(omit) }}"
+        permanent: true
+        immediate: true
+        zone: public
+        state: enabled
+      loop:
+        - service: ssh
+        - service: amqps
+        - service: http
+        - service: https
+        - service: ntp
+        - service: ftp  # passive ports are not managed by Traefik
+        - port: "{{ traefik_cvmfs_rsync_port.port }}/{{ traefik_cvmfs_rsync_port.protocol }}"  # CVMFS rsync port
+        - port: "{{ traefik_dokku_ssh_port.port }}/{{ traefik_dokku_ssh_port.protocol }}"
+
+    - name: Configure passive FTP port forwarding
+      block:
+        - name: Clear stale firewall rules
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: |
+              set -e
+              IFS=$'\n'
+
+              current_rules=$(firewall-cmd --permanent --direct --get-all-rules | grep "{{ ftp_firewall_rules_tag }}_" || true)
+              for rule in $current_rules; do
+                rule_name=$(echo "$rule" | awk '{print $NF}' | sed 's/{{ ftp_firewall_rules_tag }}_//')
+                if ! echo "{{ ftp_firewall_rules | map(attribute='name') | list }}" | grep -q "'$rule_name'"; then
+                  # `$rule` cannot be passed directly to remove the rule because it will be treated as a
+                  # single argument, so split it into an array to pass each part as a separate argument
+                  IFS=' ' read -r -a rule_parts <<< "$rule"
+                  firewall-cmd --permanent --direct --remove-rule "${rule_parts[@]}"
+                  echo "Rule removed: '$rule_name'"
+                fi
+              done
+          register: ftp_firewall_rules_cleanup
+          changed_when: "'Rule removed' in ftp_firewall_rules_cleanup.stdout"
+
+        - name: Deploy firewall rules
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: |
+              set -e
+
+              existing_rule=$(firewall-cmd --permanent --direct --get-all-rules | grep "{{ ftp_firewall_rules_tag }}_{{ item.name }}$" || true)
+              if [[ -n "$existing_rule" ]]; then
+                firewall-cmd --permanent --direct --remove-rule $existing_rule
+              fi
+
+              firewall-cmd --permanent --direct --add-rule {{ item.rule }} -m comment --comment "{{ ftp_firewall_rules_tag }}_{{ item.name }}"
+              new_rule=$(firewall-cmd --permanent --direct --get-all-rules | grep "{{ ftp_firewall_rules_tag }}_{{ item.name }}$")
+
+              if [[ "$new_rule" != "$existing_rule" ]]; then
+                echo "Rule changed: '{{ item.name }}'"
+              fi
+          loop: "{{ ftp_firewall_rules }}"
+          loop_control:
+            label: "{{ item.name }}"
+          register: ftp_firewall_rules_deploy
+          changed_when: "'Rule changed' in ftp_firewall_rules_deploy.stdout"
+
+        - name: Apply firewall configuration changes
+          ansible.builtin.command: "firewall-cmd --reload"
+          when: >-
+            ftp_firewall_rules_cleanup is defined and ftp_firewall_rules_cleanup.changed or
+            ftp_firewall_rules_deploy is defined and ftp_firewall_rules_deploy.results | selectattr('changed', 'equalto', true) | list | length > 0
+
 - name: Traefik
   become: true
   hosts: traefik
@@ -15,30 +99,6 @@
         - python3-libselinux
         - policycoreutils-python-utils
         - python3-pip
-
-    - name: Configure Firewall
-      ansible.posix.firewalld:
-        service: "{{ item }}"
-        permanent: true
-        zone: public
-        state: enabled
-      with_items:
-        - ssh
-        - amqps
-        - http
-        - https
-        - ntp
-
-    - name: Configure extra ports
-      ansible.posix.firewalld:
-        port: "{{ item.port }}/{{ item.protocol }}"
-        permanent: true
-        immediate: true
-        zone: public
-        state: enabled
-      with_items:
-        - "{{ traefik_cvmfs_rsync_port }}"
-        - "{{ traefik_dokku_ssh_port }}"
 
     - name: Install python docker
       become: true
