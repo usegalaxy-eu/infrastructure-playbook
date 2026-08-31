@@ -27,7 +27,7 @@ replicaset: false
 osiris_www_dir: /var/www/osiris
 osiris_config_file: "{{ osiris_www_dir }}/CONFIG.php"
 
-certbot_bin: "/usr/bin/certbot"
+certbot_bin: "/usr/bin/true"  # Traefik handles SSL, certbot does not need to run
 certbot_well_known_root: "{{ osiris_www_dir }}/_well-known_root"
 certbot_domains:
   - "{{ hostname }}"
