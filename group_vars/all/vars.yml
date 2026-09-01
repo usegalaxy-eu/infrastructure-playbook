@@ -4,6 +4,15 @@ bi_privat_vlan: 2068 # the vlan tag for 10.5.68.0/24 network
 generic_tmp_dir: "{{ misc.misc06.path }}/tmp/"
 job_working_root_dir: "{{ jwd.jwd07.path }}" # we set this in gxconfig, but it should not be used, our object_store_conf is overwriting it
 object_store_cache_dir: "{{ cache.cache07.path }}/object_store_cache/"
+# Sharded cache directories for S3 object store (weighted).
+# Each entry requires: path, weight, size (in GiB).
+object_store_cache_dirs:
+  - path: "{{ cache.cache07.path }}/object_store_cache/"
+    weight: 1
+    size: 90000
+  - path: "{{ cache.cache08.path }}/object_store_cache/"
+    weight: 1
+    size: 90000
 short_term_web_storage_dir: "{{ misc.misc06.path }}/short_term_web_storage/"
 ftp_upload_dir: "{{ misc.misc06.path }}/incoming"
 
