@@ -416,8 +416,12 @@ backends:
       multipart: true
       is_secure: true
     cache:
-      path: "{{ object_store_cache_dir }}"
-      size: 100000
+      dirs:
+{% for cache_dir in object_store_cache_dirs %}
+        - path: "{{ cache_dir.path }}"
+          weight: {{ cache_dir.weight }}
+          size: {{ cache_dir.size }}
+{% endfor %}
       cache_updated_data: true ## do we need this here?
     extra_dirs:
       - type: job_work
