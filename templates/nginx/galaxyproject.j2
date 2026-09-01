@@ -65,6 +65,23 @@ server {
 		return 301 https://galaxyproject.org/wall/;
 	}
 
+	# Terms of Service / Privacy Policy live on the separate GDPR site
+	# (usegalaxy-eu/gdpr, served at usegalaxy-eu.github.io/gdpr/), which was not
+	# part of the website migration. /gdpr resolves by accident today -- the
+	# catch-all at the bottom forwards it to the legacy host, where the GDPR site
+	# really is -- but /terms and /privacy do not: they were never pages, only
+	# nginx aliases on usegalaxy.eu (galaxy-main.j2 `location /terms`, and the
+	# traefik gdpr-router rule). Off galaxyproject.eu they fall through to the
+	# catch-all and 404 on the legacy host. Galaxy's own terms_url points at
+	# usegalaxy.eu/terms, so the alias is live and linked; give the same paths a
+	# home here.
+	location ~* "^/terms(?:\.html|/)?$" {
+		return 301 https://usegalaxy-eu.github.io/gdpr/;
+	}
+	location ~* "^/privacy(?:\.html|/)?$" {
+		return 301 https://usegalaxy-eu.github.io/gdpr/privacy-policy.html;
+	}
+
 	# ---------------------------------------------------------------------------
 	# Legacy galaxyproject.eu -> galaxyproject.org (hub) 301 redirect table.
 	# Generated from the galaxy-eu-migration-audit manifest (schema v3).
@@ -125,6 +142,8 @@ server {
 	location ~* "^/tools(?:\.html|/)?$" { return 301 https://galaxyproject.org/eu/tools/; }
 	location ~* "^/citations(?:\.html|/)?$" { return 301 https://galaxyproject.org/eu/citations/; }
 	location ~* "^/tiaas(?:\.html|/)?$" { return 301 https://galaxyproject.org/eu/tiaas/; }
+	location ~* "^/storage(?:\.html|/)?$" { return 301 https://galaxyproject.org/eu/storage/; }
+	location ~* "^/subdomains(?:\.html|/)?$" { return 301 https://galaxyproject.org/eu/subdomains/; }
 	location ~* "^/gga(?:\.html|/)?$" { return 301 https://galaxyproject.org/use/gga/; }
 	location ~* "^/ftp/?$" { return 301 https://galaxyproject.org/ftp-upload/; }
 	location ~* "^/widgets/?$" { return 301 https://galaxyproject.org/eu/widgets/; }

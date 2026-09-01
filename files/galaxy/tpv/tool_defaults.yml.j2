@@ -2,19 +2,37 @@
 # ALL tags must be with dashes (-) instead of underscores (_)
 global:
   default_inherits: default
+  context:
+    # Base multiplier applied on each OOM resubmission. The accumulated
+    # factor is persisted in the OOM_MEM_SCALE destination param (see
+    # params below), which Galaxy carries across resubmissions. Memory
+    # requirements for resubmitted jobs are capped at OOM_SCALING_CAP.
+    OOM_SCALING_FACTOR: 2
+    OOM_SCALING_CAP: 512
 tools:
   default:
     abstract: true
     cores: 1
     mem: cores * 3.8
     gpus: 0
+    resubmit:
+      oom_retry:
+        condition: memory_limit_reached and attempt <= 3
+        # `(mem * OOM_SCALING_FACTOR ** (attempt - 2)) < OOM_SCALING_CAP`
+        # allows only one resubmission capped at OOM_SCALING_CAP, subsequent
+        # resubmission attempts are rejected.
+        environment: tpv_dispatcher
+        # Delay is in seconds before Galaxy dispatches the resubmitted job.
+        delay: 60
     env:
       ## The execute statement should be removed once https://github.com/galaxyproject/galaxy/issues/20562 is fixed
       - execute: cd $_GALAXY_JOB_DIR
       - name: GALAXY_MEMORY_MB
         value: "{int(mem * 1024)}" # set 5/2023 might be moved to runner or tool wrappers, related to Galaxy issue 15952
       - name: _JAVA_OPTIONS
-        value: -Xmx{round(mem*0.9*1024)}m -Xms256m -Duser.home=/data/2/galaxy_db/tmp -Djava.io.tmpdir=$_GALAXY_JOB_TMP_DIR
+        value: -Xmx{round(mem*0.9*1024)}m -Xms256m -Duser.home=/data/misc06/tmp -Djava.io.tmpdir=$_GALAXY_JOB_TMP_DIR
+      - name: SINGULARITYENV__JAVA_OPTIONS
+        value: "$_JAVA_OPTIONS"
       - name: HDF5_USE_FILE_LOCKING
         value: "FALSE"
       - name: SINGULARITYENV_HDF5_USE_FILE_LOCKING
@@ -37,10 +55,24 @@ tools:
       submit_request_gpus: "{gpus or 0}"
       docker_memory: "{mem}G"
       description: "{tool.id if not tool.id.count('/') == 5 else tool.id.split('/')[4]}"
+      # We persist OOM_MEM_SCALE across resubmissions by using job.destination_params.
+      # On the first run this records the base factor (OOM_SCALING_FACTOR).
+      # On each resubmit TPV re-evaluates this expression, reading the
+      # previously persisted value and multiplying by OOM_SCALING_FACTOR.
+      OOM_MEM_SCALE: "{OOM_SCALING_FACTOR * int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else OOM_SCALING_FACTOR}"
     scheduling:
       reject:
         - offline
     rules:  # executed in order
+        # The accumulated scaling factor is read from the
+        # persisted OOM_MEM_SCALE destination param,
+        # which Galaxy carries across resubmissions.
+      - id: oom_resubmit_increase_memory
+        if: job is not None and job.state == "resubmitted"
+        execute: |
+          _scale = int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else 1
+          entity.mem = f"min(({entity.mem}) * {_scale}, {OOM_SCALING_CAP})"
+
         # Set accounting group user for jobs
       - id: jobs_user_accounting_group
         if: user is not None
@@ -122,8 +154,6 @@ tools:
       - id: interactive_tool
         if: not (dry_run_mode := job_wrapper is None) and (tool.tool_type == 'interactive')
         # `job_wrapper is None` occurs when TPV is launched in dry-run mode
-        cores: 1
-        mem: 4
         params:
           docker_volumes: $defaults
           container_monitor_result: callback

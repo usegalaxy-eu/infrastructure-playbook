@@ -3,17 +3,41 @@ name: Total Perspective Vortex
 
 "on":
   pull_request:
-    paths:
-      - "files/galaxy/tpv/**"
   push:
     branches:
       - master
     paths:
-      - "files/galaxy/tpv/**"
+      - &tpv_path "files/galaxy/tpv/**"
 
 jobs:
+  orchestrator:
+    name: Orchestrator
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.detect.outputs.changed }}
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Detect TPV configuration changes.
+        id: detect
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.event.after }}
+          TPV_PATH: *tpv_path
+        run: |
+          if git diff --quiet "$BASE_SHA" "$HEAD_SHA" -- "$TPV_PATH"; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
   lint:
-    name: Total Perspective Vortex linter
+    name: Lint
+    needs: orchestrator
+    if: needs.orchestrator.outputs.changed == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Check out the codebase.
@@ -164,7 +188,9 @@ jobs:
           done
 
   dry-run:
-    name: Total Perspective Vortex dry-run
+    name: Dry-run
+    needs: orchestrator
+    if: needs.orchestrator.outputs.changed == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Check out the codebase.

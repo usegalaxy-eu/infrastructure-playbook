@@ -348,7 +348,9 @@ server {
     }
 
     location /robots.txt {
-        alias {{ galaxy_server_dir }}/static/robots.txt;
+        alias /etc/nginx/robots.txt;
+        default_type text/plain;
+        add_header Cache-Control "no-store";
     }
 
     resolver 8.8.8.8 8.8.4.4 valid=300s;

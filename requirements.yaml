@@ -12,25 +12,10 @@ collections:
     source: https://galaxy.ansible.com
     type: galaxy
   - name: grafana.grafana
-    # This collection has dependencies
-    # (https://github.com/grafana/grafana-ansible-collection/blob/5.2.0/requirements.yml)
-    # that have not been defined as they should
-    # (https://docs.ansible.com/ansible/latest/dev_guide/developing_collections_shared.html#listing-collection-dependencies).
-    # Therefore, they have to be included in this file. @domgz opened an issue on the repository of the Grafana Ansible collection
-    # https://github.com/grafana/grafana-ansible-collection/issues/222
-    # notifying the developers of this issue.
-    version: 5.3.0
-  # - name: community.general  # required by `grafana.grafana` (already specified above)
-  #   source: https://github.com/ansible-collections/community.general.git
-  #   version: 9.0.1
-  #   type: git
-  - name: community.grafana # required by `grafana.grafana`
-    source: https://github.com/ansible-collections/community.grafana.git
-    version: 2.0.0
-    type: git
-  - name: ansible.posix # required by `grafana.grafana`
+    version: 6.1.0
+  - name: ansible.posix
     source: https://github.com/ansible-collections/ansible.posix.git
-    version: 1.5.2
+    version: 1.5.4
     type: git
   - name: community.rabbitmq
     version: 1.1.0
@@ -70,7 +55,7 @@ roles:
     src: https://github.com/usegalaxy-eu/ansible-cvmfs
     version: master
   - name: galaxyproject.proftpd
-    version: 0.3.2
+    version: 0.3.3
   - name: usegalaxy_eu.ansible_nginx_upload_module
     version: 1.0.0
   - name: usegalaxy-eu.nginx
@@ -193,5 +178,5 @@ roles:
     src: https://github.com/usegalaxy-eu/ansible-rocky-security-repository
     version: v0.1.0
   - name: usegalaxy_eu.ucsc_genome_browser
-    version: a0ca168cc0bd0bf8ff7b1df97b7a8b4e797f7524
+    version: 11c8d39c9f3f3f93c62ce6e605cc98379c0326cf
     src: https://github.com/usegalaxy-eu/ansible-ucsc-genome-browser

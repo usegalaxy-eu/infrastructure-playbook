@@ -1,0 +1,27 @@
+---
+- name: "Copy firewall management scripts"
+  ansible.builtin.copy:
+    src: '{{ item }}'
+    dest: '{{ cron_bin_dir }}/{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: 0750
+  loop:
+    - 'fetch-ipranges.sh'
+    - 'firewall-block.sh'
+
+- name: "Update firewall IP ranges"
+  ansible.builtin.cron:
+    name: "Firewall update German IP ranges - Weekly"
+    special_time: "weekly"
+    user: "root"
+    job: "{{ cron_bin_dir }}/fetch-ranges.sh"
+    cron_file: ansible_firewall_update_ipranges
+
+- name: "Refresh firewall restrictions"
+  ansible.builtin.cron:
+    name: "Firewall refresh IPs blocked - Weekly"
+    special_time: "weekly"
+    user: "root"
+    job: "{{ cron_bin_dir }}/firewall-block.sh"
+    cron_file: ansible_firewall_refresh_block

@@ -43,3 +43,6 @@
 
 - name: "Configure certbot and SSL certs"
   ansible.builtin.include_tasks: certbot_ssl.yml
+
+- name: "Configure firewall restrictions"
+  ansible.builtin.include_tasks: firewall.yml
