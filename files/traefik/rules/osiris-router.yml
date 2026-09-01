@@ -1,0 +1,17 @@
+http:
+  routers:
+    osiris-rtr:
+      rule: "Host(`osiris.denbi.de`) || Host(`osiris-denbi.galaxyproject.eu`)"
+      service: osiris
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: http
+        # although `osiris.denbi.de` points to Traefik via a CNAME record, it
+        # is not controlled by us, therefore the DNS challenge will not work,
+        # use the HTTP challenge instead
+        domains:
+          - main: "osiris.denbi.de"
+            sans:
+              - "osiris.denbi.de"
+              - "osiris-denbi.galaxyproject.eu"
