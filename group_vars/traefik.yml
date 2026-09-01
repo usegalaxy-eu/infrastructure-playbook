@@ -103,8 +103,15 @@ traefik_containers:
 
       - "--providers.file.directory=/rules"
       - "--providers.file.watch=true"
-      ## DNS Challenge
+      # Certificates Resolvers
+      ## HTTP-01 Challenge (LetsEncrypt)
+      - --certificatesResolvers.http.acme.storage=/letsencrypt/acme-http.json
+      - --certificatesResolvers.http.acme.httpChallenge.entryPoint=web
+      - --certificatesResolvers.http.acme.caserver=https://acme-v02.api.letsencrypt.org/directory
+      - "--certificatesresolvers.http.acme.email={{ traefik_letsencrypt_mail }}"
+      ## Tailscale
       - --certificatesResolvers.ts.tailscale=true
+      ## DNS-01 Challenge via Route53 (LetsEncrypt)
       - --certificatesResolvers.route53.acme.storage=/letsencrypt/acme.json
       - --certificatesResolvers.route53.acme.dnsChallenge.provider=route53
       - --certificatesresolvers.route53.acme.caserver=https://acme-v02.api.letsencrypt.org/directory
