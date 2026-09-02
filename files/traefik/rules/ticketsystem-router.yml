@@ -5,10 +5,7 @@ http:
       service: ticketsystem
       entryPoints:
         - websecure
-        - web
       tls:
         certResolver: "route53"
         domains:
           - main: "ticketsystem.galaxyproject.eu"
-      middlewares:
-        - https-redirect
