@@ -1,0 +1,36 @@
+hostname: apps.galaxyproject.eu
+apps:
+  - ptdk
+  # - pwdk
+  - oembed
+  # - certificates
+  # - gtn-slack-bot
+  - dnanalyzer
+  # - cors
+dokku_plugins:
+  - name: postgres
+    url: https://github.com/dokku/dokku-postgres.git
+  - name: letsencrypt
+    url: https://github.com/dokku/dokku-letsencrypt.git
+  - name: redis
+    url: https://github.com/dokku/dokku-redis.git
+  # - name: acl
+  #   url: https://github.com/dokku/dokku-acl.git
+dokku_users:
+  # - name: hexylena
+  #   username: hexylena
+  #   ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEEurxSQW4BrpP9FLXqiz/H6Ewclln68oc/oFAVqH5xu"
+  # - name: mira
+  #   username: mira
+  #   ssh_key: "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIEUzGzHldVS8TNywBdlFL9D5FCvgEPBdoHzRpmk/42K/AAAABHNzaDo= mk@galaxy-mira"
+  - name: github
+    username: github
+    ssh_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDXBVfvItcmrgHVaV7aohDLe05GF1G82OQ4qa+MOpSkkYqA7S+p5L+ag0RMy1Yn5YjqxxXvuHTOWosp9GTeDQi/khearnMpcNyHHQA1k9PYEAoQohcnKX9XBqXZI+9Mlk1JL8nZ4T99YbF2GqNbXo1jHsPvkLQHZtVyLV2pM2GAY28JjAhw3k+dVn7hT26FBcPCRuj4GakL/Fti1duW6HjEwiqqPjpqSio1K8fEI7TVE/YHDQjeAHLvbDe2hzbaVOwwzNkxs1jy/MsK7HfTouJHewC7IWg3wlllC2zfYqnvFTaHtcK3fHRzMdgZ3HqSUtvC4/tfd0zch/0YatWxbqmEntVNhnvyJW3t+hQM0zEPbCKVMfxuf8JTxXaTS5fzMWSNVDKIKJ3XY04gOGA6oDJOHoIubN28AaudjEo045s1a8Zf+RPq23oc7X/Ajvze4IRQdqAN/TMuCyNA/iqeGTYFWP6Ia4nd/3QYUlPtzAeCo0WTkamccYwMWPr+bYCYlls= dokku@github"
+    # - name: github2
+    #   username: github2
+    #   ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFGzr8JWnnCQo+565kzpXKYP12kLt2oyWzFCF/cueIvO"
+    # - name: oembed
+    #   username: oembed
+    #   ssh_key: "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBLkuOlVUXxCqABoQbTEvW3A8nSSici89C10lEg1F4Cmvv/q8YRGYaoDayuqifFJERWvRA8yVcIH7/XCPzmMrLM0="
+dokku_daemon_install: false
+dokku_docker_install: true
