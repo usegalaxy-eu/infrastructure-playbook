@@ -5,11 +5,9 @@ http:
       service: plausible
       entryPoints:
         - websecure
-        - web
       tls:
         certResolver: "route53"
         domains:
           - main: "plausible.galaxyproject.eu"
       middlewares:
-        - https-redirect
         - plausible-allow-iframe

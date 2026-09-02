@@ -4,7 +4,4 @@ http:
       rule: "Host(`*.usegalaxy.eu`) && PathPrefix(`/api/events/stream`)"
       entryPoints:
         - websecure
-        - web
       service: usegalaxy-eu-sse
-      middlewares:
-        - https-redirect

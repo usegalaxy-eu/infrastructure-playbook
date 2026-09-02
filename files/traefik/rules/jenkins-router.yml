@@ -5,10 +5,7 @@ http:
       service: jenkins
       entryPoints:
         - websecure
-        - web
       tls:
         certResolver: "route53"
         domains:
           - main: "build.galaxyproject.eu"
-      middlewares:
-        - https-redirect

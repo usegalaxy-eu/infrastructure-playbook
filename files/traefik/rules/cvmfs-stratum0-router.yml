@@ -1,13 +1,3 @@
-http:
-  routers:
-    cvmfs-stratum0-rtr:
-      # cvmfs-stratum0 is served over plain HTTP, please keep it exempt from
-      # the HTTPS redirection
-      rule: "Host(`cvmfs-stratum0.galaxyproject.eu`)"
-      service: cvmfs-stratum0
-      entryPoints:
-        - web
-
 tcp:
   routers:
     cvmfs-stratum0-rsync:
