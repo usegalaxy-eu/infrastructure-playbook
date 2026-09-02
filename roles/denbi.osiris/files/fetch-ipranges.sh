@@ -1,9 +1,9 @@
 #!/bin/sh
 set -eu
 
-OLD="/etc/haproxy/allowed-cidrs.txt.old"
-NOW="/etc/haproxy/allowed-cidrs.txt"
-NEW="/etc/haproxy/allowed-cidrs.txt.new"
+OLD="/root/allowed-cidrs.txt.old"
+NOW="/root/allowed-cidrs.txt"
+NEW="/root/allowed-cidrs.txt.new"
 
 wget --quiet https://www.ipdeny.com/ipblocks/data/aggregated/de-aggregated.zone -O "$NEW"
 

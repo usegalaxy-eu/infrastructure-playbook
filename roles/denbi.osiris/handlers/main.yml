@@ -11,16 +11,3 @@
     name: httpd
     state: restarted
   listen: "Validate and restart apache"
-
-- name: Validate haproxy config
-  ansible.builtin.command: haproxy -c -f /etc/haproxy/haproxy.cfg
-  register: haproxy_configtest
-  changed_when: false
-  failed_when: haproxy_configtest.rc != 0
-  listen: "Validate and reload HAProxy"
-
-- name: Reload haproxy
-  ansible.builtin.service:
-    name: haproxy
-    state: reloaded
-  listen: "Validate and reload HAProxy"

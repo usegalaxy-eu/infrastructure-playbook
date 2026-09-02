@@ -1,62 +1,27 @@
 ---
-- name: "Install HAProxy"
-  ansible.builtin.dnf:
-    name: haproxy
-    state: present
-
-- name: "Copy HAProxy IP range fetch script"
+- name: "Copy Apache access restriction scripts"
   ansible.builtin.copy:
-    src: fetch-ipranges.sh
-    dest: '{{ cron_bin_dir }}/fetch-ipranges.sh'
+    src: '{{ item }}'
+    dest: '{{ cron_bin_dir }}/{{ item }}'
     owner: 'root'
     group: 'root'
     mode: 0750
+  loop:
+    - 'fetch-ipranges.sh'
+    - 'apache-block.sh'
 
-- name: "Ensure HAProxy config directory exists"
-  ansible.builtin.file:
-    path: /etc/haproxy
-    state: directory
-    owner: root
-    group: root
-    mode: '0755'
-
-- name: "Deploy HAProxy configuration"
-  ansible.builtin.template:
-    src: haproxy.cfg.j2
-    dest: /etc/haproxy/haproxy.cfg
-    owner: root
-    group: root
-    mode: '0644'
-  notify: "Validate and reload HAProxy"
-
-- name: "Allow HAProxy to connect to Apache (SELinux)"
-  ansible.posix.seboolean:
-    name: haproxy_connect_any
-    state: true
-    persistent: true
-
-# If SELinux denies HAProxy binding to :80
-# - name: "Allow HAProxy to bind to any port (SELinux)"
-#   ansible.posix.seboolean:
-#     name: haproxy_bind_any
-#     state: true
-#     persistent: true
-
-- name: "Fetch HAProxy IP ranges"
-  ansible.builtin.command: "{{ cron_bin_dir }}/fetch-ipranges.sh"
-  args:
-    creates: "{{ haproxy_ipranges_file }}"
-
-- name: "Enable and start HAProxy"
-  ansible.builtin.service:
-    name: haproxy
-    enabled: true
-    state: started
-
-- name: "Update HAProxy IP ranges and reload"
+- name: "Update Apache IP ranges"
   ansible.builtin.cron:
     name: "Firewall update German IP ranges - Weekly"
     special_time: "weekly"
     user: "root"
-    job: "{{ cron_bin_dir }}/fetch-ipranges.sh && systemctl reload haproxy"
+    job: "{{ cron_bin_dir }}/fetch-ipranges.sh"
     cron_file: ansible_firewall_update_ipranges
+
+- name: "Refresh Apache IP restrictions"
+  ansible.builtin.cron:
+    name: "Firewall refresh IPs blocked - Weekly"
+    special_time: "weekly"
+    user: "root"
+    job: "OSIRIS_WWW_DIR={{ osiris_www_dir }} {{ cron_bin_dir }}/apache-block.sh"
+    cron_file: ansible_firewall_refresh_block
