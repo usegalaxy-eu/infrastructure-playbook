@@ -5,7 +5,9 @@ http:
       service: stats
       entryPoints:
         - websecure
+        - web
       middlewares:
+        - https-redirect
         - stats-compress
       tls:
         certResolver: "route53"

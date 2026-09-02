@@ -5,7 +5,10 @@ http:
       service: tpv-broker
       entryPoints:
         - websecure
+        - web
       tls:
         certResolver: "route53"
         domains:
           - main: "tpv-broker.galaxyproject.eu"
+      middlewares:
+        - https-redirect
