@@ -1,0 +1,29 @@
+global
+    log /dev/log local0
+    user haproxy
+    group haproxy
+
+defaults
+    log     global
+    mode    http
+    option  httplog
+    timeout connect 5s
+    timeout client  50s
+    timeout server  50s
+
+frontend osiris_in
+    bind *:80
+    acl from_traefik src {{ osiris_reverse_proxy_trusted | join(' ') }}
+    acl ipranges req.hdr_ip(X-Forwarded-For) -f {{ haproxy_ipranges_file }}
+    # HAProxy's IP range filtering is based on O(K) lookups powered by an
+    # elastic binary tree, where K is the number of bits of the IP addresses
+    # (32 bits for IPv4)
+    http-request deny deny_status 403 unless from_traefik
+    http-request deny deny_status 403 unless ipranges
+    default_backend osiris_apache
+
+backend osiris_apache
+    mode http
+    # Pass Traefik's X-Forwarded-For through unchanged (do NOT append
+    # HAProxy's own IP)
+    server apache 127.0.0.1:{{ haproxy_backend_port }} check
