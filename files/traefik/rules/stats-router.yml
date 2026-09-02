@@ -7,8 +7,8 @@ http:
         - websecure
         - web
       middlewares:
-        - stats-compress
         - https-redirect
+        - stats-compress
       tls:
         certResolver: "route53"
         domains:
