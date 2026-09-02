@@ -453,7 +453,7 @@ destinations:
       # TODO: remove once CVMFS is available / containers are synced in another way
       singularity_run_extra_arguments: --disable-cache
       submit_user: $__user_email__
-      submit_native_specification: "--qos=galaxy -p galaxy -t 24:00:00 --cpus-per-task={int(cores)} --mem-per-cpu={int(mem/cores)}G"
+      submit_native_specification: "--qos=galaxy -p galaxy -t 24:00:00 --cpus-per-task={int(cores)} --mem-per-cpu={int(mem/cores)*1024}"
       {{ pulsar_cz_container_resolvers() | indent(6, false) }}
     scheduling:
       require:
