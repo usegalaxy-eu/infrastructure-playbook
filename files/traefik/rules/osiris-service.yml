@@ -5,3 +5,10 @@ http:
         passHostHeader: true
         servers:
           - url: "http://10.4.68.174:80"
+
+tcp:
+  services:
+    osiris-ssh:
+      loadBalancer:
+        servers:
+          - address: "10.4.68.174:22"

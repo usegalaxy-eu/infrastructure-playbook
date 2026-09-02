@@ -15,3 +15,11 @@ http:
             sans:
               - "osiris.denbi.de"
               - "osiris-denbi.galaxyproject.eu"
+
+tcp:
+  routers:
+    osiris-ssh:
+      rule: "HostSNI(`*`)"
+      service: osiris-ssh
+      entryPoints:
+        - osiris-ssh
