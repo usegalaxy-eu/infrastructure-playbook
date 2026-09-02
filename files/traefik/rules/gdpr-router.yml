@@ -5,6 +5,7 @@ http:
       service: usegalaxy-github
       entryPoints:
         - websecure
+        - web
       tls:
         certResolver: "route53"
         domains:
@@ -13,6 +14,7 @@ http:
               - "*.usegalaxy.eu"
       middlewares:
         - replace-terms
+        - https-redirect
   middlewares:
     replace-terms:
       replacePath:
