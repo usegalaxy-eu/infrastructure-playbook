@@ -1,6 +1,7 @@
 #jinja2: trim_blocks: True, lstrip_blocks: True
 # The databases are stored under /data/db/databases/, thus the exception adding the path
 {% macro galaxy_volumes(exclude_volumes) -%}
+        {{ galaxy_tool_data_path }}/shared/ucsc/chrom/:ro,
         {%- for vol in dnb.values() %}
             {%- if vol.name not in exclude_volumes %}
                 {%- if 'db' in vol.name %}
@@ -121,7 +122,7 @@ destinations:
     env:
       GPU_AVAILABLE: "1"
     context:
-      galaxy_group: 'GalaxyGroup == "pxe-gpu"'
+      galaxy_group: 'GalaxyGroup == "interactive"'
     params:
       submit_requirements: "{galaxy_group}"
       request_gpus: "{gpus or 0}"
@@ -452,7 +453,8 @@ destinations:
       # TODO: remove once CVMFS is available / containers are synced in another way
       singularity_run_extra_arguments: --disable-cache
       submit_user: $__user_email__
-      submit_native_specification: "--qos=galaxy -p galaxy -t 24:00:00 --cpus-per-task={int(cores)} --mem-per-cpu={int(mem/cores)}"
+      submit_native_specification: "--qos=galaxy -p galaxy -t 24:00:00 --cpus-per-task={int(cores)} --mem-per-cpu={int(mem/cores)}G"
+      {{ pulsar_cz_container_resolvers() | indent(6, false) }}
     scheduling:
       require:
         - ufz-eve-pulsar

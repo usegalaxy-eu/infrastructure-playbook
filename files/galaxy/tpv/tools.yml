@@ -93,7 +93,7 @@ tools:
   ucsc_table_direct1:
     inherits: _basic_internal_tool
 
-  # example for overwriting the OOM memory multiplier for a specific tool.
+  # example for overwriting the OOM memory multiplier for a specific tool
   # toolshed.g2.bx.psu.edu/repos/example_owner/example_tool/example_tool/.*:
   #   context:
   #     OOM_SCALING_FACTOR: 3
@@ -440,6 +440,15 @@ tools:
       docker_run_extra_arguments: ' --gpus all --user 999 '
     env:
       GPU_AVAILABLE: 1
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_peptidedb/proteomiqon_peptidedb/.*:
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_psmstatistics/proteomiqon_psmstatistics/.*:
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_psmbasedquantification/proteomiqon_psmbasedquantification/.*:
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/.*:
     cores: 12
@@ -938,6 +947,12 @@ tools:
       SINGULARITYENV__JAVA_OPTIONS: -Xmx{int(mem)}G
 
   toolshed.g2.bx.psu.edu/repos/iuc/wgcna_network/wgcna_network/.*:
+    mem: 32
+    cores: 4
+
+  
+  toolshed.g2.bx.psu.edu/repos/iuc/wgcna_softpower/wgcna_softpower/.*:
+    mem: 32
     cores: 4
 
   toolshed.g2.bx.psu.edu/repos/iuc/celltypist/celltypist/.*:

@@ -16,6 +16,13 @@ telegraf_plugins_extra:
       - metric_version = 2
       - name_override = "traefik"
 
+traefik_cvmfs_rsync_port:
+  port: 9087
+  protocol: tcp
+traefik_dokku_ssh_port:
+  port: 3022
+  protocol: tcp
+
 traefik_force_validation: true
 traefik_manage_secrets: true
 
@@ -76,7 +83,8 @@ traefik_containers:
       - --entryPoints.amqps.address=:5671
       - --entryPoints.ftp.address=:21
       - --entryPoints.influxdb.address=:8086
-      - --entryPoints.cvmfs-rsync.address=:9087
+      - "--entryPoints.cvmfs-rsync.address=:{{ traefik_cvmfs_rsync_port.port }}"
+      - "--entryPoints.dokku-ssh.address=:{{ traefik_dokku_ssh_port.port }}"
       - --entryPoints.metrics.address=:8082
       #- "--entryPoints.websecure.http.tls.domains[0].main={{ traefik_domain }}"
       #- --entryPoints.https.http.tls.certresolver=route53
@@ -93,8 +101,15 @@ traefik_containers:
 
       - "--providers.file.directory=/rules"
       - "--providers.file.watch=true"
-      ## DNS Challenge
+      # Certificates Resolvers
+      ## HTTP-01 Challenge (LetsEncrypt)
+      - --certificatesResolvers.http.acme.storage=/letsencrypt/acme-http.json
+      - --certificatesResolvers.http.acme.httpChallenge.entryPoint=web
+      - --certificatesResolvers.http.acme.caserver=https://acme-v02.api.letsencrypt.org/directory
+      - "--certificatesresolvers.http.acme.email={{ traefik_letsencrypt_mail }}"
+      ## Tailscale
       - --certificatesResolvers.ts.tailscale=true
+      ## DNS-01 Challenge via Route53 (LetsEncrypt)
       - --certificatesResolvers.route53.acme.storage=/letsencrypt/acme.json
       - --certificatesResolvers.route53.acme.dnsChallenge.provider=route53
       - --certificatesresolvers.route53.acme.caserver=https://acme-v02.api.letsencrypt.org/directory
@@ -165,9 +180,13 @@ traefik_containers:
         published_port: 8086
         protocol: tcp
         mode: host
-      - target_port: 9087
-        published_port: 9087
-        protocol: tcp
+      - target_port: "{{ traefik_cvmfs_rsync_port.port }}"
+        published_port: "{{ traefik_cvmfs_rsync_port.port }}"
+        protocol: "{{ traefik_cvmfs_rsync_port.protocol }}"
+        mode: host
+      - target_port: "{{ traefik_dokku_ssh_port.port }}"
+        published_port: "{{ traefik_dokku_ssh_port.port }}"
+        protocol: "{{ traefik_dokku_ssh_port.protocol }}"
         mode: host
 
     secrets:
@@ -189,3 +208,25 @@ traefik_containers:
       "traefik.http.routers.whoami.tls.certresolver": "ts"
     networks:
       - traefik
+
+# `firewalld` policy for FTP passive ports, which are not managed by Traefik
+ftp_firewall_rules_node_hostname: "{{ groups['incoming'][0] }}"
+ftp_firewall_rules_node_address: "{{ hostvars[ftp_firewall_rules_node_hostname].ansible_host }}"
+ftp_firewall_rules_tag: FTP_PASSIVE_PORTS
+ftp_firewall_rules_passive_ports: >-  # e.g. "5000:5100"
+  {{
+    proftpd_global_options
+    | selectattr('PassivePorts', 'defined')
+    | map(attribute='PassivePorts')
+    | list | first
+    | regex_replace('^\s*([0-9]+)\s+([0-9]+)\s*$', '\1:\2')
+  }}
+ftp_firewall_rules:
+  - name: FORWARD
+    rule: "ipv4 nat PREROUTING 0 -d {{ ansible_default_ipv4.address }} -p tcp --dport {{ ftp_firewall_rules_passive_ports }} -j DNAT --to-destination {{ ftp_firewall_rules_node_address }}"
+  - name: MASQUERADE
+    rule: "ipv4 nat POSTROUTING 0 -d {{ ftp_firewall_rules_node_address }} -p tcp --dport {{ ftp_firewall_rules_passive_ports }} -j MASQUERADE"
+  - name: FORWARD_PATH
+    rule: "ipv4 filter FORWARD 0 -d {{ ftp_firewall_rules_node_address }} -p tcp --dport {{ ftp_firewall_rules_passive_ports }} -j ACCEPT"
+  - name: RETURN_PATH
+    rule: "ipv4 filter FORWARD 0 -s {{ ftp_firewall_rules_node_address }} -p tcp --sport {{ ftp_firewall_rules_passive_ports }} -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT"
