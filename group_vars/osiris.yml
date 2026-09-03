@@ -53,8 +53,7 @@ apache_vhosts:
       # The restriction above works for the root URL, but rather than
       # returning a 403 error, it returns the Apache test page. This
       # is because the test page conf file intercepts the requests for
-      # the root URL. The block below overrides this behavior, returning
-      # 403 also for the for the root URL.
+      # the root URL. The block below overrides this behavior.
       <LocationMatch "^/+$">
           ErrorDocument 403 default
       </LocationMatch>
