@@ -50,6 +50,14 @@ apache_vhosts:
       # of whether the file has been created yet by the cron task.
       IncludeOptional "/etc/httpd/osiris-allowed-cidrs.conf"
 
+      # The restriction above works for the root URL, but rather than
+      # returning a 403 error, it returns the Apache test page. This
+      # is because the test page conf file intercepts the requests for
+      # the root URL. The block below overrides this behavior.
+      <LocationMatch "^/+$">
+          ErrorDocument 403 default
+      </LocationMatch>
+
       Alias /.well-known/acme-challenge/ {{ certbot_well_known_root }}/acme-challenge/
       <Directory "{{ certbot_well_known_root }}">
           Options None
