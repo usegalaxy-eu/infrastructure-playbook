@@ -11,7 +11,8 @@
   vars:
     ucsc_genome_browser_ansible_group: ucsc_genome_browser
   vars_files:
-    - group_vars/ucsc_genome_browser.yml
+    - group_vars/ucsc_genome_browser/vars.yml
+    - group_vars/ucsc_genome_browser/vault.yml
   pre_tasks:
     - name: Install Vagrant
       block:
