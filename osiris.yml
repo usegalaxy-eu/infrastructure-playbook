@@ -4,8 +4,8 @@
   hosts:
     - osiris
   vars:
-    # Request certbot SSL when running the playbook
-    request_certbot_ssl: true
+    # Do not request certbot SSL when running the playbook (Traefik handles SSL)
+    request_certbot_ssl: false
     # This setting will be applied after restoring a backup
     # If no version change is desired, make sure this version matches that of the backup
     # Can also be a commit hash so long it is part of a branch

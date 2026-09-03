@@ -30,6 +30,7 @@
         - service: ftp  # passive ports are not managed by Traefik
         - port: "{{ traefik_cvmfs_rsync_port.port }}/{{ traefik_cvmfs_rsync_port.protocol }}"  # CVMFS rsync port
         - port: "{{ traefik_dokku_ssh_port.port }}/{{ traefik_dokku_ssh_port.protocol }}"
+        - port: "{{ traefik_osiris_ssh_port.port }}/{{ traefik_osiris_ssh_port.protocol }}"
 
     - name: Configure passive FTP port forwarding
       block:
