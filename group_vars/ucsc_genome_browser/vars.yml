@@ -15,6 +15,8 @@ ucsc_genome_browser_vm_state: present  # use `absent` to remove the VM
 ucsc_genome_browser_vm_cpus: 2
 ucsc_genome_browser_vm_memory: 16384
 ucsc_genome_browser_vm_ports:
+  - host: 2201
+    guest: 22
   - host: 8030
     guest: 80
 ucsc_genome_browser_vm_shares:
