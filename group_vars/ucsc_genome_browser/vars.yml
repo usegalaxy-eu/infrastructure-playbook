@@ -22,6 +22,7 @@ ucsc_genome_browser_vm_shares:
     guest: "{{ ucsc_genome_browser_vm_gbd_dir }}"
     readonly: true
   #  # TODO: default settings should be retrieved from the installation script
+ucsc_genome_browser_vm_keys: "{{ vault_ucsc_genome_browser_vm_keys }}"
 
 ucsc_genome_browser_vm_vagrant_project_dir: "/opt/ucsc_genome_browser/"
 ucsc_genome_browser_vm_vagrantfile: |
@@ -54,4 +55,37 @@ ucsc_genome_browser_vm_vagrantfile: |
       queue_size: 1024,
       mount_options: ["dax=always"]
     {% endfor %}
+
+      config.vm.provision "shell", inline: <<-SHELL
+        set -eu
+  
+        # Circumvent `usegalaxy_eu.ssh_manager` replacing the provisioned keys
+        # by defining a separate file `/etc/ssh/authorized_keys_vagrant` for
+        # them, as well as Vagrant's public SSH key.
+        AUTH_KEYS="/etc/ssh/authorized_keys_vagrant"
+  
+        # - Create `/etc/ssh/authorized_keys_vagrant` and copy Vagrant's key 
+        install -o root -g root -m 0644 "/home/vagrant/.ssh/authorized_keys" "$AUTH_KEYS"
+        install -d -o root -g root -m 0755 /etc/ssh/sshd_config.d
+        cat > /etc/ssh/sshd_config.d/90-vagrant-keys.conf <<'EOF'
+    Match User vagrant
+        AuthorizedKeysFile .ssh/authorized_keys /etc/ssh/authorized_keys_vagrant
+    EOF
+        chmod 0644 /etc/ssh/sshd_config.d/90-vagrant-keys.conf
+        sshd -t
+        systemctl reload sshd 2>/dev/null || systemctl reload ssh
+
+        # Deploy configured keys
+        BEGIN_MARKER="# BEGIN VAGRANT MANAGED KEYS"
+        END_MARKER="# END VAGRANT MANAGED KEYS"
+        # Remove managed block (if it exists)
+        sed -i "/${BEGIN_MARKER}/,/${END_MARKER}/d" "$AUTH_KEYS"
+        # Write managed block
+        [ -s "$AUTH_KEYS" ] && [ "$(tail -c1 "$AUTH_KEYS")" != "" ] && echo "" >> "$AUTH_KEYS"
+        echo "$BEGIN_MARKER" >> "$AUTH_KEYS"
+    {% for key in ucsc_genome_browser_vm_keys %}
+        echo "{{ key }}" >> "$AUTH_KEYS"
+    {% endfor %}
+        echo "$END_MARKER" >> "$AUTH_KEYS"
+      SHELL
     end
