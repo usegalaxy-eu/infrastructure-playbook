@@ -7,6 +7,9 @@ object_store_cache_dir: "{{ cache.cache07.path }}/object_store_cache/"
 # Sharded cache directories for S3 object store (weighted).
 # Each entry requires: path, weight, size (in GiB).
 object_store_cache_dirs:
+  - path: "{{ cache.cache06.path }}/object_store_cache/"
+    weight: 1
+    size: 90000
   - path: "{{ cache.cache07.path }}/object_store_cache/"
     weight: 1
     size: 90000
