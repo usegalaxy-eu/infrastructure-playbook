@@ -8,8 +8,11 @@
   # Terraform-based virtual machine
   hosts: sn10
   become: true
+  vars:
+    ucsc_genome_browser_ansible_group: ucsc_genome_browser
   vars_files:
-    - group_vars/ucsc_genome_browser.yml
+    - group_vars/ucsc_genome_browser/vars.yml
+    - group_vars/ucsc_genome_browser/vault.yml
   pre_tasks:
     - name: Install Vagrant
       block:
@@ -148,7 +151,6 @@
           when:
             - ucsc_genome_browser_vm_state == "absent"
             - "'firewalld.service' in ansible_facts.services"
-
   post_tasks:
     - name: Retrieve IP address for UCSC Genome Browser VM
       when: ucsc_genome_browser_vm_state == "present"
@@ -160,65 +162,18 @@
           register: ucsc_genome_browser_vm_ip_address
           changed_when: false
 
-        - name: Set fact for UCSC Genome Browser VM IP address (on controller)
-          become: false
-          delegate_to: localhost
-          delegate_facts: true
-          ansible.builtin.set_fact:
-            ucsc_genome_browser_vm_ip_address: "{{ ucsc_genome_browser_vm_ip_address.stdout }}"
-
-    - name: Retrieve SSH access key for UCSC Genome Browser VM
-      when: ucsc_genome_browser_vm_state == "present"
-      block:
-        - name: Locate SSH access key for UCSC Genome Browser VM
-          ansible.builtin.shell:
-            cmd: vagrant ssh-config | grep IdentityFile | awk '{print $2}'
-            chdir: "{{ ucsc_genome_browser_vm_vagrant_project_dir }}"
-          register: ucsc_genome_browser_vm_ssh_key_path
-          changed_when: false
-
-        - name: Slurp SSH access key for UCSC Genome Browser VM
-          ansible.builtin.slurp:
-            src: "{{ ucsc_genome_browser_vm_ssh_key_path.stdout }}"
-          register: ucsc_genome_browser_vm_private_key_slurp
-
-        - name: Decode SSH access key for UCSC Genome Browser VM
-          ansible.builtin.set_fact:
-            ucsc_genome_browser_vm_private_key_content: "{{ ucsc_genome_browser_vm_private_key_slurp.content | b64decode }}"
-
-        - name: Create temporary setup directory for UCSC Genome Browser role on controller
-          become: false
-          delegate_to: localhost
-          delegate_facts: true
-          ansible.builtin.tempfile:
-            state: directory
-            prefix: ucsc_genome_browser
-          changed_when: false
-          register: ucsc_genome_browser_tmpdir_controller
-
-        - name: Write SSH access key for UCSC Genome Browser VM to temporary file on controller
-          become: false
-          delegate_to: localhost
-          delegate_facts: true
-          ansible.builtin.copy:
-            content: "{{ ucsc_genome_browser_vm_private_key_content }}"
-            dest: "{{ ucsc_genome_browser_tmpdir_controller.path }}/ucsc_genome_browser_vm_private_key"
-            mode: "0600"
-          no_log: true
-
-        - name: Set UCSC Genome Browser VM SSH key file path (on controller)
-          become: false
-          delegate_to: localhost
-          delegate_facts: true
-          ansible.builtin.set_fact:
-            ucsc_genome_browser_vm_private_key_path: "{{ ucsc_genome_browser_tmpdir_controller.path }}/ucsc_genome_browser_vm_private_key"
+        - name: Write hostname for UCSC Genome Browser VM to hosts file
+          vars:
+            ucsc_genome_browser_host_entry_tag: "UCSC Genome Browser VM"
+          ansible.builtin.lineinfile:
+            path: /etc/hosts
+            regexp: ".*# {{ ucsc_genome_browser_host_entry_tag }}$"
+            line: "{{ ucsc_genome_browser_vm_ip_address.stdout }} {{ groups[ucsc_genome_browser_ansible_group][0] }}  # {{ ucsc_genome_browser_host_entry_tag }}"
+            state: "{{ ( ucsc_genome_browser_vm_state == 'present' ) | ternary('present', 'absent') }}"
 
 - name: Install UCSC Genome Browser
   hosts: ucsc_genome_browser
   tags: ucsc_genome_browser
-  vars:
-    ansible_host: "{{ hostvars['localhost']['ucsc_genome_browser_vm_ip_address'] }}"
-    ansible_ssh_private_key_file: "{{ hostvars['localhost']['ucsc_genome_browser_vm_private_key_path'] }}"
   roles:
     - name: usegalaxy_eu.ucsc_genome_browser
       become: true
