@@ -9,6 +9,15 @@ global:
     # requirements for resubmitted jobs are capped at OOM_SCALING_CAP.
     OOM_SCALING_FACTOR: 2
     OOM_SCALING_CAP: 512
+    # Weighted pool of job working directories. A single directory is
+    # selected per job via helpers.weighted_choice (see tools.default.params
+    # below). Set a weight to 0 to drain a directory; if all weights are 0
+    # the helper falls back to unweighted random selection.
+    jwd_pool:
+{% for jwd_entry in job_working_directory_pool %}
+      - value: "{{ jwd_entry.value }}"
+        weight: {{ jwd_entry.weight }}
+{%- endfor %}
 tools:
   default:
     abstract: true
@@ -54,6 +63,8 @@ tools:
       request_memory: "{mem}G"
       submit_request_gpus: "{gpus or 0}"
       docker_memory: "{mem}G"
+      # Distribute jobs across the weighted jwd_pool (see global.context above).
+      job_working_directory: "{helpers.weighted_choice(jwd_pool)['value']}"
       description: "{tool.id if not tool.id.count('/') == 5 else tool.id.split('/')[4]}"
       # We persist OOM_MEM_SCALE across resubmissions by using job.destination_params.
       # On the first run this records the base factor (OOM_SCALING_FACTOR).
