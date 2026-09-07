@@ -1,0 +1,11 @@
+http:
+  routers:
+    cvmfs-stratum1-rtr:
+      rule: "Host(`cvmfs1-ufr0.galaxyproject.eu`)"
+      service: cvmfs-stratum1
+      entryPoints:
+        - web
+      tls:
+        certResolver: "route53"
+        domains:
+          - main: "cvmfs1-ufr0.galaxyproject.eu"
