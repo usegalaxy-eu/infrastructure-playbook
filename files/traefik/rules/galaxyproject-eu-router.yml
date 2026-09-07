@@ -5,7 +5,10 @@ http:
       service: galaxyproject-eu
       entryPoints:
         - websecure
+        - web
       tls:
         certResolver: "route53"
         domains:
           - main: "galaxyproject.eu"
+      middlewares:
+        - https-redirect

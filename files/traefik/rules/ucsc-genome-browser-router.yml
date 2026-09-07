@@ -5,7 +5,9 @@ http:
       service: ucsc-genome-browser
       entryPoints:
         - websecure
+        - web
       middlewares:
+        - https-redirect
         - ucsc-genome-browser-compress
       tls:
         certResolver: "route53"

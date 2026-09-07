@@ -89,8 +89,6 @@ traefik_containers:
       - "--entryPoints.cvmfs-rsync.address=:{{ traefik_cvmfs_rsync_port.port }}"
       - "--entryPoints.dokku-ssh.address=:{{ traefik_dokku_ssh_port.port }}"
       - "--entryPoints.osiris-ssh.address=:{{ traefik_osiris_ssh_port.port }}"
-      - --entryPoints.web.http.redirections.entryPoint.to=websecure
-      - --entryPoints.web.http.redirections.entryPoint.scheme=https
       - --entryPoints.metrics.address=:8082
       #- "--entryPoints.websecure.http.tls.domains[0].main={{ traefik_domain }}"
       #- --entryPoints.https.http.tls.certresolver=route53
