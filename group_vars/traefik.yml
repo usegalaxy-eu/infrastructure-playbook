@@ -119,7 +119,7 @@ traefik_containers:
       - --certificatesresolvers.route53.acme.caserver=https://acme-v02.api.letsencrypt.org/directory
       - "--certificatesresolvers.route53.acme.email={{ traefik_letsencrypt_mail }}"
       # Enable Logging
-      - "--log.level=INFO" # DEBUG, PANIC, FATAL, ERROR, WARN, INFO
+      - "--log.level=DEBUG" # DEBUG, PANIC, FATAL, ERROR, WARN, INFO
       - "--accesslog=true"
       - "--accesslog.filepath={{ traefik_log_dir }}/access.log"
     labels:
