@@ -4,8 +4,4 @@ http:
       rule: "Host(`cvmfs1-ufr0.galaxyproject.eu`)"
       service: cvmfs-stratum1
       entryPoints:
-        - websecure
-      tls:
-        certResolver: "route53"
-        domains:
-          - main: "cvmfs1-ufr0.galaxyproject.eu"
+        - web
