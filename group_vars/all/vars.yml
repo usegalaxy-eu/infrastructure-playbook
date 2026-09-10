@@ -3,6 +3,15 @@
 bi_privat_vlan: 2068 # the vlan tag for 10.5.68.0/24 network
 generic_tmp_dir: "{{ misc.misc06.path }}/tmp/"
 job_working_root_dir: "{{ jwd.jwd07.path }}" # we set this in gxconfig, but it should not be used, our object_store_conf is overwriting it
+# Weighted pool of job working directory roots for TPV (helpers.weighted_choice).
+# Each entry requires: value (path), weight. Set a weight to 0 to drain a directory.
+job_working_directory_pool:
+  - value: "{{ jwd.jwd06.path }}/main/"
+    weight: 1
+  - value: "{{ jwd.jwd07.path }}/main/"
+    weight: 1
+  - value: "{{ jwd.jwd08.path }}/main/"
+    weight: 1
 object_store_cache_dir: "{{ cache.cache07.path }}/object_store_cache/"
 short_term_web_storage_dir: "{{ misc.misc06.path }}/short_term_web_storage/"
 ftp_upload_dir: "{{ misc.misc06.path }}/incoming"
