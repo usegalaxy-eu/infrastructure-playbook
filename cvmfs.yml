@@ -17,14 +17,14 @@
         group: root
         state: link
         force: true
-    - name: Replace all `cvmfs0-tacc0.galaxyproject.org` references with `cvmfs0-psu0.galaxyproject.org` in role defaults
+    - name: Replace all `cvmfs0-tacc0.galaxyproject.org` references with `cvmfs0-psu1.galaxyproject.org` in role defaults
       # workaround until https://github.com/galaxyproject/ansible-cvmfs/pull/93 is merged
       ansible.builtin.set_fact:
         galaxy_cvmfs_repositories: >-
           {%- set ns = namespace(out=[]) -%}
           {%- for repo in galaxy_cvmfs_repositories -%}
           {%-   set _ = ns.out.append(
-                  repo | combine({'stratum0': 'cvmfs0-psu0.galaxyproject.org'})
+                  repo | combine({'stratum0': 'cvmfs0-psu1.galaxyproject.org'})
                   if repo.stratum0 | default('') == 'cvmfs0-tacc0.galaxyproject.org'
                   else repo
                 ) -%}
