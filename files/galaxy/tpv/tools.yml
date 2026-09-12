@@ -980,5 +980,18 @@ tools:
     cores: 5
 
   toolshed.g2.bx.psu.edu/repos/bgruening/simorgh/simorgh/.*:
-    mem: 10
     cores: 5
+    rules:
+      - id: bbflow
+        if: |
+          retval = False
+          options = job.get_param_values(app)
+          if options:
+            bbflow_condi = options.get('bbflow_condi', {})
+            if bbflow_condi and isinstance(bbflow_condi, dict):
+              bbflow = bbflow_condi.get('bbflow', '')
+              retval = bbflow == 'yes'
+          retval
+        params:
+          docker_run_extra_arguments: --gpus all
+        gpus: 1
