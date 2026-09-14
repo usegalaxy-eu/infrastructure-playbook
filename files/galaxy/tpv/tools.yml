@@ -945,9 +945,10 @@ tools:
     cores: 2
     mem: 4
     env:
-      docker_env_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
-      SINGULARITYENV_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
-      LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
+      LITELLM_CONFIG_FILE: "/data/db/models/config/litellm_config.yml"
+      SINGULARITYENV_LITELLM_CONFIG_FILE: "$LITELLM_CONFIG_FILE"
+    params:
+      docker_env_LITELLM_CONFIG_FILE: "$LITELLM_CONFIG_FILE"
 
   toolshed.g2.bx.psu.edu/tools/bgruening/kraken_ocr/kraken_ocr/.*:
     env:
