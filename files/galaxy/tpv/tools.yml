@@ -936,6 +936,20 @@ tools:
       SINGULARITYENV_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
       LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
 
+  toolshed.g2.bx.psu.edu/repos/bgruening/rag_retriever/rag_retriever/.*:
+    # Measured peak RSS ~1 GB (local HuggingFace path, 600k-char corpus); mem: 4
+    # leaves headroom for user-uploaded model archives. 2 cores because local
+    # embedding runs 149s -> 41s vs a single core; the LiteLLM path is remote
+    # and light (~0.8 GB, <10s). Note mem must be set explicitly: the default
+    # is `cores * 3.8`, so cores: 2 alone would reserve 7.6 GB.
+    cores: 2
+    mem: 4
+    env:
+      LITELLM_CONFIG_FILE: "/data/db/models/config/litellm_config.yml"
+      SINGULARITYENV_LITELLM_CONFIG_FILE: "$LITELLM_CONFIG_FILE"
+    params:
+      docker_env_LITELLM_CONFIG_FILE: "$LITELLM_CONFIG_FILE"
+
   toolshed.g2.bx.psu.edu/tools/bgruening/kraken_ocr/kraken_ocr/.*:
     env:
       TORCHINDUCTOR_CACHE_DIR: "$_GALAXY_JOB_TMP_DIR"
