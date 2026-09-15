@@ -346,8 +346,6 @@ ucsc_build_sites:
 # 27/07/2025: The reason to use the Python from this conda environment is
 # due to https://github.com/usegalaxy-eu/infrastructure-playbook/pull/1591
 galaxy_virtualenv_command: '/usr/local/tools/_conda/envs/__python@3.11.5/bin/python -m venv --copies'
-galaxy_additional_venv_packages:
-  - total-perspective-vortex>=3.3.0,<4
 galaxy_nonrepro_tools: '{{ galaxy_root }}/custom-tools'
 galaxy_nonrepro_commit: master
 
