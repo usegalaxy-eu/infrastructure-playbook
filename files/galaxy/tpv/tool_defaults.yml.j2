@@ -17,7 +17,7 @@ global:
 {% for jwd_entry in job_working_directory_pool %}
       - value: "{{ jwd_entry.value }}"
         weight: {{ jwd_entry.weight }}
-{%- endfor %}
+{% endfor %}
 tools:
   default:
     abstract: true
