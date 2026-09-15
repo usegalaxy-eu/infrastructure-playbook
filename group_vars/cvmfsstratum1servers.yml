@@ -35,10 +35,13 @@ cvmfs_check_servers:
     - cvmfs-config.galaxyproject.org
     - refgenomes-databio.galaxyproject.org
   hosts:
-    - cvmfs1-psu0.galaxyproject.org
+    - cvmfs0-psu1.galaxyproject.org
     - cvmfs1-iu0.galaxyproject.org
-    - cvmfs1-tacc0.galaxyproject.org
     - cvmfs1-mel0.gvl.org.au
     - galaxy.jrc.ec.europa.eu:8008
     - cvmfs1-ufr0.galaxyproject.eu
     - cvmfs-s1-galaxy.computecanada.ca:8000
+
+ssh_selinux_packages:
+  - policycoreutils-python-utils
+  - checkpolicy
