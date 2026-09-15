@@ -995,4 +995,11 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/bgruening/simorgh/simorgh/.*:
     mem: 10
-    cores: 5
+    cores: 20
+    
+  toolshed.g2.bx.psu.edu/repos/iuc/colabfold_alphafold/colabfold_alphafold/.*:
+    mem: 60
+    cores: 16
+    params:
+      docker_run_extra_arguments: --gpus all
+    gpus: 1
