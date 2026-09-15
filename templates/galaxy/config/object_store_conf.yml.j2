@@ -306,7 +306,8 @@ backends:
         path: "/data/jwd07/main"
 
   - id: files38
-    type: disk
+    type: disk 
+    allow_selection: true
     store_by: uuid
     device: "dnb13"
     name: "University of Freiburg storage (NetApp FabricPool, id=files38)"
@@ -314,9 +315,12 @@ backends:
     badges:
       - type: more_stable
     files_dir: "/data/dnb13/galaxy_db/files"
-    extra_dirs:
-      - type: job_work
-        path: "/data/jwd06/main"
+    description: |
+        POSIX compliant storage based on NetApp FabricPool. It is maintained by the compute center of the University of Freiburg.
+        Data on this storage, is deleted if you haven't logged into your account for 1 year.
+        This storage is backed up. More information about our storage offerings is
+        documented at [https://galaxyproject.org/eu/storage/](https://galaxyproject.org/eu/storage/).
+
 
   - id: dataplant01
     type: disk
