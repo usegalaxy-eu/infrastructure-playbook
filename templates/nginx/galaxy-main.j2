@@ -99,6 +99,10 @@ server {
         add_header X-Clacks-Overhead 'GNU James Taylor (@jxtx) Simon Gladman (@slugger70) Jim Johnson (@jj-umn)';
     }
 
+   location ~ ^/display_application/[^/]+/ucsc_bam/ {
+       return 503;
+   }
+
     # Temporarily break downloading :(
     #location /api/libraries/datasets/download/ {
     #    return 302 https://usegalaxy.eu;
