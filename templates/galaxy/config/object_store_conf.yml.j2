@@ -284,7 +284,7 @@ backends:
     store_by: uuid
     device: "dnb13"
     name: "University of Freiburg storage (NetApp FabricPool, id=files36)"
-    weight: 2
+    weight: 0
     badges:
       - type: more_stable
     files_dir: "/data/dnb13/galaxy_db/files"
@@ -297,7 +297,7 @@ backends:
     store_by: uuid
     device: "dnb13"
     name: "University of Freiburg storage (NetApp FabricPool, id=files37)"
-    weight: 1
+    weight: 0
     badges:
       - type: more_stable
     files_dir: "/data/dnb13/galaxy_db/files"
@@ -306,17 +306,22 @@ backends:
         path: "/data/jwd07/main"
 
   - id: files38
-    type: disk
+    type: disk 
+    allow_selection: true
     store_by: uuid
     device: "dnb13"
     name: "University of Freiburg storage (NetApp FabricPool, id=files38)"
-    weight: 2
+    weight: 1
     badges:
       - type: more_stable
     files_dir: "/data/dnb13/galaxy_db/files"
-    extra_dirs:
-      - type: job_work
-        path: "/data/jwd06/main"
+    description: |
+        POSIX compliant storage based on NetApp FabricPool. It is maintained by the compute center of the University of Freiburg.
+        Data on this storage, is deleted if you haven't logged into your account for 1 year.
+        This storage is backed up. More information about our storage offerings is
+        documented at [https://galaxyproject.org/eu/storage/](https://galaxyproject.org/eu/storage/).
+        
+        This is the default Galaxy storage.
 
   - id: dataplant01
     type: disk
@@ -369,8 +374,12 @@ backends:
       multipart: true
       is_secure: true
     cache:
-      path: "{{ object_store_cache_dir }}"
-      size: 100000
+      dirs:
+{% for cache_dir in object_store_cache_dirs %}
+        - path: "{{ cache_dir.path }}"
+          weight: {{ cache_dir.weight }}
+          size: {{ cache_dir.size }}
+{% endfor %}
       cache_updated_data: true
     extra_dirs:
       - type: job_work
@@ -412,8 +421,12 @@ backends:
       multipart: true
       is_secure: true
     cache:
-      path: "{{ object_store_cache_dir }}"
-      size: 100000
+      dirs:
+{% for cache_dir in object_store_cache_dirs %}
+        - path: "{{ cache_dir.path }}"
+          weight: {{ cache_dir.weight }}
+          size: {{ cache_dir.size }}
+{% endfor %}
       cache_updated_data: true ## do we need this here?
     extra_dirs:
       - type: job_work

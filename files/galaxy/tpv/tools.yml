@@ -206,7 +206,7 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/ufz/genomad_end_to_end/genomad_end_to_end/.*:
     cores: 4
-    mem: 24
+    mem: 37
 
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/hifiasm_meta/hifiasm_meta/.*:
     cores: 8
@@ -357,7 +357,7 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_smart_tile/3dtrees_smart_tile/.*:
     cores: 10
-    mem: min((input_size * 2), 200)
+    mem: min(max(2,(input_size * 2)), 200)
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_potree/3dtrees_potree/.*:
     cores: 10
@@ -440,6 +440,21 @@ tools:
       docker_run_extra_arguments: ' --gpus all --user 999 '
     env:
       GPU_AVAILABLE: 1
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_peptidedb/proteomiqon_peptidedb/.*:
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_mzmltomzlite/proteomiqon_mzmltomzlite/.*:
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_psmstatistics/proteomiqon_psmstatistics/.*:
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_psmbasedquantification/proteomiqon_psmbasedquantification/.*:
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_proteininference/proteomiqon_proteininference/.*:
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/.*:
     cores: 12
@@ -927,6 +942,20 @@ tools:
       SINGULARITYENV_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
       LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
 
+  toolshed.g2.bx.psu.edu/repos/bgruening/rag_retriever/rag_retriever/.*:
+    # Measured peak RSS ~1 GB (local HuggingFace path, 600k-char corpus); mem: 4
+    # leaves headroom for user-uploaded model archives. 2 cores because local
+    # embedding runs 149s -> 41s vs a single core; the LiteLLM path is remote
+    # and light (~0.8 GB, <10s). Note mem must be set explicitly: the default
+    # is `cores * 3.8`, so cores: 2 alone would reserve 7.6 GB.
+    cores: 2
+    mem: 4
+    env:
+      LITELLM_CONFIG_FILE: "/data/db/models/config/litellm_config.yml"
+      SINGULARITYENV_LITELLM_CONFIG_FILE: "$LITELLM_CONFIG_FILE"
+    params:
+      docker_env_LITELLM_CONFIG_FILE: "$LITELLM_CONFIG_FILE"
+
   toolshed.g2.bx.psu.edu/tools/bgruening/kraken_ocr/kraken_ocr/.*:
     env:
       TORCHINDUCTOR_CACHE_DIR: "$_GALAXY_JOB_TMP_DIR"
@@ -938,6 +967,12 @@ tools:
       SINGULARITYENV__JAVA_OPTIONS: -Xmx{int(mem)}G
 
   toolshed.g2.bx.psu.edu/repos/iuc/wgcna_network/wgcna_network/.*:
+    mem: 32
+    cores: 4
+
+
+  toolshed.g2.bx.psu.edu/repos/iuc/wgcna_softpower/wgcna_softpower/.*:
+    mem: 32
     cores: 4
 
   toolshed.g2.bx.psu.edu/repos/iuc/celltypist/celltypist/.*:
@@ -963,3 +998,21 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_io/spatialdata_io/.*:
     mem: 10
     cores: 5
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/simorgh/simorgh/.*:
+    mem: 10
+    cores: 10
+    # Set the number of threads for OpenMP, MKL, and OpenBLAS
+    # if not set, torch will default to all available threads, which slows down the job
+    # Xref: https://discuss.pytorch.org/t/cpu-usage-far-too-high-and-training-inefficient/57228
+    env:
+      OMP_NUM_THREADS: 10
+      MKL_NUM_THREADS: 10
+      OPENBLAS_NUM_THREADS: 10
+
+  toolshed.g2.bx.psu.edu/repos/iuc/colabfold_alphafold/colabfold_alphafold/.*:
+    mem: 60
+    cores: 16
+    params:
+      docker_run_extra_arguments: --gpus all
+    gpus: 1

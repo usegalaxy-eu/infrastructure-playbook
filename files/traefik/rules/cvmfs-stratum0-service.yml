@@ -1,3 +1,9 @@
+http:
+  services:
+    cvmfs-stratum0:
+      loadBalancer:
+        servers:
+          - url: "http://10.4.68.179:80"
 tcp:
   services:
     cvmfs-stratum0-rsync:

@@ -33,6 +33,9 @@
     <datatype extension="anvio_state" type="galaxy.datatypes.text:Json" mimetype="application/json" subclass="true" display_in_upload="false">
         <visualization plugin="jsonviewer" />
     </datatype>
+    <datatype extension="varri.json" type="galaxy.datatypes.text:Json" mimetype="application/json" subclass="true" display_in_upload="True" description="Annotated RNA-RNA interactions in a JSON object.">
+      <visualization plugin="varri" />
+    </datatype>
     <datatype extension="anvio_structure_db" type="galaxy.datatypes.anvio:AnvioStructureDB" display_in_upload="false" />
     <datatype extension="anvio_variability" type="galaxy.datatypes.tabular:TSV" display_in_upload="false" subclass="true" />
     <datatype extension="arb" auto_compressed_types="gz" type="galaxy.datatypes.binary:Binary" subclass="true" display_in_upload="true"/>
@@ -264,6 +267,10 @@
     <datatype extension="h5" type="galaxy.datatypes.binary:H5" mimetype="application/octet-stream" display_in_upload="true">
         <infer_from suffix="h5" />
         <infer_from suffix="hdf5" />
+        <visualization plugin="h5web" />
+    </datatype>
+
+    <datatype extension="nxxps" type="galaxy.datatypes.binary:H5" subclass="true" mimetype="application/octet-stream" display_in_upload="true">
         <visualization plugin="h5web" />
     </datatype>
     <datatype extension="scool" type="galaxy.datatypes.binary:H5" mimetype="application/octet-stream" display_in_upload="true" subclass="true"/>

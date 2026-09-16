@@ -2,7 +2,7 @@
 - hosts: cvmfsstratum1servers
   become: true
   vars:
-    hostname: cvmfs1-ufr0.internal.galaxyproject.eu
+    hostname: cvmfs1-ufr0.bi.privat
   vars_files:
     - "secret_group_vars/all.yml"
     - mounts/mountpoints.yml
@@ -10,10 +10,6 @@
   collections:
     - devsec.hardening
   pre_tasks:
-    - name: Set default version of Python
-      alternatives:
-        name: python
-        path: /usr/bin/python3
     - file:
         src: /data/dnb01
         dest: /srv
@@ -27,9 +23,6 @@
         state: disabled
       register:
         selinux_disabled
-    # - name: Reboot if SELinux was disabled
-    #   reboot:
-    #   when: selinux_disabled.reboot_required == true
   roles:
     # Starting configuration of the operating system
     - role: usegalaxy_eu.handy.os_setup
@@ -49,8 +42,8 @@
     - hxr.monitor-cvmfs
     - dj-wasabi.telegraf
     # hardening
-    - os_hardening
-    - ssh_hardening
+    # - os_hardening
+    # - ssh_hardening
 
 #
 #    - hostname
