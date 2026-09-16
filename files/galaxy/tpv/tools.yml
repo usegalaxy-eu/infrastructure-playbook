@@ -995,4 +995,18 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/bgruening/simorgh/simorgh/.*:
     mem: 10
-    cores: 5
+    cores: 10
+    # Set the number of threads for OpenMP, MKL, and OpenBLAS
+    # if not set, torch will default to all available threads, which slows down the job
+    # Xref: https://discuss.pytorch.org/t/cpu-usage-far-too-high-and-training-inefficient/57228
+    env:
+      OMP_NUM_THREADS: 10
+      MKL_NUM_THREADS: 10
+      OPENBLAS_NUM_THREADS: 10
+
+  toolshed.g2.bx.psu.edu/repos/iuc/colabfold_alphafold/colabfold_alphafold/.*:
+    mem: 60
+    cores: 16
+    params:
+      docker_run_extra_arguments: --gpus all
+    gpus: 1
