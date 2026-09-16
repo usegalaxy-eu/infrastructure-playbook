@@ -7,7 +7,9 @@
     hostname: '{{ inventory_hostname }}'
     nginx_conf_user: galaxy
     server_names:
-      - '{{ inventory_hostname }}'
+      - 'tpv-broker.galaxyproject.eu'
+    certbot_hostname_override:
+      - 'tpv-broker.galaxyproject.eu'
   vars_files:
     - group_vars/tpv-broker.yml
     - secret_group_vars/all.yml

@@ -4,13 +4,13 @@
   hosts:
     - osiris
   vars:
-    # Request certbot SSL when running the playbook
-    request_certbot_ssl: true
+    # Do not request certbot SSL when running the playbook (Traefik handles SSL)
+    request_certbot_ssl: false
     # This setting will be applied after restoring a backup
     # If no version change is desired, make sure this version matches that of the backup
     # Can also be a commit hash so long it is part of a branch
     # osiris_version: "v1.6.2"
-    osiris_version: "v1.8.1"
+    osiris_version: "v2.1.1"
   vars_files:
     - group_vars/osiris.yml
     - secret_group_vars/osiris.yml
@@ -42,7 +42,6 @@
     - community.mongodb.mongodb_auth
     - community.mongodb.mongodb_mongod
     # Custom
-    - denbi.ssh-root-users
     - denbi.ssh-no-root-with-password
     - denbi.osiris
     - denbi.fail2ban-sshd

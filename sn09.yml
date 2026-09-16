@@ -135,6 +135,23 @@
       ansible.builtin.copy:
         content: '{{ firewall_htcondor_shared_port_service }}'
         dest: /etc/firewalld/services/htcondor-shared-port.xml
+
+    - name: Deploy security.txt
+      ansible.builtin.copy:
+        src: files/galaxy/config/security.txt
+        dest: /etc/nginx/security.txt
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Deploy robots.txt (block LLM crawlers)
+      ansible.builtin.copy:
+        src: files/galaxy/config/robots.txt
+        dest: /etc/nginx/robots.txt
+        owner: root
+        group: root
+        mode: '0644'
+
   post_tasks:
     - name: Write Galaxy __galaxy_client_build_version and __galaxy_current_commit_id
       delegate_to: 127.0.0.1
@@ -257,10 +274,26 @@
         group: galaxy
         mode: '0644'
 
-    - name: Copy Loc File
+    - name: Copy location file for the LLM Hub
       ansible.builtin.copy:
         src: '{{ playbook_dir }}/files/galaxy/config/llm/genai_models.loc'
         dest: '{{ galaxy_root }}/tool-data/genai_models.loc'
+        owner: galaxy
+        group: galaxy
+        mode: '0644'
+
+    - name: Copy location file for huggingface models
+      ansible.builtin.copy:
+        src: '{{ playbook_dir }}/files/galaxy/config/llm/huggingface.loc'
+        dest: '{{ galaxy_root }}/tool-data/huggingface.loc'
+        owner: galaxy
+        group: galaxy
+        mode: '0644'
+
+    - name: Download tool tag mappings from GitHub
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/usegalaxy-eu/tool-annotations/main/tool_tag_mappings.yml
+        dest: '{{ galaxy_config_dir }}/tool_tag_mappings.yml'
         owner: galaxy
         group: galaxy
         mode: '0644'
@@ -276,7 +309,6 @@
         enable_pam_limits: true # Prevent out of control processes
         enable_install_software: true # Some extra admin tools (*top, vim, etc)
     - geerlingguy.repo-epel # Install EPEL repository
-    - usegalaxy-eu.autoupdates # keep all of our packages up to date
     - influxdata.chrony # Keep our time in sync.
 
     ## Filesystems
@@ -333,8 +365,10 @@
     ## GALAXY
     - hxr.postgres-connection
     - galaxyproject.gxadmin
+
     - usegalaxy_eu.ansible_nginx_upload_module
     - usegalaxy-eu.nginx
+
     - usegalaxy-eu.gapars-galaxy
 
     # The REAL galaxy role call that will install Galaxy and all of its dependencies.
