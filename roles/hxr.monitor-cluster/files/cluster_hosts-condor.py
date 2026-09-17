@@ -127,7 +127,9 @@ def main():
     try:
         hosts = parse_inventory(args.inventory)
     except Exception as err:
-        print(f"cannot read inventory {args.inventory}: {err}", file=sys.stderr)
+        print(
+            f"cannot read inventory {args.inventory}: {err}", file=sys.stderr
+        )
         sys.exit(1)
 
     facts = machine_facts()
