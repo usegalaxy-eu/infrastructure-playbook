@@ -6,7 +6,9 @@ import re
 import subprocess
 import sys
 
-INVENTORY = os.environ.get("CONDOR_HOSTS_INVENTORY", "/etc/condor-monitored-hosts")
+INVENTORY = os.environ.get(
+    "CONDOR_HOSTS_INVENTORY", "/etc/condor-monitored-hosts"
+)
 
 
 def parse_inventory(path):
@@ -56,8 +58,9 @@ def parse_jobs(rows):
 
 def condor(args):
     try:
-        out = subprocess.run(["condor_status"] + args,
-                             check=True, capture_output=True)
+        out = subprocess.run(
+            ["condor_status"] + args, check=True, capture_output=True
+        )
     except Exception as err:
         print(f"error running condor_status: {err}", file=sys.stderr)
         sys.exit(1)
@@ -80,9 +83,14 @@ def influx_line(host, group, facts, jobs):
     gg = facts["galaxygroup"] if present else "unknown"
     if gg == "undefined":
         gg = "unknown"
-    tags = f"host={tag(host)},inventory_group={tag(group)},galaxygroup={tag(gg)}"
-    fields = [f"in_condor={1 if present else 0}i", f"running_jobs={jobs}i",
-              f'status="{status}"']
+    tags = (
+        f"host={tag(host)},inventory_group={tag(group)},galaxygroup={tag(gg)}"
+    )
+    fields = [
+        f"in_condor={1 if present else 0}i",
+        f"running_jobs={jobs}i",
+        f'status="{status}"',
+    ]
     if present:
         fields += [
             f'state="{facts["state"]}"',
@@ -99,13 +107,32 @@ def main():
         print(f"inventory file not found: {INVENTORY}", file=sys.stderr)
         sys.exit(1)
     hosts = parse_inventory(INVENTORY)
-    facts = parse_machines(condor([
-        "-autoformat", "Machine", "State", "Activity", "GalaxyGroup",
-        "DetectedCpus", "TotalMemory", "TotalGpus",
-        "-constraint", 'SlotType == "Partitionable"']))
-    jobs = parse_jobs(condor([
-        "-autoformat", "Machine",
-        "-constraint", 'State == "Claimed" && Activity == "Busy"']))
+    facts = parse_machines(
+        condor(
+            [
+                "-autoformat",
+                "Machine",
+                "State",
+                "Activity",
+                "GalaxyGroup",
+                "DetectedCpus",
+                "TotalMemory",
+                "TotalGpus",
+                "-constraint",
+                'SlotType == "Partitionable"',
+            ]
+        )
+    )
+    jobs = parse_jobs(
+        condor(
+            [
+                "-autoformat",
+                "Machine",
+                "-constraint",
+                'State == "Claimed" && Activity == "Busy"',
+            ]
+        )
+    )
 
     for host, group in hosts.items():
         print(influx_line(host, group, facts.get(host), jobs.get(host, 0)))
