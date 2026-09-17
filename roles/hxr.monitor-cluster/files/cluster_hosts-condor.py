@@ -20,23 +20,20 @@ MACHINE_ATTRS = [
     "Activity",
     "GalaxyGroup",
     "DetectedCpus",
+    "Cpus",
     "TotalMemory",
-    "TotalGpus",
+    "Memory",
+    "TotalGPUs",
+    "GPUs",
+    "NumDynamicSlots",
+    "TotalLoadAvg",
 ]
-
-NORMAL_STATES = {"Unclaimed", "Claimed"}
 
 
 def parse_inventory(path):
-    """Parse an Ansible inventory into {hostname: group}."""
+    """Return the hostnames listed in an Ansible inventory."""
     inventory = InventoryManager(loader=DataLoader(), sources=[path])
-    hosts = {}
-    for name, group in inventory.groups.items():
-        if name in ("all", "ungrouped"):
-            continue
-        for host in group.get_hosts():
-            hosts[host.name] = name
-    return hosts
+    return [host.name for host in inventory.get_hosts()]
 
 
 def run(cmd):
@@ -63,7 +60,10 @@ def machine_facts():
     ).strip()
     if not raw:
         return {}
-    return {ad["Machine"]: ad for ad in json.loads(raw)}
+    return {
+        ad["Machine"]: {k.lower(): v for k, v in ad.items()}
+        for ad in json.loads(raw)
+    }
 
 
 def job_counts(schedd):
@@ -83,43 +83,28 @@ def job_counts(schedd):
     return Counter(n for n in names if n and n != "undefined")
 
 
-def host_status(ad, jobs):
-    """Describe what the machine is actually doing."""
-    if ad is None:
-        return "absent"
-    state = ad.get("State", "unknown")
-    if state not in NORMAL_STATES:
-        return state.lower()
-    return "busy" if jobs > 0 else "idle"
-
-
 def tag(value):
     """Escape a value for use as an InfluxDB tag."""
     return re.sub(r"[ ,=]", "_", str(value))
 
 
-def influx_line(host, group, ad, jobs):
+def influx_line(host, ad, jobs):
     """Build one InfluxDB line-protocol record for a host."""
-    galaxy_group = ad.get("GalaxyGroup", "unknown") if ad else "unknown"
-    tags = ",".join(
-        [
-            f"host={tag(host)}",
-            f"inventory_group={tag(group)}",
-            f"galaxygroup={tag(galaxy_group)}",
-        ]
-    )
-    fields = [
-        f"in_condor={1 if ad else 0}i",
-        f"running_jobs={jobs}i",
-        f'status="{host_status(ad, jobs)}"',
-    ]
+    galaxy_group = ad.get("galaxygroup", "unknown") if ad else "unknown"
+    tags = f"host={tag(host)},galaxygroup={tag(galaxy_group)}"
+    fields = [f"in_condor={1 if ad else 0}i", f"running_jobs={jobs}i"]
     if ad:
         fields += [
-            f'state="{ad["State"]}"',
-            f'activity="{ad["Activity"]}"',
-            f'cpus={int(ad["DetectedCpus"])}i',
-            f'memory_mb={int(ad["TotalMemory"])}i',
-            f'gpus={int(ad["TotalGpus"])}i',
+            f'state="{ad["state"]}"',
+            f'activity="{ad["activity"]}"',
+            f'cpus_total={int(ad["detectedcpus"])}i',
+            f'cpus_free={int(ad["cpus"])}i',
+            f'memory_total_mb={int(ad["totalmemory"])}i',
+            f'memory_free_mb={int(ad["memory"])}i',
+            f'gpus_total={int(ad["totalgpus"])}i',
+            f'gpus_free={int(ad["gpus"])}i',
+            f'dynamic_slots={int(ad["numdynamicslots"])}i',
+            f'load={float(ad["totalloadavg"])}',
         ]
     return f"htcondor_host_status,{tags} " + ",".join(fields)
 
@@ -142,16 +127,14 @@ def main():
     try:
         hosts = parse_inventory(args.inventory)
     except Exception as err:
-        print(
-            f"cannot read inventory {args.inventory}: {err}", file=sys.stderr
-        )
+        print(f"cannot read inventory {args.inventory}: {err}", file=sys.stderr)
         sys.exit(1)
 
     facts = machine_facts()
     jobs = job_counts(args.schedd)
 
-    for host, group in hosts.items():
-        print(influx_line(host, group, facts.get(host), jobs.get(host, 0)))
+    for host in hosts:
+        print(influx_line(host, facts.get(host), jobs.get(host, 0)))
 
 
 if __name__ == "__main__":
