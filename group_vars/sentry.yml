@@ -18,7 +18,6 @@ certbot_auto_renew_extra: "--preferred-challenges http-01 --http-01-port 8118"
 certbot_post_renewal: |
     systemctl restart nginx || true
 
-nginx_remove_default_vhost: true
 nginx_vhosts:
   - listen: "80"
     server_name: "{{ hostname }}"
