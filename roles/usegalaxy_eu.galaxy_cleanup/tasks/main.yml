@@ -10,16 +10,16 @@
     fail_msg: "Found objectstore_id entries that do NOT contain 'scratch'"
     success_msg: "All objectstore_id values contain 'scratch'"
 
-- name: Install cleanup scratch script
+- name: Install cleanup script
   template:
-    src: "clean_scratch_storage.sh.j2"
-    dest: "/usr/local/bin/clean_scratch_storage.sh"
+    src: "cleanup_storage.sh.j2"
+    dest: "/usr/local/bin/cleanup_storage.sh"
     mode: "0555"
 
 - name: Schedule Galaxy cleanup objectstore script
   ansible.builtin.cron:
     name: "Galaxy cleanup scratch"
-    job: "/usr/local/bin/clean_scratch_storage.sh"
+    job: "/usr/local/bin/cleanup_storage.sh"
     minute: "{{ galaxy_cleanup_minute }}"
     hour: "{{ galaxy_cleanup_hour }}"
     user: "{{ galaxy_user.name }}"

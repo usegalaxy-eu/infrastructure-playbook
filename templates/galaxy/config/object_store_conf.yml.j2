@@ -4,14 +4,6 @@ search_for_missing: true
 id: primary     # is that needed
 order: 0        # is that needed
 backends:
-  - id: secondary
-    type: disk
-    store_by: id
-    weight: 0
-    badges:
-      - type: more_stable
-    files_dir: "/data/0/galaxy_db/files"
-
   - id: files1
     type: disk
     store_by: id
@@ -20,15 +12,6 @@ backends:
     badges:
       - type: more_stable
     files_dir: "/data/1/galaxy_db/files"
-
-  - id: files2
-    type: disk
-    store_by: id
-    name: "University of Freiburg storage (NetApp FabricPool, id=files2)"
-    weight: 0
-    badges:
-      - type: more_stable
-    files_dir: "/data/2/galaxy_db/files"
 
   - id: files3
     type: disk
@@ -64,7 +47,7 @@ backends:
     weight: 0
     badges:
       - type: more_stable
-    files_dir: "/data/7/galaxy_db/files"    
+    files_dir: "/data/7/galaxy_db/files"
 
   - id: files8
     type: disk
@@ -91,7 +74,7 @@ backends:
     weight: 0
     badges:
       - type: more_stable
-    files_dir: "/data/dnb-ds03/galaxy_db/files" 
+    files_dir: "/data/dnb-ds03/galaxy_db/files"
 
   - id: files11
     type: disk
@@ -100,7 +83,7 @@ backends:
     weight: 0
     badges:
       - type: more_stable
-    files_dir: "/data/dnb05/galaxy_db/files" 
+    files_dir: "/data/dnb05/galaxy_db/files"
 
   - id: files12
     type: disk
@@ -109,7 +92,7 @@ backends:
     weight: 0
     badges:
       - type: more_stable
-    files_dir: "/data/dnb06/galaxy_db/files" 
+    files_dir: "/data/dnb06/galaxy_db/files"
 
   - id: files13
     type: disk
@@ -119,7 +102,7 @@ backends:
     weight: 0
     badges:
       - type: more_stable
-    files_dir: "/data/dnb07/galaxy_db/files" 
+    files_dir: "/data/dnb07/galaxy_db/files"
 
   - id: files18
     type: disk
@@ -141,51 +124,11 @@ backends:
       - type: more_stable
     files_dir: "/data/dnb09/galaxy_db/files"
 
-  - id: files24
-    type: disk
-    store_by: uuid
-    device: "dnb09"
-    name: "University of Freiburg storage (NetApp FabricPool, id=files24)"
-    weight: 0
-    badges:
-      - type: more_stable
-    files_dir: "/data/dnb09/galaxy_db/files"
-
-  - id: files25
-    type: disk
-    store_by: uuid
-    device: "dnb09"
-    name: "University of Freiburg storage (NetApp FabricPool, id=files25)"
-    weight: 0
-    badges:
-      - type: more_stable
-    files_dir: "/data/dnb09/galaxy_db/files"
-
-  - id: files26
-    type: disk
-    store_by: uuid
-    device: "dnb09"
-    name: "University of Freiburg storage (NetApp FabricPool, id=files26)"
-    weight: 0
-    badges:
-      - type: more_stable
-    files_dir: "/data/dnb09/galaxy_db/files"
-
   - id: files27
     type: disk
     store_by: uuid
     device: "dnb10"
     name: "University of Freiburg storage (NetApp FabricPool, id=files27)"
-    weight: 0
-    badges:
-      - type: more_stable
-    files_dir: "/data/dnb10/galaxy_db/files"
-
-  - id: files28
-    type: disk
-    store_by: uuid
-    device: "dnb10"
-    name: "University of Freiburg storage (NetApp FabricPool, id=files28)"
     weight: 0
     badges:
       - type: more_stable
@@ -201,51 +144,12 @@ backends:
       - type: more_stable
     files_dir: "/data/dnb11/galaxy_db/files"
 
-  - id: files30
-    type: disk
-    store_by: uuid
-    device: "dnb11"
-    name: "University of Freiburg storage (NetApp FabricPool, id=files30)"
-    weight: 0
-    badges:
-      - type: more_stable
-    files_dir: "/data/dnb11/galaxy_db/files"
-    extra_dirs:
-      - type: job_work
-        path: "/data/jwd08/main"
-
-  - id: files31
-    type: disk
-    store_by: uuid
-    device: "dnb11"
-    name: "University of Freiburg storage (NetApp FabricPool, id=files31)"
-    weight: 0
-    badges:
-      - type: more_stable
-    files_dir: "/data/dnb11/galaxy_db/files"
-    extra_dirs:
-      - type: job_work
-        path: "/data/jwd06/main"
-
-  - id: files32
-    type: disk
-    store_by: uuid
-    device: "dnb11"
-    name: "University of Freiburg storage (NetApp FabricPool, id=files32)"
-    weight: 0
-    badges:
-      - type: more_stable
-    files_dir: "/data/dnb11/galaxy_db/files"
-    extra_dirs:
-      - type: job_work
-        path: "/data/jwd08/main"
-
   - id: files33
     type: disk
     store_by: uuid
     device: "dnb12"
     name: "University of Freiburg storage (NetApp FabricPool, id=files33)"
-    weight: 2
+    weight: 0
     badges:
       - type: more_stable
     files_dir: "/data/dnb12/galaxy_db/files"
@@ -253,31 +157,23 @@ backends:
       - type: job_work
         path: "/data/jwd08/main"
 
-  - id: files34
-    type: disk
+  - id: files38
+    type: disk 
+    allow_selection: true
     store_by: uuid
-    device: "dnb12"
-    name: "University of Freiburg storage (NetApp FabricPool, id=files34)"
+    device: "dnb13"
+    name: "University of Freiburg storage (NetApp FabricPool, id=files38)"
     weight: 1
     badges:
       - type: more_stable
-    files_dir: "/data/dnb12/galaxy_db/files"
-    extra_dirs:
-      - type: job_work
-        path: "/data/jwd07/main"
-
-  - id: files35
-    type: disk
-    store_by: uuid
-    device: "dnb12"
-    name: "University of Freiburg storage (NetApp FabricPool, id=files35)"
-    weight: 2
-    badges:
-      - type: more_stable
-    files_dir: "/data/dnb12/galaxy_db/files"
-    extra_dirs:
-      - type: job_work
-        path: "/data/jwd06/main"
+    files_dir: "/data/dnb13/galaxy_db/files"
+    description: |
+        POSIX compliant storage based on NetApp FabricPool. It is maintained by the compute center of the University of Freiburg.
+        Data on this storage, is deleted if you haven't logged into your account for 1 year.
+        This storage is backed up. More information about our storage offerings is
+        documented at [https://galaxyproject.org/eu/storage/](https://galaxyproject.org/eu/storage/).
+        
+        This is the default Galaxy storage.
 
   - id: dataplant01
     type: disk
@@ -330,14 +226,18 @@ backends:
       multipart: true
       is_secure: true
     cache:
-      path: "{{ object_store_cache_dir }}"
-      size: 100000
+      dirs:
+{% for cache_dir in object_store_cache_dirs %}
+        - path: "{{ cache_dir.path }}"
+          weight: {{ cache_dir.weight }}
+          size: {{ cache_dir.size }}
+{% endfor %}
       cache_updated_data: true
     extra_dirs:
       - type: job_work
-        path: "{{ jwd.jwd07.path }}/main"
+        path: "{{ jwd.jwd06.path }}/main"
       - type: temp
-        path: "{{ jwd.jwd07.path }}/tmp"
+        path: "{{ jwd.jwd06.path }}/tmp"
 
 
   # Private object stores, or as we call it unshareable storage
@@ -373,8 +273,12 @@ backends:
       multipart: true
       is_secure: true
     cache:
-      path: "{{ object_store_cache_dir }}"
-      size: 100000
+      dirs:
+{% for cache_dir in object_store_cache_dirs %}
+        - path: "{{ cache_dir.path }}"
+          weight: {{ cache_dir.weight }}
+          size: {{ cache_dir.size }}
+{% endfor %}
       cache_updated_data: true ## do we need this here?
     extra_dirs:
       - type: job_work

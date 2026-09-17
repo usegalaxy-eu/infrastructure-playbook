@@ -2,8 +2,6 @@
 - hosts: influxdb
   name: InfluxDB
   become: true
-  vars:
-    hostname: influxdb.galaxyproject.eu
   vars_files:
     - "secret_group_vars/all.yml"
     - secret_group_vars/aws.yml # AWS creds
