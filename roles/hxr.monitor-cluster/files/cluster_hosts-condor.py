@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """One InfluxDB line per host in the VGCN inventory, with its HTCondor state."""
 
+import os
 import re
 import subprocess
 import sys
 
-import os
 INVENTORY = os.environ.get("CONDOR_HOSTS_INVENTORY", "/etc/condor-monitored-hosts")
 
 
@@ -91,8 +91,6 @@ def influx_line(host, group, facts, jobs):
             f'memory_mb={facts["memory_mb"]}i',
             f'gpus={facts["gpus"]}i',
         ]
-    else:
-        pass
     return f"htcondor_host_status,{tags} " + ",".join(fields)
 
 
