@@ -33,15 +33,17 @@ def parse_machines(rows):
     facts = {}
     for row in rows:
         f = row.split()
-        if len(f) < 6:
+        if not f:
             continue
+        if len(f) != 7:
+            raise ValueError(f"unexpected condor_status row: {row!r}")
         facts[f[0]] = {
             "state": f[1],
             "activity": f[2],
             "galaxygroup": f[3],
             "cpus": f[4],
             "memory_mb": f[5],
-            "gpus": f[6] if len(f) > 6 else "0",
+            "gpus": f[6],
         }
     return facts
 
