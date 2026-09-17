@@ -17,7 +17,7 @@
   include_vars: "{{ ansible_os_family | lower }}.yml"
 
 - name: Include initial OS-specific tasks
-  include: "{{ ansible_os_family | lower}}.yml"
+  ansible.builtin.include_tasks: "{{ ansible_os_family | lower}}.yml"
 
 - name: Comment base proftpd.conf options
   lineinfile:
@@ -68,11 +68,11 @@
     - restart proftpd
 
 - name: Include tasks for TLS configuration
-  include: tls.yml
+  ansible.builtin.include_tasks: tls.yml
   when: proftpd_conf_ssl_certificate is defined and proftpd_conf_ssl_certificate_key is defined
 
 - name: Include tasks for Galaxy authentication
-  include: galaxy_auth.yml
+  ansible.builtin.include_tasks: galaxy_auth.yml
   when: proftpd_galaxy_auth is defined
 
 - name: Create VirtualHost configurations

@@ -1,10 +1,10 @@
 ---
 - name: include rabbitmq installation tasks
-  include: "{{ ansible_os_family }}/install.yml"
+  ansible.builtin.include_tasks: "{{ ansible_os_family }}/install.yml"
 
-- include: configure.yml
+- ansible.builtin.include_tasks: configure.yml
 
-- include: configure-cluster.yml
+- ansible.builtin.include_tasks: configure-cluster.yml
   when: rabbitmq_cluster
 
 - name: start rabbitmq server
@@ -13,11 +13,11 @@
     enabled: True
     state: started
 
-- include: vhosts.yml
+- ansible.builtin.include_tasks: vhosts.yml
 
-- include: users.yml
+- ansible.builtin.include_tasks: users.yml
 
-- include: plugins.yml
+- ansible.builtin.include_tasks: plugins.yml
 
-- include: cluster.yml
+- ansible.builtin.include_tasks: cluster.yml
   when: rabbitmq_cluster and rabbitmq_nodename != rabbitmq_cluster_master

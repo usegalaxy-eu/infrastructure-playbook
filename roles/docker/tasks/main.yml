@@ -4,11 +4,11 @@
   # Done this way because role dependencies don't have conditionals, but they do
   # take arbitrary parameters
   - name: Include install tasks for RedHat
-    include: install_redhat.yml
+    ansible.builtin.include_tasks: install_redhat.yml
     when: docker_install and ansible_os_family == "RedHat"
 
   - name: Include install tasks for Debian
-    include: install_debian.yml
+    ansible.builtin.include_tasks: install_debian.yml
     when: docker_install and ansible_os_family == "Debian"
 
   - name: Include SSL role to create/distribute SSL certs

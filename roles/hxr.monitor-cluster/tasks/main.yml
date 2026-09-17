@@ -1,9 +1,9 @@
 ---
-- include: condor.yml
+- ansible.builtin.include_: condor.yml
   when: monitor_condor
 
-- include: sge.yml
+- ansible.builtin.include_: sge.yml
   when: monitor_sge
 
-- include: slurm.yml
+- ansible.builtin.include_: slurm.yml
   when: monitor_slurm
