@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""One InfluxDB line per host in the VGCN inventory, with its HTCondor state."""
+"""One InfluxDB line per VGCN inventory host, with its HTCondor state."""
 
 import os
 import re
@@ -12,7 +12,7 @@ INVENTORY = os.environ.get(
 
 
 def parse_inventory(path):
-    """Ansible INI inventory -> {hostname: group}"""
+    """Parse an Ansible INI inventory into {hostname: group}."""
     hosts, group = {}, None
     with open(path) as f:
         for line in f:
@@ -29,7 +29,7 @@ def parse_inventory(path):
 
 
 def parse_machines(rows):
-    """Partitionable-slot rows -> {machine: facts}"""
+    """Turn partitionable-slot rows into {machine: facts}."""
     facts = {}
     for row in rows:
         f = row.split()
@@ -47,7 +47,7 @@ def parse_machines(rows):
 
 
 def parse_jobs(rows):
-    """Busy-slot rows -> {machine: count}"""
+    """Count busy slots per machine."""
     counts = {}
     for row in rows:
         name = row.strip()
@@ -57,6 +57,7 @@ def parse_jobs(rows):
 
 
 def condor(args):
+    """Run condor_status and return its output lines."""
     try:
         out = subprocess.run(
             ["condor_status"] + args, check=True, capture_output=True
@@ -73,6 +74,7 @@ def tag(value):
 
 
 def influx_line(host, group, facts, jobs):
+    """Build one InfluxDB line-protocol record for a host."""
     present = facts is not None
     if not present:
         status = "absent"
@@ -103,6 +105,7 @@ def influx_line(host, group, facts, jobs):
 
 
 def main():
+    """Print one line per inventory host."""
     if not os.path.exists(INVENTORY):
         print(f"inventory file not found: {INVENTORY}", file=sys.stderr)
         sys.exit(1)
