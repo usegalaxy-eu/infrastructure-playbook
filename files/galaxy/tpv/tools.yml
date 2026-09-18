@@ -1009,6 +1009,13 @@ tools:
       OMP_NUM_THREADS: 10
       MKL_NUM_THREADS: 10
       OPENBLAS_NUM_THREADS: 10
+      # MKL is optimized for Intel, this is a workaround to make it work for AMD CPUs
+      MKL_DEBUG_CPU_TYPE: 5
+    params:
+      docker_env_OMP_NUM_THREADS: "$OMP_NUM_THREADS"
+      docker_env_MKL_NUM_THREADS: "$MKL_NUM_THREADS"
+      docker_env_OPENBLAS_NUM_THREADS: "$OPENBLAS_NUM_THREADS"
+      docker_env_MKL_DEBUG_CPU_TYPE: "$MKL_DEBUG_CPU_TYPE"
 
   toolshed.g2.bx.psu.edu/repos/iuc/colabfold_alphafold/colabfold_alphafold/.*:
     mem: 60
