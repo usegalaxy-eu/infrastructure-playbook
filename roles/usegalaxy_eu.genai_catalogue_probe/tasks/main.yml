@@ -1,0 +1,34 @@
+---
+- name: Ensure PyYAML is present for the probe script
+  ansible.builtin.package:
+    name: python3-pyyaml
+    state: present
+  when: genai_catalogue_probe_enabled
+
+- name: Template GenAI catalogue probe script
+  ansible.builtin.template:
+    src: genai_catalogue_probe.py.j2
+    dest: "{{ genai_catalogue_probe_script_dest }}"
+    owner: root
+    group: "{{ genai_catalogue_probe_user }}"
+    mode: '0750'  # it contains the ntfy topic URL
+  when: genai_catalogue_probe_enabled
+
+- name: Ensure the probe log directory exists
+  ansible.builtin.file:
+    path: "{{ genai_catalogue_probe_log_dir }}"
+    state: directory
+    owner: "{{ genai_catalogue_probe_user }}"
+    group: "{{ genai_catalogue_probe_user }}"
+    mode: '0755'
+  when: genai_catalogue_probe_enabled
+
+- name: Configure cron job for GenAI catalogue probe
+  ansible.builtin.cron:
+    name: "Probe GenAI model catalogue for drift"
+    user: "{{ genai_catalogue_probe_user }}"
+    minute: "{{ genai_catalogue_probe_cron_minute }}"
+    hour: "{{ genai_catalogue_probe_cron_hour }}"
+    weekday: "{{ genai_catalogue_probe_cron_weekday }}"
+    job: "{{ genai_catalogue_probe_script_dest }} >> {{ genai_catalogue_probe_log_dest }} 2>&1"
+    state: "{{ 'present' if genai_catalogue_probe_enabled else 'absent' }}"
