@@ -1,0 +1,7 @@
+tcp:
+  routers:
+    dokku-ssh-rtr:
+      rule: "HostSNI(`*`)"
+      service: dokku-ssh
+      entryPoints:
+        - dokku-ssh

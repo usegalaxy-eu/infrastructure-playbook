@@ -1,0 +1,11 @@
+http:
+  routers:
+    ticketsystem-rtr:
+      rule: "Host(`ticketsystem.galaxyproject.eu`)"
+      service: ticketsystem
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: "route53"
+        domains:
+          - main: "ticketsystem.galaxyproject.eu"

@@ -2,19 +2,46 @@
 # ALL tags must be with dashes (-) instead of underscores (_)
 global:
   default_inherits: default
+  context:
+    # Base multiplier applied on each OOM resubmission. The accumulated
+    # factor is persisted in the OOM_MEM_SCALE destination param (see
+    # params below), which Galaxy carries across resubmissions. Memory
+    # requirements for resubmitted jobs are capped at OOM_SCALING_CAP.
+    OOM_SCALING_FACTOR: 2
+    OOM_SCALING_CAP: 512
+    # Weighted pool of job working directories. A single directory is
+    # selected per job via helpers.weighted_choice (see tools.default.params
+    # below). Set a weight to 0 to drain a directory; if all weights are 0
+    # the helper falls back to unweighted random selection.
+    jwd_pool:
+{% for jwd_entry in job_working_directory_pool %}
+      - value: "{{ jwd_entry.value }}"
+        weight: {{ jwd_entry.weight }}
+{% endfor %}
 tools:
   default:
     abstract: true
     cores: 1
     mem: cores * 3.8
     gpus: 0
+    resubmit:
+      oom_retry:
+        condition: memory_limit_reached and attempt <= 3
+        # `(mem * OOM_SCALING_FACTOR ** (attempt - 2)) < OOM_SCALING_CAP`
+        # allows only one resubmission capped at OOM_SCALING_CAP, subsequent
+        # resubmission attempts are rejected.
+        environment: tpv_dispatcher
+        # Delay is in seconds before Galaxy dispatches the resubmitted job.
+        delay: 60
     env:
       ## The execute statement should be removed once https://github.com/galaxyproject/galaxy/issues/20562 is fixed
       - execute: cd $_GALAXY_JOB_DIR
       - name: GALAXY_MEMORY_MB
         value: "{int(mem * 1024)}" # set 5/2023 might be moved to runner or tool wrappers, related to Galaxy issue 15952
       - name: _JAVA_OPTIONS
-        value: -Xmx{round(mem*0.9*1024)}m -Xms256m -Duser.home=/data/2/galaxy_db/tmp -Djava.io.tmpdir=$_GALAXY_JOB_TMP_DIR
+        value: -Xmx{round(mem*0.9*1024)}m -Xms256m -Duser.home=/data/misc06/tmp -Djava.io.tmpdir=$_GALAXY_JOB_TMP_DIR
+      - name: SINGULARITYENV__JAVA_OPTIONS
+        value: "$_JAVA_OPTIONS"
       - name: HDF5_USE_FILE_LOCKING
         value: "FALSE"
       - name: SINGULARITYENV_HDF5_USE_FILE_LOCKING
@@ -36,12 +63,48 @@ tools:
       request_memory: "{mem}G"
       submit_request_gpus: "{gpus or 0}"
       docker_memory: "{mem}G"
+      # Distribute jobs across the weighted jwd_pool (see global.context above).
+      job_working_directory: "{helpers.weighted_choice(jwd_pool)['value']}"
       description: "{tool.id if not tool.id.count('/') == 5 else tool.id.split('/')[4]}"
+      # We persist OOM_MEM_SCALE across resubmissions by using job.destination_params.
+      # On the first run this records the base factor (OOM_SCALING_FACTOR).
+      # On each resubmit TPV re-evaluates this expression, reading the
+      # previously persisted value and multiplying by OOM_SCALING_FACTOR.
+      OOM_MEM_SCALE: "{OOM_SCALING_FACTOR * int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else OOM_SCALING_FACTOR}"
     scheduling:
       reject:
         - offline
-    rules:
-      - id: Send TIaaS jobs to training nodes
+    rules:  # executed in order
+        # The accumulated scaling factor is read from the
+        # persisted OOM_MEM_SCALE destination param,
+        # which Galaxy carries across resubmissions.
+      - id: oom_resubmit_increase_memory
+        if: job is not None and job.state == "resubmitted"
+        execute: |
+          _scale = int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else 1
+          entity.mem = f"min(({entity.mem}) * {_scale}, {OOM_SCALING_CAP})"
+
+        # Set accounting group user for jobs
+      - id: jobs_user_accounting_group
+        if: user is not None
+        execute: |
+          entity.params['accounting_group_user'] = str(user.id)
+
+        # Send all jobs to compute nodes by default
+      - id: jobs_cluster_group_compute
+        if: "True"
+        execute: |
+          entity.params['requirements'] = '(GalaxyGroup == "compute")'
+
+        # Send interactive tools to "interactive" nodes by default
+      - id: jobs_cluster_group_interactive
+        if: not (dry_run_mode := job_wrapper is None) and (tool.tool_type == 'interactive')
+        execute: |
+          entity.params['requirements'] = '(GalaxyGroup == "interactive")'
+
+        # Send TIaaS jobs to training nodes
+      - id: jobs_cluster_group_tiaas
+        # Note: Interactive tools can be sent to training nodes according o this rule.
         if: user is not None
         execute: |
           import os
@@ -51,9 +114,7 @@ tools:
 
           training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
           training_labels = '"' + ", ".join(training_roles) + '"'
-          entity.params['requirements'] = '(GalaxyGroup == "compute")'
           entity.params['+Group'] = training_labels
-          entity.params['accounting_group_user'] = str(user.id)
 
           # ongoing trainings
           @functools.lru_cache(maxsize=1)
@@ -92,12 +153,9 @@ tools:
               for training_role in training_roles
           }
           if ongoing_trainings & user_trainings:
-              entity.params['requirements'] = '(GalaxyGroup == "compute") || (GalaxyGroup == "tiaas")'
+              entity.params['requirements'] = f'(({entity.params["requirements"]}) || (GalaxyGroup == "tiaas"))'
 
-      - id: anonymous_user
-        if: user is None
-        execute: |
-          entity.params['requirements'] = '(GalaxyGroup == "compute")'
+        # Require registration to use interactive tools
       - id: interactive_tool_require_registration
         if: not (dry_run_mode := job_wrapper is None) and (tool.tool_type == 'interactive' and user is None)
         # `job_wrapper is None` occurs when TPV is launched in dry-run mode
@@ -107,8 +165,6 @@ tools:
       - id: interactive_tool
         if: not (dry_run_mode := job_wrapper is None) and (tool.tool_type == 'interactive')
         # `job_wrapper is None` occurs when TPV is launched in dry-run mode
-        cores: 1
-        mem: 4
         params:
           docker_volumes: $defaults
           container_monitor_result: callback
@@ -116,6 +172,7 @@ tools:
           require:
             - docker
             - embedded-pulsar
+
       - id: remote_resources
         if: not (dry_run_mode := job_wrapper is None) and (user is not None and not (tool.tool_type in ["expression", "data_source"] or tool.requires_galaxy_python_environment))
         # `job_wrapper is None` occurs when TPV is launched in dry-run mode
