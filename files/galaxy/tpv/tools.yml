@@ -196,6 +196,14 @@ tools:
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
 
+  toolshed.g2.bx.psu.edu/repos/bgruening/ketos_.*:
+    env:
+      # use non-NFS `/tmp/` dir, required because of https://ticketsystem.galaxyproject.eu/#ticket/zoom/1572:
+      # on https://github.com/mittagessen/kraken/blob/main/kraken/lib/arrow_dataset.py#L282C1-L283C53,
+      # when leaving the `TemporaryDirectory()` context, Python tries to remove
+      # the temporary directory, yielding `OSError: [Errno 39] Directory not empty`
+      _GALAXY_JOB_TMP_DIR: /tmp
+
   toolshed.g2.bx.psu.edu/repos/iuc/gem_check_memote/gem_check_memote/.*:
     mem: 24
 
