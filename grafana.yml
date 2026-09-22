@@ -36,34 +36,27 @@
     - role: usegalaxy_eu.handy.os_setup
       become: true
       vars:
-        hostname: "{{ grafana_domain }}"
+        hostname: "{{ grafana_ini.server.domain }}"
         enable_hostname: true
         enable_powertools: true # geerlingguy.repo-epel role doesn't enable PowerTools repository
     - influxdata.chrony # Keep our time in sync.
 
     ## Monitoring
     - dj-wasabi.telegraf
-    - role: hxr.monitor-ssl
-      become: true
     - role: hxr.monitor-email
       become: true
 
-    ## Grafana
-    - role: galaxyproject.nginx
-      become: true
-      vars:
-        hostname: "{{ grafana_domain }}"
     - grafana
     - role: pgs
       become: true
 
   post_tasks:
-    - name: Open nginx ports
+    - name: Open Grafana port
       become: true
       ansible.posix.firewalld:
+        zone: internal
         port: "{{ item }}"
         permanent: true
         state: enabled
       with_items:
-        - 80/tcp
-        - 443/tcp
+        - 3000/tcp

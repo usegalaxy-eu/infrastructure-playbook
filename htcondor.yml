@@ -96,8 +96,6 @@
     - name: galaxyproject.gxadmin
       when: htcondor_role_submit
     - grycap.htcondor
-    - name: usegalaxy-eu.htcondor_release
-      when: htcondor_role_submit and inventory_hostname == "sn09.galaxyproject.eu"
     - name: usegalaxy-eu.fix-stop-ITs
       when: htcondor_role_submit and inventory_hostname != "maintenance.bi.privat"
     - name: usegalaxy-eu.remove-orphan-condor-jobs

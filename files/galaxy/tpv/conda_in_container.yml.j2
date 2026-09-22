@@ -3,12 +3,6 @@
 tools:
   _conda_in_container:
     abstract: true
-    env:
-      # TPV is not passing ENV vars into the containers as it seems (2026-01), so lets set this for all containers and pass in with "SINGULARITYENV_"
-      - name: _JAVA_OPTIONS
-        value: -Djava.io.tmpdir=$_GALAXY_JOB_TMP_DIR -Xmx{round(mem*0.9*1024)}m -Xms256m
-      - name: SINGULARITYENV__JAVA_OPTIONS
-        value: $_JAVA_OPTIONS
     scheduling:
       require:
         - conda
@@ -82,9 +76,6 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/lumpy_prep/lumpy_prep/.*:
     inherits: _conda_in_container
 
-  toolshed.g2.bx.psu.edu/repos/bgruening-util/stress_ng/stress_ng/.*:
-    inherits: _conda_in_container
-
   toolshed.g2.bx.psu.edu/repos/computational-metabolomics/sirius_csifingerid/sirius_csifingerid/.*:
     inherits: _conda_in_container
 
@@ -129,6 +120,10 @@ tools:
     mem: 40
 
   toolshed.g2.bx.psu.edu/repos/iuc/qiime_pick_otus/qiime_pick_otus/.*:
+    inherits: _conda_in_container
+
+  # toolshed.g2.bx.psu.edu/repos/iuc/arriba_get_filters/arriba_get_filters/2.4.0+galaxy1 (and lowerß) needs conda, some ugly find hack needs the directory structure of conda
+  toolshed.g2.bx.psu.edu/repos/iuc/arriba_get_filters/arriba_get_filters/.*:
     inherits: _conda_in_container
 
   # Nate's legacy tools (https://github.com/galaxyproject/usegalaxy-playbook/blob/f1fc7264642a471f5eed55739869bb0d7292c736/env/common/templates/galaxy/config/tpv/tools.yaml.j2#L1889)

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ item.code }} &ndash; {{ item.title }} | Galaxy Europe</title>
+<link rel="stylesheet" href="/static/error_pages/brand-tokens.css">
+<style>
+  /* Galaxy Community Hub design system (galaxyproject/galaxy-hub astro/DESIGN.md),
+     inlined so this page needs no network. Colors and the font stack come from the
+     brand tokens above.
+
+     Lucide icons (https://lucide.dev, ISC) are inlined as SVG.
+
+     {{ "> " ~ error_pages_icons_license.split('\n') | join('\n> ') | indent(5, false) }}
+  */
+  :root {
+    --hairline: color-mix(in srgb, var(--color-galaxy-primary) 10%, transparent);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 1.5rem 1rem;
+    background-color: var(--color-light-bg);
+    color: var(--color-galaxy-dark);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  main {
+    width: 100%;
+    max-width: 38rem;
+    background-color: #fff;
+    border: 1px solid var(--hairline);
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+  }
+  header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 1.25rem 1.5rem;
+    color: #fff;
+    background: linear-gradient(135deg, var(--color-galaxy-dark) 0%, var(--color-galaxy-primary) 100%);
+    border-bottom: 4px solid var(--color-galaxy-gold);
+  }
+  header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 24px 24px;
+    pointer-events: none;
+  }
+  .icon {
+    position: relative;
+    flex: none;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0.625rem;
+    border-radius: 0.5rem;
+    color: var(--color-galaxy-gold);
+    background-color: rgba(255, 215, 0, 0.12);
+    border: 1px solid rgba(255, 215, 0, 0.35);
+  }
+  .titles { position: relative; min-width: 0; }
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .code {
+    margin: 0.125rem 0 0;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.9375rem;
+  }
+  .content { padding: 1.25rem 1.5rem 1.5rem; }
+  p { margin: 0 0 0.75rem; }
+  .lead { font-size: 1.0625rem; font-weight: 700; }
+  a { color: var(--color-galaxy-primary); }
+  a:hover, a:focus { color: var(--color-galaxy-gold); }
+  ul { margin: 0.375rem 0 0; padding-left: 1.125rem; }
+  li { margin: 0.125rem 0; }
+  .cta {
+    display: inline-block;
+    margin-bottom: 0;
+    padding: 0.5rem 1.25rem;
+    border-radius: 0.5rem;
+    background-color: var(--color-galaxy-gold);
+    color: var(--color-galaxy-dark);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .cta:hover, .cta:focus { background-color: var(--color-galaxy-gold-dark); color: var(--color-galaxy-dark); }
+  .panel {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--hairline);
+  }
+  .panel h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin: 0 0 0.5rem;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--color-galaxy-primary);
+  }
+  .panel h2 svg { width: 1rem; height: 1rem; flex: none; }
+  .panel iframe {
+    display: block;
+    width: 100%;
+    height: 260px;
+    border: 1px solid var(--hairline);
+    border-radius: 0.5rem;
+    background-color: var(--color-light-bg);
+  }
+  .panel__note {
+    margin: 0.5rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--color-galaxy-grey);
+  }
+  footer {
+    margin-top: 1.25rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--hairline);
+    font-size: 0.875rem;
+    color: var(--color-galaxy-grey);
+  }
+  footer p { margin: 0; }
+  @media (max-width: 30rem) {
+    header { padding: 1rem 1.125rem; gap: 0.75rem; }
+    h1 { font-size: 1.25rem; }
+    .content { padding: 1.125rem 1.125rem 1.25rem; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{{ error_pages_icons[item.icon] }}</svg>
+    <div class="titles">
+      <h1>{{ item.title }}</h1>
+      <p class="code">Error {{ item.code }} &ndash; Galaxy Europe</p>
+    </div>
+  </header>
+  <div class="content">
+    <p class="lead">{{ item.lead }}</p>
+    <p>{{ item.body }}</p>
+    <p><a class="cta" href="{{ error_pages_home_url }}">Back to Galaxy Europe</a></p>
+{% if item.panel | default(false) %}
+    <section class="panel">
+      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{{ error_pages_icons['activity'] }}</svg>
+        Current alerts</h2>
+      <iframe src="{{ error_pages_panel_url | replace('&', '&amp;') }}" title="Galaxy Europe alerts" loading="lazy"></iframe>
+      <p class="panel__note">This panel comes from our monitoring server. If it stays
+        empty, the monitoring server cannot be reached from here &ndash; the rest of this
+        page still works. You can also open the
+        <a href="{{ error_pages_status_url }}">status page</a> directly.</p>
+    </section>
+{% endif %}
+    <footer>
+      <p>Need help or more information?</p>
+      <ul>
+{% if item.panel | default(false) %}
+        <li><a href="{{ error_pages_status_url }}">Current alerts and server status</a></li>
+{% endif %}
+        <li><a href="{{ error_pages_chat_url }}">Ask us in the Galaxy Europe chat</a></li>
+        <li><a href="mailto:{{ error_pages_contact_mail }}">Write to {{ error_pages_contact_mail }}</a></li>
+      </ul>
+    </footer>
+  </div>
+</main>
+</body>
+</html>
