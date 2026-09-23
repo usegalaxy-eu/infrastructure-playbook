@@ -47,15 +47,6 @@
             'firewalld',
           ]
       become: true
-
-    - name: Ensure Parallel SSH host directory exists
-      ansible.builtin.file:
-        path: /etc/pssh
-        state: directory
-        owner: root
-        group: root
-        mode: '0755'
-
   post_tasks:
     - name: Append some users to the systemd-journal group
       user:
