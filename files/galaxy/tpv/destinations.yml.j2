@@ -28,7 +28,7 @@
         $working_directory:rw,
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}
 {%- endmacro %}
-{% macro cvmfs_container_resolvers() -%}
+{% macro cvmfs_container_resolvers() %}
   - type: explicit_singularity
   - type: cached_mulled_singularity
     cache_directory: /cvmfs/singularity.galaxyproject.org/all/
