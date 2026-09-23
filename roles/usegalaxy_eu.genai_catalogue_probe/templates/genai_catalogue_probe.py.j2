@@ -25,10 +25,25 @@ Row statuses:
                     stream on every attempt
   UNCONFIGURED      the provider has no base URL or key in the LiteLLM config
 
-The script also lists models the proxies advertise that the catalogue does
-not have. It writes a JSON report and posts to ntfy when a row is not
-HEALTHY, or when the probe itself fails to run. Exit status: 0 all rows
-healthy, 1 some rows broken, 2 the probe failed to run.
+Models a proxy advertises that the catalogue does not list, as a row or as a
+commented-out row, are called too, to find out whether the tools could use
+them:
+
+  text accepted, then text+image accepted   HEALTHY, multimodal
+  text accepted, image rejected             HEALTHY, text
+  text rejected, image alone accepted       HEALTHY, image
+  both rejected, embeddings accepted        HEALTHY, embedding
+  everything rejected                       DEAD
+  a call failing only temporarily           FAILING, tried again next run
+
+To stop the probe calling a model, add it as a commented-out row: a line
+starting with "#" that keeps the five tab-separated columns. New models
+never trigger an alert; an alert sent for broken rows only mentions how
+many working new models there are.
+
+The script writes a JSON report and posts to ntfy when a row is not HEALTHY,
+or when the probe itself fails to run. Exit status: 0 all rows healthy, 1
+some rows broken, 2 the probe failed to run.
 
 Run by hand without alerting:
 
@@ -145,12 +160,21 @@ def parse_args():
 
 
 def parse_loc_file(loc_path):
-    """Return the rows of a genai_models.loc file as dicts."""
-    rows = []
+    """Return the rows of a genai_models.loc file and its commented-out models.
+
+    Rows are dicts. Commented-out models are (provider, model id) pairs taken
+    from lines that start with "#" but still have five tab-separated columns.
+    """
+    rows, commented = [], set()
     with open(loc_path, encoding="utf-8") as f:
         for line_num, line in enumerate(f, 1):
             line = line.strip()
-            if not line or line.startswith("#"):
+            if line.startswith("#"):
+                parts = line.lstrip("#").strip().split("\t")
+                if len(parts) >= 5:
+                    commented.add((parts[4], parts[1]))
+                continue
+            if not line:
                 continue
             parts = line.split("\t")
             if len(parts) < 5:
@@ -169,7 +193,7 @@ def parse_loc_file(loc_path):
             )
     if not rows:
         raise ValueError(f"no rows in {loc_path}")
-    return rows
+    return rows, commented
 
 
 def load_servers(config_path):
@@ -383,6 +407,52 @@ def probe_row(row, servers, timeout, attempts):
     return dict(row, status="HEALTHY", error=None, checks=checks)
 
 
+def classify_new_model(provider, model_id, servers, timeout, attempts):
+    """Find out whether and how the tools could use a model not yet listed."""
+    base_url, api_key = credentials(servers, provider)
+    checks = {}
+
+    def attempt(kind):
+        call = functools.partial(
+            probe_call, kind, base_url, api_key, model_id, timeout
+        )
+        checks[kind] = run_with_retries(call, attempts)
+        return checks[kind]
+
+    def outcome(status, domain=None):
+        errors = [
+            f"{kind}: {check['error']}"
+            for kind, check in checks.items()
+            if check["error"]
+        ]
+        return {
+            "provider": provider,
+            "model_id": model_id,
+            "status": status,
+            "domain": domain,
+            "error": None if status == "HEALTHY" else "; ".join(errors),
+            "checks": checks,
+        }
+
+    text = attempt("text")
+    if text["ok"]:
+        image = attempt("text+image")
+        if image["ok"]:
+            return outcome("HEALTHY", "multimodal")
+        if image["permanent"]:  # answers text, rejects images
+            return outcome("HEALTHY", "text")
+        return outcome("FAILING")
+    if not text["permanent"]:
+        return outcome("FAILING")
+    for kind in ("image", "embedding"):  # image rows get the image alone
+        result = attempt(kind)
+        if result["ok"]:
+            return outcome("HEALTHY", kind)
+        if not result["permanent"]:
+            return outcome("FAILING")
+    return outcome("DEAD")
+
+
 def fetch_advertised_models(servers, timeout):
     """Return ({provider: model ids on /models}, {provider: error})."""
     advertised, errors = {}, {}
@@ -407,7 +477,7 @@ def label(row):
     return f"[{row['provider']}] {row['model_id']} (line {row['line']})"
 
 
-def alert(results, problems, new_upstream, report_path):
+def alert(results, problems, new_models, report_path):
     """Return the ntfy title, message and tags for a finished run."""
     healthy = len(results) - len(problems)
     lines = [f"{healthy} of {len(results)} rows healthy."]
@@ -415,9 +485,10 @@ def alert(results, problems, new_upstream, report_path):
         lines.append(f"{row['status']} {label(row)}: {row['error']}")
     if len(problems) > MAX_ALERT_ROWS:
         lines.append(f"...and {len(problems) - MAX_ALERT_ROWS} more.")
-    if new_upstream:
-        count = sum(len(ids) for ids in new_upstream.values())
-        lines.append(f"{count} advertised models are not in the catalogue.")
+    usable = sum(1 for m in new_models if m["status"] == "HEALTHY")
+    if usable:
+        note = f"{usable} new working models are not in the catalogue yet."
+        lines.append(note)
     if report_path:
         lines.append(f"Report: {socket.gethostname()}:{report_path}")
     if problems:
@@ -447,22 +518,31 @@ def notify(url, title, message, tags):
 def run(args):
     """Probe the catalogue, report and alert; return the exit status."""
     started = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    rows = parse_loc_file(args.loc)
+    rows, commented = parse_loc_file(args.loc)
     servers = load_servers(args.config)
     print(f"=== {started}: probing {len(rows)} rows of {args.loc}", flush=True)
 
     advertised, listing_errors = fetch_advertised_models(servers, args.timeout)
-    new_upstream = {}
-    for provider, model_ids in advertised.items():
-        known = {r["model_id"] for r in rows if r["provider"] == provider}
-        if model_ids - known:
-            new_upstream[provider] = sorted(model_ids - known)
+    listed = {(r["provider"], r["model_id"]) for r in rows} | commented
+    candidates = sorted(
+        (provider, model_id)
+        for provider, model_ids in advertised.items()
+        for model_id in model_ids
+        if (provider, model_id) not in listed
+    )
 
     def probe(row):
         return probe_row(row, servers, args.timeout, args.attempts)
 
+    def classify(candidate):
+        provider, model_id = candidate
+        return classify_new_model(
+            provider, model_id, servers, args.timeout, args.attempts
+        )
+
     with concurrent.futures.ThreadPoolExecutor(args.concurrency) as pool:
         results = list(pool.map(probe, rows))
+        new_models = list(pool.map(classify, candidates))
     problems = [r for r in results if r["status"] != "HEALTHY"]
 
     for row in results:
@@ -471,24 +551,30 @@ def run(args):
             print(f"{'':<16} {row['error']}")
     for provider, error in listing_errors.items():
         print(f"Could not list the models of {provider}: {error}")
-    for provider, model_ids in new_upstream.items():
-        print(f"Advertised by {provider}, not in the catalogue:")
-        for model_id in model_ids:
-            print(f"  {model_id}")
+    if new_models:
+        print("Advertised by the proxies, not in the catalogue:")
+    for model in new_models:
+        name = f"[{model['provider']}] {model['model_id']}"
+        if model["domain"]:
+            name += f" as {model['domain']}"
+        print(f"{model['status']:<16} {name}")
+        if model["error"]:
+            print(f"{'':<16} {model['error']}")
     counts = collections.Counter(r["status"] for r in results)
     tally = ", ".join(f"{n} {s}" for s, n in sorted(counts.items()))
     print(f"Summary: {tally}")
 
     report = {
+        "format": 1,
         "summary": {
             "started": started,
             "loc_file": args.loc,
             "rows": len(results),
             "statuses": dict(counts),
-            "new_upstream_models": sum(len(v) for v in new_upstream.values()),
+            "new_models": len(new_models),
         },
         "problems": problems,
-        "new_upstream_models": new_upstream,
+        "new_models": new_models,
         "listing_errors": listing_errors,
         "results": results,
     }
@@ -501,7 +587,7 @@ def run(args):
 
     if problems or args.notify_always:
         title, message, tags = alert(
-            results, problems, new_upstream, args.output_json
+            results, problems, new_models, args.output_json
         )
         notify(args.ntfy_url, title, message, tags)
     return 1 if problems else 0
