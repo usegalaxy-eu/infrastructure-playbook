@@ -44,9 +44,20 @@
             'python3',
             'python3-devel',
             'bzip2',
+            'byobu',
             'firewalld',
+            'mosh',
           ]
       become: true
+
+    - name: Ensure Parallel SSH host directory exists
+      ansible.builtin.file:
+        path: /etc/pssh
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
   post_tasks:
     - name: Append some users to the systemd-journal group
       user:
@@ -165,3 +176,4 @@
     - usegalaxy_eu.ntfy-notifications
     - l3d.restic
     - usegalaxy-eu.kui
+    - usegalaxy-eu.update-hosts # Update hosts list
