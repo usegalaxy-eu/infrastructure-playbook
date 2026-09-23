@@ -19,11 +19,15 @@ apart from the hashed Galaxy user ids the tools send.
 Row statuses:
 
   HEALTHY           every call was accepted
-  DEAD              a call was rejected with a 4xx other than 408/429
+  DEAD              a call was rejected with a 4xx other than 408/429 (a
+                    spent budget does not count)
   CAPABILITY_DRIFT  tagged multimodal, accepts text but rejects the image
-  FAILING           timeouts, connection errors, 408, 429, 5xx or an empty
-                    stream on every attempt
-  UNCONFIGURED      the provider has no base URL or key in the LiteLLM config
+  FAILING           timeouts, connection errors, 408, 429, 5xx, a spent
+                    budget or an empty stream on every attempt
+  UNCONFIGURED      the provider has no usable base URL or key in the
+                    LiteLLM config
+  MALFORMED         fewer than six columns, so Galaxy ignores the row; not
+                    called
 
 Models a proxy advertises that the catalogue does not list, as a row or as a
 commented-out row, are called too, to find out whether the tools could use
@@ -31,10 +35,10 @@ them:
 
   text accepted, then text+image accepted   HEALTHY, multimodal
   text accepted, image rejected             HEALTHY, text
-  text rejected, image alone accepted       HEALTHY, image
-  both rejected, embeddings accepted        HEALTHY, embedding
-  everything rejected                       DEAD
-  a call failing only temporarily           FAILING, tried again next run
+  text failed, image alone accepted         HEALTHY, image
+  both failed, embeddings accepted          HEALTHY, embedding
+  every call rejected                       DEAD
+  otherwise (a call failed only for now)    FAILING, tried again next run
 
 To stop the probe calling a model, add it as a commented-out row: a line
 starting with "#" that keeps the five tab-separated columns. New models
@@ -96,13 +100,18 @@ class CallFailed(Exception):
     """A probe call failed; `permanent` means retrying cannot help."""
 
     def __init__(self, message, http_code=None, retry_after=None):
-        """Classify the failure by its HTTP status code, if it has one."""
+        """Classify the failure by its HTTP status code, if it has one.
+
+        A spent budget says nothing about the model, so it never counts as
+        permanent, whatever status code the proxy uses for it.
+        """
         super().__init__(message)
         self.http_code = http_code
         self.permanent = (
             http_code is not None
             and 400 <= http_code < 500
             and http_code not in TRANSIENT_HTTP_CODES
+            and "budget" not in message.lower()
         )
         self.retry_after = None
         if str(retry_after).isdigit():
@@ -162,33 +171,35 @@ def parse_args():
 def parse_loc_file(loc_path):
     """Return the rows of a genai_models.loc file and its commented-out models.
 
-    Rows are dicts. Commented-out models are (provider, model id) pairs taken
-    from lines that start with "#" but still have five tab-separated columns.
+    Lines are split the way Galaxy reads the file: a line starting with "#"
+    is a comment, any other non-empty line is a row of tab-separated columns.
+    Rows are dicts; "columns" counts their columns, since Galaxy ignores rows
+    with fewer than six. Commented-out models are (provider, model id) pairs
+    from comment lines that still have five tab-separated columns.
     """
     rows, commented = [], set()
     with open(loc_path, encoding="utf-8") as f:
         for line_num, line in enumerate(f, 1):
-            line = line.strip()
+            line = line.rstrip("\r\n")
             if line.startswith("#"):
-                parts = line.lstrip("#").strip().split("\t")
+                parts = line.lstrip("#").lstrip(" ").split("\t")
                 if len(parts) >= 5:
                     commented.add((parts[4], parts[1]))
                 continue
             if not line:
                 continue
             parts = line.split("\t")
-            if len(parts) < 5:
-                print(f"Skipping line {line_num}: fewer than 5 columns")
-                continue
+            padded = parts + [""] * (6 - len(parts))
             rows.append(
                 {
                     "line": line_num,
-                    "value": parts[0],
-                    "model_id": parts[1],
-                    "name": parts[2],
-                    "domain": parts[3],
-                    "provider": parts[4],
-                    "tag": parts[5] if len(parts) > 5 else "",
+                    "columns": len(parts),
+                    "value": padded[0],
+                    "model_id": padded[1],
+                    "name": padded[2],
+                    "domain": padded[3],
+                    "provider": padded[4],
+                    "tag": padded[5],
                 }
             )
     if not rows:
@@ -208,8 +219,30 @@ def load_servers(config_path):
 def credentials(servers, provider):
     """Return (base URL, API key) for a provider; empty strings if unset."""
     creds = servers.get(provider) or {}
-    base_url = (creds.get("LITELLM_BASE_URL") or "").rstrip("/")
-    return base_url, creds.get("LITELLM_API_KEY") or ""
+    base_url = str(creds.get("LITELLM_BASE_URL") or "").strip().rstrip("/")
+    return base_url, str(creds.get("LITELLM_API_KEY") or "").strip()
+
+
+def credential_problem(provider, base_url, api_key):
+    """Say what is wrong with a provider's settings, or return None.
+
+    A key with spaces or control characters in it would make the HTTP
+    library raise an error that quotes the whole key, so it is never sent.
+    """
+    if not base_url or not api_key:
+        return f"no base URL or key for '{provider}' in the config"
+    if " " in api_key or not api_key.isprintable():
+        return f"the key for '{provider}' has spaces or control characters"
+    return None
+
+
+def redact(text, secret):
+    """Replace a secret, also in its escaped form, in a message."""
+    if not text or not secret:
+        return text
+    for form in (secret, repr(secret)[1:-1]):
+        text = text.replace(form, "[redacted]")
+    return text
 
 
 def request_headers(api_key):
@@ -247,7 +280,8 @@ def post_json(url, api_key, payload, timeout):
     try:
         return urllib.request.urlopen(req, timeout=timeout)
     except urllib.error.HTTPError as e:
-        body = e.read().decode("utf-8", errors="replace")
+        # redact before error_message() shortens it and could cut the key
+        body = redact(e.read().decode("utf-8", errors="replace"), api_key)
         raise CallFailed(
             f"HTTP {e.code}: {error_message(body)}",
             e.code,
@@ -344,8 +378,12 @@ def probe_call(kind, base_url, api_key, model_id, timeout):
     return stream_chat(base_url, api_key, model_id, parts[kind], timeout)
 
 
-def run_with_retries(call, attempts):
-    """Run `call` until it succeeds, fails permanently or runs out of tries."""
+def run_with_retries(call, attempts, secret=""):
+    """Run `call` until it succeeds, fails permanently or runs out of tries.
+
+    `secret` (the API key) is removed from any error message kept.
+    """
+    attempts = max(attempts, 1)
     for attempt in range(1, attempts + 1):
         started = time.monotonic()
         error, http_code, permanent = None, None, False
@@ -364,7 +402,7 @@ def run_with_retries(call, attempts):
             return {
                 "ok": error is None,
                 "permanent": permanent,
-                "error": error,
+                "error": redact(error, secret),
                 "http_code": http_code,
                 "attempts": attempt,
                 "duration_ms": int((time.monotonic() - started) * 1000),
@@ -383,20 +421,19 @@ def failure_status(domain, kind, result):
 
 def probe_row(row, servers, timeout, attempts):
     """Probe one catalogue row and classify it."""
+    if row["columns"] < 6:
+        error = f"{row['columns']} columns; Galaxy needs 6 and ignores the row"
+        return dict(row, status="MALFORMED", error=error, checks={})
     base_url, api_key = credentials(servers, row["provider"])
-    if not base_url or not api_key:
-        return dict(
-            row,
-            status="UNCONFIGURED",
-            error=f"no base URL or key for '{row['provider']}' in the config",
-            checks={},
-        )
+    problem = credential_problem(row["provider"], base_url, api_key)
+    if problem:
+        return dict(row, status="UNCONFIGURED", error=problem, checks={})
     checks = {}
     for kind in CALLS_BY_DOMAIN.get(row["domain"], ("text",)):
         call = functools.partial(
             probe_call, kind, base_url, api_key, row["model_id"], timeout
         )
-        result = checks[kind] = run_with_retries(call, attempts)
+        result = checks[kind] = run_with_retries(call, attempts, api_key)
         if not result["ok"]:
             return dict(
                 row,
@@ -416,7 +453,7 @@ def classify_new_model(provider, model_id, servers, timeout, attempts):
         call = functools.partial(
             probe_call, kind, base_url, api_key, model_id, timeout
         )
-        checks[kind] = run_with_retries(call, attempts)
+        checks[kind] = run_with_retries(call, attempts, api_key)
         return checks[kind]
 
     def outcome(status, domain=None):
@@ -442,15 +479,14 @@ def classify_new_model(provider, model_id, servers, timeout, attempts):
         if image["permanent"]:  # answers text, rejects images
             return outcome("HEALTHY", "text")
         return outcome("FAILING")
-    if not text["permanent"]:
-        return outcome("FAILING")
-    for kind in ("image", "embedding"):  # image rows get the image alone
-        result = attempt(kind)
-        if result["ok"]:
+    # Chat failed, even if only with a server error: it may be an image-only
+    # or an embedding model. Image rows get the image alone.
+    for kind in ("image", "embedding"):
+        if attempt(kind)["ok"]:
             return outcome("HEALTHY", kind)
-        if not result["permanent"]:
-            return outcome("FAILING")
-    return outcome("DEAD")
+    if all(check["permanent"] for check in checks.values()):
+        return outcome("DEAD")
+    return outcome("FAILING")
 
 
 def fetch_advertised_models(servers, timeout):
@@ -460,15 +496,19 @@ def fetch_advertised_models(servers, timeout):
         base_url, api_key = credentials(servers, provider)
         if not base_url or not api_key:
             continue
-        req = urllib.request.Request(
-            f"{base_url}/models", headers=request_headers(api_key)
-        )
+        problem = credential_problem(provider, base_url, api_key)
+        if problem:
+            errors[provider] = problem
+            continue
         try:
+            req = urllib.request.Request(
+                f"{base_url}/models", headers=request_headers(api_key)
+            )
             with urllib.request.urlopen(req, timeout=timeout) as resp:
                 data = json.loads(resp.read().decode("utf-8")).get("data")
             advertised[provider] = {m["id"] for m in data or [] if m.get("id")}
         except Exception as e:
-            errors[provider] = f"{type(e).__name__}: {e}"
+            errors[provider] = redact(f"{type(e).__name__}: {e}", api_key)
     return advertised, errors
 
 
@@ -503,15 +543,15 @@ def notify(url, title, message, tags):
     if not url:
         print("No ntfy URL configured, not sending an alert.")
         return
-    req = urllib.request.Request(
-        url,
-        data=message.encode("utf-8"),
-        headers={"Title": title, "Tags": tags, "User-Agent": USER_AGENT},
-    )
     try:
+        req = urllib.request.Request(
+            url,
+            data=message.encode("utf-8"),
+            headers={"Title": title, "Tags": tags, "User-Agent": USER_AGENT},
+        )
         with urllib.request.urlopen(req, timeout=30):
             pass
-    except Exception as e:
+    except Exception as e:  # also malformed URLs, which Request() rejects
         print(f"Failed to send the ntfy alert: {e}")
 
 

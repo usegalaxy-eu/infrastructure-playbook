@@ -11,23 +11,27 @@ master:
 - working new models are added, with the description and the vendor left as
   TODO-genai-bot placeholders for an admin to fill in.
 
-FAILING and UNCONFIGURED rows are never changed. If every row of a provider
-is DEAD, the bot assumes a key or proxy problem and removes none of them.
-What the bot leaves alone is listed in the PR text.
+A row is only changed if master still has it as it was probed: same value,
+model id, provider and domain. FAILING, UNCONFIGURED and MALFORMED rows are
+never changed. Nothing is changed for a provider whose model list could not
+be fetched or whose every row is DEAD, and no image row is changed for a
+provider whose every image call was rejected: those look like key or proxy
+problems. What the bot leaves alone is listed in the PR text.
 
 Commands:
 
-  check FILE  validate a genai_models.loc file: at least five columns, a
-              known domain, unique values, no placeholder left in an active
-              row
+  check FILE  validate a genai_models.loc file: at least six columns (Galaxy
+              ignores shorter rows), a known domain, unique values, no
+              placeholder left in an active row
   build ...   rewrite genai_models.loc in place from a report and write the
               PR text; with --publish, also update the bot's pull request
 
 Publishing needs GITHUB_TOKEN. Every run rebuilds the branch
-genai-catalogue-bot from master and opens or updates one draft PR. New rows
-an admin already edited on that branch, filled in or commented out, are
-kept; any other edit on the branch is lost. When there is nothing to change,
-the bot's PR is closed and its branch deleted.
+genai-catalogue-bot from master and opens or updates one draft PR. Rows the
+branch added are carried over if an admin filled them in or commented them
+out, or if their model failed only this week; any other edit on the branch
+is lost. When nothing needs to change, the bot closes its PR with a comment
+listing what the report still found, and deletes the branch.
 
 Jenkins job usegalaxy-eu/genai-catalogue-pr (freestyle):
 
@@ -49,10 +53,12 @@ Jenkins job usegalaxy-eu/genai-catalogue-pr (freestyle):
       git diff > genai_models.diff
   Archive the artifacts: report.json, pr_body.md, genai_models.diff
 
-Without the GitHub credential every run is a dry run. With it, the commit is
-made through the GitHub API on top of $GIT_COMMIT (the master commit Jenkins
-checked out), so it is authored by the App. The App needs read and write
-access to Contents and Pull requests of this repository only.
+Reports older than two days are refused, so a Monday without a probe run
+fails the job instead of replaying last week's report. Without the GitHub
+credential every run is a dry run. With it, the commit is made through the
+GitHub API on top of $GIT_COMMIT (the master commit Jenkins checked out), so
+it is authored by the App. The App needs read and write access to Contents
+and Pull requests of this repository only.
 
 Tests: python3 -m unittest discover -s bin -p 'test_genai_catalogue_pr.py'
 """
@@ -71,6 +77,7 @@ import urllib.request
 
 MARKER = "TODO-genai-bot"
 DOMAINS = ("text", "multimodal", "image", "embedding")
+GALAXY_COLUMNS = 6
 REPORT_FORMAT = 1
 REPO = "usegalaxy-eu/infrastructure-playbook"
 LOC_PATH = "files/galaxy/config/llm/genai_models.loc"
@@ -83,32 +90,55 @@ class BotError(Exception):
     """The input or the result is unusable; nothing is published."""
 
 
+def split_lines(text):
+    """Split a file at newlines only, as Galaxy does."""
+    lines = text.split("\n")
+    if lines and lines[-1] == "":
+        lines.pop()
+    return lines
+
+
 def row_columns(line):
-    """Return the columns of an active row, or None for comments and blanks."""
-    text = line.strip()
-    if not text or text.startswith("#"):
+    """Return the columns of an active row, or None for comments and blanks.
+
+    Like Galaxy, a line is a comment if it starts with "#"; columns keep
+    their spacing, and an empty last column is kept too.
+    """
+    line = line.rstrip("\r")
+    if not line or line.startswith("#"):
         return None
-    return text.split("\t")
+    return line.split("\t")
 
 
 def commented_columns(line):
     """Return the columns of a commented-out row, or None."""
-    text = line.strip()
-    if not text.startswith("#"):
+    line = line.rstrip("\r")
+    if not line.startswith("#"):
         return None
-    columns = text.lstrip("#").strip().split("\t")
+    columns = line.lstrip("#").lstrip(" ").split("\t")
+    return columns if len(columns) >= 5 else None
+
+
+def line_columns(line):
+    """Return the columns of an active or commented-out row, or None."""
+    columns = row_columns(line)
+    if columns is None:
+        return commented_columns(line)
     return columns if len(columns) >= 5 else None
 
 
 def check_loc(text, placeholders_allowed=False):
     """Return the problems of a genai_models.loc text, one string each."""
     problems, first_seen = [], {}
-    for num, line in enumerate(text.splitlines(), 1):
+    for num, line in enumerate(split_lines(text), 1):
         columns = row_columns(line)
         if columns is None:
             continue
-        if len(columns) < 5:
-            problems.append(f"line {num}: {len(columns)} columns, need 5")
+        if len(columns) < GALAXY_COLUMNS:
+            problems.append(
+                f"line {num}: {len(columns)} columns; Galaxy needs "
+                f"{GALAXY_COLUMNS} and ignores the row"
+            )
             continue
         value, domain = columns[0], columns[3]
         if domain not in DOMAINS:
@@ -131,46 +161,60 @@ def base_value(model_id):
     return re.sub(r"[^A-Za-z0-9._-]", "-", model_id)
 
 
+def added_lines(old_text, new_text):
+    """Return the lines of new_text that old_text does not have."""
+    remaining = collections.Counter(split_lines(old_text))
+    added = []
+    for line in split_lines(new_text):
+        if remaining[line]:
+            remaining[line] -= 1
+        else:
+            added.append(line)
+    return added
+
+
 class Catalogue:
     """The lines of a genai_models.loc file, with its rows indexed."""
 
     def __init__(self, text):
         """Split the text into lines and index active and commented rows."""
-        self.lines = text.splitlines()
+        self.lines = split_lines(text)
         self.trailing_newline = text.endswith("\n")
         self.rows = {}  # line index -> columns, active rows only
-        self.known = {}  # (provider, model id) -> line, also commented rows
+        self.known = set()  # (provider, model id), also commented rows
         self.values = set()
         for index, line in enumerate(self.lines):
-            active = row_columns(line)
-            columns = active if active is not None else commented_columns(line)
-            if columns is None or len(columns) < 5:
+            columns = line_columns(line)
+            if columns is None:
                 continue
-            if active is not None:
+            if row_columns(line) is not None:
                 self.rows[index] = columns
-            self.known.setdefault((columns[4], columns[1]), line.rstrip())
+            self.known.add((columns[4], columns[1]))
             self.values.add(columns[0])
 
     def find(self, entry):
-        """Return the line index of the active row a report entry means."""
-        key = (entry["provider"], entry["model_id"])
-        same = [i for i, c in self.rows.items() if (c[4], c[1]) == key]
-        for index in same:
-            if self.rows[index][0] == entry.get("value"):
-                return index
-        return same[0] if len(same) == 1 else None
+        """Return the index of the active row a report entry names, if any.
 
-    def suffix(self, provider):
-        """Return the ending the provider's values add to the model id."""
+        The row must have the entry's value, model id and provider.
+        """
+        key = (entry.get("value"), entry["model_id"], entry["provider"])
+        for index, columns in self.rows.items():
+            if (columns[0], columns[1], columns[4]) == key:
+                return index
+        return None
+
+    def new_value(self, provider, model_id):
+        """Return a value for a new model, in the provider's style."""
         endings = collections.Counter()
         for columns in self.rows.values():
             value, base = columns[0], base_value(columns[1])
             if columns[4] == provider and value.startswith(base):
                 endings[value[len(base) :]] += 1
         endings.pop("", None)
+        suffix = f"-{provider}"
         if endings:
-            return endings.most_common(1)[0][0]
-        return f"-{provider}"
+            suffix = endings.most_common(1)[0][0]
+        return base_value(model_id) + suffix
 
     def insert_after(self, domain, provider):
         """Return the index of the line a new row goes after (-1: first)."""
@@ -226,41 +270,95 @@ class Changes:
     )
     added: list = dataclasses.field(default_factory=list)
     attention: list = dataclasses.field(default_factory=list)
+    stale: list = dataclasses.field(default_factory=list)
     held_back: dict = dataclasses.field(default_factory=dict)
+    image_held_back: dict = dataclasses.field(default_factory=dict)
     unusable: list = dataclasses.field(default_factory=list)
+    unclassified: list = dataclasses.field(default_factory=list)
 
 
-def held_back_providers(results):
-    """Return {provider: error} for providers whose every row is DEAD."""
-    by_provider = collections.defaultdict(list)
-    for entry in results:
-        by_provider[entry["provider"]].append(entry)
+def common_error(entries):
+    """Return the most frequent error message of some report entries."""
+    errors = collections.Counter(
+        (e.get("error") or "").split(": ", 1)[-1] for e in entries
+    )
+    return errors.most_common(1)[0][0]
+
+
+def image_call_failed(entry):
+    """Tell whether a row's image call was rejected (None: not made)."""
+    if entry["status"] not in ("HEALTHY", "CAPABILITY_DRIFT", "DEAD"):
+        return None
+    if entry.get("domain") == "multimodal" and entry["status"] != "DEAD":
+        return entry["status"] == "CAPABILITY_DRIFT"
+    if entry.get("domain") == "image":
+        return entry["status"] == "DEAD"
+    return None
+
+
+def held_back_providers(report):
+    """Return {provider: reason} for providers the bot must not touch."""
     held_back = {}
+    for provider, error in (report.get("listing_errors") or {}).items():
+        held_back[provider] = f"its model list could not be fetched ({error})"
+    by_provider = collections.defaultdict(list)
+    for entry in report.get("results", []):
+        by_provider[entry["provider"]].append(entry)
     for provider, entries in by_provider.items():
-        if len(entries) >= 2 and all(e["status"] == "DEAD" for e in entries):
-            errors = collections.Counter(e.get("error") for e in entries)
-            held_back[provider] = errors.most_common(1)[0][0]
+        dead = all(e["status"] == "DEAD" for e in entries)
+        if provider not in held_back and len(entries) >= 2 and dead:
+            held_back[
+                provider
+            ] = f"every row is DEAD ({common_error(entries)})"
     return held_back
 
 
-def plan_rows(results, catalogue, changes):
+def image_held_back_providers(results):
+    """Return {provider: error} for providers whose image calls all fail."""
+    by_provider = collections.defaultdict(list)
+    for entry in results:
+        failed = image_call_failed(entry)
+        if failed is not None:
+            by_provider[entry["provider"]].append((entry, failed))
+    held_back = {}
+    for provider, calls in by_provider.items():
+        if len(calls) >= 2 and all(failed for _, failed in calls):
+            held_back[provider] = common_error(e for e, _ in calls)
+    return held_back
+
+
+def plan_rows(report, catalogue, changes):
     """Record the removals and domain changes the row results call for."""
-    changes.held_back = held_back_providers(results)
+    results = report.get("results", [])
+    changes.held_back = held_back_providers(report)
+    changes.image_held_back = {
+        provider: error
+        for provider, error in image_held_back_providers(results).items()
+        if provider not in changes.held_back
+    }
     for entry in results:
         index = catalogue.find(entry)
-        if index is None or entry["provider"] in changes.held_back:
+        if index is None:
             continue
-        status = entry["status"]
-        if status in ("FAILING", "UNCONFIGURED"):
+        status, provider = entry["status"], entry["provider"]
+        if status in ("FAILING", "UNCONFIGURED", "MALFORMED"):
             changes.attention.append(entry)
+            continue
+        if status not in ("DEAD", "CAPABILITY_DRIFT"):
+            continue
+        if provider in changes.held_back:
+            continue
+        if provider in changes.image_held_back and image_call_failed(entry):
+            continue
+        columns = catalogue.rows[index]
+        if columns[3] != entry.get("domain"):
+            changes.stale.append(entry)  # changed on master since the deploy
         elif status == "DEAD":
             changes.removed[index] = entry
-        elif status == "CAPABILITY_DRIFT":
-            columns = list(catalogue.rows[index])
-            if columns[3] == "multimodal":
-                columns[3] = "text"
-                changes.replaced[index] = "\t".join(columns)
-                changes.retyped.append(entry)
+        elif columns[3] == "multimodal":
+            columns = columns[:3] + ["text"] + columns[4:]
+            changes.replaced[index] = "\t".join(columns)
+            changes.retyped.append(entry)
 
 
 def new_row(model, value):
@@ -272,6 +370,15 @@ def new_row(model, value):
     )
 
 
+def refreshed(line, model):
+    """Return the bot's row for a model, redone if nobody edited it."""
+    columns = row_columns(line)
+    if columns is None:
+        return line  # commented out: an admin's decision
+    untouched = new_row(dict(model, domain=columns[3]), columns[0])
+    return new_row(model, columns[0]) if line == untouched else line
+
+
 def unique(value, taken):
     """Return `value`, or it with -2, -3, ... appended if already taken."""
     candidate, number = value, 1
@@ -281,39 +388,70 @@ def unique(value, taken):
     return candidate
 
 
-def plan_new_models(new_models, catalogue, pr_catalogue, changes):
-    """Record the rows to add for working models the catalogue lacks."""
+def carried_rows(report, catalogue, branch_lines):
+    """Return {(provider, model id): line} for branch rows to keep."""
+    models = {(m["provider"], m["model_id"]): m for m in report["new_models"]}
+    listing_failed = set(report.get("listing_errors") or {})
+    kept = {}
+    for line in branch_lines:
+        columns = line_columns(line)
+        if columns is None:
+            continue
+        key = (columns[4], columns[1])
+        if key in catalogue.known or key in kept:
+            continue
+        model = models.get(key)
+        if line.startswith("#"):
+            kept[key] = line  # the admin decided to skip the model
+        elif model is None:
+            if key[0] in listing_failed:
+                kept[key] = line  # the model list failed this week
+        elif model["status"] == "FAILING":
+            kept[key] = line  # the model failed only this week
+        elif model["status"] == "HEALTHY":
+            kept[key] = refreshed(line, model)
+    return kept
+
+
+def plan_new_models(report, catalogue, branch_lines, changes):
+    """Record the rows to add for models the catalogue lacks."""
+    kept = carried_rows(report, catalogue, branch_lines)
     taken = set(catalogue.values)
-    carried = pr_catalogue.known if pr_catalogue else {}
-    for model in new_models:
+    taken.update(line_columns(line)[0] for line in kept.values())
+    for model in sorted(
+        report["new_models"], key=lambda m: (m["provider"], m["model_id"])
+    ):
         key = (model["provider"], model["model_id"])
-        if key in catalogue.known:
+        if key in catalogue.known or key in kept:
             continue
-        value = base_value(model["model_id"])
-        value += catalogue.suffix(model["provider"])
-        if model["status"] == "DEAD":
-            hint = "\t".join(
-                [value, model["model_id"], "not usable", "-", key[0]]
-            )
+        value = catalogue.new_value(*key)
+        if model["status"] == "HEALTHY":
+            value = unique(value, taken)
+            taken.add(value)
+            kept[key] = new_row(model, value)
+        elif model["status"] == "DEAD":
+            hint = "\t".join([value, key[1], "not usable", "-", key[0]])
             changes.unusable.append((model, f"#{hint}"))
-        if model["status"] != "HEALTHY":
-            continue
-        line = carried.get(key) or new_row(model, unique(value, taken))
-        taken.add(line.lstrip("#").split("\t")[0])
-        anchor = catalogue.insert_after(model["domain"], model["provider"])
-        changes.inserted[anchor].append(line)
-        changes.added.append((model, line))
+        else:
+            changes.unclassified.append(model)
+    models = {(m["provider"], m["model_id"]): m for m in report["new_models"]}
+    for key, line in sorted(kept.items()):
+        domain = line_columns(line)[3]
+        changes.inserted[catalogue.insert_after(domain, key[0])].append(line)
+        entry = models.get(key, {"provider": key[0], "model_id": key[1]})
+        changes.added.append((entry, line))
 
 
-def apply_report(report, loc_text, pr_loc_text=None):
-    """Return the rewritten file text and the changes behind it."""
+def apply_report(report, loc_text, branch_lines=()):
+    """Return the rewritten file text and the changes behind it.
+
+    branch_lines are the lines the bot's open branch adds to the file.
+    """
+    report = dict(report, new_models=report.get("new_models") or [])
     catalogue = Catalogue(loc_text)
-    pr_catalogue = Catalogue(pr_loc_text) if pr_loc_text else None
     changes = Changes()
-    plan_rows(report.get("results", []), catalogue, changes)
-    plan_new_models(
-        report.get("new_models", []), catalogue, pr_catalogue, changes
-    )
+    plan_rows(report, catalogue, changes)
+    plan_new_models(report, catalogue, branch_lines, changes)
     text = catalogue.render(
         changes.removed, changes.replaced, changes.inserted
     )
@@ -348,7 +486,7 @@ def load_report(path, max_age_days, now=None):
     if now - started > datetime.timedelta(days=max_age_days):
         raise BotError(
             f"{path}: the report of {started:%Y-%m-%d} is older than "
-            f"{max_age_days:g} days; is the probe still running?"
+            f"{max_age_days:g} days; did the probe run this week?"
         )
     return report
 
@@ -382,9 +520,10 @@ def pr_text(report, changes):
         out += ["Nothing in `genai_models.loc` needs to change this week.", ""]
     else:
         out += [
-            "The bot rebuilds this PR from each Monday's report. New rows "
-            "that were filled in or commented out here are kept; any other "
-            "edit on this branch is lost.",
+            "The bot rebuilds this PR from each Monday's report. Rows it "
+            "added are kept if they were filled in or commented out here, "
+            "or if their model failed only this week; any other edit on "
+            "this branch is lost.",
             "",
         ]
     if changes.removed:
@@ -411,24 +550,15 @@ def pr_text(report, changes):
             "with `#` so the bot stops proposing it.",
             "",
         ]
-        for model, line in changes.added:
-            item = f"{label(model)} as `{model['domain']}`"
+        for entry, line in changes.added:
+            item = f"{label(entry)} as `{line_columns(line)[3]}`"
             if line.startswith("#"):
                 out.append(f"- [x] {item} (commented out)")
             else:
                 done = " " if MARKER in line else "x"
                 out.append(f"- [{done}] {item}")
         out.append("")
-    if changes.attention or changes.held_back:
-        out += ["### Needs a look", "", "The bot did not change these:", ""]
-        for entry in changes.attention:
-            out.append(f"- {entry['status']} {label(entry)}: {entry['error']}")
-        for provider, error in changes.held_back.items():
-            out.append(
-                f"- Every row of `{provider}` is DEAD ({error}). That looks "
-                "like a key or proxy problem, so none was removed."
-            )
-        out.append("")
+    out += needs_a_look(changes)
     if changes.unusable:
         out += [
             "### Not usable",
@@ -451,6 +581,39 @@ def pr_text(report, changes):
     if os.environ.get("BUILD_URL"):
         out.append(f"Built by {os.environ['BUILD_URL']}")
     return "\n".join(out).rstrip() + "\n"
+
+
+def needs_a_look(changes):
+    """Return the PR text lines for what the bot left alone."""
+    out = []
+    for entry in changes.attention:
+        out.append(f"- {entry['status']} {label(entry)}: {entry['error']}")
+    for entry in changes.stale:
+        out.append(
+            f"- {label(entry)} was {entry['status']} ({entry['error']}), "
+            "but its row changed on master after the probe read it."
+        )
+    for provider, reason in changes.held_back.items():
+        out.append(
+            f"- Nothing was changed for `{provider}`: {reason}. That looks "
+            "like a key or proxy problem."
+        )
+    for provider, error in changes.image_held_back.items():
+        out.append(
+            f"- No image row of `{provider}` was changed: every image call "
+            f"was rejected ({error}). That looks like a proxy problem."
+        )
+    for model in changes.unclassified:
+        out.append(
+            f"- New model {label(model)} could not be classified this week: "
+            f"{short_error(model['error'])}"
+        )
+    if not out:
+        return []
+    return ["### Needs a look", "", "The bot did not change these:", ""] + [
+        *out,
+        "",
+    ]
 
 
 class GitHub:
@@ -502,14 +665,29 @@ def find_bot_pr(github):
     return pulls[0] if pulls else None
 
 
-def branch_file(github, branch, path):
-    """Return the text of a file on a branch, or None if it is not there."""
+def file_at(github, ref):
+    """Return genai_models.loc at a branch or commit, or None."""
     data = github.call(
-        "GET", f"/contents/{path}?ref={branch}", missing_ok=True
+        "GET", f"/contents/{LOC_PATH}?ref={ref}", missing_ok=True
     )
     if not data:
         return None
     return base64.b64decode(data["content"]).decode("utf-8")
+
+
+def bot_branch_lines(github):
+    """Return the lines the bot's branch adds to the file ([]: no branch).
+
+    Compared with the branch's merge base, so rows deleted from master since
+    the branch was built do not count as added.
+    """
+    comparison = github.call(
+        "GET", f"/compare/{BASE_BRANCH}...{BRANCH}", missing_ok=True
+    )
+    if not comparison:
+        return []
+    base = file_at(github, comparison["merge_base_commit"]["sha"])
+    return added_lines(base or "", file_at(github, BRANCH) or "")
 
 
 def branch_exists(github):
@@ -572,15 +750,18 @@ def publish(github, base_sha, text, title, body, open_pr):
     return pr["html_url"]
 
 
-def withdraw(github, open_pr):
-    """Close the bot's PR and delete its branch: nothing needs changing."""
+def withdraw(github, open_pr, body):
+    """Close the bot's PR and delete its branch: nothing needs changing.
+
+    The closing comment is the PR text, so what the report found still shows.
+    """
     if open_pr:
         number = open_pr["number"]
-        github.call(
-            "POST",
-            f"/issues/{number}/comments",
-            {"body": "The latest probe report needs no changes; closing."},
+        comment = (
+            f"{body}\nNothing in `genai_models.loc` needs to change, so the "
+            "bot closes this PR."
         )
+        github.call("POST", f"/issues/{number}/comments", {"body": comment})
         github.call("PATCH", f"/pulls/{number}", {"state": "closed"})
     if branch_exists(github):
         github.call("DELETE", f"/git/refs/heads/{BRANCH}")
@@ -591,34 +772,45 @@ def build(args, github=None):
     report = load_report(args.report, args.max_age_days)
     with open(args.loc, encoding="utf-8") as f:
         loc_text = f.read()
-    open_pr, pr_loc_text = None, None
+    open_pr, branch_lines = None, []
     if github:
         if not args.base_sha:
             raise BotError("--publish needs --base-sha or GIT_COMMIT")
         open_pr = find_bot_pr(github)
-        if open_pr:
-            pr_loc_text = branch_file(github, BRANCH, LOC_PATH)
+        branch_lines = bot_branch_lines(github)
     elif args.pr_loc:
         with open(args.pr_loc, encoding="utf-8") as f:
             pr_loc_text = f.read()
+        base_text = loc_text
+        if args.pr_base:
+            with open(args.pr_base, encoding="utf-8") as f:
+                base_text = f.read()
+        branch_lines = added_lines(base_text, pr_loc_text)
 
-    text, changes = apply_report(report, loc_text, pr_loc_text)
+    text, changes = apply_report(report, loc_text, branch_lines)
     body = pr_text(report, changes)
     with open(args.loc, "w", encoding="utf-8") as f:
         f.write(text)
     with open(args.body, "w", encoding="utf-8") as f:
         f.write(body)
+    looks = (
+        len(changes.attention)
+        + len(changes.stale)
+        + len(changes.held_back)
+        + len(changes.image_held_back)
+        + len(changes.unclassified)
+    )
     print(
         f"{len(changes.removed)} removed, {len(changes.retyped)} changed to "
-        f"text, {len(changes.added)} added, "
-        f"{len(changes.attention) + len(changes.held_back)} need a look; "
-        f"wrote {args.loc} and {args.body}"
+        f"text, {len(changes.added)} added, {looks} need a look, "
+        f"{len(changes.unusable)} not usable; wrote {args.loc} and "
+        f"{args.body}"
     )
 
     if not github:
         print("Dry run: nothing published.")
     elif text == loc_text:
-        withdraw(github, open_pr)
+        withdraw(github, open_pr, body)
         print("Nothing to change; the bot's PR is closed if it was open.")
     else:
         date = report["summary"]["started"][:10]
@@ -657,14 +849,19 @@ def parse_args(argv=None):
     )
     build_cmd.add_argument(
         "--pr-loc",
-        help="the file on the bot's branch, to keep admin edits "
+        help="dry runs: the file on the bot's branch, to keep admin edits "
         "(fetched from GitHub with --publish)",
+    )
+    build_cmd.add_argument(
+        "--pr-base",
+        help="dry runs: the master file the bot's branch started from "
+        "(default: --loc)",
     )
     build_cmd.add_argument(
         "--max-age-days",
         type=float,
-        default=8,
-        help="refuse reports older than this",
+        default=2,
+        help="refuse reports older than this (default: 2)",
     )
     build_cmd.add_argument(
         "--publish",
