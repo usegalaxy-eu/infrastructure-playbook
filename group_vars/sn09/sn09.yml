@@ -231,6 +231,8 @@ galaxy_systemd_mode: 'gunicorn'
 galaxy_systemd_gunicorns: 7
 galaxy_systemd_gunicorn_workers: 5
 galaxy_systemd_gunicorn_timeout: 600
+galaxy_systemd_gunicorn_limit_nofile: 16384
+galaxy_systemd_handlers_limit_nofile: 16384
 galaxy_systemd_handlers: 6
 galaxy_systemd_workflow_schedulers: 3
 
