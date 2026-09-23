@@ -33,15 +33,15 @@
   - type: cached_mulled_singularity
     cache_directory: /cvmfs/singularity.galaxyproject.org/all/
     cache_directory_cacher_type: dir_mtime
-{%- endmacro %}
-{% macro pulsar_cz_container_resolvers() -%}
-{{ cvmfs_container_resolvers() | indent(0, false) }}
   - type: mulled_singularity
     cache_directory: {{ cache.cache08.path }}/container_cache/singularity/mulled/
     # the `cache_directory` setting may break the resolver if
     # `singularity` is installed to sn09; in that case this
     # configuration should be revised
     auto_install: true
+{%- endmacro %}
+{% macro pulsar_cz_container_resolvers() -%}
+{{ cvmfs_container_resolvers() | indent(0, false) }}
 {%- endmacro %}
 ---
 # NOTE: Use dashes (-) exclusively for tags and underscores (_) exclusively for destinations.
