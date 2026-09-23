@@ -96,8 +96,12 @@ server {
         limit_rate_after 100m;
         limit_rate 5m;
 
-        add_header X-Clacks-Overhead 'GNU James Taylor (@jxtx) Simon Gladman (@slugger70) Jim Johnson (@jj-umn)';
+        add_header X-Clacks-Overhead 'GNU James Taylor (@jxtx) Simon Gladman (@slugger70) Jim Johnson (@jj-umn) Ross Lazarus (@fubar2)';
     }
+
+   location ~ ^/display_application/[^/]+/ucsc_bam/ {
+       return 503;
+   }
 
     # Temporarily break downloading :(
     #location /api/libraries/datasets/download/ {

@@ -22,6 +22,9 @@ traefik_cvmfs_rsync_port:
 traefik_dokku_ssh_port:
   port: 3022
   protocol: tcp
+traefik_osiris_ssh_port:
+  port: 3023
+  protocol: tcp
 
 traefik_force_validation: true
 traefik_manage_secrets: true
@@ -61,7 +64,7 @@ traefik_networks:
 traefik_containers:
   - name: traefik
     replicas: 1
-    image: traefik:v3.7.9
+    image: traefik:v3.7.13
     url: "https://traefik.{{ tailscale_domain }}/dashboard/#/"
     environment:
       AWS_SHARED_CREDENTIALS_FILE: "/run/secrets/aws_shared_credentials"
@@ -85,8 +88,7 @@ traefik_containers:
       - --entryPoints.influxdb.address=:8086
       - "--entryPoints.cvmfs-rsync.address=:{{ traefik_cvmfs_rsync_port.port }}"
       - "--entryPoints.dokku-ssh.address=:{{ traefik_dokku_ssh_port.port }}"
-      - --entryPoints.web.http.redirections.entryPoint.to=websecure
-      - --entryPoints.web.http.redirections.entryPoint.scheme=https
+      - "--entryPoints.osiris-ssh.address=:{{ traefik_osiris_ssh_port.port }}"
       - --entryPoints.metrics.address=:8082
       #- "--entryPoints.websecure.http.tls.domains[0].main={{ traefik_domain }}"
       #- --entryPoints.https.http.tls.certresolver=route53
@@ -117,7 +119,7 @@ traefik_containers:
       - --certificatesresolvers.route53.acme.caserver=https://acme-v02.api.letsencrypt.org/directory
       - "--certificatesresolvers.route53.acme.email={{ traefik_letsencrypt_mail }}"
       # Enable Logging
-      - "--log.level=INFO" # DEBUG, PANIC, FATAL, ERROR, WARN, INFO
+      - "--log.level=DEBUG" # DEBUG, PANIC, FATAL, ERROR, WARN, INFO
       - "--accesslog=true"
       - "--accesslog.filepath={{ traefik_log_dir }}/access.log"
     labels:
@@ -189,6 +191,10 @@ traefik_containers:
       - target_port: "{{ traefik_dokku_ssh_port.port }}"
         published_port: "{{ traefik_dokku_ssh_port.port }}"
         protocol: "{{ traefik_dokku_ssh_port.protocol }}"
+        mode: host
+      - target_port: "{{ traefik_osiris_ssh_port.port }}"
+        published_port: "{{ traefik_osiris_ssh_port.port }}"
+        protocol: "{{ traefik_osiris_ssh_port.protocol }}"
         mode: host
 
     secrets:

@@ -30,6 +30,7 @@
         - service: ftp  # passive ports are not managed by Traefik
         - port: "{{ traefik_cvmfs_rsync_port.port }}/{{ traefik_cvmfs_rsync_port.protocol }}"  # CVMFS rsync port
         - port: "{{ traefik_dokku_ssh_port.port }}/{{ traefik_dokku_ssh_port.protocol }}"
+        - port: "{{ traefik_osiris_ssh_port.port }}/{{ traefik_osiris_ssh_port.protocol }}"
 
     - name: Configure passive FTP port forwarding
       block:
@@ -131,7 +132,7 @@
         enable_pam_limits: true # Prevent out of control processes
         enable_install_software: true # Some extra admin tools (*top, vim, etc)
     - usegalaxy-eu.dynmotd
-    - artis3n.tailscale
+    - artis3n.tailscale.machine
     - usegalaxy_eu.traefik
     - devsec.hardening.ssh_hardening
     - devsec.hardening.os_hardening

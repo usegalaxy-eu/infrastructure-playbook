@@ -53,14 +53,25 @@
     - hxr.apollo
   post_tasks:
     - name: Restart Tomcat service if Apollo is not accessible
+      vars:
+        healthcheck_url: "http://127.0.0.1:8080/apollo/annotator/index"
       block:
+        - name: Wait for Tomcat to become accessible
+          ansible.builtin.wait_for:
+            host: "{{ healthcheck_url | urlsplit('hostname') }}"
+            port: "{{ healthcheck_url | urlsplit('port') }}"
+            timeout: 15
+
         - name: Check if Apollo is accessible
           ansible.builtin.uri:
-            url: "http://127.0.0.1:8080/apollo/annotator/index"
+            url: "{{ healthcheck_url }}"
             method: GET
             return_content: no
+            timeout: 60
+            # despite the TCP port being open, the service may not be ready
+            # yet, thus the long timeout
+          failed_when: apollo_status.status == -1
           register: apollo_status
-          ignore_errors: true
 
         - name: Restart Tomcat service
           ansible.builtin.service:

@@ -1,7 +1,7 @@
 ---
 collections:
   - name: community.general
-    version: 8.2.0
+    version: 11.4.9
     source: https://galaxy.ansible.com
   - name: amazon.aws
     version: 1.5.0
@@ -36,6 +36,8 @@ collections:
     source: https://galaxy.ansible.com
   - name: community.crypto
     version: 2.26.5
+  - name: artis3n.tailscale
+    version: 1.2.1
 
 roles:
   - name: dev-sec.os-hardening
@@ -85,7 +87,7 @@ roles:
     src: https://github.com/usegalaxy-eu/ansible-certbot
     version: 0.1.5
   - name: usegalaxy_eu.galaxy_systemd
-    version: 2.4.0
+    version: 2.5.1
   - name: usegalaxy-eu.dynmotd
     src: https://github.com/usegalaxy-eu/ansible-dynmotd
     version: 0.1.0
@@ -118,7 +120,7 @@ roles:
   - name: usegalaxy_eu.influxdbserver
     version: 2.0.0
   - name: usegalaxy_eu.flower
-    version: 2.1.1
+    version: 2.2.0
   - name: usegalaxy_eu.walle
     version: a9f33867c32a9a447f6eca636c1dafd637f160a7
     src: https://github.com/usegalaxy-eu/WallE
@@ -138,10 +140,9 @@ roles:
     version: 0.3.1
   - name: usegalaxy_eu.tpv_auto_lint
     version: 0.4.5
-  - name: artis3n.tailscale
-    version: v4.5.0
   - name: dokku_bot.ansible_dokku
-    version: v2024.4.11
+    src: https://github.com/usegalaxy-eu/ansible-dokku
+    version: cdeb3324bf17bdbfe5ba20efefce6d91c249f537
   - src: https://github.com/usegalaxy-eu/ansible-traefik
     name: usegalaxy_eu.traefik
     version: 2.0.0
@@ -177,5 +178,5 @@ roles:
     src: https://github.com/usegalaxy-eu/ansible-rocky-security-repository
     version: v0.1.0
   - name: usegalaxy_eu.ucsc_genome_browser
-    version: 11c8d39c9f3f3f93c62ce6e605cc98379c0326cf
+    version: 91f26a70678ce67f088a4a3db1454496a24564d0
     src: https://github.com/usegalaxy-eu/ansible-ucsc-genome-browser
