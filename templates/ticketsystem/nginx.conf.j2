@@ -15,7 +15,7 @@ upstream zammad-websocket {
 }
 map $http_origin $zammad_origin {
   default $http_origin;
-  ""      "https://ticketsystem.galaxyproject.eu";
+  ""      "https://{{ zammad_fqdn }}";
 }
 server {
   listen 80;
