@@ -15,11 +15,10 @@
           - python3-pip
         state: present
 
-    - name: Install python docker
+    - name: Install Python dependencies for Ansible modules
       become: true
       ansible.builtin.pip:
         name: "{{ item }}"
-        virtualenv_command: "python3 -m venv"
       loop:
         - docker
         - selinux
