@@ -1,0 +1,35 @@
+---
+- name: One-off Jenkins worker setup
+  hosts: build-workers
+  become: true
+  vars_files:
+    - secret_group_vars/jenkins.yml
+  vars:
+    miniconda_prefix: /scratch/miniconda
+    miniconda_channels:
+      - conda-forge
+  tasks:
+    - name: Add Jenkins SSH key to centos authorized_keys
+      ansible.posix.authorized_key:
+        user: centos
+        key: "{{ jenkins_ssh_key }}"
+        state: present
+      no_log: true
+
+    - name: Disable host key verification for github.com
+      ansible.builtin.copy:
+        dest: /home/centos/.ssh/config
+        mode: "0600"
+        owner: centos
+        group: centos
+        content: |
+          Host github.com
+                  CheckHostIP no
+
+    - name: Install qemu-kvm
+      ansible.builtin.package:
+        name: qemu-kvm
+        state: present
+
+  roles:
+    - galaxyproject.miniconda
