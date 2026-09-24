@@ -8,6 +8,8 @@ zammad_trusted_proxies:
   - 172.16.0.0/16
   - localhost
 docker_service_enabled: true
+docker_daemon_options:
+  data-root: /data/docker/
 software_groups_to_install:
   - admin
   - editors
