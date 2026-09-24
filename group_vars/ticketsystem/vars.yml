@@ -2,6 +2,11 @@
 hostname: "ticketsystem.bi.privat"
 zammad_compose_dir: /opt/zammad-docker-compose
 zammad_fqdn: ticketsystem.galaxyproject.eu
+zammad_postgres_db: zammad_production
+zammad_postgres_host: zammad-postgresql
+zammad_postgres_password: "{{ vault_zammad_postgres_password }}"
+zammad_postgres_port: 5432
+zammad_postgres_user: zammad
 zammad_trusted_proxies:
   - 132.230.103.37  # traefik.galaxyproject.eu
   - 127.0.0.1
