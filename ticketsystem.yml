@@ -50,9 +50,10 @@
         owner: root
         group: root
         mode: '0640'
-      register: zammad_compose_templated
+      notify: Restart Zammad
 
-    - name: Start Zammad services
+  handlers:
+    - name: Restart Zammad
       community.docker.docker_compose_v2:
         project_src: "{{ zammad_compose_dir }}"
         state: present
