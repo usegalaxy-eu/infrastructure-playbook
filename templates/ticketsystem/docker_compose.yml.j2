@@ -44,9 +44,9 @@ x-shared:
       NGINX_CLIENT_MAX_BODY_SIZE:
       NGINX_SERVER_NAME:
       NGINX_SERVER_SCHEME: "https"
-      RAILS_TRUSTED_PROXIES: "['132.230.103.37','127.0.0.1','172.16.0.0/16','localhost',]"
+      RAILS_TRUSTED_PROXIES: "{{ zammad_trusted_proxies }}"
       ZAMMAD_HTTP_TYPE:
-      ZAMMAD_FQDN: ticketsystem.bi.privat
+      ZAMMAD_FQDN: "{{ zammad_fqdn }}"
       ZAMMAD_WEB_CONCURRENCY:
       ZAMMAD_MANAGE_SESSIONS_JOBS_WORKERS:
       ZAMMAD_PROCESS_SESSIONS_JOBS_WORKERS:
@@ -129,7 +129,7 @@ services:
       - traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.tailscale.rule=Host(`ticketsystem.springhare-dinosaur.ts.net`)||Host(`ticketsystem.galaxyproject.eu`)"
+      - "traefik.http.routers.tailscale.rule=Host(`ticketsystem.{{ tailscale_domain }}`)||Host(`ticketsystem.galaxyproject.eu`)"
       - "traefik.http.routers.tailscale.entrypoints=websecure"
       - "traefik.http.routers.tailscale.tls.certresolver=ts"
       - "traefik.http.routers.tailscale.service=zammad-app"
