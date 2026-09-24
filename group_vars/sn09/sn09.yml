@@ -231,6 +231,8 @@ galaxy_systemd_mode: 'gunicorn'
 galaxy_systemd_gunicorns: 7
 galaxy_systemd_gunicorn_workers: 5
 galaxy_systemd_gunicorn_timeout: 600
+galaxy_systemd_gunicorn_limit_nofile: 16384
+galaxy_systemd_handlers_limit_nofile: 16384
 galaxy_systemd_handlers: 6
 galaxy_systemd_workflow_schedulers: 3
 
@@ -498,3 +500,5 @@ bashrc_galaxy_config_file: "{{ galaxy_config_file }}"
 bashrc_galaxy_mutable_config_dir: "{{ galaxy_mutable_config_dir }}"
 bashrc_galaxy_log_dir: "{{ galaxy_log_dir }}"
 bashrc_galaxy_pulsar_app_conf: "{{ galaxy_config_dir }}/pulsar_app.yml"
+bashrc_extra_exports:
+  - "GXADMIN_TOOL_ID_FORMAT=tool_short"

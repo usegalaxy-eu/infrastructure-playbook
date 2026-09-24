@@ -190,6 +190,20 @@ tools:
         cores: 18
         mem: 64
 
+  # safety net, it seems a few MQC versions try to cleanup directories, but fail due to NFS locks.
+  # Here we try to use a in-container /tmp dir, that should not be on any NFS
+  toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/.*:
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/ketos_.*:
+    env:
+      # use non-NFS `/tmp/` dir, required because of https://ticketsystem.galaxyproject.eu/#ticket/zoom/1572:
+      # on https://github.com/mittagessen/kraken/blob/main/kraken/lib/arrow_dataset.py#L282C1-L283C53,
+      # when leaving the `TemporaryDirectory()` context, Python tries to remove
+      # the temporary directory, yielding `OSError: [Errno 39] Directory not empty`
+      _GALAXY_JOB_TMP_DIR: /tmp
+
   toolshed.g2.bx.psu.edu/repos/iuc/gem_check_memote/gem_check_memote/.*:
     mem: 24
 
@@ -444,10 +458,16 @@ tools:
   toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_peptidedb/proteomiqon_peptidedb/.*:
     mem: 16
 
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_mzmltomzlite/proteomiqon_mzmltomzlite/.*:
+    mem: 16
+
   toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_psmstatistics/proteomiqon_psmstatistics/.*:
     mem: 16
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_psmbasedquantification/proteomiqon_psmbasedquantification/.*:
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_proteininference/proteomiqon_proteininference/.*:
     mem: 16
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/.*:
@@ -995,4 +1015,25 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/bgruening/simorgh/simorgh/.*:
     mem: 10
-    cores: 5
+    cores: 10
+    # Set the number of threads for OpenMP, MKL, and OpenBLAS
+    # if not set, torch will default to all available threads, which slows down the job
+    # Xref: https://discuss.pytorch.org/t/cpu-usage-far-too-high-and-training-inefficient/57228
+    env:
+      OMP_NUM_THREADS: 10
+      MKL_NUM_THREADS: 10
+      OPENBLAS_NUM_THREADS: 10
+      # MKL is optimized for Intel, this is a workaround to make it work for AMD CPUs
+      MKL_DEBUG_CPU_TYPE: 5
+    params:
+      docker_env_OMP_NUM_THREADS: "$OMP_NUM_THREADS"
+      docker_env_MKL_NUM_THREADS: "$MKL_NUM_THREADS"
+      docker_env_OPENBLAS_NUM_THREADS: "$OPENBLAS_NUM_THREADS"
+      docker_env_MKL_DEBUG_CPU_TYPE: "$MKL_DEBUG_CPU_TYPE"
+
+  toolshed.g2.bx.psu.edu/repos/iuc/colabfold_alphafold/colabfold_alphafold/.*:
+    mem: 60
+    cores: 16
+    params:
+      docker_run_extra_arguments: --gpus all
+    gpus: 1
