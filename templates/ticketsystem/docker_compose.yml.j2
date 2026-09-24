@@ -1,6 +1,7 @@
 ---
-# This is copied from https://github.com/zammad/zammad-docker-compose.git
-# Based on a1feeee 🏷  v15.2.0
+# Based on file from https://github.com/zammad/zammad-docker-compose.git
+# a1feeee 🏷 v15.2.0. This version drops Traefik in favor of the centralized
+# Traefik instance from our own infrastructure.
 x-shared:
   zammad-service: &zammad-service
     environment: &zammad-environment
@@ -124,19 +125,10 @@ services:
       - zammad-railsserver
     volumes:
       - "/opt/zammad-docker-compose/zammad.conf:/opt/zammad/contrib/nginx/zammad.conf"
-    networks:
-      - default
-      - traefik
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.tailscale.rule=Host(`ticketsystem.{{ tailscale_domain }}`)||Host(`ticketsystem.galaxyproject.eu`)"
-      - "traefik.http.routers.tailscale.entrypoints=websecure"
-      - "traefik.http.routers.tailscale.tls.certresolver=ts"
-      - "traefik.http.routers.tailscale.service=zammad-app"
-      - "traefik.http.routers.galaxyproject.rule=Host(`ticketsystem.galaxyproject.eu`)"
-      - "traefik.http.routers.galaxyproject.entrypoints=web"
-      - "traefik.http.routers.galaxyproject.service=zammad-app"
-      - "traefik.http.services.zammad-app.loadbalancer.server.port=${NGINX_PORT:-8080}"
+    ports:
+      # Our infrastructure's Traefik proxies to http://ticketsystem.bi.privat/
+      # (see files/traefik/rules/ticketsystem-service.yml)
+      - "80:${NGINX_PORT:-8080}"
 
   zammad-postgresql:
     environment:
@@ -165,45 +157,6 @@ services:
   zammad-websocket:
     <<: *zammad-service
     command: ["zammad-websocket"]
-
-  traefik:
-    image: traefik:v3.7.0
-    restart: ${RESTART:-always}
-    command:
-      - --ping
-      - --ping.entryPoint=websecure
-      - --api=true
-      - --api.dashboard=false
-      - --api.insecure=false
-      - --global.sendAnonymousUsage=false
-      - --global.checkNewVersion=false
-      - --entryPoints.websecure.address=:443
-      - --entryPoints.web.address=:80
-      - --entryPoints.websecure.http.tls=true
-      - --providers.docker=true
-      - --providers.docker.exposedByDefault=false
-      - --providers.docker.network=zammad-docker-compose_traefik
-      - --certificatesResolvers.ts.tailscale=true
-      - --log.level=INFO
-      - --accesslog=true
-# Test
-    labels:
-      - "traefik.enable=false"
-    ports:
-      - "443:443"
-      - "80:80"
-      - "8080:8080"
-    networks:
-      - traefik
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /var/run/tailscale:/var/run/tailscale:ro
-    security_opt:
-      - "label:type:container_runtime_t"
-
-networks:
-  traefik:
-    driver: bridge
 
 volumes:
   elasticsearch-data:
