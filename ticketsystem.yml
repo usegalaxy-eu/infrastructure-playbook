@@ -70,9 +70,9 @@
         mode: '0644'
       notify: Restart Zammad
 
-    - name: Get current Tailscale serve configuration
+    - name: Get Tailscale serve configuration
       ansible.builtin.command:
-        cmd: tailscale serve status
+        cmd: tailscale serve status --json
       register: tailscale_serve_status
       changed_when: false
       failed_when: false
@@ -80,7 +80,12 @@
     - name: Serve Zammad over Tailscale
       ansible.builtin.command:
         cmd: tailscale serve --bg --https=443 http://127.0.0.1:80
-      when: "'http://127.0.0.1:80' not in tailscale_serve_status.stdout"
+      when: >-
+        tailscale_serve_config.get('Web', {}).get(tailscale_domain ~ ':443', {})
+        .get('Handlers', {}).get('/', {}).get('Proxy') != 'http://127.0.0.1:80'
+      vars:
+        tailscale_serve_config: "{{ tailscale_serve_status.stdout | from_json
+                                    if tailscale_serve_status.stdout else {} }}"
 
   handlers:
     - name: Restart Zammad
