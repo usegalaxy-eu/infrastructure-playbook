@@ -11,6 +11,10 @@ zammad_trusted_proxies:
 docker_service_enabled: true
 docker_daemon_options:
   data-root: /data/docker/
+  log-driver: json-file
+  log-opts:
+    max-size: "10m"
+    max-file: "3"
 software_groups_to_install:
   - admin
   - editors
