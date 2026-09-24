@@ -67,7 +67,7 @@
         dest: "{{ zammad_compose_dir }}/zammad.conf"
         owner: root
         group: root
-        mode: '0640'
+        mode: '0644'
       notify: Restart Zammad
 
     - name: Get current Tailscale serve configuration
