@@ -43,10 +43,19 @@
         group: root
         mode: '0750'
 
-    - name: Template Docker Compose file
-      ansible.builtin.template:
-        src: ticketsystem/docker_compose.yml.j2
+    - name: Copy Docker Compose file
+      ansible.builtin.copy:
+        src: ticketsystem/docker_compose.yml
         dest: "{{ zammad_compose_dir }}/docker-compose.yml"
+        owner: root
+        group: root
+        mode: '0640'
+      notify: Restart Zammad
+
+    - name: Deploy environment file
+      ansible.builtin.template:
+        src: ticketsystem/env.j2
+        dest: "{{ zammad_compose_dir }}/.env"
         owner: root
         group: root
         mode: '0640'

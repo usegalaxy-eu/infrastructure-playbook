@@ -6,11 +6,11 @@ x-shared:
   zammad-service: &zammad-service
     environment: &zammad-environment
       MEMCACHE_SERVERS: ${MEMCACHE_SERVERS:-zammad-memcached:11211}
-      POSTGRESQL_DB: "{{ zammad_postgres_db }}"
-      POSTGRESQL_HOST: "{{ zammad_postgres_host }}"
-      POSTGRESQL_USER: "{{ zammad_postgres_user }}"
-      POSTGRESQL_PASS: "{{ zammad_postgres_password }}"
-      POSTGRESQL_PORT: "{{ zammad_postgres_port }}"
+      POSTGRESQL_DB: ${POSTGRES_DB:-zammad_production}
+      POSTGRESQL_HOST: ${POSTGRES_HOST:-zammad-postgresql}
+      POSTGRESQL_USER: ${POSTGRES_USER:-zammad}
+      POSTGRESQL_PASS: ${POSTGRES_PASS:-zammad}
+      POSTGRESQL_PORT: ${POSTGRES_PORT:-5432}
       POSTGRESQL_OPTIONS: ${POSTGRESQL_OPTIONS:-?pool=50}
       POSTGRESQL_DB_CREATE:
 
@@ -45,9 +45,9 @@ x-shared:
       NGINX_CLIENT_MAX_BODY_SIZE:
       NGINX_SERVER_NAME:
       NGINX_SERVER_SCHEME: "https"
-      RAILS_TRUSTED_PROXIES: "{{ zammad_trusted_proxies }}"
+      RAILS_TRUSTED_PROXIES:
       ZAMMAD_HTTP_TYPE:
-      ZAMMAD_FQDN: "{{ zammad_fqdn }}"
+      ZAMMAD_FQDN:
       ZAMMAD_WEB_CONCURRENCY:
       ZAMMAD_MANAGE_SESSIONS_JOBS_WORKERS:
       ZAMMAD_PROCESS_SESSIONS_JOBS_WORKERS:
@@ -132,9 +132,9 @@ services:
 
   zammad-postgresql:
     environment:
-      POSTGRES_DB: "{{ zammad_postgres_db }}"
-      POSTGRES_USER: "{{ zammad_postgres_user }}"
-      POSTGRES_PASSWORD: "{{ zammad_postgres_password }}"
+      POSTGRES_DB: ${POSTGRES_DB:-zammad_production}
+      POSTGRES_USER: ${POSTGRES_USER:-zammad}
+      POSTGRES_PASSWORD: ${POSTGRES_PASS:-zammad}
     image: postgres:${POSTGRES_VERSION:-17.9-alpine}
     restart: ${RESTART:-always}
     volumes:
