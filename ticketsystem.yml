@@ -61,6 +61,18 @@
         mode: '0640'
       notify: Restart Zammad
 
+    - name: Get current Tailscale serve configuration
+      ansible.builtin.command:
+        cmd: tailscale serve status
+      register: tailscale_serve_status
+      changed_when: false
+      failed_when: false
+
+    - name: Serve Zammad over Tailscale
+      ansible.builtin.command:
+        cmd: tailscale serve --bg --https=443 http://127.0.0.1:80
+      when: "'http://127.0.0.1:80' not in tailscale_serve_status.stdout"
+
   handlers:
     - name: Restart Zammad
       community.docker.docker_compose_v2:
