@@ -123,7 +123,7 @@ services:
     depends_on:
       - zammad-railsserver
     volumes:
-      - "/opt/zammad-docker-compose/zammad.conf.fix:/opt/zammad/contrib/nginx/zammad.conf"
+      - "/opt/zammad-docker-compose/zammad.conf:/opt/zammad/contrib/nginx/zammad.conf"
     networks:
       - default
       - traefik

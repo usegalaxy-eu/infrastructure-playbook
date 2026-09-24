@@ -52,6 +52,15 @@
         mode: '0640'
       notify: Restart Zammad
 
+    - name: Copy nginx configuration
+      ansible.builtin.copy:
+        src: ticketsystem/nginx.conf
+        dest: "{{ zammad_compose_dir }}/zammad.conf"
+        owner: root
+        group: root
+        mode: '0640'
+      notify: Restart Zammad
+
   handlers:
     - name: Restart Zammad
       community.docker.docker_compose_v2:
