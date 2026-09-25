@@ -18,23 +18,16 @@
             'java-21-openjdk-devel',
             'rsync',
             'firewalld',
+            'qemu-kvm-core',  # qemu-kvm instead if it does not work to build images
           ]
+        state: present
       become: true
-
-    - name: Make Scratch directory for miniconda
-      file:
-        path: {{ miniconda_prefix }}
-        state: directory
-        owner: centos
-        group: centos
-        mode: "0755"
 
     - name: Add Jenkins SSH key to centos authorized_keys
       ansible.posix.authorized_key:
         user: centos
-        key: "{{ ssh_manager_authorized_persons.jenkins.key }}"
+        key: "{{ ssh_manager_authorized_persons.jenkins.key | join('\n') }}"
         state: present
-      no_log: true
 
     - name: Disable host key verification for github.com
       ansible.builtin.copy:
@@ -45,11 +38,6 @@
         content: |
           Host github.com
                   CheckHostIP no
-
-    - name: Install qemu-kvm
-      ansible.builtin.package:
-        name: qemu-kvm
-        state: present
 
   roles:
     - galaxyproject.miniconda
