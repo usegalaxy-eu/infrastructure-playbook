@@ -47,11 +47,13 @@
       ansible.builtin.command: "ssh-keyscan -t ed25519 {{ item }}"
       loop: "{{ groups['all'] }}"
       delegate_to: localhost
+      become: false
       register: keyscan_results
       changed_when: false
       failed_when: false
 
     - name: Add scanned keys to worker known_hosts
+      become: true
       ansible.builtin.known_hosts:
         name: "{{ item.item }}"
         key: "{{ item.stdout }}"
