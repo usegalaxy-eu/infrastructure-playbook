@@ -212,7 +212,7 @@ nginx_rate_limit_dry_run: true
 # Proxies whose X-Forwarded-For we trust for the real client IP. Only list
 # proxies here, otherwise clients can spoof their own rate limit key.
 nginx_rate_limit_real_ip_from:
-  - 132.230.103.0/24 # traefik public (132.230.103.37)
+  - 132.230.103.37/32 # traefik public
   - 100.91.215.93/32 # traefik tailscale
 # Networks that are never rate limited (internal, monitoring, pulsar relay).
 nginx_rate_limit_exempt_networks:
