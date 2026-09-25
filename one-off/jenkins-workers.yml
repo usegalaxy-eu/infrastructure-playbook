@@ -29,6 +29,15 @@
         key: "{{ ssh_manager_authorized_persons.jenkins.key | join('\n') }}"
         state: present
 
+    - name: Install Worker private key
+      ansible.builtin.copy:
+        dest: /home/centos/.ssh/id_rsa
+        content: "???????????????"
+        mode: "0600"
+        owner: centos
+        group: centos
+      no_log: true
+
     - name: Disable host key verification for github.com
       ansible.builtin.copy:
         dest: /home/centos/.ssh/config
@@ -60,3 +69,6 @@
         path: /etc/ssh/ssh_known_hosts
       loop: "{{ keyscan_results.results }}"
       when: item.stdout is defined and item.rc == 0
+
+    - name: Scan github.com host key
+      ansible.builtin.command: ssh-keyscan -t ed25519 github.com >> /etc/ssh/ssh_known_hosts
