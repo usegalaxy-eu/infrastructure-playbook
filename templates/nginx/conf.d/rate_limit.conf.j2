@@ -1,0 +1,80 @@
+##
+## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
+##
+
+# Chained maps for rate limiting:
+# 1. First check if path should be exempted (tusd, job_files)
+# 2. Then use session cookie if present, otherwise IP address
+# 3. Finally prefer API key if present, otherwise use result from step 2
+
+{% for ip in nginx_rate_limit_real_ip_from | default([]) %}
+set_real_ip_from {{ ip }};
+{% endfor %}
+real_ip_header   X-Forwarded-For;
+real_ip_recursive on;
+
+# 1. The API key, when sent in the X-API-Key header.
+map $http_x_api_key $rate_limit_key_api {
+    default $http_x_api_key;
+    ''      '';
+}
+
+# 2. Otherwise the galaxysession cookie.
+map $rate_limit_key_api $rate_limit_key_api_or_session {
+    default $rate_limit_key_api;
+    ''      $cookie_galaxysession;
+}
+
+# 3. Otherwise the client IP.
+map $rate_limit_key_api_or_session $rate_limit_key_keyed {
+    default $rate_limit_key_api_or_session;
+    ''      $binary_remote_addr;
+}
+
+
+# Exempt paths from rate limiting (tusd, nginx upload module, job files).
+map $request_uri $rate_limit_path_exempt {
+    default                        '';
+    ~^/api/upload/resumable_upload 'exempt';
+    ~^/api/job_files               'exempt';
+    ~^/_job_files                  'exempt';
+    ~^/api/jobs/[^/]+/files        'exempt';
+    ~^/_upload                     'exempt';
+}
+
+# Networks that are never rate limited (internal, monitoring, pulsar relay).
+geo $rate_limit_network_exempt {
+    default 0;
+{% for network in nginx_rate_limit_exempt_networks | default([]) %}
+    {{ network }} 1;
+{% endfor %}
+}
+
+# Blank the key for exempt paths and/or exempt networks. The lookup string is
+# the path exemption concatenated with the network flag: '', '0', '1',
+# 'exempt0' or 'exempt1'.
+map $rate_limit_path_exempt$rate_limit_network_exempt $rate_limit_key {
+    default   $rate_limit_key_keyed;
+    '1'       '';
+    'exempt0' '';
+    'exempt1' '';
+}
+
+# All matching crawlers share a single bucket, so a misbehaving bot cannot
+# get a fresh allowance by rotating API keys, cookies or IPs. Keep the list
+# in sync with files/galaxy/config/robots.txt.
+map $http_user_agent $rate_limit_crawler {
+    default '';
+    '~*{{ nginx_crawler_user_agents }}' 'crawler';
+}
+
+# Rate Limit Zones
+limit_req_zone $rate_limit_key zone=relaxed:10m rate={{ nginx_rate_limit_relaxed_rate | default('8r/s') }};
+limit_req_zone $rate_limit_key zone=strict:10m rate={{ nginx_rate_limit_strict_rate | default('4r/s') }};
+limit_req_zone $rate_limit_crawler zone=crawler:10m rate={{ nginx_rate_limit_crawler_rate | default('1r/s') }};
+
+{% if nginx_rate_limit_dry_run | default(true) | bool %}
+# Log excess requests without rejecting them (nginx >= 1.17.1), for tuning
+# rate and burst against real traffic before enforcing.
+limit_req_dry_run on;
+{% endif %}
