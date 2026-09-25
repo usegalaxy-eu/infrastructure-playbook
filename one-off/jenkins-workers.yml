@@ -38,7 +38,23 @@
         content: |
           Host github.com
                   CheckHostIP no
-
   roles:
     - galaxyproject.miniconda
     - geerlingguy.docker
+
+  post_tasks:
+    - name: Scan host keys for inventory hosts
+      ansible.builtin.command: "ssh-keyscan -t ed25519 {{ item }}"
+      loop: "{{ groups['all'] }}"
+      delegate_to: localhost
+      register: keyscan_results
+      changed_when: false
+      failed_when: false
+
+    - name: Add scanned keys to worker known_hosts
+      ansible.builtin.known_hosts:
+        name: "{{ item.item }}"
+        key: "{{ item.stdout }}"
+        path: /etc/ssh/ssh_known_hosts
+      loop: "{{ keyscan_results.results }}"
+      when: item.stdout is defined and item.rc == 0
