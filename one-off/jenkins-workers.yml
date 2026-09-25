@@ -8,7 +8,17 @@
     miniconda_prefix: /scratch/miniconda
     miniconda_channels:
       - conda-forge
-  tasks:
+  pre_tasks:
+    - name: Install Dependencies
+      package:
+        name:
+          [
+            'git',
+            'rsync',
+            'firewalld',
+          ]
+      become: true
+
     - name: Add Jenkins SSH key to centos authorized_keys
       ansible.posix.authorized_key:
         user: centos
@@ -33,3 +43,4 @@
 
   roles:
     - galaxyproject.miniconda
+    - geerlingguy.docker
