@@ -1,28 +1,19 @@
-# Rate limiting, adapted from usegalaxy.org's conf.d/rate_limit.conf
-# (galaxyproject/infrastructure-playbook). The limits themselves are applied
-# in templates/nginx/galaxy-main.j2.
-#
-# Requests are keyed on (in order of precedence):
-#   1. the X-API-Key header, if present
-#   2. the galaxysession cookie
-#   3. the client IP
-# so that many users behind one NAT (a classroom or an institute) each get
-# their own bucket, and one heavy user cannot use up everyone's allowance.
-#
-# The key is blanked (and the request therefore not limited at all) for
-# exempt paths and exempt networks, see the maps below.
+##
+## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
+##
 
-# Traefik terminates TLS in front of this nginx, so without real_ip every
-# request would share a single bucket keyed on Traefik's address. Only list
-# proxies here, otherwise clients can spoof their own rate limit key.
+# Chained maps for rate limiting:
+# 1. First check if path should be exempted (tusd, job_files)
+# 2. Then use session cookie if present, otherwise IP address
+# 3. Finally prefer API key if present, otherwise use result from step 2
+
 {% for ip in nginx_rate_limit_real_ip_from | default([]) %}
 set_real_ip_from {{ ip }};
 {% endfor %}
 real_ip_header   X-Forwarded-For;
 real_ip_recursive on;
 
-# 1. The API key, when sent in the X-API-Key header (as BioBlend and the
-#    client do). Requests using ?key= fall through to the cookie or IP.
+# 1. The API key, when sent in the X-API-Key header.
 map $http_x_api_key $rate_limit_key_api {
     default $http_x_api_key;
     ''      '';
@@ -40,9 +31,8 @@ map $rate_limit_key_api_or_session $rate_limit_key_keyed {
     ''      $binary_remote_addr;
 }
 
-# Paths that carry bulk data transfers and must not be limited. EU uses the
-# nginx upload module, so the _-prefixed paths and their rewrite targets are
-# exempt in addition to the tusd endpoint.
+
+# Exempt paths from rate limiting (tusd, nginx upload module, job files).
 map $request_uri $rate_limit_path_exempt {
     default                        '';
     ~^/api/upload/resumable_upload 'exempt';
@@ -78,9 +68,7 @@ map $http_user_agent $rate_limit_crawler {
     '~*{{ nginx_crawler_user_agents }}' 'crawler';
 }
 
-# An empty key means the request is not counted in that zone, so the relaxed
-# and strict zones only apply to regular clients and the crawler zone only
-# applies to matching user agents.
+# Rate Limit Zones
 limit_req_zone $rate_limit_key zone=relaxed:10m rate={{ nginx_rate_limit_relaxed_rate | default('8r/s') }};
 limit_req_zone $rate_limit_key zone=strict:10m rate={{ nginx_rate_limit_strict_rate | default('4r/s') }};
 limit_req_zone $rate_limit_crawler zone=crawler:10m rate={{ nginx_rate_limit_crawler_rate | default('1r/s') }};
