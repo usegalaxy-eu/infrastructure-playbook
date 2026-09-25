@@ -14,10 +14,20 @@
         name:
           [
             'git',
+            'java-21-openjdk',
+            'java-21-openjdk-devel',
             'rsync',
             'firewalld',
           ]
       become: true
+
+    - name: Make Scratch directory for miniconda
+      file:
+        path: {{ miniconda_prefix }}
+        state: directory
+        owner: centos
+        group: centos
+        mode: "0755"
 
     - name: Add Jenkins SSH key to centos authorized_keys
       ansible.posix.authorized_key:
