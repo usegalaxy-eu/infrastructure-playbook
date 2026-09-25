@@ -200,6 +200,28 @@ nginx_enable_default_server: false
 nginx_flavor: ''
 nginx_cache_dir: /var/cache/nginx
 
+# Rate limiting. Zones and maps are defined in
+# templates/nginx/conf.d/rate_limit.conf.j2, the limits are applied in
+# templates/nginx/galaxy-main.j2. Adapted from usegalaxy.org's
+# conf.d/rate_limit.conf.
+nginx_extra_configs:
+  - conf.d/rate_limit.conf
+# Start in dry run mode: excess requests are logged but not rejected. Set to
+# false after tuning rate and burst against real traffic.
+nginx_rate_limit_dry_run: true
+# Proxies whose X-Forwarded-For we trust for the real client IP. Only list
+# proxies here, otherwise clients can spoof their own rate limit key.
+nginx_rate_limit_real_ip_from:
+  - 132.230.103.0/24 # traefik public (132.230.103.37)
+  - 100.91.215.93/32 # traefik tailscale
+# Networks that are never rate limited (internal, monitoring, pulsar relay).
+nginx_rate_limit_exempt_networks:
+  - 10.4.68.0/24 # sn09 subnet incl. pulsar-relay.bi.privat
+# User agents pushed into the shared "crawler" zone (1 r/s). Keep in sync
+# with the AI/crawler list in files/galaxy/config/robots.txt.
+nginx_crawler_user_agents: >-
+  (GPTBot|ClaudeBot|Claude-SearchBot|CCBot|Google-Extended|Applebot-Extended|Facebookbot|Meta-ExternalAgent|Meta-ExternalFetcher|diffbot|PerplexityBot|Omgili|webzio-extended|ImagesiftBot|Bytespider|TikTokSpider|Amazonbot|Youbot|SemrushBot|Petalbot|VelenPublicWebCrawler|TurnitinBot|Timpibot|OAI-SearchBot|ICC-Crawler|AI2Bot|DataForSeoBot|AwarioBot|Google-CloudVertexBot|PanguBot|Kangaroo Bot|Sentibot|img2dataset|Meltwater|Seekr|peer39_crawler|cohere-ai|cohere-training-data-crawler|DuckAssistBot|Scrapy|Cotoyogi|aiHitBot|Factset_spyderbot|FirecrawlAgent|bedrockbot|DeepSeekBot|Google-Firebase|AddSearchBot|bigsur\.ai|Brightbot|Crawlspace|EchoboxBot|FriendlyCrawler|LinerBot|Panscient|Poseidon Research Crawler|SBIntuitionsBot|TerraCotta|Thinkbot|Yak|YandexAdditional)
+
 # Nginx Letsencrypt bindings
 nginx_ssl_role: usegalaxy-eu.certbot
 nginx_conf_ssl_certificate: /etc/ssl/certs/fullchain.pem

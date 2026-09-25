@@ -64,6 +64,14 @@ server {
     #client_body_temp_path  /data/dnb01/nginx_upload_store/;
     client_body_buffer_size 1024m;
 
+    # Rate limiting (zones and maps in conf.d/rate_limit.conf). Requests are
+    # keyed on API key, then galaxysession cookie, then client IP. A location
+    # that defines its own limit_req does not inherit these, which is why the
+    # /api/ location below repeats the crawler zone.
+    limit_req zone=crawler burst=10 nodelay;
+    limit_req zone=relaxed burst=50 nodelay;
+    limit_req_status 429;
+
     # Long-lived Server-Sent Events stream.
     # Galaxy sends ``X-Accel-Buffering: no`` on the response, which
     # disables nginx response buffering just for this endpoint.
@@ -97,6 +105,20 @@ server {
         limit_rate 5m;
 
         add_header X-Clacks-Overhead 'GNU James Taylor (@jxtx) Simon Gladman (@slugger70) Jim Johnson (@jj-umn) Ross Lazarus (@fubar2)';
+    }
+
+    # The API gets a stricter limit than the rest of the server. Exempt paths
+    # (uploads, Pulsar job files) are handled by blanking the rate limit key
+    # in conf.d/rate_limit.conf. The regex locations for
+    # /api/dataset_collections/.../download below take precedence over this
+    # prefix location and inherit the server-level limits.
+    location /api/ {
+        limit_req zone=crawler burst=10 nodelay;
+        limit_req zone=strict burst=50 nodelay;
+        limit_req_status 429;
+
+        {{ upstream_galaxy() | indent(8, false) }}
+        proxy_set_header Connection         $connection_upgrade;
     }
 
    location ~ ^/display_application/[^/]+/ucsc_bam/ {
