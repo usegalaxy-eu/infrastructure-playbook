@@ -12,7 +12,7 @@
     - name: Add Jenkins SSH key to centos authorized_keys
       ansible.posix.authorized_key:
         user: centos
-        key: "{{ jenkins_ssh_key }}"
+        key: "{{ ssh_manager_authorized_persons.jenkins.key }}"
         state: present
       no_log: true
 
