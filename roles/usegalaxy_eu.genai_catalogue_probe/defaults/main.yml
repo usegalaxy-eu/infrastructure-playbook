@@ -1,0 +1,43 @@
+---
+# defaults for usegalaxy_eu.genai_catalogue_probe
+# Background: https://github.com/usegalaxy-eu/infrastructure-playbook/issues/2351
+
+# Enable or disable the probe role
+genai_catalogue_probe_enabled: true
+
+# User under which the script runs
+genai_catalogue_probe_user: "{{ galaxy_user.name | default('galaxy') }}"
+
+# Cron schedule (defaults to weekly on Mondays at 05:00, host time)
+genai_catalogue_probe_cron_minute: "0"
+genai_catalogue_probe_cron_hour: "5"
+genai_catalogue_probe_cron_weekday: "1"
+
+# Inputs, as deployed by sn09.yml. maintenance reads them over NFS: the
+# galaxy-sync share (gxkey) is mounted at galaxy_root, /data/db via data.
+genai_catalogue_probe_loc_file: "{{ galaxy_root | default('/opt/galaxy') }}/tool-data/genai_models.loc"
+# This config holds the production keys. Probe requests carry the OpenAI
+# `user` field "genai-catalogue-probe", so they can be told apart in per-user
+# metering; point this at a copy with a dedicated key to separate them fully.
+genai_catalogue_probe_config_file: "/data/db/models/config/litellm_config.yml"
+
+genai_catalogue_probe_script_dest: "/usr/local/bin/genai_catalogue_probe.py"
+
+# The console output of every run is appended to the log; the JSON report
+# holds the last run only
+genai_catalogue_probe_log_dir: "/var/log/genai_catalogue_probe"
+genai_catalogue_probe_log_dest: "{{ genai_catalogue_probe_log_dir }}/probe.log"
+genai_catalogue_probe_report_dest: "{{ genai_catalogue_probe_log_dir }}/report.json"
+
+# ntfy topic URL, from the vault (same topic as usegalaxy_eu.ntfy-notifications).
+# Alerts go out when a row is broken or the probe fails to run; empty disables them.
+genai_catalogue_probe_ntfy_url: "{{ NTFY_GALAXY_EU_URL | default('') }}"
+# Also send an alert when every row is healthy
+genai_catalogue_probe_notify_always: false
+
+# Execution limits
+genai_catalogue_probe_concurrency: 6
+# Seconds to wait for a response (for chat, the first streamed chunk)
+genai_catalogue_probe_timeout: 60
+# Tries per call on timeouts, connection errors, 408, 429 and 5xx
+genai_catalogue_probe_attempts: 3
