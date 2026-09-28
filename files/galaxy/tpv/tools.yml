@@ -719,21 +719,27 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_cluster_reduce_dimension/scanpy_cluster_reduce_dimension/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_filter/scanpy_filter/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_inspect/scanpy_inspect/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_normalize/scanpy_normalize/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_remove_confounders/scanpy_remove_confounders/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_plot/scanpy_plot/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   # Also on add_to_tpv_shared_db.yml but without NUMBA_CACHE_DIR
   toolshed.g2.bx.psu.edu/repos/iuc/gemini_inheritance/gemini_inheritance/.*:
@@ -990,7 +996,7 @@ tools:
     cores: 4
 
   toolshed.g2.bx.psu.edu/repos/iuc/celltypist/celltypist/.*:
-    mem: 8
+    mem: 16
     cores: 4
     rules:
       - id: celltypist_train
@@ -1007,10 +1013,10 @@ tools:
         mem: 20
 
   toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_operation/spatialdata_operation/.*:
-    mem: 10
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_io/spatialdata_io/.*:
-    mem: 10
+    mem: 16
     cores: 5
 
   toolshed.g2.bx.psu.edu/repos/bgruening/simorgh/simorgh/.*:
