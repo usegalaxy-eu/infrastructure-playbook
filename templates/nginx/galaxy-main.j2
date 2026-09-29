@@ -65,9 +65,8 @@ server {
     client_body_buffer_size 1024m;
 
     # Rate limiting (zones and maps in conf.d/rate_limit.conf). Requests are
-    # keyed on API key, then galaxysession cookie, then client IP. A location
-    # that defines its own limit_req does not inherit these, which is why the
-    # /api/ location below repeats the crawler zone.
+    # keyed on API key, then `galaxysession` cookie, then client IP. Locations
+    # defining their own `limit_req` do not inherit these.
     limit_req zone=crawler burst=10 nodelay;
     limit_req zone=relaxed burst=50 nodelay;
     limit_req_status 429;
