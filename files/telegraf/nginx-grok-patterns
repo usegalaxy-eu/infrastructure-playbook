@@ -1,0 +1,5 @@
+# Grok patterns for the nginx rate limit tail input in
+# group_vars/sn09/sn09.yml (telegraf_plugins_extra: nginx_rate_limit).
+
+NGINX_TS %{YEAR}/%{MONTHNUM}/%{MONTHDAY} %{TIME}
+NGINX_LIMIT_REQ %{NGINX_TS:ts:ts-"2006/01/02 15:04:05"} \[%{LOGLEVEL:level}\] %{POSINT:pid}#%{POSINT:tid}: \*%{POSINT:conn} limiting requests, (dry run, )?excess: %{NUMBER:excess:float} by zone "%{DATA:zone:tag}", client: %{IPORHOST:client:tag}, server: %{DATA:server}, request: "%{WORD:method} %{URIPATHPARAM:req_path:tag} HTTP/%{NUMBER:httpver}", host: "%{DATA:host}"

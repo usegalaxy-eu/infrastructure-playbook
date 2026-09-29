@@ -94,6 +94,31 @@ telegraf_plugins_extra:
       - data_format = "influx"
       - interval = "15s"
 
+  # Parse nginx rate limit hits
+  nginx_rate_limit:
+    plugin: 'tail'
+    config:
+      - files = ["/var/log/nginx/error.log"]
+      - from_beginning = false
+      - data_format = "grok"
+      - name_override = "nginx_rate_limit"
+      - grok_patterns = ["%{NGINX_LIMIT_REQ}"]
+      - grok_custom_pattern_files = ["/etc/telegraf/nginx-grok-patterns"]
+
+# Normalise high-cardinality path IDs in nginx_rate_limit metrics
+telegraf_processors:
+  - processor: regex
+    config:
+      - namepass = ["nginx_rate_limit"]
+      - '[[processors.regex.tags]]'
+      - '  key = "req_path"'
+      - '  pattern = "[0-9a-fA-F]{16,}"'
+      - '  replacement = "ID"'
+      - '[[processors.regex.tags]]'
+      - '  key = "req_path"'
+      - '  pattern = "\\?.*"'
+      - '  replacement = ""'
+
 # Custom pip installer
 pip_venv_path: '{{ galaxy_venv_dir }}'
 pip_install_dependencies:
