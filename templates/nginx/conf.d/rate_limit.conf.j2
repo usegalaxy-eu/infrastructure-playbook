@@ -74,7 +74,7 @@ limit_req_zone $rate_limit_key zone=strict:10m rate={{ nginx_rate_limit_strict_r
 limit_req_zone $rate_limit_crawler zone=crawler:10m rate={{ nginx_rate_limit_crawler_rate | default('1r/s') }};
 
 {% if nginx_rate_limit_dry_run | default(true) | bool %}
-# Log excess requests without rejecting them (nginx >= 1.17.1), for tuning
-# rate and burst against real traffic before enforcing.
+# Log excess requests without rejecting them for fine-tuning
+# against real traffic before enforcing.
 limit_req_dry_run on;
 {% endif %}
