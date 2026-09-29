@@ -92,6 +92,7 @@
             'rsyslog',
             'rsyslog-gnutls',
             'byobu',
+            'acl',
           ]
         state: present
 
@@ -179,25 +180,24 @@
         - 'telegraf'
         - 'stats' # special account to retrieve statistics from the server in read-only mode
 
-    - name: Check nginx error log permissions
-      ansible.builtin.stat:
-        path: /var/log/nginx/error.log
-      register: __nginx_error_log
-
-    # The rate limit tail input reads the error log. If it is not world
-    # readable, grant the telegraf user access through the file's group.
+    # Grant read access via a POSIX ACL on the current file, and a default
+    # ACL on the directory so the file nginx recreates at logrotate stays readable.
     - name: Allow telegraf to read the nginx error log
-      ansible.builtin.user:
-        name: '{{ telegraf_user.name }}'
-        groups: '{{ __nginx_error_log.stat.gr_name }}'
-        append: true
-      when:
-        - __nginx_error_log.stat.exists
-        - __nginx_error_log.stat.gr_name != 'root'
-        - __nginx_error_log.stat.mode[-1:] not in ['4', '5', '6', '7']
+      ansible.posix.acl:
+        path: /var/log/nginx/error.log
+        entity: '{{ telegraf_user.name }}'
+        etype: user
+        permissions: r
+        state: present
       register: __telegraf_log_access
 
-    - name: Restart telegraf to pick up the new group membership
+    - name: Ensure recreated nginx log files stay readable by telegraf
+      ansible.posix.acl:
+        path: /var/log/nginx
+        entry: 'd:u:{{ telegraf_user.name }}:r'
+        state: present
+
+    - name: Restart telegraf to pick up the error log access
       ansible.builtin.systemd:
         name: telegraf
         state: restarted
