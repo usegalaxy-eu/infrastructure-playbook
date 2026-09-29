@@ -172,7 +172,7 @@ tools:
             - embedded-pulsar
 
       - id: remote_resources
-        if: not (dry_run_mode := job_wrapper is None) and (user is not None and not (tool.tool_type in ["expression", "data_source"] or tool.requires_galaxy_python_environment))
+        if: not (dry_run_mode := job_wrapper is None) and (user is not None and not (tool.tool_type in ["data_source"] or tool.requires_galaxy_python_environment))
         # `job_wrapper is None` occurs when TPV is launched in dry-run mode
         execute: |
           from tpv.core.entities import SchedulingTags, Tag, TagType
@@ -203,7 +203,7 @@ tools:
         fail: |
           Invalid 'Remote resources id' selected in the config menu under 'User -> Preferences -> Manage Information -> Use distributed compute resources'. Please reselect either 'default' or an appropriate remote resource then click 'Save' and rerun your job.
       - id: tool_requires_galaxy
-        if: not (dry_run_mode := job_wrapper is None) and (tool.tool_type in ["expression", "data_source"] or tool.requires_galaxy_python_environment)
+        if: not (dry_run_mode := job_wrapper is None) and (tool.tool_type in ["data_source"] or tool.requires_galaxy_python_environment)
         # `job_wrapper is None` occurs when TPV is launched in dry-run mode
         # ORG has a more fine-grained alternative, we just run all those tools locally with the venv
         # params:
