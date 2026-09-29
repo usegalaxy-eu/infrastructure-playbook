@@ -106,20 +106,19 @@ server {
         add_header X-Clacks-Overhead 'GNU James Taylor (@jxtx) Simon Gladman (@slugger70) Jim Johnson (@jj-umn) Ross Lazarus (@fubar2)';
     }
 
-    # The API gets a stricter limit than the rest of the server. Exempt paths
-    # (uploads, Pulsar job files) are handled by blanking the rate limit key
-    # in conf.d/rate_limit.conf. The regex locations for
-    # /api/dataset_collections/.../download below take precedence over this
-    # prefix location and inherit the server-level limits.
     location /api/ {
+        # stricter rate limit than the rest of the server; some paths exempt
+        # (e.g. uploads, Pulsar job files), see conf.d/rate_limit.conf
         limit_req zone=crawler burst=10 nodelay;
         limit_req zone=strict burst=50 nodelay;
         limit_req_status 429;
 
         {{ upstream_galaxy() | indent(8, false) }}
         proxy_set_header Connection         $connection_upgrade;
-    }
 
+        # regex locations for `/api/...` below take precedence over this
+        # location and inherit the server-level limits
+    }
    location ~ ^/display_application/[^/]+/ucsc_bam/ {
        return 503;
    }
