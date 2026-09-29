@@ -54,7 +54,7 @@ geo $rate_limit_network_exempt {
 # the path exemption concatenated with the network flag: '', '0', '1',
 # 'exempt0' or 'exempt1'.
 map $rate_limit_path_exempt$rate_limit_network_exempt $rate_limit_key {
-    default   $rate_limit_key_keyed;
+    default   $rate_limit_key_api_or_session_or_ip;
     '1'       '';
     'exempt0' '';
     'exempt1' '';
