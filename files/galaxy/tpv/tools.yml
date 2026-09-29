@@ -12,25 +12,6 @@ tools:
           param_dict.get('__job_resource', {}).get('__job_resource__select') == 'yes'
         gpus: int(job.get_param_values(app)['__job_resource']['gpu'])
 
-  _basic_internal_tool:
-    abstract: true
-    rules:
-      - id: no-pulsar
-        if: user is not None
-        execute: |
-            user_preferences = user.extra_preferences
-            pulsar_tag = user_preferences.get("distributed_compute|remote_resources", "None")
-
-            if pulsar_tag != "None":
-                entity.tpv_tags.require = [
-                    tag
-                    for tag in (entity.tpv_tags.require or [])
-                    if tag != pulsar_tag
-                ]
-    scheduling:
-      require:
-        - internal
-
   _basic_docker_tool:
     abstract: true
     params:
@@ -81,40 +62,28 @@ tools:
           - docker
           - embedded-pulsar
 
-  __.*__:
-    inherits: _basic_internal_tool
-
-  param_value_from_file:
-    inherits: _basic_internal_tool
-
-  upload1:
-    inherits: _basic_internal_tool
-
-  ucsc_table_direct1:
-    inherits: _basic_internal_tool
-
   # example for overwriting the OOM memory multiplier for a specific tool
   # toolshed.g2.bx.psu.edu/repos/example_owner/example_tool/example_tool/.*:
   #   context:
   #     OOM_SCALING_FACTOR: 3
 
-  toolshed.g2.bx.psu.edu/repos/iuc/compose_text_param/compose_text_param/.*:
-    inherits: _basic_internal_tool
-
   export_remote:
-    inherits: _basic_internal_tool
     # a user exported 100 of files and memory was not enough
     mem: 8
 
+  CONVERTER_gff_to_bed_0:
+    # It's an "internal" tool (requires access to Galaxy code), but it is not
+    # part of `GALAXY_LIB_TOOLS_UNVERSIONED` in lib/galaxy/tools/__init__.py.
+    # Therefore, needs to be explicitly marked as internal.
+    scheduling:
+      require:
+        - internal
+
   __DATA_FETCH__:
-    inherits: _basic_internal_tool
     cores: 1
     mem: 3
     env:
       TEMP: /data/misc06/tmp
-
-  CONVERTER_gff_to_bed_0:
-    inherits: _basic_internal_tool
 
   toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/*:
     env:
