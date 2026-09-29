@@ -68,7 +68,7 @@ map $rate_limit_path_exempt$rate_limit_network_exempt $rate_limit_key {
 # in sync with files/galaxy/config/robots.txt.
 map $http_user_agent $rate_limit_crawler {
     default '';
-    '~*{{ nginx_crawler_user_agents }}' 'crawler';
+    '~*{{ nginx_rate_limit_crawler_user_agents }}' 'crawler';
 }
 
 # Rate Limit Zones
