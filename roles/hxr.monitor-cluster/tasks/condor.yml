@@ -1,4 +1,9 @@
 ---
+- name: Install `ansible-core`
+  package:
+    name: ansible-core
+    state: present
+
 - name: "Send machine group monitor"
   copy:
     src: "cluster_util-condor-split.sh"
