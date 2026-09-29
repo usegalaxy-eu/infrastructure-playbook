@@ -26,7 +26,7 @@ map $rate_limit_key_api $rate_limit_key_api_or_session {
 }
 
 # 3. Otherwise the client IP.
-map $rate_limit_key_api_or_session $rate_limit_key_keyed {
+map $rate_limit_key_api_or_session $rate_limit_key_api_or_session_or_ip {
     default $rate_limit_key_api_or_session;
     ''      $binary_remote_addr;
 }
