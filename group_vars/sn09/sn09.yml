@@ -200,10 +200,8 @@ nginx_enable_default_server: false
 nginx_flavor: ''
 nginx_cache_dir: /var/cache/nginx
 
-# Rate limiting. Zones and maps are defined in
-# templates/nginx/conf.d/rate_limit.conf.j2, the limits are applied in
-# templates/nginx/galaxy-main.j2. Adapted from usegalaxy.org's
-# conf.d/rate_limit.conf.
+# Rate limiting via NGINX
+# (see templates/nginx/conf.d/rate_limit.conf.j2, templates/nginx/galaxy-main.j2)
 nginx_extra_configs:
   - conf.d/rate_limit.conf
 # Start in dry run mode: excess requests are logged but not rejected. Set to
