@@ -71,6 +71,14 @@ tools:
     # a user exported 100 of files and memory was not enough
     mem: 8
 
+  CONVERTER_gff_to_bed_0:
+    # It's an "internal" tool (requires access to Galaxy code), but it is not
+    # part of `GALAXY_LIB_TOOLS_UNVERSIONED` in lib/galaxy/tools/__init__.py.
+    # Therefore, needs to be explicitly marked as internal.
+    scheduling:
+      require:
+        - internal
+
   __DATA_FETCH__:
     cores: 1
     mem: 3
