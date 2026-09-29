@@ -212,8 +212,7 @@ nginx_rate_limit_real_ip_from:
   - 100.91.215.93/32 # traefik tailscale
 nginx_rate_limit_exempt_networks:
   - 10.4.68.0/24 # snXX subnet incl. VMs
-# User agents pushed into the shared "crawler" zone (1 r/s). Keep in sync
-# with the AI/crawler list in files/galaxy/config/robots.txt.
+# SUGGESTION: Keep in sync with the crawler list in files/galaxy/config/robots.txt programmatically.
 nginx_rate_limit_crawler_user_agents: >-
   (GPTBot|ClaudeBot|Claude-SearchBot|CCBot|Google-Extended|Applebot-Extended|Facebookbot|Meta-ExternalAgent|Meta-ExternalFetcher|diffbot|PerplexityBot|Omgili|webzio-extended|ImagesiftBot|Bytespider|TikTokSpider|Amazonbot|Youbot|SemrushBot|Petalbot|VelenPublicWebCrawler|TurnitinBot|Timpibot|OAI-SearchBot|ICC-Crawler|AI2Bot|DataForSeoBot|AwarioBot|Google-CloudVertexBot|PanguBot|Kangaroo Bot|Sentibot|img2dataset|Meltwater|Seekr|peer39_crawler|cohere-ai|cohere-training-data-crawler|DuckAssistBot|Scrapy|Cotoyogi|aiHitBot|Factset_spyderbot|FirecrawlAgent|bedrockbot|DeepSeekBot|Google-Firebase|AddSearchBot|bigsur\.ai|Brightbot|Crawlspace|EchoboxBot|FriendlyCrawler|LinerBot|Panscient|Poseidon Research Crawler|SBIntuitionsBot|TerraCotta|Thinkbot|Yak|YandexAdditional)
 
