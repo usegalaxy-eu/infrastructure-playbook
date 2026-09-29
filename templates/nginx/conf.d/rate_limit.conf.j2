@@ -42,7 +42,7 @@ map $request_uri $rate_limit_path_exempt {
     ~^/_upload                     'exempt';
 }
 
-# Networks that are never rate limited (internal, monitoring, pulsar relay).
+# Networks that are never rate limited:
 geo $rate_limit_network_exempt {
     default 0;
 {% for network in nginx_rate_limit_exempt_networks | default([]) %}
