@@ -70,7 +70,7 @@
 
 - name: "Fetch VGCN host inventory for Condor host monitor"
   get_url:
-    url: "{{ condor_hosts_inventory_url }}"
+    url: "{{ monitor_condor_inventory_url }}"
     dest: /etc/condor-monitored-hosts
     owner: root
     group: root
