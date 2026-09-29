@@ -1,13 +1,12 @@
-# Coarse per-IP rate limit backstop for everything entering on the
-# websecure entrypoint, applied via
-# --entryPoints.websecure.http.middlewares in group_vars/traefik.yml.
+# Coarse per-IP rate limit backstop for the websecure entrypoint, applied
+# via
+# `--entryPoints.websecure.http.middlewares` in group_vars/traefik.yml.
 #
-# Applies to all HTTPS vhosts routed through Traefik (usegalaxy.eu,
-# galaxyproject.eu, subdomains, telescope, jenkins, ...). Long-lived
-# connections (SSE streams, websockets for interactive tools) count once,
-# at connection setup. Keep well above the aggregate of a NAT'd classroom;
-# tune against Traefik's Prometheus metrics (traefik_entrypoint_requests_total
-# by code=429) before tightening.
+# Applies to all HTTPS routers. Long-lived connections (SSE streams,
+# websockets for interactive tools) count once, at connection setup.
+# Keep well above the aggregate of a NAT'd classroom, tune against
+# Traefik's Prometheus metric `traefik_entrypoint_requests_total`
+# (code 429) before tightening.
 http:
   middlewares:
     rate-limit-backstop:
