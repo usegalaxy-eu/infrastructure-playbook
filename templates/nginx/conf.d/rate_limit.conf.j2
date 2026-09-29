@@ -2,6 +2,9 @@
 ## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
 ##
 
+# Adapted from UseGalaxy.org
+# (see https://github.com/galaxyproject/infrastructure-playbook/blob/e870bf26224e7ebf7bffcc857c158381bb42d866/templates/nginx/conf.d/rate_limit.conf.j2)
+
 # Chained maps for rate limiting:
 # 1. First check if path should be exempted (tusd, job_files)
 # 2. Then use session cookie if present, otherwise IP address
