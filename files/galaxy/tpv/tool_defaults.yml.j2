@@ -64,20 +64,24 @@ tools:
       # Distribute jobs across the weighted jwd_pool (see global.context above).
       job_working_directory: "{helpers.weighted_choice(jwd_pool)['value']}"
       description: "{tool.id if not tool.id.count('/') == 5 else tool.id.split('/')[4]}"
-      # We persist OOM_MEM_SCALE across resubmissions by using job.destination_params.
-      # On the first run this records the base factor (OOM_SCALING_FACTOR).
-      # On each resubmit TPV re-evaluates this expression, reading the
-      # previously persisted value and multiplying by OOM_SCALING_FACTOR.
-      OOM_MEM_SCALE: "{OOM_SCALING_FACTOR * int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else OOM_SCALING_FACTOR}"
     scheduling:
       reject:
         - offline
     rules:  # executed in order
+        # Persist OOM_MEM_SCALE across resubmissions via job.destination_params.
+        # On the first run this records the base factor (OOM_SCALING_FACTOR).
+        # On each resubmit this rule re-evaluates the expression, reading the
+        # previously persisted value and multiplying by OOM_SCALING_FACTOR.
+      - id: oom_resubmit_persist_oom_mem_scale
+        if: not (dry_run_mode := job_wrapper is None)
+        params:
+          OOM_MEM_SCALE: "{OOM_SCALING_FACTOR * int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else OOM_SCALING_FACTOR}"
+
         # The accumulated scaling factor is read from the
         # persisted OOM_MEM_SCALE destination param,
         # which Galaxy carries across resubmissions.
       - id: oom_resubmit_increase_memory
-        if: job is not None and job.state == "resubmitted"
+        if: not (dry_run_mode := job_wrapper is None) and job is not None and job.state == "resubmitted"
         execute: |
           _scale = int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else 1
           entity.mem = f"min(({entity.mem}) * {_scale}, {OOM_SCALING_CAP})"
