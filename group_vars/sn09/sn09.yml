@@ -204,8 +204,6 @@ nginx_cache_dir: /var/cache/nginx
 # (see templates/nginx/conf.d/rate_limit.conf.j2, templates/nginx/galaxy-main.j2)
 nginx_extra_configs:
   - conf.d/rate_limit.conf
-# Start in dry run mode: excess requests are logged but not rejected. Set to
-# false after tuning rate and burst against real traffic.
 nginx_rate_limit_dry_run: true
 # Proxies whose X-Forwarded-For we trust for the real client IP. Only list
 # proxies here, otherwise clients can spoof their own rate limit key.
