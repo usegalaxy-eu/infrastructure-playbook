@@ -4,6 +4,6 @@
 # Parses lines from dedicated NGINX rate limit access log;
 # see templates/nginx/conf.d/rate_limit.conf.j2,
 # templates/nginx/galaxy-main.j2.
-NGINX_LIMIT_REQ %{TIMESTAMP_ISO8601:ts:ts-"2006-01-02T15:04:05Z07:00"}\|%{IPORHOST:client:tag}\|%{DATA:host}\|%{WORD:method} %{URIPATHPARAM:req_path:tag} HTTP/%{NUMBER:httpver}\|%{POSINT:status:int}\|%{POSINT:body_bytes:int}\|(?:REJECTED_DRY_RUN|DELAYED_DRY_RUN|REJECTED|DELAYED)\|(?:crawler)?$
+NGINX_LIMIT_REQ %{TIMESTAMP_ISO8601:ts:ts-"2006-01-02T15:04:05Z07:00"}\|%{IPORHOST:client:tag}\|%{DATA:host}\|%{WORD:method} (?P<req_path_raw>%{URIPATHPARAM:req_path_normalized:tag}) HTTP/%{NUMBER:httpver}\|%{POSINT:status:int}\|%{POSINT:body_bytes:int}\|(?:REJECTED_DRY_RUN|DELAYED_DRY_RUN|REJECTED|DELAYED)\|(?:crawler)?$
 # Note: "2006-01-02T15:04:05Z07:00" is a Go reference-time layout, where
 # Z07:00 is the offset placeholder, not a literal UTC+7.

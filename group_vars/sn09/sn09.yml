@@ -111,11 +111,11 @@ telegraf_processors:
     config:
       - namepass = ["nginx_rate_limit"]
       - '[[processors.regex.tags]]'
-      - '  key = "req_path"'
+      - '  key = "req_path_normalized"'
       - '  pattern = "[0-9a-fA-F]{16,}"'
       - '  replacement = "ID"'
       - '[[processors.regex.tags]]'
-      - '  key = "req_path"'
+      - '  key = "req_path_normalized"'
       - '  pattern = "\\?.*"'
       - '  replacement = ""'
 
