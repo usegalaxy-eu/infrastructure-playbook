@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Emit D-state metrics for processes owned by systemd services."""
 
+# Managed by Ansible. Local changes will be overwritten.
+
 import subprocess
 import sys
 from pathlib import Path
@@ -13,6 +15,7 @@ def escape_tag(value):
 
 
 def service_properties(service):
+    # systemd provides both service lifecycle and cgroup ownership information.
     command = [
         "systemctl",
         "show",
@@ -26,6 +29,7 @@ def service_properties(service):
 
 
 def cgroup_pids(control_group):
+    # Every process started by the service remains visible in its cgroup.
     if not control_group or control_group == "/":
         return []
     path = CGROUP_ROOT / control_group.lstrip("/") / "cgroup.procs"
@@ -40,6 +44,7 @@ def process_state(pid):
         stat = Path(f"/proc/{pid}/stat").read_text()
     except (FileNotFoundError, OSError):
         return None
+    # The process name is parenthesized and may contain spaces.
     fields = stat[stat.rfind(")") + 2 :].split()
     return fields[0] if fields else None
 
