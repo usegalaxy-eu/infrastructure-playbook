@@ -945,13 +945,15 @@ tools:
     params:
       docker_env_LITELLM_CONFIG_FILE: "$LITELLM_CONFIG_FILE"
 
-  toolshed.g2.bx.psu.edu/tools/bgruening/kraken_ocr/kraken_ocr/.*:
+  toolshed.g2.bx.psu.edu/repos/bgruening/kraken_ocr/kraken_ocr/.*:
     env:
       TORCHINDUCTOR_CACHE_DIR: "$_GALAXY_JOB_TMP_DIR"
+      SINGULARITYENV_TORCHINDUCTOR_CACHE_DIR: "$TORCHINDUCTOR_CACHE_DIR"
 
-  toolshed.g2.bx.psu.edu/tools/bgruening/kraken_segment/kraken_segment/.*:
+  toolshed.g2.bx.psu.edu/repos/bgruening/kraken_segment/kraken_segment/.*:
     env:
       TORCHINDUCTOR_CACHE_DIR: "$_GALAXY_JOB_TMP_DIR"
+      SINGULARITYENV_TORCHINDUCTOR_CACHE_DIR: "$TORCHINDUCTOR_CACHE_DIR"
 
   toolshed.g2.bx.psu.edu/repos/imgteam/bfconvert/ip_convertimage/.*:
     cores: 12
