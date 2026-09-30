@@ -34,8 +34,6 @@ tools:
         # Delay is in seconds before Galaxy dispatches the resubmitted job.
         delay: 60
     env:
-      ## The execute statement should be removed once https://github.com/galaxyproject/galaxy/issues/20562 is fixed
-      - execute: cd $_GALAXY_JOB_DIR
       - name: GALAXY_MEMORY_MB
         value: "{int(mem * 1024)}" # set 5/2023 might be moved to runner or tool wrappers, related to Galaxy issue 15952
       - name: _JAVA_OPTIONS
@@ -66,20 +64,24 @@ tools:
       # Distribute jobs across the weighted jwd_pool (see global.context above).
       job_working_directory: "{helpers.weighted_choice(jwd_pool)['value']}"
       description: "{tool.id if not tool.id.count('/') == 5 else tool.id.split('/')[4]}"
-      # We persist OOM_MEM_SCALE across resubmissions by using job.destination_params.
-      # On the first run this records the base factor (OOM_SCALING_FACTOR).
-      # On each resubmit TPV re-evaluates this expression, reading the
-      # previously persisted value and multiplying by OOM_SCALING_FACTOR.
-      OOM_MEM_SCALE: "{OOM_SCALING_FACTOR * int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else OOM_SCALING_FACTOR}"
     scheduling:
       reject:
         - offline
     rules:  # executed in order
+        # Persist OOM_MEM_SCALE across resubmissions via job.destination_params.
+        # On the first run this records the base factor (OOM_SCALING_FACTOR).
+        # On each resubmit this rule re-evaluates the expression, reading the
+        # previously persisted value and multiplying by OOM_SCALING_FACTOR.
+      - id: oom_resubmit_persist_oom_mem_scale
+        if: not (dry_run_mode := job_wrapper is None)
+        params:
+          OOM_MEM_SCALE: "{OOM_SCALING_FACTOR * int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else OOM_SCALING_FACTOR}"
+
         # The accumulated scaling factor is read from the
         # persisted OOM_MEM_SCALE destination param,
         # which Galaxy carries across resubmissions.
       - id: oom_resubmit_increase_memory
-        if: job is not None and job.state == "resubmitted"
+        if: not (dry_run_mode := job_wrapper is None) and job is not None and job.state == "resubmitted"
         execute: |
           _scale = int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else 1
           entity.mem = f"min(({entity.mem}) * {_scale}, {OOM_SCALING_CAP})"
@@ -173,9 +175,31 @@ tools:
             - docker
             - embedded-pulsar
 
-      - id: remote_resources
-        if: not (dry_run_mode := job_wrapper is None) and (user is not None and not (tool.tool_type in ["expression", "data_source"] or tool.requires_galaxy_python_environment))
+      - id: tool_requires_galaxy
+        if: not (dry_run_mode := job_wrapper is None) and (tool.tool_type in ["data_source"] or tool.requires_galaxy_python_environment)
         # `job_wrapper is None` occurs when TPV is launched in dry-run mode
+        # ORG has a more fine-grained alternative, we just run all those tools locally with the venv
+        # params:
+        #   container_override:
+        #     - type: singularity
+        #       shell: /bin/sh
+        #       identifier: /cvmfs/main.galaxyproject.org/singularity/rockylinux:9.5.20241118--0
+        # env:
+        #   - name: SINGULARITYENV_PREPEND_PATH
+        #     value: $GALAXY_VIRTUAL_ENV/bin
+        #   - name: SINGULARITYENV_PYTHONPATH
+        #     value: $GALAXY_LIB
+        # Workaround from 23/02/2026
+        scheduling:
+          require:
+            - internal
+
+      - id: remote_resources
+        if: not (dry_run_mode := job_wrapper is None) and (user is not None) and ("internal" not in {tag.value for tag in entity.tpv_tags.tags})
+        # - `job_wrapper is None` occurs when TPV is launched in dry-run mode
+        # - internal tools (tools requiring the Galaxy python environment)
+        #   never run on Pulsar nodes, even if the user has selected specific
+        #   remote resources (see `tool_requires_galaxy` rule above)
         execute: |
           from tpv.core.entities import SchedulingTags, Tag, TagType
 
@@ -204,24 +228,6 @@ tools:
           retval
         fail: |
           Invalid 'Remote resources id' selected in the config menu under 'User -> Preferences -> Manage Information -> Use distributed compute resources'. Please reselect either 'default' or an appropriate remote resource then click 'Save' and rerun your job.
-      - id: tool_requires_galaxy
-        if: not (dry_run_mode := job_wrapper is None) and (tool.tool_type in ["expression", "data_source"] or tool.requires_galaxy_python_environment)
-        # `job_wrapper is None` occurs when TPV is launched in dry-run mode
-        # ORG has a more fine-grained alternative, we just run all those tools locally with the venv
-        # params:
-        #   container_override:
-        #     - type: singularity
-        #       shell: /bin/sh
-        #       identifier: /cvmfs/main.galaxyproject.org/singularity/rockylinux:9.5.20241118--0
-        # env:
-        #   - name: SINGULARITYENV_PREPEND_PATH
-        #     value: $GALAXY_VIRTUAL_ENV/bin
-        #   - name: SINGULARITYENV_PYTHONPATH
-        #     value: $GALAXY_LIB
-        # Workaround from 23/02/2026
-        scheduling:
-          require:
-            - internal
     rank: |
       final_destinations = helpers.weighted_random_sampling(candidate_destinations)
       final_destinations
