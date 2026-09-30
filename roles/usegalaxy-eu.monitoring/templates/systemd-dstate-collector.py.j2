@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Emit D-state metrics for processes owned by systemd services."""
+"""Emit D-state metrics for processes owned by systemd services.
 
-# Managed by Ansible. Local changes will be overwritten.
+Managed by Ansible. Local changes will be overwritten.
+"""
 
 import subprocess
 import sys
@@ -11,25 +12,39 @@ CGROUP_ROOT = Path("/sys/fs/cgroup")
 
 
 def escape_tag(value):
-    return str(value).replace("\\", "\\\\").replace(",", "\\,").replace("=", "\\=").replace(" ", "\\ ")
+    """Escape an InfluxDB line protocol tag value."""
+    return (
+        str(value)
+        .replace("\\", "\\\\")
+        .replace(",", "\\,")
+        .replace("=", "\\=")
+        .replace(" ", "\\ ")
+    )
 
 
 def service_properties(service):
-    # systemd provides both service lifecycle and cgroup ownership information.
+    """Query systemd for the lifecycle and cgroup ownership of a service."""
     command = [
         "systemctl",
         "show",
         service,
-        "--property=LoadState,ActiveState,SubState,Result,ExecMainStatus,ControlGroup",
+        "--property=LoadState,ActiveState,SubState,Result,"
+        "ExecMainStatus,ControlGroup",
     ]
-    result = subprocess.run(command, check=False, capture_output=True, text=True, timeout=3)
+    result = subprocess.run(
+        command, check=False, capture_output=True, text=True, timeout=3
+    )
     if result.returncode != 0:
         return None
-    return dict(line.split("=", 1) for line in result.stdout.splitlines() if "=" in line)
+    return dict(
+        line.split("=", 1)
+        for line in result.stdout.splitlines()
+        if "=" in line
+    )
 
 
 def cgroup_pids(control_group):
-    # Every process started by the service remains visible in its cgroup.
+    """Return the PIDs of all processes belonging to a cgroup."""
     if not control_group or control_group == "/":
         return []
     path = CGROUP_ROOT / control_group.lstrip("/") / "cgroup.procs"
@@ -40,6 +55,7 @@ def cgroup_pids(control_group):
 
 
 def process_state(pid):
+    """Return the process state from /proc, or None if it is gone."""
     try:
         stat = Path(f"/proc/{pid}/stat").read_text()
     except (FileNotFoundError, OSError):
@@ -50,11 +66,14 @@ def process_state(pid):
 
 
 def emit(service):
+    """Emit one InfluxDB line protocol point for a systemd service."""
     properties = service_properties(service)
     if properties is None:
         print(
-            f"systemd_dstate,service={escape_tag(service)},active_state=unknown,sub_state=unknown "
-            "monitor_healthy=0i,running=0i,d_state=0i,d_state_processes=0i,processes=0i,exit_code=0i"
+            f"systemd_dstate,service={escape_tag(service)},"
+            "load_state=unknown,active_state=unknown,sub_state=unknown "
+            "monitor_healthy=0i,running=0i,d_state=0i,"
+            "d_state_processes=0i,processes=0i,exit_code=0i"
         )
         return
 
@@ -87,6 +106,7 @@ def emit(service):
 
 
 def main():
+    """Emit D-state metrics for every service given on the command line."""
     if len(sys.argv) < 2:
         print("At least one systemd service is required", file=sys.stderr)
         return 2
