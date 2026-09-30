@@ -81,3 +81,11 @@ limit_req_zone $rate_limit_crawler zone=crawler:10m rate={{ nginx_rate_limit_cra
 # against real traffic before enforcing.
 limit_req_dry_run on;
 {% endif %}
+
+# Telegraf parses the rate limit log, see
+# group_vars/sn09/sn09.yml (`telegraf_plugins_extra: nginx_rate_limit`).
+log_format limit '$time_iso8601|$remote_addr|$host|$request|$status|$body_bytes_sent|$limit_req_status|$rate_limit_crawler';
+map $limit_req_status $rate_limited {
+    default              0;
+    ~^(DELAYED|REJECTED) 1;
+}

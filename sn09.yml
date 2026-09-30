@@ -182,9 +182,9 @@
 
     # Grant read access via a POSIX ACL on the current file, and a default
     # ACL on the directory so the file nginx recreates at logrotate stays readable.
-    - name: Allow telegraf to read the nginx error log
+    - name: Allow telegraf to read the nginx rate limit log
       ansible.posix.acl:
-        path: /var/log/nginx/error.log
+        path: /var/log/nginx/rate_limit.log
         entity: '{{ telegraf_user.name }}'
         etype: user
         permissions: r
@@ -197,7 +197,7 @@
         entry: 'd:u:{{ telegraf_user.name }}:r'
         state: present
 
-    - name: Restart telegraf to pick up the error log access
+    - name: Restart telegraf to pick up the nginx log access
       ansible.builtin.systemd:
         name: telegraf
         state: restarted

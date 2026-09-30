@@ -82,6 +82,8 @@ server {
     limit_req zone=relaxed burst=50 nodelay;
     limit_req_status 429;
 
+    access_log /var/log/nginx/rate_limit.log limit if=$rate_limited;
+
     # Long-lived Server-Sent Events stream.
     # Galaxy sends ``X-Accel-Buffering: no`` on the response, which
     # disables nginx response buffering just for this endpoint.

@@ -98,7 +98,7 @@ telegraf_plugins_extra:
   nginx_rate_limit:
     plugin: 'tail'
     config:
-      - files = ["/var/log/nginx/error.log"]
+      - files = ["/var/log/nginx/rate_limit.log"]
       - from_beginning = false
       - data_format = "grok"
       - name_override = "nginx_rate_limit"
