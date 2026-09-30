@@ -1,0 +1,13 @@
+---
+- name: Validate httpd config
+  ansible.builtin.command: /usr/sbin/httpd -t
+  register: httpd_configtest
+  changed_when: false
+  failed_when: httpd_configtest.rc != 0
+  listen: "Validate and restart apache"
+
+- name: Restart Apache
+  ansible.builtin.service:
+    name: httpd
+    state: restarted
+  listen: "Validate and restart apache"

@@ -1,0 +1,8 @@
+{{ restic_log_dir }}/*log {
+    missingok
+    notifempty
+    compress
+    weekly
+    rotate 2
+    maxsize 50M
+}

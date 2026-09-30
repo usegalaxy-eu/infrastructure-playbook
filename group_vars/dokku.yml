@@ -1,0 +1,28 @@
+hostname: apps.galaxyproject.eu
+
+docker_daemon_options:
+  data-root: "/data/docker"
+  log-driver: "json-file"
+  log-opts: 
+    max-size: "10m"
+    max-file: "3"
+    
+apps:
+  - ptdk
+  # - pwdk
+  - oembed
+  # - certificates
+  # - gtn-slack-bot
+  - dnanalyzer
+  # - cors
+dokku_plugins:
+  - name: postgres
+    url: https://github.com/dokku/dokku-postgres.git
+  - name: redis
+    url: https://github.com/dokku/dokku-redis.git
+dokku_users:
+  - name: github
+    username: github
+    ssh_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDXBVfvItcmrgHVaV7aohDLe05GF1G82OQ4qa+MOpSkkYqA7S+p5L+ag0RMy1Yn5YjqxxXvuHTOWosp9GTeDQi/khearnMpcNyHHQA1k9PYEAoQohcnKX9XBqXZI+9Mlk1JL8nZ4T99YbF2GqNbXo1jHsPvkLQHZtVyLV2pM2GAY28JjAhw3k+dVn7hT26FBcPCRuj4GakL/Fti1duW6HjEwiqqPjpqSio1K8fEI7TVE/YHDQjeAHLvbDe2hzbaVOwwzNkxs1jy/MsK7HfTouJHewC7IWg3wlllC2zfYqnvFTaHtcK3fHRzMdgZ3HqSUtvC4/tfd0zch/0YatWxbqmEntVNhnvyJW3t+hQM0zEPbCKVMfxuf8JTxXaTS5fzMWSNVDKIKJ3XY04gOGA6oDJOHoIubN28AaudjEo045s1a8Zf+RPq23oc7X/Ajvze4IRQdqAN/TMuCyNA/iqeGTYFWP6Ia4nd/3QYUlPtzAeCo0WTkamccYwMWPr+bYCYlls= dokku@github"
+dokku_daemon_install: false
+dokku_docker_install: true

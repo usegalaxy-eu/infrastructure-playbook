@@ -1,0 +1,11 @@
+http:
+  routers:
+    jenkins-rtr:
+      rule: "Host(`build.galaxyproject.eu`)"
+      service: jenkins
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: "route53"
+        domains:
+          - main: "build.galaxyproject.eu"

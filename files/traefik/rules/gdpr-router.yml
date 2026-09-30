@@ -1,8 +1,8 @@
 http:
   routers:
     gdpr-rtr:
-      rule: "(Host(`usegalaxy.eu`) || HostRegexp(`^.+\\.usegalaxy\\.eu`)) && PathPrefix(`/gdpr`)"
-      service: gdpr
+      rule: "(Host(`usegalaxy.eu`) || HostRegexp(`^.+\\.usegalaxy\\.eu`)) && (PathPrefix(`/gdpr`) || PathPrefix(`/terms`))"
+      service: usegalaxy-github
       entryPoints:
         - websecure
       tls:
@@ -11,3 +11,9 @@ http:
           - main: "usegalaxy.eu"
             sans:
               - "*.usegalaxy.eu"
+      middlewares:
+        - replace-terms
+  middlewares:
+    replace-terms:
+      replacePath:
+        path: "/gdpr"

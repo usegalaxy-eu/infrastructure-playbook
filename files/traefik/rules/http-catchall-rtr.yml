@@ -1,0 +1,13 @@
+http:
+  middlewares:
+    redirect-https:
+      redirectScheme:
+        scheme: https
+  routers:
+    http-catchall-rtr:
+      rule: Host(`*`)
+      service: noop@internal
+      entryPoints:
+        - web
+      middlewares:
+        - redirect-https

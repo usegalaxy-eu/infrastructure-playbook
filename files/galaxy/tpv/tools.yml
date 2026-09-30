@@ -1,9 +1,10 @@
 ---
 # ALL tags must be with dashes (-) instead of underscores (_)
 tools:
-  basic_gpu_resource_param_tool:
+  _basic_gpu_resource_param_tool:
     # Type of compute resource (CPU or GPU) for the tool depends on user's input from its wrapper.
     # Default resource is CPU.
+    abstract: true
     rules:
       - id: resource_params_gpu
         if: |
@@ -11,43 +12,93 @@ tools:
           param_dict.get('__job_resource', {}).get('__job_resource__select') == 'yes'
         gpus: int(job.get_param_values(app)['__job_resource']['gpu'])
 
+  _basic_docker_tool:
+    abstract: true
+    params:
+    scheduling:
+      require:
+        - docker
+
+  _basic_braker_tool:
+    abstract: true
+    rules:
+      - id: braker_genome_sequence_count_rule
+        if: |
+          retval = False
+          options = job.get_param_values(app)
+          if "genome" in options:
+            if "sequences" in options["genome"].metadata:
+              sequences = options["genome"].metadata.get("sequences")
+              retval = sequences > 100000
+          retval
+        fail: |
+          The number of sequences in your genome file is too large (>100K) for this tool.
+
+  _basic_numba_tool:
+    abstract: true
+    env:
+      NUMBA_CACHE_DIR: /data/misc06/tmp
+      OMP_NUM_THREADS: 4
+      OPENBLAS_NUM_THREADS: 4
+      MKL_NUM_THREADS: 4
+      VECLIB_MAXIMUM_THREADS: 4
+      NUMEXPR_NUM_THREADS: 4
+      NUMBA_NUM_THREADS: 4
+
+
+  # User Defined Tools will be used for GCC ppresentaion and
+  # we may want to comment out after sense is a beta feature
+  # lets run in embedded pulsar to reduce the jwd scope and make it more secure
+  # running docker is fine here
+  user_defined-.*:
+      cores: 1
+      mem: 3.7
+      rules:
+      - id: require_login_user_defined
+        if: user is None
+        fail: An account is required to run this tool. Please log in or create an account.
+      scheduling:
+        require:
+          - docker
+          - embedded-pulsar
+
+  # example for overwriting the OOM memory multiplier for a specific tool
+  # toolshed.g2.bx.psu.edu/repos/example_owner/example_tool/example_tool/.*:
+  #   context:
+  #     OOM_SCALING_FACTOR: 3
+
+  export_remote:
+    # a user exported 100 of files and memory was not enough
+    mem: 8
+
+  CONVERTER_gff_to_bed_0:
+    # It's an "internal" tool (requires access to Galaxy code), but it is not
+    # part of `GALAXY_LIB_TOOLS_UNVERSIONED` in lib/galaxy/tools/__init__.py.
+    # Therefore, needs to be explicitly marked as internal.
+    scheduling:
+      require:
+        - internal
+
   __DATA_FETCH__:
     cores: 1
     mem: 3
-    gpus: 0
-    scheduling:
-      require:
-        - upload
-    rules:
-      - id: no-pulsar
-        if: user is not None
-        execute: |
-            from tpv.core.entities import Tag, TagSetManager, TagType
-
-            user_preferences = user.extra_preferences
-            pulsar_tag = user_preferences.get("distributed_compute|remote_resources", "None")
-            pulsar_tag = Tag("scheduling", pulsar_tag, TagType.REQUIRE) if pulsar_tag != "None" else None
-
-            entity.tpv_tags.tags = [
-                tag
-                for tag in entity.tpv_tags.tags
-                if tag != pulsar_tag
-            ]
-
     env:
-      TEMP: /data/1/galaxy_db/tmp
+      TEMP: /data/misc06/tmp
 
-  toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/.*:
-    inherits: basic_gpu_resource_param_tool
+  toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/*:
+    env:
+      - name: SINGULARITYENV_LC_ALL
+        value: C.UTF-8
 
   toolshed.g2.bx.psu.edu/repos/bgruening/tabpfn/tabpfn/.*:
-    inherits: basic_gpu_resource_param_tool
+    inherits: _basic_gpu_resource_param_tool
     # This tool is using git to get a huggingface model, it seems that git is easily getting into a locked state on NFS.
     # Here we reset the HOME dir in Galaxy to a non-NFS directory. It is true that now multiple tabpfn jobs are updating/cloning into a global directory,
     # but since its git, it should work and even be faster for jobs that already find a model. This is not vrey reproducible as the model can change, but this is
     # also true if the tool runs on NFS.
     env:
       HOME: /tmp
+      TABPFN_ALLOW_CPU_LARGE_DATASET: 1
 
   toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_.*/deeptools_.*/.*:
     rules:
@@ -63,220 +114,103 @@ tools:
               '3.0.1.0',
               '3.0.2.0',
           }
-          all(not helpers.tool_version_eq(tool, version) for version in no_container)
+          any(helpers.tool_version_eq(tool, version) for version in no_container)
         scheduling:
           require:
+            - conda
             - singularity
 
-  toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_compare/deeptools_bam_compare/.*:
-    rules:
-      - id: deeptools_singularity_bam_compare
-        if: |
-          # versions working in conda but not in singularity
-          conda_only_versions = {
-              '2.4.1.0',
-          }
-          any(helpers.tool_version_eq(tool, version) for version in conda_only_versions)
-        # remove singularity tag
-        execute: |
-          from tpv.core.entities import TagSetManager, TagType
-          entity.tpv_tags = TagSetManager([
-              tag for tag in entity.tpv_tags.tags
-              if not (tag.value == 'singularity' and tag.tag_type == TagType.REQUIRE)
-          ])
-
-  toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_coverage/deeptools_bam_coverage/.*:
-    rules:
-      - id: deeptools_singularity_bam_coverage
-        if: |
-          # versions working in conda but not in singularity
-          conda_only_versions = {
-              '2.4.1.0',
-          }
-          any(helpers.tool_version_eq(tool, version) for version in conda_only_versions)
-        # remove singularity tag
-        execute: |
-          from tpv.core.entities import TagSetManager, TagType
-          entity.tpv_tags = TagSetManager([
-              tag for tag in entity.tpv_tags.tags
-              if not (tag.value == 'singularity' and tag.tag_type == TagType.REQUIRE)
-          ])
-
-  toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_plot_coverage/deeptools_plot_coverage/.*:
-    rules:
-      - id: deeptools_singularity_plot_coverage
-        if: |
-          # versions working in conda but not in singularity
-          conda_only_versions = {
-              '2.4.1.0',
-          }
-          any(helpers.tool_version_eq(tool, version) for version in conda_only_versions)
-        # remove singularity tag
-        execute: |
-          from tpv.core.entities import TagSetManager, TagType
-          entity.tpv_tags = TagSetManager([
-              tag for tag in entity.tpv_tags.tags
-              if not (tag.value == 'singularity' and tag.tag_type == TagType.REQUIRE)
-          ])
-
-  toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_plot_profile/deeptools_plot_profile/.*:
-    rules:
-      - id: deeptools_singularity_plot_profile
-        if: |
-          # versions working in conda but not in singularity
-          conda_only_versions = {
-              '3.1.2.0.0',
-          }
-          any(helpers.tool_version_eq(tool, version) for version in conda_only_versions)
-        # remove singularity tag
-        execute: |
-          from tpv.core.entities import TagSetManager, TagType
-          entity.tpv_tags = TagSetManager([
-              tag for tag in entity.tpv_tags.tags
-              if not (tag.value == 'singularity' and tag.tag_type == TagType.REQUIRE)
-          ])
-
-  toolshed.g2.bx.psu.edu/repos/iuc/quast/quast/.*:
-    cores: 10
-    rules:
-      - id: quast_memory
-        # Quast has a vastly greater memory requirement when it generates alignments between scaffolds and a user-
-        # provided reference. This is particularly true if the ref genome is large.
-        if: |
-          helpers.job_args_match(job, app, {"assembly": {"ref": {"use_ref": "true"}}, "large": True})
-        mem: 250
-
-  toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/.*:
-    cores: 10
-    rules:
-      - id: hifiasm_memory
-        # The memory requirement of Hifiasm depends on a wrapper's input
-        if: |
-          parameters = {p.name: p.value for p in job.parameters}
-          parameters = tool.params_from_strings(parameters, app)
-
-          advanced_options = parameters.get("advanced_options", dict())
-          hg_size = advanced_options.get("hg_size", "")
-
-          bool(hg_size)
-        mem: |
-          from math import ceil
-
-          parameters = {p.name: p.value for p in job.parameters}
-          parameters = tool.params_from_strings(parameters, app)
-
-          advanced_options = parameters.get("advanced_options", dict())
-
-          kcov_default = 36
-          kcov = advanced_options.get("kcov", kcov_default)
-
-          hg_size = advanced_options.get("hg_size", "")
-
-          value = 0
-          if hg_size:
-              conversion_factors = {
-                  "k": 1000000,
-                  "M": 1000,
-                  "G": 1,
-              }
-              conversion_factors = {
-                  key.lower(): value for key, value in conversion_factors.items()
-              }
-              suffix = hg_size[-1:].lower()
-              value = hg_size[:len(hg_size) - 1]
-              value = value.replace(",", ".")
-              value = float(value)
-              # compute hg size in Gb
-              value = value / conversion_factors[suffix.lower()]
-              value = ceil(value * (kcov * 2) * 1.75)
-
-          # return the amount of memory needed
-          value
-
   toolshed.g2.bx.psu.edu/repos/bgruening/keras_train_and_eval/keras_train_and_eval/.*:
-    inherits: basic_gpu_resource_param_tool
+    inherits: _basic_gpu_resource_param_tool
+
+  toolshed.g2.bx.psu.edu/repos/iuc/kaiju_kaiju/kaiju_kaiju/.*:
+    mem: |
+      # kaiju has memory requirements depending on its input reference database
+      # according to: https://github.com/bioinformatics-centre/kaiju#creating-the-kaiju-index
+      # the calculation below should pick sufficient memory as long as no new potentially
+      # larger databases are provided.
+      mem_reqs = {
+          "viruses": 4,
+          "plasmids": 4,
+          "fungi": 8,
+          "refseq": 128,
+          "refseq_nr": 164,
+          "nr": 256,
+          "nr_euk": 256,
+      }
+      ref = job.get_param_values(app).get("reference", "")
+      ref_type = ref.split("_", maxsplit=1)[-1]
+      mem_reqs.get(ref_type, 4)
 
   toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy/.*:
     cores: 2
-    scheduling:
-      require:
-        - condor-tpv
     rules:
       - if: input_size >= 0.015
         cores: 14
+      - if: input_size >= 1
+        cores: 14
+        mem: 24
 
-  toolshed.g2.bx.psu.edu/repos/iuc/enasearch_search_data/enasearch_search_data/.*:
-    scheduling:
-      require:
-        - conda
-        - singularity
+  toolshed.g2.bx.psu.edu/repos/iuc/gatk4_mutect2/gatk4_mutect2/.*:
+    cores: 12
+    mem: 36
+    rules:
+      - if: input_size >= 100
+        cores: 18
+        mem: 64
+
+  # safety net, it seems a few MQC versions try to cleanup directories, but fail due to NFS locks.
+  # Here we try to use a in-container /tmp dir, that should not be on any NFS
+  toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/.*:
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/ketos_.*:
+    env:
+      # use non-NFS `/tmp/` dir, required because of https://ticketsystem.galaxyproject.eu/#ticket/zoom/1572:
+      # on https://github.com/mittagessen/kraken/blob/main/kraken/lib/arrow_dataset.py#L282C1-L283C53,
+      # when leaving the `TemporaryDirectory()` context, Python tries to remove
+      # the temporary directory, yielding `OSError: [Errno 39] Directory not empty`
+      _GALAXY_JOB_TMP_DIR: /tmp
+
+  toolshed.g2.bx.psu.edu/repos/iuc/gem_check_memote/gem_check_memote/.*:
+    mem: 24
 
   toolshed.g2.bx.psu.edu/repos/iuc/mummer_mummer/mummer_mummer/.*:
     mem: 8
 
+  toolshed.g2.bx.psu.edu/repos/iuc/pirate/pirate/.*:
+    cores: 12
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/galaxy-australia/panaroo/panaroo/.*:
+    cores: 12
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/ufz/genomad_end_to_end/genomad_end_to_end/.*:
+    cores: 4
+    mem: 37
+
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/hifiasm_meta/hifiasm_meta/.*:
     cores: 8
-    params:
-      singularity_enabled: true
+
+  toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/.*:
+    mem: 8
 
   toolshed.g2.bx.psu.edu/repos/rnateam/dewseq/dewseq/.*:
     cores: 2
     mem: 40
-    scheduling:
-      prefer:
-        - condor-tpv
 
-  toolshed.g2.bx.psu.edu/repos/iuc/fasta_stats/fasta-stats/.*:
-    rules:
-      - if: input_size >= 0.01
-        cores: 3
+  toolshed.g2.bx.psu.edu/repos/iuc/iqtree/iqtree/.*:
+    cores: 4
+    mem: 12
 
-  toolshed.g2.bx.psu.edu/repos/iuc/ncbi_fcs_gx/ncbi_fcs_gx/.*:
-    rules:
-      - id: ncbi_fcs_gx
-        if: |
-          helpers.job_args_match(job, app, {"mode": {"mode_selector": "screen"}})
-        mem: 480
-        cores: 64
-
-  toolshed.g2.bx.psu.edu/repos/computational-metabolomics/sirius_csifingerid/sirius_csifingerid/.*:
-    cores: 8
-    mem: 8
-
-  ## a user exported 100 of files and memory was not enough
-  export_remote:
-    mem: 8
-
-  toolshed.g2.bx.psu.edu/repos/rnateam/htseq-clip/htseq-clip/.*:
+  toolshed.g2.bx.psu.edu/repos/rnateam/htseq_clip/htseq_clip/.*:
     cores: 4
     mem: 16
-    scheduling:
-      prefer:
-        - condor-tpv
 
-  toolshed.g2.bx.psu.edu/repos/iuc/sleuth/sleuth/.*:
-    cores: 4
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_peptidespectrummatching/proteomiqon_peptidespectrummatching/.*:
     mem: 16
-    scheduling:
-      require:
-        - conda
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/iuc/rnaquast/rna_quast/.*:
-    cores: 12
-    mem: 40
-    scheduling:
-      require:
-        - conda
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/iuc/mashmap/mashmap/.*:
-    cores: 8
-    mem: 32
-    scheduling:
-      require:
-        - conda
-        - singularity
 
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold/.*:
     cores: 10
@@ -335,113 +269,108 @@ tools:
           "cz-pulsar" in {tag.value for tag in entity.tpv_tags.tags}
         gpus: 1
     scheduling:
-      require:
+      accept:
         - singularity
 
-  basic_docker_tool:
-    params:
-      submit_requirements: "GalaxyDockerHack == True"
-    scheduling:
-      require:
-        - docker
-
-  basic_pxe_gpu_tool:
-    inherits: basic_docker_tool
-    rule:
-      - name: Assign pxe-gpu by random
-        if: true
-        execute: |
-          from tpv.core.entities import Tag, TagSetManager, TagType
-          from random import SystemRandom
-          if SystemRandom().random() < 0.2:
-            pulsar_tag = Tag("scheduling", "pxe-gpu", TagType.PREFER)
-            entity.tpv_tags = entity.tpv_tags.combine(TagSetManager(tags=[pulsar_tag]))
-
   toolshed.g2.bx.psu.edu/repos/bgruening/markitdown/markitdown/.*:
-    inherits: basic_docker_tool
     params:
       docker_run_extra_arguments: --user 999
-  toolshed.g2.bx.psu.edu/repos/iuc/brew3r_r/brew3r_r/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/iuc/bellavista_prepare/bellavista_prepare/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/bgruening/vpt_extract/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/bgruening/vpt_segment/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/eml2eal/eml2eal/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/data_paper_from_eml/data_paper_from_EML/.*:
-    inherits: basic_docker_tool
+
   toolshed.g2.bx.psu.edu/repos/ecology/harmonize_insitu_to_netcdf/harmonize_insitu_to_netcdf/.*:
-    inherits: basic_docker_tool
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
-  toolshed.g2.bx.psu.edu/repos/ecology/tool_odv/tool_odv/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/tool_odv_history/tool_odv_history/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/tool_biogeochemical_calibration/tool_biogeochemical_calibration/.*:
-    inherits: basic_docker_tool
-  # conda env not working, trying the container
-  toolshed.g2.bx.psu.edu/repos/imgteam/color_deconvolution/ip_color_deconvolution/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_point/ggplot2_point/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/bgruening/mgnify_seqprep/mgnify_seqprep/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/artbio/manta/manta/.*:
-    inherits: basic_docker_tool
+
+
   toolshed.g2.bx.psu.edu/repos/goeckslab/squidpy/squidpy_spatial/*:
-    inherits: basic_docker_tool
     mem: 6
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
-  toolshed.g2.bx.psu.edu/repos/goeckslab/gate_finder/gate_finder/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/galaxyp/qupath_roi_splitter/qupath_roi_splitter/.*:
-    inherits: basic_docker_tool
+
+  # this is for tabular learner tool
+  toolshed.g2.bx.psu.edu/repos/goeckslab/pycaret_[^/]*/pycaret_[^/]*/3.3.2.*:
+    params:
+      container_override: [{type: singularity, shell: '/bin/sh', identifier: "/cvmfs/main.galaxyproject.org/singularity/galaxy-pycaret:3.3.2--0"}]
+
+  toolshed.g2.bx.psu.edu/repos/goeckslab/tabular_learner/tabular_learner/0\.1\..*:
+    inherits: toolshed.g2.bx.psu.edu/repos/goeckslab/pycaret_[^/]*/pycaret_[^/]*/3.3.2.*
+
+  toolshed.g2.bx.psu.edu/repos/rnateam/splitfasta/rbc_splitfasta/.*:
+    # this is only implemented in 0.6.0+, consider adding a rule checking that `$inputFile.metadata.sequences` is not bigger than 1000 and the version is less 0.6.0
+    env:
+      - name: SINGULARITYENV_GALAXY_FILE_LIMIT
+        value: "250"
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_overviews/3dtrees_overviews/.*:
+    cores: 5
+    mem: 5
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_tile_merge/3dtrees_tile_merge/.*:
+    cores: 10
+    mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_raycloudtools/3dtrees_raycloudtools/.*:
+    # Devereux et al., 2026 (DOI: 10.1016/j.rse.2025.115162): 28 cores, 128 GB
+    cores: min(int(input_size * 2 // 1 + 1), 28)
+    mem: min(19 + (input_size * 8.5 // 1 + 1), 128)
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_segmentanytree/3dtrees_segmentanytree/.*:
+    gpus: 1
+    cores: 10
+    mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_forestmamba/3dtrees_forestmamba/.*:
+    gpus: 1
+    cores: 10
+    mem: 20
+    params:
+      docker_env_CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
+      docker_run_extra_arguments: ' --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
+    context:
+      exclude_gpu_models: ["Tesla T4"]
+      include_gpu_models: ["NVIDIA L40S", "Tesla V100-PCIE-32GB"]
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_standardization/3dtrees_standardization/.*:
+    cores: 10
+    mem: 4
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_detailview/3dtrees_detailview/.*:
+    gpus: 1
+    cores: 8
+    mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_smart_tile/3dtrees_smart_tile/.*:
+    cores: 10
+    mem: min(max(2,(input_size * 2)), 200)
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_potree/3dtrees_potree/.*:
+    cores: 10
+    mem: min(50 + (input_size * 4), 200)
+
+  toolshed.g2.bx.psu.edu/repos/imgteam/libcarna_render/libcarna_render/.*:
+    inherits: _basic_docker_tool
+    gpus: 1
+    cores: 1
+    mem: 4
+    params:
+      docker_run_extra_arguments: " --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,compute "
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/msconvert/msconvert/.*:
+    ## seems to be still needed 2026/06
+    ## https://github.com/usegalaxy-eu/infrastructure-playbook/pull/2154
+    params:
+      docker_run_extra_arguments: --user 999 -v /bin/false:/usr/bin/sudo:ro
+
   toolshed.g2.bx.psu.edu/repos/goeckslab/vitessce_spatial/vitessce_spatial/.*:
-    inherits: basic_docker_tool
     params:
       docker_run_extra_arguments: --user 999
-  toolshed.g2.bx.psu.edu/repos/bgruening/cellpose/cellpose/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/iuc/fgsea/fgsea/.*:
-    # any container should work
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/iuc/cat_bins/cat_bins/.*:
-    rules:
-      - id: cat_bins_medium_input_rule
-        if: input_size >= 0.03
-        mem: 48
-      - id: cat_bins_large_input_rule
-        if: input_size >= 0.06
-        mem: 72
-  toolshed.g2.bx.psu.edu/repos/iuc/chewbbaca.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/recetox/recetox_msfinder/recetox_msfinder/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/recetox/qcxms_getres/qcxms_getres/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/recetox/qcxms_neutral_run/qcxms_neutral_run/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/recetox/qcxms_production_run/qcxms_production_run/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/imgteam/bioformats2raw/bf2raw/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/bgruening/biomodels_biomd0000001066/biomodels_biomd0000001066/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/bgruening/biomodels_biomd0000001076/biomodels_biomd0000001076/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/bgruening/doclayoutyolo/doclayoutyolo/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/bgruening/json2yolosegment/json2yolosegment/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/bgruening/yolo_predict/yolo_predict/.*:
-    inherits: basic_docker_tool
+
+  # NCBI recommends AWS r6a.8xlarge: cores: 32, mem:256
+  toolshed.g2.bx.psu.edu/repos/richard-burhans/ncbi_egapx/ncbi_egapx/.*:
+    cores: 32
+    mem: 248
+
   toolshed.g2.bx.psu.edu/repos/bgruening/yolo_training/yolo_training/.*:
-    inherits: basic_docker_tool
+    inherits: _basic_docker_tool
     gpus: 1
     cores: 4
     mem: 32
@@ -449,16 +378,28 @@ tools:
       docker_run_extra_arguments: ' --gpus all --shm-size 16g '
     env:
       GPU_AVAILABLE: 1
-  toolshed.g2.bx.psu.edu/repos/imgteam/rfove/rfove/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/iuc/homer_findmotifs/homer_findMotifs/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/gga/repeatexplorer_clustering/repeatexplorer_clustering/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/galaxyp/diann/diann/.*:
-    inherits: basic_docker_tool
+      # the non-NFS /tmp dir is needed to avoid "resource is busy" errors
+      _GALAXY_JOB_TMP_DIR: '/tmp'
+  toolshed.g2.bx.psu.edu/repos/bgruening/parabricks_fq2bam/parabricks_fq2bam/.*:
+    # 16 mem / 8 cores = 4min for a paired-end 2,5/2,5 GB FASTQ file
+    # 32 mem / 16 cores = 2min for a paired-end 2,5/2,5 GB FASTQ file
+    inherits: _basic_docker_tool
+    mem: 16
+    gpus: 1
+    cores: 8
+    params:
+      docker_env_CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
+      docker_run_extra_arguments: ' --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
+    context:
+      exclude_gpu_models: ["Tesla V100-PCIE-32GB"]
+      include_gpu_models: ["NVIDIA L40S", "Tesla T4"]
+    env:
+      GPU_AVAILABLE: 1
+      # the non-NFS /tmp dir is needed to avoid "resource is busy" errors
+      _GALAXY_JOB_TMP_DIR: '/tmp'
+
   toolshed.g2.bx.psu.edu/repos/bgruening/instagraal/instagraal/.*:
-    inherits: basic_pxe_gpu_tool
+    inherits: _basic_docker_tool
     gpus: 1
     cores: 1
     mem: 30
@@ -469,23 +410,41 @@ tools:
 
   # picrust tries to remove TMP folders, on NFS this does not always work, so we run this tool in a container with internal (non-NFS) TMP
   toolshed.g2.bx.psu.edu/repos/iuc/picrust.*:
-    inherits: basic_docker_tool
     cores: 2
     mem: 10
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
 
   toolshed.g2.bx.psu.edu/repos/iuc/diffdock/diffdock/.*:
-    inherits: basic_pxe_gpu_tool
+    inherits: _basic_docker_tool
     gpus: 1
     cores: 1
     params:
-      docker_run_extra_arguments: ' --gpus all '
+      docker_run_extra_arguments: ' --gpus all --user 999 '
     env:
       GPU_AVAILABLE: 1
 
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_peptidedb/proteomiqon_peptidedb/.*:
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_mzmltomzlite/proteomiqon_mzmltomzlite/.*:
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_psmstatistics/proteomiqon_psmstatistics/.*:
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_psmbasedquantification/proteomiqon_psmbasedquantification/.*:
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_proteininference/proteomiqon_proteininference/.*:
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/.*:
+    cores: 12
+    mem: 32
+
   toolshed.g2.bx.psu.edu/repos/bgruening/black_forest_labs_flux/black_forest_labs_flux/.*:
-    inherits: basic_pxe_gpu_tool
+    inherits: _basic_docker_tool
     gpus: 1
     cores: 1
     params:
@@ -493,446 +452,80 @@ tools:
       docker_run_extra_arguments: ' --gpus all '
     env:
       GPU_AVAILABLE: 1
+    # scheduling:
+    #   require:
+    #     - gpu-divided
 
   toolshed.g2.bx.psu.edu/repos/bgruening/whisper/whisper/.*:
-    inherits: basic_pxe_gpu_tool
     cores: 1
     mem: 5
     env:
       OPENAI_WHISPER_MODEL_DIR: "/data/db/models/openai_whisper/"
 
   toolshed.g2.bx.psu.edu/repos/bgruening/whisperx/whisperx/.*:
-    inherits: basic_pxe_gpu_tool
+    inherits: _basic_docker_tool
     gpus: 1
     cores: 1
     mem: 5
     params:
-      docker_run_extra_arguments: '--gpus all --env WHISPERX_MODEL_DIR=$WHISPERX_MODEL_DIR --env WHISPERX_DEVICE=$WHISPERX_DEVICE'
+      docker_run_extra_arguments: '--gpus all --env WHISPERX_MODEL_DIR=$WHISPERX_MODEL_DIR --env WHISPERX_DEVICE=$WHISPERX_DEVICE --env WHISPERX_COMPUTE_TYPE=$WHISPERX_COMPUTE_TYPE'
     env:
       WHISPERX_MODEL_DIR: "/data/db/models/whisperx/whisperx_models/"
       WHISPERX_DEVICE: "cuda"
       WHISPERX_COMPUTE_TYPE: "float16"
+    # scheduling:
+    #   require:
+    #     - gpu-divided
+
+  toolshed.g2.bx.psu.edu/repos/iuc/biapy/biapy/.*:
+    inherits: _basic_docker_tool
+    gpus: 1
+    cores: 1
+    mem: 12
+    params:
+      docker_run_extra_arguments: ' --gpus all --shm-size 16g --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
+      docker_env_CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
+      docker_env_GALAXY_BIAPY_GPU_STRING: "$_CONDOR_AssignedGPUs"
+      docker_env_GPU_AVAILABLE: 1
+    env:
+      GPU_AVAILABLE: 1
+      GALAXY_BIAPY_GPU_STRING: 0
 
   toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc/.*:
     # 8 (from the shared TPV) seems to high for me
     cores: 3
 
-
   toolshed.g2.bx.psu.edu/repos/iuc/bbtools_tadpole/bbtools_tadpole/.*:
     mem: 8
-    scheduling:
-      require:
-        - singularity
 
-  toolshed.g2.bx.psu.edu/repos/iuc/pairtools_parse/pairtools_parse/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/cb_ivr/cb_ivr/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/taxo_cov_template/taxo_cov_template/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/makeeml/makeeml/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/entities_template/entities_template/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/eal_templates/eal_templates/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/eal_table_template/eal_table_template/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/raster_template/raster_template/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/ecology/vector_template/vector_template/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/perssond/basic_illumination/basic_illumination/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/goeckslab/mesmer/mesmer/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/perssond/quantification/quantification/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/perssond/s3segmenter/s3segmenter/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/perssond/coreograph/unet_coreograph/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/perssond/unmicst/unmicst/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/perssond/ashlar/ashlar/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__alignment__mafft/qiime2__alignment__mafft/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__alignment__mafft_add/qiime2__alignment__mafft_add/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__alignment__mask/qiime2__alignment__mask/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__composition__add_pseudocount/qiime2__composition__add_pseudocount/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__composition__ancom/qiime2__composition__ancom/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__composition__ancombc/qiime2__composition__ancombc/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__filter_alpha_diversity/qiime2__diversity__filter_alpha_diversity/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__composition__tabulate/qiime2__composition__tabulate/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__cutadapt__demux_paired/qiime2__cutadapt__demux_paired/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__cutadapt__demux_single/qiime2__cutadapt__demux_single/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__cutadapt__trim_paired/qiime2__cutadapt__trim_paired/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__cutadapt__trim_single/qiime2__cutadapt__trim_single/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__dada2__denoise_ccs/qiime2__dada2__denoise_ccs/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__dada2__denoise_paired/qiime2__dada2__denoise_paired/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__dada2__denoise_pyro/qiime2__dada2__denoise_pyro/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__dada2__denoise_single/qiime2__dada2__denoise_single/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__deblur__denoise_16S/qiime2__deblur__denoise_16S/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__deblur__denoise_other/qiime2__deblur__denoise_other/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__deblur__visualize_stats/qiime2__deblur__visualize_stats/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__emp_paired/qiime2__demux__emp_paired/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__emp_single/qiime2__demux__emp_single/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__filter_samples/qiime2__demux__filter_samples/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__subsample_paired/qiime2__demux__subsample_paired/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__subsample_single/qiime2__demux__subsample_single/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__summarize/qiime2__demux__summarize/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__adonis/qiime2__diversity__adonis/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__alpha/qiime2__diversity__alpha/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__alpha_correlation/qiime2__diversity__alpha_correlation/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__alpha_group_significance/qiime2__diversity__alpha_group_significance/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__alpha_phylogenetic/qiime2__diversity__alpha_phylogenetic/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__alpha_rarefaction/qiime2__diversity__alpha_rarefaction/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__beta/qiime2__diversity__beta/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__beta_correlation/qiime2__diversity__beta_correlation/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__beta_group_significance/qiime2__diversity__beta_group_significance/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__beta_phylogenetic/qiime2__diversity__beta_phylogenetic/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__beta_rarefaction/qiime2__diversity__beta_rarefaction/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__bioenv/qiime2__diversity__bioenv/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__core_metrics/qiime2__diversity__core_metrics/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__core_metrics_phylogenetic/qiime2__diversity__core_metrics_phylogenetic/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__filter_distance_matrix/qiime2__diversity__filter_distance_matrix/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__mantel/qiime2__diversity__mantel/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__pcoa/qiime2__diversity__pcoa/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__pcoa_biplot/qiime2__diversity__pcoa_biplot/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__procrustes_analysis/qiime2__diversity__procrustes_analysis/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__tsne/qiime2__diversity__tsne/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__umap/qiime2__diversity__umap/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__alpha_passthrough/qiime2__diversity_lib__alpha_passthrough/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__beta_passthrough/qiime2__diversity_lib__beta_passthrough/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__beta_phylogenetic_meta_passthrough/qiime2__diversity_lib__beta_phylogenetic_meta_passthrough/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__beta_phylogenetic_passthrough/qiime2__diversity_lib__beta_phylogenetic_passthrough/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__bray_curtis/qiime2__diversity_lib__bray_curtis/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__faith_pd/qiime2__diversity_lib__faith_pd/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__jaccard/qiime2__diversity_lib__jaccard/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__observed_features/qiime2__diversity_lib__observed_features/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__pielou_evenness/qiime2__diversity_lib__pielou_evenness/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__shannon_entropy/qiime2__diversity_lib__shannon_entropy/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__unweighted_unifrac/qiime2__diversity_lib__unweighted_unifrac/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity_lib__weighted_unifrac/qiime2__diversity_lib__weighted_unifrac/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__emperor__biplot/qiime2__emperor__biplot/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__emperor__plot/qiime2__emperor__plot/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__emperor__procrustes_plot/qiime2__emperor__procrustes_plot/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_classifier__blast/qiime2__feature_classifier__blast/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_classifier__classify_consensus_blast/qiime2__feature_classifier__classify_consensus_blast/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_classifier__classify_consensus_vsearch/qiime2__feature_classifier__classify_consensus_vsearch/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_classifier__classify_hybrid_vsearch_sklearn/qiime2__feature_classifier__classify_hybrid_vsearch_sklearn/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_classifier__classify_sklearn/qiime2__feature_classifier__classify_sklearn/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_classifier__extract_reads/qiime2__feature_classifier__extract_reads/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_classifier__find_consensus_annotation/qiime2__feature_classifier__find_consensus_annotation/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_classifier__fit_classifier_naive_bayes/qiime2__feature_classifier__fit_classifier_naive_bayes/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_classifier__fit_classifier_sklearn/qiime2__feature_classifier__fit_classifier_sklearn/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_classifier__vsearch_global/qiime2__feature_classifier__vsearch_global/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__core_features/qiime2__feature_table__core_features/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__filter_features/qiime2__feature_table__filter_features/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__filter_features_conditionally/qiime2__feature_table__filter_features_conditionally/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__filter_samples/qiime2__feature_table__filter_samples/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__filter_seqs/qiime2__feature_table__filter_seqs/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__group/qiime2__feature_table__group/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__heatmap/qiime2__feature_table__heatmap/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__merge/qiime2__feature_table__merge/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__merge_seqs/qiime2__feature_table__merge_seqs/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__merge_taxa/qiime2__feature_table__merge_taxa/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__presence_absence/qiime2__feature_table__presence_absence/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__rarefy/qiime2__feature_table__rarefy/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__relative_frequency/qiime2__feature_table__relative_frequency/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__rename_ids/qiime2__feature_table__rename_ids/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__subsample/qiime2__feature_table__subsample/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__summarize/qiime2__feature_table__summarize/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__tabulate_seqs/qiime2__feature_table__tabulate_seqs/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__feature_table__transpose/qiime2__feature_table__transpose/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__fragment_insertion__classify_otus_experimental/qiime2__fragment_insertion__classify_otus_experimental/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__fragment_insertion__filter_features/qiime2__fragment_insertion__filter_features/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__fragment_insertion__sepp/qiime2__fragment_insertion__sepp/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__gneiss__assign_ids/qiime2__gneiss__assign_ids/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__gneiss__correlation_clustering/qiime2__gneiss__correlation_clustering/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__gneiss__dendrogram_heatmap/qiime2__gneiss__dendrogram_heatmap/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__gneiss__gradient_clustering/qiime2__gneiss__gradient_clustering/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__gneiss__ilr_hierarchical/qiime2__gneiss__ilr_hierarchical/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__gneiss__ilr_phylogenetic/qiime2__gneiss__ilr_phylogenetic/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__gneiss__ilr_phylogenetic_differential/qiime2__gneiss__ilr_phylogenetic_differential/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__gneiss__ilr_phylogenetic_ordination/qiime2__gneiss__ilr_phylogenetic_ordination/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__longitudinal__anova/qiime2__longitudinal__anova/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__longitudinal__feature_volatility/qiime2__longitudinal__feature_volatility/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__longitudinal__first_differences/qiime2__longitudinal__first_differences/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__longitudinal__first_distances/qiime2__longitudinal__first_distances/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__longitudinal__linear_mixed_effects/qiime2__longitudinal__linear_mixed_effects/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__longitudinal__maturity_index/qiime2__longitudinal__maturity_index/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__longitudinal__nmit/qiime2__longitudinal__nmit/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__longitudinal__pairwise_differences/qiime2__longitudinal__pairwise_differences/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__longitudinal__pairwise_distances/qiime2__longitudinal__pairwise_distances/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__longitudinal__plot_feature_volatility/qiime2__longitudinal__plot_feature_volatility/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__longitudinal__volatility/qiime2__longitudinal__volatility/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__metadata__distance_matrix/qiime2__metadata__distance_matrix/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__metadata__shuffle_groups/qiime2__metadata__shuffle_groups/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__metadata__tabulate/qiime2__metadata__tabulate/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__align_to_tree_mafft_fasttree/qiime2__phylogeny__align_to_tree_mafft_fasttree/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__align_to_tree_mafft_iqtree/qiime2__phylogeny__align_to_tree_mafft_iqtree/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__align_to_tree_mafft_raxml/qiime2__phylogeny__align_to_tree_mafft_raxml/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__fasttree/qiime2__phylogeny__fasttree/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__filter_table/qiime2__phylogeny__filter_table/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__filter_tree/qiime2__phylogeny__filter_tree/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__iqtree/qiime2__phylogeny__iqtree/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__iqtree_ultrafast_bootstrap/qiime2__phylogeny__iqtree_ultrafast_bootstrap/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__midpoint_root/qiime2__phylogeny__midpoint_root/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__raxml/qiime2__phylogeny__raxml/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__raxml_rapid_bootstrap/qiime2__phylogeny__raxml_rapid_bootstrap/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__phylogeny__robinson_foulds/qiime2__phylogeny__robinson_foulds/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__quality_control__bowtie2_build/qiime2__quality_control__bowtie2_build/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__quality_control__evaluate_composition/qiime2__quality_control__evaluate_composition/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__quality_control__evaluate_seqs/qiime2__quality_control__evaluate_seqs/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__quality_control__evaluate_taxonomy/qiime2__quality_control__evaluate_taxonomy/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__quality_control__exclude_seqs/qiime2__quality_control__exclude_seqs/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__quality_control__filter_reads/qiime2__quality_control__filter_reads/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__quality_filter__q_score/qiime2__quality_filter__q_score/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__classify_samples/qiime2__sample_classifier__classify_samples/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__classify_samples_from_dist/qiime2__sample_classifier__classify_samples_from_dist/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__classify_samples_ncv/qiime2__sample_classifier__classify_samples_ncv/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__confusion_matrix/qiime2__sample_classifier__confusion_matrix/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__fit_classifier/qiime2__sample_classifier__fit_classifier/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__fit_regressor/qiime2__sample_classifier__fit_regressor/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__heatmap/qiime2__sample_classifier__heatmap/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__metatable/qiime2__sample_classifier__metatable/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__predict_classification/qiime2__sample_classifier__predict_classification/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__predict_regression/qiime2__sample_classifier__predict_regression/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__regress_samples/qiime2__sample_classifier__regress_samples/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__regress_samples_ncv/qiime2__sample_classifier__regress_samples_ncv/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__scatterplot/qiime2__sample_classifier__scatterplot/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__split_table/qiime2__sample_classifier__split_table/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__sample_classifier__summarize/qiime2__sample_classifier__summarize/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__taxa__barplot/qiime2__taxa__barplot/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__taxa__collapse/qiime2__taxa__collapse/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__taxa__filter_seqs/qiime2__taxa__filter_seqs/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__taxa__filter_table/qiime2__taxa__filter_table/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__vsearch__cluster_features_closed_reference/qiime2__vsearch__cluster_features_closed_reference/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__vsearch__cluster_features_de_novo/qiime2__vsearch__cluster_features_de_novo/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__vsearch__cluster_features_open_reference/qiime2__vsearch__cluster_features_open_reference/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__vsearch__dereplicate_sequences/qiime2__vsearch__dereplicate_sequences/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__vsearch__fastq_stats/qiime2__vsearch__fastq_stats/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__vsearch__merge_pairs/qiime2__vsearch__merge_pairs/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__vsearch__uchime_denovo/qiime2__vsearch__uchime_denovo/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__vsearch__uchime_ref/qiime2__vsearch__uchime_ref/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_core__tools__export/qiime2_core__tools__export/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_core__tools__import/qiime2_core__tools__import/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_core__tools__import_fastq/qiime2_core__tools__import_fastq/.*:
-    inherits: basic_docker_tool
-  toolshed.g2.bx.psu.edu/repos/bgruening/qiime2_dbotu_q2/.*:
-    inherits: basic_docker_tool
+  # the following two rules are really dumb ones, which will allow bbtools to succeed in more cases than with default mem,
+  # but this should really be improved according to https://github.com/usegalaxy-eu/infrastructure-playbook/issues/1994
+  toolshed.g2.bx.psu.edu/repos/iuc/bbtools_bbduk/bbtools_bbduk/.*:
+    mem: 32
+  toolshed.g2.bx.psu.edu/repos/iuc/bbtools_bbmap/bbtools_bbmap/.*:
+    mem: 32
+
+  toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_.*:
+    params:
+      docker_run_extra_arguments: --user 999:999
+
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_train/cherri_train/.*:
-    inherits: basic_docker_tool
     cores: 10
     mem: 90
 
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastn_wrapper/.*:
+  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/.*:
     env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastp_wrapper/.*:
-    env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastx_wrapper/.*:
-    env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_makeblastdb/.*:
-    env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_tblastn_wrapper/.*:
-    env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
-  toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_tblastx_wrapper/.*:
-    env:
-      BLASTDB: "/data/db/databases/blast/taxdb"
-
-  toolshed.g2.bx.psu.edu/repos/genouest/helixer/helixer/.*:
-    cores: 4
-    mem: 30
-    scheduling:
-      require:
-        - singularity
-    rules:
-      - if: input_size >= 0.2
-        gpus: 1
-        params:
-          singularity_run_extra_arguments: ' --nv '
+      - name: BLASTDB
+        value: /data/db/databases/blast/taxdb
+      - name: SINGULARITYENV_BLASTDB
+        value: $BLASTDB
 
   toolshed.g2.bx.psu.edu/repos/iuc/cherri_eval/cherri_eval/.*:
-    inherits: basic_docker_tool
     cores: 1
     mem: 20
 
   toolshed.g2.bx.psu.edu/repos/nml/metaspades/metaspades/.*:
     cores: 2
-    scheduling:
-      accept:
-        - pulsar
-        - condor-tpv
     rules:
       - if: 0.05 <= input_size < 1
         cores: 8
@@ -955,46 +548,8 @@ tools:
       - if: 2 <= input_size < 20
         cores: 20
         mem: 350
-        scheduling:
-          prefer:
-            - condor-tpv
       - if: input_size >= 20
         fail: Too much data, please don't use this tool for this.
-
-  toolshed.g2.bx.psu.edu/repos/iuc/beagle/beagle/.*:
-    cores: 1
-    rules:
-      - if: input_size < 1
-        mem: 24
-      - if: input_size >= 1
-        mem: 64
-
-  toolshed.g2.bx.psu.edu/repos/galaxy-australia/smudgeplot/smudgeplot/.*:
-    cores: 8
-    rules:
-      - if: input_size < 1
-        mem: 15
-      - if: 1 <= input_size < 5
-        mem: 75
-      - if: 5 <= input_size < 10
-        cores: 12
-        mem: 150
-      - if: 10 <= input_size < 15
-        cores: 12
-        mem: 225
-      - if: 15 <= input_size < 20
-        cores: 12
-        mem: 300
-      - if: 20 <= input_size < 25
-        mem: 375
-        cores: 16
-      - if: input_size >= 25
-        fail: Too much data, please check if the input is correct.
-
-  toolshed.g2.bx.psu.edu/repos/devteam/freebayes/freebayes/.*:
-    # see https://github.com/usegalaxy-eu/infrastructure-playbook/pull/881 for some numbers
-    cores: 10
-    mem: 9 + input_size * 1
 
   toolshed.g2.bx.psu.edu/repos/iuc/shovill/shovill/.*:
     inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
@@ -1014,9 +569,6 @@ tools:
       - if: input_size >= 2
         cores: 20
         mem: 350
-        scheduling:
-          prefer:
-            - condor-tpv
 
   toolshed.g2.bx.psu.edu/repos/iuc/spades_plasmidspades/spades_plasmidspades/.*:
     inherits: toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
@@ -1032,53 +584,16 @@ tools:
 
   # cactus suite
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/cactus_cactus/cactus_cactus/.*:
-    context:
-      test_cores: 4
     cores: 20
     mem: 256
-    scheduling:
-      prefer:
-        - condor-tpv
-    params:
-      singularity_enabled: true
-  toolshed.g2.bx.psu.edu/repos/galaxy-australia/cactus_export/cactus_export/.*:
-    params:
-      singularity_enabled: true
-
-  toolshed.g2.bx.psu.edu/repos/iuc/trinity/trinity/.*:
-    cores: 24
-    mem: 250
-    scheduling:
-      prefer:
-        - condor-tpv
-    rules:
-      - if: input_size < 0.1
-        cores: 1
-        mem: 4
-      - if: 0.1 <= input_size < 1
-        cores: 12
-        mem: 92
-      - if: 1 <= input_size < 4
-        cores: 16
-        mem: 128
-      - if: 4 <= input_size < 8
-        cores: 20
-        mem: 190
-      - if: input_size >= 80
-        fail: |
-          Too much data, we cannot support such large Trinity assemblies with our
-          backend. Please use another server for your job.
 
   '.*mothur_.*':
     cores: 1
     mem: 90
     params:
       docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
-      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb13/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/1/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
       docker_default_container_id: centos:8.3.2011
-    scheduling:
-      require:
-        - docker
         # see https://github.com/galaxyproject/galaxy/issues/16121#issuecomment-1555153421
         ##- embedded-pulsar
 
@@ -1087,18 +602,15 @@ tools:
     mem: 20
     params:
       docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
-      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb13/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/1/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
       docker_default_container_id: centos:8.3.2011
-    scheduling:
-      require:
-        - docker
         # see https://github.com/galaxyproject/galaxy/issues/16121#issuecomment-1555153421
         ##- embedded-pulsar
 
   '.*bioext_bam2msa.*':
     params:
       docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
-      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb13/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/1/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
       docker_default_container_id: centos:8.3.2011
     scheduling:
       require:
@@ -1108,7 +620,7 @@ tools:
   'last_*':
     params:
       docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
-      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb13/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/1/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
       docker_default_container_id: centos:8.3.2011
     scheduling:
       require:
@@ -1118,21 +630,18 @@ tools:
   toolshed.g2.bx.psu.edu/repos/bgruening/blobtoolkit/blobtoolkit/.*:
     cores: 8
     mem: 20
-    inherits: basic_docker_tool
     params:
       docker_run_extra_arguments: --user 999
-
-  # 4GB is enough for most of the runs as it seems
-  toolshed.g2.bx.psu.edu/repos/iuc/purge_dups/purge_dups/.*:
-    cores: 1
-    mem: 6
 
   toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicates/.*:
     cores: 8
     mem: 20
-    inherits: basic_docker_tool
-    params:
-      docker_run_extra_arguments: --user 999
+    env:
+      SINGULARITYENV__JAVA_OPTIONS: -Xmx{int(mem)}G
+
+  toolshed.g2.bx.psu.edu/repos/devteam/sam_merge/sam_merge2/(1\.1\.2|1\.2\.0):
+    env:
+      SINGULARITYENV_JAVA_JAR_PATH: /usr/local/share/picard-1.56-1/
 
   toolshed.g2.bx.psu.edu/repos/bgruening/diamond/diamond/.*:
     cores: 6
@@ -1140,71 +649,32 @@ tools:
     rules:
       - if: input_size >= 30
         cores: 12
-  toolshed.g2.bx.psu.edu/repos/bgruening/xchem_transfs_scoring/xchem_transfs_scoring/.*:
-    scheduling:
-      require:
-        - docker
+
   toolshed.g2.bx.psu.edu/repos/bgruening/openduck_run_smd/openduck_run_smd/.*:
-    env:
+    params:
       docker_set_user: 1000
       docker_run_extra_arguments: '-e "OPENDUCK_GPU_PARAM=$OPENDUCK_GPU_PARAM" --gpus all'
-    scheduling:
-      require:
-        - docker
-  toolshed.g2.bx.psu.edu/repos/bgruening-util/stress_ng/stress_ng/.*:
-    scheduling:
-      require:
-        - singularity
-        - conda
-  toolshed.g2.bx.psu.edu/repos/galaxyp/maxquant/maxquant/.*:
-    scheduling:
-      require:
-        - singularity
-  toolshed.g2.bx.psu.edu/repos/iuc/lumpy_prep/lumpy_prep/.*:
-    scheduling:
-      require:
-        - singularity
-        - conda
+
   # is there a way to avoid this
   ".*pcgr.*":
     mem: 16
     cores: 8
     env:
       GALAXY_PCGR_DIR: "/data/db/databases/pcgr"
-    scheduling:
-      require:
-        - docker
-  toolshed.g2.bx.psu.edu/repos/iuc/vardict_java/vardict_java/.*:
-    scheduling:
-      require:
-        - singularity
-        - conda
+
 # Not for Pulsar, or is the file copied?
   toolshed.g2.bx.psu.edu/repos/climate/cds_essential_variability/cds_essential_variability/.*:
     env:
       COPERNICUS_CDSAPIRC_KEY_FILE: /data/db/data_managers/COPERNICUS_CDSAPIRC_KEY_FILE
-  toolshed.g2.bx.psu.edu/repos/iuc/idr_download_by_ids/idr_download_by_ids/.*:
-    scheduling:
-      require:
-        - singularity
-        - conda
+
   toolshed.g2.bx.psu.edu/repos/imgteam/overlay_moving_and_fixed_image/ip_viz_overlay_moving_and_fixed_image/.*:
     cores: 8
-  basic_numba_tool:
-    env:
-      NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
-      OMP_NUM_THREADS: 4
-      OPENBLAS_NUM_THREADS: 4
-      MKL_NUM_THREADS: 4
-      VECLIB_MAXIMUM_THREADS: 4
-      NUMEXPR_NUM_THREADS: 4
-      NUMBA_NUM_THREADS: 4
   toolshed.g2.bx.psu.edu/repos/computational-metabolomics/dimspy_process_scans/dimspy_process_scans/.*:
-    inherits: basic_numba_tool
+    inherits: _basic_numba_tool
   toolshed.g2.bx.psu.edu/repos/computational-metabolomics/dimspy_replicate_filter/dimspy_replicate_filter/.*:
-    inherits: basic_numba_tool
+    inherits: _basic_numba_tool
   toolshed.g2.bx.psu.edu/repos/computational-metabolomics/dimspy_align_samples/dimspy_align_samples/.*:
-    inherits: basic_numba_tool
+    inherits: _basic_numba_tool
   toolshed.g2.bx.psu.edu/repos/bgruening/repeat_masker/repeatmasker_wrapper/.*:
     rules:
       - if: helpers.tool_version_gte(tool, '4.1.5')
@@ -1217,124 +687,47 @@ tools:
         cores: 4
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_cluster_reduce_dimension/scanpy_cluster_reduce_dimension/.*:
-    inherits: basic_numba_tool
+    inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_filter/scanpy_filter/.*:
-    inherits: basic_numba_tool
+    inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_inspect/scanpy_inspect/.*:
-    inherits: basic_numba_tool
+    inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_normalize/scanpy_normalize/.*:
-    inherits: basic_numba_tool
+    inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_remove_confounders/scanpy_remove_confounders/.*:
-    inherits: basic_numba_tool
+    inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_plot/scanpy_plot/.*:
-    inherits: basic_numba_tool
-
-  toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*:
-    cores: 24
-    mem: 80
-    env:
-      TERM: vt100
-    scheduling:
-      accept:
-        - pulsar
-    rules:
-      - id: unicycler_small_input_rule
-        if: input_size < 0.05
-        cores: 1
-        mem: 3.8
-      - id: unicycler_medium_input_rule
-        if: 0.05 <= input_size < 2
-        cores: 8
-        mem: 28
-
-  toolshed.g2.bx.psu.edu/repos/imgteam/unzip/unzip/.*:
-    scheduling:
-      require:
-        - singularity
+    inherits: _basic_numba_tool
+    mem: 16
 
   # Also on add_to_tpv_shared_db.yml but without NUMBA_CACHE_DIR
   toolshed.g2.bx.psu.edu/repos/iuc/gemini_inheritance/gemini_inheritance/.*:
-    inherits: basic_numba_tool
-
-  toolshed.g2.bx.psu.edu/repos/iuc/chira_map/chira_map/.*:
-    scheduling:
-      require:
-        - singularity
-        - conda
-
-  toolshed.g2.bx.psu.edu/repos/iuc/chira_merge/chira_merge/.*:
-    scheduling:
-      require:
-        - singularity
-        - conda
-
-  toolshed.g2.bx.psu.edu/repos/iuc/chira_quantify/chira_quantify/.*:
-    scheduling:
-      require:
-        - singularity
-        - conda
-
-  toolshed.g2.bx.psu.edu/repos/iuc/chira_extract/chira_extract/.*:
-    scheduling:
-      require:
-        - singularity
-        - conda
-
-  toolshed.g2.bx.psu.edu/repos/galaxyp/custom_pro_db/custom_pro_db/.*:
-    mem: 16
-
-  toolshed.g2.bx.psu.edu/repos/iuc/data_manager_gtdbtk_database_installer/gtdbtk_database_installer/.*:
-    mem: 128
-
-  toolshed.g2.bx.psu.edu/repos/iuc/semibin/semibin/.*:
-    mem: 16
-    cores: 16
-
-  toolshed.g2.bx.psu.edu/repos/bgruening/nextdenovo/nextdenovo/.*:
-    mem: 128
-    cores: 24
-
-  toolshed.g2.bx.psu.edu/repos/iuc/windowmasker/windowmasker_mkcounts/.*:
-    mem: 64
-    cores: 1
-
-  jbrowse2:
-    mem: 6
-    cores: 1
+    inherits: _basic_numba_tool
 
   toolshed.g2.bx.psu.edu/repos/iuc/circos/circos/.*:
-    scheduling:
-      require:
-        - singularity
-
-  braker_tool:
-    abstract: true
-    rules:
-      - id: braker_genome_sequence_count_rule
-        if: |
-          options = job.get_param_values(app)
-          sequences = options["genome"].metadata.get("sequences")
-          sequences > 100000
-        fail: |
-          The number of sequences in your genome file is too large (>100K) for this tool.
+    env:
+      - name: SINGULARITYENV_LC_ALL
+        value: C
 
   toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.6.*:
-    inherits: braker_tool
+    inherits: _basic_braker_tool
     mem: 4
     cores: 6
     params:
       singularity_container_id_override: "docker://teambraker/braker3:v1.0.6"
-    scheduling:
-      require:
-        - singularity
 
   toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.7.*:
-    inherits: braker_tool
+    inherits: _basic_braker_tool
     mem: 4
     cores: 6
     env:
@@ -1343,51 +736,31 @@ tools:
       singularity_container_id_override: "docker://teambraker/braker3:v3.0.7.1"
       ## This should not be needed. Why are ENVs not passed into the container?
       singularity_cleanenv: true
-    scheduling:
-      require:
-        - singularity
 
   toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.8.*:
-    inherits: braker_tool
+    inherits: _basic_braker_tool
     cores: 6
     mem: 4
     params:
       singularity_container_id_override: "docker://teambraker/braker3:v3.0.7.4"
       ## This should not be needed. Why are ENVs not passed into the container?
       singularity_cleanenv: true
-    scheduling:
-      require:
-        - singularity
 
   toolshed.g2.bx.psu.edu/repos/genouest/braker3/braker3/3.0.3.*:
-    inherits: braker_tool
+    inherits: _basic_braker_tool
     mem: 4
     cores: 6
     params:
       singularity_container_id_override: "docker://teambraker/braker3:v.1.0.4"
-    scheduling:
-      require:
-        - singularity
 
   # GeneMark is a pain and needs special casing
   toolshed.g2.bx.psu.edu/repos/genouest/braker/braker/.*:
-    inherits: braker_tool
+    inherits: _basic_braker_tool
     mem: 4
     cores: 6
     env:
       GENEMARK_PATH: "/usr/local/tools/genemark/etp.for_braker/bin/gmes/"
       PROTHINT_PATH: "/usr/local/tools/genemark/etp.for_braker/bin/gmes/ProtHint/bin/"
-
-  toolshed.g2.bx.psu.edu/repos/iuc/checkm_taxonomy_wf/checkm_taxonomy_wf/.*:
-    mem: 8
-    cores: 8
-
-  toolshed.g2.bx.psu.edu/repos/iuc/checkm_lineage_wf/checkm_lineage_wf/.*:
-    mem: 16
-    cores: 16
-  toolshed.g2.bx.psu.edu/repos/iuc/maker/maker/.*:
-    mem: 64
-    cores: 16
 
   ## is in the shared DB - we need to test it here a bit
   toolshed.g2.bx.psu.edu/repos/galaxyp/openms_featurefindermultiplex/FeatureFinderMultiplex/.*:
@@ -1401,85 +774,15 @@ tools:
       GALAXY_DATA_INDEX_DIR: "/opt/galaxy/tool-data/"
     params:
       singularity_container_id_override: "quay.io/biocontainers/mulled-v2-56685ecbcd8a92192501538ce5a05b1be490b742:1f13308a8260334d826a999ba1f77b563eccd8a5-0"
-    scheduling:
-      require:
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/.*:
-    cores: 8
-    memory: 24
-    scheduling:
-      require:
-        - conda
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/.*:
-    cores: 1
-    mem: 40
-    scheduling:
-      require:
-        - conda
-        - singularity
 
   # 27:02:2024: We seem to have issues with the tools when loaded from the conda envs.
   # For whatever reason they seem to get stuck in the D state and never finish.
   # The below is an attempt to test whether by running the tools in a singularity container
   # we can avoid the issue.
   toolshed.g2.bx.psu.edu/repos/iuc/abricate/abricate/.*:
-    mem: 30.4
-    scheduling:
-      require:
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/galaxyp/eggnog_mapper/eggnog_mapper/.*:
-    cores: 8
-    mem: 24
-    env:
-      EGGNOG_DBMEM: "--dbmem"
-    params:
-      singularity_run_extra_arguments: "--env EGGNOG_DBMEM=--dbmem"
-    scheduling:
-      require:
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2/.*:
-    cores: 32
-    mem: 244
-    rules:
-      - id: bwa_mem2_small_input_rule
-        if: input_size < 0.25
-        cores: 2
-        mem: 7.6
-      - id: bwa_mem2_medium_input_rule
-        if: 0.25 <= input_size < 16
-        cores: 8
-        mem: 28
-      - id: bwa_mem2_large_input_rule
-        if: 16 <= input_size < 32
-        cores: 16
-        mem: 58
-      - id: bwa_mem2_xlarge_input_rule
-        if: 32 <= input_size < 64
-        cores: 24
-        mem: 120
-      - id: bwa_mem2_history_reference_rule
-        if: |
-          helpers.job_args_match(job, app, {"reference_source": {"reference_source_selector": "history"}})
-        # per https://github.com/bwa-mem2/bwa-mem2/issues/41 it's 28 * reference
-        mem: |
-          options = job.get_param_values(app)
-          size = options["reference_source"]["ref_file"].get_size()
-          min(max(float(size/1024**3) * 28, (input_size - float(size/1024**3)) * 2, 7.6), 120)
-
-  toolshed.g2.bx.psu.edu/repos/bgruening/flye/flye/.*:
-    cores: 20
-    mem: min(max(input_size*1.2, 3.8), 256)
-    scheduling:
-      require:
-        - singularity
+    mem: 30.40
 
   toolshed.g2.bx.psu.edu/repos/iuc/funannotate_annotate/funannotate_annotate/.*:
-    inherits: basic_docker_tool
     cores: 8
     mem: 42
     env:
@@ -1492,9 +795,6 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/funannotate_clean/funannotate_clean/.*:
     cores: 8
     mem: 40
-    scheduling:
-      require:
-        - singularity
 
   toolshed.g2.bx.psu.edu/repos/iuc/funannotate_predict/funannotate_predict/.*:
     # we need this here because we need to set the GENEMARK_PATH
@@ -1504,83 +804,12 @@ tools:
       GENEMARK_PATH: /usr/local/tools/genemark/etp.for_braker/bin/gmes/
       _GALAXY_JOB_TMP_DIR: '/tmp'
     params:
-      singularity_run_extra_arguments: "--env GENEMARK_PATH=/usr/local/tools/genemark/etp.for_braker/bin/gmes/ -B /tmp:/tmp"
+      singularity_run_extra_arguments: "--env GENEMARK_PATH=/usr/local/tools/genemark/etp.for_braker/bin/gmes/ -B $TMPDIR:/tmp"
       singularity_no_mount: null
-    scheduling:
-      require:
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/iuc/kraken2/kraken2/.*:
-    cores: 2
-    mem: 70
-    scheduling:
-      require:
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_compute_graph/scanpy_compute_graph/.*:
-    scheduling:
-      require:
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_filter_cells/scanpy_filter_cells/.*:
-    scheduling:
-      require:
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_find_cluster/scanpy_find_cluster/.*:
-    scheduling:
-      require:
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_find_variable_genes/scanpy_find_variable_genes/.*:
-    scheduling:
-      require:
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_multiplet_scrublet/scanpy_multiplet_scrublet/.*:
-    scheduling:
-      require:
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_normalise_data/scanpy_normalise_data/.*:
-    scheduling:
-      require:
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_plot_embed/scanpy_plot_embed/.*:
-    scheduling:
-      require:
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/ebi-gxa/scanpy_run_dpt/scanpy_run_dpt/.*:
-    scheduling:
-      require:
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/bgruening/omark/omark/.*:
-    cores: 8
-    mem: 4
-    scheduling:
-      require:
-        - singularity
 
   toolshed.g2.bx.psu.edu/repos/iuc/red/red/.*:
     cores: 1
     mem: 35
-
-  toolshed.g2.bx.psu.edu/repos/iuc/anndata_manipulate/anndata_manipulate/.*:
-    cores: 1
-    mem: 16
-    rules:
-      - id: anndata_concat
-        if: |
-          param_dict = job.get_param_values(app)
-          param_dict.get('manipulate', {}).get('function') == 'concatenate'
-        mem: 60
-
-  toolshed.g2.bx.psu.edu/repos/iuc/anndata_import/anndata_import/.*:
-    cores: 1
-    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/anndata_export/anndata_export/.*:
     cores: 1
@@ -1590,56 +819,202 @@ tools:
     cores: 1
     mem: 16
 
-  toolshed.g2.bx.psu.edu/repos/iuc/modify_loom/modify_loom/.*:
-    cores: 1
-    mem: 16
-
-  toolshed.g2.bx.psu.edu/repos/iuc/humann/humann/.*:
-    cores: 12
-
-  # Tool is same as fastqc so setting the same resources
-  toolshed.g2.bx.psu.edu/repos/iuc/falco/falco/.*:
-    cores: 3
-
-  toolshed.g2.bx.psu.edu/repos/peterjc/tmhmm_and_signalp/Psortb/.*:
-    scheduling:
-      require:
-        - conda
-        - singularity
-    env:
-      _GALAXY_JOB_TMP_DIR: '/tmp'
-
-  toolshed.g2.bx.psu.edu/repos/bgruening/hicexplorer_hicinfo/hicexplorer_hicinfo/.*:
-    scheduling:
-      require:
-        - singularity
-
-  toolshed.g2.bx.psu.edu/repos/galaxyp/fragpipe/fragpipe/.*:
-    cores: 12
-    mem: 256
-
   toolshed.g2.bx.psu.edu/repos/iuc/episcanpy_build_matrix/episcanpy_build_matrix/.*:
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
     params:
       singularity_no_mount: null
-    scheduling:
-      require:
-        - singularity
 
-  toolshed.g2.bx.psu.edu/repos/iuc/optitype/optitype/.*:
-    cores: 12
-    mem: 256
-
-  # ppanggolin all tries to remove TMP folders, on NFS this does not always work, so we run this tool in singularity with internal (non-NFS) TMP
   toolshed.g2.bx.psu.edu/repos/iuc/ppanggolin_all/ppanggolin_all/.*:
-    env:
-      _GALAXY_JOB_TMP_DIR: '/tmp'
+    cores: 8
+    mem: 24
+
+  # we overwrite here the shared-db, as we seem to need more DB
+  toolshed.g2.bx.psu.edu/repos/iuc/gtdbtk_classify_wf/gtdbtk_classify_wf/.*:
+    cores: 32
+    mem: 200
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/sylph_profile/sylph_profile/.*:
+    cores: 4
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/kmetashot/kmetashot/.*:
+    cores: 2
+    mem: 60
     params:
-      singularity_no_mount: null
+      docker_run_extra_arguments: --shm-size 22g
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/racon/racon/.*:
+    # This tool requires a GPU in the tool wrapper, this is supported since TPV v3.1.0
+    # see https://github.com/galaxyproject/total-perspective-vortex/blob/v3.1.0/tpv/core/resource_requirements.py
     scheduling:
       require:
         - singularity
 
-  toolshed.g2.bx.psu.edu/repos/iuc/vapor/vapor/.*:
-    mem: 8
+  toolshed.g2.bx.psu.edu/repos/chemteam/gmx_sim/gmx_sim/.*:
+    inherits: _basic_gpu_resource_param_tool
+    scheduling:
+      require:
+        - singularity  # can be removed after closing https://github.com/usegalaxy-eu/issues/issues/928
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/flexynesis/flexynesis/.*:
+    rules:
+      - if: helpers.tool_version_gte(tool, '1.1.11+galaxy0')
+        params:
+          docker_run_extra_arguments: --user 999
+      - id: flexynesis_gnn_high_mem
+        if: |
+          retval = False
+          if helpers.tool_version_gte(tool, '1.1.11+galaxy0'):
+            options = job.get_param_values(app)
+            if options:
+              training_type = options.get('training_type', {})
+              if training_type and isinstance(training_type, dict):
+                model_select = training_type.get('model_class', {})
+                if model_select and isinstance(model_select, dict):
+                  retval = model_select.get('model_class') == 'GNN'
+          retval
+        params:
+          docker_run_extra_arguments: --user 999 --gpus all
+        gpus: 1
+        cores: 20
+        mem: 100
+        context:
+          exclude_gpu_models: ["Tesla T4"] # T4 GPUs have only 16 GB of memory, which is not enough for the GNN model
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/flexynesis_cbioportal_import/flexynesis_cbioportal_import/.*:
+    rules:
+      - if: helpers.tool_version_gte(tool, '1.1.11+galaxy0')
+        params:
+          docker_run_extra_arguments: --user 999
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/flexynesis_plot/flexynesis_plot/.*:
+    rules:
+      - if: helpers.tool_version_gte(tool, '1.1.11+galaxy0')
+        params:
+          docker_run_extra_arguments: --user 999
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/flexynesis_utils/flexynesis_utils/.*:
+    rules:
+      - if: helpers.tool_version_gte(tool, '1.1.11+galaxy0')
+        params:
+          docker_run_extra_arguments: --user 999
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/flexynesis_infer/flexynesis_infer/.*:
+    rules:
+      - if: helpers.tool_version_gte(tool, '1.1.11+galaxy0')
+        params:
+          docker_run_extra_arguments: --user 999
+
+  toolshed.g2.bx.psu.edu/repos/genouest/helixer/helixer/.*:
+    params:
+      docker_run_extra_arguments: --user 999
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/search_protein_search_database/search_protein_search_database/.*:
+    cores: 4
+    mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/logan_protein_embed_query/logan_protein_embed_query/.*:
+    cores: 4
+    mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/recetox/aoptk_.*:
+    env:
+      docker_env_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
+      SINGULARITYENV_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
+      LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/llm_hub/llm_hub/.*:
+    mem: 1
+    env:
+      docker_env_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
+      SINGULARITYENV_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
+      LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/rag_retriever/rag_retriever/.*:
+    # Measured peak RSS ~1 GB (local HuggingFace path, 600k-char corpus); mem: 4
+    # leaves headroom for user-uploaded model archives. 2 cores because local
+    # embedding runs 149s -> 41s vs a single core; the LiteLLM path is remote
+    # and light (~0.8 GB, <10s). Note mem must be set explicitly: the default
+    # is `cores * 3.8`, so cores: 2 alone would reserve 7.6 GB.
+    cores: 2
+    mem: 4
+    env:
+      LITELLM_CONFIG_FILE: "/data/db/models/config/litellm_config.yml"
+      SINGULARITYENV_LITELLM_CONFIG_FILE: "$LITELLM_CONFIG_FILE"
+    params:
+      docker_env_LITELLM_CONFIG_FILE: "$LITELLM_CONFIG_FILE"
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/kraken_ocr/kraken_ocr/.*:
+    env:
+      TORCHINDUCTOR_CACHE_DIR: "$_GALAXY_JOB_TMP_DIR"
+      SINGULARITYENV_TORCHINDUCTOR_CACHE_DIR: "$TORCHINDUCTOR_CACHE_DIR"
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/kraken_segment/kraken_segment/.*:
+    env:
+      TORCHINDUCTOR_CACHE_DIR: "$_GALAXY_JOB_TMP_DIR"
+      SINGULARITYENV_TORCHINDUCTOR_CACHE_DIR: "$TORCHINDUCTOR_CACHE_DIR"
+
+  toolshed.g2.bx.psu.edu/repos/imgteam/bfconvert/ip_convertimage/.*:
+    cores: 12
+    mem: 30
+    env:
+      SINGULARITYENV__JAVA_OPTIONS: -Xmx{int(mem)}G
+
+  toolshed.g2.bx.psu.edu/repos/iuc/wgcna_network/wgcna_network/.*:
+    mem: 32
+    cores: 4
+
+
+  toolshed.g2.bx.psu.edu/repos/iuc/wgcna_softpower/wgcna_softpower/.*:
+    mem: 32
+    cores: 4
+
+  toolshed.g2.bx.psu.edu/repos/iuc/celltypist/celltypist/.*:
+    mem: 16
+    cores: 4
+    rules:
+      - id: celltypist_train
+        if: |
+          retval = False
+          options = job.get_param_values(app)
+          if options:
+            model_source = options.get('model_source', {})
+            if model_source and isinstance(model_source, dict):
+              history_model_type = model_source.get('history_model_source', {})
+              if history_model_type and isinstance(history_model_type, dict):
+                retval = history_model_type.get('history_model_select') == 'train_model'
+          retval
+        mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_operation/spatialdata_operation/.*:
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_io/spatialdata_io/.*:
+    mem: 16
+    cores: 5
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/simorgh/simorgh/.*:
+    mem: 10
+    cores: 10
+    # Set the number of threads for OpenMP, MKL, and OpenBLAS
+    # if not set, torch will default to all available threads, which slows down the job
+    # Xref: https://discuss.pytorch.org/t/cpu-usage-far-too-high-and-training-inefficient/57228
+    env:
+      OMP_NUM_THREADS: 10
+      MKL_NUM_THREADS: 10
+      OPENBLAS_NUM_THREADS: 10
+      # MKL is optimized for Intel, this is a workaround to make it work for AMD CPUs
+      MKL_DEBUG_CPU_TYPE: 5
+    params:
+      docker_env_OMP_NUM_THREADS: "$OMP_NUM_THREADS"
+      docker_env_MKL_NUM_THREADS: "$MKL_NUM_THREADS"
+      docker_env_OPENBLAS_NUM_THREADS: "$OPENBLAS_NUM_THREADS"
+      docker_env_MKL_DEBUG_CPU_TYPE: "$MKL_DEBUG_CPU_TYPE"
+
+  toolshed.g2.bx.psu.edu/repos/iuc/colabfold_alphafold/colabfold_alphafold/.*:
+    mem: 60
+    cores: 16
+    params:
+      docker_run_extra_arguments: --gpus all
+    gpus: 1

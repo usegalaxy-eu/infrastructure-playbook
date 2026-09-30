@@ -18,34 +18,12 @@
     - name: Install Dependencies
       become: true
       ansible.builtin.package:
-        name: ["python3-virtualenv", "python3-docker", "python3-pip"]
-    - name: Install docker compose python (no rpm available)
-      ansible.builtin.pip:
-        name: docker-compose
-        version: 1.29.2
+        name: ["python3-virtualenv"]
     - name: Ensure git is installed. (hxr.monitor-ssl)
       become: true
       ansible.builtin.package:
         name:
           - git
-    - name: Create data dir
-      ansible.builtin.file:
-        state: directory
-        path: /data
-      become: true
-    - name: Create FS
-      community.general.filesystem:
-        fstype: xfs
-        dev: /dev/vdb
-      become: true
-    - name: Mount data volume
-      ansible.posix.mount:
-        path: /data
-        src: /dev/vdb
-        fstype: xfs
-        state: mounted
-      become: true
-
   collections:
     - devsec.hardening
     - grafana.grafana
@@ -58,77 +36,27 @@
     - role: usegalaxy_eu.handy.os_setup
       become: true
       vars:
-        hostname: "{{ grafana_domain }}"
+        hostname: "{{ grafana_ini.server.domain }}"
         enable_hostname: true
         enable_powertools: true # geerlingguy.repo-epel role doesn't enable PowerTools repository
-    - role: usegalaxy-eu.autoupdates # keep all of our packages up to date
-      become: true
-      vars:
-        hostname: "{{ grafana_domain }}"
     - influxdata.chrony # Keep our time in sync.
 
     ## Monitoring
     - dj-wasabi.telegraf
-    - role: hxr.monitor-ssl
-      become: true
     - role: hxr.monitor-email
       become: true
 
-    ## Grafana
-    - role: galaxyproject.nginx
-      become: true
-      vars:
-        hostname: "{{ grafana_domain }}"
     - grafana
     - role: pgs
       become: true
-    - role: geerlingguy.docker
-      become: true
-      vars:
-        docker_install_compose: true
-        docker_users:
-          - "{{ ansible_ssh_user }}"
 
   post_tasks:
-    - name: Open nginx ports
+    - name: Open Grafana port
       become: true
       ansible.posix.firewalld:
+        zone: internal
         port: "{{ item }}"
         permanent: true
         state: enabled
       with_items:
-        - 80/tcp
-        - 443/tcp
-    - name: Add on-call backend
-      when: grafana_on_call
-      block:
-        - name: Create dir
-          ansible.builtin.file:
-            path: "{{ grafana_on_call_path }}"
-            state: directory
-            owner: "{{ ansible_ssh_user }}"
-            group: "{{ ansible_ssh_user }}"
-            mode: "0755"
-          become: true
-        - name: Get docker compose
-          ansible.builtin.get_url:
-            url: https://raw.githubusercontent.com/grafana/oncall/49d20f1a7e40669e901db95443603138e1a1cde4/docker-compose.yml
-            dest: "{{ grafana_on_call_path }}/docker-compose.yml"
-            owner: "{{ ansible_ssh_user }}"
-            group: "{{ ansible_ssh_user }}"
-            mode: "0600"
-        - name: Create env
-          ansible.builtin.copy:
-            content: |
-              DOMAIN=https://{{ grafana_on_call_domain }}
-              SECRET_KEY={{ grafana_on_call_secret }}
-              COMPOSE_PROFILES=''
-            dest: "{{ grafana_on_call_path }}/.env"
-            owner: "{{ ansible_ssh_user }}"
-            group: "{{ ansible_ssh_user }}"
-            mode: "0600"
-          no_log: true
-        - name: Start OnCall
-          community.docker.docker_compose_v2:
-            project_src: "{{ grafana_on_call_path }}"
-            project_name: oncall
+        - 3000/tcp

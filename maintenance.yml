@@ -6,10 +6,8 @@
   vars_files:
     - secret_group_vars/db-main.yml
     - secret_group_vars/all.yml
-    - group_vars/all.yml
     - mounts/dest/all.yml
     - mounts/mountpoints.yml
-    - group_vars/maintenance.yml
   collections:
     - devsec.hardening
   handlers:
@@ -17,7 +15,20 @@
       service:
         name: rsyslog
         state: restarted
+  tasks:
+    - name: Run library permission set for Issue 855
+      ansible.builtin.cron:
+        name: Sets the library permissions of all dataset in Library SPAMR-VET to Role SPAMR-VET
+        user: galaxy
+        job: uvx --from git+https://github.com/mira-miracoli/ephemeris.git@patch-1 set-library-permissions "{{ library_id_spamr_vet }}" -g  https://usegalaxy.eu -a "$GALAXY_API_KEY" --roles "{{ role_id_spamr_vet }}" -y -s
+        hour: "*/4"
+        minute: "0"
+
   pre_tasks:
+    - name: Install EPEL-release
+      ansible.builtin.package:
+        name: epel-release
+        state: present
     - name: Set additional local mount point
       set_fact:
         autofs_conf_files: "{{ autofs_conf_files | combine({ 'usrlocal': autofs_conf_files['usrlocal'] + galaxy_mount }) }}"
@@ -28,10 +39,12 @@
             'git',
             'postgresql',
             'python3-psycopg2',
-            'python3-virtualenv',
+            'python3-pip',
             'bc',
             'python3',
             'python3-devel',
+            'bzip2',
+            'firewalld',
           ]
       become: true
   post_tasks:
@@ -43,15 +56,7 @@
       loop:
         - '{{ galaxy_user.name }}'
         - 'telegraf'
-    - name: Set authorized SSH key (galaxy user)
-      ansible.posix.authorized_key:
-        user: '{{ galaxy_user.name }}'
-        state: present
-        key: '{{ item }}'
-      loop:
-        - https://github.com/mira-miracoli.keys
-        - 'ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBACB5Q5blymkTIRSzVzXITOGvBuI7W0L9Ykwfz8LJGPraaGVPiezzFGvjhqwX+EyCqQPt7JprR5mimJRw/JN3nBXWAHjekvmB5FuILkk6m5fOiQJ5QhRMyQ5GfxODAvGbHpTuWHbYJLWD5fhcboKPxlXOWy4xY9kDZVuQvEKisNKYBsFLA== sanjay'
-        - 'ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBABRaLHL8mgW86rbtdUh6TY4rs7/la8hAGeSQ3jBF7LMwYZnbS32YDMYvDq3KgNu5WqSMFvkxNm3vfTAbd8CXBfakwDBFBaD9kO0b2t4/p4VoFUsd3B2OvmTR7Bsg7OxTGJJ7aUP/SzTg+Z4NzsmHwQ9h31gfI7n/buZD4S1edQke19Y6w== dominguj@informatik.uni-freiburg.de'
+
     - name: rsyslog configuration
       copy:
         content: |
@@ -108,6 +113,12 @@
         owner: root
         group: root
         mode: "0555"
+    - name: Ensure firewalld is running
+      ansible.builtin.service:
+        name: firewalld
+        state: started
+        enabled: true
+      become: true
     - name: Configure firewalld to open ports
       firewalld:
         port: "{{ item }}"
@@ -115,13 +126,19 @@
         permanent: true
         state: enabled
       with_items:
-        - 9628/tcp # HTCondor shared port
+        - 9618/tcp # HTCondor shared port
         - 514/tcp  # rsyslog
+    - name: Add the OpenAI API key to the telegraf user's bashrc file
+      ansible.builtin.lineinfile:
+        path: "/etc/telegraf/.bashrc"
+        regexp: "^export OPENAI_API_KEY_TELEGRAF"
+        line: 'export OPENAI_API_KEY_TELEGRAF="{{ openai_api_key_telegraf }}"'
+        create: true
+      no_log: true
   roles:
     - usegalaxy-eu.vgcn-monitoring
     - usegalaxy_eu.handy.os_setup
     - geerlingguy.repo-epel
-    - usegalaxy-eu.autoupdates
     - influxdata.chrony
     - usegalaxy-eu.autofs
     - hxr.monitor-cluster
@@ -134,14 +151,17 @@
     - galaxyproject.gxadmin
     - usegalaxy-eu.galaxy-slurp
     - usegalaxy_eu.fs_maintenance
+    - usegalaxy_eu.galaxy_cleanup # Cleanup the Galaxy objectstores and old datasets
     # - usegalaxy-eu.htcondor_release
     # - usegalaxy-eu.fix-unscheduled-workflows
     - usegalaxy-eu.fix-ancient-ftp-data
     # - usegalaxy-eu.fix-user-quotas
-    - usegalaxy-eu.remove-orphan-condor-jobs
-    - ssh_hardening
+    # - ssh_hardening
     - usegalaxy-eu.job-radar-stats-influxdb
     - dj-wasabi.telegraf
     # - usegalaxy-eu.fix-stop-ITs
     - usegalaxy-eu.logrotate
     - usegalaxy_eu.walle
+    - usegalaxy_eu.ntfy-notifications
+    - l3d.restic
+    - usegalaxy-eu.kui
