@@ -1,0 +1,388 @@
+#!/usr/bin/env python3
+# {{ ansible_managed }}
+"""Check that every row of genai_models.loc still works on its LiteLLM proxy.
+
+Each row is called the way the Galaxy tools call it: a streamed chat
+completion for text rows, the same with a small PNG attached for multimodal
+rows, the PNG alone for image rows and an embeddings request for embedding
+rows. Chat calls stop at the first streamed chunk.
+
+A row is HEALTHY, DEAD (rejected with a 4xx other than 408/429),
+CAPABILITY_DRIFT (multimodal, but the image is rejected), FAILING (timeouts,
+408, 429 or 5xx on every attempt) or UNCONFIGURED (no base URL or key).
+
+Models a proxy lists on /models that the file lacks, as a row or as a
+commented-out row, are called too: HEALTHY with the domain the tools could
+use them as, DEAD if every call is rejected, FAILING otherwise.
+
+Writes a JSON report and posts to ntfy when a row is not HEALTHY or the
+probe fails. Run by hand without alerting:
+
+  genai_catalogue_probe.py --ntfy-url '' --output-json /tmp/genai_probe.json
+"""
+
+import argparse
+import base64
+import concurrent.futures
+import functools
+import json
+import socket
+import struct
+import sys
+import time
+import traceback
+import urllib.error
+import urllib.request
+import zlib
+
+import yaml
+
+DEFAULT_LOC = "{{ genai_catalogue_probe_loc_file }}"
+DEFAULT_CONFIG = "{{ genai_catalogue_probe_config_file }}"
+DEFAULT_REPORT = "{{ genai_catalogue_probe_report_dest }}"
+DEFAULT_NTFY = "{{ genai_catalogue_probe_ntfy_url }}"
+CONCURRENCY = {{ genai_catalogue_probe_concurrency }}
+TIMEOUT = {{ genai_catalogue_probe_timeout }}
+ATTEMPTS = {{ genai_catalogue_probe_attempts }}
+RETRY_DELAY = 5  # seconds, multiplied by the attempt number
+
+# Sent as the OpenAI `user` field, to tell probe calls apart in metering
+PROBE_USER = "genai-catalogue-probe"
+PROMPT = "Reply with one word."
+# The calls made for each domain, in order; any other domain gets ("text",)
+CALLS_BY_DOMAIN = {
+    "embedding": ("embedding",),
+    "image": ("image",),
+    "multimodal": ("text", "text+image"),
+}
+
+
+class CallFailed(Exception):
+    """A probe call failed; `permanent` means retrying cannot help."""
+
+    def __init__(self, message, http_code=None):
+        """Treat a 4xx other than 408 and 429 as permanent."""
+        super().__init__(message)
+        self.permanent = (
+            http_code is not None
+            and 400 <= http_code < 500
+            and http_code not in (408, 429)
+        )
+
+
+def parse_loc_file(path):
+    """Return the rows of genai_models.loc and its commented-out models."""
+    rows, commented = [], set()
+    with open(path, encoding="utf-8") as f:
+        for num, line in enumerate(f, 1):
+            parts = line.rstrip("\r\n").split("\t")
+            if parts[0].startswith("#"):
+                if len(parts) >= 5:
+                    commented.add((parts[4], parts[1]))
+            elif len(parts) >= 6:
+                keys = ("value", "model_id", "name", "domain", "provider")
+                rows.append(dict(zip(keys, parts), line=num))
+            elif parts != [""]:
+                print(f"Skipping line {num}: Galaxy needs 6 columns")
+    if not rows:
+        raise ValueError(f"no rows in {path}")
+    return rows, commented
+
+
+def credentials(servers, provider):
+    """Return (base URL, API key) of a provider; empty strings if unset."""
+    creds = servers.get(provider) or {}
+    base_url = str(creds.get("LITELLM_BASE_URL") or "").strip().rstrip("/")
+    # a key with a trailing newline would end up quoted in an error message
+    return base_url, str(creds.get("LITELLM_API_KEY") or "").strip()
+
+
+def error_message(body):
+    """Return the message of an OpenAI-style error body, on one short line."""
+    try:
+        body = json.loads(body)
+    except (TypeError, ValueError):
+        pass
+    if isinstance(body, dict):
+        body = body.get("error", body)
+    if isinstance(body, dict):
+        body = body.get("message", body)
+    return " ".join(str(body).split())[:200]
+
+
+def post(url, api_key, payload):
+    """POST JSON to a proxy; raise CallFailed on an HTTP error status."""
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+    )
+    try:
+        return urllib.request.urlopen(req, timeout=TIMEOUT)
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", errors="replace")
+        raise CallFailed(f"HTTP {e.code}: {error_message(body)}", e.code)
+
+
+def png_data_url(size=64):
+    """Return a data URL for a solid-colour PNG, large enough for encoders."""
+
+    def chunk(kind, data):
+        crc = struct.pack(">I", zlib.crc32(kind + data))
+        return struct.pack(">I", len(data)) + kind + data + crc
+
+    scanline = b"\x00" + b"\xf0\x80\x30" * size  # filter byte + RGB pixels
+    png = (
+        b"\x89PNG\r\n\x1a\n"
+        + chunk(b"IHDR", struct.pack(">IIBBBBB", size, size, 8, 2, 0, 0, 0))
+        + chunk(b"IDAT", zlib.compress(scanline * size))
+        + chunk(b"IEND", b"")
+    )
+    return "data:image/png;base64," + base64.b64encode(png).decode("ascii")
+
+
+def stream_chat(base_url, api_key, model_id, parts):
+    """Start a chat completion shaped like LLM Hub's; stop at the first chunk.
+
+    Leaving the `with` block closes the connection, so the proxy aborts the
+    generation.
+    """
+    payload = {
+        "model": model_id,
+        "messages": [{"role": "user", "content": parts}],
+        "stream": True,
+        "user": PROBE_USER,
+    }
+    deadline = time.monotonic() + TIMEOUT
+    with post(f"{base_url}/chat/completions", api_key, payload) as resp:
+        for raw in resp:
+            line = raw.decode("utf-8", errors="replace").strip()
+            data = line[5:].strip() if line.startswith("data:") else ""
+            if data == "[DONE]":
+                break
+            if data:
+                event = json.loads(data)
+                error = event.get("error")
+                if error:
+                    code = (
+                        error.get("code") if isinstance(error, dict) else None
+                    )
+                    code = int(code) if str(code).isdigit() else None
+                    message = f"error in stream: {error_message(error)}"
+                    raise CallFailed(message, code)
+                if "choices" in event:
+                    return
+            if time.monotonic() > deadline:
+                raise CallFailed(f"no chunk within {TIMEOUT}s")
+    raise CallFailed("stream ended without a chunk")
+
+
+def embed(base_url, api_key, model_id):
+    """Request one embedding as the RAG Retriever does (base64 by default)."""
+    payload = {
+        "model": model_id,
+        "input": ["ping"],
+        "encoding_format": "base64",
+        "user": PROBE_USER,
+    }
+    with post(f"{base_url}/embeddings", api_key, payload) as resp:
+        data = json.loads(resp.read().decode("utf-8")).get("data") or []
+    if not data or not data[0].get("embedding"):
+        raise CallFailed("response contains no embedding")
+
+
+def probe_call(kind, base_url, api_key, model_id):
+    """Make one call of the given kind; raise if the proxy rejects it."""
+    if kind == "embedding":
+        return embed(base_url, api_key, model_id)
+    text = {"type": "text", "text": PROMPT}
+    image = {"type": "image_url", "image_url": {"url": png_data_url()}}
+    # LLM Hub puts attached files before the question
+    parts = {"text": [text], "image": [image], "text+image": [image, text]}
+    return stream_chat(base_url, api_key, model_id, parts[kind])
+
+
+def run_with_retries(call):
+    """Run `call` until it succeeds, fails permanently or runs out of tries."""
+    for attempt in range(1, ATTEMPTS + 1):
+        try:
+            call()
+            return {"ok": True, "permanent": False, "error": None}
+        except CallFailed as e:
+            result = {"ok": False, "permanent": e.permanent, "error": str(e)}
+        except Exception as e:  # network, TLS, timeouts, malformed replies
+            reason = getattr(e, "reason", None)
+            if not isinstance(reason, BaseException):
+                reason = e  # URLError wraps the socket or TLS error
+            error = f"{type(reason).__name__}: {reason}"
+            result = {"ok": False, "permanent": False, "error": error}
+        if result["permanent"] or attempt == ATTEMPTS:
+            return result
+        time.sleep(RETRY_DELAY * attempt)
+
+
+def probe_row(row, servers):
+    """Probe one catalogue row and classify it."""
+    base_url, api_key = credentials(servers, row["provider"])
+    if not base_url or not api_key:
+        error = "no base URL or key in the LiteLLM config"
+        return dict(row, status="UNCONFIGURED", error=error)
+    for kind in CALLS_BY_DOMAIN.get(row["domain"], ("text",)):
+        call = functools.partial(
+            probe_call, kind, base_url, api_key, row["model_id"]
+        )
+        result = run_with_retries(call)
+        if not result["ok"]:
+            if not result["permanent"]:
+                status = "FAILING"
+            elif kind == "text+image":
+                status = "CAPABILITY_DRIFT"  # the text call before it passed
+            else:
+                status = "DEAD"
+            return dict(row, status=status, error=f"{kind}: {result['error']}")
+    return dict(row, status="HEALTHY", error=None)
+
+
+def classify_new_model(provider, model_id, servers):
+    """Find out whether and how the tools could use a model not yet listed."""
+    base_url, api_key = credentials(servers, provider)
+    results = {}
+
+    def accepted(kind):
+        call = functools.partial(probe_call, kind, base_url, api_key, model_id)
+        results[kind] = run_with_retries(call)
+        return results[kind]["ok"]
+
+    domain, status = None, "FAILING"
+    if accepted("text"):
+        if accepted("text+image"):
+            domain = "multimodal"
+        elif results["text+image"]["permanent"]:
+            domain = "text"
+    elif accepted("image"):  # image rows get the image alone
+        domain = "image"
+    elif accepted("embedding"):
+        domain = "embedding"
+    elif all(r["permanent"] for r in results.values()):
+        status = "DEAD"
+    errors = [f"{k}: {r['error']}" for k, r in results.items() if r["error"]]
+    return {
+        "provider": provider,
+        "model_id": model_id,
+        "status": "HEALTHY" if domain else status,
+        "domain": domain,
+        "error": None if domain else "; ".join(errors),
+    }
+
+
+def advertised_models(servers):
+    """Return {provider: model ids on /models}; print listing failures."""
+    advertised = {}
+    for provider in servers:
+        base_url, api_key = credentials(servers, provider)
+        if not base_url or not api_key:
+            continue
+        req = urllib.request.Request(
+            f"{base_url}/models",
+            headers={"Authorization": f"Bearer {api_key}"},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+                data = json.loads(resp.read().decode("utf-8")).get("data")
+            advertised[provider] = {m["id"] for m in data or [] if m.get("id")}
+        except Exception as e:
+            print(f"Could not list the models of {provider}: {e}")
+    return advertised
+
+
+def notify(url, title, message):
+    """Post an alert to ntfy; a failure to send is only printed."""
+    if not url:
+        return
+    try:
+        req = urllib.request.Request(
+            url, data=message.encode("utf-8"), headers={"Title": title}
+        )
+        with urllib.request.urlopen(req, timeout=30):
+            pass
+    except Exception as e:  # also malformed URLs, which Request() rejects
+        print(f"Could not send the ntfy alert: {e}")
+
+
+def run(args):
+    """Probe the catalogue, report and alert; return the exit status."""
+    started = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    rows, commented = parse_loc_file(args.loc)
+    with open(args.config, encoding="utf-8") as f:
+        servers = (yaml.safe_load(f) or {}).get("servers")
+    if not servers:
+        raise ValueError(f"no 'servers' block in {args.config}")
+
+    listed = {(r["provider"], r["model_id"]) for r in rows} | commented
+    candidates = sorted(
+        (provider, model_id)
+        for provider, model_ids in advertised_models(servers).items()
+        for model_id in model_ids
+        if (provider, model_id) not in listed
+    )
+    with concurrent.futures.ThreadPoolExecutor(CONCURRENCY) as pool:
+        results = list(pool.map(lambda r: probe_row(r, servers), rows))
+        new_models = list(
+            pool.map(lambda c: classify_new_model(*c, servers), candidates)
+        )
+
+    for r in results:
+        print(f"{r['status']:<16} [{r['provider']}] {r['model_id']}", end="")
+        print(f": {r['error']}" if r["error"] else "")
+    for m in new_models:
+        found = f"as {m['domain']}" if m["domain"] else m["error"]
+        name = f"[{m['provider']}] {m['model_id']}"
+        print(f"new {m['status']:<12} {name}: {found}")
+
+    report = {
+        "format": 1,
+        "summary": {"started": started},
+        "results": results,
+        "new_models": new_models,
+    }
+    if args.output_json:
+        with open(args.output_json, "w", encoding="utf-8") as f:
+            json.dump(report, f, indent=2)
+
+    problems = [r for r in results if r["status"] != "HEALTHY"]
+    if problems:
+        lines = [
+            f"{r['status']} [{r['provider']}] {r['model_id']}: {r['error']}"
+            for r in problems[:10]
+        ]
+        if len(problems) > 10:
+            lines.append(f"...and {len(problems) - 10} more.")
+        lines.append(f"Report: {socket.gethostname()}:{args.output_json}")
+        title = f"GenAI catalogue: {len(problems)} broken rows"
+        notify(args.ntfy_url, title, "\n".join(lines))
+    return 1 if problems else 0
+
+
+def main():
+    """Run the probe; a crash alerts too, so it is never silent."""
+    parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    parser.add_argument("--config", default=DEFAULT_CONFIG)
+    parser.add_argument("--loc", default=DEFAULT_LOC)
+    parser.add_argument("--output-json", default=DEFAULT_REPORT)
+    parser.add_argument("--ntfy-url", default=DEFAULT_NTFY)
+    args = parser.parse_args()
+    try:
+        return run(args)
+    except Exception as e:
+        sys.stdout.flush()
+        traceback.print_exc(file=sys.stdout)
+        title = "GenAI catalogue probe failed"
+        notify(args.ntfy_url, title, f"{type(e).__name__}: {e}")
+        return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
