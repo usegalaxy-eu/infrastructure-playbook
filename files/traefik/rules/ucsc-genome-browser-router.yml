@@ -1,0 +1,13 @@
+http:
+  routers:
+    ucsc-genome-browser-rtr:
+      rule: "Host(`genome-browser.galaxyproject.eu`)"
+      service: ucsc-genome-browser
+      entryPoints:
+        - websecure
+      middlewares:
+        - ucsc-genome-browser-compress
+      tls:
+        certResolver: "route53"
+        domains:
+          - main: "genome-browser.galaxyproject.eu"

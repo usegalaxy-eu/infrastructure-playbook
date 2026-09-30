@@ -4,10 +4,8 @@
   label: ERGA Nextcloud
   doc: ERGA Pilot storage provided by BSC
   writable: true
-  url: 'https://ergapilot.bsc.es'
+  base_url: 'https://ergapilot.bsc.es'
   root: '/remote.php/webdav'
-  use_temp_files: true
-  temp_path: {{ generic_tmp_dir }}
   login: "{{ erga_nextcloud_login }}"
   password: "{{ erga_nextcloud_password }}"
   requires_groups: erga
@@ -85,7 +83,7 @@
   id: ensembl-ftp
   label: "ENSEMBL FTP server"
   doc: "ENSEMBL FTP server"
-  host: "ftp.ensemblgenomes.org/vol1/pub/"
+  host: "ftp.ensemblgenomes.org/pub/"
   user: "anonymous"
   passwd: ""
   timeout: 10
@@ -102,7 +100,6 @@
   passwd: "{{ covid_crg_ftp_staging_passwd }}"
   timeout: 10
   path: "/home/FTPvandenbeek/userspace/staging/"
-  config_path: ""
   port: 2222
 
 - type: s3fs
@@ -242,6 +239,13 @@
   id: argo-gdac-sandbox
   doc: Argo is an international program to observe the interior of the ocean with a fleet of profiling floats drifting in the deep ocean currents (https://argo.ucsd.edu). 
   bucket: argo-gdac-sandbox
+  anon: true
+
+- type: s3fs
+  label: Human Pangenome Reference Consortium
+  id: human-pangenomics
+  doc: "This bucket includes sequencing data, assemblies, and pangenomes, and analyses for the Human Pangenome Reference Consortium. Sequencing data includes PacBio, Oxford Nanopore, Illumina, and Hi-C."
+  bucket: human-pangenomics
   anon: true
 
 #- type: arcfs

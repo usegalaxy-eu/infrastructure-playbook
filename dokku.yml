@@ -2,38 +2,8 @@
 - name: Dokku App Server
   hosts: dokku
   become: true
-  vars:
-    hostname: apps.galaxyproject.eu
-    apps:
-      - ptdk
-      - pwdk
-      - oembed
-      - certificates
-      - gtn-slack-bot
-      - dnanalyzer
-      - cors
-    dokku_plugins:
-      - name: postgres
-        url: https://github.com/dokku/dokku-postgres.git
-      - name: letsencrypt
-        url: https://github.com/dokku/dokku-letsencrypt.git
-      - name: redis
-        url: https://github.com/dokku/dokku-redis.git
-      # - name: acl
-      #   url: https://github.com/dokku/dokku-acl.git
-    dokku_users:
-      - name: hexylena
-        username: hexylena
-        ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEEurxSQW4BrpP9FLXqiz/H6Ewclln68oc/oFAVqH5xu"
-      - name: github
-        username: github
-        ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG0UpPcbt0ytqZSRiqC38cgT1Ey2jWqc/oEgzTpUncA8"
-      - name: github2
-        username: github2
-        ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFGzr8JWnnCQo+565kzpXKYP12kLt2oyWzFCF/cueIvO"
-      - name: oembed
-        username: oembed
-        ssh_key: "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBLkuOlVUXxCqABoQbTEvW3A8nSSici89C10lEg1F4Cmvv/q8YRGYaoDayuqifFJERWvRA8yVcIH7/XCPzmMrLM0="
+  vars_files:
+    - secret_group_vars/all.yml
   pre_tasks:
     # make sure /data exists
     - name: Ensure /data exists
@@ -51,92 +21,124 @@
         fstype: xfs
         state: mounted
         opts: defaults
-    # Create a symlink in /var/lib/docker to /data/docker
-    - name: Create a symlink in /var/lib/docker to /data/docker
-      file:
-        src: /data/docker
-        dest: /var/lib/docker
-        state: link
+    - name: Set root for Containerd
+      ansible.builtin.lineinfile:
+        path: /etc/containerd/config.toml
+        line: 'root = "/data/containerd"'
+        search_string: "root ="
+      notify: Restart Containerd
+  handlers:
+    - name: Restart Containerd
+      ansible.builtin.systemd_service:
+        name: containerd
+        state: restarted
   roles:
     - hostname
     - dokku_bot.ansible_dokku
   post_tasks:
-    - name: Create our apps
-      dokku_app:
-        app: "{{ item }}"
+    - name: Create apps
+      community.docker.docker_container_exec:
+        container: dokku
+        command: "dokku apps:create {{ item }}"
+      register: app_results
       with_items: "{{ apps }}"
+      ignore_errors: true
+
+    - name: Check if successful
+      ansible.builtin.fail:
+        msg: "{{ item.stderr }}"
+      with_items: "{{ app_results.results }}"
+      when: item.rc != 0 and not "Name is already taken" in item.stderr
+
+    - name: Check domains
+      community.docker.docker_container_exec:
+        container: dokku
+        command: "dokku domains:report {{ item }}"
+      with_items: "{{ apps }}"
+      register: domain_results
 
     - name: Setup domains
-      dokku_domains:
-        app: "{{ item }}"
-        domains:
-          - "{{ item }}.apps.galaxyproject.eu"
-        state: set
-      with_items: "{{ apps }}"
+      community.docker.docker_container_exec:
+        container: dokku
+        command: "dokku domains:add {{ item }} {{ item }}.apps.galaxyproject.eu"
+      loop: "{{ apps | flatten(levels=1) }}"
+      loop_control:
+        index_var: idx
+      when: domain_results.results[idx].rc == 0 and not item + ".apps.galaxyproject.eu" in domain_results.results[idx].stderr
 
+    - name: Get ptdk env variable
+      community.docker.docker_container_exec:
+        container: dokku
+        command: "dokku config:get ptdk USEGALAXY_EU_APIKEY"
+      register: ptdk_env
+      no_log: true
+      ignore_errors: true
+
+    - name: Set ptdk env variable
+      community.docker.docker_container_exec:
+        container: dokku
+        command: "dokku config:set ptdk USEGALAXY_EU_APIKEY={{ admin_api_key_maintenance }}"
+      when: not admin_api_key_maintenance in ptdk_env.stdout or ptdk_env.rc != 0
+      no_log: true
+
+    
     - name: Check if DNAnalyzer postgres exists
-      shell: dokku postgres:exists dnanalyzer
+      community.docker.docker_container_exec:
+        container: dokku
+        command: dokku postgres:exists dnanalyzer
       register: pg_exists
       changed_when: false
       ignore_errors: true
-
+    
     - name: Create DNAnalyzer postgres
-      shell: dokku postgres:create dnanalyzer
+      community.docker.docker_container_exec:
+        container: dokku
+        command: dokku postgres:create dnanalyzer
       changed_when: pg_exists.rc == 1
       when: pg_exists.rc == 1
-
+    
     - name: Check if DNAnalyzer postgres link exists
-      shell: dokku postgres:exists dnanalyzer
+      community.docker.docker_container_exec:
+        container: dokku
+        command: dokku postgres:links dnanalyzer
       register: pg_link_exists
       changed_when: false
       failed_when: pg_link_exists.rc > 1
-
+    
     - name: Create DNAnalyzer postgres link
-      shell: dokku postgres:link dnanalyzer dnanalyzer
+      community.docker.docker_container_exec:
+        container: dokku
+        command: dokku postgres:link dnanalyzer dnanalyzer
       changed_when: "'dnanalyzer' not in pg_link_exists.stdout"
       when: "'dnanalyzer' not in pg_link_exists.stdout"
+    
+      #  - name: Check if gtn-slack-bot postgres exists
+      #    community.docker.docker_container_exec:
+      #      container: dokku
+      #      command: dokku postgres:exists gtn-slack-bot
+      #    register: pg_exists
+      #    changed_when: false
+      #    ignore_errors: true
+      #  
+      #  - name: Create gtn-slack-bot postgres
+      #    community.docker.docker_container_exec:
+      #      container: dokku
+      #      command: dokku postgres:create gtn-slack-bot
+      #    changed_when: pg_exists.rc == 1
+      #    when: pg_exists.rc == 1
+      #  
+      #  - name: Check if gtn-slack-bot postgres link exists
+      #    community.docker.docker_container_exec:
+      #      container: dokku
+      #      command: dokku postgres:links gtn-slack-bot
+      #    register: pg_link_exists
+      #    changed_when: false
+      #    failed_when: pg_link_exists.rc > 1
+      #  
+      #  - name: Create gtn-slack-bot postgres link
+      #    community.docker.docker_container_exec:
+      #      container: dokku
+      #      command: dokku postgres:link gtn-slack-bot gtn-slack-bot
+      #    changed_when: "'gtn-slack-bot' not in pg_link_exists.stdout"
+      #    when: "'gtn-slack-bot' not in pg_link_exists.stdout"
 
-    - name: Check if gtn-slack-bot postgres exists
-      shell: dokku postgres:exists gtn-slack-bot
-      register: pg_exists
-      changed_when: false
-      ignore_errors: true
-
-    - name: Create gtn-slack-bot postgres
-      shell: dokku postgres:create gtn-slack-bot
-      changed_when: pg_exists.rc == 1
-      when: pg_exists.rc == 1
-
-    - name: Check if gtn-slack-bot postgres link exists
-      shell: dokku postgres:exists gtn-slack-bot
-      register: pg_link_exists
-      changed_when: false
-      failed_when: pg_link_exists.rc > 1
-
-    - name: Create gtn-slack-bot postgres link
-      shell: dokku postgres:link gtn-slack-bot gtn-slack-bot
-      changed_when: "'gtn-slack-bot' not in pg_link_exists.stdout"
-      when: "'gtn-slack-bot' not in pg_link_exists.stdout"
-
-    - name: Set LE email
-      command: dokku letsencrypt:set --global email helena.rasche@gmail.com
-
-    - name: Setup Certs
-      dokku_letsencrypt:
-        app: "{{ item }}"
-      with_items: "{{ apps }}"
-
-    - name: Auto Renew Certs
-      ansible.builtin.cron:
-        name: Dokku Cert Autorenew
-        user: ubuntu
-        job: /usr/bin/dokku letsencrypt:auto-renew
-        hour: 4
-        minute: 59
-        # random values
-
-    # - name: Clones
-    #   dokku_clone:
-    #     app: oembed
-    #     repository: https://github.com/galaxyproject/oembed
-    #     version: main

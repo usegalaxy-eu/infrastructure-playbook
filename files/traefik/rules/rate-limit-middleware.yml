@@ -1,0 +1,17 @@
+# Coarse per-IP rate limit backstop for the websecure entrypoint, applied
+# via
+# `--entryPoints.websecure.http.middlewares` in group_vars/traefik.yml.
+#
+# Applies to all HTTPS routers. Long-lived connections (SSE streams,
+# websockets for interactive tools) count once, at connection setup.
+# Keep well above the aggregate of a NAT'd classroom, tune against
+# Traefik's Prometheus metric `traefik_entrypoint_requests_total`
+# (code 429) before tightening.
+http:
+  middlewares:
+    rate-limit-backstop:
+      rateLimit:
+        # Token Bucket algorithm: https://traefik.io/blog/how-to-keep-your-services-secure-with-traefiks-rate-limiting
+        average: 150 
+        period: 1s
+        burst: 300
