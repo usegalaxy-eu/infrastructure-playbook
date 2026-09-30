@@ -7,20 +7,6 @@
     group: root
     mode: "0755"
 
-- name: Remove legacy stateful script watchdog executable and tmpfiles config
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: absent
-  loop:
-    - /usr/bin/script-watchdog
-    - /etc/tmpfiles.d/script-watchdog.conf
-
-- name: Remove legacy Telegraf script watchdog configuration
-  ansible.builtin.file:
-    path: /etc/telegraf/telegraf.d/script-watchdog.conf
-    state: absent
-  notify: restart Telegraf after configuring systemd D-state collector
-
 - name: Ensure Telegraf configuration directory exists
   ansible.builtin.file:
     path: /etc/telegraf/telegraf.d

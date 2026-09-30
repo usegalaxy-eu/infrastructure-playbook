@@ -46,20 +46,8 @@
     - Reload systemd for Galaxy cleanup
     - Restart Galaxy cleanup timer
 
-- name: Remove legacy Galaxy cleanup cron entry
-  ansible.builtin.cron:
-    name: "Galaxy cleanup scratch"
-    state: absent
-    user: "{{ galaxy_user.name }}"
-
-- name: Remove legacy Galaxy cleanup watchdog log
-  ansible.builtin.file:
-    path: "{{ galaxy_cleanup_log_dir }}/cleanup-watchdog.log"
-    state: absent
-
 - name: Enable Galaxy cleanup timer
   ansible.builtin.systemd:
     name: "{{ galaxy_cleanup_systemd_timer }}"
     enabled: true
     state: started
-    daemon_reload: true
