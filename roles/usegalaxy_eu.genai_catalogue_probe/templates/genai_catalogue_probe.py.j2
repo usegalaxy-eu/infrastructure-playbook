@@ -5,7 +5,8 @@
 Each row is called the way the Galaxy tools call it: a streamed chat
 completion for text rows, the same with a small PNG attached for multimodal
 rows, the PNG alone for image rows and an embeddings request for embedding
-rows. Chat calls stop at the first streamed chunk.
+rows, and a rerank request for rerank rows. Chat calls stop at the first
+streamed chunk.
 
 A row is HEALTHY, DEAD (rejected with a 4xx other than 408/429),
 CAPABILITY_DRIFT (multimodal, but the image is rejected), FAILING (timeouts,
@@ -13,7 +14,9 @@ CAPABILITY_DRIFT (multimodal, but the image is rejected), FAILING (timeouts,
 
 Models a proxy lists on /models that the file lacks, as a row or as a
 commented-out row, are called too: HEALTHY with the domain the tools could
-use them as, DEAD if every call is rejected, FAILING otherwise.
+use them as, DEAD if every call is rejected, FAILING otherwise. A model
+named like a reranker only gets the rerank call, since rerankers often
+answer chat calls as well.
 
 Writes a JSON report and posts to ntfy when a row is not HEALTHY or the
 probe fails. Run by hand without alerting:
@@ -54,6 +57,7 @@ CALLS_BY_DOMAIN = {
     "embedding": ("embedding",),
     "image": ("image",),
     "multimodal": ("text", "text+image"),
+    "rerank": ("rerank",),
 }
 
 
@@ -194,10 +198,27 @@ def embed(base_url, api_key, model_id):
         raise CallFailed("response contains no embedding")
 
 
+def rerank(base_url, api_key, model_id):
+    """Rank two documents as the RAG Retriever does."""
+    payload = {
+        "model": model_id,
+        "query": "hello",
+        "documents": ["hi", "table"],
+        "top_n": 1,
+        "user": PROBE_USER,
+    }
+    with post(f"{base_url}/rerank", api_key, payload) as resp:
+        results = json.loads(resp.read().decode("utf-8")).get("results")
+    if not results or "index" not in results[0]:
+        raise CallFailed("response contains no ranking")
+
+
 def probe_call(kind, base_url, api_key, model_id):
     """Make one call of the given kind; raise if the proxy rejects it."""
     if kind == "embedding":
         return embed(base_url, api_key, model_id)
+    if kind == "rerank":
+        return rerank(base_url, api_key, model_id)
     text = {"type": "text", "text": PROMPT}
     image = {"type": "image_url", "image_url": {"url": png_data_url()}}
     # LLM Hub puts attached files before the question
@@ -256,8 +277,11 @@ def classify_new_model(provider, model_id, servers):
         results[kind] = run_with_retries(call)
         return results[kind]["ok"]
 
-    domain, status = None, "FAILING"
-    if accepted("text"):
+    domain = None
+    if "rerank" in model_id.lower():  # rerankers often answer chat too
+        if accepted("rerank"):
+            domain = "rerank"
+    elif accepted("text"):
         if accepted("text+image"):
             domain = "multimodal"
         elif results["text+image"]["permanent"]:
@@ -266,8 +290,8 @@ def classify_new_model(provider, model_id, servers):
         domain = "image"
     elif accepted("embedding"):
         domain = "embedding"
-    elif all(r["permanent"] for r in results.values()):
-        status = "DEAD"
+    permanent = all(r["permanent"] for r in results.values())
+    status = "DEAD" if permanent else "FAILING"
     errors = [f"{k}: {r['error']}" for k, r in results.items() if r["error"]]
     return {
         "provider": provider,
