@@ -1,6 +1,6 @@
 ---
-- name: Restart Telegraf after configuring script watchdog
-  listen: restart Telegraf after configuring script watchdog
+- name: Restart Telegraf after configuring systemd D-state collector
+  listen: restart Telegraf after configuring systemd D-state collector
   ansible.builtin.service:
     name: telegraf
     state: restarted

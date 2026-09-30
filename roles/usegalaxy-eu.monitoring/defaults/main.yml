@@ -1,12 +1,4 @@
 ---
-# Passive process-state watchdog. It observes child commands but never signals,
-# terminates, or restarts them.
-script_watchdog_state_dir: "/run/script-watchdog"
-script_watchdog_state_owner: root
-script_watchdog_state_group: root
-script_watchdog_state_mode: "0755"
-script_watchdog_interval: 10
-script_watchdog_warning_d_seconds: 180
-script_watchdog_critical_d_seconds: 600
+# Read-only D-state collector for systemd services.
+script_watchdog_services: []
 script_watchdog_telegraf_interval: "30s"
-script_watchdog_report_names: []

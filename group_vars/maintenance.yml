@@ -20,11 +20,8 @@ galaxy_user:
   shell: /bin/bash
 
 # Role: usegalaxy-eu.monitoring
-script_watchdog_state_owner: "{{ galaxy_user.name }}"
-script_watchdog_state_group: "{{ galaxy_group.name }}"
-script_watchdog_cleanup_name: galaxy-cleanup
-script_watchdog_report_names:
-  - "{{ script_watchdog_cleanup_name }}"
+script_watchdog_services:
+  - "{{ galaxy_cleanup_systemd_service }}"
 
 # Role: usegalaxy_eu.galaxy_cleanup
 galaxy_cleanup_log_dir: "{{ dnb.dnb01 }}/maintenance/galaxy_cleanup"
@@ -434,6 +431,16 @@ lp_logrotate_confd:
         rotate 5
         missingok
         dateext
+        notifempty
+        compress
+      }
+  - path: galaxy-cleanup
+    conf: |
+      {{ galaxy_cleanup_log_dir }}/*.log
+      {{ galaxy_cleanup_log_dir }}/*.err {
+        daily
+        rotate 14
+        missingok
         notifempty
         compress
       }

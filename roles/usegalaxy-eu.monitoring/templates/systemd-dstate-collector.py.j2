@@ -1,0 +1,94 @@
+#!/usr/bin/env python3
+"""Emit D-state metrics for processes owned by systemd services."""
+
+import subprocess
+import sys
+from pathlib import Path
+
+CGROUP_ROOT = Path("/sys/fs/cgroup")
+
+
+def escape_tag(value):
+    return str(value).replace("\\", "\\\\").replace(",", "\\,").replace("=", "\\=").replace(" ", "\\ ")
+
+
+def service_properties(service):
+    command = [
+        "systemctl",
+        "show",
+        service,
+        "--property=LoadState,ActiveState,SubState,Result,ExecMainStatus,ControlGroup",
+    ]
+    result = subprocess.run(command, check=False, capture_output=True, text=True, timeout=3)
+    if result.returncode != 0:
+        return None
+    return dict(line.split("=", 1) for line in result.stdout.splitlines() if "=" in line)
+
+
+def cgroup_pids(control_group):
+    if not control_group or control_group == "/":
+        return []
+    path = CGROUP_ROOT / control_group.lstrip("/") / "cgroup.procs"
+    try:
+        return [int(pid) for pid in path.read_text().splitlines()]
+    except (FileNotFoundError, OSError, ValueError):
+        return []
+
+
+def process_state(pid):
+    try:
+        stat = Path(f"/proc/{pid}/stat").read_text()
+    except (FileNotFoundError, OSError):
+        return None
+    fields = stat[stat.rfind(")") + 2 :].split()
+    return fields[0] if fields else None
+
+
+def emit(service):
+    properties = service_properties(service)
+    if properties is None:
+        print(
+            f"systemd_dstate,service={escape_tag(service)},active_state=unknown,sub_state=unknown "
+            "monitor_healthy=0i,running=0i,d_state=0i,d_state_processes=0i,processes=0i,exit_code=0i"
+        )
+        return
+
+    load_state = properties.get("LoadState", "unknown")
+    monitor_healthy = load_state == "loaded"
+    pids = cgroup_pids(properties.get("ControlGroup", ""))
+    states = [process_state(pid) for pid in pids]
+    d_state_processes = sum(state == "D" for state in states)
+    active_state = properties.get("ActiveState", "unknown")
+    sub_state = properties.get("SubState", "unknown")
+    try:
+        exit_code = int(properties.get("ExecMainStatus", "0"))
+    except ValueError:
+        exit_code = 0
+    fields = (
+        f"monitor_healthy={int(monitor_healthy)}i,"
+        f"running={int(active_state == 'active')}i,"
+        f"d_state={int(d_state_processes > 0)}i,"
+        f"d_state_processes={d_state_processes}i,"
+        f"processes={len(pids)}i,"
+        f"exit_code={exit_code}i"
+    )
+    tags = (
+        f"service={escape_tag(service)},"
+        f"load_state={escape_tag(load_state)},"
+        f"active_state={escape_tag(active_state)},"
+        f"sub_state={escape_tag(sub_state)}"
+    )
+    print(f"systemd_dstate,{tags} {fields}")
+
+
+def main():
+    if len(sys.argv) < 2:
+        print("At least one systemd service is required", file=sys.stderr)
+        return 2
+    for service in sys.argv[1:]:
+        emit(service)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

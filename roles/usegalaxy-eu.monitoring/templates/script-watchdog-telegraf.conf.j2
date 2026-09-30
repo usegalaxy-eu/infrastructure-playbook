@@ -1,7 +1,0 @@
-### Managed by usegalaxy-eu.monitoring ###
-
-[[inputs.exec]]
-  commands = ["/usr/bin/script-watchdog report --state-dir {{ script_watchdog_state_dir }}{% if script_watchdog_report_names %} --names {{ script_watchdog_report_names | join(',') }}{% endif %}"]
-  timeout = "5s"
-  interval = "{{ script_watchdog_telegraf_interval }}"
-  data_format = "influx"

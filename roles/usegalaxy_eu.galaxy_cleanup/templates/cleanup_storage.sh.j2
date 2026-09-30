@@ -4,16 +4,6 @@
 ##
 set -euo pipefail
 
-WATCHDOG_STATE_DIR="{{ script_watchdog_state_dir }}"
-
-# A second scheduled cleanup must not overlap one that is still blocked on I/O.
-mkdir -p "${WATCHDOG_STATE_DIR}"
-exec 9>"${WATCHDOG_STATE_DIR}/galaxy-cleanup.lock"
-if ! flock -n 9; then
-    echo "Galaxy cleanup is already running; skipping overlapping invocation" >&2
-    exit 0
-fi
-
 run_timestamp="$(date --rfc-3339=seconds)"
 
 {#

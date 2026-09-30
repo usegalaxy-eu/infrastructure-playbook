@@ -1,0 +1,39 @@
+---
+- name: Install systemd service D-state collector
+  ansible.builtin.template:
+    src: systemd-dstate-collector.py.j2
+    dest: /usr/bin/systemd-dstate-collector
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Remove legacy stateful script watchdog executable and tmpfiles config
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /usr/bin/script-watchdog
+    - /etc/tmpfiles.d/script-watchdog.conf
+
+- name: Remove legacy Telegraf script watchdog configuration
+  ansible.builtin.file:
+    path: /etc/telegraf/telegraf.d/script-watchdog.conf
+    state: absent
+  notify: restart Telegraf after configuring systemd D-state collector
+
+- name: Ensure Telegraf configuration directory exists
+  ansible.builtin.file:
+    path: /etc/telegraf/telegraf.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Configure Telegraf systemd D-state collector
+  ansible.builtin.template:
+    src: systemd-dstate-telegraf.conf.j2
+    dest: /etc/telegraf/telegraf.d/systemd-dstate.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart Telegraf after configuring systemd D-state collector
