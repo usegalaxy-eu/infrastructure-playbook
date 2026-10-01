@@ -27,9 +27,7 @@ class ForceRetryTemplateTests(unittest.TestCase):
         self.assertIn("purge_datasets", script)
         self.assertIn('exit "${exit_code}"', script)
         self.assertIn("pgcleanup --force-retry started", script)
-        self.assertIn(
-            "pgcleanup --force-retry ${result}", script
-        )
+        self.assertIn("pgcleanup --force-retry ${result}", script)
 
 
 if __name__ == "__main__":
