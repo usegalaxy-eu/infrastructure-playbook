@@ -60,7 +60,7 @@ server {
     listen 443 default_server;
     listen [::]:443 default_server;
 
-    access_log /var/log/nginx/access.log;
+    access_log /var/log/nginx/access.log main;
 
     {% for error_code in [400, 403, 404, 408, 500, 502, 503, 504] %}
 
