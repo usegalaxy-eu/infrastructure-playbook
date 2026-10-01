@@ -10,14 +10,14 @@ galaxy_jobconf:
     max_grab: 16
     ready_window_size: 32
     handler_definitions:
-      0:
+      default:
+        exclude_plugins:
+          - condor
+      "0":
         tags:
-          - htcondor-apiv2
+          - tiaas
         plugins:
-          - htcondor_apiv2
-    default_process:
-      exclude_plugins:
-        - htcondor_apiv2
+          - htcondor
   plugins:
     #- id: drmaa
     #load: galaxy.jobs.runners.drmaa:DRMAAJobRunner
@@ -250,7 +250,7 @@ galaxy_jobconf:
         amqp_ack_republish_time: 300
         amqp_consumer_timeout: 2.0
         amqp_publish_retry: "true"
-        amqp_publish_retry_max_retries: 60    
+        amqp_publish_retry_max_retries: 60
     - id: pulsar_eu_ufz_eve01
       load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
       params:
@@ -299,7 +299,7 @@ galaxy_jobconf:
       resources: usegpu
   resources:
     - id: usegpu
-      names: [gpu]    
+      names: [gpu]
   limits:
     - type: "walltime"
       value: "'148:00:00'"

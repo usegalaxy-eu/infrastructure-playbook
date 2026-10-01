@@ -46,10 +46,10 @@ handling:
 {% endif %}
 {% if galaxy_systemd_handlers is defined and galaxy_systemd_handlers > 0 %}
   processes:
-{% set handler_definitions = galaxy_jobconf.handlers.handler_definitions | default({}) %}
-{% set default_handler_definition = galaxy_jobconf.handlers.default_process | default({}) %}
+{% set handler_definitions = galaxy_jobconf.handlers.handler_definitions | default({}, true) %}
+{% set default_handler_definition = handler_definitions.get('default', {}) %}
 {% for n in range(galaxy_systemd_handlers) %}
-{% set handler_definition = handler_definitions.get(n, default_handler_definition) %}
+{% set handler_definition = default_handler_definition | combine(handler_definitions.get(n | string, {})) %}
     {{ galaxy_systemd_handler_prefix }}_{{ n }}:
 {% if handler_definition.tags is defined %}
       tags:
