@@ -1,0 +1,6 @@
+---
+- name: Restart Telegraf after configuring systemd D-state collector
+  listen: restart Telegraf after configuring systemd D-state collector
+  ansible.builtin.service:
+    name: telegraf
+    state: restarted

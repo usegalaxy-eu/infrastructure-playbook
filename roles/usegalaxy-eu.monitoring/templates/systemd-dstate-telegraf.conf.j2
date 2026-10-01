@@ -1,0 +1,7 @@
+### Managed by Ansible (usegalaxy-eu.monitoring). Local changes will be overwritten. ###
+
+[[inputs.exec]]
+  commands = ["/usr/bin/systemd-dstate-collector{% for service in script_watchdog_services %} {{ service }}{% endfor %}"]
+  timeout = "5s"
+  interval = "{{ script_watchdog_telegraf_interval }}"
+  data_format = "influx"

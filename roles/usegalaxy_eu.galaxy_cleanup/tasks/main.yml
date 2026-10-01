@@ -1,6 +1,6 @@
 ---
 - name: Check that all objectstore_id include 'scratch'
-  assert:
+  ansible.builtin.assert:
     that:
       - galaxy_cleanup_scratchstorage | length > 0
       - galaxy_cleanup_scratchstorage | list
@@ -11,15 +11,43 @@
     success_msg: "All objectstore_id values contain 'scratch'"
 
 - name: Install cleanup script
-  template:
-    src: "cleanup_storage.sh.j2"
-    dest: "/usr/local/bin/cleanup_storage.sh"
+  ansible.builtin.template:
+    src: cleanup_storage.sh.j2
+    dest: /usr/local/bin/cleanup_storage.sh
+    owner: root
+    group: root
     mode: "0555"
 
-- name: Schedule Galaxy cleanup objectstore script
-  ansible.builtin.cron:
-    name: "Galaxy cleanup scratch"
-    job: "/usr/local/bin/cleanup_storage.sh"
-    minute: "{{ galaxy_cleanup_minute }}"
-    hour: "{{ galaxy_cleanup_hour }}"
-    user: "{{ galaxy_user.name }}"
+- name: Create Galaxy cleanup log directory
+  ansible.builtin.file:
+    path: "{{ galaxy_cleanup_log_dir }}"
+    state: directory
+    owner: "{{ galaxy_user.name }}"
+    group: "{{ galaxy_group.name }}"
+    mode: "0755"
+
+- name: Install Galaxy cleanup service
+  ansible.builtin.template:
+    src: galaxy-cleanup.service.j2
+    dest: "/etc/systemd/system/{{ galaxy_cleanup_systemd_service }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload systemd for Galaxy cleanup
+
+- name: Install Galaxy cleanup timer
+  ansible.builtin.template:
+    src: galaxy-cleanup.timer.j2
+    dest: "/etc/systemd/system/{{ galaxy_cleanup_systemd_timer }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Reload systemd for Galaxy cleanup
+    - Restart Galaxy cleanup timer
+
+- name: Enable Galaxy cleanup timer
+  ansible.builtin.systemd:
+    name: "{{ galaxy_cleanup_systemd_timer }}"
+    enabled: true
+    state: started

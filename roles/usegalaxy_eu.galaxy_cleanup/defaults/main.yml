@@ -12,9 +12,11 @@
 # *****************************************************************************************
 galaxy_cleanup_scratchstorage: {}
 
-# Cron schedule for galaxy cleanup objectstores script
-# Default: runs daily at 1:00 AM
+# Schedule for Galaxy cleanup objectstore service.
 galaxy_cleanup_minute: 0
 galaxy_cleanup_hour: 1
 
 galaxy_cleanup_log_dir: "{{ undef() }}"
+galaxy_cleanup_systemd_service: galaxy-cleanup.service
+galaxy_cleanup_systemd_timer: galaxy-cleanup.timer
+galaxy_cleanup_systemd_on_calendar: "*-*-* {{ '%02d' | format(galaxy_cleanup_hour | int) }}:{{ '%02d' | format(galaxy_cleanup_minute | int) }}:00"

@@ -136,32 +136,29 @@
         create: true
       no_log: true
   roles:
-    - usegalaxy-eu.vgcn-monitoring
+    # OS operations
     - usegalaxy_eu.handy.os_setup
     - geerlingguy.repo-epel
     - influxdata.chrony
     - usegalaxy-eu.autofs
-    - hxr.monitor-cluster
-    - hxr.monitor-galaxy
-    - usegalaxy-eu.monitoring
     - usegalaxy-eu.bashrc
     - usegalaxy-eu.dynmotd
     - ssh-host-sign
-    - hxr.postgres-connection
     - galaxyproject.gxadmin
     - usegalaxy-eu.galaxy-slurp
+    - usegalaxy-eu.fix-ancient-ftp-data
+    # Monitor / Maintenance Operations
+    - dj-wasabi.telegraf
+    - usegalaxy-eu.vgcn-monitoring
+    - hxr.monitor-cluster
+    - hxr.monitor-galaxy
+    - usegalaxy-eu.monitoring
     - usegalaxy_eu.fs_maintenance
     - usegalaxy_eu.galaxy_cleanup # Cleanup the Galaxy objectstores and old datasets
-    # - usegalaxy-eu.htcondor_release
-    # - usegalaxy-eu.fix-unscheduled-workflows
-    - usegalaxy-eu.fix-ancient-ftp-data
-    # - usegalaxy-eu.fix-user-quotas
-    # - ssh_hardening
+    - hxr.postgres-connection
+    - usegalaxy-eu.kui
     - usegalaxy-eu.job-radar-stats-influxdb
-    - dj-wasabi.telegraf
-    # - usegalaxy-eu.fix-stop-ITs
     - usegalaxy-eu.logrotate
     - usegalaxy_eu.walle
     - usegalaxy_eu.ntfy-notifications
     - l3d.restic
-    - usegalaxy-eu.kui
