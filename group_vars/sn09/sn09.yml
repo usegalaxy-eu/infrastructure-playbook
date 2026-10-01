@@ -94,6 +94,34 @@ telegraf_plugins_extra:
       - data_format = "influx"
       - interval = "15s"
 
+  # Parse nginx rate limit hits
+  nginx_rate_limit:
+    plugin: 'tail'
+    config:
+      - files = ["/var/log/nginx/rate_limit.log"]
+      - from_beginning = false
+      - data_format = "grok"
+      - name_override = "nginx_rate_limit"
+      # Parses lines from the dedicated NGINX rate limit access log, see
+      # templates/nginx/conf.d/rate_limit.conf.j2)
+      - grok_patterns = ['ts=%{TIMESTAMP_ISO8601:ts:ts-"2006-01-02T15:04:05Z07:00"} client=%{IPORHOST:client:tag} host=%{NOTSPACE:host} request="%{WORD:method} (?P<req_path_raw>%{URIPATHPARAM:req_path_normalized:tag}) HTTP/%{NUMBER:httpver}" status=%{POSINT:status:int} bytes=%{NONNEGINT:body_bytes:int} limit_status=%{WORD:limit_status:tag} crawler=(?P<crawler>\S*)$']
+      # Note: "2006-01-02T15:04:05Z07:00" is a Go reference-time layout,
+      # where Z07:00 is the offset placeholder, not UTC+7.
+
+# Normalise high-cardinality path IDs in nginx_rate_limit metrics
+telegraf_processors:
+  - processor: regex
+    config:
+      - namepass = ["nginx_rate_limit"]
+      - '[[processors.regex.tags]]'
+      - '  key = "req_path_normalized"'
+      - '  pattern = "[0-9a-fA-F]{16,}"'
+      - '  replacement = "ID"'
+      - '[[processors.regex.tags]]'
+      - '  key = "req_path_normalized"'
+      - '  pattern = "\\?.*"'
+      - '  replacement = ""'
+
 # Custom pip installer
 pip_venv_path: '{{ galaxy_venv_dir }}'
 pip_install_dependencies:

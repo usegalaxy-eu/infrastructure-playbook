@@ -60,6 +60,8 @@ server {
     listen 443 default_server;
     listen [::]:443 default_server;
 
+    access_log /var/log/nginx/access.log main;
+
     {% for error_code in [400, 403, 404, 408, 500, 502, 503, 504] %}
 
     error_page {{ error_code }} /{{ error_code }}.html;
@@ -81,6 +83,7 @@ server {
     limit_req zone=crawler burst=10 nodelay;
     limit_req zone=relaxed burst=50 nodelay;
     limit_req_status 429;
+    access_log /var/log/nginx/rate_limit.log limit if=$rate_limited;
 
     # Long-lived Server-Sent Events stream.
     # Galaxy sends ``X-Accel-Buffering: no`` on the response, which
