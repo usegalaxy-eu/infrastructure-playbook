@@ -1,0 +1,38 @@
+tcp:
+  routers:
+    ftp:
+      rule: "HostSNI(`*`)"
+      service: ftp
+      entryPoints:
+        - ftp
+
+  services:
+    ftp:
+      loadBalancer:
+        servers:
+          - address: "ftp.bi.privat:21"
+
+http:
+  routers:
+    ftp-instructions-rtr:
+      rule: "Host(`ftp.usegalaxy.eu`)"
+      service: noop@internal
+      entryPoints:
+        - websecure
+      priority: 100
+      middlewares:
+        - ftp-instructions-redirect
+      tls:
+        certResolver: "route53"
+        domains:
+          # note that CertBot on the FTP node also obtains a certificate for
+          # `ftp.usegalaxy.eu` via DNS challenge, but both certificates can
+          # coexist
+          - main: "ftp.usegalaxy.eu"
+
+  middlewares:
+    ftp-instructions-redirect:
+      redirectRegex:
+        regex: "^.*$"  # any URL
+        replacement: "https://galaxyproject.org/ftp-upload/"
+        permanent: false

@@ -12,25 +12,6 @@ tools:
           param_dict.get('__job_resource', {}).get('__job_resource__select') == 'yes'
         gpus: int(job.get_param_values(app)['__job_resource']['gpu'])
 
-  _basic_internal_tool:
-    abstract: true
-    rules:
-      - id: no-pulsar
-        if: user is not None
-        execute: |
-            user_preferences = user.extra_preferences
-            pulsar_tag = user_preferences.get("distributed_compute|remote_resources", "None")
-
-            if pulsar_tag != "None":
-                entity.tpv_tags.require = [
-                    tag
-                    for tag in (entity.tpv_tags.require or [])
-                    if tag != pulsar_tag
-                ]
-    scheduling:
-      require:
-        - internal
-
   _basic_docker_tool:
     abstract: true
     params:
@@ -56,7 +37,7 @@ tools:
   _basic_numba_tool:
     abstract: true
     env:
-      NUMBA_CACHE_DIR: /data/2/galaxy_db/tmp
+      NUMBA_CACHE_DIR: /data/misc06/tmp
       OMP_NUM_THREADS: 4
       OPENBLAS_NUM_THREADS: 4
       MKL_NUM_THREADS: 4
@@ -81,35 +62,28 @@ tools:
           - docker
           - embedded-pulsar
 
-  __.*__:
-    inherits: _basic_internal_tool
-
-  param_value_from_file:
-    inherits: _basic_internal_tool
-
-  upload1:
-    inherits: _basic_internal_tool
-
-  ucsc_table_direct1:
-    inherits: _basic_internal_tool
-
-  toolshed.g2.bx.psu.edu/repos/iuc/compose_text_param/compose_text_param/.*:
-    inherits: _basic_internal_tool
+  # example for overwriting the OOM memory multiplier for a specific tool
+  # toolshed.g2.bx.psu.edu/repos/example_owner/example_tool/example_tool/.*:
+  #   context:
+  #     OOM_SCALING_FACTOR: 3
 
   export_remote:
-    inherits: _basic_internal_tool
     # a user exported 100 of files and memory was not enough
     mem: 8
 
+  CONVERTER_gff_to_bed_0:
+    # It's an "internal" tool (requires access to Galaxy code), but it is not
+    # part of `GALAXY_LIB_TOOLS_UNVERSIONED` in lib/galaxy/tools/__init__.py.
+    # Therefore, needs to be explicitly marked as internal.
+    scheduling:
+      require:
+        - internal
+
   __DATA_FETCH__:
-    inherits: _basic_internal_tool
     cores: 1
     mem: 3
     env:
-      TEMP: /data/1/galaxy_db/tmp
-
-  CONVERTER_gff_to_bed_0:
-    inherits: _basic_internal_tool
+      TEMP: /data/misc06/tmp
 
   toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/*:
     env:
@@ -185,6 +159,22 @@ tools:
         cores: 18
         mem: 64
 
+  # safety net, it seems a few MQC versions try to cleanup directories, but fail due to NFS locks.
+  # Here we try to use a in-container /tmp dir, that should not be on any NFS
+  toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/.*:
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/ketos_.*:
+    env:
+      # use non-NFS `/tmp/` dir, required because of https://ticketsystem.galaxyproject.eu/#ticket/zoom/1572:
+      # on https://github.com/mittagessen/kraken/blob/main/kraken/lib/arrow_dataset.py#L282C1-L283C53,
+      # when leaving the `TemporaryDirectory()` context, Python tries to remove
+      # the temporary directory, yielding `OSError: [Errno 39] Directory not empty`
+      _GALAXY_JOB_TMP_DIR: /tmp
+
+  toolshed.g2.bx.psu.edu/repos/iuc/gem_check_memote/gem_check_memote/.*:
+    mem: 24
 
   toolshed.g2.bx.psu.edu/repos/iuc/mummer_mummer/mummer_mummer/.*:
     mem: 8
@@ -199,7 +189,7 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/ufz/genomad_end_to_end/genomad_end_to_end/.*:
     cores: 4
-    mem: 24
+    mem: 37
 
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/hifiasm_meta/hifiasm_meta/.*:
     cores: 8
@@ -211,12 +201,16 @@ tools:
     cores: 2
     mem: 40
 
+  toolshed.g2.bx.psu.edu/repos/iuc/iqtree/iqtree/.*:
+    cores: 4
+    mem: 12
+
   toolshed.g2.bx.psu.edu/repos/rnateam/htseq_clip/htseq_clip/.*:
     cores: 4
     mem: 16
-    #scheduling:
-    #  prefer:
-    #    - condor-tpv
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_peptidespectrummatching/proteomiqon_peptidespectrummatching/.*:
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/galaxy-australia/alphafold2/alphafold/.*:
     cores: 10
@@ -297,6 +291,10 @@ tools:
     params:
       container_override: [{type: singularity, shell: '/bin/sh', identifier: "/cvmfs/main.galaxyproject.org/singularity/galaxy-pycaret:3.3.2--0"}]
 
+  toolshed.g2.bx.psu.edu/repos/bgruening/mirge3_build_database/mirge3_build_database/0.1.4+galaxy0:
+    params:
+      container_override: [{type: singularity, shell: '/bin/sh', identifier: "/cvmfs/singularity.galaxyproject.org/w/g/wget:1.25.0"}]
+
   toolshed.g2.bx.psu.edu/repos/goeckslab/tabular_learner/tabular_learner/0\.1\..*:
     inherits: toolshed.g2.bx.psu.edu/repos/goeckslab/pycaret_[^/]*/pycaret_[^/]*/3.3.2.*
 
@@ -346,7 +344,7 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_smart_tile/3dtrees_smart_tile/.*:
     cores: 10
-    mem: min((input_size * 2), 200)
+    mem: min(max(2,(input_size * 2)), 200)
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_potree/3dtrees_potree/.*:
     cores: 10
@@ -429,6 +427,21 @@ tools:
       docker_run_extra_arguments: ' --gpus all --user 999 '
     env:
       GPU_AVAILABLE: 1
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_peptidedb/proteomiqon_peptidedb/.*:
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_mzmltomzlite/proteomiqon_mzmltomzlite/.*:
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_psmstatistics/proteomiqon_psmstatistics/.*:
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_psmbasedquantification/proteomiqon_psmbasedquantification/.*:
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/galaxyp/proteomiqon_proteininference/proteomiqon_proteininference/.*:
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/.*:
     cores: 12
@@ -583,7 +596,7 @@ tools:
     mem: 90
     params:
       docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
-      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb13/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb13/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/1/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
       docker_default_container_id: centos:8.3.2011
         # see https://github.com/galaxyproject/galaxy/issues/16121#issuecomment-1555153421
         ##- embedded-pulsar
@@ -593,7 +606,7 @@ tools:
     mem: 20
     params:
       docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
-      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb13/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb13/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/1/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
       docker_default_container_id: centos:8.3.2011
         # see https://github.com/galaxyproject/galaxy/issues/16121#issuecomment-1555153421
         ##- embedded-pulsar
@@ -601,7 +614,7 @@ tools:
   '.*bioext_bam2msa.*':
     params:
       docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
-      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb13/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb13/galaxy_db/:rw,/data/dnb-ds02/galaxy_db/:ro,/data/dp01/galaxy_db/:rw,/data/1/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
       docker_default_container_id: centos:8.3.2011
     scheduling:
       require:
@@ -611,7 +624,7 @@ tools:
   'last_*':
     params:
       docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
-      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb13/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/0/galaxy_db/:ro,/data/1/galaxy_db/:ro,/data/2/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
+      docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb13/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/1/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
       docker_default_container_id: centos:8.3.2011
     scheduling:
       require:
@@ -679,21 +692,27 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_cluster_reduce_dimension/scanpy_cluster_reduce_dimension/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_filter/scanpy_filter/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_inspect/scanpy_inspect/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_normalize/scanpy_normalize/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_remove_confounders/scanpy_remove_confounders/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_plot/scanpy_plot/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   # Also on add_to_tpv_shared_db.yml but without NUMBA_CACHE_DIR
   toolshed.g2.bx.psu.edu/repos/iuc/gemini_inheritance/gemini_inheritance/.*:
@@ -844,6 +863,9 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/bgruening/flexynesis/flexynesis/.*:
     rules:
+      - if: helpers.tool_version_gte(tool, '1.1.11+galaxy0')
+        params:
+          docker_run_extra_arguments: --user 999
       - id: flexynesis_gnn_high_mem
         if: |
           retval = False
@@ -856,13 +878,37 @@ tools:
                 if model_select and isinstance(model_select, dict):
                   retval = model_select.get('model_class') == 'GNN'
           retval
+        params:
+          docker_run_extra_arguments: --user 999 --gpus all
         gpus: 1
         cores: 20
         mem: 100
-        params:
-          docker_run_extra_arguments: --user 999
         context:
           exclude_gpu_models: ["Tesla T4"] # T4 GPUs have only 16 GB of memory, which is not enough for the GNN model
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/flexynesis_cbioportal_import/flexynesis_cbioportal_import/.*:
+    rules:
+      - if: helpers.tool_version_gte(tool, '1.1.11+galaxy0')
+        params:
+          docker_run_extra_arguments: --user 999
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/flexynesis_plot/flexynesis_plot/.*:
+    rules:
+      - if: helpers.tool_version_gte(tool, '1.1.11+galaxy0')
+        params:
+          docker_run_extra_arguments: --user 999
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/flexynesis_utils/flexynesis_utils/.*:
+    rules:
+      - if: helpers.tool_version_gte(tool, '1.1.11+galaxy0')
+        params:
+          docker_run_extra_arguments: --user 999
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/flexynesis_infer/flexynesis_infer/.*:
+    rules:
+      - if: helpers.tool_version_gte(tool, '1.1.11+galaxy0')
+        params:
+          docker_run_extra_arguments: --user 999
 
   toolshed.g2.bx.psu.edu/repos/genouest/helixer/helixer/.*:
     params:
@@ -889,9 +935,29 @@ tools:
       SINGULARITYENV_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
       LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
 
-  toolshed.g2.bx.psu.edu/tools/bgruening/kraken_ocr/kraken_ocr/.*:
+  toolshed.g2.bx.psu.edu/repos/bgruening/rag_retriever/rag_retriever/.*:
+    # Measured peak RSS ~1 GB (local HuggingFace path, 600k-char corpus); mem: 4
+    # leaves headroom for user-uploaded model archives. 2 cores because local
+    # embedding runs 149s -> 41s vs a single core; the LiteLLM path is remote
+    # and light (~0.8 GB, <10s). Note mem must be set explicitly: the default
+    # is `cores * 3.8`, so cores: 2 alone would reserve 7.6 GB.
+    cores: 2
+    mem: 4
+    env:
+      LITELLM_CONFIG_FILE: "/data/db/models/config/litellm_config.yml"
+      SINGULARITYENV_LITELLM_CONFIG_FILE: "$LITELLM_CONFIG_FILE"
+    params:
+      docker_env_LITELLM_CONFIG_FILE: "$LITELLM_CONFIG_FILE"
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/kraken_ocr/kraken_ocr/.*:
     env:
       TORCHINDUCTOR_CACHE_DIR: "$_GALAXY_JOB_TMP_DIR"
+      SINGULARITYENV_TORCHINDUCTOR_CACHE_DIR: "$TORCHINDUCTOR_CACHE_DIR"
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/kraken_segment/kraken_segment/.*:
+    env:
+      TORCHINDUCTOR_CACHE_DIR: "$_GALAXY_JOB_TMP_DIR"
+      SINGULARITYENV_TORCHINDUCTOR_CACHE_DIR: "$TORCHINDUCTOR_CACHE_DIR"
 
   toolshed.g2.bx.psu.edu/repos/imgteam/bfconvert/ip_convertimage/.*:
     cores: 12
@@ -900,4 +966,59 @@ tools:
       SINGULARITYENV__JAVA_OPTIONS: -Xmx{int(mem)}G
 
   toolshed.g2.bx.psu.edu/repos/iuc/wgcna_network/wgcna_network/.*:
+    mem: 32
     cores: 4
+
+
+  toolshed.g2.bx.psu.edu/repos/iuc/wgcna_softpower/wgcna_softpower/.*:
+    mem: 32
+    cores: 4
+
+  toolshed.g2.bx.psu.edu/repos/iuc/celltypist/celltypist/.*:
+    mem: 16
+    cores: 4
+    rules:
+      - id: celltypist_train
+        if: |
+          retval = False
+          options = job.get_param_values(app)
+          if options:
+            model_source = options.get('model_source', {})
+            if model_source and isinstance(model_source, dict):
+              history_model_type = model_source.get('history_model_source', {})
+              if history_model_type and isinstance(history_model_type, dict):
+                retval = history_model_type.get('history_model_select') == 'train_model'
+          retval
+        mem: 20
+
+  toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_operation/spatialdata_operation/.*:
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_io/spatialdata_io/.*:
+    mem: 16
+    cores: 5
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/simorgh/simorgh/.*:
+    mem: 10
+    cores: 10
+    # Set the number of threads for OpenMP, MKL, and OpenBLAS
+    # if not set, torch will default to all available threads, which slows down the job
+    # Xref: https://discuss.pytorch.org/t/cpu-usage-far-too-high-and-training-inefficient/57228
+    env:
+      OMP_NUM_THREADS: 10
+      MKL_NUM_THREADS: 10
+      OPENBLAS_NUM_THREADS: 10
+      # MKL is optimized for Intel, this is a workaround to make it work for AMD CPUs
+      MKL_DEBUG_CPU_TYPE: 5
+    params:
+      docker_env_OMP_NUM_THREADS: "$OMP_NUM_THREADS"
+      docker_env_MKL_NUM_THREADS: "$MKL_NUM_THREADS"
+      docker_env_OPENBLAS_NUM_THREADS: "$OPENBLAS_NUM_THREADS"
+      docker_env_MKL_DEBUG_CPU_TYPE: "$MKL_DEBUG_CPU_TYPE"
+
+  toolshed.g2.bx.psu.edu/repos/iuc/colabfold_alphafold/colabfold_alphafold/.*:
+    mem: 60
+    cores: 16
+    params:
+      docker_run_extra_arguments: --gpus all
+    gpus: 1

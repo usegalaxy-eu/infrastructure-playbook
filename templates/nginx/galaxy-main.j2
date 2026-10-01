@@ -45,35 +45,45 @@ add_header X-Cache $upstream_cache_status;
 expires 24h;
 {%- endmacro %}
 
+{% macro throttle_downloads() -%}
+# Throttle downloads. First 100Mb are free, after that 5Mb/s.
+# users can move to FTP if they need / we can sort that out.
+limit_rate_after 100m;
+limit_rate 5m;
+{%- endmacro %}
+
+{% macro x_clacks_overhead() -%}
+add_header X-Clacks-Overhead 'GNU James Taylor (@jxtx) Simon Gladman (@slugger70) Jim Johnson (@jj-umn) Ross Lazarus (@fubar2)';
+{%- endmacro %}
+
 server {
     listen 443 default_server;
     listen [::]:443 default_server;
 
-    error_page 404 /404.html;
-    error_page 502 /502.html;
-    error_page 503 /503.html;
-    error_page 504 /503.html;
+    access_log /var/log/nginx/access.log main;
 
-    location /404.html {
-        root /usr/share/nginx/html;
+    {% for error_code in [400, 403, 404, 408, 500, 502, 503, 504] %}
+
+    error_page {{ error_code }} /{{ error_code }}.html;
+
+    location = /{{ error_code }}.html {
+        alias {{ error_pages_dest }}/{{ error_code }}.html;
         internal;
     }
-    location /502.html {
-        root /usr/share/nginx/html;
-        internal;
-    }
-    location /503.html {
-        root /usr/share/nginx/html;
-        internal;
-    }
-    location /504.html {
-        root /usr/share/nginx/html;
-        internal;
-    }
+
+    {% endfor %}
 
     # Move to remote storage, hopefully hammer local disk slightly less?
     #client_body_temp_path  /data/dnb01/nginx_upload_store/;
     client_body_buffer_size 1024m;
+
+    # Rate limiting (zones and maps in conf.d/rate_limit.conf). Requests are
+    # keyed on API key, then `galaxysession` cookie, then client IP. Locations
+    # defining their own `limit_req` do not inherit these.
+    limit_req zone=crawler burst=10 nodelay;
+    limit_req zone=relaxed burst=50 nodelay;
+    limit_req_status 429;
+    access_log /var/log/nginx/rate_limit.log limit if=$rate_limited;
 
     # Long-lived Server-Sent Events stream.
     # Galaxy sends ``X-Accel-Buffering: no`` on the response, which
@@ -102,13 +112,31 @@ server {
         {{ upstream_galaxy() | indent(8, false) }}
         proxy_set_header Connection         $connection_upgrade;
 
-        # Throttle downloads. First 100Mb are free, after that 5Mb/s.
-        # users can move to FTP if they need / we can sort that out.
-        limit_rate_after 100m;
-        limit_rate 5m;
+        {{ throttle_downloads() | indent(8, false) }}
 
-        add_header X-Clacks-Overhead 'GNU James Taylor (@jxtx) Simon Gladman (@slugger70) Jim Johnson (@jj-umn)';
+        {{ x_clacks_overhead() | indent(8, false) }}
     }
+
+    location /api/ {
+        # stricter rate limit than the rest of the server; some paths exempt
+        # (e.g. uploads, Pulsar job files), see conf.d/rate_limit.conf
+        limit_req zone=crawler burst=10 nodelay;
+        limit_req zone=strict burst=50 nodelay;
+        limit_req_status 429;
+
+        {{ upstream_galaxy() | indent(8, false) }}
+        proxy_set_header Connection         $connection_upgrade;
+
+        {{ throttle_downloads() | indent(8, false) }}
+
+        {{ x_clacks_overhead() | indent(8, false) }}
+
+        # regex locations for `/api/...` below take precedence over this
+        # location and inherit the server-level limits
+    }
+   location ~ ^/display_application/[^/]+/ucsc_bam/ {
+       return 503;
+   }
 
     # Temporarily break downloading :(
     #location /api/libraries/datasets/download/ {
@@ -206,6 +234,10 @@ server {
     location /static {
         {{ upstream_galaxy() | indent(8, false) }}
         {{ upstream_galaxy_cache() | indent(8, false) }}
+    }
+
+    location = /static/error_pages/brand-tokens.css {
+        alias {{ error_pages_dest }}/brand-tokens.css;
     }
 
     location /static/vgcn {
@@ -355,7 +387,9 @@ server {
     }
 
     location /robots.txt {
-        alias {{ galaxy_server_dir }}/static/robots.txt;
+        alias /etc/nginx/robots.txt;
+        default_type text/plain;
+        add_header Cache-Control "no-store";
     }
 
     resolver 8.8.8.8 8.8.4.4 valid=300s;
