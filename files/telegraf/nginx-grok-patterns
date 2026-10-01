@@ -1,9 +1,0 @@
-# Grok patterns for the NGINX rate limit log in
-# group_vars/sn09/sn09.yml (`telegraf_plugins_extra: nginx_rate_limit`).
-
-# Parses lines from dedicated NGINX rate limit access log;
-# see templates/nginx/conf.d/rate_limit.conf.j2,
-# templates/nginx/galaxy-main.j2.
-NGINX_LIMIT_REQ ts=%{TIMESTAMP_ISO8601:ts:ts-"2006-01-02T15:04:05Z07:00"} client=%{IPORHOST:client:tag} host=%{NOTSPACE:host} request="%{WORD:method} (?P<req_path_raw>%{URIPATHPARAM:req_path_normalized:tag}) HTTP/%{NUMBER:httpver}" status=%{POSINT:status:int} bytes=%{NONNEGINT:body_bytes:int} limit_status=%{WORD:limit_status:tag} crawler=(?P<crawler>\S*)$
-# Note: "2006-01-02T15:04:05Z07:00" is a Go reference-time layout, where
-# Z07:00 is the offset placeholder, not a literal UTC+7.
