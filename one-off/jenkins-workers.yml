@@ -32,7 +32,7 @@
     - name: Install Worker private key
       ansible.builtin.copy:
         dest: /home/centos/.ssh/id_rsa
-        content: "{{ worker_ssh_priv_key}}"
+        content: "{{ worker_ssh_priv_key }}"
         mode: "0600"
         owner: centos
         group: centos
