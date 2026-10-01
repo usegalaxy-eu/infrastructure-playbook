@@ -39,14 +39,16 @@
       no_log: true
 
     - name: Disable host key verification for github.com
-      ansible.builtin.copy:
-        dest: /home/centos/.ssh/config
+      ansible.builtin.blockinfile:
+        path: /home/centos/.ssh/config
+        create: true
         mode: "0600"
         owner: centos
         group: centos
-        content: |
+        marker: "# {mark} ANSIBLE MANAGED github.com block"
+        block: |
           Host github.com
-                  CheckHostIP no
+              CheckHostIP no
   roles:
     - galaxyproject.miniconda
     - geerlingguy.docker
