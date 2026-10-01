@@ -84,7 +84,7 @@ limit_req_dry_run on;
 
 # Telegraf parses the rate limit log, see
 # group_vars/sn09/sn09.yml (`telegraf_plugins_extra: nginx_rate_limit`).
-log_format limit '$time_iso8601|$remote_addr|$host|$request|$status|$body_bytes_sent|$limit_req_status|$rate_limit_crawler';
+log_format limit 'ts=$time_iso8601 client=$remote_addr host=$host request="$request" status=$status bytes=$body_bytes_sent limit_status=$limit_req_status crawler=$rate_limit_crawler';
 map $limit_req_status $rate_limited {
     default              0;
     ~^(DELAYED|REJECTED) 1;
