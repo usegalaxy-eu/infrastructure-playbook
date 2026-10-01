@@ -99,7 +99,6 @@ telegraf_plugins_extra:
     plugin: 'tail'
     config:
       - files = ["/var/log/nginx/rate_limit.log"]
-      - from_beginning = false
       - data_format = "grok"
       - name_override = "nginx_rate_limit"
       # Parses lines from the dedicated NGINX rate limit access log, see
