@@ -18,7 +18,7 @@
             'java-21-openjdk-devel',
             'rsync',
             'firewalld',
-            'qemu-kvm-core', 
+            'qemu-kvm-core',
           ]
         state: present
       become: true
@@ -32,7 +32,7 @@
     - name: Install Worker private key
       ansible.builtin.copy:
         dest: /home/centos/.ssh/id_rsa
-        content: "???????????????"
+        content: "{{ worker_ssh_priv_key}}"
         mode: "0600"
         owner: centos
         group: centos
