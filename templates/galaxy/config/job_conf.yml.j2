@@ -70,13 +70,16 @@ handling:
   ready_window_size: 32
 {% if galaxy_systemd_handlers > 0 %}
   processes:
-{% set handler_defaults = {'exclude_plugins': ['condor']} %}
-{% set handler_overrides = {
+{% set default_handler_plugins = runner_ids | reject('equalto', 'condor') | sort %}
+#
+# Set handler tags
+#
+{% set special_handlers = {
     0: {'tags': ['tiaas'], 'plugins': ['htcondor']},
     7: {'tags': ['test'], 'plugins': ['htcondor']},
 } %}
 {% for n in range(galaxy_systemd_handlers) %}
-{% set handler = handler_defaults | combine(handler_overrides.get(n, {})) %}
+{% set handler = special_handlers.get(n, {}) %}
     {{ galaxy_systemd_handler_prefix }}_{{ n }}:
 {% if handler.tags is defined %}
       tags:
@@ -84,17 +87,10 @@ handling:
         - {{ tag }}
 {% endfor %}
 {% endif %}
-{% if handler.plugins is defined %}
       plugins:
-{% for plugin in handler.plugins %}
+{% for plugin in handler.plugins | default(default_handler_plugins) %}
         - {{ plugin }}
 {% endfor %}
-{% elif handler.exclude_plugins is defined %}
-      plugins:
-{% for plugin in runner_ids | sort if plugin not in handler.exclude_plugins %}
-        - {{ plugin }}
-{% endfor %}
-{% endif %}
 {% endfor %}
 {% else %}
   processes:
