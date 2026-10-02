@@ -9,15 +9,6 @@ galaxy_jobconf:
     assign: db-skip-locked
     max_grab: 16
     ready_window_size: 32
-    handler_definitions:
-      default:
-        exclude_plugins:
-          - condor
-      "0":
-        tags:
-          - tiaas
-        plugins:
-          - htcondor
   plugins:
     #- id: drmaa
     #load: galaxy.jobs.runners.drmaa:DRMAAJobRunner

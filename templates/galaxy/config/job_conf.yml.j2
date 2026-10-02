@@ -44,34 +44,21 @@ handling:
 {% if galaxy_jobconf.handlers.ready_window_size is defined %}
   ready_window_size: {{ galaxy_jobconf.handlers.ready_window_size }}
 {% endif %}
-{% if galaxy_systemd_handlers is defined and galaxy_systemd_handlers > 0 %}
+{% if galaxy_systemd_handlers is defined %}
   processes:
-{% set handler_definitions = galaxy_jobconf.handlers.handler_definitions | default({}, true) %}
-{% set default_handler_definition = handler_definitions.get('default', {}) %}
-{% for n in range(galaxy_systemd_handlers) %}
-{% set handler_definition = default_handler_definition | combine(handler_definitions.get(n | string, {})) %}
-    {{ galaxy_systemd_handler_prefix }}_{{ n }}:
-{% if handler_definition.tags is defined %}
-      tags:
-{% for tag in handler_definition.tags %}
-        - {{ tag }}
-{% endfor %}
-{% endif %}
-{% if handler_definition.plugins is defined %}
-      plugins:
-{% for plugin in handler_definition.plugins %}
-        - {{ plugin }}
-{% endfor %}
-{% elif handler_definition.exclude_plugins is defined %}
-      plugins:
-{% for plugin in galaxy_jobconf.plugins | sort(attribute='id') if plugin.id not in handler_definition.exclude_plugins %}
-        - {{ plugin.id }}
-{% endfor %}
-{% endif %}
-{% endfor %}
-{% elif galaxy_systemd_handlers is defined and galaxy_systemd_handlers == 0 %}
-  processes:
+{% if galaxy_systemd_handlers == 0 %}
     DUMMY_PLACEHOLDER_FOR_HANDLER:
+{% endif %}
+{% set special_handlers = {
+    0: {'tags': ['tiaas'], 'plugins': ['htcondor']},
+    7: {'tags': ['test'], 'plugins': ['htcondor']},
+} %}
+{% for n in range(galaxy_systemd_handlers) %}
+    {{ galaxy_systemd_handler_prefix }}_{{ n }}:
+{% if n in special_handlers %}
+      {{ special_handlers[n] | to_json }}
+{% endif %}
+{% endfor %}
 {% endif %}
 
 #
