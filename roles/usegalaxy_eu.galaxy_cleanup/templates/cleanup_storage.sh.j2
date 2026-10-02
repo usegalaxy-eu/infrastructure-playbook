@@ -28,7 +28,7 @@ for action in {delete_userless_histories,delete_exported_histories,purge_deleted
 			-o "60" \
 			-b "5000" \
 			-l "{{ galaxy_cleanup_log_dir }}" \
-			-s $action \
+			-s ${action} \
 			-w 128MB \
 			 >> "{{ galaxy_cleanup_log_dir }}/cleanup-$(date --rfc-3339=seconds)-${action}.log" \
 			2>> "{{ galaxy_cleanup_log_dir }}/cleanup-$(date --rfc-3339=seconds)-${action}.err";
