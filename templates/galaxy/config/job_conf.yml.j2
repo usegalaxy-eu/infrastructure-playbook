@@ -8,18 +8,7 @@
 #
 # Job runner plugin configuration
 #
-runners:
-  condor:
-    load: galaxy.jobs.runners.condor:CondorJobRunner
-  htcondor:
-    load: galaxy.jobs.runners.htcondor:HTCondorJobRunner
-  local:
-    load: galaxy.jobs.runners.local:LocalJobRunner
-    workers: 8
-  pulsar_embedded:
-    load: galaxy.jobs.runners.pulsar:PulsarEmbeddedJobRunner
-    pulsar_config: "{{ galaxy_config_dir }}/pulsar_app.yml"
-{% for site, username, password in [
+{% set pulsar_sites = [
     ('be01', 'galaxy_be01', rabbitmq_password_galaxy_be01),
     ('bsc01', 'galaxy_bsc01', rabbitmq_password_galaxy_bsc01),
     ('cyf01', 'galaxy_cyf01', rabbitmq_password_galaxy_cyf01),
@@ -42,7 +31,22 @@ runners:
     ('eosc01', 'galaxy_eosc01', rabbitmq_password_galaxy_eosc01),
     ('mira_runner', 'galaxy_mira_pulsar', rabbitmq_password_galaxy_mira_pulsar),
 ] %}
-  {% if site == 'mira_runner' %}pulsar_mira_runner{% else %}pulsar_eu_{{ site }}{% endif %}:
+{% set runner_ids = ['condor', 'htcondor', 'local', 'pulsar_embedded'] %}
+runners:
+  condor:
+    load: galaxy.jobs.runners.condor:CondorJobRunner
+  htcondor:
+    load: galaxy.jobs.runners.htcondor:HTCondorJobRunner
+  local:
+    load: galaxy.jobs.runners.local:LocalJobRunner
+    workers: 8
+  pulsar_embedded:
+    load: galaxy.jobs.runners.pulsar:PulsarEmbeddedJobRunner
+    pulsar_config: "{{ galaxy_config_dir }}/pulsar_app.yml"
+{% for site, username, password in pulsar_sites %}
+{% set runner_id = 'pulsar_mira_runner' if site == 'mira_runner' else 'pulsar_eu_' ~ site %}
+{% set _ = runner_ids.append(runner_id) %}
+  {{ runner_id }}:
     load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
     amqp_url: "pyamqp://{{ username }}:{{ password }}@mq.galaxyproject.eu:5671//pulsar/{{ username }}?ssl=1"
     galaxy_url: "https://usegalaxy.eu"
@@ -60,14 +64,37 @@ runners:
 # Job handler configuration
 #
 handling:
-  assign_with:
+  assign:
     - db-skip-locked
   max_grab: 16
   ready_window_size: 32
 {% if galaxy_systemd_handlers > 0 %}
   processes:
+{% set handler_defaults = {'exclude_plugins': ['condor']} %}
+{% set handler_overrides = {
+    0: {'tags': ['tiaas'], 'plugins': ['htcondor']},
+    7: {'tags': ['test'], 'plugins': ['htcondor']},
+} %}
 {% for n in range(galaxy_systemd_handlers) %}
+{% set handler = handler_defaults | combine(handler_overrides.get(n, {})) %}
     {{ galaxy_systemd_handler_prefix }}_{{ n }}:
+{% if handler.tags is defined %}
+      tags:
+{% for tag in handler.tags %}
+        - {{ tag }}
+{% endfor %}
+{% endif %}
+{% if handler.plugins is defined %}
+      plugins:
+{% for plugin in handler.plugins %}
+        - {{ plugin }}
+{% endfor %}
+{% elif handler.exclude_plugins is defined %}
+      plugins:
+{% for plugin in runner_ids | sort if plugin not in handler.exclude_plugins %}
+        - {{ plugin }}
+{% endfor %}
+{% endif %}
 {% endfor %}
 {% else %}
   processes:
