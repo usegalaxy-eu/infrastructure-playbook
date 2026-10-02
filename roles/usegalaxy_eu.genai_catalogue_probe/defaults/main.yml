@@ -1,0 +1,28 @@
+---
+# defaults for usegalaxy_eu.genai_catalogue_probe (see issue #2351)
+
+genai_catalogue_probe_enabled: true
+genai_catalogue_probe_user: "{{ galaxy_user.name | default('galaxy') }}"
+
+# Weekly, Mondays at 05:00 host time
+genai_catalogue_probe_cron_minute: "0"
+genai_catalogue_probe_cron_hour: "5"
+genai_catalogue_probe_cron_weekday: "1"
+
+# As deployed by sn09.yml; maintenance reads them over its NFS mounts
+genai_catalogue_probe_loc_file: "{{ galaxy_root | default('/opt/galaxy') }}/tool-data/genai_models.loc"
+genai_catalogue_probe_config_file: "/data/db/models/config/litellm_config.yml"
+
+genai_catalogue_probe_script_dest: "/usr/local/bin/genai_catalogue_probe.py"
+genai_catalogue_probe_log_dir: "/var/log/genai_catalogue_probe"
+genai_catalogue_probe_log_dest: "{{ genai_catalogue_probe_log_dir }}/probe.log"
+genai_catalogue_probe_report_dest: "{{ genai_catalogue_probe_log_dir }}/report.json"
+
+# ntfy topic URL from the vault; empty disables alerts
+genai_catalogue_probe_ntfy_url: "{{ NTFY_GALAXY_EU_URL | default('') }}"
+
+genai_catalogue_probe_concurrency: 6
+# Seconds to wait for a response (for chat, the first streamed chunk)
+genai_catalogue_probe_timeout: 60
+# Tries per call on timeouts, connection errors, 408, 429 and 5xx
+genai_catalogue_probe_attempts: 3
