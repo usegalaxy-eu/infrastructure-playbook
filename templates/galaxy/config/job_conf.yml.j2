@@ -49,10 +49,7 @@ handling:
 {% if galaxy_systemd_handlers == 0 %}
     DUMMY_PLACEHOLDER_FOR_HANDLER:
 {% endif %}
-{% set special_handlers = {
-#    0: {'tags': ['tiaas'], 'plugins': ['htcondor']},
-#    7: {'tags': ['test'], 'plugins': ['htcondor']},
-} %}
+{% set special_handlers = {} %}
 {% for n in range(galaxy_systemd_handlers) %}
     {{ galaxy_systemd_handler_prefix }}_{{ n }}:
 {% if n in special_handlers %}
