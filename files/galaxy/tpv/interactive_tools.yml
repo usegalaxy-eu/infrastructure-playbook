@@ -32,12 +32,12 @@ tools:
 
   interactive_tool_pretextview:
     params:
-      # the USER_ID & GROUP_ID are strincly needed - also because we have NFS root-squash enabled
+      # the USER_ID & GROUP_ID are stritcly needed - also because we have NFS root-squash enabled
       docker_run_extra_arguments: " -e USER_ID=999 -e GROUP_ID=999 "
 
   interactive_tool_qupath:
     params:
-      # the USER_ID & GROUP_ID are strincly needed - also because we have NFS root-squash enabled
+      # the USER_ID & GROUP_ID are stritcly needed - also because we have NFS root-squash enabled
       docker_run_extra_arguments: " -e USER_ID=999 -e GROUP_ID=999 "
 
   interactive_tool_qgis:
@@ -48,12 +48,12 @@ tools:
       TMP: /tmp
       TMPDIR: /tmp
     params:
-      # the USER_ID & GROUP_ID are strincly needed - also because we have NFS root-squash enabled
+      # the USER_ID & GROUP_ID are stritcly needed - also because we have NFS root-squash enabled
       docker_run_extra_arguments: " -e USER_ID=999 -e GROUP_ID=999 "
 
   interactive_tool_blobtoolkit:
     env:
-      TEMP: /data/1/galaxy_db/tmp
+      TEMP: /data/misc06/tmp
   interactive_tool_rstudio:
     cores: 2
     mem: 8
@@ -90,9 +90,9 @@ tools:
     mem: 8
     env:
       XLA_FLAGS: "--xla_gpu_cuda_data_dir=/op/conda/"
-    scheduling:
-      require:
-        - pxe-gpu-div4
+    # scheduling:
+    #   require:
+    #     - pxe-gpu-div4
 
   #interactive_tool_jupyter_notebook:
   #  rules:

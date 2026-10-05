@@ -24,6 +24,6 @@
     mode: '0640'
 
 - name: Create and start services
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ plausible_dir }}"
-  #when: repo_cloned.changed
+  when: repo_cloned.changed

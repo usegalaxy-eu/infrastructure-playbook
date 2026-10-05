@@ -1,0 +1,7 @@
+http:
+  routers:
+    cvmfs-stratum1-rtr:
+      rule: "Host(`cvmfs1-ufr0.galaxyproject.eu`)"
+      service: cvmfs-stratum1
+      entryPoints:
+        - web

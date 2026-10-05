@@ -7,12 +7,17 @@
     hostname: '{{ inventory_hostname }}'
     nginx_conf_user: galaxy
     server_names:
-      - '{{ inventory_hostname }}'
+      - 'tpv-broker.galaxyproject.eu'
+    certbot_hostname_override:
+      - 'tpv-broker.galaxyproject.eu'
     playbook_secret_vars_files:
       - secret_group_vars/all.yml
       - secret_group_vars/aws.yml
   vars_files:
     - group_vars/tpv-broker.yml
+  collections:
+    - devsec.hardening
+      - '{{ inventory_hostname }}'
   pre_tasks:
     - name: Load secret variables
       ansible.builtin.include_vars:

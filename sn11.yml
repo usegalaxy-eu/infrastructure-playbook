@@ -8,6 +8,7 @@
       - secret_group_vars/all.yml
   vars_files:
     - group_vars/sn11.yml
+    - secret_group_vars/sn11.yml
     - mounts/dest/all.yml
     - mounts/mountpoints.yml
   pre_tasks:
@@ -38,7 +39,6 @@
     - usegalaxy-eu.dynmotd
     - influxdata.chrony
     - hxr.monitor-email
-    - usegalaxy-eu.autoupdates # keep all of our packages up to date
     - usegalaxy-eu.autofs
     - ssh-host-sign
     - usegalaxy-eu.ansible-postgresql
