@@ -12,25 +12,6 @@ tools:
           param_dict.get('__job_resource', {}).get('__job_resource__select') == 'yes'
         gpus: int(job.get_param_values(app)['__job_resource']['gpu'])
 
-  _basic_internal_tool:
-    abstract: true
-    rules:
-      - id: no-pulsar
-        if: user is not None
-        execute: |
-            user_preferences = user.extra_preferences
-            pulsar_tag = user_preferences.get("distributed_compute|remote_resources", "None")
-
-            if pulsar_tag != "None":
-                entity.tpv_tags.require = [
-                    tag
-                    for tag in (entity.tpv_tags.require or [])
-                    if tag != pulsar_tag
-                ]
-    scheduling:
-      require:
-        - internal
-
   _basic_docker_tool:
     abstract: true
     params:
@@ -81,40 +62,28 @@ tools:
           - docker
           - embedded-pulsar
 
-  __.*__:
-    inherits: _basic_internal_tool
-
-  param_value_from_file:
-    inherits: _basic_internal_tool
-
-  upload1:
-    inherits: _basic_internal_tool
-
-  ucsc_table_direct1:
-    inherits: _basic_internal_tool
-
   # example for overwriting the OOM memory multiplier for a specific tool
   # toolshed.g2.bx.psu.edu/repos/example_owner/example_tool/example_tool/.*:
   #   context:
   #     OOM_SCALING_FACTOR: 3
 
-  toolshed.g2.bx.psu.edu/repos/iuc/compose_text_param/compose_text_param/.*:
-    inherits: _basic_internal_tool
-
   export_remote:
-    inherits: _basic_internal_tool
     # a user exported 100 of files and memory was not enough
     mem: 8
 
+  CONVERTER_gff_to_bed_0:
+    # It's an "internal" tool (requires access to Galaxy code), but it is not
+    # part of `GALAXY_LIB_TOOLS_UNVERSIONED` in lib/galaxy/tools/__init__.py.
+    # Therefore, needs to be explicitly marked as internal.
+    scheduling:
+      require:
+        - internal
+
   __DATA_FETCH__:
-    inherits: _basic_internal_tool
     cores: 1
     mem: 3
     env:
       TEMP: /data/misc06/tmp
-
-  CONVERTER_gff_to_bed_0:
-    inherits: _basic_internal_tool
 
   toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/*:
     env:
@@ -321,6 +290,10 @@ tools:
   toolshed.g2.bx.psu.edu/repos/goeckslab/pycaret_[^/]*/pycaret_[^/]*/3.3.2.*:
     params:
       container_override: [{type: singularity, shell: '/bin/sh', identifier: "/cvmfs/main.galaxyproject.org/singularity/galaxy-pycaret:3.3.2--0"}]
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/mirge3_build_database/mirge3_build_database/.*:
+    params:
+      container_override: [{type: singularity, shell: '/bin/sh', identifier: "/cvmfs/singularity.galaxyproject.org/w/g/wget:1.25.0"}]
 
   toolshed.g2.bx.psu.edu/repos/goeckslab/tabular_learner/tabular_learner/0\.1\..*:
     inherits: toolshed.g2.bx.psu.edu/repos/goeckslab/pycaret_[^/]*/pycaret_[^/]*/3.3.2.*
@@ -719,21 +692,27 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_cluster_reduce_dimension/scanpy_cluster_reduce_dimension/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_filter/scanpy_filter/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_inspect/scanpy_inspect/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_normalize/scanpy_normalize/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_remove_confounders/scanpy_remove_confounders/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_plot/scanpy_plot/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   # Also on add_to_tpv_shared_db.yml but without NUMBA_CACHE_DIR
   toolshed.g2.bx.psu.edu/repos/iuc/gemini_inheritance/gemini_inheritance/.*:
@@ -970,9 +949,15 @@ tools:
     params:
       docker_env_LITELLM_CONFIG_FILE: "$LITELLM_CONFIG_FILE"
 
-  toolshed.g2.bx.psu.edu/tools/bgruening/kraken_ocr/kraken_ocr/.*:
+  toolshed.g2.bx.psu.edu/repos/bgruening/kraken_ocr/kraken_ocr/.*:
     env:
       TORCHINDUCTOR_CACHE_DIR: "$_GALAXY_JOB_TMP_DIR"
+      SINGULARITYENV_TORCHINDUCTOR_CACHE_DIR: "$TORCHINDUCTOR_CACHE_DIR"
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/kraken_segment/kraken_segment/.*:
+    env:
+      TORCHINDUCTOR_CACHE_DIR: "$_GALAXY_JOB_TMP_DIR"
+      SINGULARITYENV_TORCHINDUCTOR_CACHE_DIR: "$TORCHINDUCTOR_CACHE_DIR"
 
   toolshed.g2.bx.psu.edu/repos/imgteam/bfconvert/ip_convertimage/.*:
     cores: 12
@@ -990,7 +975,7 @@ tools:
     cores: 4
 
   toolshed.g2.bx.psu.edu/repos/iuc/celltypist/celltypist/.*:
-    mem: 8
+    mem: 16
     cores: 4
     rules:
       - id: celltypist_train
@@ -1007,10 +992,10 @@ tools:
         mem: 20
 
   toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_operation/spatialdata_operation/.*:
-    mem: 10
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_io/spatialdata_io/.*:
-    mem: 10
+    mem: 16
     cores: 5
 
   toolshed.g2.bx.psu.edu/repos/bgruening/simorgh/simorgh/.*:
