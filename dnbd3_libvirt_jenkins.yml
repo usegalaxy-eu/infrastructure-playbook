@@ -82,7 +82,7 @@
     - name: Install Dependencies
       package:
         enablerepo: crb
-        name: 
+        name:
           - libvirt
       become: true
     # Create network setup
@@ -118,11 +118,11 @@
         content: |
           [Unit]
           Description=Mount NFS Share for Libvirt
-          
+
           [Mount]
           What=/dev/mapper/vg_images-images
           Where=/images
-          
+
           [Install]
           RequiredBy=libvirtd.socket
         dest: /etc/systemd/system/images.mount
@@ -133,13 +133,13 @@
           Description=Mount NFS Share for Libvirt
           Requires=network-online.target
           After=network-online.target
-          
+
           [Mount]
           What=ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/dnb01/vms
           Where=/data
           Type=nfs
           Options=hard,rw,nosuid,nconnect=2,nodev,vers=3
-          
+
           [Install]
           WantedBy=remote-fs.target
         dest: /etc/systemd/system/data.mount

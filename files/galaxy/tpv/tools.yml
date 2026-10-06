@@ -51,16 +51,16 @@ tools:
   # lets run in embedded pulsar to reduce the jwd scope and make it more secure
   # running docker is fine here
   user_defined-.*:
-      cores: 1
-      mem: 3.7
-      rules:
+    cores: 1
+    mem: 3.7
+    rules:
       - id: require_login_user_defined
         if: user is None
         fail: An account is required to run this tool. Please log in or create an account.
-      scheduling:
-        require:
-          - docker
-          - embedded-pulsar
+    scheduling:
+      require:
+        - docker
+        - embedded-pulsar
 
   # example for overwriting the OOM memory multiplier for a specific tool
   # toolshed.g2.bx.psu.edu/repos/example_owner/example_tool/example_tool/.*:
