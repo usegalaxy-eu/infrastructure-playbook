@@ -90,6 +90,7 @@
               register: vagrant_plugin_install
               failed_when: vagrant_plugin_install.rc != 0
               when: "'vagrant-libvirt' not in vagrant_plugins.stdout"
+              # noqa no-changed-when
   tasks:
     - name: Manage UCSC Genome Browser VM
       block:
@@ -108,6 +109,9 @@
           ansible.builtin.copy:
             dest: "{{ ucsc_genome_browser_vm_vagrant_project_dir }}/Vagrantfile"
             content: "{{ ucsc_genome_browser_vm_vagrantfile }}"
+            owner: root
+            group: root
+            mode: "0644"
 
         - name: Open forwarded ports for UCSC Genome Browser VM
           ansible.posix.firewalld:
@@ -127,12 +131,14 @@
           ansible.builtin.command:
             cmd: vagrant up
             chdir: "{{ ucsc_genome_browser_vm_vagrant_project_dir }}"
+          # noqa no-changed-when
 
         - name: Destroy UCSC Genome Browser VM
           when: ucsc_genome_browser_vm_state == "absent"
           ansible.builtin.command:
             cmd: vagrant destroy -f
             chdir: "{{ ucsc_genome_browser_vm_vagrant_project_dir }}"
+          # noqa no-changed-when
 
         - name: Clear UCSC Genome Browser Vagrant project directory
           when: ucsc_genome_browser_vm_state == "absent"
@@ -162,6 +168,7 @@
             chdir: "{{ ucsc_genome_browser_vm_vagrant_project_dir }}"
           register: ucsc_genome_browser_vm_ip_address
           changed_when: false
+          # noqa risky-shell-pipe
 
         - name: Write hostname for UCSC Genome Browser VM to hosts file
           vars:
@@ -170,13 +177,13 @@
             path: /etc/hosts
             regexp: ".*# {{ ucsc_genome_browser_host_entry_tag }}$"
             line: "{{ ucsc_genome_browser_vm_ip_address.stdout }} {{ groups[ucsc_genome_browser_ansible_group][0] }}  # {{ ucsc_genome_browser_host_entry_tag }}"
-            state: "{{ ( ucsc_genome_browser_vm_state == 'present' ) | ternary('present', 'absent') }}"
+            state: "{{ (ucsc_genome_browser_vm_state == 'present') | ternary('present', 'absent') }}"
 
 - name: Install UCSC Genome Browser
   hosts: ucsc_genome_browser
   tags: ucsc_genome_browser
   roles:
-    - name: usegalaxy_eu.ucsc_genome_browser
+    - role: usegalaxy_eu.ucsc_genome_browser
       become: true
   tasks:
     - name: Symlink databases in UCSC Genome Browser database meta directory
@@ -259,3 +266,6 @@
         section: mariadb
         option: symbolic-links
         value: "1"
+        owner: root
+        group: root
+        mode: "644"

@@ -69,6 +69,10 @@
     - mounts/dest/all.yml
     - mounts/mountpoints.yml
   handlers:
+    - name: Restart telegraf to pick up the nginx log access
+      ansible.builtin.systemd:
+        name: telegraf
+        state: restarted
     - name: Restart Galaxy
       ansible.builtin.shell: |
         cd /opt/galaxy/ && source /opt/galaxy/.bashrc && /usr/bin/gxadmin gunicorn handler-restart && sudo -u galaxy /usr/bin/galaxy-sync-to-nfs && systemctl restart galaxy-handler@* && systemctl restart galaxy-workflow-scheduler@*
@@ -194,12 +198,7 @@
         - path: /var/log/nginx
           entry: "d:u:{{ telegraf_user.name }}:r"
       register: __telegraf_log_access
-
-    - name: Restart telegraf to pick up the nginx log access
-      ansible.builtin.systemd:
-        name: telegraf
-        state: restarted
-      when: __telegraf_log_access is changed
+      notify: Restart telegraf to pick up the nginx log access
 
     # Note (ToDo): We should ensure that the Gunicorn sockets are created with the correct SELinux
     # context to avoid adding or allowing unconfined contexts. This will further tighten

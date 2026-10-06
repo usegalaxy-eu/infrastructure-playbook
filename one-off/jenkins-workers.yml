@@ -12,7 +12,7 @@
       - centos
   pre_tasks:
     - name: Install Dependencies
-      package:
+      ansible.builtin.package:
         name:
           [
             'git',

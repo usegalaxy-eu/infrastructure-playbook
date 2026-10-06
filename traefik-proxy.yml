@@ -38,7 +38,7 @@
           ansible.builtin.shell:
             executable: /bin/bash
             cmd: |
-              set -e
+              set -e -o pipefail
               IFS=$'\n'
 
               current_rules=$(firewall-cmd --permanent --direct --get-all-rules | grep "{{ ftp_firewall_rules_tag }}_" || true)
@@ -59,7 +59,7 @@
           ansible.builtin.shell:
             executable: /bin/bash
             cmd: |
-              set -e
+              set -e -o pipefail
 
               existing_rule=$(firewall-cmd --permanent --direct --get-all-rules | grep "{{ ftp_firewall_rules_tag }}_{{ item.name }}$" || true)
               if [[ -n "$existing_rule" ]]; then
@@ -83,6 +83,7 @@
           when: >-
             ftp_firewall_rules_cleanup is defined and ftp_firewall_rules_cleanup.changed or
             ftp_firewall_rules_deploy is defined and ftp_firewall_rules_deploy.results | selectattr('changed', 'equalto', true) | list | length > 0
+          # noqa no-changed-when
 
 - name: Traefik
   become: true

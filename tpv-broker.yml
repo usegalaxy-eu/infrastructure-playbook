@@ -15,9 +15,6 @@
       - secret_group_vars/aws.yml
   vars_files:
     - group_vars/tpv-broker.yml
-  collections:
-    - devsec.hardening
-      - '{{ inventory_hostname }}'
   pre_tasks:
     - name: Load secret variables
       ansible.builtin.include_vars:

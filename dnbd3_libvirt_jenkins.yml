@@ -47,6 +47,7 @@
           [Install]
           RequiredBy=tftp.service dnbd3-server.service httpd.service
         dest: /etc/systemd/system/require-autofs.service
+        mode: "0644"
     - name: Enable the service
       ansible.builtin.systemd_service:
         daemon_reload: true
@@ -80,7 +81,7 @@
     - "secret_group_vars/all.yml"
   pre_tasks:
     - name: Install Dependencies
-      package:
+      ansible.builtin.package:
         enablerepo: crb
         name:
           - libvirt
@@ -126,6 +127,7 @@
           [Install]
           RequiredBy=libvirtd.socket
         dest: /etc/systemd/system/images.mount
+        mode: "0644"
     - name: Create mountpoint for Libvirt
       ansible.builtin.copy:
         content: |
@@ -143,6 +145,7 @@
           [Install]
           WantedBy=remote-fs.target
         dest: /etc/systemd/system/data.mount
+        mode: "0644"
   post_tasks:
     - name: Enable the service
       ansible.builtin.systemd_service:
@@ -154,8 +157,6 @@
         - images.mount
         - data.mount
 
-  collections:
-    #   - devsec.hardening
   roles:
     - hostname
     - usegalaxy-eu.dynmotd
@@ -181,11 +182,11 @@
     - "secret_group_vars/aws.yml" # AWS creds
   pre_tasks:
     - name: Install Dependencies for Jenkins
-      package:
+      ansible.builtin.package:
         enablerepo: crb
         name: ["policycoreutils-python-utils", "python3-wheel-wheel"]
       become: true
-    - name: permit traffic in default zone for http and https service
+    - name: Permit traffic in default zone for http and https service
       ansible.posix.firewalld:
         service: "{{ item }}"
         permanent: true
@@ -193,8 +194,6 @@
       loop:
         - http
         - https
-  collections:
-    - devsec.hardening
   roles:
     - usegalaxy-eu.dynmotd
     - geerlingguy.repo-epel

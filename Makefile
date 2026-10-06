@@ -72,9 +72,13 @@ syntax:
 		ansible-playbook --syntax-check $$playbook; \
 	done
 
-validate: deps lint syntax
+validate: empty_vault deps lint syntax
 
 %.yml: deps
 	ansible-playbook $@ $(CHECK_C) $(DIFF_C) $(DEBUG) $(OTHER)
 
 .PHONY: main.eu lint syntax validate known_hosts deps pull help
+
+empty_vault:
+	# replace all vault-encrypted files with an empty placeholder
+	find . -type f \( -name '*.yml' -o -name '*.yaml' \) -exec grep -lZ '^$$ANSIBLE_VAULT' {} + | xargs -0 -r sh -c 'for f; do printf -- "---\n" > "$$f"; done' sh
