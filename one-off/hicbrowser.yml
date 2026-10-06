@@ -2,15 +2,8 @@
 - name: Hicbrowser
   hosts: hicbrowser
   become: true
-  vars:
-    playbook_secret_vars_files:
-      - secret_group_vars/all.yml
-  pre_tasks:
-    - name: Load secret variables
-      ansible.builtin.include_vars:
-        file: "{{ item }}"
-      loop: "{{ playbook_secret_vars_files }}"
-      no_log: true
+  vars_files:
+    - "secret_group_vars/all.yml"
   roles:
     - hxr.admin-tools
     - influxdata.chrony

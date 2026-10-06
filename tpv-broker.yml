@@ -10,17 +10,11 @@
       - 'tpv-broker.galaxyproject.eu'
     certbot_hostname_override:
       - 'tpv-broker.galaxyproject.eu'
-    playbook_secret_vars_files:
-      - secret_group_vars/all.yml
-      - secret_group_vars/aws.yml
   vars_files:
     - group_vars/tpv-broker.yml
+    - secret_group_vars/all.yml
+    - secret_group_vars/aws.yml
   pre_tasks:
-    - name: Load secret variables
-      ansible.builtin.include_vars:
-        file: "{{ item }}"
-      loop: "{{ playbook_secret_vars_files }}"
-      no_log: true
     - name: Install Dependencies
       ansible.builtin.package:
         name:

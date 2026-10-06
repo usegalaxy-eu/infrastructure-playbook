@@ -88,17 +88,11 @@
 - name: Traefik
   become: true
   hosts: traefik
-  vars:
-    playbook_secret_vars_files:
-      - secret_group_vars/all.yml
-      - secret_group_vars/traefik.yml
-      - secret_group_vars/keys.yml
+  vars_files:
+    - secret_group_vars/all.yml
+    - secret_group_vars/traefik.yml
+    - secret_group_vars/keys.yml
   pre_tasks:
-    - name: Load secret variables
-      ansible.builtin.include_vars:
-        file: "{{ item }}"
-      loop: "{{ playbook_secret_vars_files }}"
-      no_log: true
     - name: Install ansible dependencies
       ansible.builtin.package:
         name: "{{ item }}"

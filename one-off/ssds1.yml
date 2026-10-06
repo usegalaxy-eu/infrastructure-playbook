@@ -4,14 +4,8 @@
   become: true
   vars:
     hostname: cvmfs1-ufr1-nfs.galaxyproject.eu
-    playbook_secret_vars_files:
-      - secret_group_vars/all.yml
-  pre_tasks:
-    - name: Load secret variables
-      ansible.builtin.include_vars:
-        file: "{{ item }}"
-      loop: "{{ playbook_secret_vars_files }}"
-      no_log: true
+  vars_files:
+    - "secret_group_vars/all.yml"
   roles:
     - hostname
     - geerlingguy.repo-epel

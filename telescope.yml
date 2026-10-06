@@ -4,14 +4,9 @@
   become: true
   vars:
     hostname: telescope.internal.galaxyproject.eu
-    playbook_secret_vars_files:
-      - secret_group_vars/all.yml
+  vars_files:
+    - "secret_group_vars/all.yml"
   pre_tasks:
-    - name: Load secret variables
-      ansible.builtin.include_vars:
-        file: "{{ item }}"
-      loop: "{{ playbook_secret_vars_files }}"
-      no_log: true
     - name: Install telescope database client dependency
       ansible.builtin.package:
         name: ['python-psycopg2']

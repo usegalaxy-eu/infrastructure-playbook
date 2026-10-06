@@ -4,17 +4,11 @@
   become: true
   vars:
     hostname: cvmfs1-ufr0.bi.privat
-    playbook_secret_vars_files:
-      - secret_group_vars/all.yml
   vars_files:
+    - "secret_group_vars/all.yml"
     - mounts/mountpoints.yml
     - mounts/dest/all.yml
   pre_tasks:
-    - name: Load secret variables
-      ansible.builtin.include_vars:
-        file: "{{ item }}"
-      loop: "{{ playbook_secret_vars_files }}"
-      no_log: true
     - name: Create /srv symlink to cvmfs data
       ansible.builtin.file:
         src: /data/dnb01

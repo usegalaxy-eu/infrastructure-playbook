@@ -2,16 +2,10 @@
 - name: InfluxDB
   hosts: influxdb
   become: true
-  vars:
-    playbook_secret_vars_files:
-      - secret_group_vars/all.yml
-      - secret_group_vars/aws.yml
+  vars_files:
+    - "secret_group_vars/all.yml"
+    - secret_group_vars/aws.yml # AWS creds
   pre_tasks:
-    - name: Load secret variables
-      ansible.builtin.include_vars:
-        file: "{{ item }}"
-      loop: "{{ playbook_secret_vars_files }}"
-      no_log: true
     - name: Install Dependencies
       become: true
       ansible.builtin.package:

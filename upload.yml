@@ -3,11 +3,9 @@
   hosts: upload
   become: true
   become_user: root
-  vars:
-    playbook_secret_vars_files:
-      - secret_group_vars/all.yml
-      - secret_group_vars/sentry.yml
   vars_files:
+    - secret_group_vars/all.yml
+    - secret_group_vars/sentry.yml
     - mounts/mountpoints.yml
     - mounts/dest/all.yml
   handlers:
@@ -15,11 +13,6 @@
       ansible.builtin.systemd:
         daemon_reload: true
   pre_tasks:
-    - name: Load secret variables
-      ansible.builtin.include_vars:
-        file: "{{ item }}"
-      loop: "{{ playbook_secret_vars_files }}"
-      no_log: true
     - name: Deploy `rustus` systemd unit override(s)
       # increase the resilience of automatic restarts of `rustus` service to
       # work around the error `rustus-main_uploads.service: Failed at step
