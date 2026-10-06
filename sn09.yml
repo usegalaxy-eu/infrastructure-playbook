@@ -112,6 +112,14 @@
         enablerepo: crb
         state: present
 
+    - name: Increase fs.inotify.max_user_watches # see https://github.com/usegalaxy-eu/issues/issues/1071
+      ansible.posix.sysctl:
+        name: fs.inotify.max_user_watches
+        value: '524288'
+        sysctl_set: true
+        state: present
+        reload: true
+
     - name: Disable SELinux
       ansible.posix.selinux:
         state: disabled
