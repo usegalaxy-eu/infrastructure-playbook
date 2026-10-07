@@ -75,8 +75,8 @@
     - name: Restart Galaxy
       ansible.builtin.shell: |
         cd /opt/galaxy/ && source /opt/galaxy/.bashrc && /usr/bin/gxadmin gunicorn handler-restart && sudo -u galaxy /usr/bin/galaxy-sync-to-nfs && systemctl restart galaxy-handler@* && systemctl restart galaxy-workflow-scheduler@*
-      changed_when: false
       listen: 'restart galaxy'
+      # noqa no-changed-when
   pre_tasks:
     # This should be the 1st pretask as the rest of the tasks are dependent on it.
     - name: Install EPEL-release
