@@ -38,7 +38,7 @@
           ansible.builtin.shell:
             executable: /bin/bash
             cmd: |
-              set -e -o pipefail
+              set -e
               IFS=$'\n'
 
               current_rules=$(firewall-cmd --permanent --direct --get-all-rules | grep "{{ ftp_firewall_rules_tag }}_" || true)
@@ -54,12 +54,13 @@
               done
           register: ftp_firewall_rules_cleanup
           changed_when: "'Rule removed' in ftp_firewall_rules_cleanup.stdout"
+          # noqa risky-shell-pipe
 
         - name: Deploy firewall rules
           ansible.builtin.shell:
             executable: /bin/bash
             cmd: |
-              set -e -o pipefail
+              set -e
 
               existing_rule=$(firewall-cmd --permanent --direct --get-all-rules | grep "{{ ftp_firewall_rules_tag }}_{{ item.name }}$" || true)
               if [[ -n "$existing_rule" ]]; then
@@ -77,6 +78,7 @@
             label: "{{ item.name }}"
           register: ftp_firewall_rules_deploy
           changed_when: "'Rule changed' in ftp_firewall_rules_deploy.stdout"
+          # noqa risky-shell-pipe
 
         - name: Apply firewall configuration changes
           ansible.builtin.command: "firewall-cmd --reload"
