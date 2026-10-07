@@ -111,7 +111,7 @@
             content: "{{ ucsc_genome_browser_vm_vagrantfile }}"
             owner: root
             group: root
-            mode: "0644"
+            mode: "0640"
 
         - name: Open forwarded ports for UCSC Genome Browser VM
           ansible.posix.firewalld:
