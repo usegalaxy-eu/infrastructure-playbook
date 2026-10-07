@@ -24,6 +24,7 @@ help:
 	@echo "Make Variables: (make ... VAR=VALUE)"
 	@echo "  DIFF=1         show changes made"
 	@echo "  CHECK=1      run in --check mode (implies DIFF=1)"
+	@echo "  CLEAR_VAULT=1  replace vault-encrypted files with empty placeholders when running the `validate` target"
 
 deps: requirements.yaml
 	bash bin/clean-deps.sh
@@ -72,7 +73,13 @@ syntax:
 		ansible-playbook --syntax-check $$playbook; \
 	done
 
-validate: clear_vault deps lint syntax
+ifeq ($(CLEAR_VAULT),1)
+VALIDATE_PREREQS := clear_vault deps lint syntax
+else
+VALIDATE_PREREQS := deps lint syntax
+endif
+
+validate: $(VALIDATE_PREREQS)
 
 %.yml: deps
 	ansible-playbook $@ $(CHECK_C) $(DIFF_C) $(DEBUG) $(OTHER)
