@@ -1,5 +1,6 @@
 ---
-- hosts: apollo
+- name: Apollo
+  hosts: apollo
   become: true
   vars_files:
     - mounts/dest/all.yml
@@ -24,7 +25,7 @@
     #         Allow access by executing:
     #         # setsebool -P daemons_enable_cluster_mode 1
     - name: Put SELinux in permissive mode, logging actions that would be blocked.
-      selinux:
+      ansible.posix.selinux:
         policy: targeted
         state: permissive
 
@@ -66,7 +67,7 @@
           ansible.builtin.uri:
             url: "{{ healthcheck_url }}"
             method: GET
-            return_content: no
+            return_content: false
             timeout: 60
             # despite the TCP port being open, the service may not be ready
             # yet, thus the long timeout

@@ -30,7 +30,7 @@
     mode: 0755
 
 - name: Deploy systemd environment override
-  template:
+  ansible.builtin.template:
     src: docker-env.conf
     dest: /etc/systemd/system/docker.service.d/custom.conf
     owner: root

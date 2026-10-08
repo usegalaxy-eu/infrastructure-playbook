@@ -16,7 +16,7 @@
     job: "cd {{ grt_queries_dir }}  && . {{ grt_dir }}/config/env.sh && {{ grt_dir }}/venv/bin/python {{ grt_dir }}/code/manage.py queries"
 
 - name: Send influx script
-  template:
+  ansible.builtin.template:
     src: "export-to-influx.sh"
     dest: "/usr/bin/export-grt-to-influx"
     owner: root

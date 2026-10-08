@@ -8,7 +8,7 @@
     mode: 0750
 
 - name: Send templates
-  template:
+  ansible.builtin.template:
     src: "{{ item }}"
     dest: "{{ grt_dir }}/config/{{ item }}"
     owner: root

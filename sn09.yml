@@ -67,13 +67,16 @@
     - templates/galaxy/config/job_conf.yml
     - mounts/dest/all.yml
     - mounts/mountpoints.yml
-  collections:
-    - devsec.hardening
   handlers:
+    - name: Restart telegraf to pick up the nginx log access
+      ansible.builtin.systemd:
+        name: telegraf
+        state: restarted
     - name: Restart Galaxy
       ansible.builtin.shell: |
-        cd /opt/galaxy/ && source /opt/galaxy/.bashrc  && /usr/bin/gxadmin gunicorn handler-restart && sudo -u galaxy /usr/bin/galaxy-sync-to-nfs && systemctl restart galaxy-handler@* && systemctl restart galaxy-workflow-scheduler@*
+        cd /opt/galaxy/ && source /opt/galaxy/.bashrc && /usr/bin/gxadmin gunicorn handler-restart && sudo -u galaxy /usr/bin/galaxy-sync-to-nfs && systemctl restart galaxy-handler@* && systemctl restart galaxy-workflow-scheduler@*
       listen: 'restart galaxy'
+      # noqa no-changed-when
   pre_tasks:
     # This should be the 1st pretask as the rest of the tasks are dependent on it.
     - name: Install EPEL-release
@@ -111,7 +114,7 @@
         reload: true
 
     - name: Disable SELinux
-      selinux:
+      ansible.posix.selinux:
         state: disabled
 
     - name: Install repository key (PostgreSQL v11 and above)
@@ -120,7 +123,7 @@
         state: present
 
     - name: Install pgdg repository package (RedHat)
-      ansible.builtin.yum:
+      ansible.builtin.dnf:
         name: >-
           https://download.postgresql.org/pub/repos/yum/reporpms/{{ postgresql_pgdg_shortfamilies[ansible_distribution]
             | default("EL") }}-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-{{
@@ -139,11 +142,13 @@
       ansible.builtin.copy:
         content: '{{ firewall_mosh_service }}'
         dest: /etc/firewalld/services/mosh.xml
+        mode: "0644"
 
     - name: Add HTcondor shared port service config for FirewallD
       ansible.builtin.copy:
         content: '{{ firewall_htcondor_shared_port_service }}'
         dest: /etc/firewalld/services/htcondor-shared-port.xml
+        mode: "0644"
 
     - name: Deploy security.txt
       ansible.builtin.copy:
@@ -151,7 +156,7 @@
         dest: /etc/nginx/security.txt
         owner: root
         group: root
-        mode: '0644'
+        mode: "0644"
 
     - name: Deploy robots.txt (block LLM crawlers)
       ansible.builtin.copy:
@@ -159,7 +164,7 @@
         dest: /etc/nginx/robots.txt
         owner: root
         group: root
-        mode: '0644'
+        mode: "0644"
 
   post_tasks:
     - name: Write Galaxy __galaxy_client_build_version and __galaxy_current_commit_id
@@ -169,9 +174,10 @@
           client_build_version={{ __galaxy_client_build_version }}
           current_commit_id={{ __galaxy_current_commit_id }}
         dest: '{{ playbook_dir }}/galaxy_update.properties'
+        mode: "0644"
 
     - name: Append some users to the systemd-journal group
-      user:
+      ansible.builtin.user:
         name: '{{ item }}'
         groups: systemd-journal
         append: true
@@ -193,12 +199,7 @@
         - path: /var/log/nginx
           entry: "d:u:{{ telegraf_user.name }}:r"
       register: __telegraf_log_access
-
-    - name: Restart telegraf to pick up the nginx log access
-      ansible.builtin.systemd:
-        name: telegraf
-        state: restarted
-      when: __telegraf_log_access is changed
+      notify: Restart telegraf to pick up the nginx log access
 
     # Note (ToDo): We should ensure that the Gunicorn sockets are created with the correct SELinux
     # context to avoid adding or allowing unconfined contexts. This will further tighten
@@ -268,7 +269,7 @@
         path: '{{ galaxy_server_dir }}/compliance.log'
         owner: galaxy
         group: root
-        mode: 0644
+        mode: "0644"
 
     - name: Ensure .config directory exists for galaxy user
       ansible.builtin.file:
@@ -278,7 +279,7 @@
         group: galaxy
         mode: '0755'
 
-    - name: "Ensure {{ galaxy_server_dir }}/database directory exists and is owned by galaxy user"
+    - name: Ensure database directory exists and is owned by galaxy user
       ansible.builtin.file:
         path: "{{ galaxy_server_dir }}/database"
         state: directory
@@ -434,6 +435,6 @@
     - usegalaxy-eu.log-cleaner # do not retain journalctl logs, they are unnecessary/risky under GDPR
     - dj-wasabi.telegraf
     - usegalaxy-eu.galaxy-procstat # Some custom telegraf monitoring that's templated
-    - ssh_hardening #dev-sec.hardening collection
+    - devsec.hardening.ssh_hardening
     - usegalaxy-eu.fix-stop-ITs
     - usegalaxy_eu.firewall

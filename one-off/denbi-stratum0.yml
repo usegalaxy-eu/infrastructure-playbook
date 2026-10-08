@@ -1,5 +1,6 @@
 ---
-- hosts: denbistratum0
+- name: Denbi stratum0
+  hosts: denbistratum0
   become: true
   vars:
     cvmfs_role: 'stratum0'
@@ -8,7 +9,8 @@
   vars_files:
     - "secret_group_vars/all.yml"
   pre_tasks:
-    - file:
+    - name: Create /srv symlink to mounted data
+      ansible.builtin.file:
         src: /data/vol/
         dest: /srv
         owner: root

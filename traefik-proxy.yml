@@ -10,7 +10,7 @@
         name: net.ipv4.ip_forward
         value: "1"
         state: present
-        sysctl_set: yes
+        sysctl_set: true
         reload: true
 
     - name: Allow access to Traefik entry points
@@ -54,6 +54,7 @@
               done
           register: ftp_firewall_rules_cleanup
           changed_when: "'Rule removed' in ftp_firewall_rules_cleanup.stdout"
+          # noqa risky-shell-pipe
 
         - name: Deploy firewall rules
           ansible.builtin.shell:
@@ -77,12 +78,14 @@
             label: "{{ item.name }}"
           register: ftp_firewall_rules_deploy
           changed_when: "'Rule changed' in ftp_firewall_rules_deploy.stdout"
+          # noqa risky-shell-pipe
 
         - name: Apply firewall configuration changes
           ansible.builtin.command: "firewall-cmd --reload"
           when: >-
             ftp_firewall_rules_cleanup is defined and ftp_firewall_rules_cleanup.changed or
             ftp_firewall_rules_deploy is defined and ftp_firewall_rules_deploy.results | selectattr('changed', 'equalto', true) | list | length > 0
+          # noqa no-changed-when
 
 - name: Traefik
   become: true

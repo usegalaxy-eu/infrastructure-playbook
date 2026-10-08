@@ -53,7 +53,7 @@
   notify: 'reload ggb'
 
 - name: Send runner script
-  template:
+  ansible.builtin.template:
     src: "run.sh"
     dest: "{{ ggb_dir }}/run.sh"
     owner: "{{ ggb_user }}"
@@ -71,7 +71,7 @@
   notify: 'reload ggb'
 
 - name: Install systemd unit file
-  template:
+  ansible.builtin.template:
     src: ggb.service
     dest: /etc/systemd/system/ggb.service
   notify: setup ggb systemd

@@ -2589,7 +2589,7 @@ base_app_main: &BASE_APP_MAIN
   # which Galaxy processes should schedule workflows.
   # The value of this option will be resolved with respect to
   # <config_dir>.
-  workflow_schedulers_config_file: "{{ galaxy_config_dir  }}/workflow_schedulers_conf.xml"
+  workflow_schedulers_config_file: "{{ galaxy_config_dir }}/workflow_schedulers_conf.xml"
 
   # Workflows launched with URI/URL inputs that are not marked as
   # 'deferred' are "materialized" (or undeferred) by the workflow
@@ -2719,10 +2719,10 @@ base_app_main: &BASE_APP_MAIN
   # all workers.
   #celery_user_concurrency_limit: 0
 
-  # When both `celery_user_rate_limit` and `celery_user_concurrency_limit` 
-  # are set, rate limiting runs first (to schedule the timeslot) and concurrency 
-  # limiting runs second (to gate execution based on active task count). 
-  # This means a task must both reach its scheduled timeslot *and* 
+  # When both `celery_user_rate_limit` and `celery_user_concurrency_limit`
+  # are set, rate limiting runs first (to schedule the timeslot) and concurrency
+  # limiting runs second (to gate execution based on active task count).
+  # This means a task must both reach its scheduled timeslot *and*
   # have a concurrency slot available before it can execute.
 
   # Allow disabling pbkdf2 hashing of passwords for legacy situations.

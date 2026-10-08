@@ -2,7 +2,7 @@
   file: path=/opt/sentry/ state=directory
 
 - name: Copy configuration file
-  template:
+  ansible.builtin.template:
     src: config.yml
     dest: /opt/sentry/config.yml
     owner: root
@@ -10,7 +10,7 @@
     mode: 0644
 
 - name: Copy sentry.conf.py file
-  template:
+  ansible.builtin.template:
     src: sentry.conf.py
     dest: /opt/sentry/sentry.conf.py
     owner: root
@@ -18,7 +18,7 @@
     mode: 0644
 
 - name: Copy Dockerfile
-  template:
+  ansible.builtin.template:
     src: Dockerfile
     dest: /opt/sentry/Dockerfile
     owner: root
