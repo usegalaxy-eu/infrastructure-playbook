@@ -81,6 +81,20 @@
       when: not admin_api_key_maintenance in ptdk_env.stdout or ptdk_env.rc != 0
       no_log: true
 
+    - name: Get pwdk env variable
+      community.docker.docker_container_exec:
+        container: dokku
+        command: "dokku config:get pwdk USEGALAXY_EU_APIKEY"
+      register: pwdk_env
+      no_log: true
+      ignore_errors: true
+
+    - name: Set pwdk env variable
+      community.docker.docker_container_exec:
+        container: dokku
+        command: "dokku config:set pwdk USEGALAXY_EU_APIKEY={{ admin_api_key_maintenance }}"
+      when: not admin_api_key_maintenance in pwdk_env.stdout or pwdk_env.rc != 0
+      no_log: true
 
     - name: Check if DNAnalyzer postgres exists
       community.docker.docker_container_exec:
