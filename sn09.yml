@@ -114,7 +114,7 @@
         sysctl_set: true
         state: present
         reload: true
-    - name: Increase fs.inotify.max_user_watches  # this is the actual fix for the inotify limits in journalctl
+    - name: Increase fs.inotify.max_user_instances  # this is the actual fix for the inotify limits in journalctl
       ansible.posix.sysctl:
         name: fs.inotify.max_user_instances
         value: '1024'
