@@ -105,10 +105,19 @@
         enablerepo: crb
         state: present
 
-    - name: Increase fs.inotify.max_user_watches # see https://github.com/usegalaxy-eu/issues/issues/1071
+    # TODO: Check if the limit is reached by galaxy or htcondor
+    # see https://github.com/usegalaxy-eu/issues/issues/1071
+    - name: Increase fs.inotify.max_user_watches
       ansible.posix.sysctl:
         name: fs.inotify.max_user_watches
         value: '524288'
+        sysctl_set: true
+        state: present
+        reload: true
+    - name: Increase fs.inotify.max_user_watches  # this is the actual fix for the inotify limits in journalctl
+      ansible.posix.sysctl:
+        name: fs.inotify.max_user_instances
+        value: '1024'
         sysctl_set: true
         state: present
         reload: true
