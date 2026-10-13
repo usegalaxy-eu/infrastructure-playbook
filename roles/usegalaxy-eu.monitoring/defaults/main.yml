@@ -1,4 +1,5 @@
 ---
-# Read-only D-state collector for systemd services.
+# Read-only watchdog collector for systemd services: emits running state and
+# cumulative CPU ticks, a stuck service is a flat counter.
 script_watchdog_services: []
 script_watchdog_telegraf_interval: "30s"

@@ -1,0 +1,25 @@
+---
+- name: Install systemd service watchdog collector
+  ansible.builtin.template:
+    src: script-watchdog-collector.py.j2
+    dest: /usr/bin/script-watchdog-collector
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Ensure Telegraf configuration directory exists
+  ansible.builtin.file:
+    path: /etc/telegraf/telegraf.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Configure Telegraf systemd watchdog collector
+  ansible.builtin.template:
+    src: script-watchdog-telegraf.conf.j2
+    dest: /etc/telegraf/telegraf.d/script-watchdog.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart Telegraf after configuring systemd watchdog collector
