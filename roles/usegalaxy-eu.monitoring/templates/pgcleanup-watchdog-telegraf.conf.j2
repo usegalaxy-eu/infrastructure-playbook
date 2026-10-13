@@ -1,0 +1,7 @@
+### Managed by Ansible (usegalaxy-eu.monitoring). Local changes will be overwritten. ###
+
+[[inputs.exec]]
+  commands = ["/usr/bin/pgcleanup-watchdog {{ pgcleanup_watchdog_stale_threshold_seconds }}"]
+  timeout = "5s"
+  interval = "{{ pgcleanup_watchdog_telegraf_interval }}"
+  data_format = "influx"
