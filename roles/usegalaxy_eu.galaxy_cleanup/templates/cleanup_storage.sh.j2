@@ -21,7 +21,7 @@ run_timestamp="$(date --rfc-3339=seconds)"
 "{{ galaxy_venv_dir }}/bin/python" "{{ galaxy_server_dir }}/scripts/cleanup_datasets/pgcleanup.py" \
     -c "{{ galaxy_config_file }}" -U -b 5000 -o "{{ config.days | int }}" \
     -l "{{ galaxy_log_dir }}" -w 128MB --object-store-id "{{ objectstore_id }}" purge_old_hdas \
-    >> "{{ galaxy_log_dir }}/cleanup-${run_timestamp}-purgeOldHdas.log" \
+    >> "{{ galaxy_cleanup_log_dir }}/cleanup-${run_timestamp}-purgeOldHdas.log" \
     2>&1
 {% endfor %}
 
