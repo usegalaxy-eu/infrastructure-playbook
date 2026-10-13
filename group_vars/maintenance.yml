@@ -438,16 +438,6 @@ lp_logrotate_confd:
         notifempty
         compress
       }
-  - path: galaxy-cleanup
-    conf: |
-      {{ galaxy_cleanup_log_dir }}/*.log
-      {{ galaxy_cleanup_log_dir }}/*.err {
-        daily
-        rotate 14
-        missingok
-        notifempty
-        compress
-      }
 
 # WallE
 walle_verbose: false
