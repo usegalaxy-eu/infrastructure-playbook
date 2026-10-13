@@ -1,4 +1,4 @@
-"""Tests for the systemd script watchdog collector template."""
+"""Tests for the systemd D-state collector template."""
 
 import contextlib
 import importlib.machinery
@@ -11,14 +11,14 @@ from pathlib import Path
 from unittest import mock
 
 SCRIPT = (
-    Path(__file__).parents[1] / "templates" / "script-watchdog-collector.py.j2"
+    Path(__file__).parents[1] / "templates" / "systemd-dstate-collector.py.j2"
 )
 
 
 def load_collector():
     """Load the collector template as a Python module."""
     loader = importlib.machinery.SourceFileLoader(
-        "script_watchdog_collector", str(SCRIPT)
+        "systemd_dstate_collector", str(SCRIPT)
     )
     spec = importlib.util.spec_from_loader(loader.name, loader)
     module = importlib.util.module_from_spec(spec)
@@ -26,7 +26,7 @@ def load_collector():
     return module
 
 
-class ScriptWatchdogCollectorTests(unittest.TestCase):
+class SystemdDstateCollectorTests(unittest.TestCase):
     """Cover metric emission and process/cgroup helpers of the collector."""
 
     @classmethod
@@ -50,14 +50,15 @@ class ScriptWatchdogCollectorTests(unittest.TestCase):
 
         self.assertIn("active_state=unknown", line)
         self.assertIn("monitor_healthy=0i", line)
-        self.assertIn("running=0i", line)
+        self.assertIn("d_state=0i", line)
 
-    def test_running_service_emits_tick_counters(self):
-        """A running service emits summed utime/stime ticks."""
+    def test_d_state_process_is_reported(self):
+        """A D-state process in the cgroup sets d_state and its count."""
         properties = {
             "LoadState": "loaded",
             "ActiveState": "active",
             "SubState": "running",
+            "ExecMainStatus": "0",
             "ControlGroup": "/system.slice/galaxy-cleanup.service",
         }
         with mock.patch.object(
@@ -65,35 +66,15 @@ class ScriptWatchdogCollectorTests(unittest.TestCase):
         ), mock.patch.object(
             self.collector, "cgroup_pids", return_value=[10, 11]
         ), mock.patch.object(
-            self.collector, "process_ticks", side_effect=[(100, 50), (10, 5)]
+            self.collector, "process_state", side_effect=["S", "D"]
         ):
             line = self.emit("galaxy-cleanup.service")
 
         self.assertIn("active_state=active", line)
+        self.assertIn("load_state=loaded", line)
         self.assertIn("running=1i", line)
-        self.assertIn("processes=2i", line)
-        self.assertIn("utime_ticks=110i", line)
-        self.assertIn("stime_ticks=55i", line)
-
-    def test_vanished_pid_omits_tick_fields(self):
-        """A pid gone mid-scrape suppresses tick fields for this round."""
-        properties = {
-            "LoadState": "loaded",
-            "ActiveState": "active",
-            "SubState": "running",
-            "ControlGroup": "/system.slice/galaxy-cleanup.service",
-        }
-        with mock.patch.object(
-            self.collector, "service_properties", return_value=properties
-        ), mock.patch.object(
-            self.collector, "cgroup_pids", return_value=[10, 11]
-        ), mock.patch.object(
-            self.collector, "process_ticks", side_effect=[(100, 50), None]
-        ):
-            line = self.emit("galaxy-cleanup.service")
-
-        self.assertNotIn("utime_ticks", line)
-        self.assertNotIn("stime_ticks", line)
+        self.assertIn("d_state=1i", line)
+        self.assertIn("d_state_processes=1i", line)
         self.assertIn("processes=2i", line)
 
     def test_cgroup_pids_reads_one_pid_per_line(self):
@@ -111,22 +92,15 @@ class ScriptWatchdogCollectorTests(unittest.TestCase):
 
         self.assertEqual(pids, [12, 34])
 
-    def test_process_ticks_reads_fields_14_and_15(self):
-        """process_ticks returns utime and stime from a real /proc stat."""
-        pid = os.getpid()
-        stat = Path(f"/proc/{pid}/stat").read_text()
-        expected = stat[stat.rfind(")") + 2 :].split()
-        ticks = self.collector.process_ticks(pid)
-        self.assertEqual(ticks, (int(expected[11]), int(expected[12])))
-
-    def test_process_ticks_handles_missing_pid(self):
-        """A missing process yields None for the tick pair."""
-        self.assertIsNone(self.collector.process_ticks(999999999))
+    def test_process_state_handles_missing_pid(self):
+        """A missing process yields None and a live PID yields a state."""
+        self.assertIsNone(self.collector.process_state(999999999))
+        self.assertIsNotNone(self.collector.process_state(os.getpid()))
 
     def test_main_requires_a_service_argument(self):
         """main() refuses to run without a service argument."""
         with mock.patch.object(
-            self.collector.sys, "argv", ["script-watchdog-collector"]
+            self.collector.sys, "argv", ["systemd-dstate-collector"]
         ), contextlib.redirect_stderr(io.StringIO()):
             self.assertEqual(self.collector.main(), 2)
 

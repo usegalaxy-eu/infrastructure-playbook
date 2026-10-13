@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Emit CPU tick counters for processes owned by systemd services.
+"""Emit D-state metrics for processes owned by systemd services.
 
 Managed by Ansible. Local changes will be overwritten.
 """
@@ -28,7 +28,8 @@ def service_properties(service):
         "systemctl",
         "show",
         service,
-        "--property=LoadState,ActiveState,SubState,ControlGroup",
+        "--property=LoadState,ActiveState,SubState,Result,"
+        "ExecMainStatus,ControlGroup",
     ]
     result = subprocess.run(
         command, check=False, capture_output=True, text=True, timeout=3
@@ -53,15 +54,15 @@ def cgroup_pids(control_group):
         return []
 
 
-def process_ticks(pid):
-    """Return (utime, stime) clock ticks from /proc, or None if it is gone."""
+def process_state(pid):
+    """Return the process state from /proc, or None if it is gone."""
     try:
         stat = Path(f"/proc/{pid}/stat").read_text()
     except (FileNotFoundError, OSError):
         return None
-    # utime and stime are fields 14 and 15, after the parenthesized name.
+    # The process name is parenthesized and may contain spaces.
     fields = stat[stat.rfind(")") + 2 :].split()
-    return int(fields[11]), int(fields[12])
+    return fields[0] if fields else None
 
 
 def emit(service):
@@ -69,40 +70,43 @@ def emit(service):
     properties = service_properties(service)
     if properties is None:
         print(
-            f"systemd_watchdog,service={escape_tag(service)},"
-            "active_state=unknown,sub_state=unknown "
-            "monitor_healthy=0i,running=0i,processes=0i"
+            f"systemd_dstate,service={escape_tag(service)},"
+            "load_state=unknown,active_state=unknown,sub_state=unknown "
+            "monitor_healthy=0i,running=0i,d_state=0i,"
+            "d_state_processes=0i,processes=0i,exit_code=0i"
         )
         return
 
     load_state = properties.get("LoadState", "unknown")
     monitor_healthy = load_state == "loaded"
+    pids = cgroup_pids(properties.get("ControlGroup", ""))
+    states = [process_state(pid) for pid in pids]
+    d_state_processes = sum(state == "D" for state in states)
     active_state = properties.get("ActiveState", "unknown")
     sub_state = properties.get("SubState", "unknown")
-    pids = cgroup_pids(properties.get("ControlGroup", ""))
-    # Ticks only increase while a process is scheduled, so a flat sum means
-    # the service is making no progress, however it blocks.
-    ticks = [process_ticks(pid) for pid in pids]
-    field_values = [
-        f"monitor_healthy={int(monitor_healthy)}i",
-        f"running={int(active_state == 'active')}i",
-        f"processes={len(pids)}i",
-    ]
-    if None not in ticks:
-        # A process vanished mid-scrape; a partial sum would look like a
-        # frozen counter, so omit the fields this round.
-        field_values.append(f"utime_ticks={sum(t[0] for t in ticks)}i")
-        field_values.append(f"stime_ticks={sum(t[1] for t in ticks)}i")
+    try:
+        exit_code = int(properties.get("ExecMainStatus", "0"))
+    except ValueError:
+        exit_code = 0
+    fields = (
+        f"monitor_healthy={int(monitor_healthy)}i,"
+        f"running={int(active_state == 'active')}i,"
+        f"d_state={int(d_state_processes > 0)}i,"
+        f"d_state_processes={d_state_processes}i,"
+        f"processes={len(pids)}i,"
+        f"exit_code={exit_code}i"
+    )
     tags = (
         f"service={escape_tag(service)},"
+        f"load_state={escape_tag(load_state)},"
         f"active_state={escape_tag(active_state)},"
         f"sub_state={escape_tag(sub_state)}"
     )
-    print(f"systemd_watchdog,{tags} {','.join(field_values)}")
+    print(f"systemd_dstate,{tags} {fields}")
 
 
 def main():
-    """Emit metrics for every service given on the command line."""
+    """Emit D-state metrics for every service given on the command line."""
     if len(sys.argv) < 2:
         print("At least one systemd service is required", file=sys.stderr)
         return 2
