@@ -1,6 +1,6 @@
 ---
 - name: Install pgcleanup watchdog
-  ansible.builtin.template:
+  ansible.builtin.copy:
     src: pgcleanup-watchdog.sh
     dest: "{{ monitoring_pgcleanup_watchdog_script_path }}"
     owner: root
