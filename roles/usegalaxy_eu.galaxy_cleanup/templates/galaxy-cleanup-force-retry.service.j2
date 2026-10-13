@@ -1,0 +1,10 @@
+[Unit]
+Description=Annual Galaxy dataset cleanup force-retry
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User={{ galaxy_user.name }}
+Group={{ galaxy_group.name }}
+ExecStart=/usr/local/bin/cleanup_force_retry.sh

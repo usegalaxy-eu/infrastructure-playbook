@@ -18,3 +18,9 @@ galaxy_cleanup_minute: 0
 galaxy_cleanup_hour: 1
 
 galaxy_cleanup_log_dir: "{{ undef() }}"
+
+# Annual retry of datasets that are already marked as purged.
+galaxy_cleanup_force_retry_service: galaxy-cleanup-force-retry.service
+galaxy_cleanup_force_retry_timer: galaxy-cleanup-force-retry.timer
+galaxy_cleanup_force_retry_on_calendar: "*-12-24 01:00:00"
+galaxy_cleanup_force_retry_ntfy_url: "{{ undef() }}"

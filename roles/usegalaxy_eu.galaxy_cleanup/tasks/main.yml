@@ -23,3 +23,37 @@
     minute: "{{ galaxy_cleanup_minute }}"
     hour: "{{ galaxy_cleanup_hour }}"
     user: "{{ galaxy_user.name }}"
+
+- name: Install annual Galaxy cleanup force-retry script
+  ansible.builtin.template:
+    src: cleanup_force_retry.sh.j2
+    dest: /usr/local/bin/cleanup_force_retry.sh
+    owner: root
+    group: root
+    mode: "0555"
+
+- name: Install annual Galaxy cleanup force-retry service
+  ansible.builtin.template:
+    src: galaxy-cleanup-force-retry.service.j2
+    dest: "/etc/systemd/system/{{ galaxy_cleanup_force_retry_service }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload systemd for annual Galaxy cleanup
+
+- name: Install annual Galaxy cleanup force-retry timer
+  ansible.builtin.template:
+    src: galaxy-cleanup-force-retry.timer.j2
+    dest: "/etc/systemd/system/{{ galaxy_cleanup_force_retry_timer }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Reload systemd for annual Galaxy cleanup
+    - Restart annual Galaxy cleanup timer
+
+- name: Enable annual Galaxy cleanup force-retry timer
+  ansible.builtin.systemd:
+    name: "{{ galaxy_cleanup_force_retry_timer }}"
+    enabled: true
+    state: started

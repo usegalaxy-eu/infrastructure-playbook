@@ -1,0 +1,10 @@
+[Unit]
+Description=Schedule annual Galaxy dataset cleanup force-retry
+
+[Timer]
+OnCalendar={{ galaxy_cleanup_force_retry_on_calendar }}
+Persistent=true
+Unit={{ galaxy_cleanup_force_retry_service }}
+
+[Install]
+WantedBy=timers.target
