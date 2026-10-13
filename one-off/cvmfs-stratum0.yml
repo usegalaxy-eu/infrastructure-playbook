@@ -1,5 +1,6 @@
 ---
-- hosts: cvmfs-stratum0
+- name: CVMFS stratum0
+  hosts: cvmfs-stratum0
   become: true
   vars:
     chrony_port:  # 123
@@ -12,7 +13,8 @@
   vars_files:
     - "secret_group_vars/all.yml"
   pre_tasks:
-    - authorized_key:
+    - name: Add CVMFS admin SSH key
+      ansible.posix.authorized_key:
         user: centos
         state: present
         key: https://github.com/natefoo.keys

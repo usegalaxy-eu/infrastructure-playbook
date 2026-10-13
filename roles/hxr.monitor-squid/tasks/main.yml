@@ -22,7 +22,8 @@
     mode: 0755
   notify: 'Restart Telegraf'
 
-- set_fact:
+- name: Build squid telegraf plugin config
+  set_fact:
     check_squid_telegraf:
       check_squid_telegraf:
         plugin: "exec"
@@ -32,5 +33,6 @@
           - data_format = "influx"
           - interval = "5m"
 
-- set_fact:
+- name: Merge squid telegraf plugin config
+  set_fact:
     telegraf_plugins_extra: "{{ telegraf_plugins_extra | combine(check_squid_telegraf) }}"

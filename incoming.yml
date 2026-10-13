@@ -10,14 +10,12 @@
     - secret_group_vars/aws.yml # AWS creds
     - mounts/mountpoints.yml
     - mounts/dest/all.yml
-  collections:
-    - devsec.hardening
   pre_tasks:
     - name: Set timezone to Europe/Berlin
       community.general.timezone:
         name: Europe/Berlin
     - name: Install Dependencies
-      package:
+      ansible.builtin.package:
         name: ['postgresql', 'proftpd-utils']
     - name: Configure SELinux
       ansible.posix.seboolean:
@@ -69,5 +67,5 @@
     - galaxyproject.proftpd
 
     - dj-wasabi.telegraf
-    - os_hardening
-    - ssh_hardening
+    - devsec.hardening.os_hardening
+    - devsec.hardening.ssh_hardening

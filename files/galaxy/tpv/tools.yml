@@ -12,25 +12,6 @@ tools:
           param_dict.get('__job_resource', {}).get('__job_resource__select') == 'yes'
         gpus: int(job.get_param_values(app)['__job_resource']['gpu'])
 
-  _basic_internal_tool:
-    abstract: true
-    rules:
-      - id: no-pulsar
-        if: user is not None
-        execute: |
-            user_preferences = user.extra_preferences
-            pulsar_tag = user_preferences.get("distributed_compute|remote_resources", "None")
-
-            if pulsar_tag != "None":
-                entity.tpv_tags.require = [
-                    tag
-                    for tag in (entity.tpv_tags.require or [])
-                    if tag != pulsar_tag
-                ]
-    scheduling:
-      require:
-        - internal
-
   _basic_docker_tool:
     abstract: true
     params:
@@ -70,51 +51,39 @@ tools:
   # lets run in embedded pulsar to reduce the jwd scope and make it more secure
   # running docker is fine here
   user_defined-.*:
-      cores: 1
-      mem: 3.7
-      rules:
+    cores: 1
+    mem: 3.7
+    rules:
       - id: require_login_user_defined
         if: user is None
         fail: An account is required to run this tool. Please log in or create an account.
-      scheduling:
-        require:
-          - docker
-          - embedded-pulsar
-
-  __.*__:
-    inherits: _basic_internal_tool
-
-  param_value_from_file:
-    inherits: _basic_internal_tool
-
-  upload1:
-    inherits: _basic_internal_tool
-
-  ucsc_table_direct1:
-    inherits: _basic_internal_tool
+    scheduling:
+      require:
+        - docker
+        - embedded-pulsar
 
   # example for overwriting the OOM memory multiplier for a specific tool
   # toolshed.g2.bx.psu.edu/repos/example_owner/example_tool/example_tool/.*:
   #   context:
   #     OOM_SCALING_FACTOR: 3
 
-  toolshed.g2.bx.psu.edu/repos/iuc/compose_text_param/compose_text_param/.*:
-    inherits: _basic_internal_tool
-
   export_remote:
-    inherits: _basic_internal_tool
     # a user exported 100 of files and memory was not enough
     mem: 8
 
+  CONVERTER_gff_to_bed_0:
+    # It's an "internal" tool (requires access to Galaxy code), but it is not
+    # part of `GALAXY_LIB_TOOLS_UNVERSIONED` in lib/galaxy/tools/__init__.py.
+    # Therefore, needs to be explicitly marked as internal.
+    scheduling:
+      require:
+        - internal
+
   __DATA_FETCH__:
-    inherits: _basic_internal_tool
     cores: 1
     mem: 3
     env:
       TEMP: /data/misc06/tmp
-
-  CONVERTER_gff_to_bed_0:
-    inherits: _basic_internal_tool
 
   toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/*:
     env:
@@ -189,6 +158,20 @@ tools:
       - if: input_size >= 100
         cores: 18
         mem: 64
+
+  # safety net, it seems a few MQC versions try to cleanup directories, but fail due to NFS locks.
+  # Here we try to use a in-container /tmp dir, that should not be on any NFS
+  toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/.*:
+    env:
+      _GALAXY_JOB_TMP_DIR: '/tmp'
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/ketos_.*:
+    env:
+      # use non-NFS `/tmp/` dir, required because of https://ticketsystem.galaxyproject.eu/#ticket/zoom/1572:
+      # on https://github.com/mittagessen/kraken/blob/main/kraken/lib/arrow_dataset.py#L282C1-L283C53,
+      # when leaving the `TemporaryDirectory()` context, Python tries to remove
+      # the temporary directory, yielding `OSError: [Errno 39] Directory not empty`
+      _GALAXY_JOB_TMP_DIR: /tmp
 
   toolshed.g2.bx.psu.edu/repos/iuc/gem_check_memote/gem_check_memote/.*:
     mem: 24
@@ -308,6 +291,10 @@ tools:
     params:
       container_override: [{type: singularity, shell: '/bin/sh', identifier: "/cvmfs/main.galaxyproject.org/singularity/galaxy-pycaret:3.3.2--0"}]
 
+  toolshed.g2.bx.psu.edu/repos/bgruening/mirge3_build_database/mirge3_build_database/.*:
+    params:
+      container_override: [{type: singularity, shell: '/bin/sh', identifier: "/cvmfs/singularity.galaxyproject.org/w/g/wget:1.25.0"}]
+
   toolshed.g2.bx.psu.edu/repos/goeckslab/tabular_learner/tabular_learner/0\.1\..*:
     inherits: toolshed.g2.bx.psu.edu/repos/goeckslab/pycaret_[^/]*/pycaret_[^/]*/3.3.2.*
 
@@ -339,9 +326,6 @@ tools:
     gpus: 1
     cores: 10
     mem: 20
-    params:
-      docker_env_CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
-      docker_run_extra_arguments: ' --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
     context:
       exclude_gpu_models: ["Tesla T4"]
       include_gpu_models: ["NVIDIA L40S", "Tesla V100-PCIE-32GB"]
@@ -392,7 +376,7 @@ tools:
     cores: 4
     mem: 32
     params:
-      docker_run_extra_arguments: ' --gpus all --shm-size 16g '
+      docker_run_extra_arguments: ' --shm-size 16g '
     env:
       GPU_AVAILABLE: 1
       # the non-NFS /tmp dir is needed to avoid "resource is busy" errors
@@ -404,9 +388,6 @@ tools:
     mem: 16
     gpus: 1
     cores: 8
-    params:
-      docker_env_CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
-      docker_run_extra_arguments: ' --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
     context:
       exclude_gpu_models: ["Tesla V100-PCIE-32GB"]
       include_gpu_models: ["NVIDIA L40S", "Tesla T4"]
@@ -420,8 +401,6 @@ tools:
     gpus: 1
     cores: 1
     mem: 30
-    params:
-      docker_run_extra_arguments: ' --gpus all '
     env:
       GPU_AVAILABLE: 1
 
@@ -437,7 +416,7 @@ tools:
     gpus: 1
     cores: 1
     params:
-      docker_run_extra_arguments: ' --gpus all --user 999 '
+      docker_run_extra_arguments: ' --user 999 '
     env:
       GPU_AVAILABLE: 1
 
@@ -464,9 +443,6 @@ tools:
     inherits: _basic_docker_tool
     gpus: 1
     cores: 1
-    params:
-      ##docker_run_extra_arguments: ' --gpus all  --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
-      docker_run_extra_arguments: ' --gpus all '
     env:
       GPU_AVAILABLE: 1
     # scheduling:
@@ -485,7 +461,7 @@ tools:
     cores: 1
     mem: 5
     params:
-      docker_run_extra_arguments: '--gpus all --env WHISPERX_MODEL_DIR=$WHISPERX_MODEL_DIR --env WHISPERX_DEVICE=$WHISPERX_DEVICE --env WHISPERX_COMPUTE_TYPE=$WHISPERX_COMPUTE_TYPE'
+      docker_run_extra_arguments: '--env WHISPERX_MODEL_DIR=$WHISPERX_MODEL_DIR --env WHISPERX_DEVICE=$WHISPERX_DEVICE --env WHISPERX_COMPUTE_TYPE=$WHISPERX_COMPUTE_TYPE'
     env:
       WHISPERX_MODEL_DIR: "/data/db/models/whisperx/whisperx_models/"
       WHISPERX_DEVICE: "cuda"
@@ -500,8 +476,7 @@ tools:
     cores: 1
     mem: 12
     params:
-      docker_run_extra_arguments: ' --gpus all --shm-size 16g --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
-      docker_env_CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
+      docker_run_extra_arguments: ' --shm-size 16g '
       docker_env_GALAXY_BIAPY_GPU_STRING: "$_CONDOR_AssignedGPUs"
       docker_env_GPU_AVAILABLE: 1
     env:
@@ -705,21 +680,27 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_cluster_reduce_dimension/scanpy_cluster_reduce_dimension/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_filter/scanpy_filter/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_inspect/scanpy_inspect/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_normalize/scanpy_normalize/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_remove_confounders/scanpy_remove_confounders/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/scanpy_plot/scanpy_plot/.*:
     inherits: _basic_numba_tool
+    mem: 16
 
   # Also on add_to_tpv_shared_db.yml but without NUMBA_CACHE_DIR
   toolshed.g2.bx.psu.edu/repos/iuc/gemini_inheritance/gemini_inheritance/.*:
@@ -886,7 +867,7 @@ tools:
                   retval = model_select.get('model_class') == 'GNN'
           retval
         params:
-          docker_run_extra_arguments: --user 999 --gpus all
+          docker_run_extra_arguments: --user 999
         gpus: 1
         cores: 20
         mem: 100
@@ -956,9 +937,15 @@ tools:
     params:
       docker_env_LITELLM_CONFIG_FILE: "$LITELLM_CONFIG_FILE"
 
-  toolshed.g2.bx.psu.edu/tools/bgruening/kraken_ocr/kraken_ocr/.*:
+  toolshed.g2.bx.psu.edu/repos/bgruening/kraken_ocr/kraken_ocr/.*:
     env:
       TORCHINDUCTOR_CACHE_DIR: "$_GALAXY_JOB_TMP_DIR"
+      SINGULARITYENV_TORCHINDUCTOR_CACHE_DIR: "$TORCHINDUCTOR_CACHE_DIR"
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/kraken_segment/kraken_segment/.*:
+    env:
+      TORCHINDUCTOR_CACHE_DIR: "$_GALAXY_JOB_TMP_DIR"
+      SINGULARITYENV_TORCHINDUCTOR_CACHE_DIR: "$TORCHINDUCTOR_CACHE_DIR"
 
   toolshed.g2.bx.psu.edu/repos/imgteam/bfconvert/ip_convertimage/.*:
     cores: 12
@@ -976,7 +963,7 @@ tools:
     cores: 4
 
   toolshed.g2.bx.psu.edu/repos/iuc/celltypist/celltypist/.*:
-    mem: 8
+    mem: 16
     cores: 4
     rules:
       - id: celltypist_train
@@ -993,10 +980,10 @@ tools:
         mem: 20
 
   toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_operation/spatialdata_operation/.*:
-    mem: 10
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_io/spatialdata_io/.*:
-    mem: 10
+    mem: 16
     cores: 5
 
   toolshed.g2.bx.psu.edu/repos/bgruening/simorgh/simorgh/.*:
@@ -1020,6 +1007,4 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/colabfold_alphafold/colabfold_alphafold/.*:
     mem: 60
     cores: 16
-    params:
-      docker_run_extra_arguments: --gpus all
     gpus: 1

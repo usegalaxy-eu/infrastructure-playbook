@@ -24,9 +24,6 @@
       ansible.builtin.package:
         name:
           - git
-  collections:
-    - devsec.hardening
-    - grafana.grafana
   roles:
     ## Starting configuration of the operating system
     - role: usegalaxy_eu.firewall
@@ -46,7 +43,7 @@
     - role: hxr.monitor-email
       become: true
 
-    - grafana
+    - grafana.grafana.grafana
     - role: pgs
       become: true
 

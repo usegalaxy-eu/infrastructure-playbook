@@ -8,11 +8,9 @@
     - secret_group_vars/all.yml
     - mounts/dest/all.yml
     - mounts/mountpoints.yml
-  collections:
-    - devsec.hardening
   handlers:
-    - name: restart rsyslog
-      service:
+    - name: Restart rsyslog
+      ansible.builtin.service:
         name: rsyslog
         state: restarted
   tasks:
@@ -30,10 +28,10 @@
         name: epel-release
         state: present
     - name: Set additional local mount point
-      set_fact:
-        autofs_conf_files: "{{ autofs_conf_files | combine({ 'usrlocal': autofs_conf_files['usrlocal'] + galaxy_mount }) }}"
+      ansible.builtin.set_fact:
+        autofs_conf_files: "{{ autofs_conf_files | combine({'usrlocal': autofs_conf_files['usrlocal'] + galaxy_mount}) }}"
     - name: Install Dependencies
-      package:
+      ansible.builtin.package:
         name:
           [
             'git',
@@ -49,7 +47,7 @@
       become: true
   post_tasks:
     - name: Append some users to the systemd-journal group
-      user:
+      ansible.builtin.user:
         name: '{{ item }}'
         groups: systemd-journal
         append: true
@@ -57,8 +55,8 @@
         - '{{ galaxy_user.name }}'
         - 'telegraf'
 
-    - name: rsyslog configuration
-      copy:
+    - name: Rsyslog configuration
+      ansible.builtin.copy:
         content: |
           # Accept logs on TCP port 514
           module(load="imtcp")
@@ -91,6 +89,7 @@
             state: directory
             owner: root
             group: root
+            mode: "0750"
         - name: Ensure OpenStack configuration directory exists.
           become: true
           ansible.builtin.file:
@@ -120,7 +119,7 @@
         enabled: true
       become: true
     - name: Configure firewalld to open ports
-      firewalld:
+      ansible.posix.firewalld:
         port: "{{ item }}"
         immediate: true
         permanent: true
@@ -134,6 +133,9 @@
         regexp: "^export OPENAI_API_KEY_TELEGRAF"
         line: 'export OPENAI_API_KEY_TELEGRAF="{{ openai_api_key_telegraf }}"'
         create: true
+        owner: "{{ telegraf_user.name }}"
+        group: "{{ telegraf_user.group }}"
+        mode: "0640"
       no_log: true
   roles:
     # OS operations
@@ -141,12 +143,14 @@
     - geerlingguy.repo-epel
     - influxdata.chrony
     - usegalaxy-eu.autofs
+    - hxr.admin-tools
     - usegalaxy-eu.bashrc
     - usegalaxy-eu.dynmotd
     - ssh-host-sign
     - galaxyproject.gxadmin
     - usegalaxy-eu.galaxy-slurp
     - usegalaxy-eu.fix-ancient-ftp-data
+
     # Monitor / Maintenance Operations
     - dj-wasabi.telegraf
     - usegalaxy-eu.vgcn-monitoring
@@ -157,8 +161,15 @@
     - usegalaxy_eu.galaxy_cleanup # Cleanup the Galaxy objectstores and old datasets
     - hxr.postgres-connection
     - usegalaxy-eu.kui
+    # - usegalaxy-eu.htcondor_release
+    # - usegalaxy-eu.fix-unscheduled-workflows
+    - usegalaxy-eu.fix-ancient-ftp-data
+    # - usegalaxy-eu.fix-user-quotas
+    # - devsec.hardening.ssh_hardening
     - usegalaxy-eu.job-radar-stats-influxdb
+    # - usegalaxy-eu.fix-stop-ITs
     - usegalaxy-eu.logrotate
     - usegalaxy_eu.walle
     - usegalaxy_eu.ntfy-notifications
     - l3d.restic
+    - usegalaxy-eu.update-hosts # Update hosts list

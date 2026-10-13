@@ -14,11 +14,9 @@
     - group_vars/tpv-broker.yml
     - secret_group_vars/all.yml
     - secret_group_vars/aws.yml
-  collections:
-    - devsec.hardening
   pre_tasks:
     - name: Install Dependencies
-      package:
+      ansible.builtin.package:
         name:
           [
             'git',
@@ -27,12 +25,12 @@
           ]
         state: present
     - name: Enable and start firewalld
-      service:
+      ansible.builtin.service:
         name: firewalld
         state: started
         enabled: true
     - name: Allow http and https services
-      firewalld:
+      ansible.posix.firewalld:
         service: '{{ item }}'
         permanent: true
         state: enabled
@@ -42,7 +40,7 @@
         - https
   post_tasks:
     - name: Append some users to the systemd-journal group
-      user:
+      ansible.builtin.user:
         name: '{{ item }}'
         groups: systemd-journal
         append: true

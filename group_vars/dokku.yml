@@ -1,12 +1,13 @@
+---
 hostname: apps.galaxyproject.eu
 
 docker_daemon_options:
   data-root: "/data/docker"
   log-driver: "json-file"
-  log-opts: 
+  log-opts:
     max-size: "10m"
     max-file: "3"
-    
+
 apps:
   - ptdk
   # - pwdk

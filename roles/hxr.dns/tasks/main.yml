@@ -20,7 +20,7 @@
   when: set_dns | default(true)
 
 - name: Template cert refresh command
-  template:
+  ansible.builtin.template:
     src: refresh.sh
     dest: /usr/sbin/cert-refresh
     owner: root
