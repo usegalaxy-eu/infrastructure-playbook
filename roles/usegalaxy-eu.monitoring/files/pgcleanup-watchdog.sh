@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 ## Managed by Ansible. Local changes will be overwritten.
-## Emit OK when no pgcleanup.py process has reached the runtime threshold.
+## Emit stuck=1 when a pgcleanup.py process has reached the runtime threshold.
 
 set -euo pipefail
 
@@ -10,16 +10,16 @@ if ! [[ $threshold =~ ^[0-9]+$ ]]; then
     exit 2
 fi
 
-ok=1
+stuck=0
 while read -r pid; do
     # etimes is wall-clock elapsed time in seconds. Skip processes that exited.
     runtime=$(ps -o etimes= -p "$pid") || continue
     runtime=${runtime//[[:space:]]/}
     [[ -n $runtime ]] || continue
     if ((runtime >= threshold)); then
-        ok=0
+        stuck=1
         break
     fi
 done < <(pgrep -f '[p]gcleanup\.py' || true)
 
-printf 'pgcleanup-watchdog ok=%si\n' "$ok"
+printf 'pgcleanup-watchdog stuck=%si\n' "$stuck"
