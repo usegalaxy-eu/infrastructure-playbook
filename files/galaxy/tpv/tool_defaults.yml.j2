@@ -195,18 +195,17 @@ tools:
             - internal
 
       - id: remote_resources
-        if: not (dry_run_mode := job_wrapper is None) and (user is not None) and ("internal" not in {tag.value for tag in entity.tpv_tags.tags})
-        # - `job_wrapper is None` occurs when TPV is launched in dry-run mode
-        # - internal tools (tools requiring the Galaxy python environment)
-        #   never run on Pulsar nodes, even if the user has selected specific
-        #   remote resources (see `tool_requires_galaxy` rule above)
+        if: user is not None and tool.tool_type != 'interactive' and not ({"internal", "embedded-pulsar"} & set(entity.tpv_tags.require or []))
+        # Keep explicit Czech routing here: AlphaFold rules inspect cz-pulsar
+        # before assigning GPUs. Other site preferences are applied in rank,
+        # after all tool/user/role rules and resource expressions are evaluated.
         execute: |
-          from tpv.core.entities import SchedulingTags, Tag, TagType
+          from tpv.core.entities import SchedulingTags
 
           user_preferences = user.extra_preferences
           pulsar_tag = user_preferences.get("distributed_compute|remote_resources", "None")
 
-          if pulsar_tag != "None":
+          if pulsar_tag == "cz-pulsar":
               entity.tpv_tags = entity.tpv_tags.combine(
                   SchedulingTags(require=[pulsar_tag])
               )
@@ -229,5 +228,26 @@ tools:
         fail: |
           Invalid 'Remote resources id' selected in the config menu under 'User -> Preferences -> Manage Information -> Use distributed compute resources'. Please reselect either 'default' or an appropriate remote resource then click 'Save' and rerun your job.
     rank: |
-      final_destinations = helpers.weighted_random_sampling(candidate_destinations)
+      # Matching has evaluated resource expressions after all entity rules.
+      # Site preferences must not force GPU/interactive/embedded/internal jobs
+      # to remote sites. Conda fallback tools also need the local resolver.
+      required_tags = set(entity.tpv_tags.require or [])
+      remote_eligible = (
+          tool.tool_type != 'interactive'
+          and not tool.requires_galaxy_python_environment
+          and tool.tool_type != 'data_source'
+          and not ({'internal', 'embedded-pulsar', 'conda'} & required_tags)
+          and not gpus
+      )
+      selected_site = user.extra_preferences.get('distributed_compute|remote_resources', 'None') if user else 'None'
+      destinations = []
+      for destination in candidate_destinations:
+          tags = {tag.value for tag in destination.tpv_dest_tags.tags}
+          # Czech destinations remain explicit-only, including GPU AlphaFold.
+          if 'pulsar' in tags and 'cz-pulsar' not in tags and not remote_eligible:
+              continue
+          if remote_eligible and selected_site not in (None, 'None', 'cz-pulsar') and selected_site not in tags:
+              continue
+          destinations.append(destination)
+      final_destinations = helpers.weighted_random_sampling(destinations)
       final_destinations

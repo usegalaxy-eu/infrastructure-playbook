@@ -171,6 +171,9 @@ destinations:
   #######################
   # PULSAR DESTINATIONS #
   #######################
+  # Non-CZ sites accept their site tag for both automatic weighted scheduling
+  # and explicit selection. CZ retains require tags and remains opt-in only.
+  # Automatic eligibility is enforced after entity rules in tools.default.rank.
 
   pulsar_default: # use for remote Pulsar nodes and ALWAYS overwrite the runner.
     abstract: true
@@ -215,7 +218,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     scheduling:
-      require:
+      accept:
         - mira-pulsar
 
   pulsar_sk01_tpv:
@@ -228,7 +231,7 @@ destinations:
     params:
       singularity_volumes: "{{ pulsar_base_volumes() }}"
     scheduling:
-      require:
+      accept:
         - sk-pulsar
 
   pulsar_it_tpv:
@@ -241,7 +244,7 @@ destinations:
     params:
       singularity_volumes: "{{ pulsar_base_volumes() }}"
     scheduling:
-      require:
+      accept:
         - it-pulsar
 
   pulsar_it02_tpv:
@@ -254,7 +257,7 @@ destinations:
     params:
       singularity_volumes: "{{ pulsar_base_volumes() }}"
     scheduling:
-      require:
+      accept:
         - it02-pulsar
 
   pulsar_it03_tpv:
@@ -267,7 +270,7 @@ destinations:
     params:
       singularity_volumes: "{{ pulsar_base_volumes() }}"
     scheduling:
-      require:
+      accept:
         - it03-pulsar
 
   pulsar_fr01_tpv:
@@ -280,7 +283,7 @@ destinations:
     params:
       singularity_volumes: "{{ pulsar_base_volumes() }}"
     scheduling:
-      require:
+      accept:
         - fr-pulsar
 
   pulsar_be_tpv:
@@ -291,7 +294,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     scheduling:
-      require:
+      accept:
         - be-pulsar
 
   pulsar_cz01_tpv:
@@ -372,7 +375,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     scheduling:
-      require:
+      accept:
         - egi-pulsar
 
   pulsar_bsc01_tpv:
@@ -383,7 +386,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     scheduling:
-      require:
+      accept:
         - bsc-pulsar
 
   pulsar_tubitak01_tpv:
@@ -394,7 +397,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     scheduling:
-      require:
+      accept:
         - tubitak-pulsar
 
   pulsar_cyf01_tpv:
@@ -405,7 +408,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     scheduling:
-      require:
+      accept:
         - pl-pulsar
 
   pulsar_hcmr01_tpv:
@@ -416,7 +419,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     scheduling:
-      require:
+      accept:
         - hcmr-gr-pulsar
 
   pulsar_eosc01_tpv:
@@ -427,7 +430,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     scheduling:
-      require:
+      accept:
         - eosc-eu-node-01-pulsar
 
   pulsar_uca01_tpv:
@@ -438,7 +441,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     scheduling:
-      require:
+      accept:
         - uca-pulsar
 
   pulsar_ufz_eve01_tpv:
@@ -459,7 +462,7 @@ destinations:
       container_resolvers:
         {{ cvmfs_container_resolvers() | indent(8, false) }}
     scheduling:
-      require:
+      accept:
         - ufz-eve-pulsar
 
 #  pulsar_nemo_tpv:
@@ -509,6 +512,8 @@ destinations:
       - name: PYTHONPYCACHEPREFIX
         value: /scratch/pythoncache/
     params:
+      # Relative to weight 1 for each automatically eligible remote Pulsar site.
+      weight: 90
       request_gpus: "{gpus or 0}"
 
       # we could set this to false, and usually, afaik, this would then fallback to conda-resolution, however, I put in here a `container:` fallback, so maybe we can leave that to true
