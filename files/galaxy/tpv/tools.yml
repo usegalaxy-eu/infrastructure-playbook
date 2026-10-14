@@ -90,6 +90,9 @@ tools:
       - name: SINGULARITYENV_LC_ALL
         value: C.UTF-8
 
+  toolshed.g2.bx.psu.edu/repos/bgruening/tabicl/tabicl/.*:
+    inherits: _basic_gpu_resource_param_tool
+
   toolshed.g2.bx.psu.edu/repos/bgruening/tabpfn/tabpfn/.*:
     inherits: _basic_gpu_resource_param_tool
     # This tool is using git to get a huggingface model, it seems that git is easily getting into a locked state on NFS.
