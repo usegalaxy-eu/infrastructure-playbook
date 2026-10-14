@@ -121,7 +121,7 @@ server {
         # stricter rate limit than the rest of the server; some paths exempt
         # (e.g. uploads, Pulsar job files), see conf.d/rate_limit.conf
         limit_req zone=crawler burst=10 nodelay;
-        limit_req zone=strict burst=50 nodelay;
+        limit_req zone=strict burst=150 nodelay;
         limit_req_status 429;
 
         {{ upstream_galaxy() | indent(8, false) }}
@@ -134,9 +134,24 @@ server {
         # regex locations for `/api/...` below take precedence over this
         # location and inherit the server-level limits
     }
-   location ~ ^/display_application/[^/]+/ucsc_bam/ {
-       return 503;
-   }
+
+    location ~ ^/api/tools/[^/]+/icon/?$ {
+        # clicking "Interactive Tools" on the Activity Bar triggers one request
+        # for each interactive tool (to load the icon); relax the rate limits
+        # for this location
+        limit_req zone=crawler burst=10 nodelay;
+        limit_req zone=relaxed burst=200 nodelay;
+        limit_req_status 429;
+
+        {{ upstream_galaxy() | indent(8, false) }}
+        proxy_set_header Connection         $connection_upgrade;
+
+        {{ x_clacks_overhead() | indent(8, false) }}
+    }
+
+    location ~ ^/display_application/[^/]+/ucsc_bam/ {
+        return 503;
+    }
 
     # Temporarily break downloading :(
     #location /api/libraries/datasets/download/ {
