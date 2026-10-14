@@ -1,0 +1,25 @@
+---
+- name: Install pgcleanup watchdog
+  ansible.builtin.copy:
+    src: pgcleanup-watchdog.sh
+    dest: "{{ monitoring_pgcleanup_watchdog_script_path }}"
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Ensure Telegraf configuration directory exists
+  ansible.builtin.file:
+    path: /etc/telegraf/telegraf.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Configure Telegraf pgcleanup watchdog
+  ansible.builtin.template:
+    src: pgcleanup-watchdog-telegraf.conf.j2
+    dest: /etc/telegraf/telegraf.d/pgcleanup-watchdog.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart Telegraf after configuring pgcleanup watchdog
