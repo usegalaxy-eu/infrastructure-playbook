@@ -76,8 +76,8 @@ telegraf_user:
 
 cloud_network_prefix: 10.5.67
 # Certbot defaults
-certbot_auto_renew_hour: "{{ 23 |random(seed=inventory_hostname)  }}"
-certbot_auto_renew_minute: "{{ 59 |random(seed=inventory_hostname)  }}"
+certbot_auto_renew_hour: "{{ 23 | random(seed=inventory_hostname) }}"
+certbot_auto_renew_minute: "{{ 59 | random(seed=inventory_hostname) }}"
 certbot_install_method: virtualenv
 certbot_auto_renew: true
 certbot_auto_renew_user: root
@@ -105,6 +105,34 @@ chrony_server: 'time.ruf.uni-freiburg.de iburst'
 chrony_acquisitionport: 0
 chrony_conf_file: '/etc/chrony.conf'
 chrony_keyfile: '/etc/chrony.keys'
+
+# Admin Tools
+admin_packages:
+  - nano
+  - vim
+  - atop
+  - iftop
+  - htop
+  - strace
+  - jq
+  - btop
+  - wget
+  - curl
+  - tmux
+  - git
+  - nmap
+  - tcpdump
+  - net-tools
+  - unzip
+  - tmpwatch
+  - rclone
+  - byobu
+  # centos specific
+  - setools-console
+  - yum-utils
+  - bind-utils
+  - nfs-utils
+  - tree
 
 # Telegraf var
 dc: ufr-rz
