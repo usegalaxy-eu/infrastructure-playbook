@@ -84,6 +84,7 @@
         hostname: "{{ inventory_hostname }}"
     ## Filesystems
     - usegalaxy-eu.autofs # Set up the mount points which will be needed later
+    - galaxyproject.cvmfs
     - usegalaxy_eu.galaxy_systemd
     - influxdata.chrony
     - role: usegalaxy_eu.flower
