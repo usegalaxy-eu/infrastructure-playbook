@@ -51,16 +51,16 @@ tools:
   # lets run in embedded pulsar to reduce the jwd scope and make it more secure
   # running docker is fine here
   user_defined-.*:
-      cores: 1
-      mem: 3.7
-      rules:
+    cores: 1
+    mem: 3.7
+    rules:
       - id: require_login_user_defined
         if: user is None
         fail: An account is required to run this tool. Please log in or create an account.
-      scheduling:
-        require:
-          - docker
-          - embedded-pulsar
+    scheduling:
+      require:
+        - docker
+        - embedded-pulsar
 
   # example for overwriting the OOM memory multiplier for a specific tool
   # toolshed.g2.bx.psu.edu/repos/example_owner/example_tool/example_tool/.*:
@@ -290,6 +290,10 @@ tools:
   toolshed.g2.bx.psu.edu/repos/goeckslab/pycaret_[^/]*/pycaret_[^/]*/3.3.2.*:
     params:
       container_override: [{type: singularity, shell: '/bin/sh', identifier: "/cvmfs/main.galaxyproject.org/singularity/galaxy-pycaret:3.3.2--0"}]
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/mirge3_build_database/mirge3_build_database/.*:
+    params:
+      container_override: [{type: singularity, shell: '/bin/sh', identifier: "/cvmfs/singularity.galaxyproject.org/w/g/wget:1.25.0"}]
 
   toolshed.g2.bx.psu.edu/repos/goeckslab/tabular_learner/tabular_learner/0\.1\..*:
     inherits: toolshed.g2.bx.psu.edu/repos/goeckslab/pycaret_[^/]*/pycaret_[^/]*/3.3.2.*

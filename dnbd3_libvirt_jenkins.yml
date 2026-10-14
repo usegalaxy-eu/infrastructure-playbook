@@ -47,6 +47,7 @@
           [Install]
           RequiredBy=tftp.service dnbd3-server.service httpd.service
         dest: /etc/systemd/system/require-autofs.service
+        mode: "0644"
     - name: Enable the service
       ansible.builtin.systemd_service:
         daemon_reload: true
@@ -80,9 +81,9 @@
     - "secret_group_vars/all.yml"
   pre_tasks:
     - name: Install Dependencies
-      package:
+      ansible.builtin.package:
         enablerepo: crb
-        name: 
+        name:
           - libvirt
       become: true
     # Create network setup
@@ -118,14 +119,15 @@
         content: |
           [Unit]
           Description=Mount NFS Share for Libvirt
-          
+
           [Mount]
           What=/dev/mapper/vg_images-images
           Where=/images
-          
+
           [Install]
           RequiredBy=libvirtd.socket
         dest: /etc/systemd/system/images.mount
+        mode: "0644"
     - name: Create mountpoint for Libvirt
       ansible.builtin.copy:
         content: |
@@ -133,16 +135,17 @@
           Description=Mount NFS Share for Libvirt
           Requires=network-online.target
           After=network-online.target
-          
+
           [Mount]
           What=ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/dnb01/vms
           Where=/data
           Type=nfs
           Options=hard,rw,nosuid,nconnect=2,nodev,vers=3
-          
+
           [Install]
           WantedBy=remote-fs.target
         dest: /etc/systemd/system/data.mount
+        mode: "0644"
   post_tasks:
     - name: Enable the service
       ansible.builtin.systemd_service:
@@ -154,8 +157,6 @@
         - images.mount
         - data.mount
 
-  collections:
-    #   - devsec.hardening
   roles:
     - hostname
     - usegalaxy-eu.dynmotd
@@ -181,11 +182,11 @@
     - "secret_group_vars/aws.yml" # AWS creds
   pre_tasks:
     - name: Install Dependencies for Jenkins
-      package:
+      ansible.builtin.package:
         enablerepo: crb
         name: ["policycoreutils-python-utils", "python3-wheel-wheel"]
       become: true
-    - name: permit traffic in default zone for http and https service
+    - name: Permit traffic in default zone for http and https service
       ansible.posix.firewalld:
         service: "{{ item }}"
         permanent: true
@@ -193,8 +194,6 @@
       loop:
         - http
         - https
-  collections:
-    - devsec.hardening
   roles:
     - usegalaxy-eu.dynmotd
     - geerlingguy.repo-epel
