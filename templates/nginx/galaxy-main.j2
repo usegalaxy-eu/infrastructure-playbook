@@ -199,8 +199,8 @@ server {
         # we need to limit it because the disc IO can be too large, ideally this happens on a different node
         # upload_limit_rate 32k;
 
-        # https://github.com/galaxyproject/infrastructure-playbook/pull/77
         client_body_buffer_size 8m;
+        client_max_body_size 0;
         upload_store_access user:rw group:rw all:rw;
         upload_pass_form_field "";
         upload_set_form_field "__${upload_field_name}_path" "$upload_tmp_path";
