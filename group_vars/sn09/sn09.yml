@@ -232,7 +232,7 @@ nginx_cache_dir: /var/cache/nginx
 # (see templates/nginx/conf.d/rate_limit.conf.j2, templates/nginx/galaxy-main.j2)
 nginx_extra_configs:
   - conf.d/rate_limit.conf
-nginx_rate_limit_dry_run: true
+nginx_rate_limit_dry_run: false
 # Proxies whose X-Forwarded-For we trust for the real client IP. Only list
 # proxies here, otherwise clients can spoof their own rate limit key.
 nginx_rate_limit_trusted_proxies:
