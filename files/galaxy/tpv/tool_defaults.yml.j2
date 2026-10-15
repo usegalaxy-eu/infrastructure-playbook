@@ -228,26 +228,11 @@ tools:
         fail: |
           Invalid 'Remote resources id' selected in the config menu under 'User -> Preferences -> Manage Information -> Use distributed compute resources'. Please reselect either 'default' or an appropriate remote resource then click 'Save' and rerun your job.
     rank: |
-      # Matching has evaluated resource expressions after all entity rules.
-      # Site preferences must not force GPU/interactive/embedded/internal jobs
-      # to remote sites. Conda fallback tools also need the local resolver.
-      required_tags = set(entity.tpv_tags.require or [])
-      remote_eligible = (
-          tool.tool_type != 'interactive'
-          and not tool.requires_galaxy_python_environment
-          and tool.tool_type != 'data_source'
-          and not ({'internal', 'embedded-pulsar', 'conda'} & required_tags)
-          and not gpus
-      )
+      # Reuse the destination policy for preferences after all entity rules and
+      # resource expressions have run. Matching already enforces exclusions.
+      remote_policy = mapper.destinations['pulsar_remote_cpu'].tpv_dest_tags
+      remote_eligible = not gpus and entity.tpv_tags.match(remote_policy)
       selected_site = user.extra_preferences.get('distributed_compute|remote_resources', 'None') if user else 'None'
-      destinations = []
-      for destination in candidate_destinations:
-          tags = {tag.value for tag in destination.tpv_dest_tags.tags}
-          # Czech destinations remain explicit-only, including GPU AlphaFold.
-          if 'pulsar' in tags and 'cz-pulsar' not in tags and not remote_eligible:
-              continue
-          if remote_eligible and selected_site not in (None, 'None', 'cz-pulsar') and selected_site not in tags:
-              continue
-          destinations.append(destination)
-      final_destinations = helpers.weighted_random_sampling(destinations)
-      final_destinations
+      if remote_eligible and selected_site not in (None, 'None', 'cz-pulsar'):
+          candidate_destinations = [d for d in candidate_destinations if any(d.tpv_dest_tags.filter(tag_value=selected_site))]
+      helpers.weighted_random_sampling(candidate_destinations)

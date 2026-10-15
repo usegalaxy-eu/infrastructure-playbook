@@ -173,7 +173,7 @@ destinations:
   #######################
   # Non-CZ sites accept their site tag for both automatic weighted scheduling
   # and explicit selection. CZ retains require tags and remains opt-in only.
-  # Automatic eligibility is enforced after entity rules in tools.default.rank.
+  # Shared compatibility constraints live in pulsar_remote_cpu.
 
   pulsar_default: # use for remote Pulsar nodes and ALWAYS overwrite the runner.
     abstract: true
@@ -210,24 +210,35 @@ destinations:
         - singularity
         - docker
 
-  pulsar_mira_tpv:
+  pulsar_remote_cpu:
+    abstract: true
     inherits: pulsar_default
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    params:
+      weight: 1
+    scheduling:
+      reject:
+        - tool_type_interactive
+        - internal
+        - embedded-pulsar
+        - conda
+        - local-only
+
+  pulsar_mira_tpv:
+    inherits: pulsar_remote_cpu
     runner: pulsar_mira_runner
     max_accepted_cores: 8
     max_accepted_mem: 15
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
     scheduling:
       accept:
         - mira-pulsar
 
   pulsar_sk01_tpv:
-    inherits: pulsar_default
+    inherits: pulsar_remote_cpu
     runner: pulsar_eu_sk01
     max_accepted_cores: 8
     max_accepted_mem: 31
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
     params:
       singularity_volumes: "{{ pulsar_base_volumes() }}"
     scheduling:
@@ -235,12 +246,10 @@ destinations:
         - sk-pulsar
 
   pulsar_it_tpv:
-    inherits: pulsar_default
+    inherits: pulsar_remote_cpu
     runner: pulsar_eu_it01
     max_accepted_cores: 8
     max_accepted_mem: 31
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
     params:
       singularity_volumes: "{{ pulsar_base_volumes() }}"
     scheduling:
@@ -248,12 +257,10 @@ destinations:
         - it-pulsar
 
   pulsar_it02_tpv:
-    inherits: pulsar_default
+    inherits: pulsar_remote_cpu
     runner: pulsar_eu_it02
     max_accepted_cores: 16
     max_accepted_mem: 31
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
     params:
       singularity_volumes: "{{ pulsar_base_volumes() }}"
     scheduling:
@@ -261,12 +268,10 @@ destinations:
         - it02-pulsar
 
   pulsar_it03_tpv:
-    inherits: pulsar_default
+    inherits: pulsar_remote_cpu
     runner: pulsar_eu_it03
     max_accepted_cores: 32
     max_accepted_mem: 124
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
     params:
       singularity_volumes: "{{ pulsar_base_volumes() }}"
     scheduling:
@@ -274,12 +279,10 @@ destinations:
         - it03-pulsar
 
   pulsar_fr01_tpv:
-    inherits: pulsar_default
+    inherits: pulsar_remote_cpu
     runner: pulsar_eu_fr01
     max_accepted_cores: 8
     max_accepted_mem: 63
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
     params:
       singularity_volumes: "{{ pulsar_base_volumes() }}"
     scheduling:
@@ -287,12 +290,10 @@ destinations:
         - fr-pulsar
 
   pulsar_be_tpv:
-    inherits: pulsar_default
+    inherits: pulsar_remote_cpu
     runner: pulsar_eu_be01
     max_accepted_cores: 8
     max_accepted_mem: 15
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
     scheduling:
       accept:
         - be-pulsar
@@ -368,89 +369,73 @@ destinations:
 
 
   pulsar_egi01_tpv:
-    inherits: pulsar_default
+    inherits: pulsar_remote_cpu
     runner: pulsar_eu_egi01
     max_accepted_cores: 8
     max_accepted_mem: 15
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
     scheduling:
       accept:
         - egi-pulsar
 
   pulsar_bsc01_tpv:
-    inherits: pulsar_default
+    inherits: pulsar_remote_cpu
     runner: pulsar_eu_bsc01
     max_accepted_cores: 16
     max_accepted_mem: 64
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
     scheduling:
       accept:
         - bsc-pulsar
 
   pulsar_tubitak01_tpv:
-    inherits: pulsar_default
+    inherits: pulsar_remote_cpu
     runner: pulsar_eu_tubitak01
     max_accepted_cores: 16
     max_accepted_mem: 95
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
     scheduling:
       accept:
         - tubitak-pulsar
 
   pulsar_cyf01_tpv:
-    inherits: pulsar_default
+    inherits: pulsar_remote_cpu
     runner: pulsar_eu_cyf01
     max_accepted_cores: 4
     max_accepted_mem: 15
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
     scheduling:
       accept:
         - pl-pulsar
 
   pulsar_hcmr01_tpv:
-    inherits: pulsar_default
+    inherits: pulsar_remote_cpu
     runner: pulsar_eu_hcmr01
     max_accepted_cores: 8
     max_accepted_mem: 30
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
     scheduling:
       accept:
         - hcmr-gr-pulsar
 
   pulsar_eosc01_tpv:
-    inherits: pulsar_default
+    inherits: pulsar_remote_cpu
     runner: pulsar_eu_eosc01
     max_accepted_cores: 4
     max_accepted_mem: 31
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
     scheduling:
       accept:
         - eosc-eu-node-01-pulsar
 
   pulsar_uca01_tpv:
-    inherits: pulsar_default
+    inherits: pulsar_remote_cpu
     runner: pulsar_eu_uca01
     max_accepted_cores: 8
     max_accepted_mem: 31
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
     scheduling:
       accept:
         - uca-pulsar
 
   pulsar_ufz_eve01_tpv:
-    inherits: pulsar_default
+    inherits: pulsar_remote_cpu
     runner: pulsar_eu_ufz_eve01
     max_accepted_cores: 56
     max_accepted_mem: 360
-    min_accepted_gpus: 0
-    max_accepted_gpus: 0
     env:
       LC_ALL: C
     params:

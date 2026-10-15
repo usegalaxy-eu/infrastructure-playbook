@@ -36,6 +36,9 @@ tools:
 
   _basic_numba_tool:
     abstract: true
+    scheduling:
+      accept:
+        - local-only
     env:
       NUMBA_CACHE_DIR: /data/misc06/tmp
       OMP_NUM_THREADS: 4
@@ -271,6 +274,9 @@ tools:
     scheduling:
       accept:
         - singularity
+        # CPU mode uses local AlphaFold databases. CZ has its own data mounts
+        # and deliberately does not reject this non-CZ routing marker.
+        - local-only
 
   toolshed.g2.bx.psu.edu/repos/bgruening/markitdown/markitdown/.*:
     params:
@@ -580,6 +586,9 @@ tools:
     mem: 256
 
   '.*mothur_.*':
+    scheduling:
+      accept:
+        - local-only
     cores: 1
     mem: 90
     params:
@@ -911,6 +920,9 @@ tools:
     mem: 20
 
   toolshed.g2.bx.psu.edu/repos/recetox/aoptk_.*:
+    scheduling:
+      accept:
+        - local-only
     env:
       docker_env_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
       SINGULARITYENV_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
@@ -918,6 +930,9 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/bgruening/llm_hub/llm_hub/.*:
     mem: 1
+    scheduling:
+      accept:
+        - local-only
     env:
       docker_env_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
       SINGULARITYENV_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
@@ -931,6 +946,9 @@ tools:
     # is `cores * 3.8`, so cores: 2 alone would reserve 7.6 GB.
     cores: 2
     mem: 4
+    scheduling:
+      accept:
+        - local-only
     env:
       LITELLM_CONFIG_FILE: "/data/db/models/config/litellm_config.yml"
       SINGULARITYENV_LITELLM_CONFIG_FILE: "$LITELLM_CONFIG_FILE"
