@@ -26,7 +26,8 @@
         $tool_directory:ro,
         $job_directory/outputs:rw,
         $working_directory:rw,
-        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }},
+        {{ cvmfs.idc.path }}:{{ cvmfs.idc.docker_perm }}
 {%- endmacro %}
 {% macro cvmfs_container_resolvers() %}
   - type: explicit_singularity
@@ -62,7 +63,8 @@ destinations:
       docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,
         $defaults,
         {{ galaxy_volumes(exclude_volumes=['dnb04', 'dnb-ds01']) }}
-        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}",
+        {{ cvmfs.idc.path }}:{{ cvmfs.idc.docker_perm }}
       docker_run_extra_arguments: "--memory={mem}g --cpus={cores} {self.params.get('docker_run_extra_arguments') or ''}"
       require_container: true
       submit_request_cpus: "{cores}"
@@ -107,7 +109,8 @@ destinations:
         $job_directory/outputs:rw,
         $working_directory:rw,
         {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
-        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}",
+        {{ cvmfs.idc.path }}:{{ cvmfs.idc.docker_perm }}
     scheduling:
       accept:
         - tool_type_user_defined
@@ -312,7 +315,7 @@ destinations:
     params:
       jobs_directory: "/storage/praha5-elixir/home/galaxyeu/pulsar-eu/files/staging"
       persistence_directory: "/opt/pulsar/files/persistent"
-      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }},$SCRATCHDIR,$SCRATCHDIR:/tmp,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,/cvmfs/data.galaxyproject.org/managed/:/data/db/data_managers/:ro"
+      singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }},{{ cvmfs.idc.path }}:{{ cvmfs.idc.docker_perm }},$SCRATCHDIR,$SCRATCHDIR:/tmp,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,/cvmfs/data.galaxyproject.org/managed/:/data/db/data_managers/:ro"
       singularity_env__JAVA_OPTIONS: '-Xmx{int(mem)}g -Djava.io.tmpdir=$SCRATCHDIR'
 #      singularity_run_extra_arguments: '--env _JAVA_OPTIONS=\"-Xmx{int(mem)}g -Djava.io.tmpdir=$SCRATCHDIR\"'
       submit_native_specification: "-l select=1:ncpus={int(cores)}:mem={int(mem)}gb:scratch_local=100gb -l walltime=24:00:00 -q galaxyeu@pbs-m1.metacentrum.cz -N pulsar_eu_j{job.id}__{tool.id if '/' not in tool.id else tool.id.split('/')[-2]+'_v'+tool.id.split('/')[-1]}__{user.username if user and hasattr(user, 'username') else 'anonymous'}"
@@ -324,7 +327,7 @@ destinations:
     rules:
       - if: tool.id.startswith("toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta") or tool.id.startswith("toolshed.g2.bx.psu.edu/repos/iuc/plasmidfinder/plasmidfinder")
         params:
-          singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }},$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,/cvmfs/data.galaxyproject.org/byhand/:/data/db/data_managers/:ro"
+          singularity_volumes: "$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,{{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }},{{ cvmfs.idc.path }}:{{ cvmfs.idc.docker_perm }},$SCRATCHDIR,/storage/praha5-elixir/home/galaxyeu:/home/galaxyeu,/cvmfs/data.galaxyproject.org/byhand/:/data/db/data_managers/:ro"
 
   pulsar_cz02_tpv:
     inherits: pulsar_default
@@ -538,7 +541,8 @@ destinations:
       docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,
         $defaults,
         {{ galaxy_volumes(exclude_volumes=['dnb04', 'dnb-ds01']) }}
-        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}"
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}",
+        {{ cvmfs.idc.path }}:{{ cvmfs.idc.docker_perm }}
 
       # let's move our config to destinations and forget about the global YAML file
       # If no resolver finds a container, this base container will be taken and resolve_dependencies=true will force conda deps usage
