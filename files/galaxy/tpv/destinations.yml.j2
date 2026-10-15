@@ -218,12 +218,19 @@ destinations:
     params:
       weight: 1
       pulsar_local_fallback: true
+      pulsar_requested_mem: "{mem}"
     resubmit:
-      # Retry any runner-reported failure through TPV once. The marker above
-      # makes TPV choose local execution; default OOM retries remain available.
-      pulsar_local_fallback:
-        condition: any_failure and attempt <= 1
+      # OOM failures use the usual dispatcher and its memory scaling.
+      # Other failures use a separate entry point to preserve requested memory.
+      # No global attempt limit: even a later attempt may first land on Pulsar.
+      # The marker pins all subsequent retries locally, preventing a loop.
+      oom_retry:
+        condition: memory_limit_reached
         environment: tpv_dispatcher
+        delay: 60
+      pulsar_local_fallback:
+        condition: any_failure and not memory_limit_reached
+        environment: tpv_local_fallback
         delay: 30
     scheduling:
       reject:
@@ -507,7 +514,6 @@ destinations:
     params:
       # Relative to weight 1 for each automatically eligible remote Pulsar site.
       weight: 90
-      pulsar_local_fallback: "{bool(job and job.destination_params and job.destination_params.get('pulsar_local_fallback'))}"
       request_gpus: "{gpus or 0}"
 
       # we could set this to false, and usually, afaik, this would then fallback to conda-resolution, however, I put in here a `container:` fallback, so maybe we can leave that to true
@@ -623,7 +629,6 @@ destinations:
       - name: PYTHONPYCACHEPREFIX
         value: /scratch/pythoncache/
     params:
-      pulsar_local_fallback: "{bool(job and job.destination_params and job.destination_params.get('pulsar_local_fallback'))}"
       require_container: true
       container_override:
         - type: singularity

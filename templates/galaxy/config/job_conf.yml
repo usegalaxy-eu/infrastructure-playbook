@@ -265,7 +265,8 @@ galaxy_jobconf:
   destinations:
     - id: local
       runner: local
-    - id: tpv_dispatcher
+    - &tpv_dispatcher
+      id: tpv_dispatcher
       runner: dynamic
       type: python
       function: map_tool_to_destination
@@ -279,6 +280,12 @@ galaxy_jobconf:
         - "{{ galaxy_config_dir }}/total_perspective_vortex/conda_in_container.yml"
         - "{{ galaxy_config_dir }}/total_perspective_vortex/users.yml"
         - "{{ galaxy_config_dir }}/total_perspective_vortex/roles.yml"
+    # Separate retry entry point records a non-OOM failure before TPV runs.
+    # Galaxy merges these params over the previous destination's params.
+    - <<: *tpv_dispatcher
+      id: tpv_local_fallback
+      params:
+        pulsar_fallback_non_oom: true
   tools:
     # TODO(hxr): implement validation that checks that every destination
     # used here is defined above.

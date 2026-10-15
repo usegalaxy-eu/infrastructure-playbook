@@ -101,6 +101,7 @@ class RoutingTests(unittest.TestCase):
         final=False,
         rank_override=False,
         fallback=False,
+        destination_params=None,
     ):
         tool = SimpleNamespace(
             id=tool_id,
@@ -127,7 +128,9 @@ class RoutingTests(unittest.TestCase):
         job = SimpleNamespace(
             id=42,
             state="resubmitted" if resubmitted else "new",
-            destination_params=(
+            destination_params=destination_params
+            if destination_params is not None
+            else (
                 {"OOM_MEM_SCALE": 128, "pulsar_local_fallback": fallback}
                 if resubmitted
                 else {}
@@ -322,11 +325,11 @@ class RoutingTests(unittest.TestCase):
         remote = self.mapper.destinations["pulsar_it03_tpv"]
         self.assertEqual(
             remote.resubmit["pulsar_local_fallback"]["condition"],
-            "any_failure and attempt <= 1",
+            "any_failure and not memory_limit_reached",
         )
         self.assertEqual(
             remote.resubmit["pulsar_local_fallback"]["environment"],
-            "tpv_dispatcher",
+            "tpv_local_fallback",
         )
         czech = self.mapper.destinations["pulsar_cz01_tpv"]
         self.assertNotIn("pulsar_local_fallback", czech.resubmit)
@@ -336,7 +339,123 @@ class RoutingTests(unittest.TestCase):
         destination = self.candidates(
             site="it03-pulsar", resubmitted=True, fallback=True, final=True
         )
-        self.assertTrue(destination.params["pulsar_local_fallback"])
+        self.assertEqual(
+            str(destination.params["pulsar_local_fallback"]).lower(), "true"
+        )
+
+    def test_false_marker_does_not_force_local_retry(self):
+        candidates = self.candidates(
+            site="it03-pulsar",
+            resubmitted=True,
+            destination_params={
+                "pulsar_local_fallback": "False",
+                "OOM_MEM_SCALE": 2,
+            },
+        )
+        self.assertEqual([d.id for d in candidates], ["pulsar_it03_tpv"])
+
+    def test_non_oom_transition_preserves_memory_then_allows_local_oom(self):
+        remote = self.candidates(site="it03-pulsar", final=True)
+        retry_params = dict(remote.params, pulsar_fallback_non_oom=True)
+        local = self.candidates(
+            site="it03-pulsar",
+            resubmitted=True,
+            destination_params=retry_params,
+            final=True,
+        )
+        self.assertEqual(local.id, "condor_container")
+        self.assertEqual(
+            local.params["request_memory"],
+            remote.params["submit_request_memory"],
+        )
+        self.assertEqual(
+            str(local.params["pulsar_fallback_non_oom"]).lower(), "false"
+        )
+        self.assertNotIn("any_failure", str(local.resubmit))
+        oom_retry = self.candidates(
+            site="it03-pulsar",
+            resubmitted=True,
+            destination_params=local.params,
+            final=True,
+        )
+        self.assertEqual(oom_retry.id, "condor_container")
+        self.assertEqual(oom_retry.params["request_memory"], "7.6G")
+
+    def test_fallback_after_prior_oom_attempt(self):
+        # Local OOM -> remote attempt -> non-OOM failure -> local fallback.
+        remote = self.candidates(
+            site="it03-pulsar",
+            resubmitted=True,
+            destination_params={"OOM_MEM_SCALE": 2},
+            final=True,
+        )
+        local = self.candidates(
+            site="it03-pulsar",
+            resubmitted=True,
+            destination_params=dict(
+                remote.params, pulsar_fallback_non_oom="True"
+            ),
+            final=True,
+        )
+        self.assertEqual(local.id, "condor_container")
+        self.assertEqual(
+            local.params["request_memory"],
+            remote.params["submit_request_memory"],
+        )
+
+    def test_remote_oom_transition_scales_memory_and_stays_local(self):
+        remote = self.candidates(site="it03-pulsar", final=True)
+        local = self.candidates(
+            site="it03-pulsar",
+            resubmitted=True,
+            destination_params=remote.params,
+            final=True,
+        )
+        self.assertEqual(local.id, "condor_container")
+        self.assertEqual(local.params["request_memory"], "7.6G")
+
+    def test_fallback_entry_point_and_retry_conditions(self):
+        # Verify the actual Galaxy environment exists and clones the TPV
+        # dispatcher, adding only the non-OOM transition parameter.
+        config_path = (
+            Path(__file__).resolve().parents[2]
+            / "templates/galaxy/config/job_conf.yml"
+        )
+        environments = yaml.safe_load(config_path.read_text())[
+            "galaxy_jobconf"
+        ]["destinations"]
+        dispatcher = next(
+            d for d in environments if d["id"] == "tpv_dispatcher"
+        )
+        fallback = next(
+            d for d in environments if d["id"] == "tpv_local_fallback"
+        )
+        self.assertEqual(
+            fallback["tpv_config_files"], dispatcher["tpv_config_files"]
+        )
+        self.assertEqual(fallback["rules_module"], dispatcher["rules_module"])
+        self.assertIs(fallback["params"]["pulsar_fallback_non_oom"], True)
+        remote = self.candidates(site="it03-pulsar", final=True)
+        # Galaxy uses the first matching condition, and attempt counts all
+        # prior resubmissions, not just the remote execution.
+        for attempt in (1, 2, 4):
+            for oom in (False, True):
+                context = dict(
+                    any_failure=True, memory_limit_reached=oom, attempt=attempt
+                )
+                matching = [
+                    r
+                    for r in remote.resubmit
+                    if eval(r["condition"], {"__builtins__": {}}, context)
+                ]
+                if not oom:
+                    self.assertEqual(
+                        matching[0]["environment"], "tpv_local_fallback"
+                    )
+                else:
+                    self.assertEqual(
+                        matching[0]["environment"], "tpv_dispatcher"
+                    )
 
     def test_removed_site_has_meaningful_error(self):
         from galaxy.jobs.mapper import JobMappingException
