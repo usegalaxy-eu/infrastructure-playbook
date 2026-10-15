@@ -3,3 +3,11 @@
   database = "{{ influxdb.database }}"
   username = "{{ influxdb.username }}"
   password = "{{ influxdb.password }}"
+
+[[outputs.influxdb]]
+  urls = ["https://influxdb.galaxyproject.eu:8086"]
+  database = "{{ telegraf_historical_database }}"
+  username = "{{ influxdb.username }}"
+  password = "{{ influxdb.password }}"
+  skip_database_creation = true
+  namepass = {{ telegraf_historical_measurements | to_json }}

@@ -35,6 +35,9 @@ autofs_mount_points:
 ## Telegraf
 check_slx_disks_path: /usr/local/bin/check_slx_disks
 telegraf_agent_config_path: /etc/telegraf
+telegraf_historical_database: galaxy_stats
+telegraf_historical_measurements:
+  - ipmi_power
 telegraf_plugins_extra:
   check_slx_disks_telegraf:
     plugin: exec
