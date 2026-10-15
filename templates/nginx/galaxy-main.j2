@@ -319,6 +319,11 @@ server {
         proxy_pass_request_headers on;
     }
 
+    location /webhook-games/ {
+        alias /opt/galaxy/custom-tools/SequenceAlignment/;
+        index index.html;
+    }
+
     {{ gapars_nginx_config }}
 
     location /apollo/ {
