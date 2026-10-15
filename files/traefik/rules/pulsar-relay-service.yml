@@ -1,0 +1,11 @@
+---
+http:
+  serversTransports:
+    pulsar-relay-transport:
+      serverName: pulsar-relay.galaxyproject.eu
+  services:
+    pulsar-relay:
+      loadBalancer:
+        serversTransport: pulsar-relay-transport
+        servers:
+          - url: "https://10.4.68.172"

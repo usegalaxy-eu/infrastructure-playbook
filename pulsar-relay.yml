@@ -1,0 +1,39 @@
+---
+- name: Pulsar relay
+  hosts: pulsar_relay
+  become: true
+  become_user: root
+  vars:
+    hostname: '{{ inventory_hostname }}'
+    server_names:
+      - 'pulsar-relay.galaxyproject.eu'
+    certbot_hostname_override:
+      - 'pulsar-relay.galaxyproject.eu'
+  vars_files:
+    - group_vars/pulsar-relay.yml
+    - secret_group_vars/all.yml
+    - secret_group_vars/aws.yml
+  pre_tasks:
+    - name: Install Dependencies
+      ansible.builtin.package:
+        name: ['git', 'python3-virtualenv', 'firewalld']
+        state: present
+    - name: Enable and start firewalld
+      ansible.builtin.service:
+        name: firewalld
+        state: started
+        enabled: true
+    - name: Allow http and https services
+      ansible.posix.firewalld:
+        service: '{{ item }}'
+        permanent: true
+        state: enabled
+        immediate: true
+      loop:
+        - http
+        - https
+  roles:
+    - geerlingguy.repo-epel
+    - hxr.aws-cli
+    - usegalaxy-eu.nginx
+    - usegalaxy_eu.ansible_pulsar_relay

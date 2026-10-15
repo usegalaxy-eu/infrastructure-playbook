@@ -1,0 +1,38 @@
+---
+# Certbot
+certbot_virtualenv_package_name: python3-virtualenv
+certbot_dns_provider: route53
+certbot_auth_method: --standalone
+certbot_domains: "{{ server_names }}"
+certbot_post_renewal: |
+  systemctl restart nginx || true
+certbot_share_key_users:
+  - nginx
+
+# AWS Credentials for certbot-route53
+aws_cli_credentials:
+  - access_key: "{{ aws_credentials.certbot.AWS_ACCESS_KEY }}"
+    secret_key: "{{ aws_credentials.certbot.AWS_SECRET_KEY }}"
+    homedir: /root
+    owner: root
+    group: root
+
+# Role: usegalaxy-eu.nginx
+nginx_selinux_allow_local_connections: true
+nginx_servers:
+  - redirect-ssl
+nginx_ssl_servers:
+  - pulsar-relay
+nginx_enable_default_server: false
+nginx_flavor: ''
+
+# Nginx Letsencrypt bindings
+nginx_ssl_role: usegalaxy-eu.certbot
+nginx_conf_ssl_certificate: /etc/letsencrypt/live/pulsar-relay.galaxyproject.eu/fullchain.pem
+nginx_conf_ssl_certificate_key: /etc/letsencrypt/live/pulsar-relay.galaxyproject.eu/privkey.pem
+
+# Role: usegalaxy_eu.ansible_pulsar_relay
+# secrets come from the vault: pulsar_relay_jwt_secret, pulsar_relay_admin_password, pulsar_relay_valkey_password
+pulsar_relay_version: "v0.2.1"
+pulsar_relay_port: 9000
+pulsar_relay_trusted_hosts: '["pulsar-relay.galaxyproject.eu"]'
