@@ -1,0 +1,11 @@
+# Managed by Ansible. Local changes will be overwritten.
+[Unit]
+Description=Schedule Galaxy dataset cleanup
+
+[Timer]
+OnCalendar={{ galaxy_cleanup_systemd_on_calendar }}
+Persistent=true
+Unit={{ galaxy_cleanup_systemd_service }}
+
+[Install]
+WantedBy=timers.target

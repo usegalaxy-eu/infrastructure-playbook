@@ -1,0 +1,101 @@
+---
+tools:
+  interactive_tool_gpu:
+    abstract: true
+    rules:
+      - if: |
+          not user or not any([ role for role in user.all_roles() if (role.name in ['gpu_access_validated'] and not role.deleted) ])
+        fail: |
+          Interactive tools require registration. Moreover, this tool has restricted access even for registered users. Please log-in or register on https://usegalaxy.eu/login and then request access by visiting https://usegalaxy.eu/gpu-request.
+
+  interactive_tool_anylabeling:
+    cores: 4
+    mem: 32
+
+  interactive_tool_ideal:
+    params:
+      docker_run_extra_arguments: "--user $UID:$GID"
+
+  interactive_tool_phyloseq:
+    params:
+      docker_run_extra_arguments: "--user $UID:$GID"
+
+  interactive_tool_jupytergis_notebook:
+    params:
+      docker_run_extra_arguments: "-e NB_UID=999"
+    env:
+      HOME: /home/jovyan
+
+  interactive_tool_ilastik:
+    cores: 3
+    mem: 10
+
+  interactive_tool_pretextview:
+    params:
+      # the USER_ID & GROUP_ID are stritcly needed - also because we have NFS root-squash enabled
+      docker_run_extra_arguments: " -e USER_ID=999 -e GROUP_ID=999 "
+
+  interactive_tool_qupath:
+    params:
+      # the USER_ID & GROUP_ID are stritcly needed - also because we have NFS root-squash enabled
+      docker_run_extra_arguments: " -e USER_ID=999 -e GROUP_ID=999 "
+
+  interactive_tool_qgis:
+    env:
+      # This is needed because the default TMPDIR is mounted to /var/lib/condor/execute/dir_NUMBERS
+      # which is not writable by the container "app" user
+      TEMP: /tmp
+      TMP: /tmp
+      TMPDIR: /tmp
+    params:
+      # the USER_ID & GROUP_ID are stritcly needed - also because we have NFS root-squash enabled
+      docker_run_extra_arguments: " -e USER_ID=999 -e GROUP_ID=999 "
+
+  interactive_tool_blobtoolkit:
+    env:
+      TEMP: /data/misc06/tmp
+  interactive_tool_rstudio:
+    cores: 2
+    mem: 8
+  interactive_tool_rstudio_askor:
+    cores: 2
+    mem: 8
+  interactive_tool_pyiron:
+    mem: 8
+  interactive_tool_guacamole_desktop:
+    cores: 2
+    mem: 8
+  interactive_tool_holoviz:
+    env:
+      HOME: /home/jovyan
+
+  interactive_tool_jupyter_notebook:
+    params:
+      # needed for > quay.io/bgruening/docker-jupyter-notebook:24.07, this image starts as root but drops privileges
+      docker_run_extra_arguments: "-e NB_UID=999"
+    env:
+      HOME: /home/jovyan
+
+  interactive_tool_pangeo_notebook:
+    env:
+      HOME: /home/jovyan
+
+  interactive_tool_climate_notebook:
+    env:
+      HOME: /home/jovyan
+
+  interactive_tool_ml_jupyter_notebook:
+    inherits: interactive_tool_gpu
+    gpus: 1
+    mem: 8
+    env:
+      XLA_FLAGS: "--xla_gpu_cuda_data_dir=/op/conda/"
+    # scheduling:
+    #   require:
+    #     - pxe-gpu-div4
+
+  #interactive_tool_jupyter_notebook:
+  #  rules:
+  #    - if: |
+  #        not user or not 'trusted_for_ITs' in [role.name for role in user.all_roles() if not role.deleted]
+  #      fail: "Interactive tool jupyter not available for user"  # TODO: update placeholder text

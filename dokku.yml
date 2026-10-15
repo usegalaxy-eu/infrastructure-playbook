@@ -1,0 +1,157 @@
+---
+- name: Dokku App Server
+  hosts: dokku
+  become: true
+  vars_files:
+    - secret_group_vars/all.yml
+  pre_tasks:
+    # make sure /data exists
+    - name: Ensure /data exists
+      ansible.builtin.file:
+        path: /data
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+    # Mount /dev/vdb1 to /data
+    - name: Mount /dev/vdb1 to /data
+      ansible.posix.mount:
+        path: /data
+        src: /dev/vdb1
+        fstype: xfs
+        state: mounted
+        opts: defaults
+    - name: Set root for Containerd
+      ansible.builtin.lineinfile:
+        path: /etc/containerd/config.toml
+        line: 'root = "/data/containerd"'
+        search_string: "root ="
+      notify: Restart Containerd
+  handlers:
+    - name: Restart Containerd
+      ansible.builtin.systemd_service:
+        name: containerd
+        state: restarted
+  roles:
+    - hostname
+    - dokku_bot.ansible_dokku
+  post_tasks:
+    - name: Create apps
+      community.docker.docker_container_exec:
+        container: dokku
+        command: "dokku apps:create {{ item }}"
+      register: app_results
+      with_items: "{{ apps }}"
+      ignore_errors: true
+
+    - name: Check if successful
+      ansible.builtin.fail:
+        msg: "{{ item.stderr }}"
+      with_items: "{{ app_results.results }}"
+      when: item.rc != 0 and not "Name is already taken" in item.stderr
+
+    - name: Check domains
+      community.docker.docker_container_exec:
+        container: dokku
+        command: "dokku domains:report {{ item }}"
+      with_items: "{{ apps }}"
+      register: domain_results
+
+    - name: Setup domains
+      community.docker.docker_container_exec:
+        container: dokku
+        command: "dokku domains:add {{ item }} {{ item }}.apps.galaxyproject.eu"
+      loop: "{{ apps | flatten(levels=1) }}"
+      loop_control:
+        index_var: idx
+      when: domain_results.results[idx].rc == 0 and not item + ".apps.galaxyproject.eu" in domain_results.results[idx].stderr
+
+    - name: Get ptdk env variable
+      community.docker.docker_container_exec:
+        container: dokku
+        command: "dokku config:get ptdk USEGALAXY_EU_APIKEY"
+      register: ptdk_env
+      no_log: true
+      ignore_errors: true
+
+    - name: Set ptdk env variable
+      community.docker.docker_container_exec:
+        container: dokku
+        command: "dokku config:set ptdk USEGALAXY_EU_APIKEY={{ admin_api_key_maintenance }}"
+      when: not admin_api_key_maintenance in ptdk_env.stdout or ptdk_env.rc != 0
+      no_log: true
+
+    - name: Get pwdk env variable
+      community.docker.docker_container_exec:
+        container: dokku
+        command: "dokku config:get pwdk USEGALAXY_EU_APIKEY"
+      register: pwdk_env
+      no_log: true
+      ignore_errors: true
+
+    - name: Set pwdk env variable
+      community.docker.docker_container_exec:
+        container: dokku
+        command: "dokku config:set pwdk USEGALAXY_EU_APIKEY={{ admin_api_key_maintenance }}"
+      when: not admin_api_key_maintenance in pwdk_env.stdout or pwdk_env.rc != 0
+      no_log: true
+
+    - name: Check if DNAnalyzer postgres exists
+      community.docker.docker_container_exec:
+        container: dokku
+        command: dokku postgres:exists dnanalyzer
+      register: pg_exists
+      changed_when: false
+      ignore_errors: true
+
+    - name: Create DNAnalyzer postgres
+      community.docker.docker_container_exec:
+        container: dokku
+        command: dokku postgres:create dnanalyzer
+      changed_when: pg_exists.rc == 1
+      when: pg_exists.rc == 1
+
+    - name: Check if DNAnalyzer postgres link exists
+      community.docker.docker_container_exec:
+        container: dokku
+        command: dokku postgres:links dnanalyzer
+      register: pg_link_exists
+      changed_when: false
+      failed_when: pg_link_exists.rc > 1
+
+    - name: Create DNAnalyzer postgres link
+      community.docker.docker_container_exec:
+        container: dokku
+        command: dokku postgres:link dnanalyzer dnanalyzer
+      changed_when: "'dnanalyzer' not in pg_link_exists.stdout"
+      when: "'dnanalyzer' not in pg_link_exists.stdout"
+
+      #  - name: Check if gtn-slack-bot postgres exists
+      #    community.docker.docker_container_exec:
+      #      container: dokku
+      #      command: dokku postgres:exists gtn-slack-bot
+      #    register: pg_exists
+      #    changed_when: false
+      #    ignore_errors: true
+      #
+      #  - name: Create gtn-slack-bot postgres
+      #    community.docker.docker_container_exec:
+      #      container: dokku
+      #      command: dokku postgres:create gtn-slack-bot
+      #    changed_when: pg_exists.rc == 1
+      #    when: pg_exists.rc == 1
+      #
+      #  - name: Check if gtn-slack-bot postgres link exists
+      #    community.docker.docker_container_exec:
+      #      container: dokku
+      #      command: dokku postgres:links gtn-slack-bot
+      #    register: pg_link_exists
+      #    changed_when: false
+      #    failed_when: pg_link_exists.rc > 1
+      #
+      #  - name: Create gtn-slack-bot postgres link
+      #    community.docker.docker_container_exec:
+      #      container: dokku
+      #      command: dokku postgres:link gtn-slack-bot gtn-slack-bot
+      #    changed_when: "'gtn-slack-bot' not in pg_link_exists.stdout"
+      #    when: "'gtn-slack-bot' not in pg_link_exists.stdout"

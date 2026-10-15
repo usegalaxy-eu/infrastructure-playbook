@@ -1,7 +1,7 @@
 ---
 # Volumes
 usegalaxy_eu_autofs_mounts:
- - vdb
+  - vdb
 
 # Certbot
 certbot_auth_method: --webroot
@@ -30,7 +30,7 @@ grt_upload_dir: /vols/vdb/uploads
 grt_queries_dir: /srv/nginx/grt-api
 grt_web_dir: /srv/nginx/grt
 
-grt_pghost: "sn03.bi.uni-freiburg.de"
+grt_pghost: "sn11.galaxyproject.eu"
 grt_pguser: "grt"
 grt_pgname: "grt"
 grt_pgport: 5432
@@ -38,7 +38,7 @@ grt_pgpassword: "{{ grt_postgres_password }}"
 grt_allowed_hosts: telescope.galaxyproject.eu,telescope.internal.galaxyproject.eu
 
 # gxadmin
-gxadmin_commit: master
+gxadmin_commit: main
 gxadmin_dir: /opt/gxadmin
 gxadmin_bin_dir: /usr/bin
 gxadmin_force: true

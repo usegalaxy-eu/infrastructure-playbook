@@ -1,0 +1,81 @@
+---
+- name: Install and configure rustus
+  hosts: upload
+  become: true
+  become_user: root
+  vars_files:
+    - secret_group_vars/all.yml
+    - secret_group_vars/sentry.yml
+    - mounts/mountpoints.yml
+    - mounts/dest/all.yml
+  handlers:
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+  pre_tasks:
+    - name: Deploy `rustus` systemd unit override(s)
+      # increase the resilience of automatic restarts of `rustus` service to
+      # work around the error `rustus-main_uploads.service: Failed at step
+      # CHDIR spawning /usr/local/bin/rustus: No such file or directory` that
+      # occurs only for a short period of time after a reboot
+      block:
+        - name: Ensure systemd override directory exists
+          ansible.builtin.file:
+            dest: "/etc/systemd/system/rustus-{{ item.name }}.service.d/"
+            state: directory
+            owner: root
+            group: root
+            mode: "0644"
+          loop: "{{ rustus_instances }}"
+
+        - name: Deploy systemd override file
+          ansible.builtin.copy:
+            dest: "/etc/systemd/system/rustus-{{ item.name }}.service.d/override.conf"
+            content: |
+              [Unit]
+              # infinite restart attempts
+              StartLimitIntervalSec=0
+
+              [Service]
+              Restart=always
+              RestartSec=10s
+              TimeoutStartSec=20s
+            owner: root
+            group: root
+            mode: "0644"
+          loop: "{{ rustus_instances }}"
+          notify: Reload systemd
+    - name: Open Rustus firewall ports
+      ansible.posix.firewalld:
+        zone: public
+        port: 1080-1081/tcp
+        permanent: true
+        immediate: true
+        state: enabled
+    - name: Copy Rustus request monitoring script
+      ansible.builtin.copy:
+        content: "{{ rustus_monitor_requests }}"
+        dest: "{{ rustus_monitor_requests_path }}"
+        mode: "0755"
+        owner: root
+        group: root
+  roles:
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        #enable_remap_user: true
+        enable_create_user: true
+        enable_kernel_5: true
+        enable_install_software: true
+    - influxdata.chrony
+    - dj-wasabi.telegraf
+    ## Filesystems
+    - usegalaxy-eu.autofs     # Setup the mount points which will be needed later
+
+    - usegalaxy_eu.rustus
+  post_tasks:
+    - name: Add telegraf to systemd-journal
+      ansible.builtin.user:
+        name: telegraf
+        groups:
+          - systemd-journal
+        append: true

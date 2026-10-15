@@ -1,0 +1,100 @@
+---
+- name: Ensure systemd-container is installed.
+  become: true
+  ansible.builtin.package:
+    name: systemd-container
+    state: installed
+
+- name: Check if the container already exists.
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: "machinectl image-status {{ nspawn_name }}"
+  register: nspawn_status
+  changed_when: false
+  failed_when: nspawn_status.rc == 127  # command not found
+
+- name: Build and import the container rootfs.
+  become: true
+  when: nspawn_status.rc != 0
+  block:
+    - name: Create a temporary build directory.
+      when: nspawn_build_directory is not defined
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: "ansible.{{ ansible_role_name }}"
+      register: nspawn_build_directory
+
+    - name: Overwrite nspawn_build_directory with the build directory path.
+      # only if the build directory was created by the previous task
+      when: nspawn_build_directory.path is defined
+      ansible.builtin.set_fact:
+        nspawn_build_directory: "{{ nspawn_build_directory.path }}"
+
+    - name: Build the container rootfs.
+      ansible.builtin.include_tasks: build.yml
+
+    - name: Get the location of machinectl's image store.
+      ansible.builtin.shell:
+        executable: /bin/bash
+        cmd: |
+          set -o pipefail
+          machinectl image-status | grep "Path: " | awk '{$1=$1};1' | cut -d' ' -f2
+        # `machinectl image-status` prints
+        #             Path: /var/lib/machines
+        # to stdout.
+      changed_when: false
+      register: nspawn_image_store
+
+    - name: Import the container rootfs.
+      become: true
+      ansible.builtin.shell:
+        executable: /bin/bash
+        cmd: "mv {{ nspawn_build_directory }} {{ nspawn_image_store.stdout }}/{{ nspawn_name }}"
+      changed_when: true
+  rescue:
+    - name: Clean the build directory.
+      ansible.builtin.file:
+        path: "{{ nspawn_build_directory }}"
+        state: absent
+
+- name: Ensure the systemd-nspawn configuration directory exists.
+  become: true
+  ansible.builtin.file:
+    path: /etc/systemd/nspawn
+    state: directory
+    mode: "0755"
+
+- name: Configure the container.
+  become: true
+  ansible.builtin.copy:
+    content: "{{ nspawn_config }}"
+    dest: "/etc/systemd/nspawn/{{ nspawn_name }}.nspawn"
+    mode: "0644"
+
+- name: Enable the container.
+  # meaning that it will autostart at boot
+  become: true
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: "machinectl enable {{ nspawn_name }}"
+  register: nspawn_container_enable
+  changed_when: nspawn_container_enable.rc == 0 and nspawn_container_enable.stderr != ''
+  when: nspawn_enable
+
+- name: Check if the container is already running.
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: "machinectl show {{ nspawn_name }} -p State --value"
+  register: nspawn_status
+  changed_when: false
+  failed_when: nspawn_status.rc == 127  # command not found
+  when: nspawn_start
+
+- name: Start the container.
+  become: true
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: "machinectl start {{ nspawn_name }}"
+  register: nspawn_container_enable
+  changed_when: nspawn_status.stdout != 'running'
+  when: nspawn_start

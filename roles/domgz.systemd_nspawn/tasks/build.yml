@@ -1,0 +1,42 @@
+# Build a container rootfs that can be used with systemd-nspawn.
+---
+- name: Ensure the build directory exists.
+  become: true
+  ansible.builtin.file:
+    path: "{{ nspawn_build_directory }}"
+    state: directory
+    mode: "0700"
+
+- name: Template the DNF configuration needed to build the rootfs.
+  become: true
+  ansible.builtin.template:
+    src: "{{ nspawn_distro }}-dnf.conf.j2"
+    dest: "{{ nspawn_build_directory }}/nspawn-dnf.conf"
+    owner: root
+    mode: "0644"
+
+- name: Copy the GPG key needed to build the rootfs.
+  become: true
+  ansible.builtin.copy:
+    src: "{{ nspawn_distro }}-gpg.pub"
+    dest: "{{ nspawn_build_directory }}/nspawn-gpg.pub"
+    owner: root
+    mode: "0644"
+
+- name: Build the container rootfs.
+  become: true
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: |
+      dnf \
+        --assumeyes \
+        --releasever={{ nspawn_release }} \
+        --config {{ nspawn_build_directory }}/nspawn-dnf.conf \
+        --installroot={{ nspawn_build_directory }} \
+        --setopt=install_weak_deps=False \
+        --repo=nspawn-baseos \
+        --repo=nspawn-appstream \
+        --repo=nspawn-extras \
+        install {{ nspawn_distro }}-release \
+        {{ nspawn_packages | join(' ') }}
+  changed_when: true

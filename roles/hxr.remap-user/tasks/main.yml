@@ -13,7 +13,7 @@
 #
 #TODO: does not seem to be working?
 - name: Check for input group
-  command: grep -Fxq "input:x:999" /etc/group
+  shell: grep -Fxq "input:x:999" /etc/group
   ignore_errors: yes
   register: check_input
   changed_when: no
@@ -25,12 +25,12 @@
     line: 'input:x:500:'
   when: check_input.rc == 0
 
-- command: "find / -gid 999 -exec chgrp 500 '{}' +"
+- command: "find / ( -path /proc -o -path /sys -o -path /dev -o -path /run ) -prune -o -gid 999 -exec chgrp 500 '{}' +"
   ignore_errors: yes
   when: check_input.rc == 0
 
 - name: Check for polkitd
-  command: grep -Fxq "polkitd:x:999" /etc/passwd
+  shell: grep -Fxq "polkitd:x:999" /etc/passwd
   ignore_errors: yes
   register: check_polkitd
   changed_when: no
@@ -41,6 +41,6 @@
     line: 'polkitd:x:500:998:User for polkitd:/:/sbin/nologin'
   when: check_polkitd.rc == 0
 
-- command: "find / -uid 999 -exec chown 500 '{}' +"
+- command: "find / ( -path /proc -o -path /sys -o -path /dev -o -path /run ) -prune -o -uid 999 -exec chown 500 '{}' +"
   ignore_errors: yes
   when: check_polkitd.rc == 0

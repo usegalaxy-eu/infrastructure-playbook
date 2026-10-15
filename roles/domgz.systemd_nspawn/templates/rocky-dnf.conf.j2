@@ -1,0 +1,30 @@
+[main]
+gpgcheck=1
+installonly_limit=3
+clean_requirements_on_remove=True
+best=True
+skip_if_unavailable=False
+
+[nspawn-baseos]
+name=Rocky Linux $releasever - BaseOS
+mirrorlist=https://mirrors.rockylinux.org/mirrorlist?arch=$basearch&repo=BaseOS-$releasever
+#baseurl=http://dl.rockylinux.org/$contentdir/$releasever/BaseOS/$basearch/os/
+gpgcheck=1
+enabled=1
+gpgkey=file://{{ nspawn_build_directory }}/nspawn-gpg.pub
+
+[nspawn-appstream]
+name=Rocky Linux $releasever - AppStream
+mirrorlist=https://mirrors.rockylinux.org/mirrorlist?arch=$basearch&repo=AppStream-$releasever
+#baseurl=http://dl.rockylinux.org/$contentdir/$releasever/AppStream/$basearch/os/
+gpgcheck=1
+enabled=1
+gpgkey=file://{{ nspawn_build_directory }}/nspawn-gpg.pub
+
+[nspawn-extras]
+name=Rocky Linux $releasever - Extras
+mirrorlist=https://mirrors.rockylinux.org/mirrorlist?arch=$basearch&repo=extras-$releasever
+#baseurl=http://dl.rockylinux.org/$contentdir/$releasever/extras/$basearch/os/
+gpgcheck=1
+enabled=1
+gpgkey=file://{{ nspawn_build_directory }}/nspawn-gpg.pub

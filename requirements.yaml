@@ -1,78 +1,184 @@
-- src: dev-sec.os-hardening
-  version: 4.2.0
-- src: dev-sec.ssh-hardening
-  version: 9.7.0
-- src: geerlingguy.nfs
-  version: 1.5.0
-- src: devops.tomcat7
-  version: 1.0.0
-#- src: dj-wasabi.telegraf
-#  version: 0.10.0
-- src: https://github.com/galaxyproject/ansible-galaxy
-  name: galaxyproject.galaxy
-  version: 0.9.6
-- src: galaxyproject.cvmfs
-  version: 0.2.14
-- src: galaxyproject.proftpd
-  version: 0.2.4
-- src: https://github.com/usegalaxy-eu/ansible-nginx
-  name: usegalaxy-eu.nginx
-  version: master
-- src: galaxyproject.nginx
-  version: 0.6.4
-- src: galaxyproject.postgresql
-  version: 1.0.1
-- src: natefoo.postgresql_objects
-  version: 1.1
-- src: geerlingguy.gitlab
-  version: 2.5.1
-- src: geerlingguy.java
-  version: 1.9.5
-- src: geerlingguy.jenkins
-  version: 3.2.0
-- src: geerlingguy.nodejs
-  version: 4.2.2
-- src: geerlingguy.pip
-  version: 1.0.0
-- src: geerlingguy.repo-epel
-  version: 1.3.0
-- src: https://github.com/usegalaxy-eu/ansible-chrony
-  name: influxdata.chrony
-  version: "0.1"
-- src: jasonroyle.rabbitmq
-  version: 0.0.4
-- src: linuxhq.yum_cron
-  version: master
-- src: usegalaxy_eu.influxdb
-  version: v6.0.8
-- src: https://github.com/galaxyproject/ansible-gxadmin
-  name: galaxyproject.gxadmin
-  version: 0.0.6
-- src: https://github.com/usegalaxy-eu/ansible-certbot
-  name: usegalaxy-eu.certbot
-  version: master
-- src: https://github.com/usegalaxy-eu/ansible-galaxy-systemd
-  name: usegalaxy-eu.galaxy-systemd
-  version: 0.1.4
-- src: https://github.com/usegalaxy-eu/ansible-dynmotd
-  name: usegalaxy-eu.dynmotd
-  version: master
-- src: cloudalchemy.grafana
-  version: 0.16.2
-- src: geerlingguy.docker
-  version: 2.9.0
-- src: https://github.com/usegalaxy-eu/ansible-tiaas2
-  name: usegalaxy_eu.tiaas2
-  version: 0.0.6
-- src: https://github.com/usegalaxy-eu/ansible-autoupdates
-  name: usegalaxy-eu.autoupdates
-  version: master
-- src: https://github.com/usegalaxy-eu/ansible-htcondor
-  name: usegalaxy-eu.htcondor
-  version: 0.0.3
-- src: https://github.com/usegalaxy-eu/ansible-update-hosts
-  name: usegalaxy-eu.update-hosts
-  version: 0.0.1
-- src: usegalaxy_eu.gie_proxy
-  name: usegalaxy-eu.gie_proxy
-  version: 0.0.2
+---
+collections:
+  - name: community.general
+    version: 11.4.9
+    source: https://galaxy.ansible.com
+  - name: amazon.aws
+    version: 1.5.0
+    source: https://galaxy.ansible.com
+    type: galaxy
+  - name: community.docker
+    version: 3.12.1
+    source: https://galaxy.ansible.com
+    type: galaxy
+  - name: grafana.grafana
+    version: 6.1.0
+  - name: ansible.posix
+    source: https://github.com/ansible-collections/ansible.posix.git
+    version: 1.5.4
+    type: git
+  - name: community.rabbitmq
+    version: 1.1.0
+    source: https://galaxy.ansible.com
+    type: galaxy
+  - name: devsec.hardening
+    version: 8.7.0
+    source: https://galaxy.ansible.com
+    type: galaxy
+  - name: usegalaxy_eu.handy
+    version: 3.3.0
+    source: https://galaxy.ansible.com
+  - name: ansible.windows
+    version: 1.14.0
+    source: https://galaxy.ansible.com
+  - name: community.mongodb
+    version: 1.7.10
+    source: https://galaxy.ansible.com
+  - name: community.crypto
+    version: 2.26.5
+  - name: artis3n.tailscale
+    version: 1.2.1
+
+roles:
+  - name: dev-sec.os-hardening
+    version: 4.2.0
+  - name: dev-sec.ssh-hardening
+    version: 9.7.0
+  - name: devops.tomcat7
+    version: 1.0.0
+  - name: dj-wasabi.telegraf
+    # retrieve from GitHub, version 0.14.2 is not available on Ansible Galaxy
+    src: https://github.com/dj-wasabi/ansible-telegraf
+    version: 0.14.2
+  - name: galaxyproject.galaxy
+    src: https://github.com/galaxyproject/ansible-galaxy
+    version: ede09c4db04f37cbd51b9de060e70db58d6a2681
+  - name: galaxyproject.cvmfs
+    src: https://github.com/usegalaxy-eu/ansible-cvmfs
+    version: master
+  - name: galaxyproject.proftpd
+    version: 0.3.3
+  - name: usegalaxy_eu.ansible_nginx_upload_module
+    version: 1.0.0
+  - name: usegalaxy-eu.nginx
+    src: https://github.com/usegalaxy-eu/ansible-nginx
+    version: master
+  - name: galaxyproject.nginx
+    version: 0.6.4
+  - name: galaxyproject.postgresql
+    version: 1.1.0
+  - name: usegalaxy-eu.ansible-postgresql
+    src: https://github.com/usegalaxy-eu/ansible-postgresql
+    version: main
+  - name: geerlingguy.docker
+    version: 4.1.1
+  - name: geerlingguy.java
+    version: 2.3.2
+  - name: geerlingguy.jenkins
+    version: 5.1.0
+  - name: geerlingguy.repo-epel
+    version: 3.1.0
+  - name: influxdata.chrony
+    src: https://github.com/usegalaxy-eu/ansible-chrony
+    version: 0.1.1
+  - name: galaxyproject.gxadmin
+    version: 0.0.13
+  - name: usegalaxy-eu.certbot
+    src: https://github.com/usegalaxy-eu/ansible-certbot
+    version: 0.1.5
+  - name: usegalaxy_eu.galaxy_systemd
+    version: 2.5.1
+  - name: usegalaxy-eu.dynmotd
+    src: https://github.com/usegalaxy-eu/ansible-dynmotd
+    version: 0.1.0
+  - name: galaxyproject.tiaas2
+    version: 2.1.3
+  - name: usegalaxy-eu.autoupdates
+    src: https://github.com/usegalaxy-eu/ansible-autoupdates
+    version: 0.0.1
+  - name: usegalaxy_eu.htcondor
+    version: 1.0.1
+  - name: grycap.htcondor
+    src: https://github.com/usegalaxy-eu/ansible-htcondor-grycap
+    version: 33ea3aafd9c5d33a1063534e0604631696c052f9
+  - name: usegalaxy-eu.update-hosts
+    src: https://github.com/usegalaxy-eu/ansible-update-hosts
+    version: 0.5.0
+  - name: usegalaxy_eu.gie_proxy
+    version: 0.2.0
+  - name: usegalaxy-eu.autofs
+    src: https://github.com/usegalaxy-eu/ansible-autofs
+    version: 1.3.0
+  - name: usegalaxy_eu.fs_maintenance
+    version: 0.1.0
+    src: https://github.com/usegalaxy-eu/ansible-fs-maintenance
+  - name: usegalaxy_eu.rustus
+    version: 0.3.0
+  - name: usegalaxy_eu.rabbitmqserver
+    version: ulimits
+    src: https://github.com/usegalaxy-eu/ansible-rabbitmq
+  - name: usegalaxy_eu.influxdbserver
+    version: 2.0.0
+  - name: usegalaxy_eu.flower
+    version: 2.2.0
+  - name: usegalaxy_eu.walle
+    version: a9f33867c32a9a447f6eca636c1dafd637f160a7
+    src: https://github.com/usegalaxy-eu/WallE
+  # `geerlingguy.pip` is here only because it is a dependency of
+  # `paprikant.beacon` and because no version has been pinned when declaring
+  # the dependency, the role is affected by this bug:
+  # https://forum.ansible.com/t/role-import-from-github-results-in-master-release-not-the-tag-release-breaking-installs/1856
+  # Remove `geerlingguy.pip` from this list when the bug above has been fixed.
+  - name: geerlingguy.pip
+    version: 2.2.0
+  - name: paprikant.beacon
+    src: https://github.com/gsaudade99/ansible-role-beacon/ # CHANGE ME ONCE MERGED https://github.com/Paprikant/ansible-role-beacon/pull/4
+    version: 2639596e9c0af8084272e60579ccddeb5a411bbf
+  - name: paprikant.beacon-importer
+    src: https://github.com/usegalaxy-eu/ansible-role-beacon_importer
+  - name: galaxyproject.miniconda
+    version: 0.3.4
+  - name: usegalaxy_eu.tpv_auto_lint
+    version: 0.4.5
+  - name: dokku_bot.ansible_dokku
+    src: https://github.com/usegalaxy-eu/ansible-dokku
+    version: cdeb3324bf17bdbfe5ba20efefce6d91c249f537
+  - src: https://github.com/usegalaxy-eu/ansible-traefik
+    name: usegalaxy_eu.traefik
+    version: 2.0.0
+  - src: https://github.com/usegalaxy-eu/ansible-fw-glxeu-generic
+    name: usegalaxy_eu.firewall
+    version: 2.1.0
+  - name: usegalaxy_eu.dnbd3
+    src: https://github.com/usegalaxy-eu/ansible-dnbd3
+    version: main
+  - name: usegalaxy_eu.tftp
+    src: https://github.com/usegalaxy-eu/ansible-tftp
+    version: main
+  - name: geerlingguy.apache
+    version: 4.0.0
+  - name: usegalaxy_eu.ansible_tpv_broker
+    src: https://github.com/usegalaxy-eu/ansible-tpv-broker
+    version: main
+  - name: geerlingguy.swap
+    version: 1.2.0
+  - name: usegalaxy_eu.disable_memory_overcommit
+    version: 0.0.1
+    src: https://github.com/usegalaxy-eu/ansible-disable-memory-overcommit
+  - name: geerlingguy.apache-php-fpm
+    version: 1.1.0
+  - name: geerlingguy.php
+    version: 6.0.0
+  - name: geerlingguy.nfs
+    version: 2.1.1
+  - name: usegalaxy_eu.ssh_manager
+    version: 0.0.2
+  - name: l3d.restic
+    version: v0.9.2
+    src: https://github.com/roles-ansible/ansible_role_restic
+  - name: usegalaxy_eu.rocky_security_repository
+    src: https://github.com/usegalaxy-eu/ansible-rocky-security-repository
+    version: v0.1.0
+  - name: usegalaxy_eu.ucsc_genome_browser
+    version: 91f26a70678ce67f088a4a3db1454496a24564d0
+    src: https://github.com/usegalaxy-eu/ansible-ucsc-genome-browser

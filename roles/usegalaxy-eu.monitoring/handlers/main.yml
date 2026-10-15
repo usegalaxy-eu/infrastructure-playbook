@@ -1,0 +1,6 @@
+---
+- name: Restart Telegraf after configuring pgcleanup watchdog
+  listen: restart Telegraf after configuring pgcleanup watchdog
+  ansible.builtin.service:
+    name: telegraf
+    state: restarted

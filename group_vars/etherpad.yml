@@ -1,8 +1,8 @@
+---
 certbot_auto_renew_extra: "--preferred-challenges http-01 --http-01-port 8118"
 certbot_post_renewal: |
     systemctl restart nginx || true
 
-nginx_remove_default_vhost: true
 nginx_vhosts:
   - listen: "80"
     server_name: "{{ hostname }}"
@@ -21,7 +21,7 @@ nginx_vhosts:
         location / {
             proxy_set_header           Host $host:$server_port;
             proxy_set_header           X-Real-IP $remote_addr;
-            proxy_set_header           X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header           X-Forwarded-For $remote_addr;
             proxy_set_header           X-Forwarded-Proto $scheme;
             proxy_pass                 http://127.0.0.1:8080;
             proxy_pass_request_headers on;
@@ -30,7 +30,7 @@ nginx_vhosts:
         location /.well-known/ {
             proxy_set_header           Host $host:$server_port;
             proxy_set_header           X-Real-IP $remote_addr;
-            proxy_set_header           X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header           X-Forwarded-For $remote_addr;
             proxy_set_header           X-Forwarded-Proto $scheme;
             proxy_pass                 http://127.0.0.1:8118;
             proxy_pass_request_headers on;
@@ -58,9 +58,6 @@ nginx_vhosts:
         add_header X-XSS-Protection "1; mode=block";
         add_header X-Robots-Tag none;
 
-
-
-
 etherpad_required_packages:
   - curl
   - git
@@ -73,7 +70,7 @@ etherpad_home: "/opt/etherpad"
 etherpad_path: "{{ etherpad_home }}/etherpad-lite"
 etherpad_console_path: "{{ etherpad_home }}/etherpad-lite-console"
 etherpad_console_purge_delay: 30
-etherpad_console_purge_enabled: False
+etherpad_console_purge_enabled: false
 etherpad_title: "Etherpad"
 etherpad_favicon: "favicon.ico"
 etherpad_ip: 0.0.0.0
@@ -140,7 +137,7 @@ etherpad_log_appenders:
     type: console
 
 etherpad_console_enabled: true
-etherpad_monit_enabled: False
+etherpad_monit_enabled: false
 # list of etherpad plugins to be installed
 etherpad_plugins: []
 

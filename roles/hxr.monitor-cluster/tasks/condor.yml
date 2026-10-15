@@ -1,4 +1,9 @@
 ---
+- name: Install `ansible-core`
+  package:
+    name: ansible-core
+    state: present
+
 - name: "Send machine group monitor"
   copy:
     src: "cluster_util-condor-split.sh"
@@ -6,7 +11,6 @@
     owner: root
     group: root
     mode: 0755
-  when: monitor_condor_split_util
 
 - name: Allow telegraf to run monitor-condor-utilisation-split
   lineinfile:
@@ -15,7 +19,6 @@
     insertafter: EOF
     line: 'telegraf ALL=(ALL) NOPASSWD: /usr/bin/monitor-condor-utilisation-split'
     validate: 'visudo -cf %s'
-  when: monitor_condor_split_util
 
 - name: "Send condor cluster utilisation monitor"
   copy:
@@ -49,42 +52,43 @@
     line: 'telegraf ALL=(ALL) NOPASSWD: /usr/bin/monitor-condor-queue'
     validate: 'visudo -cf %s'
 
-#- set_fact:
-    #monitor_condor_queue:
-      #- plugin: exec
-        #disambiguation: monitor_condor_queue
-        #config:
-          #- commands = ["/usr/bin/monitor-condor-queue"]
-          #- timeout = "5s"
-          #- data_format = "influx"
-          #- interval = "10s"
+- name: "Add condor queue jobs status script"
+  copy:
+    src: "cluster_queue-condor-jobs.sh"
+    dest: "/usr/bin/monitor-condor-queue-jobs"
+    owner: root
+    group: root
+    mode: 0755
 
-#- set_fact:
-    #telegraf_plugins_extra: "{{ telegraf_plugins_extra + monitor_condor_queue }}"
+- name: Allow telegraf to run monitor-condor-queue-jobs
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    insertafter: EOF
+    line: 'telegraf ALL=(ALL) NOPASSWD: /usr/bin/monitor-condor-queue-jobs'
+    validate: 'visudo -cf %s'
 
-#- set_fact:
-    #monitor_condor_util:
-      #- plugin: exec
-        #disambiguation: monitor_condor_util
-        #config:
-          #- commands = ["/usr/bin/monitor-condor-utilisation"]
-          #- timeout = "5s"
-          #- data_format = "influx"
-          #- interval = "10s"
+- name: "Fetch VGCN host inventory for Condor host monitor"
+  get_url:
+    url: "{{ monitor_condor_inventory_url }}"
+    dest: /etc/condor-monitored-hosts
+    force: true
+    owner: root
+    group: root
+    mode: 0644
 
-#- set_fact:
-    #telegraf_plugins_extra: "{{ telegraf_plugins_extra + monitor_condor_util }}"
+- name: "Add Condor host status monitor"
+  copy:
+    src: "cluster_hosts-condor.py"
+    dest: "/usr/bin/monitor-condor-hosts"
+    owner: root
+    group: root
+    mode: 0755
 
-#- set_fact:
-    #monitor_condor_util_split:
-      #- plugin: exec
-        #disambiguation: monitor_condor_util_split
-        #config:
-          #- commands = ["/usr/bin/monitor-condor-utilisation-split"]
-          #- timeout = "5s"
-          #- data_format = "influx"
-          #- interval = "10s"
-
-#- set_fact:
-    #telegraf_plugins_extra: "{{ telegraf_plugins_extra + monitor_condor_util_split }}"
-  #when: "{{ monitor_condor_split_util }}"
+- name: Allow telegraf to run monitor-condor-hosts
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    insertafter: EOF
+    line: 'telegraf ALL=(ALL) NOPASSWD: /usr/bin/monitor-condor-hosts'
+    validate: 'visudo -cf %s'

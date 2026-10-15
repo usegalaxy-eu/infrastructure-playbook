@@ -1,0 +1,22 @@
+server {
+	listen        *:443 ssl default_server;
+	server_name   [::]:443 default_server;
+
+    client_body_buffer_size 1024m;
+	access_log  /var/log/nginx/access.log;
+    error_log   /var/log/nginx/error.log;
+
+	{% if tpv_broker_nginx_conf %}
+	location {{ tpv_broker_proxy_config.location }} {
+		rewrite  ^{{ tpv_broker_proxy_config.location }}(.*)  /$1 break;
+        proxy_pass {{ tpv_broker_proxy_config.proxy_pass_protocol }}://{{ tpv_broker_proxy_config.proxy_pass_host }}:{{ tpv_broker_proxy_config.proxy_pass_port }};
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+	}
+
+	location {{ tpv_broker_proxy_config.location }}version {
+		alias {{ tpv_broker_dir }}/version;
+		add_header Content-Type text/plain;
+        }
+	{% endif %}
+}

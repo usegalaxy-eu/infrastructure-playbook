@@ -1,0 +1,21 @@
+---
+nspawn_name: nspawn
+nspawn_distro: "rocky"
+nspawn_release: "9"
+nspawn_packages:
+  - dhcp-client
+  - dnf
+  - glibc-langpack-en
+  - iproute
+  - iputils
+  - less
+  - passwd
+  - systemd
+  - dbus
+  - vim-minimal
+
+nspawn_config: |
+  # systemd-nspawn container configuration file
+
+nspawn_enable: true
+nspawn_start: true

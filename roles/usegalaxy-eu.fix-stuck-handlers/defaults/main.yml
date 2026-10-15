@@ -1,4 +1,4 @@
-sleep_duration: 240
+sleep_duration: 360
 cron_tasks:
   - name: "Call sync-to-nfs"
     minute: 30
@@ -10,14 +10,13 @@ cron_tasks:
     hour: 3
     job: "/bin/bash -c 'for (( c=0; c<{{ galaxy_systemd_handlers }}; c++ )); do systemctl restart galaxy-handler@$c && sleep {{ sleep_duration }}; done'"
     user: root
-  - name: "Restart zerglings"
+  - name: "Restart gunicorn"
     minute: 30
     hour: 3
-    job: "/bin/bash -c 'for (( c=0; c<{{ galaxy_systemd_zerglings }}; c++ )); do systemctl restart galaxy-zergling@$c && sleep {{ sleep_duration }}; done'"
+    job: "/bin/bash -c 'for (( c=0; c<{{ galaxy_systemd_gunicorns }}; c++ )); do systemctl restart galaxy-gunicorn@$c && sleep {{ sleep_duration }}; done'"
     user: root
   - name: "Restart workflow schedulers"
     minute: 0
     hour: 4
     job: "/bin/bash -c 'for (( c=0; c<{{ galaxy_systemd_workflow_schedulers }}; c++ )); do systemctl restart galaxy-workflow-scheduler@$c && sleep {{ sleep_duration }}; done'"
     user: root
-    

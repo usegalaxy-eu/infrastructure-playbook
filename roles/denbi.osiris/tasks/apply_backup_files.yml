@@ -1,0 +1,32 @@
+---
+- name: "Restore MongoDB backup"
+  ansible.builtin.command: "mongorestore --drop --nsInclude '{{ mongo_dbname }}.*' 'mongodb://{{ mongo_user }}:{{ mongo_passwd }}@localhost/{{ mongo_dbname }}' '{{ backup_restore_dir }}/{{ mongo_dbname }}'"
+
+- name: "Delete any old OSIRIS folder"
+  ansible.builtin.file:
+    path: "{{ osiris_www_dir }}_old"
+    state: absent
+
+- name: "Register if destination dir exists"
+  ansible.builtin.stat:
+    path: "{{ osiris_www_dir }}"
+  register: osiris_www
+
+- name: "Ensure clean slate for OSIRIS PHP files"
+  ansible.builtin.command:
+    cmd: "mv {{ osiris_www_dir }} {{ osiris_www_dir }}_old"
+    creates: "{{ osiris_www_dir }}_old"
+  when: osiris_www.stat.exists
+
+- name: "Restore OSIRIS PHP files"
+  ansible.builtin.command:
+    cmd: "mv {{ backup_restore_dir }}/osiris {{ osiris_www_dir }}"
+    creates: "{{ osiris_www_dir }}"
+
+- name: "Create semaphore file to control restoring from backup"
+  ansible.builtin.file:
+    path: "{{ restore_backup_semaphore_path }}"
+    owner: "root"
+    group: "root"
+    mode: "0600"
+    state: "touch"

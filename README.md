@@ -3,6 +3,9 @@
 Ansible playbook for managing UseGalaxy.EU infrastructure. For the playbook
 managing Galaxy itself, see https://github.com/galaxyproject/usegalaxy-playbook/
 
+## Detailed documentation
+* Is available [here](https://github.com/usegalaxy-eu/operations/blob/main/infrastructure_playbook_repo.md)
+
 ## Running Notes
 
 This probably won't work for your infra. We require everything to run on
@@ -41,11 +44,9 @@ Server          | Status
 ---             | ---
 Apollo          | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fapollo)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/apollo/)
 Build           | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fbuild)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/build/)
-Central-Manager | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fcentral-manager)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/central-manager/)
+Central-Manager | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fsn05)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/sn05/)
 CVMFS           | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fcvmfs)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/cvmfs/)
-Docker          | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fdocker)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/docker/)
-Galaxy          | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fgalaxy)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/galaxy/)
-Galaxy/Test     | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fgalaxy-test)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/galaxy-test/)
+Galaxy          | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fsn06)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/sn06/)
 Grafana         | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fstats)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/stats/)
 HAProxy         | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Fhaproxy-internal)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/haproxy-internal/)
 InfluxDB        | [![Build Status](https://build.galaxyproject.eu/buildStatus/icon?job=usegalaxy-eu%2Fplaybooks%2Finfluxdb)](https://build.galaxyproject.eu/job/usegalaxy-eu/job/playbooks/job/influxdb/)

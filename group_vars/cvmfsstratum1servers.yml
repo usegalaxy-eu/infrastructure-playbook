@@ -1,6 +1,18 @@
 ---
-cvmfs_stratum1_create_directory: false
+# Autofs
+autofs_mount_points:
+  - data
 
+autofs_conf_files:
+  data:
+    - dnb01   -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
+
+autofs_service:
+  install: true
+  enable: true
+nfs_kernel_tuning: true
+
+# CVMFS
 cvmfs_stratum1_cache_dir:
   dir: /var/cache/squid/
   # 'Mbytes' is the amount of disk space (MB) to use under this
@@ -10,27 +22,28 @@ cvmfs_stratum1_cache_dir:
   # subtract 20% and use that value.
   size: 1024
 
-usegalaxy_eu_autofs_mounts:
- - data
-
 cvmfs_role: stratum1
 galaxy_cvmfs_repos_enabled: true
 
 cvmfs_check_servers:
-    repos:
+  repos:
     - test.galaxyproject.org
     - data.galaxyproject.org
+    - idc.galaxyproject.org
     - main.galaxyproject.org
     - sandbox.galaxyproject.org
     - singularity.galaxyproject.org
     - usegalaxy.galaxyproject.org
     - cvmfs-config.galaxyproject.org
     - refgenomes-databio.galaxyproject.org
-    hosts:
-    - cvmfs1-psu0.galaxyproject.org
+  hosts:
+    - cvmfs0-psu1.galaxyproject.org
     - cvmfs1-iu0.galaxyproject.org
-    - cvmfs1-tacc0.galaxyproject.org
     - cvmfs1-mel0.gvl.org.au
     - galaxy.jrc.ec.europa.eu:8008
     - cvmfs1-ufr0.galaxyproject.eu
     - cvmfs-s1-galaxy.computecanada.ca:8000
+
+ssh_selinux_packages:
+  - policycoreutils-python-utils
+  - checkpolicy

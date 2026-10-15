@@ -3,21 +3,52 @@
   copy:
     content: |
         #!/bin/bash
+        if [ "$(whoami)" != "galaxy" ]; then
+          exec sudo -u galaxy bash "$0" "$@"
+          exit
+        fi
         cd {{ galaxy_root }};
-        for dir in {custom-tools,dynamic_rules,interactive_environments,mutable-config,mutable-data,server,venv,tool-data}; do
+        for dir in {config,mutable-config,mutable-data,server,venv,tool-data}; do
             if [ -d $dir ]; then
                 echo "Syncing $dir"
-                rsync -avr --delete --exclude client/node_modules $dir/ {{ galaxy_nfs_location }}/$dir/
+                rsync -avr \
+                  --delete \
+                  --delete-excluded \
+                  --exclude "node_modules/" \
+                  --exclude ".git/" \
+                  --exclude ".hg/" \
+                  --exclude "*.sock" \
+                  --exclude "tool_search_index/" \
+                  --exclude "server/static-*/" \
+                  --exclude "cache/biotools/" \
+                  --exclude "test-data/" \
+                $dir/ {{ galaxy_nfs_location }}/$dir/
             else
                 echo "Skipping $dir"
             fi
         done;
-        if [ -d shed_tools-local ]; then
-            echo "Syncing shed_tools-local"
-            rsync -avr --delete --exclude .hg shed_tools-local/ {{ galaxy_nfs_location }}/shed_tools/
-        else
-            echo "Skipping shed_tools-local"
-        fi
+        
+        ## The following two dirs are only adding or removing files, never modifying. So we can use the faster --size-only stradegy
+        for dir in {custom-tools,shed_tools}; do
+        
+            if [ -d $dir ]; then
+                echo "Syncing $dir"
+                rsync -avr \
+                   --size-only \
+                   --whole-file \
+                   --delete \
+                   --delete-excluded \
+                   --exclude "node_modules/" \
+                   --exclude ".git/" \
+                   --exclude ".hg/" \
+                   --exclude "__pycache__/" \
+                   --exclude "*.sock" \
+                   --exclude "test-data/" \
+                $dir/ {{ galaxy_nfs_location }}/$dir/
+          else
+                echo "Skipping $dir"
+          fi
+        done;
     dest: /usr/bin/galaxy-sync-to-nfs
     owner: root
     group: root
@@ -25,4 +56,6 @@
 
 - name: "Execute the script. Syncing in progress."
   command: /usr/bin/galaxy-sync-to-nfs
+  become: true
+  become_user: galaxy
   when: execute_galaxy_sync_to_nfs

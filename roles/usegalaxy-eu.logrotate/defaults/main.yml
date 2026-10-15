@@ -9,3 +9,14 @@ lp_logrotate_confd:
       	missingok
       	rotate 1
       }
+
+  - path: atop
+    conf: |
+      /var/log/atop/atop_* {
+        compress
+      	copytruncate
+      	daily
+      	notifempty
+      	missingok
+      	rotate 1
+      }

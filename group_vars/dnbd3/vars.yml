@@ -1,0 +1,16 @@
+---
+hostname: "{{ inventory_hostname }}"
+# --- dnbd3 setup vars ---
+#dnbd3_base_path: "/mnt/s3/dnbd3"
+dnbd3_git_tag: "master"
+dnbd3_git_repo: "git://git.openslx.org/dnbd3.git"
+# --- dnbd3 config vars ---
+dnbd3_listen_port: "5003"
+dnbd3_client_penalty: "100000"
+dnbd3_primary: "{{ hostvars['dnbd3-primary.galaxyproject.eu']['ansible_default_ipv4']['address'] }}"
+dnbd3_primary_comment: "Primary DNBD3 server, which replicates S3FS mounted QCOW2 images."
+# dnbd3_primary_backup: "10.20.56.174"
+# dnbd3_primary_backup_comment: "Secondary/backup DNBD3 server, which replicates S3FS mounted QCOW2 images."
+dnbd3_poxys:
+  - ip: "{{ hostvars['sn12.galaxyproject.eu']['ansible_default_ipv4']['address'] }}"
+    comment: "1st DNBD3 Proxy"

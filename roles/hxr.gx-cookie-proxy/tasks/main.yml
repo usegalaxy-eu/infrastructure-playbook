@@ -12,14 +12,14 @@
 
 - name: Download proxy
   get_url:
-    url: "https://github.com/erasche/gx-cookie-proxy/releases/download/v0.9.10/default.gx-cookie-proxy_linux_amd64"
+    url: "https://github.com/hexylena/gx-cookie-proxy/releases/download/v0.9.10/default.gx-cookie-proxy_linux_amd64"
     dest: "/usr/bin/gx-cookie-proxy"
     owner: root
     group: root
     mode: 0755
 
 - name: Deploy env file
-  template:
+  ansible.builtin.template:
     src: env
     dest: /etc/sysconfig/gx-cookie-proxy
     owner: gxp

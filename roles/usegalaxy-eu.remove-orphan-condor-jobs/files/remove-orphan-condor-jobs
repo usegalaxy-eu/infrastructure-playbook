@@ -1,0 +1,32 @@
+#!/bin/bash
+# This script finds jobs that are known to HTCondor but not to Galaxy anymore
+# e.g. because we removed the jobs with `gxadmin mutate fail-job`
+# use --dry-run to only print the Galaxy ID and the Condor ID of the jobs that would
+# be removed
+source ~/.bashrc
+date
+
+IFS=$'\n'
+# Get running jobs from the HTCondor queue
+condor_running_jobs=(`condor_q -global -constraint 'regexp("(.*galaxy_[0-9]+\.sh)|(.*\/[0-9]+\/command\.sh)", Cmd)' -autoformat Cmd ClusterId JobStatus -json | jq -r -c '.[] | select(.JobStatus == 2) | [.Cmd, .ClusterId] | @sh' | cut -d " " -f1,2 | awk '{n = split($1, arr, "/"); print arr[n-1], $2}'`)
+# Get running jobs from the Galaxy database
+galaxy_running_jobs=(`gxadmin query queue-detail | grep -E "queued|running" | awk '{print$3}'`)
+
+# Safeguard: abort if no jobs seem to be known to Galaxy
+if [ "${#galaxy_running_jobs[@]}" -eq 0 ]; then
+    exit 1
+fi
+
+# Check if each result from the HTCondor queue matches an entry from the galaxy_running_jobs list
+for job in "${condor_running_jobs[@]}"; do
+    IFS=' ' read -r galaxy_job_id condor_job_id <<< $job
+
+    # Remove the Job from the condor cluster if the Galaxy ID was not found in galaxy_running_jobs
+    if [[ ! "${galaxy_running_jobs[*]}" =~ $galaxy_job_id ]]; then
+        if [ "$1" = "--dry-run" ]; then
+            echo $galaxy_job_id $condor_job_id
+        else
+            condor_rm $condor_job_id
+        fi
+    fi
+done

@@ -1,13 +1,13 @@
 ---
 - name: Deploy export
-  template:
+  ansible.builtin.template:
     src: grt-export.sh
     dest: /usr/bin/grt-export
     owner: "{{ galaxy_grt_exporter }}"
     mode: 0750
 
 - name: Deploy upload
-  template:
+  ansible.builtin.template:
     src: grt-eupload.sh
     dest: /usr/bin/grt-upload
     owner: "{{ galaxy_grt_uploader }}"

@@ -1,26 +1,19 @@
 ### MANAGED BY usegalaxy-eu.galaxy-procstat ANSIBLE ROLE ###
 
+{% for gunicorn in range(galaxy_systemd_gunicorns) %}
 [[inputs.procstat]]
-	cgroup = "systemd/system.slice/galaxy-zergpool.service"
-	cmdline_tag = true
-
-{% for zerg in range(galaxy_systemd_zerglings) %}
-[[inputs.procstat]]
-	cgroup = "systemd/system.slice/system-galaxy\\x2dzergling.slice/galaxy-zergling@{{ zerg }}.service"
-	process_name = "galaxy-zerg@{{ zerg }}"
-	cmdline_tag = true
+	cgroup = "systemd/system.slice/system-galaxy\\x2dgunicorn.slice/galaxy-gunicorn@{{ gunicorn }}.service"
+	process_name = "galaxy-gunicorn@{{ gunicorn }}"
 {% endfor %}
 
 {% for handler in range(galaxy_systemd_handlers) %}
 [[inputs.procstat]]
 	cgroup = "systemd/system.slice/system-galaxy\\x2dhandler.slice/galaxy-handler@{{ handler }}.service"
 	process_name = "galaxy-handler@{{ handler }}"
-	cmdline_tag = true
 {% endfor %}
 
 {% for handler in range(galaxy_systemd_workflow_schedulers) %}
 [[inputs.procstat]]
 	cgroup = "systemd/system.slice/system-galaxy\\x2dworkflow\\x2dscheduler.slice/galaxy-workflow-scheduler@{{ handler }}.service"
 	process_name = "galaxy-workflow-scheduler@{{ handler }}"
-	cmdline_tag = true
 {% endfor %}

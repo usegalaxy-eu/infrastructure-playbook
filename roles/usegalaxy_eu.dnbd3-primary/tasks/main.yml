@@ -1,0 +1,35 @@
+- name: Grant access to http directory
+  ansible.builtin.file:
+    mode: "770"
+    path: "{{ http_path }}"
+    state: directory
+    owner: "{{ http_user }}"
+    group: "{{ http_group }}"
+- name: Grant access to tftp root directory
+  ansible.builtin.file:
+    mode: "770"
+    path: "{{ tftpboot_path }}"
+    state: directory
+    owner: "{{ tftp_user }}"
+    group: "{{ tftp_group }}"
+- name: Copy ipxe.efi
+  ansible.builtin.copy:
+    mode: '0644'
+    owner: "{{ tftp_user }}"
+    group: "{{ tftp_group }}"
+    src: files/dnbd3/ipxe.efi
+    dest: "{{ tftpboot_path }}"
+- name: Template http served files
+  ansible.builtin.template:
+    mode: '0644'
+    owner: "{{ http_user }}"
+    group: "{{ http_group }}"
+    src: "templates/dnbd3/{{ item }}.j2"
+    dest: "{{ http_path }}/{{ item }}"
+  with_items:
+    - boot.menu
+    - config
+- name: Change the httpd_t domain to permissive
+  community.general.selinux_permissive:
+    name: tftpd_t
+    permissive: true

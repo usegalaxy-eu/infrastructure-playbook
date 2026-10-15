@@ -1,2 +1,5 @@
-/usr/local/galaxy  -rw,hard,intr,nosuid,quota      sn03.bi.uni-freiburg.de:/export/galaxy1/system/galaxy
-/usr/local/tools   -rw,hard,intr,nosuid,quota      sn03.bi.uni-freiburg.de:/export/galaxy1/system/tools
+{% if "usrlocal" in usegalaxy_eu_autofs_mounts %}
+{% for row in usrlocal_conf %}
+{{ row }}
+{% endfor %}
+{% endif %}

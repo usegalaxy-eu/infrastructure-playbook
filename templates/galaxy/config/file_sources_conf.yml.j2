@@ -1,0 +1,350 @@
+
+- type: webdav
+  id: erga_nextcloud
+  label: ERGA Nextcloud
+  doc: ERGA Pilot storage provided by BSC
+  writable: true
+  base_url: 'https://ergapilot.bsc.es'
+  root: '/remote.php/webdav'
+  login: "{{ erga_nextcloud_login }}"
+  password: "{{ erga_nextcloud_password }}"
+  requires_groups: erga
+
+- type: huggingface
+  id: huggingface
+  label: Hugging Face Hub 🤗
+  doc: 'Hugging Face Hub is a platform for sharing machine learning models and datasets.'
+  endpoint: 'https://huggingface.co'
+  token: ''
+
+- type: posix
+  root: '/data/db/file_sources/tabula_atlases'
+  id: tabula-atlases
+  doc: "Tabula Sapiens and Tabula Muris senis single-cell transcriptomic atlases, providing comprehensive cell-type–resolved gene expression profiles across multiple tissues and organs in human and mouse."
+  label: "Tabula Atlases"
+
+- type: posix
+  root: '/data/5/galaxy_import/galaxy_user_data/covid-19/data/sequences/'
+  id: covid19-raw-sequences
+  label: COVID-19 FASTQ
+  doc: COVID-19 RAW sequences in FASTQ format
+
+- type: posix
+  root: '/data/db/databases/pdb/pdb/'
+  id: pdb-gzip             
+  doc: Protein Data Bank (PDB)
+  label: PDB
+
+- type: posix
+  root: '/data/db/models/'
+  id: ml-models
+  doc: ML/AI models for PyTorch, TensorFlow, Keras ...
+  label: ML models
+
+- type: inveniordm
+  id: zenodo
+  doc: Zenodo is an open-access digital repository created by CERN (the European Organization for Nuclear Research) to enable researchers to share, preserve, and cite research outputs across various disciplines.
+  label: Zenodo
+  url: https://zenodo.org
+  token: ""
+  public_name: ""
+
+- type: ftp
+  id: ebi-ftp
+  label: "EBI FTP server"
+  doc: "European Bioinformatic Institute FTP server"
+  host: "ftp.ebi.ac.uk"
+  user: "anonymous"
+  passwd: ""
+  timeout: 10
+  port: 21
+
+- type: ftp
+  id: covid-monitoring
+  label: "SARS-CoV-2 result files"
+  doc: "SARS-CoV-2 variants and consensus sequences"
+  host: "xfer13.crg.eu"
+  user: "anonymous"
+  passwd: ""
+  timeout: 10
+  port: 21
+
+- type: ftp
+  id: ncbi-ftp
+  label: "NCBI FTP server"
+  doc: "NCBI FTP server"
+  host: "ftp.ncbi.nlm.nih.gov"
+  user: "anonymous"
+  passwd: ""
+  timeout: 10
+  port: 21
+
+- type: ftp
+  id: ensembl-ftp
+  label: "ENSEMBL FTP server"
+  doc: "ENSEMBL FTP server"
+  host: "ftp.ensemblgenomes.org/pub/"
+  user: "anonymous"
+  passwd: ""
+  timeout: 10
+  port: 21
+
+- type: ssh
+  id: covid-crg-ftp-staging
+  requires_roles: sars-cov2
+  writable: true
+  label: "CRG COVID data - staging"
+  doc: "Center for Genomic regulation COVID19 FTP server"
+  host: "xfer13.crg.eu"
+  user: "{{ covid_crg_ftp_staging_user }}"
+  passwd: "{{ covid_crg_ftp_staging_passwd }}"
+  timeout: 10
+  path: "/home/FTPvandenbeek/userspace/staging/"
+  port: 2222
+
+- type: s3fs
+  label: Genome Ark
+  id: genomeark
+  doc: Access to Genome Ark open data on AWS.
+  bucket: genomeark
+  anon: true
+
+- type: s3fs
+  label: Genome Ark Test Instance
+  id: genomeark_galaxy
+  doc: Access to Genome Ark open data on AWS.
+  bucket: genomeark
+  requires_groups: vgp
+  writable: true
+  secret: "{{ genomeark_galaxy_aws_secret_access_key }}"
+  key: "{{ genomeark_galaxy_aws_access_key_id }}"
+
+- type: s3fs
+  label: Gilsbach S3 ElementBio
+  id: gilsback_element_bio
+  doc: Access to an ElementBio S3 bucket
+  bucket: elembio-macro-galaxy
+  requires_groups: gilsbach
+  writable: true
+  secret: "{{ gilsback_element_bio_aws_secret_access_key }}"
+  key: "{{ gilsback_element_bio_aws_access_key_id }}"
+
+- type: s3fs
+  label: "ONT open data"
+  id: gm24385_q20_2021.10
+  doc: "simplex nanopore sequencing from the Genome in a Bottle sample GM24385"
+  bucket: ont-open-data
+  anon: true
+
+- type: s3fs
+  label: 1000 Genomes
+  id: 1000genomes
+  doc: Access to the 1000 Genomes Project with human genetic variation, including SNPs, structural variants, and their haplotype context.
+  bucket: 1000genomes
+  anon: true
+
+- type: s3fs
+  label: The Cancer Genome Atlas
+  id: tcga-2-open
+  doc: Access to the Cancer Genome Atlas (TCGA)
+  bucket: tcga-2-open
+  anon: true
+
+- type: s3fs
+  label: COVID-19 Data Lake
+  id: covid19-lake
+  doc: A centralized repository of up-to-date and curated datasets on or related to the spread and characteristics of the novel corona virus (SARS-CoV-2) and its associated illness, COVID-19
+  bucket: covid19-lake
+  anon: true
+
+- type: s3fs
+  label: Encyclopedia of DNA Elements (ENCODE)
+  id: encode-public
+  doc: The Encyclopedia of DNA Elements (ENCODE) Consortium is an international collaboration of research groups funded by the National Human Genome Research Institute (NHGRI)
+  bucket: encode-public
+  anon: true
+
+- type: s3fs
+  label: Sentinel-3
+  id: meeo-s3-nrt
+  doc: European Commission’s Copernicus Earth Observation Programme. Sentinel-3 is a polar orbiting satellite that completes 14 orbits of the Earth a day.
+  bucket: meeo-s3/NRT/
+  anon: true
+
+- type: s3fs
+  label: Sentinel-5P Level 2
+  id: meeo-s5p-nrti
+  doc: Observations from the Sentinel-5 Precursor satellite of the Copernicus Earth Observation Programme. It contains a polar orbiting satellite that completes 14 orbits of the Earth a day.
+  bucket: meeo-s5p/RPRO/
+  anon: true
+
+- type: s3fs
+  label: Coupled Model Intercomparison Project 6
+  id: esgf-world
+  doc: The sixth phase of global coupled ocean-atmosphere general circulation model ensemble
+  bucket: esgf-world
+  anon: true
+
+- type: s3fs
+  label: CMIP6 GCMs downscaled using WRF
+  id: wrf-cmip6-noversioning
+  doc: High-resolution historical and future climate simulations from 1980-2100
+  bucket: wrf-cmip6-noversioning
+  anon: true
+
+- type: s3fs
+  label: GBIF European region public datasets
+  id: gbif-open-data-eu-central-1
+  doc: The Global Biodiversity Information Facility is an international network and data infrastructure aimed at providing anyone, anywhere, open access to data about all types of life on Earth.
+  bucket: gbif-open-data-eu-central-1
+  anon: true
+
+- type: s3fs
+  label: NOAA Global Forecast System (GFS)
+  id: noaa-gfs-bdp-pds
+  doc: The Global Forecast System (GFS) is a weather forecast model produced by the National Centers for Environmental Prediction (NCEP).
+  bucket: noaa-gfs-bdp-pds
+  anon: true
+
+- type: s3fs
+  label: NOAA Unified Forecast System Subseasonal to Seasonal Prototype 5
+  id: noaa-ufs-prototype5-pds
+  doc: The Unified Forecast System Subseasonal to Seasonal prototype 5 (UFS S2Sp5) dataset is reforecast data from the UFS atmosphere-ocean.
+  bucket: noaa-ufs-prototype5-pds
+  anon: true
+
+- type: s3fs
+  label: Copernicus Digital Elevation Model (DEM)
+  id: copernicus-dem-30m
+  doc: The Copernicus DEM is a Digital Surface Model (DSM) which represents the surface of the Earth including buildings, infrastructure and vegetation.
+  bucket: copernicus-dem-30m
+  anon: true
+
+- type: s3fs
+  label: NSF NCAR Curated ECMWF Reanalysis 5 (ERA5)
+  id: nsf-ncar-era5
+  doc: ERA5 is the fifth generation of ECMWF atmospheric reanalyses of the global climate created with the best available observation data from satellites, in-situ stations and ECMWF's Integrated Forecast System. The dataset provides atmospheric meteorological parameters.
+  bucket: nsf-ncar-era5
+  anon: true
+
+- type: s3fs
+  label: Atmospheric Models from Météo-France
+  id: mf-nwp-models
+  doc: Global and high-resolution regional atmospheric models from Météo-France.
+  bucket: mf-nwp-models
+  anon: true
+  
+- type: s3fs
+  label: Argo marine floats data and metadata from Global Data Assembly Centre (Argo GDAC)
+  id: argo-gdac-sandbox
+  doc: Argo is an international program to observe the interior of the ocean with a fleet of profiling floats drifting in the deep ocean currents (https://argo.ucsd.edu). 
+  bucket: argo-gdac-sandbox
+  anon: true
+
+- type: s3fs
+  label: Human Pangenome Reference Consortium
+  id: human-pangenomics
+  doc: "This bucket includes sequencing data, assemblies, and pangenomes, and analyses for the Human Pangenome Reference Consortium. Sequencing data includes PacBio, Oxford Nanopore, Illumina, and Hi-C."
+  bucket: human-pangenomics
+  anon: true
+
+#- type: arcfs
+#  id: arcfs1
+#  label: DataPLANT DataHUB ARCs
+#  doc: Explore ARCs in the DataPLANT GitLab repository.
+#  token: ${user.preferences['gitlabfs|read_access_token']}
+#  server_url: "https://git.nfdi4plants.org"
+#  writable: true
+
+- type: inveniordm
+  id: berd_nfdi
+  doc: "A Single Place for Data in Business, Economics and Related Fields"
+  label: "BERD@NFDI Repository"
+  url: https://berd-platform.de
+  token: ""
+  public_name: ""
+
+- type: onedata
+  id: gtn_public_onedata
+  label: GTN training data
+  doc: Training data from the Galaxy Training Network (powered by Onedata)
+  # The access Token is public and can be shared
+  access_token: "MDAxY2xvY2F00aW9uIGRhdGFodWIuZWdpLmV1CjAwNmJpZGVudGlmaWVyIDIvbm1kL3Vzci00yNmI4ZTZiMDlkNDdjNGFkN2E3NTU00YzgzOGE3MjgyY2NoNTNhNS9hY3QvMGJiZmY1NWU4NDRiMWJjZGEwNmFlODViM2JmYmRhNjRjaDU00YjYKMDAxNmNpZCBkYXRhLnJlYWRvbmx5CjAwNDljaWQgZGF00YS5wYXRoID00gTHpaa1pUTTROMkl4WmpjMllXVmpOMlU00WWpreU5XWmtNV00ZpT1RKbU1ETXlZMmhoWTJReAowMDJmc2lnbmF00dXJlIIQvnXp01Oey02LnaNwEkFJAyArzhHN8SlXSYFsBbSkqdqCg"
+  onezone_domain: "datahub.egi.eu"
+
+- type: inveniordm
+  id: cern_opendata
+  doc: "The CERN Open Data Portal is a repository that enables large scale experimental data releases of curated datasets, accompanying software, supporting documentation and example analyses"
+  label: CERN Open Data
+  url: https://opendata.cern
+  token: ""
+  public_name: ""
+
+- type: omero
+  id: omero_demo
+  label: "OMERO Demo Server"
+  doc: "Browse and import images from OMERO demo server"
+  username: "{{ omero_test_username }}"
+  password: "{{ omero_test_password }}"
+  host: "demo.openmicroscopy.org" # without protocol
+  port: 4064
+  writable: false # OMERO file sources are read-only
+
+
+## Public Dataverse repositories
+
+- type: dataverse
+  id: heidata
+  doc: "Heidelberg University Dataverse instance"
+  label: "HeiDATA"
+  url: https://heidata.uni-heidelberg.de/
+  token: ''
+  public_name: ''
+
+- type: dataverse
+  id: dataverse_harvard
+  doc: "Harvard Dataverse Repository"
+  label: "Publishing your data and code in the Harvard Dataverse Repository"
+  url: https://dataverse.harvard.edu/
+  token: ''
+  public_name: ''
+
+- type: dataverse
+  id: recherchedatagouv
+  doc: "Recherche Data Gouv French Dataverse instance"
+  label: "Recherche Data Gouv"
+  url: https://entrepot.recherche.data.gouv.fr/
+  token: ''
+  public_name: ''
+  
+- type: dataverse
+  id: indorese
+  doc: "InDoRES Dataverse instance"
+  label: "InDoRES"
+  url: https://data.indores.fr/
+  token: ''
+  public_name: ''
+
+- type: dataverse
+  id: cirad
+  doc: "CIRAD Dataverse instance"
+  label: "CIRAD"
+  url: https://dataverse.cirad.fr/
+  token: ''
+  public_name: ''
+
+- type: dataverse
+  id: ird
+  doc: "IRD Dataverse instance"
+  label: "IRD"
+  url: https://dataverse.ird.fr/
+  token: ''
+  public_name: ''
+
+- type: dataverse
+  id: bsc
+  doc: "BSC Dataverse instance"
+  label: "BSC"
+  url: https://dataverse.bsc.es/ 
+  token: ''
+  public_name: ''

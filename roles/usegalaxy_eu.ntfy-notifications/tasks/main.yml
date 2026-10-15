@@ -1,0 +1,14 @@
+---
+- name: Template ntfy script to the target
+  ansible.builtin.template:
+    src: ntfy_notify_usegalaxy_eu_down.sh.j2
+    dest: /usr/local/bin/ntfy_notify_usegalaxy_eu_down.sh
+    mode: '0755'
+
+- name: Add a cron task to run this script once every 2 minutes as a Galaxy user
+  ansible.builtin.cron:
+    name: "Check usegalaxy.eu status and notify if down"
+    user: galaxy
+    minute: "*/2"
+    job: "/usr/local/bin/ntfy_notify_usegalaxy_eu_down.sh"
+    state: present

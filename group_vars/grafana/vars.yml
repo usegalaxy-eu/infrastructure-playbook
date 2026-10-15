@@ -1,0 +1,219 @@
+---
+# Certbot
+certbot_auth_method: --webroot
+certbot_well_known_root: /srv/nginx/_well-known_root
+certbot_share_key_users:
+  - nginx
+certbot_virtualenv_package_name: python3-virtualenv
+certbot_post_renewal: |
+    systemctl restart nginx || true
+
+# Autoupdates
+au_hostname: "{{ grafana_ini.server.domain }}"
+
+# Grafana
+grafana_version: "13.1.1"
+
+grafana_ini:
+  server:
+    http_addr: "0.0.0.0"
+    domain: stats.galaxyproject.eu
+    root_url: "https://stats.galaxyproject.eu"
+
+  users:
+    default_theme: light
+
+  security:
+    admin_user: admin
+    admin_password: "{{ vault_grafana_auth_admin_password }}"
+    secret_key: "{{ vault_grafana_security_secret_key }}"
+    allow_embedding: true
+    cookie_secure: true
+
+  database:
+    type: postgres
+    host: sn11.galaxyproject.eu:5432
+    name: "{{ vault_grafana_database_name }}"
+    user: "{{ vault_grafana_database_user }}"
+    password: "{{ vault_grafana_database_password }}"
+
+  auth:
+    anonymous:
+      enabled: true
+      org_name: UseGalaxy.eu
+      org_role: Viewer
+    github:
+      enabled: true
+      allow_sign_up: true
+      client_id: "{{ vault_grafana_auth__github_client_id }}"
+      client_secret: "{{ vault_grafana_auth__github_client_secret }}"
+      scopes: user:email,read:org
+      auth_url: https://github.com/login/oauth/authorize
+      token_url: https://github.com/login/oauth/access_token
+      api_url: https://api.github.com/user
+      allowed_organisations: usegalaxy.eu galaxyproject
+
+  external_image_storage:
+    provider: local
+
+  panels:
+    disable_sanitize_html: true
+
+  unified_alerting:
+    enabled: true
+    execute_alerts: true
+
+# Grafana 13 does not support the legacy Angular plugins previously listed
+# here. Their dashboards must use supported visualizations instead.
+grafana_plugins: []
+
+grafana_dashboards_dir: "files/grafana"
+
+grafana_datasources:
+  - name: Galaxy
+    type: influxdb
+    access: proxy
+    url: "{{ influxdb.url }}"
+    isDefault: true
+    editable: false
+    user: "{{ influxdb.grafana.username }}"
+    jsonData:
+      version: InfluxQL
+      dbName: galaxy
+    secureJsonData:
+      password: "{{ influxdb.grafana.password }}"
+    uid: P9B81C0353945995B
+  - name: Galaxy Historical
+    type: influxdb
+    access: proxy
+    url: "{{ influxdb.url }}"
+    editable: false
+    user: "{{ influxdb.grafana.username }}"
+    jsonData:
+      version: InfluxQL
+      dbName: galaxy_stats
+    secureJsonData:
+      password: "{{ influxdb.grafana.password }}"
+    uid: PEBD82B4560F292BD
+  - name: GRT Tool Usage
+    type: influxdb
+    access: proxy
+    url: "{{ influxdb.url }}"
+    editable: false
+    user: "{{ influxdb.grafana.username }}"
+    jsonData:
+      version: InfluxQL
+      dbName: grt
+    secureJsonData:
+      password: "{{ influxdb.grafana.password }}"
+    uid: PA4245ACF5D5D4D2B
+  - name: InfluxDB - internal
+    type: influxdb
+    access: proxy
+    url: "{{ influxdb.url }}"
+    editable: false
+    user: "{{ influxdb.grafana.username }}"
+    jsonData:
+      version: InfluxQL
+      dbName: _internal
+    secureJsonData:
+      password: "{{ influxdb.grafana.password }}"
+    uid: P97EDD1499B7D2981
+  - name: Notifications
+    type: influxdb
+    access: proxy
+    url: "{{ influxdb.url }}"
+    editable: false
+    user: "{{ influxdb.grafana.username }}"
+    jsonData:
+      version: InfluxQL
+      dbName: notifications
+    secureJsonData:
+      password: "{{ influxdb.grafana.password }}"
+    uid: P788011833A5A0F22
+
+hxr_monitor_ssl_expiry:
+  # A couple of usegalaxy.eu subdomains.
+  - usegalaxy.eu:443
+  - metagenomics.usegalaxy.eu:443
+  # Proxy + Proxied services
+  - build.galaxyproject.eu:443
+  - influxdb.galaxyproject.eu:8086
+  - influxdb.galaxyproject.eu:443
+  - stats.galaxyproject.eu:443
+  - telescope.galaxyproject.eu:443
+  - toolshed.g2.bx.psu.edu:443
+  - galaxyproject.org:443
+  - usegalaxy.org:443
+
+
+telegraf_plugins_extra:
+  github:
+    plugin: github
+    config:
+      - repositories = ["galaxyproject/galaxy", "galaxyproject/training-material", "usegalaxy-eu/gxadmin"]
+      - interval = "6h"
+  simple_nagios:
+    plugin: "exec"
+    config:
+      - commands = ["/usr/bin/simple-nagios"]
+      - timeout = "120s"
+      - data_format = "influx"
+      - interval = "1m"
+
+  #galaxy_jobs:
+    #plugin: "exec"
+    #config:
+      #- commands = ["/usr/local/bin/simple-galaxy"]
+      #- timeout = "180s"
+      #- data_format = "influx"
+      #- interval = "15m"
+
+#galaxy_test_url: https://usegalaxy.eu
+#galaxy_test_user:
+    #api_key: "{{ vault_galaxy_test_user__api_key }}"
+    #username: bot@usegalaxy.eu
+    #password: "{{ vault_galaxy_test_user__password }}"
+    #handlers:
+        #- "handler0"
+        #- "handler1"
+        #- "handler2"
+        #- "handler3"
+        #- "handler4"
+        #- "handler5"
+        #- "handler6"
+        #- "handler7"
+        #- "handler8"
+        #- "handler9"
+        #- "handler10"
+        #- "handler11"
+        #- "drmaa"
+        #- "condor"
+
+galaxy_nagios_urls:
+  ftp_tests: []
+  http_tests:
+    - name: home_nossl
+      url: "http://usegalaxy.eu"
+      code: 301
+    - name: home
+      url: "https://usegalaxy.eu"
+      code: 200
+    - name: hicexplorer
+      url: "https://hicexplorer.usegalaxy.eu"
+      code: 200
+    - name: stats
+      url: "https://stats.galaxyproject.eu"
+      code: 200
+    - name: grt
+      url: "https://telescope.galaxyproject.eu"
+      code: 200
+    - name: build
+      url: "https://build.galaxyproject.eu"
+      code: 200
+    - name: influx
+      url: "{{ influxdb.url }}/ping"
+      code: 204
+    - name: phinch
+      url: "https://usegalaxy.eu/phinch/index.html"
+      code: 200
