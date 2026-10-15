@@ -438,7 +438,7 @@ class RoutingTests(unittest.TestCase):
         remote = self.candidates(site="it03-pulsar", final=True)
         # Galaxy uses the first matching condition, and attempt counts all
         # prior resubmissions, not just the remote execution.
-        for attempt in (1, 2, 4):
+        for attempt in (1, 2, 3, 4):
             for oom in (False, True):
                 context = dict(
                     any_failure=True, memory_limit_reached=oom, attempt=attempt
@@ -452,10 +452,12 @@ class RoutingTests(unittest.TestCase):
                     self.assertEqual(
                         matching[0]["environment"], "tpv_local_fallback"
                     )
-                else:
+                elif attempt <= 3:
                     self.assertEqual(
                         matching[0]["environment"], "tpv_dispatcher"
                     )
+                else:
+                    self.assertFalse(matching)
 
     def test_removed_site_has_meaningful_error(self):
         from galaxy.jobs.mapper import JobMappingException

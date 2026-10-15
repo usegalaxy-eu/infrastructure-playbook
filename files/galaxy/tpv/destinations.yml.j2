@@ -222,10 +222,11 @@ destinations:
     resubmit:
       # OOM failures use the usual dispatcher and its memory scaling.
       # Other failures use a separate entry point to preserve requested memory.
-      # No global attempt limit: even a later attempt may first land on Pulsar.
+      # Non-OOM fallback has no global attempt limit: even a later attempt
+      # may first land on Pulsar. OOM retries retain the standard attempt cap.
       # The marker pins all subsequent retries locally, preventing a loop.
       oom_retry:
-        condition: memory_limit_reached
+        condition: memory_limit_reached and attempt <= 3
         environment: tpv_dispatcher
         delay: 60
       pulsar_local_fallback:
