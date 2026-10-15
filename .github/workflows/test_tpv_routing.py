@@ -12,6 +12,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 import yaml
+from jinja2 import Environment, meta
 
 # The adjacent CI helper tpv.py must not shadow the installed TPV package.
 sys.path.remove(str(Path(__file__).resolve().parent))
@@ -25,10 +26,53 @@ JOB_CONF = Path(sys.argv.pop(1))
 
 def load_config():
     loader = None
-    job_conf = yaml.safe_load(JOB_CONF.read_text())
-    dispatcher = job_conf["execution"]["environments"]["tpv_dispatcher"]
-    for source in dispatcher["tpv_config_files"]:
-        loader = TPVConfigLoader.from_url_or_path(source, parent=loader)
+    if JOB_CONF.is_dir():
+        root = JOB_CONF
+        sources = [
+            "tool_defaults.yml",
+            "https://raw.githubusercontent.com/galaxyproject/tpv-shared-database/main/tools.yml",
+            "destinations.yml",
+            "tools.yml",
+            "interactive_tools.yml",
+            "conda_in_container.yml",
+            "users.yml",
+            "roles.yml",
+        ]
+    else:
+        job_conf = yaml.safe_load(JOB_CONF.read_text())
+        sources = job_conf["execution"]["environments"]["tpv_dispatcher"][
+            "tpv_config_files"
+        ]
+
+    for source in sources:
+        if source.startswith("https://"):
+            loader = TPVConfigLoader.from_url_or_path(source, parent=loader)
+            continue
+        path = root / source if JOB_CONF.is_dir() else Path(source)
+        if not path.exists():
+            path = path.with_suffix(".yml.j2")
+            template = path.read_text()
+            environment = Environment(trim_blocks=True, lstrip_blocks=True)
+            variables = {
+                key: "fixture"
+                for key in meta.find_undeclared_variables(
+                    environment.parse(template)
+                )
+            }
+            volume = {"name": "db", "path": "/fixture", "docker_perm": "ro"}
+            variables.update(
+                dnb={"db": volume, 5: volume},
+                cache={"cache08": volume},
+                tools={"tools": volume},
+                cvmfs={"data": volume, "singularity": volume},
+                job_working_directory_pool=[
+                    {"value": "/fixture", "weight": 1}
+                ],
+            )
+            content = environment.from_string(template).render(variables)
+            loader = TPVConfigLoader(yaml.safe_load(content), parent=loader)
+            continue
+        loader = TPVConfigLoader.from_url_or_path(str(path), parent=loader)
     return EntityToDestinationMapper(loader)
 
 
@@ -56,6 +100,7 @@ class RoutingTests(unittest.TestCase):
         roles=(),
         final=False,
         rank_override=False,
+        fallback=False,
     ):
         tool = SimpleNamespace(
             id=tool_id,
@@ -82,7 +127,11 @@ class RoutingTests(unittest.TestCase):
         job = SimpleNamespace(
             id=42,
             state="resubmitted" if resubmitted else "new",
-            destination_params={"OOM_MEM_SCALE": 128} if resubmitted else {},
+            destination_params=(
+                {"OOM_MEM_SCALE": 128, "pulsar_local_fallback": fallback}
+                if resubmitted
+                else {}
+            ),
             input_datasets=[],
             get_param_values=lambda app: params or {},
         )
@@ -252,6 +301,42 @@ class RoutingTests(unittest.TestCase):
             {d.id for d in self.candidates(resubmitted=True)},
             {"condor_container"},
         )
+
+    def test_remote_pulsar_failure_falls_back_to_local_once(self):
+        self.assertEqual(
+            {
+                d.id
+                for d in self.candidates(
+                    site="it03-pulsar", resubmitted=True, fallback=True
+                )
+            },
+            {"condor_container"},
+        )
+        local = self.candidates(
+            site="it03-pulsar", resubmitted=True, fallback=True, final=True
+        )
+        self.assertEqual(local.id, "condor_container")
+        self.assertEqual(local.runner, "htcondor")
+
+    def test_only_non_cz_pulsar_has_fallback_resubmit(self):
+        remote = self.mapper.destinations["pulsar_it03_tpv"]
+        self.assertEqual(
+            remote.resubmit["pulsar_local_fallback"]["condition"],
+            "any_failure and attempt <= 1",
+        )
+        self.assertEqual(
+            remote.resubmit["pulsar_local_fallback"]["environment"],
+            "tpv_dispatcher",
+        )
+        czech = self.mapper.destinations["pulsar_cz01_tpv"]
+        self.assertNotIn("pulsar_local_fallback", czech.resubmit)
+        self.assertNotIn("pulsar_local_fallback", czech.params)
+
+    def test_local_fallback_marker_survives_local_destination(self):
+        destination = self.candidates(
+            site="it03-pulsar", resubmitted=True, fallback=True, final=True
+        )
+        self.assertTrue(destination.params["pulsar_local_fallback"])
 
     def test_removed_site_has_meaningful_error(self):
         from galaxy.jobs.mapper import JobMappingException

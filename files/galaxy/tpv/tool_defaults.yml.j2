@@ -233,6 +233,19 @@ tools:
       remote_policy = mapper.destinations['pulsar_remote_cpu'].tpv_dest_tags
       remote_eligible = not gpus and entity.tpv_tags.match(remote_policy)
       selected_site = user.extra_preferences.get('distributed_compute|remote_resources', 'None') if user else 'None'
-      if remote_eligible and selected_site not in (None, 'None', 'cz-pulsar'):
+      local_fallback = (
+          job is not None
+          and job.state == 'resubmitted'
+          and bool((job.destination_params or {}).get('pulsar_local_fallback'))
+      )
+      if local_fallback:
+          candidate_destinations = [
+              d for d in candidate_destinations
+              if not any(d.tpv_dest_tags.filter(tag_value='pulsar'))
+          ]
+          # Preserve the marker if a local OOM retry goes through TPV again.
+          for destination in candidate_destinations:
+              destination.params['pulsar_local_fallback'] = True
+      elif remote_eligible and selected_site not in (None, 'None', 'cz-pulsar'):
           candidate_destinations = [d for d in candidate_destinations if any(d.tpv_dest_tags.filter(tag_value=selected_site))]
       helpers.weighted_random_sampling(candidate_destinations)
