@@ -2,11 +2,11 @@
 http:
   routers:
     pulsar-relay-rtr:
-      rule: "Host(`pulsar-relay.galaxyproject.eu`)"
+      rule: "Host(`relay.galaxyproject.eu`)"
       service: pulsar-relay
       entryPoints:
         - websecure
       tls:
         certResolver: "route53"
         domains:
-          - main: "pulsar-relay.galaxyproject.eu"
+          - main: "relay.galaxyproject.eu"

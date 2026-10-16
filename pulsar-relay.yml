@@ -2,15 +2,13 @@
 - name: Pulsar relay
   hosts: pulsar_relay
   become: true
-  become_user: root
   vars:
     hostname: '{{ inventory_hostname }}'
     server_names:
-      - 'pulsar-relay.galaxyproject.eu'
+      - 'relay.galaxyproject.eu'
     certbot_hostname_override:
-      - 'pulsar-relay.galaxyproject.eu'
+      - 'relay.galaxyproject.eu'
   vars_files:
-    - group_vars/pulsar-relay.yml
     - secret_group_vars/all.yml
     - secret_group_vars/aws.yml
   pre_tasks:
