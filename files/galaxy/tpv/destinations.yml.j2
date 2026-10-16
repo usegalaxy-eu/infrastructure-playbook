@@ -228,7 +228,7 @@ destinations:
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     params:
-      singularity_volumes: "{{ pulsar_base_volumes() }},{{ cvmfs.idc.path }}:{{ cvmfs.idc.docker_perm }}"
+      singularity_volumes: "{{ pulsar_base_volumes() }}"
     scheduling:
       require:
         - sk-pulsar
