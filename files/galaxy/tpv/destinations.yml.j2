@@ -26,8 +26,7 @@
         $tool_directory:ro,
         $job_directory/outputs:rw,
         $working_directory:rw,
-        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }},
-        {{ cvmfs.idc.path }}:{{ cvmfs.idc.docker_perm }}
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}
 {%- endmacro %}
 {% macro cvmfs_container_resolvers() %}
   - type: explicit_singularity
