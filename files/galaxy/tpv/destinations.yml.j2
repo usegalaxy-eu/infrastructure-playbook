@@ -63,8 +63,8 @@ destinations:
       docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,
         $defaults,
         {{ galaxy_volumes(exclude_volumes=['dnb04', 'dnb-ds01']) }}
-        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}",
-        {{ cvmfs.idc.path }}:{{ cvmfs.idc.docker_perm }}
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }},
+        {{ cvmfs.idc.path }}:{{ cvmfs.idc.docker_perm }}"
       docker_run_extra_arguments: "--memory={mem}g --cpus={cores} {self.params.get('docker_run_extra_arguments') or ''}"
       require_container: true
       submit_request_cpus: "{cores}"
@@ -109,8 +109,8 @@ destinations:
         $job_directory/outputs:rw,
         $working_directory:rw,
         {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
-        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}",
-        {{ cvmfs.idc.path }}:{{ cvmfs.idc.docker_perm }}
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }},
+        {{ cvmfs.idc.path }}:{{ cvmfs.idc.docker_perm }}"
     scheduling:
       accept:
         - tool_type_user_defined
@@ -541,8 +541,8 @@ destinations:
       docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,
         $defaults,
         {{ galaxy_volumes(exclude_volumes=['dnb04', 'dnb-ds01']) }}
-        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }}",
-        {{ cvmfs.idc.path }}:{{ cvmfs.idc.docker_perm }}
+        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }},
+        {{ cvmfs.idc.path }}:{{ cvmfs.idc.docker_perm }}"
 
       # let's move our config to destinations and forget about the global YAML file
       # If no resolver finds a container, this base container will be taken and resolve_dependencies=true will force conda deps usage
