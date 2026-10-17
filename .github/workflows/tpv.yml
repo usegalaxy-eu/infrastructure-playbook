@@ -434,3 +434,10 @@ jobs:
               echo Running TPV dry-run for "$tool..."
               tpv dry-run --job-conf templates/galaxy/config/job_conf.yml --tool "$tool"
           done
+
+      - name: Verify global routing policy.
+        env:
+          PLAYBOOK: ${{ steps.playbooks.outputs.new }}
+        run: |
+          export PYTHONPATH=$(realpath ./galaxy/lib)
+          python infrastructure-playbook/.github/workflows/test_tpv_routing.py "$(dirname "$PLAYBOOK")/templates/galaxy/config/job_conf.yml"

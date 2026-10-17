@@ -55,6 +55,11 @@ tools:
       - name: SINGULARITYENV_TERM
         value: $TERM
     params:
+      # Galaxy persists destination params across retries. Parse serialized
+      # booleans explicitly: bool('False') would incorrectly activate fallback.
+      pulsar_local_fallback: "{str((job.destination_params or {}).get('pulsar_local_fallback', False)).lower() == 'true' if job else False}"
+      # Consumed only on entry through tpv_local_fallback; clear for later OOMs.
+      pulsar_fallback_non_oom: false
       metadata_strategy: "extended"
       tmp_dir: true
       request_cpus: "{cores}"
@@ -75,16 +80,21 @@ tools:
       - id: oom_resubmit_persist_oom_mem_scale
         if: not (dry_run_mode := job_wrapper is None)
         params:
-          OOM_MEM_SCALE: "{OOM_SCALING_FACTOR * int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else OOM_SCALING_FACTOR}"
+          OOM_MEM_SCALE: "{int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) * (1 if str(job.destination_params.get('pulsar_fallback_non_oom', False)).lower() == 'true' else OOM_SCALING_FACTOR) if job.destination_params else OOM_SCALING_FACTOR}"
 
         # The accumulated scaling factor is read from the
         # persisted OOM_MEM_SCALE destination param,
         # which Galaxy carries across resubmissions.
       - id: oom_resubmit_increase_memory
-        if: not (dry_run_mode := job_wrapper is None) and job is not None and job.state == "resubmitted"
+        if: not (dry_run_mode := job_wrapper is None) and job is not None and job.state == "resubmitted" and str((job.destination_params or {}).get('pulsar_fallback_non_oom', False)).lower() != 'true'
         execute: |
           _scale = int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else 1
           entity.mem = f"min(({entity.mem}) * {_scale}, {OOM_SCALING_CAP})"
+
+      - id: pulsar_fallback_preserve_memory
+        if: job is not None and job.state == 'resubmitted' and str((job.destination_params or {}).get('pulsar_fallback_non_oom', False)).lower() == 'true'
+        execute: |
+          entity.mem = float(job.destination_params['pulsar_requested_mem'])
 
         # Set accounting group user for jobs
       - id: jobs_user_accounting_group
@@ -195,18 +205,17 @@ tools:
             - internal
 
       - id: remote_resources
-        if: not (dry_run_mode := job_wrapper is None) and (user is not None) and ("internal" not in {tag.value for tag in entity.tpv_tags.tags})
-        # - `job_wrapper is None` occurs when TPV is launched in dry-run mode
-        # - internal tools (tools requiring the Galaxy python environment)
-        #   never run on Pulsar nodes, even if the user has selected specific
-        #   remote resources (see `tool_requires_galaxy` rule above)
+        if: user is not None and tool.tool_type != 'interactive' and not ({"internal", "embedded-pulsar"} & set(entity.tpv_tags.require or [])) and not (job is not None and job.state == 'resubmitted' and str((job.destination_params or {}).get('pulsar_local_fallback', False)).lower() == 'true')
+        # Keep explicit Czech routing here: AlphaFold rules inspect cz-pulsar
+        # before assigning GPUs. Other site preferences are applied in rank,
+        # after all tool/user/role rules and resource expressions are evaluated.
         execute: |
-          from tpv.core.entities import SchedulingTags, Tag, TagType
+          from tpv.core.entities import SchedulingTags
 
           user_preferences = user.extra_preferences
           pulsar_tag = user_preferences.get("distributed_compute|remote_resources", "None")
 
-          if pulsar_tag != "None":
+          if pulsar_tag == "cz-pulsar":
               entity.tpv_tags = entity.tpv_tags.combine(
                   SchedulingTags(require=[pulsar_tag])
               )
@@ -229,5 +238,21 @@ tools:
         fail: |
           Invalid 'Remote resources id' selected in the config menu under 'User -> Preferences -> Manage Information -> Use distributed compute resources'. Please reselect either 'default' or an appropriate remote resource then click 'Save' and rerun your job.
     rank: |
-      final_destinations = helpers.weighted_random_sampling(candidate_destinations)
-      final_destinations
+      # Reuse the destination policy for preferences after all entity rules and
+      # resource expressions have run. Matching already enforces exclusions.
+      remote_policy = mapper.destinations['pulsar_remote_cpu'].tpv_dest_tags
+      remote_eligible = not gpus and entity.tpv_tags.match(remote_policy)
+      selected_site = user.extra_preferences.get('distributed_compute|remote_resources', 'None') if user else 'None'
+      local_fallback = (
+          job is not None
+          and job.state == 'resubmitted'
+          and str((job.destination_params or {}).get('pulsar_local_fallback', False)).lower() == 'true'
+      )
+      if local_fallback:
+          candidate_destinations = [
+              d for d in candidate_destinations
+              if not any(d.tpv_dest_tags.filter(tag_value='pulsar'))
+          ]
+      elif remote_eligible and selected_site not in (None, 'None', 'cz-pulsar'):
+          candidate_destinations = [d for d in candidate_destinations if any(d.tpv_dest_tags.filter(tag_value=selected_site))]
+      helpers.weighted_random_sampling(candidate_destinations)
