@@ -1,9 +1,7 @@
 ---
 # Role: usegalaxy_eu.ansible_pulsar_relay
-# secrets come from the vault: pulsar_relay_jwt_secret, pulsar_relay_admin_password, pulsar_relay_valkey_password
 pulsar_relay_version: "v0.2.1"
 pulsar_relay_port: 9000
-# traefik connects directly over plain http
 pulsar_relay_bind: "0.0.0.0"
 pulsar_relay_trusted_hosts: '["stargate.galaxyproject.eu"]'
 pulsar_relay_jwt_secret: "{{ vault_pulsar_relay_jwt_secret }}"
