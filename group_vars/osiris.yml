@@ -43,7 +43,7 @@ apache_vhosts:
     documentroot: "{{ osiris_www_dir }}"
     extra_parameters: &extra_parameters |
       # Force OSIRIS to return https links
-      RequestHeader set X-Forwarded-Proto "https"
+      SetEnv HTTPS on
 
       RemoteIPHeader X-Forwarded-For
       {% for proxy in osiris_reverse_proxy_trusted -%}
