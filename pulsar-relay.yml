@@ -2,8 +2,6 @@
 - name: Pulsar relay
   hosts: pulsar_relay
   become: true
-  vars_files:
-    - secret_group_vars/all.yml
   pre_tasks:
     - name: Install firewalld
       ansible.builtin.package:
