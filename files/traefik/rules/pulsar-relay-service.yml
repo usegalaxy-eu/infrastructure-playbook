@@ -1,11 +1,7 @@
 ---
 http:
-  serversTransports:
-    pulsar-relay-transport:
-      serverName: stargate.galaxyproject.eu
   services:
     pulsar-relay:
       loadBalancer:
-        serversTransport: pulsar-relay-transport
         servers:
-          - url: "https://10.4.68.172"
+          - url: "http://10.4.68.172:9000"
