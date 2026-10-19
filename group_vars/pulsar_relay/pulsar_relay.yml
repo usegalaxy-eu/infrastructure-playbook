@@ -28,17 +28,17 @@ nginx_flavor: ''
 
 # Nginx Letsencrypt bindings
 nginx_ssl_role: usegalaxy-eu.certbot
-nginx_conf_ssl_certificate: /etc/letsencrypt/live/relay.galaxyproject.eu/fullchain.pem
-nginx_conf_ssl_certificate_key: /etc/letsencrypt/live/relay.galaxyproject.eu/privkey.pem
+nginx_conf_ssl_certificate: /etc/letsencrypt/live/stargate.galaxyproject.eu/fullchain.pem
+nginx_conf_ssl_certificate_key: /etc/letsencrypt/live/stargate.galaxyproject.eu/privkey.pem
 
 # Role: usegalaxy_eu.ansible_pulsar_relay
 # secrets come from the vault: pulsar_relay_jwt_secret, pulsar_relay_admin_password, pulsar_relay_valkey_password
 pulsar_relay_version: "v0.2.1"
 pulsar_relay_port: 9000
-pulsar_relay_trusted_hosts: '["relay.galaxyproject.eu"]'
+pulsar_relay_trusted_hosts: '["stargate.galaxyproject.eu"]'
 pulsar_relay_jwt_secret: "{{ vault_pulsar_relay_jwt_secret }}"
 pulsar_relay_admin_password: "{{ vault_pulsar_relay_admin_password }}"
 pulsar_relay_valkey_password: "{{ vault_pulsar_relay_valkey_password }}"
-pulsar_nemo_relay_url: "https://relay.galaxyproject.eu/"
+pulsar_nemo_relay_url: "https://stargate.galaxyproject.eu/"
 pulsar_nemo_relay_username: "{{ vault_pulsar_nemo_relay_username }}"
 pulsar_nemo_relay_password: "{{ vault_pulsar_nemo_relay_password }}"
