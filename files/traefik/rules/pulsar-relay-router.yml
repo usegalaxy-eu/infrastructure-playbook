@@ -1,0 +1,12 @@
+---
+http:
+  routers:
+    pulsar-relay-rtr:
+      rule: "Host(`stargate.galaxyproject.eu`)"
+      service: pulsar-relay
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: "route53"
+        domains:
+          - main: "stargate.galaxyproject.eu"
