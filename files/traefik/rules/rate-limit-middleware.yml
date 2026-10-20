@@ -1,9 +1,9 @@
 ---
-# Coarse per-IP rate limit backstop for the websecure entrypoint.
-# Currently disabled. To enable, attach it via
-# `--entryPoints.websecure.http.middlewares=rate-limit-backstop@file` in group_vars/traefik.yml.
+# Coarse per-IP rate limit backstop for the websecure entrypoint, applied
+# via
+# `--entryPoints.websecure.http.middlewares` in group_vars/traefik.yml.
 #
-# When enabled, applies to all HTTPS routers. Long-lived connections (SSE streams,
+# Applies to all HTTPS routers. Long-lived connections (SSE streams,
 # websockets for interactive tools) count once, at connection setup.
 # Keep well above the aggregate of a NAT'd classroom, tune against
 # Traefik's Prometheus metric `traefik_entrypoint_requests_total`

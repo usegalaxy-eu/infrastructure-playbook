@@ -83,6 +83,7 @@ traefik_containers:
       - --global.checkNewVersion=false
       - --entryPoints.web.address=:80
       - --entryPoints.websecure.address=:443
+      - "--entryPoints.websecure.http.middlewares=rate-limit-backstop@file"
       - --entryPoints.amqps.address=:5671
       - --entryPoints.ftp.address=:21
       - --entryPoints.influxdb.address=:8086
