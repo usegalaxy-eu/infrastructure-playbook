@@ -7,8 +7,8 @@ au_upgrade_type: default
 restore_backup_semaphore_path: /root/delete_to_restore_OSIRIS_backup.ansible
 
 # Custom php version - system default is 8.0 in Rocky 9
-php_version: "8.5"
-php_version_prefix: "php85"
+php_version: "8.4"
+php_version_prefix: "php{{ php_version | replace('.', '') }}"
 php_versions_install_recommends: false
 
 php_memory_limit: "128M"
