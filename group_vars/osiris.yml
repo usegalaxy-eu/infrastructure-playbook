@@ -48,8 +48,9 @@ certbot_auto_renew_extra:
 
 apache_vhosts:
   - servername: "{{ hostname }}"
+    serveralias: "{{ server_alias }}"
     documentroot: "{{ osiris_www_dir }}"
-    extra_parameters: &extra_parameters |
+    extra_parameters: |
       # Force OSIRIS to return https links
       SetEnv HTTPS on
 
@@ -84,6 +85,3 @@ apache_vhosts:
           AllowOverride None
           Require all denied
       </Directory>
-  - servername: "{{ server_alias }}"
-    documentroot: "{{ osiris_www_dir }}"
-    extra_parameters: *extra_parameters
