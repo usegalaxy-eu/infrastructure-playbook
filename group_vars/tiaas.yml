@@ -6,6 +6,7 @@ tiaas_admin_user: admin
 tiaas_admin_pass: "{{ __tiaas_admin_pass }}"
 tiaas_galaxy_stylesheet: '{{ galaxy_server_dir }}/static/dist/base.css'
 tiaas_socket: '/var/run/tiaas.sock'
+tiaas_repo: "https://github.com/usegalaxy-eu/tiaas2"
 
 tiaas_galaxy_db_name: "{{ _galaxy_db_name }}"
 tiaas_galaxy_db_user: "{{ _galaxy_db_user }}"
@@ -20,7 +21,7 @@ tiaas_tiaas_db_pass: "{{ _tiaas_db_pass }}"
 tiaas_tiaas_db_host: "{{ _tiaas_db_host }}"
 tiaas_tiaas_db_port: "{{ _tiaas_db_port }}"
 
-tiaas_virtualenv_command: /usr/bin/python3 -m virtualenv
+tiaas_virtualenv_command: /usr/bin/python3 -m pip install --user uv && uv run --python 3.10 --with=virtualenv python -m virtualenv
 tiaas_other_config: |
   EMAIL_HOST="smtp.informatik.uni-freiburg.de"
   EMAIL_PORT=587
