@@ -6,22 +6,30 @@ au_upgrade_type: default
 
 restore_backup_semaphore_path: /root/delete_to_restore_OSIRIS_backup.ansible
 
+# Custom php version - system default is 8.0 in Rocky 9
+php_version: "8.4"
+php_version_prefix: "php{{ php_version | replace('.', '') }}"
+php_versions_install_recommends: false
+
 php_memory_limit: "128M"
 php_max_execution_time: "60"
 php_upload_max_filesize: "128M"
 php_packages:
-  - php
-  - php-cli
-  - php-pear
-  - php-ldap
-  - php-pecl-mongodb
+  - "{{ php_version_prefix }}-php"
+  - "{{ php_version_prefix }}-php-cli"
+  - "{{ php_version_prefix }}-php-pear"
+  - "{{ php_version_prefix }}-php-ldap"
+  - "{{ php_version_prefix }}-php-pecl-mongodb"
+  - "{{ php_version_prefix }}-php-fpm"
 
 php_webserver_daemon: httpd
 php_enablerepo: epel
 
-php_enable_php_fpm: true
-php_fpm_state: started
-php_fpm_enabled_on_boot: true
+# Disabled as remi-php provides phpXX-php-fpm not php-fpm
+# and is enabled by default
+php_enable_php_fpm: false
+php_fpm_enabled_on_boot: false
+php_fpm_state: stopped
 
 # Prevent mongo from configuring a replicaset
 replicaset: false
@@ -40,8 +48,9 @@ certbot_auto_renew_extra:
 
 apache_vhosts:
   - servername: "{{ hostname }}"
+    serveralias: "{{ server_alias }}"
     documentroot: "{{ osiris_www_dir }}"
-    extra_parameters: &extra_parameters |
+    extra_parameters: |
       # Force OSIRIS to return https links
       SetEnv HTTPS on
 
@@ -76,7 +85,3 @@ apache_vhosts:
           AllowOverride None
           Require all denied
       </Directory>
-      ProxyPassMatch ^/(.*\.php(/.*)?)$ "fcgi://127.0.0.1:9000{{ osiris_www_dir }}"
-  - servername: "{{ server_alias }}"
-    documentroot: "{{ osiris_www_dir }}"
-    extra_parameters: *extra_parameters
