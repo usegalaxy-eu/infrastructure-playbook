@@ -546,3 +546,8 @@ bashrc_galaxy_log_dir: "{{ galaxy_log_dir }}"
 bashrc_galaxy_pulsar_app_conf: "{{ galaxy_config_dir }}/pulsar_app.yml"
 bashrc_extra_exports:
   - "GXADMIN_TOOL_ID_FORMAT=tool_short"
+
+# NEMO Pulsar via the relay; credentials from group_vars/pulsar_relay/vault.yml (loaded in sn09.yml)
+pulsar_nemo_relay_url: "https://stargate.galaxyproject.eu/"
+pulsar_nemo_relay_username: "{{ vault_pulsar_nemo_relay_username }}"
+pulsar_nemo_relay_password: "{{ vault_pulsar_nemo_relay_password }}"
