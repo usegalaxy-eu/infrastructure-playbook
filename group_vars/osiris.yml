@@ -20,14 +20,16 @@ php_packages:
   - "{{ php_version_prefix }}-php-pear"
   - "{{ php_version_prefix }}-php-ldap"
   - "{{ php_version_prefix }}-php-pecl-mongodb"
+  - "{{ php_version_prefix }}-php-fpm"
 
 php_webserver_daemon: httpd
 php_enablerepo: epel
 
-php_enable_php_fpm: true
-php_fpm_state: started
-php_fpm_enabled_on_boot: true
-php_fpm_socket: /var/opt/remi/{{ php_version_prefix }}/run/php-fpm/www.sock
+# Disabled as remi-php provides phpXX-php-fpm not php-fpm
+# and is enabled by default
+php_enable_php_fpm: false
+php_fpm_enabled_on_boot: false
+php_fpm_state: stopped
 
 # Prevent mongo from configuring a replicaset
 replicaset: false
@@ -82,7 +84,6 @@ apache_vhosts:
           AllowOverride None
           Require all denied
       </Directory>
-      ProxyPassMatch ^/(.*\.php(/.*)?)$ "proxy:unix:{{ php85_fpm_socket }}{{ osiris_www_dir }}"
   - servername: "{{ server_alias }}"
     documentroot: "{{ osiris_www_dir }}"
     extra_parameters: *extra_parameters
