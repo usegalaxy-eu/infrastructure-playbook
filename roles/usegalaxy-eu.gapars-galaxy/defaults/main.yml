@@ -18,3 +18,6 @@ gapars_nginx_config: |
     location /gapars-experiment/img/ {
         alias {{ gapars_dir }}/code/img/;
     }
+
+gapars_virtualenv_command: /usr/local/bin/uv venv --seed
+gapars_virtualenv_python: 3.10
