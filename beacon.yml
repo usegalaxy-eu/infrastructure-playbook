@@ -11,8 +11,14 @@
         enable_powertools: true        # geerlingguy.repo-epel role doesn't enable PowerTools repository
         #enable_remap_user: true
         enable_create_user: true
+    - geerlingguy.repo-epel
     - influxdata.chrony
     - usegalaxy-eu.dynmotd # nicer MOTD/welcome message
+  tasks:
+    - name: Install `uv` Python package manager
+      ansible.builtin.package:
+        name: uv
+        state: present
 
 - name: Beacon
   become: true
