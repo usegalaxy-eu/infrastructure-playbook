@@ -7,6 +7,12 @@
     - geerlingguy.repo-epel
     - influxdata.chrony
     - hxr.aws-cli
+  tasks:
+    - name: Install `uv` Python package manager
+      become: true
+      ansible.builtin.package:
+        name: uv
+        state: present
 
 - name: TPV Broker
   hosts: tpvbroker
