@@ -1,12 +1,9 @@
 ---
-- name: Beacon
+- name: Configure operating system
+  hosts: beacon
   become: true
-  hosts:
-    - beacon
   vars_files:
     - secret_group_vars/all.yml
-    - group_vars/beacon/vars.yml
-    - group_vars/beacon/vault.yml
   roles:
     - role: usegalaxy_eu.handy.os_setup
       vars:
@@ -15,8 +12,16 @@
         #enable_remap_user: true
         enable_create_user: true
     - influxdata.chrony
-    - dj-wasabi.telegraf
     - usegalaxy-eu.dynmotd # nicer MOTD/welcome message
+
+- name: Beacon
+  become: true
+  hosts: beacon
+  vars_files:
+    - secret_group_vars/all.yml
+  roles:
+    - dj-wasabi.telegraf
+
     - paprikant.beacon
     - paprikant.beacon-importer
 #    - os_hardening
