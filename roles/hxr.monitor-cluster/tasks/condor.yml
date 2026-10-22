@@ -84,7 +84,6 @@
     user: root
     job: >-
       curl -fsS --max-time 60 -o /etc/condor-monitored-hosts.new {{ monitor_condor_inventory_url | quote }}
-      && grep -q '^\[' /etc/condor-monitored-hosts.new
       && mv /etc/condor-monitored-hosts.new /etc/condor-monitored-hosts
 
 - name: "Add Condor host status monitor"
