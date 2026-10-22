@@ -1,4 +1,13 @@
 ---
+- name: Configure operating system
+  hosts: tpvbroker
+  become: true
+  roles:
+    - usegalaxy_eu.handy.os_setup
+    - geerlingguy.repo-epel
+    - influxdata.chrony
+    - hxr.aws-cli
+
 - name: TPV Broker
   hosts: tpvbroker
   become: true
@@ -48,11 +57,7 @@
         - '{{ galaxy_user.name }}'
 
   roles:
-    - usegalaxy_eu.handy.os_setup
-    - geerlingguy.repo-epel
     - galaxyproject.miniconda
-    - influxdata.chrony
-    - hxr.aws-cli
     - usegalaxy_eu.ansible_nginx_upload_module
     - usegalaxy-eu.nginx
     - usegalaxy_eu.ansible_tpv_broker
