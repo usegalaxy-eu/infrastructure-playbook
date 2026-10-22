@@ -15,6 +15,12 @@
           enable_hostname: true
           enable_powertools: true # geerlingguy.repo-epel role doesn't enable PowerTools repository
       - influxdata.chrony # Keep our time in sync.
+  tasks:
+    - name: Install `uv` Python package manager
+      become: true
+      ansible.builtin.package:
+        name: uv
+        state: present
 
 - name: Grafana
   hosts: grafana
