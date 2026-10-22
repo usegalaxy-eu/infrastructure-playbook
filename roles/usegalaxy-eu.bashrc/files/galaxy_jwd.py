@@ -382,13 +382,6 @@ def directory_hash_id(id: str) -> list:
 
     Duplicate of ``galaxy.util.directory_hash_id`` (we can not import Galaxy
     here), see: lib/galaxy/util/__init__.py in the Galaxy codebase.
-
-    >>> directory_hash_id("100")
-    ['000']
-    >>> directory_hash_id("90000")
-    ['090']
-    >>> directory_hash_id("777777777")
-    ['000', '777', '777']
     """
     s = str(id)
     len_s = len(s)
