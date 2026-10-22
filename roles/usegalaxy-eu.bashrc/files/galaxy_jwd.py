@@ -377,6 +377,32 @@ def get_pulsar_staging_dir(galaxy_pulsar_app_conf: str) -> str:
     return pulsar_staging_dir
 
 
+def directory_hash_id(id: str) -> list:
+    """Build the hashed directory components for an id.
+
+    Duplicate of ``galaxy.util.directory_hash_id`` (we can not import Galaxy
+    here), see: lib/galaxy/util/__init__.py in the Galaxy codebase.
+
+    >>> directory_hash_id("100")
+    ['000']
+    >>> directory_hash_id("90000")
+    ['090']
+    >>> directory_hash_id("777777777")
+    ['000', '777', '777']
+    """
+    s = str(id)
+    len_s = len(s)
+    # Shortcut -- ids 0-999 go under ../000/
+    if len_s < 4:
+        return ["000"]
+    # Pad with zeros until a multiple of three
+    padded = ((3 - len_s % 3) * "0") + s
+    # Drop the last three digits -- 1000 files per directory
+    padded = padded[:-3]
+    # Break into chunks of three
+    return [padded[i * 3 : (i + 1) * 3] for i in range(len(padded) // 3)]
+
+
 def decode_path(
     job_id: int,
     metadata: list,
@@ -412,9 +438,13 @@ def decode_path(
     if (job_runner_name or "").startswith("pulsar_embedded"):
         jwd_path = f"{backends_dict['pulsar_embedded']}/{job_id}"
     else:
+        # Build the hashed path the same way Galaxy does it (see
+        # galaxy.util.directory_hash_id): chunk the id into groups of three
+        # digits after padding it with zeros
+        hashed_dirs = directory_hash_id(job_id)
         jwd_path = (
             f"{backend_info['job_work_path']}/"
-            f"0{job_id[0:2]}/{job_id[2:5]}/{job_id}"
+            f"{'/'.join(hashed_dirs)}/{job_id}"
         )
 
     # Validate that the path is a JWD
