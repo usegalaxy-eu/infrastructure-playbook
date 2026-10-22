@@ -279,6 +279,8 @@ galaxy_jobconf:
         - "{{ galaxy_config_dir }}/total_perspective_vortex/conda_in_container.yml"
         - "{{ galaxy_config_dir }}/total_perspective_vortex/users.yml"
         - "{{ galaxy_config_dir }}/total_perspective_vortex/roles.yml"
+        # Keep last: append OOM scaling after destination-specific rules.
+        - "{{ galaxy_config_dir }}/total_perspective_vortex/resubmission.yml"
   tools:
     # TODO(hxr): implement validation that checks that every destination
     # used here is defined above.

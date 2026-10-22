@@ -475,6 +475,8 @@ galaxy_config_files:
     dest: '{{ tpv_mutable_dir }}/interactive_tools.yml'
   - src: '{{ galaxy_config_file_src_dir }}/tpv/users.yml'
     dest: '{{ tpv_mutable_dir }}/users.yml'
+  - src: '{{ galaxy_config_file_src_dir }}/tpv/resubmission.yml'
+    dest: '{{ tpv_mutable_dir }}/resubmission.yml'
 
   #- src: files/galaxy/config/job_resource_params_conf.xml
   #dest: "{{ galaxy_config['app:main']['job_resource_params_file'] }}"

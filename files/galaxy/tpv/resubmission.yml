@@ -1,0 +1,69 @@
+---
+# Load last so local Condor memory scaling runs after tool/user/role and
+# destination-specific rules. Pulsar destinations do not use this policy.
+global:
+  context:
+    OOM_SCALING_FACTOR: 2
+    OOM_SCALING_CAP: 512
+# Destination names are explicit because TPV does not regex-match destinations.
+# Each final rule has a unique ID and checks the selected destination name:
+# inherited parent rules must not scale memory before the child's own rules.
+# Add new local Condor destinations here when adding them to destinations.yml.j2.
+destinations:
+  condor_container:
+    resubmit: &oom_retry_policy
+      oom_retry:
+        condition: memory_limit_reached and attempt <= 3
+        environment: tpv_dispatcher
+        delay: 60
+    rules:
+      # TPV updates the rule context's entity after a matching declarative
+      # rule. Seed it with the combined destination before executing code.
+      - &oom_destination_context
+        id: oom_destination_context
+        if: true
+      - &oom_final_rule
+        id: oom_final_condor_container
+        if: job_wrapper is not None and job is not None and entity.dest_name == 'condor_container'
+        execute: |
+          from tpv.core.entities import TryNextDestinationOrFail
+
+          # Work with a copy: a rejected candidate must not change the next
+          # candidate's base memory, context, or persisted multiplier.
+          resources = entity.evaluate_resources(dict(locals()))
+          if job.state == "resubmitted":
+              scale = int((job.destination_params or {}).get('OOM_MEM_SCALE', OOM_SCALING_FACTOR))
+              resources.mem = min(resources.mem * scale, OOM_SCALING_CAP)
+              # Respect explicit resource ceilings as well as the OOM cap.
+              if resources.max_mem is not None:
+                  resources.mem = min(resources.mem, resources.max_mem)
+              if not entity.matches(resources, dict(locals())):
+                  raise TryNextDestinationOrFail("Destination cannot accommodate OOM retry resources")
+              next_scale = scale * OOM_SCALING_FACTOR
+          else:
+              next_scale = OOM_SCALING_FACTOR
+
+          entity.mem = resources.mem
+          entity.params['OOM_MEM_SCALE'] = str(next_scale)
+
+  condor_container_gpu:
+    resubmit: *oom_retry_policy
+    rules:
+      - *oom_destination_context
+      - <<: *oom_final_rule
+        id: oom_final_condor_container_gpu
+        if: job_wrapper is not None and job is not None and entity.dest_name == 'condor_container_gpu'
+  condor_singularity_with_conda:
+    resubmit: *oom_retry_policy
+    rules:
+      - *oom_destination_context
+      - <<: *oom_final_rule
+        id: oom_final_condor_singularity_with_conda
+        if: job_wrapper is not None and job is not None and entity.dest_name == 'condor_singularity_with_conda'
+  condor_internal:
+    resubmit: *oom_retry_policy
+    rules:
+      - *oom_destination_context
+      - <<: *oom_final_rule
+        id: oom_final_condor_internal
+        if: job_wrapper is not None and job is not None and entity.dest_name == 'condor_internal'
