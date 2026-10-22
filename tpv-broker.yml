@@ -2,6 +2,9 @@
 - name: Configure operating system
   hosts: tpvbroker
   become: true
+  vars_files:
+    - secret_group_vars/all.yml
+    - secret_group_vars/aws.yml
   roles:
     - usegalaxy_eu.handy.os_setup
     - geerlingguy.repo-epel
@@ -26,7 +29,6 @@
     certbot_hostname_override:
       - 'tpv-broker.galaxyproject.eu'
   vars_files:
-    - group_vars/tpv-broker.yml
     - secret_group_vars/all.yml
     - secret_group_vars/aws.yml
   pre_tasks:
