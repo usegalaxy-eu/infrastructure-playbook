@@ -64,9 +64,10 @@
   become: true
   become_user: "{{ gapars_user }}"
   pip:
-    virtualenv: "{{ gapars_dir }}/venv/"
     requirements: "{{ gapars_dir }}/code/requirements.txt"
-    #virtualenv_python: python3.6
+    virtualenv: "{{ gapars_dir }}/venv/"
+    virtualenv_command: "{{ gapars_virtualenv_command | default(omit) }}"
+    virtualenv_python: "{{ gapars_virtualenv_python | default(omit) }}"
   notify: 'reload gapars'
 
 - name: Install systemd unit file
