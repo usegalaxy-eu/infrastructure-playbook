@@ -1,0 +1,9 @@
+[Unit]
+Description=Periodically update UCSC Genome Browser genome assemblies on {{ ucsc_genome_browser_host_gbd_dir }}
+
+[Timer]
+OnCalendar={{ ucsc_genome_browser_gbd_sync_schedule }}
+Persistent=true
+
+[Install]
+WantedBy=timers.target

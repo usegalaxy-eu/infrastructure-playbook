@@ -14,6 +14,13 @@ ucsc_genome_browser_assemblies: []
 ucsc_genome_browser_assemblies_env: "OS=linux MACH=x86_64"  # works around a bug in the installation script
 
 ucsc_genome_browser_vm_gbd_dir: /srv/ucsc_genome_browser/
+ucsc_genome_browser_host_gbd_dir: /data/misc08/gbd/
+
+ucsc_genome_browser_gbd_sync_enabled: false
+ucsc_genome_browser_gbd_sync_schedule: "Sun *-*-01..07 03:00"  # first Sunday of the month
+ucsc_genome_browser_gbd_sync_assemblies: []  # empty: all in `gbdb/`
+ucsc_genome_browser_gbd_sync_hgdownload: hgdownload.soe.ucsc.edu
+
 ucsc_genome_browser_vm_name: ucsc_genome_browser
 ucsc_genome_browser_vm_state: present  # use `absent` to remove the VM
 
@@ -25,7 +32,7 @@ ucsc_genome_browser_vm_ports:
   - host: 8030
     guest: 80
 ucsc_genome_browser_vm_shares:
-  - host: /data/misc08/gbd/
+  - host: "{{ ucsc_genome_browser_host_gbd_dir }}"
     guest: "{{ ucsc_genome_browser_vm_gbd_dir }}"
     readonly: true
   #  # TODO: default settings should be retrieved from the installation script
