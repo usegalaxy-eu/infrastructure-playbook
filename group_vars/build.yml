@@ -38,8 +38,6 @@ aws_cli_credentials:
     group: root
 certbot_post_renewal: |
   systemctl restart nginx || true
-certbot_virtualenv_package_name: python3-virtualenv
-certbot_virtualenv_command: virtualenv
 certbot_well_known_root: /srv/nginx/_well-known_root
 # NGINX
 nginx_enable_default_server: false
