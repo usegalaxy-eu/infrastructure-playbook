@@ -1,4 +1,22 @@
 ---
+- name: Configure operating system
+  hosts: incoming
+  become: true
+  vars:
+    hostname: ftp.galaxyproject.eu
+  vars_files:
+    - secret_group_vars/all.yml
+  roles:
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        enable_hostname: true
+        enable_powertools: true        # geerlingguy.repo-epel role doesn't enable PowerTools repository
+        enable_remap_user: true
+        enable_install_software: true  # Some extra admin tools (*top, vim, etc)
+    - geerlingguy.repo-epel     # Install EPEL repository
+    - influxdata.chrony         # Keep our time in sync.
+    - usegalaxy-eu.dynmotd
+
 - name: Incoming
   hosts: incoming
   become: true
@@ -47,16 +65,6 @@
       notify:
         - reload proftpd
   roles:
-    ## Starting configuration of the operating system
-    - role: usegalaxy_eu.handy.os_setup
-      vars:
-        enable_hostname: true
-        enable_powertools: true        # geerlingguy.repo-epel role doesn't enable PowerTools repository
-        enable_remap_user: true
-        enable_install_software: true  # Some extra admin tools (*top, vim, etc)
-    - geerlingguy.repo-epel     # Install EPEL repository
-    - influxdata.chrony         # Keep our time in sync.
-    - usegalaxy-eu.dynmotd
     ## Filesystems
     - usegalaxy-eu.autofs
     # User
