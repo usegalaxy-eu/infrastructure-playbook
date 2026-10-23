@@ -30,7 +30,7 @@ destinations:
         # job_wrapper is None when TPV is launched in dry-run mode.
         if: not (dry_run_mode := job_wrapper is None) and job is not None
         params:
-          OOM_MEM_SCALE: "{OOM_SCALING_FACTOR * int((job.destination_params or {}).get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.state == 'resubmitted' else OOM_SCALING_FACTOR}"
+          OOM_MEM_SCALE: "{OOM_SCALING_FACTOR * int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else OOM_SCALING_FACTOR}"
       - &oom_increase_rule
         id: oom_resubmit_increase_memory
         if: not (dry_run_mode := job_wrapper is None) and job is not None and job.state == "resubmitted"
@@ -42,7 +42,7 @@ destinations:
           # Evaluate the base formula first: it can be a multiline Python block
           # (e.g. BWA-MEM2 with a reference supplied from history).
           resources = entity.evaluate_resources(dict(locals()))
-          scale = int((job.destination_params or {}).get('OOM_MEM_SCALE', OOM_SCALING_FACTOR))
+          scale = int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else 1
           resources.mem = min(resources.mem * scale, OOM_SCALING_CAP)
           # Respect explicit resource ceilings as well as the OOM cap.
           if resources.max_mem is not None:
