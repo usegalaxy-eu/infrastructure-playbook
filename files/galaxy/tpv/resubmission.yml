@@ -40,20 +40,22 @@ destinations:
         execute: |
           from tpv.core.entities import TryNextDestinationOrFail
 
+          scale = int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else 1
+          scale_mem = lambda mem: min(mem * scale, OOM_SCALING_CAP)
+
           # Work with a copy: a rejected candidate must not change the next
           # candidate's base memory, context, or persisted multiplier.
           # Evaluate the base formula first: it can be a multiline Python block
           # (e.g. BWA-MEM2 with a reference supplied from history).
           resources = entity.evaluate_resources(dict(locals()))
-          scale = int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else 1
-          resources.mem = min(resources.mem * scale, OOM_SCALING_CAP)
-          # Respect explicit resource ceilings as well as the OOM cap.
+          resources.mem = scale_mem(resources.mem)
           if resources.max_mem is not None:
+              # respect explicit resource ceilings as well as the OOM cap
               resources.mem = min(resources.mem, resources.max_mem)
-          # Initial destination matching used the unscaled memory requirement.
-          # Reject an undersized candidate and let TPV try the next destination.
           if not entity.matches(resources, dict(locals())):
+              # reject an undersized candidate and try the next destination
               raise TryNextDestinationOrFail("Destination cannot accommodate OOM retry resources")
+
           entity.mem = resources.mem
   condor_container_gpu:
     # inherits resubmission rules from `condor_container`
