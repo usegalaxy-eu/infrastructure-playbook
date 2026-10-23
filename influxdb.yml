@@ -9,8 +9,15 @@
     - role: usegalaxy_eu.handy.os_setup
       vars:
         enable_hostname: true
+    - geerlingguy.repo-epel
     - influxdata.chrony         # Keep our time in sync.
     - usegalaxy-eu.dynmotd
+  tasks:
+    - name: Install `uv` Python package manager
+      become: true
+      ansible.builtin.package:
+        name: uv
+        state: present
 
 - name: InfluxDB
   hosts: influxdb
