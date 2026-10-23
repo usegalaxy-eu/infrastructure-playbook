@@ -6,8 +6,8 @@ global:
     OOM_SCALING_FACTOR: 2
     OOM_SCALING_CAP: 512
 # Destination names are explicit because TPV does not regex-match destinations.
-# Each final rule has a unique ID and checks the selected destination name:
-# inherited parent rules must not scale memory before the child's own rules.
+# Attach the shared final rule only to selectable destinations. Shared abstract
+# bases contain no OOM rules, so CPU and GPU destinations each scale once.
 # Add new local Condor destinations here when adding them to destinations.yml.j2.
 destinations:
   condor_container:
@@ -23,8 +23,8 @@ destinations:
         id: oom_destination_context
         if: true
       - &oom_final_rule
-        id: oom_final_condor_container
-        if: job_wrapper is not None and job is not None and entity.dest_name == 'condor_container'
+        id: oom_final_memory
+        if: job_wrapper is not None and job is not None
         execute: |
           from tpv.core.entities import TryNextDestinationOrFail
 
@@ -50,20 +50,14 @@ destinations:
     resubmit: *oom_retry_policy
     rules:
       - *oom_destination_context
-      - <<: *oom_final_rule
-        id: oom_final_condor_container_gpu
-        if: job_wrapper is not None and job is not None and entity.dest_name == 'condor_container_gpu'
+      - *oom_final_rule
   condor_singularity_with_conda:
     resubmit: *oom_retry_policy
     rules:
       - *oom_destination_context
-      - <<: *oom_final_rule
-        id: oom_final_condor_singularity_with_conda
-        if: job_wrapper is not None and job is not None and entity.dest_name == 'condor_singularity_with_conda'
+      - *oom_final_rule
   condor_internal:
     resubmit: *oom_retry_policy
     rules:
       - *oom_destination_context
-      - <<: *oom_final_rule
-        id: oom_final_condor_internal
-        if: job_wrapper is not None and job is not None and entity.dest_name == 'condor_internal'
+      - *oom_final_rule

@@ -489,7 +489,10 @@ destinations:
   #############################
 
 
-  condor_container:
+  # Shared settings only. Keep retry rules on the selectable destinations so
+  # neither CPU nor GPU jobs inherit a scaling rule from the other.
+  _condor_container_base:
+    abstract: true
     runner: htcondor
     max_accepted_cores: 64
     max_accepted_mem: 1000
@@ -551,8 +554,11 @@ destinations:
         - docker
         - singularity
 
+  condor_container:
+    inherits: _condor_container_base
+
   condor_container_gpu:
-    inherits: condor_container
+    inherits: _condor_container_base
     max_accepted_cores: 128
     max_accepted_mem: 500
     min_accepted_gpus: 1
