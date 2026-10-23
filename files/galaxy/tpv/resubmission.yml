@@ -1,18 +1,18 @@
+# This file must be loaded last, after all other configuration files, so that
+# memory scaling occurs after all other rules have modified the `mem`
+# requirement.
 ---
-# Load last so local Condor memory scaling runs after tool/user/role rules.
-# Pulsar destinations do not use this policy.
 global:
   context:
     # Base multiplier applied on each OOM resubmission. The accumulated factor
-    # is persisted in OOM_MEM_SCALE, which Galaxy carries across resubmissions.
+    # is persisted in OOM_MEM_SCALE destination param, which Galaxy carries
+    # across resubmissions.
     OOM_SCALING_FACTOR: 2
-    # Maximum memory requirement for resubmitted jobs, in GiB.
+    # Memory requirement cap for resubmitted jobs.
     OOM_SCALING_CAP: 512
-# Destination names are explicit because TPV does not regex-match destinations.
-# condor_container_gpu inherits these rules from condor_container. Its own
-# rules only change GPU scheduling preferences, not memory. If a child gains
-# memory-setting rules, scaling must be ordered after those rules as well.
 destinations:
+  # - Keep in mind that TPV does not regex-match destination names
+  # - If a child applies `mem`-setting rules, scaling must apply afterward
   condor_container:
     resubmit: &oom_retry_policy
       oom_retry:
@@ -20,17 +20,20 @@ destinations:
         environment: tpv_dispatcher
         # Delay is in seconds before Galaxy dispatches the resubmitted job.
         delay: 60
-    rules:
-      # Record the factor for the next attempt. On the first run, store the
-      # base factor; on retries, advance the previously persisted factor.
-      # This declarative rule also refreshes TPV's entity context to the
-      # combined destination before the following execute block runs.
+    rules:  # executed in order
+        # Persist OOM_MEM_SCALE across resubmissions via
+        # `job.destination_params`. On the first run this records the base
+        # factor (OOM_SCALING_FACTOR). On each resubmit this rule re-evaluates
+        # the expression, reading the previously persisted value and
+        # multiplying by OOM_SCALING_FACTOR.
       - &oom_persist_rule
         id: oom_resubmit_persist_oom_mem_scale
-        # job_wrapper is None when TPV is launched in dry-run mode.
         if: not (dry_run_mode := job_wrapper is None) and job is not None
         params:
           OOM_MEM_SCALE: "{OOM_SCALING_FACTOR * int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else OOM_SCALING_FACTOR}"
+        # The accumulated scaling factor is read from the persisted
+        # OOM_MEM_SCALE destination param, which Galaxy carries across
+        # resubmissions.
       - &oom_increase_rule
         id: oom_resubmit_increase_memory
         if: not (dry_run_mode := job_wrapper is None) and job is not None and job.state == "resubmitted"
@@ -52,6 +55,8 @@ destinations:
           if not entity.matches(resources, dict(locals())):
               raise TryNextDestinationOrFail("Destination cannot accommodate OOM retry resources")
           entity.mem = resources.mem
+  condor_container_gpu:
+    # inherits resubmission rules from `condor_container`
   condor_singularity_with_conda:
     resubmit: *oom_retry_policy
     rules:
