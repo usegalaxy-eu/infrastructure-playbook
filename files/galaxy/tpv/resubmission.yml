@@ -1,63 +1,64 @@
 ---
-# Load last so local Condor memory scaling runs after tool/user/role and
-# destination-specific rules. Pulsar destinations do not use this policy.
+# Load last so local Condor memory scaling runs after tool/user/role rules.
+# Pulsar destinations do not use this policy.
 global:
   context:
+    # Base multiplier applied on each OOM resubmission. The accumulated factor
+    # is persisted in OOM_MEM_SCALE, which Galaxy carries across resubmissions.
     OOM_SCALING_FACTOR: 2
+    # Maximum memory requirement for resubmitted jobs, in GiB.
     OOM_SCALING_CAP: 512
 # Destination names are explicit because TPV does not regex-match destinations.
-# Attach the shared final rule only to selectable destinations. Shared abstract
-# bases contain no OOM rules, so CPU and GPU destinations each scale once.
-# Add new local Condor destinations here when adding them to destinations.yml.j2.
+# condor_container_gpu inherits these rules from condor_container. Its own
+# rules only change GPU scheduling preferences, not memory. If a child gains
+# memory-setting rules, scaling must be ordered after those rules as well.
 destinations:
   condor_container:
     resubmit: &oom_retry_policy
       oom_retry:
         condition: memory_limit_reached and attempt <= 3
         environment: tpv_dispatcher
+        # Delay is in seconds before Galaxy dispatches the resubmitted job.
         delay: 60
     rules:
-      # TPV updates the rule context's entity after a matching declarative
-      # rule. Seed it with the combined destination before executing code.
-      - &oom_destination_context
-        id: oom_destination_context
-        if: true
-      - &oom_final_rule
-        id: oom_final_memory
-        if: job_wrapper is not None and job is not None
+      # Record the factor for the next attempt. On the first run, store the
+      # base factor; on retries, advance the previously persisted factor.
+      # This declarative rule also refreshes TPV's entity context to the
+      # combined destination before the following execute block runs.
+      - &oom_persist_rule
+        id: oom_resubmit_persist_oom_mem_scale
+        # job_wrapper is None when TPV is launched in dry-run mode.
+        if: not (dry_run_mode := job_wrapper is None) and job is not None
+        params:
+          OOM_MEM_SCALE: "{OOM_SCALING_FACTOR * int((job.destination_params or {}).get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.state == 'resubmitted' else OOM_SCALING_FACTOR}"
+      - &oom_increase_rule
+        id: oom_resubmit_increase_memory
+        if: not (dry_run_mode := job_wrapper is None) and job is not None and job.state == "resubmitted"
         execute: |
           from tpv.core.entities import TryNextDestinationOrFail
 
           # Work with a copy: a rejected candidate must not change the next
           # candidate's base memory, context, or persisted multiplier.
+          # Evaluate the base formula first: it can be a multiline Python block
+          # (e.g. BWA-MEM2 with a reference supplied from history).
           resources = entity.evaluate_resources(dict(locals()))
-          if job.state == "resubmitted":
-              scale = int((job.destination_params or {}).get('OOM_MEM_SCALE', OOM_SCALING_FACTOR))
-              resources.mem = min(resources.mem * scale, OOM_SCALING_CAP)
-              # Respect explicit resource ceilings as well as the OOM cap.
-              if resources.max_mem is not None:
-                  resources.mem = min(resources.mem, resources.max_mem)
-              if not entity.matches(resources, dict(locals())):
-                  raise TryNextDestinationOrFail("Destination cannot accommodate OOM retry resources")
-              next_scale = scale * OOM_SCALING_FACTOR
-          else:
-              next_scale = OOM_SCALING_FACTOR
-
+          scale = int((job.destination_params or {}).get('OOM_MEM_SCALE', OOM_SCALING_FACTOR))
+          resources.mem = min(resources.mem * scale, OOM_SCALING_CAP)
+          # Respect explicit resource ceilings as well as the OOM cap.
+          if resources.max_mem is not None:
+              resources.mem = min(resources.mem, resources.max_mem)
+          # Initial destination matching used the unscaled memory requirement.
+          # Reject an undersized candidate and let TPV try the next destination.
+          if not entity.matches(resources, dict(locals())):
+              raise TryNextDestinationOrFail("Destination cannot accommodate OOM retry resources")
           entity.mem = resources.mem
-          entity.params['OOM_MEM_SCALE'] = str(next_scale)
-
-  condor_container_gpu:
-    resubmit: *oom_retry_policy
-    rules:
-      - *oom_destination_context
-      - *oom_final_rule
   condor_singularity_with_conda:
     resubmit: *oom_retry_policy
     rules:
-      - *oom_destination_context
-      - *oom_final_rule
+      - *oom_persist_rule
+      - *oom_increase_rule
   condor_internal:
     resubmit: *oom_retry_policy
     rules:
-      - *oom_destination_context
-      - *oom_final_rule
+      - *oom_persist_rule
+      - *oom_increase_rule
