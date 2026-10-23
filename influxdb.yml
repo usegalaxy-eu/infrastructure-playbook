@@ -1,4 +1,17 @@
 ---
+- name: Configure operating system
+  hosts: influxdb
+  become: true
+  vars_files:
+    - secret_group_vars/all.yml
+  roles:
+    - geerlingguy.swap
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        enable_hostname: true
+    - influxdata.chrony         # Keep our time in sync.
+    - usegalaxy-eu.dynmotd
+
 - name: InfluxDB
   hosts: influxdb
   become: true
@@ -44,15 +57,8 @@
         name: firewalld
         state: reloaded
   roles:
-    ## Starting configuration of the operating system
-    - geerlingguy.swap
     - role: usegalaxy_eu.firewall
       become: true
-    - role: usegalaxy_eu.handy.os_setup
-      vars:
-        enable_hostname: true
-    - influxdata.chrony         # Keep our time in sync.
-    - usegalaxy-eu.dynmotd
     - hxr.monitor-email
 #    # Applications
     - geerlingguy.docker
