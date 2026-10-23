@@ -26,7 +26,7 @@ destinations:
         # factor (OOM_SCALING_FACTOR). On each resubmit this rule re-evaluates
         # the expression, reading the previously persisted value and
         # multiplying by OOM_SCALING_FACTOR.
-      - &oom_persist_rule
+      - &oom_resubmit_persist_oom_mem_scale
         id: oom_resubmit_persist_oom_mem_scale
         if: not (dry_run_mode := job_wrapper is None) and job is not None
         params:
@@ -34,7 +34,7 @@ destinations:
         # The accumulated scaling factor is read from the persisted
         # OOM_MEM_SCALE destination param, which Galaxy carries across
         # resubmissions.
-      - &oom_increase_rule
+      - &oom_resubmit_increase_memory
         id: oom_resubmit_increase_memory
         if: not (dry_run_mode := job_wrapper is None) and job is not None and job.state == "resubmitted"
         execute: |
@@ -62,10 +62,10 @@ destinations:
   condor_singularity_with_conda:
     resubmit: *oom_retry_policy
     rules:
-      - *oom_persist_rule
-      - *oom_increase_rule
+      - *oom_resubmit_persist_oom_mem_scale
+      - *oom_resubmit_increase_memory
   condor_internal:
     resubmit: *oom_retry_policy
     rules:
-      - *oom_persist_rule
-      - *oom_increase_rule
+      - *oom_resubmit_persist_oom_mem_scale
+      - *oom_resubmit_increase_memory
