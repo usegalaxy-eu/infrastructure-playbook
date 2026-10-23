@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Data part of `browserSetup.sh update`, run on the host as the VM mounts the storage read-only
+set -euo pipefail
+
+GBD_DIR="{{ ucsc_genome_browser_host_gbd_dir | regex_replace('/$', '') }}"
+HGDOWNLOAD="{{ ucsc_genome_browser_gbd_sync_hgdownload }}"
+VAGRANT_DIR="{{ ucsc_genome_browser_vm_vagrant_project_dir }}"
+RSYNC_OPTS=(-rltv --partial)  # not -a, NFS root squashing
+
+# $1 must not contain single quotes
+vm() {
+    (cd "$VAGRANT_DIR" && vagrant ssh --no-tty -c "sudo sh -c '$1'")
+}
+
+{% if ucsc_genome_browser_gbd_sync_assemblies | length > 0 %}
+ASSEMBLIES=({{ ucsc_genome_browser_gbd_sync_assemblies | join(' ') }})
+{% else %}
+mapfile -t ASSEMBLIES < <(find "$GBD_DIR/gbdb" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort)
+{% endif %}
+mapfile -t DATABASES < <(find "$GBD_DIR/meta" -mindepth 1 -maxdepth 1 -type d -not -name hgcentral -not -name hgTemp -printf '%f\n' | sort)
+
+for db in "${ASSEMBLIES[@]}"; do
+    echo "Syncing gbdb: $db"
+    rsync "${RSYNC_OPTS[@]}" "$HGDOWNLOAD::gbdb/$db/" "$GBD_DIR/gbdb/$db/"
+done
+
+echo "Stopping MariaDB in the VM"
+vm "systemctl stop mariadb"
+# drop caches, virtiofs `cache: always` would serve stale files
+trap 'echo "Starting MariaDB in the VM"; vm "sync; echo 3 > /proc/sys/vm/drop_caches; systemctl start mariadb"' EXIT
+
+for db in "${DATABASES[@]}"; do
+    echo "Syncing MySQL database: $db"
+    rsync "${RSYNC_OPTS[@]}" --update "$HGDOWNLOAD::mysql/$db/" "$GBD_DIR/meta/$db/"
+done
+
+echo "Update finished"
