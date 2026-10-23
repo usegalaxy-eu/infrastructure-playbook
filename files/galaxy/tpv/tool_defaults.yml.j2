@@ -3,12 +3,6 @@
 global:
   default_inherits: default
   context:
-    # Base multiplier applied on each OOM resubmission. The accumulated
-    # factor is persisted in the OOM_MEM_SCALE destination param (see
-    # params below), which Galaxy carries across resubmissions. Memory
-    # requirements for resubmitted jobs are capped at OOM_SCALING_CAP.
-    OOM_SCALING_FACTOR: 2
-    OOM_SCALING_CAP: 512
     # Weighted pool of job working directories. A single directory is
     # selected per job via helpers.weighted_choice (see tools.default.params
     # below). Set a weight to 0 to drain a directory; if all weights are 0
@@ -24,15 +18,6 @@ tools:
     cores: 1
     mem: cores * 3.8
     gpus: 0
-    resubmit:
-      oom_retry:
-        condition: memory_limit_reached and attempt <= 3
-        # `(mem * OOM_SCALING_FACTOR ** (attempt - 2)) < OOM_SCALING_CAP`
-        # allows only one resubmission capped at OOM_SCALING_CAP, subsequent
-        # resubmission attempts are rejected.
-        environment: tpv_dispatcher
-        # Delay is in seconds before Galaxy dispatches the resubmitted job.
-        delay: 60
     env:
       - name: GALAXY_MEMORY_MB
         value: "{int(mem * 1024)}" # set 5/2023 might be moved to runner or tool wrappers, related to Galaxy issue 15952
@@ -68,24 +53,6 @@ tools:
       reject:
         - offline
     rules:  # executed in order
-        # Persist OOM_MEM_SCALE across resubmissions via job.destination_params.
-        # On the first run this records the base factor (OOM_SCALING_FACTOR).
-        # On each resubmit this rule re-evaluates the expression, reading the
-        # previously persisted value and multiplying by OOM_SCALING_FACTOR.
-      - id: oom_resubmit_persist_oom_mem_scale
-        if: not (dry_run_mode := job_wrapper is None)
-        params:
-          OOM_MEM_SCALE: "{OOM_SCALING_FACTOR * int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else OOM_SCALING_FACTOR}"
-
-        # The accumulated scaling factor is read from the
-        # persisted OOM_MEM_SCALE destination param,
-        # which Galaxy carries across resubmissions.
-      - id: oom_resubmit_increase_memory
-        if: not (dry_run_mode := job_wrapper is None) and job is not None and job.state == "resubmitted"
-        execute: |
-          _scale = int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else 1
-          entity.mem = f"min(({entity.mem}) * {_scale}, {OOM_SCALING_CAP})"
-
         # Set accounting group user for jobs
       - id: jobs_user_accounting_group
         if: user is not None
