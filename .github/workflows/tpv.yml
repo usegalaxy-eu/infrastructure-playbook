@@ -182,10 +182,9 @@ jobs:
 
           shopt -s nullglob
 
-          for file in files/galaxy/tpv/*.{yml,yaml}; do
-            echo Running TPV linter on "$file"...
-            tpv lint $file || exit 1
-          done
+          files=(files/galaxy/tpv/*.yml files/galaxy/tpv/*.yaml)
+          echo Linting TPV configuration files: "${files[@]}"
+          tpv lint "${files[@]}" || exit 1
 
   dry-run:
     name: Dry-run
@@ -404,7 +403,13 @@ jobs:
           for file in (Path(path) for path in glob.glob(f"{tpv_path}/*.yml") + glob.glob(f"{tpv_path}/*.yaml")):
               comparison = {}
               for key, playbook in playbooks.items():
-                  comparison[key] = yaml.safe_load(open(playbooks[key].parent / file, 'r')).get("tools", {})
+                  path = playbook.parent / file
+                  if not path.exists():
+                      # file was added or deleted in this PR, missing from the
+                      # other checkout, every tool counts as changed
+                      comparison[key] = {}
+                      continue
+                  comparison[key] = yaml.safe_load(open(path, 'r')).get("tools", {})
                   comparison[key] = {
                     key: hashlib.sha256(yaml.dump(value, sort_keys=True).encode('utf-8')).hexdigest()
                     for key, value in comparison[key].items() if not value.get("abstract", False) # ignore abstract tools
