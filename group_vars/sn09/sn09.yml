@@ -121,6 +121,12 @@ telegraf_processors:
       - '  key = "req_path_normalized"'
       - '  pattern = "\\?.*"'
       - '  replacement = ""'
+  # Counters as float, else InfluxDB drops them next to float gauges
+  - processor: converter
+    config:
+      - namepass = ["galaxy_page_timings."]
+      - '[processors.converter.fields]'
+      - '  float = ["value"]'
 
 # Custom pip installer
 pip_venv_path: '{{ galaxy_venv_dir }}'
