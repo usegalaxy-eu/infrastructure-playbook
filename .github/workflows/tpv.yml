@@ -182,10 +182,9 @@ jobs:
 
           shopt -s nullglob
 
-          for file in files/galaxy/tpv/*.{yml,yaml}; do
-            echo Running TPV linter on "$file"...
-            tpv lint $file || exit 1
-          done
+          files=(files/galaxy/tpv/*.yml files/galaxy/tpv/*.yaml)
+          echo Linting TPV configuration files: "${files[@]}"
+          tpv lint "${files[@]}" || exit 1
 
   dry-run:
     name: Dry-run
