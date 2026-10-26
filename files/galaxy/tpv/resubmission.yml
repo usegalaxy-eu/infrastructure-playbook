@@ -1,0 +1,71 @@
+# This file must be loaded last, after all other configuration files, so that
+# memory scaling occurs after all other rules have modified the `mem`
+# requirement.
+---
+global:
+  context:
+    # Base multiplier applied on each OOM resubmission. The accumulated factor
+    # is persisted in OOM_MEM_SCALE destination param, which Galaxy carries
+    # across resubmissions.
+    OOM_SCALING_FACTOR: 2
+    # Memory requirement cap for resubmitted jobs.
+    OOM_SCALING_CAP: 512
+destinations:
+  # - Keep in mind that TPV does not regex-match destination names
+  # - If a child applies `mem`-setting rules, scaling must apply afterward
+  condor_container:
+    resubmit: &oom_retry_policy
+      oom_retry:
+        condition: memory_limit_reached and attempt <= 3
+        environment: tpv_dispatcher
+        # Delay is in seconds before Galaxy dispatches the resubmitted job.
+        delay: 60
+    rules:  # executed in order
+        # Persist OOM_MEM_SCALE across resubmissions via
+        # `job.destination_params`. On the first run this records the base
+        # factor (OOM_SCALING_FACTOR). On each resubmit this rule re-evaluates
+        # the expression, reading the previously persisted value and
+        # multiplying by OOM_SCALING_FACTOR.
+      - &oom_resubmit_persist_oom_mem_scale
+        id: oom_resubmit_persist_oom_mem_scale
+        if: not (dry_run_mode := job_wrapper is None) and job is not None
+        params:
+          OOM_MEM_SCALE: "{OOM_SCALING_FACTOR * int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else OOM_SCALING_FACTOR}"
+        # The accumulated scaling factor is read from the persisted
+        # OOM_MEM_SCALE destination param, which Galaxy carries across
+        # resubmissions.
+      - &oom_resubmit_increase_memory
+        id: oom_resubmit_increase_memory
+        if: not (dry_run_mode := job_wrapper is None) and job is not None and job.state == "resubmitted"
+        execute: |
+          from tpv.core.entities import TryNextDestinationOrFail
+
+          scale = int(job.destination_params.get('OOM_MEM_SCALE', OOM_SCALING_FACTOR)) if job.destination_params else 1
+          scale_mem = lambda mem: min(mem * scale, OOM_SCALING_CAP)
+
+          # Work with a copy: a rejected candidate must not change the next
+          # candidate's base memory, context, or persisted multiplier.
+          # Evaluate the base formula first: it can be a multiline Python block
+          # (e.g. BWA-MEM2 with a reference supplied from history).
+          resources = entity.evaluate_resources(dict(locals()))
+          resources.mem = scale_mem(resources.mem)
+          if resources.max_mem is not None:
+              # respect explicit resource ceilings as well as the OOM cap
+              resources.mem = min(resources.mem, resources.max_mem)
+          if not entity.matches(resources, dict(locals())):
+              # reject an undersized candidate and try the next destination
+              raise TryNextDestinationOrFail("Destination cannot accommodate OOM retry resources")
+
+          entity.mem = resources.mem
+  # condor_container_gpu:
+  #  # inherits resubmission rules from `condor_container`
+  condor_singularity_with_conda:
+    resubmit: *oom_retry_policy
+    rules:
+      - *oom_resubmit_persist_oom_mem_scale
+      - *oom_resubmit_increase_memory
+  condor_internal:
+    resubmit: *oom_retry_policy
+    rules:
+      - *oom_resubmit_persist_oom_mem_scale
+      - *oom_resubmit_increase_memory
