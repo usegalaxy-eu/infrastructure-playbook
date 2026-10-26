@@ -280,7 +280,7 @@ galaxy_jobconf:
         - "{{ galaxy_config_dir }}/total_perspective_vortex/users.yml"
         - "{{ galaxy_config_dir }}/total_perspective_vortex/roles.yml"
         # Keep last: append OOM scaling after destination-specific rules.
-        - "{{ galaxy_config_dir }}/total_perspective_vortex/resubmission.yml"
+        - "{{ galaxy_config_dir }}/total_perspective_vortex/resubmission.yml"  # keep last, should apply only after `mem` is set in stone
   tools:
     # TODO(hxr): implement validation that checks that every destination
     # used here is defined above.
