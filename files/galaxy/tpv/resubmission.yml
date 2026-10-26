@@ -57,8 +57,8 @@ destinations:
               raise TryNextDestinationOrFail("Destination cannot accommodate OOM retry resources")
 
           entity.mem = resources.mem
-  condor_container_gpu:
-    # inherits resubmission rules from `condor_container`
+  # condor_container_gpu:
+  #  # inherits resubmission rules from `condor_container`
   condor_singularity_with_conda:
     resubmit: *oom_retry_policy
     rules:
