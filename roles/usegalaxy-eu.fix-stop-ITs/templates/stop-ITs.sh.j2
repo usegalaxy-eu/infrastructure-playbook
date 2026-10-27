@@ -6,7 +6,7 @@ cd ~
 for job in $(gxadmin query queue-detail | grep running | grep interactive_tool | awk '{print $3}')
 do
     # Get job working directory
-    JWD=$(python3 /usr/local/bin/galaxy_jwd get $job)
+    JWD=$(/opt/galaxy/venv/bin/python /usr/local/bin/galaxy_jwd get $job)
 
     # Get external/Condor job ID from either external_id file or job_condor.log file from JWD
     if [ -f $JWD/external_id ]; then

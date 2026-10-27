@@ -3,14 +3,6 @@
 usegalaxy_eu_autofs_mounts:
   - vdb
 
-# Certbot
-certbot_auth_method: --webroot
-certbot_well_known_root: /srv/nginx/_well-known_root
-certbot_share_key_users:
-  - nginx
-certbot_post_renewal: |
-  systemctl restart nginx || true
-
 # NGINX
 nginx_enable_default_server: false
 nginx_servers:

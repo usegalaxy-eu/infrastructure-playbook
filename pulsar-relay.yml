@@ -1,0 +1,22 @@
+---
+- name: Pulsar relay
+  hosts: pulsar_relay
+  become: true
+  pre_tasks:
+    - name: Install firewalld
+      ansible.builtin.package:
+        name: firewalld
+        state: present
+    - name: Enable and start firewalld
+      ansible.builtin.service:
+        name: firewalld
+        state: started
+        enabled: true
+    - name: Allow traefik to reach the relay
+      ansible.posix.firewalld:
+        port: "{{ pulsar_relay_port }}/tcp"
+        permanent: true
+        state: enabled
+        immediate: true
+  roles:
+    - usegalaxy_eu.ansible_pulsar_relay

@@ -7,8 +7,9 @@ autofs_conf_files:
   data:
     - dnb01   -rw,hard,nosuid      ufr-dyn.isi1.public.ads.uni-freiburg.de:/ifs/isi1/ufr/bronze/nfs/denbi/&
 
-autofs_service.install: true
-autofs_service.enable: true
+autofs_service:
+  install: true
+  enable: true
 nfs_kernel_tuning: true
 
 # CVMFS
@@ -28,6 +29,7 @@ cvmfs_check_servers:
   repos:
     - test.galaxyproject.org
     - data.galaxyproject.org
+    - idc.galaxyproject.org
     - main.galaxyproject.org
     - sandbox.galaxyproject.org
     - singularity.galaxyproject.org
@@ -35,10 +37,13 @@ cvmfs_check_servers:
     - cvmfs-config.galaxyproject.org
     - refgenomes-databio.galaxyproject.org
   hosts:
-    - cvmfs1-psu0.galaxyproject.org
+    - cvmfs0-psu1.galaxyproject.org
     - cvmfs1-iu0.galaxyproject.org
-    - cvmfs1-tacc0.galaxyproject.org
     - cvmfs1-mel0.gvl.org.au
     - galaxy.jrc.ec.europa.eu:8008
     - cvmfs1-ufr0.galaxyproject.eu
     - cvmfs-s1-galaxy.computecanada.ca:8000
+
+ssh_selinux_packages:
+  - policycoreutils-python-utils
+  - checkpolicy
