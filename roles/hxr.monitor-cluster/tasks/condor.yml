@@ -1,4 +1,9 @@
 ---
+- name: Install `ansible-core`
+  package:
+    name: ansible-core
+    state: present
+
 - name: "Send machine group monitor"
   copy:
     src: "cluster_util-condor-split.sh"
@@ -61,4 +66,29 @@
     state: present
     insertafter: EOF
     line: 'telegraf ALL=(ALL) NOPASSWD: /usr/bin/monitor-condor-queue-jobs'
+    validate: 'visudo -cf %s'
+
+- name: "Fetch VGCN host inventory for Condor host monitor"
+  get_url:
+    url: "{{ monitor_condor_inventory_url }}"
+    dest: /etc/condor-monitored-hosts
+    force: true
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "Add Condor host status monitor"
+  copy:
+    src: "cluster_hosts-condor.py"
+    dest: "/usr/bin/monitor-condor-hosts"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Allow telegraf to run monitor-condor-hosts
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    insertafter: EOF
+    line: 'telegraf ALL=(ALL) NOPASSWD: /usr/bin/monitor-condor-hosts'
     validate: 'visudo -cf %s'

@@ -31,9 +31,9 @@ runners:
 # Job handler configuration
 #
 handling:
-{% if galaxy_jobconf.handlers.assign_with is defined %}
-  assign_with:
-    - {{ galaxy_jobconf.handlers.assign_with }}
+{% if galaxy_jobconf.handlers.assign is defined %}
+  assign:
+    - {{ galaxy_jobconf.handlers.assign }}
 {% endif %}
 {% if galaxy_jobconf.handlers.default is defined %}
   default: {{ galaxy_jobconf.handlers.default }}
@@ -44,14 +44,18 @@ handling:
 {% if galaxy_jobconf.handlers.ready_window_size is defined %}
   ready_window_size: {{ galaxy_jobconf.handlers.ready_window_size }}
 {% endif %}
-{% if galaxy_systemd_handlers is defined and galaxy_systemd_handlers > 0 %}
+{% if galaxy_systemd_handlers is defined %}
   processes:
+{% if galaxy_systemd_handlers == 0 %}
+    DUMMY_PLACEHOLDER_FOR_HANDLER:
+{% endif %}
+{% set special_handlers = {} %}
 {% for n in range(galaxy_systemd_handlers) %}
     {{ galaxy_systemd_handler_prefix }}_{{ n }}:
+{% if n in special_handlers %}
+      {{ special_handlers[n] | to_json }}
+{% endif %}
 {% endfor %}
-{% elif galaxy_systemd_handlers is defined and galaxy_systemd_handlers == 0 %}
-  processes:
-    DUMMY_PLACEHOLDER_FOR_HANDLER:
 {% endif %}
 
 #
@@ -113,6 +117,9 @@ tools:
   - id: {{ tool['id'] }}
 {% if 'destination' in tool %}
     environment: {{ tool['destination'] }}
+{% endif %}
+{% if 'handler' in tool %}
+    handler: {{ tool['handler'] }}
 {% endif %}
 {% if 'resources' in tool %}
     resources: {{ tool['resources'] }}

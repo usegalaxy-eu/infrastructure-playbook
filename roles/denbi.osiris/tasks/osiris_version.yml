@@ -7,6 +7,12 @@
     update: true
   become: yes
   become_user: "apache"
+  environment:
+    ANSIBLE_SYSTEM_WARNINGS: "False"
+  vars:
+    # Prevent ansible from using $HOME/.ansible/tmp
+    # which for 'apache' is /usr/share/httpd/.ansible/tmp
+    ansible_remote_tmp: /tmp/ansible_osiris_checkout
 
 - name: "Ensure permissions for OSIRIS PHP files"
   ansible.builtin.file:

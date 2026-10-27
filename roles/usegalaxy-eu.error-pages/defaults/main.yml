@@ -1,0 +1,80 @@
+---
+error_pages_dest: /usr/share/nginx/html
+error_pages_owner: nginx
+error_pages_group: nginx
+
+error_pages_home_url: "https://usegalaxy.eu/"
+error_pages_status_url: "https://stats.galaxyproject.eu/d/000000052/alerts?orgId=1"
+error_pages_panel_url: "https://stats.galaxyproject.eu/d/000000052/alerts?orgId=1&refresh=15m&kiosk"
+error_pages_chat_url: "https://matrix.to/#/#galaxyproject_usegalaxy-eu:gitter.im"
+error_pages_contact_mail: "contact@usegalaxy.eu"
+
+# panel: embed the live Grafana alerts panel, as the old pages did
+# (408, 500, 502, 503, 504 -- not 400, 403, 404)
+error_pages:
+  - code: 400
+    icon: file-warning
+    title: "We could not read that request"
+    lead: "The request was not valid."
+    body: >-
+      Something in the address or in the data sent to us was malformed.
+      Please check the address and try again.
+    panel: false
+  - code: 403
+    icon: lock
+    title: "You cannot open this page"
+    lead: "You do not have access to this resource."
+    body: >-
+      If you think you should have access, please log in first, or write to us.
+    panel: false
+  - code: 404
+    icon: search-x
+    title: "Page not found"
+    lead: "We could not find the page you asked for."
+    body: >-
+      The link may be old, or the address may have a typo. The Galaxy Europe
+      start page is a good place to continue.
+    panel: false
+  - code: 408
+    icon: hourglass
+    title: "The request took too long"
+    lead: "Your request timed out before we could read all of it."
+    body: >-
+      This can happen on a slow or broken connection, for example during a
+      large upload. Please check your connection and try again.
+    panel: true
+  - code: 500
+    icon: bug
+    title: "Something broke on our side"
+    lead: "Galaxy ran into an internal error."
+    body: >-
+      This is our fault, not yours. Your data and your histories are not
+      affected. Please try again, and tell us if it keeps happening.
+    panel: true
+  - code: 502
+    icon: unplug
+    title: "Galaxy is not reachable"
+    lead: "We cannot connect to Galaxy right now."
+    body: >-
+      Our team is working on it. Your data and your histories are not affected.
+      Please try again in a few minutes.
+    panel: true
+  - code: 503
+    icon: wrench
+    title: "Galaxy is unavailable"
+    lead: "Galaxy is down or under maintenance right now."
+    body: >-
+      Planned maintenance is announced on our chat and on the status page. Your
+      data and your histories are not affected. Please try again later.
+    panel: true
+  - code: 504
+    icon: timer-off
+    title: "Galaxy took too long to answer"
+    lead: "The server did not answer in time."
+    body: >-
+      This usually means Galaxy is very busy. Your data and your histories are
+      not affected. Please try again in a few minutes.
+    panel: true
+
+error_pages_brand_tokens_url: "{{ undef() }}"
+error_pages_brand_tokens_checksum: "{{ undef() }}"

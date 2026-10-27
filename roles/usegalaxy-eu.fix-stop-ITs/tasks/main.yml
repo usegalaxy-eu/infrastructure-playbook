@@ -1,6 +1,6 @@
 ---
 - name: "Deploy IT stopper script"
-  template:
+  ansible.builtin.template:
     src: stop-ITs.sh.j2
     dest: /usr/bin/stop-ITs
     owner: root

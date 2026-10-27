@@ -1,4 +1,4 @@
 ---
 - name: Include CentOS8 tasks
-  include: centos8.yml
+  ansible.builtin.include_tasks: centos8.yml
   when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '8'

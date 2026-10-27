@@ -1,20 +1,16 @@
 ---
-- hosts: cvmfsstratum1servers
+- name: CVMFS stratum1 servers
+  hosts: cvmfsstratum1servers
   become: true
   vars:
-    hostname: cvmfs1-ufr0.internal.galaxyproject.eu
+    hostname: cvmfs1-ufr0.bi.privat
   vars_files:
     - "secret_group_vars/all.yml"
     - mounts/mountpoints.yml
     - mounts/dest/all.yml
-  collections:
-    - devsec.hardening
   pre_tasks:
-    - name: Set default version of Python
-      alternatives:
-        name: python
-        path: /usr/bin/python3
-    - file:
+    - name: Create /srv symlink to cvmfs data
+      ansible.builtin.file:
         src: /data/dnb01
         dest: /srv
         owner: root
@@ -23,13 +19,10 @@
         force: true
   post_tasks:
     - name: Disable SELinux
-      selinux:
+      ansible.posix.selinux:
         state: disabled
       register:
         selinux_disabled
-    # - name: Reboot if SELinux was disabled
-    #   reboot:
-    #   when: selinux_disabled.reboot_required == true
   roles:
     # Starting configuration of the operating system
     - role: usegalaxy_eu.handy.os_setup
@@ -39,7 +32,6 @@
         enable_grub: true
         enable_kernel_5: true
     - geerlingguy.repo-epel     # Install EPEL repository
-    - usegalaxy-eu.autoupdates  # keep all of our packages up to date
     - influxdata.chrony         # Keep our time in sync.
     - usegalaxy-eu.dynmotd
     # Filesystems
@@ -50,8 +42,8 @@
     - hxr.monitor-cvmfs
     - dj-wasabi.telegraf
     # hardening
-    - os_hardening
-    - ssh_hardening
+    #- devsec.hardening.os_hardening
+    #- devsec.hardening.ssh_hardening
 
 #
 #    - hostname

@@ -1,0 +1,11 @@
+---
+http:
+  services:
+    usegalaxy-eu-sse:
+      loadBalancer:
+        sticky:
+          cookie: {}
+        passHostHeader: true
+        serversTransport: usegalaxy-eu-sse-transport
+        servers:
+          - url: "https://sn09.galaxyproject.eu/"

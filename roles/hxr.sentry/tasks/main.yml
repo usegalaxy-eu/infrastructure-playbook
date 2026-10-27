@@ -11,7 +11,7 @@
     groups: docker
     append: yes
 
-- name: reset ssh connection to allow user changes to affect 'current login user'
+- name: Reset SSH connection to allow user changes to affect 'current login user'
   meta: reset_connection
 
 - name: "Make data dir"
@@ -58,7 +58,7 @@
 - name: Template config files
   become: true
   become_user: "{{ hxr_sentry_user }}"
-  template:
+  ansible.builtin.template:
     src: "{{ item }}.j2"
     dest: "{{ hxr_sentry_repodir }}/{{ item }}"
     owner: "{{ hxr_sentry_user }}"

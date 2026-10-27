@@ -8,11 +8,9 @@
     - secret_group_vars/all.yml
     - mounts/dest/all.yml
     - mounts/mountpoints.yml
-  collections:
-    - devsec.hardening
   handlers:
-    - name: restart rsyslog
-      service:
+    - name: Restart rsyslog
+      ansible.builtin.service:
         name: rsyslog
         state: restarted
   tasks:
@@ -30,10 +28,10 @@
         name: epel-release
         state: present
     - name: Set additional local mount point
-      set_fact:
-        autofs_conf_files: "{{ autofs_conf_files | combine({ 'usrlocal': autofs_conf_files['usrlocal'] + galaxy_mount }) }}"
+      ansible.builtin.set_fact:
+        autofs_conf_files: "{{ autofs_conf_files | combine({'usrlocal': autofs_conf_files['usrlocal'] + galaxy_mount}) }}"
     - name: Install Dependencies
-      package:
+      ansible.builtin.package:
         name:
           [
             'git',
@@ -49,7 +47,7 @@
       become: true
   post_tasks:
     - name: Append some users to the systemd-journal group
-      user:
+      ansible.builtin.user:
         name: '{{ item }}'
         groups: systemd-journal
         append: true
@@ -57,8 +55,8 @@
         - '{{ galaxy_user.name }}'
         - 'telegraf'
 
-    - name: rsyslog configuration
-      copy:
+    - name: Rsyslog configuration
+      ansible.builtin.copy:
         content: |
           # Accept logs on TCP port 514
           module(load="imtcp")
@@ -91,6 +89,7 @@
             state: directory
             owner: root
             group: root
+            mode: "0750"
         - name: Ensure OpenStack configuration directory exists.
           become: true
           ansible.builtin.file:
@@ -120,13 +119,13 @@
         enabled: true
       become: true
     - name: Configure firewalld to open ports
-      firewalld:
+      ansible.posix.firewalld:
         port: "{{ item }}"
         immediate: true
         permanent: true
         state: enabled
       with_items:
-        - 9628/tcp # HTCondor shared port
+        - 9618/tcp # HTCondor shared port
         - 514/tcp  # rsyslog
     - name: Add the OpenAI API key to the telegraf user's bashrc file
       ansible.builtin.lineinfile:
@@ -134,36 +133,42 @@
         regexp: "^export OPENAI_API_KEY_TELEGRAF"
         line: 'export OPENAI_API_KEY_TELEGRAF="{{ openai_api_key_telegraf }}"'
         create: true
+        owner: "{{ telegraf_user.name }}"
+        group: "{{ telegraf_user.group }}"
+        mode: "0640"
       no_log: true
   roles:
-    - usegalaxy-eu.vgcn-monitoring
+    # OS operations
     - usegalaxy_eu.handy.os_setup
     - geerlingguy.repo-epel
-    - usegalaxy-eu.autoupdates
     - influxdata.chrony
     - usegalaxy-eu.autofs
-    - hxr.monitor-cluster
-    - hxr.monitor-galaxy
-    - usegalaxy-eu.monitoring
+    - hxr.admin-tools
     - usegalaxy-eu.bashrc
     - usegalaxy-eu.dynmotd
     - ssh-host-sign
-    - hxr.postgres-connection
     - galaxyproject.gxadmin
     - usegalaxy-eu.galaxy-slurp
+
+    # Monitor / Maintenance Operations
+    - hxr.postgres-connection
+    - dj-wasabi.telegraf
+    - usegalaxy-eu.vgcn-monitoring
+    - hxr.monitor-cluster
+    - hxr.monitor-galaxy
+    - usegalaxy-eu.monitoring
     - usegalaxy_eu.fs_maintenance
     - usegalaxy_eu.galaxy_cleanup # Cleanup the Galaxy objectstores and old datasets
+    - usegalaxy-eu.kui
     # - usegalaxy-eu.htcondor_release
     # - usegalaxy-eu.fix-unscheduled-workflows
     - usegalaxy-eu.fix-ancient-ftp-data
     # - usegalaxy-eu.fix-user-quotas
-    - usegalaxy-eu.remove-orphan-condor-jobs
-    - ssh_hardening
+    # - devsec.hardening.ssh_hardening
     - usegalaxy-eu.job-radar-stats-influxdb
-    - dj-wasabi.telegraf
     # - usegalaxy-eu.fix-stop-ITs
     - usegalaxy-eu.logrotate
     - usegalaxy_eu.walle
     - usegalaxy_eu.ntfy-notifications
     - l3d.restic
-    - usegalaxy-eu.kui
+    - usegalaxy-eu.update-hosts # Update hosts list

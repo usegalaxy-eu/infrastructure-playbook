@@ -145,7 +145,14 @@
         - "export GALAXY_PULSAR_APP_CONF={{ bashrc_galaxy_pulsar_app_conf }}"
         - "export SINGULARITY_CACHEDIR=/scratch/singularity/"
         - "export APPTAINER_CACHEDIR=/scratch/singularity/"
+      loop_control:
+        loop_var: task_item
 
+    - name: Insert specific export vars from group_vars
+      lineinfile:
+        path: "{{ item.uhome }}/.bashrc"
+        line: "export {{ task_item }}"
+      loop: "{{ bashrc_extra_exports }}"
       loop_control:
         loop_var: task_item
 
