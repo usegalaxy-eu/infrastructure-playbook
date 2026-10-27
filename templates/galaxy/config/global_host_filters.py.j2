@@ -189,7 +189,13 @@ DOMAIN_SECTIONS = {
         "evolution",
         "metagenomic_analysis"
     ],
-    "riboseq": ["get_data"],
+    "riboseq": [
+        "get_data",
+        "riboseq_preprocessing",
+        "riboseq_umi_and_barcodes",
+        "riboseq_gwips_viz",
+        "riboseq_trips_viz"
+    ],
 }
 
 def per_host_tool_sections( context, section ):
