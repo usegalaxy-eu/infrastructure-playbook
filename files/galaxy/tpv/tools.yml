@@ -991,11 +991,20 @@ tools:
         mem: 20
 
   toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_operation/spatialdata_operation/.*:
-    mem: 16
+    cores: min(max(1, input_size / 4), 16)
+    mem: min(max(4, input_size), 64)
 
   toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_io/spatialdata_io/.*:
-    mem: 16
-    cores: 5
+    cores: min(max(1, input_size / 4), 16)
+    mem: min(max(4, input_size), 64)
+
+  toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_plot/spatialdata_plot/.*:
+    cores: min(max(1, input_size / 4), 16)
+    mem: min(max(4, input_size), 64)
+
+  toolshed.g2.bx.psu.edu/repos/iuc/liana_methods/liana_methods/.*:
+    cores: min(max(1, input_size / 8), 8)
+    mem: min(max(4, input_size / 2), 32)
 
   toolshed.g2.bx.psu.edu/repos/bgruening/simorgh/simorgh/.*:
     mem: 10
