@@ -49,12 +49,9 @@ tools:
       request_memory: "{mem}G"
       submit_request_gpus: "{gpus or 0}"
       docker_memory: "{mem}G"
-      # Choose a base root once, then reuse it when TPV reroutes a retry.
-      # Prefer the assigned root over destination params to keep submission
-      # and recovery paths consistent. Dry runs have no job to reuse.
+      # Distribute jobs across the weighted jwd_pool (see global.context above). Reuse the assigned JWD root when TPV reroutes a retry. 
       job_working_directory: >-
-        {((job.working_directory or (job.destination_params or {}).get('job_working_directory'))
-        if job is not None else None) or helpers.weighted_choice(jwd_pool)['value']}
+        {((job.working_directory or (job.destination_params or {}).get('job_working_directory')) if not (dry_run_mode := job_wrapper is None) else None) or helpers.weighted_choice(jwd_pool)['value']}
       description: "{tool.id if not tool.id.count('/') == 5 else tool.id.split('/')[4]}"
     scheduling:
       reject:
