@@ -8,6 +8,8 @@ global:
     # below). Set a weight to 0 to drain a directory; if all weights are 0
     # the helper falls back to unweighted random selection. Existing
     # assignments are retained across job resubmissions.
+    # the helper falls back to unweighted random selection. Existing
+    # assignments are retained across job resubmissions.
     jwd_pool:
 {% for jwd_entry in job_working_directory_pool %}
       - value: "{{ jwd_entry.value }}"
