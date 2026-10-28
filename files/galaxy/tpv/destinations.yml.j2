@@ -64,7 +64,7 @@ destinations:
         {{ galaxy_volumes(exclude_volumes=['dnb04', 'dnb-ds01']) }}
         {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }},
         {{ cvmfs.idc.path }}:{{ cvmfs.idc.docker_perm }}"
-      docker_run_extra_arguments: "--memory={mem}g --cpus={cores} {self.params.get('docker_run_extra_arguments') or ''}"
+      docker_run_extra_arguments: "--memory={mem}g --cpus={cores} {entity.evaluator.eval_code_block(tool_container_arguments.get('docker_run_extra_arguments') or '', dict(locals()), as_f_string=True)}"
       require_container: true
       submit_request_cpus: "{cores}"
       submit_request_memory: "{mem}G"
@@ -130,7 +130,7 @@ destinations:
     params:
       submit_requirements: "{galaxy_group}"
       request_gpus: "{gpus or 0}"
-      docker_run_extra_arguments: "{self.params.get('docker_run_extra_arguments') or ''} --gpus \"device=$_CONDOR_AssignedGPUs\" --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
+      docker_run_extra_arguments: "--memory={mem}g --cpus={cores} {entity.evaluator.eval_code_block(tool_container_arguments.get('docker_run_extra_arguments') or '', dict(locals()), as_f_string=True)} --gpus \"device=$_CONDOR_AssignedGPUs\" --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
     rules:
       - id: GPU model preferences
         if: |
@@ -564,8 +564,8 @@ destinations:
     params:
       requirements: "{galaxy_group}"
       request_gpus: "{gpus or 0}"
-      docker_run_extra_arguments: "{self.params.get('docker_run_extra_arguments') or ''} --gpus \"device=$_CONDOR_AssignedGPUs\" --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
-      singularity_run_extra_arguments: "{self.params.get('singularity_run_extra_arguments') or ''} --nv --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
+      docker_run_extra_arguments: "{entity.evaluator.eval_code_block(tool_container_arguments.get('docker_run_extra_arguments') or '', dict(locals()), as_f_string=True)} --gpus \"device=$_CONDOR_AssignedGPUs\" --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
+      singularity_run_extra_arguments: "{entity.evaluator.eval_code_block(tool_container_arguments.get('singularity_run_extra_arguments') or '', dict(locals()), as_f_string=True)} --nv --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
     rules:
       - id: GPU model preferences
         if: |

@@ -196,5 +196,13 @@ tools:
         fail: |
           Invalid 'Remote resources id' selected in the config menu under 'User -> Preferences -> Manage Information -> Use distributed compute resources'. Please reselect either 'default' or an appropriate remote resource then click 'Save' and rerun your job.
     rank: |
+      # Capture tool/user/role arguments before destination params override them.
+      # In TPV >= 3.3.1, self and entity refer to the combined destination during
+      # argument rendering, so reading the same param there is self-referential.
+      # Keep the templates unevaluated until final (possibly scaled) mem is known.
+      entity.context['tool_container_arguments'] = {
+          key: (entity.params or {}).get(key) or ''
+          for key in ('docker_run_extra_arguments', 'singularity_run_extra_arguments')
+      }
       final_destinations = helpers.weighted_random_sampling(candidate_destinations)
       final_destinations
