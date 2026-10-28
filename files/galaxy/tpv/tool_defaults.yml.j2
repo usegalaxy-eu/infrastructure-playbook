@@ -5,8 +5,7 @@ global:
   context:
     # Weighted pool of job working directories. A single directory is
     # selected per job via helpers.weighted_choice (see tools.default.params
-    # below). Set a weight to 0 to drain a directory; if all weights are 0
-    # the helper falls back to unweighted random selection.
+    # below). Existing assignments are retained across resubmissions.
     jwd_pool:
 {% for jwd_entry in job_working_directory_pool %}
       - value: "{{ jwd_entry.value }}"
@@ -46,8 +45,12 @@ tools:
       request_memory: "{mem}G"
       submit_request_gpus: "{gpus or 0}"
       docker_memory: "{mem}G"
-      # Distribute jobs across the weighted jwd_pool (see global.context above).
-      job_working_directory: "{helpers.weighted_choice(jwd_pool)['value']}"
+      # Choose a base root once, then reuse it when TPV reroutes a retry.
+      # Prefer the assigned root over destination params to keep submission
+      # and recovery paths consistent. Dry runs have no job to reuse.
+      job_working_directory: >-
+        {((job.working_directory or (job.destination_params or {}).get('job_working_directory'))
+        if job is not None else None) or helpers.weighted_choice(jwd_pool)['value']}
       description: "{tool.id if not tool.id.count('/') == 5 else tool.id.split('/')[4]}"
     scheduling:
       reject:
