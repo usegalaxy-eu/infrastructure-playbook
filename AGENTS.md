@@ -10,3 +10,6 @@
 
 Files in this repository that have been encrypted with Ansible vault cannot be decrypted without the secret key. Do
 not waste time attempting to decrypt them.
+
+## Remote Machines
+Don't ever attempt to access a remote machine over ssh or other means.
