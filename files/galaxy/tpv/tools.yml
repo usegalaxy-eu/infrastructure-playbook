@@ -991,20 +991,70 @@ tools:
         mem: 20
 
   toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_operation/spatialdata_operation/.*:
-    mem: 64
-    cores: 20
+    rules:
+      - if: input_size < 5
+        cores: 1
+        mem: 5
+      - if: 5 <= input_size < 10
+        cores: 2
+        mem: 10
+      - if: 10 <= input_size < 20
+        cores: 5
+        mem: 20
+      - if: 20 <= input_size < 30
+        cores: 7
+        mem: 30
+      - if: input_size >= 30
+        cores: 10
+        mem: 40
 
   toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_io/spatialdata_io/.*:
-    mem: 64
-    cores: 20
+    rules:
+      - if: input_size < 5
+        cores: 1
+        mem: 5
+      - if: 5 <= input_size < 10
+        cores: 2
+        mem: 10
+      - if: 10 <= input_size < 20
+        cores: 5
+        mem: 20
+      - if: 20 <= input_size < 30
+        cores: 7
+        mem: 30
+      - if: input_size >= 30
+        cores: 10
+        mem: 40
 
   toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_plot/spatialdata_plot/.*:
-    mem: 64
-    cores: 20
+    rules:
+      - if: input_size < 5
+        cores: 1
+        mem: 5
+      - if: 5 <= input_size < 10
+        cores: 2
+        mem: 10
+      - if: 10 <= input_size < 20
+        cores: 5
+        mem: 20
+      - if: 20 <= input_size < 30
+        cores: 7
+        mem: 30
+      - if: input_size >= 30
+        cores: 10
+        mem: 40
 
   toolshed.g2.bx.psu.edu/repos/iuc/liana_methods/liana_methods/.*:
-    mem: 32
-    cores: 10
+    rules:
+      - if: input_size < 10
+        cores: 1
+        mem: 5
+      - if: 10 <= input_size < 30
+        cores: 3
+        mem: 10
+      - if: input_size >= 30
+        cores: 7
+        mem: 30
 
   toolshed.g2.bx.psu.edu/repos/bgruening/simorgh/simorgh/.*:
     mem: 10
