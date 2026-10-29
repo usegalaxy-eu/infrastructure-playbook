@@ -64,6 +64,7 @@ ansible_ssh_user=centos
 [htcondor:children]
 htcondor-manager
 htcondor-submit
+htcondor-execute
 
 [htcondor-manager]
 central-manager.bi.privat ansible_ssh_user=root
@@ -76,6 +77,12 @@ maintenance.bi.privat
 sn09.galaxyproject.eu
 
 [htcondor-submit:vars]
+ansible_group_priority=4
+
+[htcondor-execute:children]
+compute
+
+[htcondor-execute:vars]
 ansible_group_priority=4
 
 [dokku]
