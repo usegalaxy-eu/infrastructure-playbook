@@ -21,7 +21,7 @@ notify() {
     fi
 }
 
-notify "The annual Galaxy pgcleanup as started on $(hostname). Happy Holidays!"
+notify "The annual Galaxy pgcleanup has started on $(hostname). Happy Holidays!"
 
 "{{ galaxy_venv_dir }}/bin/python" \
     "{{ galaxy_server_dir }}/scripts/cleanup_datasets/pgcleanup.py" \
