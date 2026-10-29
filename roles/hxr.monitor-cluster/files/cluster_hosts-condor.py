@@ -31,9 +31,13 @@ MACHINE_ATTRS = [
 
 
 def parse_inventory(path):
-    """Return the hostnames listed in an Ansible inventory."""
+    """Return the hostnames of the compute group in an Ansible inventory.
+
+    Falls back to all hosts for inventories without a compute group.
+    """
     inventory = InventoryManager(loader=DataLoader(), sources=[path])
-    return [host.name for host in inventory.get_hosts()]
+    pattern = "compute" if "compute" in inventory.groups else "all"
+    return [host.name for host in inventory.get_hosts(pattern)]
 
 
 def run(cmd):
