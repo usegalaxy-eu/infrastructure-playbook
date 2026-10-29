@@ -29,7 +29,7 @@
   tasks:
     - name: Install proprietary Nvidia driver
       ansible.builtin.include_tasks:
-        file: tasks/install-nvidia-proprietary.yml
+        file: tasks/compute/install-nvidia-proprietary.yml
       when: inventory_hostname == "c64m512g8-gpuv100.bi.privat"
 
     - name: Update Telegraf hostname
@@ -41,7 +41,7 @@
 
     - name: Copy Telegraf credentials
       ansible.builtin.template:
-        src: output.conf.j2
+        src: compute/output.conf.j2
         dest: "{{ telegraf_agent_config_path }}/telegraf.d/output.conf"
         mode: "0640"
         owner: telegraf
@@ -51,7 +51,7 @@
 
     - name: Copy Cvmfs Telemetry Listener
       ansible.builtin.template:
-        src: telegraf-cvmfs-listener.conf.j2
+        src: compute/telegraf-cvmfs-listener.conf.j2
         dest: "{{ telegraf_agent_config_path }}/telegraf.d/cvmfs-listener.conf"
         mode: "0640"
         owner: telegraf
@@ -61,7 +61,7 @@
 
     - name: Deploy SLX disk monitor script
       ansible.builtin.template:
-        src: check_slx_disks.sh.j2
+        src: compute/check_slx_disks.sh.j2
         dest: "{{ check_slx_disks_path }}"
         owner: root
         group: root
@@ -70,7 +70,7 @@
 
     - name: Deploy NFS access monitor script
       ansible.builtin.template:
-        src: nfs_check.sh.j2
+        src: compute/nfs_check.sh.j2
         dest: "{{ nfs_check_path }}"
         owner: root
         group: root
@@ -93,7 +93,7 @@
 
     - name: "Copy telegraf extra plugins"
       template:
-        src: "telegraf-extra-plugin.conf.j2"
+        src: compute/telegraf-extra-plugin.conf.j2
         dest: "{{ telegraf_agent_config_path }}/telegraf.d/{{ item.key }}.conf"
         owner: telegraf
         group: telegraf
