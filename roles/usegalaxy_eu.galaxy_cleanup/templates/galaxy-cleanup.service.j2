@@ -3,6 +3,7 @@
 Description=Galaxy dataset cleanup
 After=network-online.target
 Wants=network-online.target
+After=galaxy-cleanup-force-retry.service
 
 [Service]
 Type=oneshot
