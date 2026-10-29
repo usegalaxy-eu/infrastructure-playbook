@@ -1,5 +1,13 @@
 ---
 users:
+  PILOT_USER_EMAIL:  # 3Dtrees NEMO pilot account, set before opening the PR
+    rules:
+      - id: nemo-3dtrees-pilot-standardization
+        if: |
+          tool.id.startswith('toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_standardization/3dtrees_standardization/')
+        scheduling:
+          require:
+            - nemo-3dtrees
   bjoern.gruening@gmail.com:
     rules:
       - id: user-specific-notebook
