@@ -1,0 +1,77 @@
+---
+- name: Check if NVIDIA driver is correctly installed
+  ansible.builtin.command:
+    cmd: nvidia-smi
+  register: nvidia_smi
+  failed_when: false
+  changed_when: false
+
+- name: Install NVIDIA driver if not correctly installed
+  when: nvidia_smi.rc != 0
+  block:
+    - name: Remove old driver RHEL 9
+      ansible.builtin.dnf:
+        state: absent
+        name:
+          - nvidia-driver
+      when: ansible_distribution_major_version == '9'
+
+    - name: Remove old driver RHEL 10
+      ansible.builtin.dnf:
+        state: absent
+        name:
+          - '*nvidia*'
+          - '*cuda*'
+        allowerasing: true
+        disable_excludes: all
+      when: ansible_distribution_major_version == '10'
+      failed_when: false
+
+    - name: Create temporary build directory
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: nvidia
+      register: nvidia_tmp_dir
+
+    - name: Download driver package
+      ansible.builtin.get_url:
+        url: "{{ nvidia_proprietary_url }}"
+        dest: "{{ nvidia_tmp_dir.path }}/{{ nvidia_proprietary_url | split('/') | last }}"
+
+    - name: Extract driver package
+      ansible.builtin.unarchive:
+        src: "{{ nvidia_tmp_dir.path }}/{{ nvidia_proprietary_url | split('/') | last }}"
+        dest: "{{ nvidia_tmp_dir.path }}"
+        remote_src: true
+
+    - name: Make installation script executable
+      ansible.builtin.file:
+        path: "{{ nvidia_tmp_dir.path }}/NVIDIA-Linux-x86_64-{{ nvidia_proprietary_version }}.run"
+        mode: "0755"
+
+    - name: Run installation script
+      ansible.builtin.command:
+        cmd: "{{ nvidia_tmp_dir.path }}/NVIDIA-Linux-x86_64-{{ nvidia_proprietary_version }}.run -s"
+
+    - name: Check if nvidia-smi is successful
+      ansible.builtin.command:
+        cmd: nvidia-smi
+      register: nvidia_smi_after_install
+      failed_when: false
+
+    - name: Stop condor if not detected
+      ansible.builtin.systemd_service:
+        state: stopped
+        name: condor
+      when: nvidia_smi_after_install.rc != 0
+
+    - name: Fail if nvidia-smi failed
+      ansible.builtin.fail:
+        msg: GPU not working!
+      when: nvidia_smi_after_install.rc != 0
+  always:
+    - name: Remove temporary build directory
+      ansible.builtin.file:
+        path: "{{ nvidia_tmp_dir.path }}"
+        state: absent
+      when: nvidia_tmp_dir is defined

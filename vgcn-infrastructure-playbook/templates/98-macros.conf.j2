@@ -1,0 +1,9 @@
+#jinja2: trim_blocks:False
+
+# Changing this file will result in a RESTART of all condor daemons
+# on machines where it is deployed.
+# This will TERMINATE running jobs on that execution point.
+# Advertise the GPUs
+{% if htcondor_features is defined %}use feature : {{ htcondor_features }}{% endif %}
+
+{% if gpu_discovery_extra is defined %}GPU_DISCOVERY_EXTRA = {{ gpu_discovery_extra }} {% if gpu_division is defined %}-divide {{ gpu_division }}{% endif %}{% endif %}

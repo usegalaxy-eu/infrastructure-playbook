@@ -1,0 +1,183 @@
+- name: VGCN Configuration Playbook
+  hosts: all
+  become: true
+  vars_files:
+    - mounts/dest/all.yml
+    - mounts/mountpoints.yml
+    - mounts/vars.yml
+  vars:
+    internal: true
+  handlers:
+    - name: Restart Telegraf
+      ansible.builtin.service:
+        name: telegraf
+        state: restarted
+    - name: Reload HTCondor
+      ansible.builtin.service:
+        name: condor
+        state: reloaded
+    - name: Restart HTCondor
+      ansible.builtin.service:
+        name: condor
+        state: restarted
+  pre_tasks:
+    - name: Install proprietary Nvidia driver
+      ansible.builtin.include_tasks:
+        file: tasks/install-nvidia-proprietary.yml
+      when: inventory_hostname == "c64m512g8-gpuv100.bi.privat"
+    - name: Update Telegraf hostname
+      ansible.builtin.lineinfile:
+        path: "{{ telegraf_agent_config_path }}/telegraf.conf"
+        search_string: '    hostname = "localhost.localdomain"'
+        line: '    hostname = "{{ ansible_fqdn }}"'
+      notify: Restart Telegraf
+    - name: Copy Telegraf credentials
+      ansible.builtin.template:
+        src: output.conf.j2
+        dest: "{{ telegraf_agent_config_path }}/telegraf.d/output.conf"
+        mode: "0640"
+        owner: telegraf
+        group: telegraf
+      no_log: true
+      notify: Restart Telegraf
+    - name: Copy Cvmfs Telemetry Listener
+      ansible.builtin.template:
+        src: telegraf-cvmfs-listener.conf.j2
+        dest: "{{ telegraf_agent_config_path }}/telegraf.d/cvmfs-listener.conf"
+        mode: "0640"
+        owner: telegraf
+        group: telegraf
+      no_log: true
+      notify: Restart Telegraf
+    - name: Deploy SLX disk monitor script
+      ansible.builtin.template:
+        src: check_slx_disks.sh.j2
+        dest: "{{ check_slx_disks_path }}"
+        owner: root
+        group: root
+        mode: 0755
+      notify: Restart Telegraf
+    - name: Deploy NFS access monitor script
+      ansible.builtin.template:
+        src: nfs_check.sh.j2
+        dest: "{{ nfs_check_path }}"
+        owner: root
+        group: root
+        mode: 0755
+      notify: Restart Telegraf
+    - name: Load the IPMI device interface
+      community.general.modprobe:
+        name: ipmi_devintf
+        state: present
+    - name: Allow Telegraf to read the power sensor
+      ansible.builtin.copy:
+        dest: /etc/sudoers.d/telegraf-ipmitool
+        content: "telegraf ALL=(root) NOPASSWD: /usr/bin/ipmitool dcmi power reading\n"
+        owner: root
+        group: root
+        mode: "0440"
+        validate: /usr/sbin/visudo -cf %s
+    - name: "Copy telegraf extra plugins"
+      template:
+        src: "telegraf-extra-plugin.conf.j2"
+        dest: "{{ telegraf_agent_config_path }}/telegraf.d/{{ item.key }}.conf"
+        owner: telegraf
+        group: telegraf
+        mode: 0640
+      with_dict: "{{ telegraf_plugins_extra }}"
+      loop_control:
+        label: "{{ item.key }}"
+      when:
+        - telegraf_plugins_extra is defined
+        - telegraf_plugins_extra is iterable
+        - item.value.state|default('present') != 'absent'
+      notify:
+        - Restart Telegraf
+    - name: Fail if disks are misconfigured
+      ansible.builtin.shell:
+        cmd: "{{ check_slx_disks_path }} | cut -d ' ' -f2"
+      register: disk_setup
+    - ansible.builtin.fail:
+        msg: >
+          Disks are misconfigured:
+          "{{ disk_setup.stdout }}"
+      when: '"0" in disk_setup.stdout or (disk_setup.stderr | length > 0)'
+    - name: Ensure the HTCondor configuration directory exists.
+      ansible.builtin.file:
+        path: /etc/condor
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+    - name: Ensure apptainer cache exists
+      ansible.builtin.file:
+        path: /scratch/singularity/
+        state: directory
+        owner: galaxy
+        group: galaxy
+        mode: "0700"
+    - name: Ensure python chache exists (PYTHONPYCACHEPREFIX)
+      ansible.builtin.file:
+        path: /scratch/pythoncache/
+        state: directory
+        owner: galaxy
+        group: galaxy
+        mode: "0700"
+    - name: Ensure CVMFS scratch directory exists
+      ansible.builtin.file:
+        path: /scratch/cvmfs/
+        state: directory
+        owner: cvmfs
+        group: cvmfs
+        mode: "0755"
+  post_tasks:
+    - name: Template HTCondor local configuration.
+      ansible.builtin.template:
+        src: condor_config.local.j2
+        dest: /etc/condor/condor_config.local
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Reload HTCondor
+    - name: Template HTCondor host specific configuration.
+      ansible.builtin.template:
+        src: 99-cloud-init.conf.j2
+        dest: /etc/condor/config.d/99-cloud-init.conf
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Reload HTCondor
+    - name: Template HTCondor host specific configuration macros.
+      ansible.builtin.template:
+        src: 98-macros.conf.j2
+        dest: /etc/condor/config.d/98-macros.conf
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart HTCondor
+    - name: Fix HTCondor token permissions
+      # set perms to 600 for all iles in /etc/condor/tokens.d/
+      become: true
+      block:
+        - name: Find token files
+          ansible.builtin.find:
+            paths: /etc/condor/tokens.d/
+            file_type: file
+            recurse: yes
+          register: htcondor_token_files
+        - name: Set perms to 0600 on all token files
+          ansible.builtin.file:
+            path: "{{ item.path }}"
+            mode: '0600'
+          notify: Restart HTCondor
+          loop: "{{ htcondor_token_files.files }}"
+  roles:
+    - usegalaxy_eu.firewall
+    - usegalaxy_eu.restrict_docker_net
+
+    - usegalaxy-eu.autofs
+    - cvmfs_stat_cvac
+    - galaxyproject.cvmfs
+    - cvmfs_cache_dir
+
+    - grycap.htcondor

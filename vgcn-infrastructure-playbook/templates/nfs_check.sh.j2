@@ -1,0 +1,39 @@
+{% set trim_blocks=True %}
+{% set lstrip_blocks=True %}
+{% macro initialize_vars(excluded_volumes) -%}
+{% for group in [cvmfs,dnb,jwd,cache,misc] -%}
+{% for vol in group.values() -%}
+{% if vol.name not in excluded_volumes -%}
+{{ nfs_check_var_prefix }}{{ vol.name | replace("-","_") }}=1
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% endmacro %}
+{% macro test_galaxy_volumes(excluded_volumes) -%}
+{% for group in [cvmfs,dnb,jwd,cache,misc] -%}
+{% for vol in group.values() -%}
+{% if vol.name not in excluded_volumes -%}
+timeout {{ nfs_check_timeout_sec }} ls {{ vol.path }} > /dev/null 2>&1 || {{ nfs_check_var_prefix }}{{ vol.name | replace("-","_") }}=0
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% endmacro %}
+{% macro print_results_to_influx(excluded_volumes) %}
+{% set parts = [] %}
+{% for group in [cvmfs,dnb,jwd,cache,misc] %}
+  {% for vol in group.values() %}
+    {% if vol.name not in excluded_volumes %}
+      {% set _ = parts.append(nfs_check_var_prefix + vol.name ~ '=${' ~ nfs_check_var_prefix + vol.name | replace("-","_") ~ '}') %}
+    {% endif %}
+  {% endfor %}
+{% endfor %}
+
+echo "nfs.disks_available,host=$(cat /etc/hostname),timeout={{ nfs_check_timeout_sec}} {{ parts|join(',') }}"
+{%- endmacro %}
+#!/bin/bash
+# This script tests Galaxy EUs NFS mountpoints by trying to ls 
+{{ initialize_vars(excluded_volumes=nfs_check_excluded_mounts) }}
+
+{{ test_galaxy_volumes(excluded_volumes=nfs_check_excluded_mounts) }}
+
+{{ print_results_to_influx(excluded_volumes=nfs_check_excluded_mounts) }}

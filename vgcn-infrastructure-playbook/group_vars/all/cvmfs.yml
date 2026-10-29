@@ -1,0 +1,44 @@
+# Cvmfs Client Configuration
+cvmfs_role: client
+
+cvmfs_cache_disk_base: /scratch/cvmfs/
+cvmfs_cache_disk_quota_limit: 100000  # defined outside `cvmfs_params` so it can be redefined per-host or per-group
+cvmfs_params:
+  CVMFS_MEMCACHE_SIZE: 256
+
+  CVMFS_CACHE_PRIMARY: cvmfs
+
+  CVMFS_CACHE_cvmfs_TYPE: tiered
+  CVMFS_CACHE_cvmfs_UPPER: disk
+  CVMFS_CACHE_cvmfs_UPPER_READONLY: no
+  CVMFS_CACHE_cvmfs_LOWER: nfs
+  CVMFS_CACHE_cvmfs_LOWER_READONLY: no
+
+  CVMFS_CACHE_disk_TYPE: posix
+  CVMFS_CACHE_disk_BASE: "{{ cvmfs_cache_disk_base }}"
+  CVMFS_CACHE_disk_QUOTA_LIMIT: "{{ cvmfs_cache_disk_quota_limit }}"
+
+  CVMFS_CACHE_nfs_TYPE: posix
+  CVMFS_CACHE_nfs_ALIEN: "{{ cvac.cvac08.path }}/cvmfs_cache/"
+  CVMFS_CACHE_nfs_SHARED: no
+  CVMFS_CACHE_nfs_QUOTA_LIMIT: -1
+
+galaxy_cvmfs_repos_enabled: true
+galaxy_cvmfs_server_urls:
+  - domain: galaxyproject.org
+    urls:
+      - "http://cvmfs1-ufr0.galaxyproject.eu/cvmfs/@fqrn@"
+      - "http://cvmfs1-psu0.galaxyproject.org/cvmfs/@fqrn@"
+      - "http://cvmfs-s1-galaxy.computecanada.ca:8000/cvmfs/@fqrn@"
+      - "http://cvmfs1-iu0.galaxyproject.org/cvmfs/@fqrn@"
+      - "http://cvmfs1-tacc0.galaxyproject.org/cvmfs/@fqrn@"
+      - "http://cvmfs1-mel0.gvl.org.au/cvmfs/@fqrn@"
+
+cvmfs_quota_limit: 5000
+cvmfs_telemetry: true
+cvmfs_telemetry_rate: "60"
+cvmfs_influx_host: localhost
+cvmfs_influx_port: "8092"
+cvmfs_influx_metric_name: cvmfs_metrics
+cvmfs_influx_extra_tags: "host=$HOSTNAME"
+cvmfs_influx_extra_fields: ""
