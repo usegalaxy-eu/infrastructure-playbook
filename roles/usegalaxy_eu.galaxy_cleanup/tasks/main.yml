@@ -56,8 +56,8 @@
     src: cleanup_force_retry.sh.j2
     dest: /usr/local/bin/cleanup_force_retry.sh
     owner: root
-    group: root
-    mode: "0555"
+    group: "{{ galaxy_group.name }}"
+    mode: "0550"
 
 - name: Install annual Galaxy cleanup force-retry service
   ansible.builtin.template:
