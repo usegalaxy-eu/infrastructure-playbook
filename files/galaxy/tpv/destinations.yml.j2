@@ -484,6 +484,34 @@ destinations:
       require:
         - nemo-pulsar
 
+  # 3Dtrees pilot on NEMO 2 (account bw17b010). Pulsar runs queued_cli + Slurm with a fixed job size
+  # (genoa, 10 cores, 16 GB), so the limits below match that size. Images are prepared as .sif on NEMO.
+  pulsar_nemo_3dtrees_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_nemo_3dtrees
+    max_accepted_cores: 10
+    max_accepted_mem: 16
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    env:
+      APPTAINER_CACHEDIR: /work/classic/fr_kg1074-pulsar/container_cache
+      SINGULARITY_CACHEDIR: /work/classic/fr_kg1074-pulsar/container_cache
+    params:
+      jobs_directory: /work/classic/fr_kg1074-pulsar/staging
+      singularity_enabled: true
+      singularity_command: apptainer
+      container_resolvers:
+        - type: mapping
+          mappings:
+            - tool_id: toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_standardization/3dtrees_standardization/1.2.1+galaxy0
+              tool_version: 1.2.1+galaxy0
+              identifier: /work/classic/fr_kg1074-pulsar/container_cache/pc-standard_1.2.1.sif
+              container_type: singularity
+        - type: explicit_singularity
+    scheduling:
+      require:
+        - nemo-3dtrees
+
   #############################
   # LOCAL CONDOR DESTINATIONS #
   #############################

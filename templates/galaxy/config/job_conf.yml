@@ -259,6 +259,14 @@ galaxy_jobconf:
         relay_username: "{{ pulsar_nemo_relay_username }}"
         relay_password: "{{ pulsar_nemo_relay_password }}"
         galaxy_url: "https://usegalaxy.eu"
+    - id: pulsar_eu_nemo_3dtrees
+      load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+      params:
+        relay_url: "{{ pulsar_nemo_relay_url }}"
+        relay_username: "{{ pulsar_nemo_3dtrees_relay_username }}"
+        relay_password: "{{ pulsar_nemo_3dtrees_relay_password }}"
+        relay_topic_prefix: "{{ pulsar_nemo_3dtrees_relay_topic_prefix }}"
+        galaxy_url: "https://usegalaxy.eu"
 
 
   default_destination: tpv_dispatcher

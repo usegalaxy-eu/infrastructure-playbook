@@ -1,5 +1,13 @@
 ---
 users:
+  kilian.gerberding@geosense.uni-freiburg.de:  # 3Dtrees NEMO 2 pilot account
+    rules:
+      - id: nemo-3dtrees-pilot-standardization
+        if: |
+          tool.id.startswith('toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_standardization/3dtrees_standardization/')
+        scheduling:
+          require:
+            - nemo-3dtrees
   bjoern.gruening@gmail.com:
     rules:
       - id: user-specific-notebook
