@@ -7,20 +7,6 @@ accepted_internal_networks:  # usegalaxy_eu.restrict_docker_net
   - 10.4.68.201  # sn09 needed for GxIT Proxy
   - 10.8.103.69  # LiteLLM gateway
 
-galaxy_training: false
-galaxy_group: training-pxe-test
-galaxy_cluster: denbi
-galaxy_docker_hack: true
-startd_attrs:
-  - GalaxyTraining
-  - GalaxyGroup
-  - GalaxyCluster
-  - GalaxyDockerHack
-rank: GalaxyGroup
-base_cgroup: htcondor
-memory_limit_policy: hard
-reserved_memory: 2048
-
 autofs_mount_points:
   - data
   - gxtest
