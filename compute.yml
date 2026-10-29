@@ -1,3 +1,4 @@
+---
 - name: Compute node configuration Playbook
   hosts: compute
   become: true
@@ -65,7 +66,7 @@
         dest: "{{ check_slx_disks_path }}"
         owner: root
         group: root
-        mode: 0755
+        mode: "0755"
       notify: Restart Telegraf
 
     - name: Deploy NFS access monitor script
@@ -74,7 +75,7 @@
         dest: "{{ nfs_check_path }}"
         owner: root
         group: root
-        mode: 0755
+        mode: "0755"
       notify: Restart Telegraf
 
     - name: Load the IPMI device interface
@@ -97,7 +98,7 @@
         dest: "{{ telegraf_agent_config_path }}/telegraf.d/{{ item.key }}.conf"
         owner: telegraf
         group: telegraf
-        mode: 0640
+        mode: "0640"
       with_dict: "{{ telegraf_plugins_extra }}"
       loop_control:
         label: "{{ item.key }}"
@@ -190,7 +191,7 @@
           ansible.builtin.find:
             paths: /etc/condor/tokens.d/
             file_type: file
-            recurse: yes
+            recurse: true
           register: htcondor_token_files
 
         - name: Set perms to 0600 on all token files

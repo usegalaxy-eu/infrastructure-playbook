@@ -1,3 +1,4 @@
+---
 # Cvmfs Client Configuration
 cvmfs_role: client
 
@@ -10,9 +11,9 @@ cvmfs_params:
 
   CVMFS_CACHE_cvmfs_TYPE: tiered
   CVMFS_CACHE_cvmfs_UPPER: disk
-  CVMFS_CACHE_cvmfs_UPPER_READONLY: no
+  CVMFS_CACHE_cvmfs_UPPER_READONLY: "no"
   CVMFS_CACHE_cvmfs_LOWER: nfs
-  CVMFS_CACHE_cvmfs_LOWER_READONLY: no
+  CVMFS_CACHE_cvmfs_LOWER_READONLY: "no"
 
   CVMFS_CACHE_disk_TYPE: posix
   CVMFS_CACHE_disk_BASE: "{{ cvmfs_cache_disk_base }}"
@@ -20,7 +21,7 @@ cvmfs_params:
 
   CVMFS_CACHE_nfs_TYPE: posix
   CVMFS_CACHE_nfs_ALIEN: "{{ cvac.cvac08.path }}/cvmfs_cache/"
-  CVMFS_CACHE_nfs_SHARED: no
+  CVMFS_CACHE_nfs_SHARED: "no"
   CVMFS_CACHE_nfs_QUOTA_LIMIT: -1
 
 galaxy_cvmfs_repos_enabled: true
