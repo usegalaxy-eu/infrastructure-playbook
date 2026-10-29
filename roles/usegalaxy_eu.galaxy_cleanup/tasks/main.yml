@@ -1,6 +1,6 @@
 ---
 - name: Check that all objectstore_id include 'scratch'
-  assert:
+  ansible.builtin.assert:
     that:
       - galaxy_cleanup_scratchstorage | length > 0
       - galaxy_cleanup_scratchstorage | list
@@ -11,49 +11,42 @@
     success_msg: "All objectstore_id values contain 'scratch'"
 
 - name: Install cleanup script
-  template:
-    src: "cleanup_storage.sh.j2"
-    dest: "/usr/local/bin/cleanup_storage.sh"
-    mode: "0555"
-
-- name: Schedule Galaxy cleanup objectstore script
-  ansible.builtin.cron:
-    name: "Galaxy cleanup scratch"
-    job: "/usr/local/bin/cleanup_storage.sh"
-    minute: "{{ galaxy_cleanup_minute }}"
-    hour: "{{ galaxy_cleanup_hour }}"
-    user: "{{ galaxy_user.name }}"
-
-- name: Install annual Galaxy cleanup force-retry script
   ansible.builtin.template:
-    src: cleanup_force_retry.sh.j2
-    dest: /usr/local/bin/cleanup_force_retry.sh
+    src: cleanup_storage.sh.j2
+    dest: /usr/local/bin/cleanup_storage.sh
     owner: root
     group: root
     mode: "0555"
 
-- name: Install annual Galaxy cleanup force-retry service
+- name: Create Galaxy cleanup log directory
+  ansible.builtin.file:
+    path: "{{ galaxy_cleanup_log_dir }}"
+    state: directory
+    owner: "{{ galaxy_user.name }}"
+    group: "{{ galaxy_group.name }}"
+    mode: "0755"
+
+- name: Install Galaxy cleanup service
   ansible.builtin.template:
-    src: galaxy-cleanup-force-retry.service.j2
-    dest: "/etc/systemd/system/{{ galaxy_cleanup_force_retry_service }}"
+    src: galaxy-cleanup.service.j2
+    dest: "/etc/systemd/system/{{ galaxy_cleanup_systemd_service }}"
     owner: root
     group: root
     mode: "0644"
-  notify: Reload systemd for annual Galaxy cleanup
+  notify: Reload systemd for Galaxy cleanup
 
-- name: Install annual Galaxy cleanup force-retry timer
+- name: Install Galaxy cleanup timer
   ansible.builtin.template:
-    src: galaxy-cleanup-force-retry.timer.j2
-    dest: "/etc/systemd/system/{{ galaxy_cleanup_force_retry_timer }}"
+    src: galaxy-cleanup.timer.j2
+    dest: "/etc/systemd/system/{{ galaxy_cleanup_systemd_timer }}"
     owner: root
     group: root
     mode: "0644"
   notify:
-    - Reload systemd for annual Galaxy cleanup
-    - Restart annual Galaxy cleanup timer
+    - Reload systemd for Galaxy cleanup
+    - Restart Galaxy cleanup timer
 
-- name: Enable annual Galaxy cleanup force-retry timer
+- name: Enable Galaxy cleanup timer
   ansible.builtin.systemd:
-    name: "{{ galaxy_cleanup_force_retry_timer }}"
+    name: "{{ galaxy_cleanup_systemd_timer }}"
     enabled: true
-    state: started

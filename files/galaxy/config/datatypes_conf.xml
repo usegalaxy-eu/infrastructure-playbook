@@ -16,10 +16,10 @@
     <datatype extension="a2m" type="galaxy.datatypes.sequence:Fasta" display_in_upload="true" description="A multiple sequence alignment in A2M format. Each sequence has a single-line description starting with '>', followed by aligned sequence lines. Dots ('.') represent matches to a reference, and hyphens ('-') represent deletions relative to the reference." subclass="true" />
     <datatype extension="afg" type="galaxy.datatypes.assembly:Amos" display_in_upload="false"/>
     <datatype extension="agp" type="galaxy.datatypes.goldenpath:GoldenPath" display_in_upload="true" description="UCSC GoldenPath assembly"/>
-    <datatype extension="alto" type="galaxy.datatypes.xml:GenericXml" mimetype="application/xml" subclass="true" description="Analyzed Layout and Text Object" description_url="https://github.com/altoxml/documentation/wiki/Versions" display_in_upload="true"/>
-    <datatype extension="page.xml" type="galaxy.datatypes.xml:GenericXml" mimetype="application/xml" subclass="true" description="XML format for encoding the layout and text of digitised documents, comparable to ALTO" description_url="https://github.com/PRImA-Research-Lab/PAGE-XML/wiki" display_in_upload="true"/>
-    <datatype extension="abbyy.xml" type="galaxy.datatypes.xml:GenericXml" mimetype="application/xml" subclass="true" description="ABBYY FineReader XML" description_url="https://support.abbyy.com/hc/en-us/articles/360017270080-Output-XML-document" display_in_upload="true"/>
-    <datatype extension="hocr" type="galaxy.datatypes.html:GenericHtml" mimetype="text/html" subclass="true" description="HTML format for representing OCR output." description_url="https://kba.github.io/hocr-spec/1.2/" display_in_upload="true"/>
+    <datatype extension="alto" type="galaxy.datatypes.xml:Alto" mimetype="application/xml" description="Analyzed Layout and Text Object" description_url="https://github.com/altoxml/documentation/wiki/Versions" display_in_upload="true"/>
+    <datatype extension="page.xml" type="galaxy.datatypes.xml:PageXml" mimetype="application/xml" description="XML format for encoding the layout and text of digitised documents, comparable to ALTO" description_url="https://github.com/PRImA-Research-Lab/PAGE-XML/wiki" display_in_upload="true"/>
+    <datatype extension="abbyy.xml" type="galaxy.datatypes.xml:AbbyyXml" mimetype="application/xml" description="ABBYY FineReader XML" description_url="https://support.abbyy.com/hc/en-us/articles/360017270080-Output-XML-document" display_in_upload="true"/>
+    <datatype extension="hocr" type="galaxy.datatypes.text:Hocr" mimetype="text/html" description="HTML format for representing OCR output." description_url="https://kba.github.io/hocr-spec/1.2/" display_in_upload="true"/>
     <datatype extension="anvio_cog_profile" type="galaxy.datatypes.anvio:AnvioComposite" display_in_upload="false" subclass="true" />
     <datatype extension="anvio_composite" type="galaxy.datatypes.anvio:AnvioComposite" display_in_upload="false" />
     <datatype extension="anvio_classifier" type="galaxy.datatypes.data:Data" display_in_upload="false" subclass="true" />
@@ -264,7 +264,7 @@
     </datatype>
     <datatype extension="toolshed.gz" type="galaxy.datatypes.binary:Binary" mimetype="multipart/x-gzip" subclass="true"/>
     <datatype extension="hdf4" type="galaxy.datatypes.binary:Binary" subclass="true" mimetype="application/octet-stream" display_in_upload="true"/>
-    <datatype extension="juicebox_hic" type="galaxy.datatypes.binary:Binary" subclass="true" mimetype="application/octet-stream" display_in_upload="true" description="Juicebox binary HIC format" description_url="https://github.com/aidenlab/Juicebox/blob/master/HiCFormatV8.md"/>    
+    <datatype extension="juicebox_hic" type="galaxy.datatypes.binary:Binary" subclass="true" mimetype="application/octet-stream" display_in_upload="true" description="Juicebox binary HIC format" description_url="https://github.com/aidenlab/Juicebox/blob/master/HiCFormatV8.md"/>
     <datatype extension="h5" type="galaxy.datatypes.binary:H5" mimetype="application/octet-stream" display_in_upload="true">
         <infer_from suffix="h5" />
         <infer_from suffix="hdf5" />
@@ -476,6 +476,7 @@
     <datatype extension="mzq" type="galaxy.datatypes.proteomics:MzQuantML" mimetype="application/xml" display_in_upload="true"/>
     <datatype extension="sqlite" type="galaxy.datatypes.binary:SQlite" mimetype="application/octet-stream" display_in_upload="true"/>
     <datatype extension="mz.sqlite" type="galaxy.datatypes.binary:MzSQlite" mimetype="application/octet-stream" display_in_upload="true"/>
+    <datatype extension="mzlite" type="galaxy.datatypes.binary:Mzlite" display_in_upload="true"/>
     <datatype extension="osw" type="galaxy.datatypes.binary:OSW" mimetype="application/octet-stream" display_in_upload="true"/>
     <datatype extension="pqp" type="galaxy.datatypes.binary:PQP" mimetype="application/octet-stream" display_in_upload="true"/>
     <datatype extension="traml" type="galaxy.datatypes.proteomics:TraML" mimetype="application/xml" display_in_upload="true"/>
@@ -1456,6 +1457,10 @@
     <sniffer type="galaxy.datatypes.proteomics:PEFF"/>
     <sniffer type="galaxy.datatypes.molecules:CML"/>
     <sniffer type="galaxy.datatypes.triples:Sbol"/>
+    <sniffer type="galaxy.datatypes.xml:PageXml"/>
+    <sniffer type="galaxy.datatypes.xml:Alto"/>
+    <sniffer type="galaxy.datatypes.xml:AbbyyXml"/>
+    <sniffer type="galaxy.datatypes.text:Hocr"/>
     <sniffer type="galaxy.datatypes.xml:GenericXml"/>
     <sniffer type="galaxy.datatypes.triples:HDT"/>
     <sniffer type="galaxy.datatypes.triples:Turtle"/>

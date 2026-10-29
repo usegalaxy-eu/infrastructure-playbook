@@ -14,8 +14,9 @@ docker_users:
   - galaxy
 
 # Autofs
-autofs_service.install: true
-autofs_service.enable: true
+autofs_service:
+  install: true
+  enable: true
 nfs_kernel_tuning: true
 
 autofs_mount_points:
@@ -120,6 +121,12 @@ telegraf_processors:
       - '  key = "req_path_normalized"'
       - '  pattern = "\\?.*"'
       - '  replacement = ""'
+  # Counters as float, else InfluxDB drops them next to float gauges
+  - processor: converter
+    config:
+      - namepass = ["galaxy_page_timings."]
+      - '[processors.converter.fields]'
+      - '  float = ["value"]'
 
 # Custom pip installer
 pip_venv_path: '{{ galaxy_venv_dir }}'
@@ -165,7 +172,6 @@ all_yum_repositories:
     timeout: 10
 
 # Certbot
-certbot_virtualenv_package_name: python3-virtualenv
 certbot_dns_provider: route53
 certbot_auth_method: --standalone
 certbot_domains: '{{ server_names }}'
@@ -231,7 +237,7 @@ nginx_cache_dir: /var/cache/nginx
 # (see templates/nginx/conf.d/rate_limit.conf.j2, templates/nginx/galaxy-main.j2)
 nginx_extra_configs:
   - conf.d/rate_limit.conf
-nginx_rate_limit_dry_run: true
+nginx_rate_limit_dry_run: false
 # Proxies whose X-Forwarded-For we trust for the real client IP. Only list
 # proxies here, otherwise clients can spoof their own rate limit key.
 nginx_rate_limit_trusted_proxies:
@@ -372,7 +378,7 @@ galaxy_webhook_dir: "{{ galaxy_mutable_data_dir }}/webhooks"
 galaxy_tour_dir: "{{ galaxy_mutable_data_dir }}/tours"
 tpv_mutable_dir: "{{ galaxy_mutable_data_dir }}/total_perspective_vortex"
 # Galaxy configuration files will be written with these permissions (mode argument to Ansible copy/template module)
-galaxy_config_perms: 0644
+galaxy_config_perms: "0644"
 
 galaxy_root: /opt/galaxy
 galaxy_workflow_scheduler_count: '{{ galaxy_systemd_workflow_schedulers }}'
@@ -474,6 +480,8 @@ galaxy_config_files:
     dest: '{{ tpv_mutable_dir }}/interactive_tools.yml'
   - src: '{{ galaxy_config_file_src_dir }}/tpv/users.yml'
     dest: '{{ tpv_mutable_dir }}/users.yml'
+  - src: '{{ galaxy_config_file_src_dir }}/tpv/resubmission.yml'
+    dest: '{{ tpv_mutable_dir }}/resubmission.yml'
 
   #- src: files/galaxy/config/job_resource_params_conf.xml
   #dest: "{{ galaxy_config['app:main']['job_resource_params_file'] }}"
@@ -545,3 +553,8 @@ bashrc_galaxy_log_dir: "{{ galaxy_log_dir }}"
 bashrc_galaxy_pulsar_app_conf: "{{ galaxy_config_dir }}/pulsar_app.yml"
 bashrc_extra_exports:
   - "GXADMIN_TOOL_ID_FORMAT=tool_short"
+
+# NEMO Pulsar via the relay; credentials from group_vars/pulsar_relay/vault.yml (loaded in sn09.yml)
+pulsar_nemo_relay_url: "https://stargate.galaxyproject.eu/"
+pulsar_nemo_relay_username: "{{ vault_pulsar_nemo_relay_username }}"
+pulsar_nemo_relay_password: "{{ vault_pulsar_nemo_relay_password }}"

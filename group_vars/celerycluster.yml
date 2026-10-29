@@ -23,8 +23,9 @@ galaxy_config_dir: "{{ galaxy_root }}/config"
 galaxy_config_file: "{{ galaxy_config_dir }}/galaxy.yml"
 
 # Autofs
-autofs_service.install: true
-autofs_service.enable: true
+autofs_service:
+  install: true
+  enable: true
 nfs_kernel_tuning: true
 
 autofs_mount_points:
@@ -42,7 +43,7 @@ galaxy_systemd_mode: ""
 galaxy_systemd_celery: true
 galaxy_systemd_celery_beat_schedule_path: "/opt/galaxy/celery/celery-beat-schedule"
 galaxy_systemd_watchdog: false
-galaxy_systemd_celery_env: "GALAXY_ONEDRIVE_CLIENT_ID={{ onedrive_client_id }} GALAXY_ONEDRIVE_CLIENT_SECRET={{ onedrive_client_secret }} GALAXY_DROPBOX_APP_CLIENT_ID={{ dropbox_app_client_id }} GALAXY_DROPBOX_APP_CLIENT_SECRET={{ dropbox_app_client_secret }} GALAXY_GOOGLE_DRIVE_APP_CLIENT_ID={{ google_drive_oauth_client_id }} GALAXY_GOOGLE_DRIVE_APP_CLIENT_SECRET={{ google_drive_oauth_client_secret }}"
+galaxy_systemd_celery_env: "GALAXY_ONEDRIVE_CLIENT_ID={{ onedrive_client_id }} GALAXY_ONEDRIVE_CLIENT_SECRET={{ onedrive_client_secret }} GALAXY_DROPBOX_APP_CLIENT_ID={{ dropbox_app_client_id }} GALAXY_DROPBOX_APP_CLIENT_SECRET={{ dropbox_app_client_secret }} GALAXY_GOOGLE_DRIVE_APP_CLIENT_ID={{ google_drive_oauth_client_id }} GALAXY_GOOGLE_DRIVE_APP_CLIENT_SECRET={{ google_drive_oauth_client_secret }} TMPDIR={{ misc.misc06.path }}/celery/tmp/"
 
 galaxy_systemd_celery_internal_pool: threads
 galaxy_systemd_celery_internal_max_tasks: 250000
@@ -92,3 +93,7 @@ software_groups_to_install:
   - admin
   - editors
   - utils
+
+# (galaxyproject.cvmfs)
+cvmfs_role: client
+galaxy_cvmfs_repos_enabled: true

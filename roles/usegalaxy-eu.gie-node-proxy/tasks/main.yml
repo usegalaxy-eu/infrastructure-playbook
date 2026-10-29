@@ -16,7 +16,7 @@
     - gie systemd restart
 
 - name: Copy main systemd file
-  template:
+  ansible.builtin.template:
     src: galaxy-gie-proxy.service.j2
     dest: "/etc/systemd/system/galaxy-gie-proxy.service"
     owner: root

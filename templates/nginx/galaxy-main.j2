@@ -81,7 +81,7 @@ server {
     # keyed on API key, then `galaxysession` cookie, then client IP. Locations
     # defining their own `limit_req` do not inherit these.
     limit_req zone=crawler burst=10 nodelay;
-    limit_req zone=relaxed burst=50 nodelay;
+    # limit_req zone=relaxed burst=50 nodelay;
     limit_req_status 429;
     access_log /var/log/nginx/rate_limit.log limit if=$rate_limited;
 
@@ -121,7 +121,7 @@ server {
         # stricter rate limit than the rest of the server; some paths exempt
         # (e.g. uploads, Pulsar job files), see conf.d/rate_limit.conf
         limit_req zone=crawler burst=10 nodelay;
-        limit_req zone=strict burst=50 nodelay;
+        # limit_req zone=strict burst=150 nodelay;
         limit_req_status 429;
 
         {{ upstream_galaxy() | indent(8, false) }}
@@ -134,9 +134,24 @@ server {
         # regex locations for `/api/...` below take precedence over this
         # location and inherit the server-level limits
     }
-   location ~ ^/display_application/[^/]+/ucsc_bam/ {
-       return 503;
-   }
+
+    location ~ ^/api/tools/[^/]+/icon/?$ {
+        # clicking "Interactive Tools" on the Activity Bar triggers one request
+        # for each interactive tool (to load the icon); relax the rate limits
+        # for this location
+        limit_req zone=crawler burst=10 nodelay;
+        # limit_req zone=relaxed burst=200 nodelay;
+        limit_req_status 429;
+
+        {{ upstream_galaxy() | indent(8, false) }}
+        proxy_set_header Connection         $connection_upgrade;
+
+        {{ x_clacks_overhead() | indent(8, false) }}
+    }
+
+    location ~ ^/display_application/[^/]+/ucsc_bam/ {
+        return 503;
+    }
 
     # Temporarily break downloading :(
     #location /api/libraries/datasets/download/ {
@@ -195,9 +210,12 @@ server {
                 rewrite "" /api/jobs/$arg_job_id/files last;
         }
         upload_store {{ galaxy_config['galaxy']['nginx_upload_job_files_store'] }};
-                # the rate limit might be needed if we have many Pulsar jobs that are writing data back
+        # the rate limit might be needed if we have many Pulsar jobs that are writing data back
         # we need to limit it because the disc IO can be too large, ideally this happens on a different node
-                # upload_limit_rate 32k;
+        # upload_limit_rate 32k;
+
+        client_body_buffer_size 8m;
+        client_max_body_size 0;
         upload_store_access user:rw group:rw all:rw;
         upload_pass_form_field "";
         upload_set_form_field "__${upload_field_name}_path" "$upload_tmp_path";
@@ -299,6 +317,11 @@ server {
         proxy_set_header    X-Forwarded-For     $proxy_add_x_forwarded_for;
         proxy_set_header    X-Forwarded-Proto   $scheme;
         proxy_pass_request_headers on;
+    }
+
+    location /webhook-games/ {
+        alias /opt/galaxy/custom-tools/SequenceAlignment/;
+        index index.html;
     }
 
     {{ gapars_nginx_config }}

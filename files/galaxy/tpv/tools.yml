@@ -51,16 +51,16 @@ tools:
   # lets run in embedded pulsar to reduce the jwd scope and make it more secure
   # running docker is fine here
   user_defined-.*:
-      cores: 1
-      mem: 3.7
-      rules:
+    cores: 1
+    mem: 3.7
+    rules:
       - id: require_login_user_defined
         if: user is None
         fail: An account is required to run this tool. Please log in or create an account.
-      scheduling:
-        require:
-          - docker
-          - embedded-pulsar
+    scheduling:
+      require:
+        - docker
+        - embedded-pulsar
 
   # example for overwriting the OOM memory multiplier for a specific tool
   # toolshed.g2.bx.psu.edu/repos/example_owner/example_tool/example_tool/.*:
@@ -89,6 +89,17 @@ tools:
     env:
       - name: SINGULARITYENV_LC_ALL
         value: C.UTF-8
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/dna_foundation_models/dna_foundation_models/.*:
+    inherits: _basic_docker_tool
+    mem: 16
+    gpus: 1
+    cores: 8
+    env:
+      GPU_AVAILABLE: 1
+
+  toolshed.g2.bx.psu.edu/repos/bgruening/tabicl/tabicl/.*:
+    inherits: _basic_gpu_resource_param_tool
 
   toolshed.g2.bx.psu.edu/repos/bgruening/tabpfn/tabpfn/.*:
     inherits: _basic_gpu_resource_param_tool
@@ -291,7 +302,7 @@ tools:
     params:
       container_override: [{type: singularity, shell: '/bin/sh', identifier: "/cvmfs/main.galaxyproject.org/singularity/galaxy-pycaret:3.3.2--0"}]
 
-  toolshed.g2.bx.psu.edu/repos/bgruening/mirge3_build_database/mirge3_build_database/0.1.4+galaxy0:
+  toolshed.g2.bx.psu.edu/repos/bgruening/mirge3_build_database/mirge3_build_database/.*:
     params:
       container_override: [{type: singularity, shell: '/bin/sh', identifier: "/cvmfs/singularity.galaxyproject.org/w/g/wget:1.25.0"}]
 
@@ -326,9 +337,6 @@ tools:
     gpus: 1
     cores: 10
     mem: 20
-    params:
-      docker_env_CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
-      docker_run_extra_arguments: ' --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
     context:
       exclude_gpu_models: ["Tesla T4"]
       include_gpu_models: ["NVIDIA L40S", "Tesla V100-PCIE-32GB"]
@@ -356,7 +364,7 @@ tools:
     cores: 1
     mem: 4
     params:
-      docker_run_extra_arguments: " --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,compute "
+      docker_run_extra_arguments: "-e NVIDIA_DRIVER_CAPABILITIES=graphics,compute"
 
   toolshed.g2.bx.psu.edu/repos/galaxyp/msconvert/msconvert/.*:
     ## seems to be still needed 2026/06
@@ -379,7 +387,7 @@ tools:
     cores: 4
     mem: 32
     params:
-      docker_run_extra_arguments: ' --gpus all --shm-size 16g '
+      docker_run_extra_arguments: ' --shm-size 16g '
     env:
       GPU_AVAILABLE: 1
       # the non-NFS /tmp dir is needed to avoid "resource is busy" errors
@@ -391,9 +399,6 @@ tools:
     mem: 16
     gpus: 1
     cores: 8
-    params:
-      docker_env_CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
-      docker_run_extra_arguments: ' --gpus all --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
     context:
       exclude_gpu_models: ["Tesla V100-PCIE-32GB"]
       include_gpu_models: ["NVIDIA L40S", "Tesla T4"]
@@ -407,8 +412,6 @@ tools:
     gpus: 1
     cores: 1
     mem: 30
-    params:
-      docker_run_extra_arguments: ' --gpus all '
     env:
       GPU_AVAILABLE: 1
 
@@ -424,7 +427,7 @@ tools:
     gpus: 1
     cores: 1
     params:
-      docker_run_extra_arguments: ' --gpus all --user 999 '
+      docker_run_extra_arguments: ' --user 999 '
     env:
       GPU_AVAILABLE: 1
 
@@ -451,9 +454,6 @@ tools:
     inherits: _basic_docker_tool
     gpus: 1
     cores: 1
-    params:
-      ##docker_run_extra_arguments: ' --gpus all  --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
-      docker_run_extra_arguments: ' --gpus all '
     env:
       GPU_AVAILABLE: 1
     # scheduling:
@@ -472,7 +472,7 @@ tools:
     cores: 1
     mem: 5
     params:
-      docker_run_extra_arguments: '--gpus all --env WHISPERX_MODEL_DIR=$WHISPERX_MODEL_DIR --env WHISPERX_DEVICE=$WHISPERX_DEVICE --env WHISPERX_COMPUTE_TYPE=$WHISPERX_COMPUTE_TYPE'
+      docker_run_extra_arguments: '--env WHISPERX_MODEL_DIR=$WHISPERX_MODEL_DIR --env WHISPERX_DEVICE=$WHISPERX_DEVICE --env WHISPERX_COMPUTE_TYPE=$WHISPERX_COMPUTE_TYPE'
     env:
       WHISPERX_MODEL_DIR: "/data/db/models/whisperx/whisperx_models/"
       WHISPERX_DEVICE: "cuda"
@@ -487,8 +487,7 @@ tools:
     cores: 1
     mem: 12
     params:
-      docker_run_extra_arguments: ' --gpus all --shm-size 16g --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs '
-      docker_env_CUDA_VISIBLE_DEVICES: "$_CONDOR_AssignedGPUs"
+      docker_run_extra_arguments: ' --shm-size 16g '
       docker_env_GALAXY_BIAPY_GPU_STRING: "$_CONDOR_AssignedGPUs"
       docker_env_GPU_AVAILABLE: 1
     env:
@@ -879,7 +878,7 @@ tools:
                   retval = model_select.get('model_class') == 'GNN'
           retval
         params:
-          docker_run_extra_arguments: --user 999 --gpus all
+          docker_run_extra_arguments: --user 999
         gpus: 1
         cores: 20
         mem: 100
@@ -992,11 +991,20 @@ tools:
         mem: 20
 
   toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_operation/spatialdata_operation/.*:
-    mem: 16
+    cores: min(max(1, input_size / 4), 16)
+    mem: min(max(4, input_size), 64)
 
   toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_io/spatialdata_io/.*:
-    mem: 16
-    cores: 5
+    cores: min(max(1, input_size / 4), 16)
+    mem: min(max(4, input_size), 64)
+
+  toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_plot/spatialdata_plot/.*:
+    cores: min(max(1, input_size / 4), 16)
+    mem: min(max(4, input_size), 64)
+
+  toolshed.g2.bx.psu.edu/repos/iuc/liana_methods/liana_methods/.*:
+    cores: min(max(1, input_size / 8), 8)
+    mem: min(max(4, input_size / 2), 32)
 
   toolshed.g2.bx.psu.edu/repos/bgruening/simorgh/simorgh/.*:
     mem: 10
@@ -1019,6 +1027,4 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/colabfold_alphafold/colabfold_alphafold/.*:
     mem: 60
     cores: 16
-    params:
-      docker_run_extra_arguments: --gpus all
     gpus: 1

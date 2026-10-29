@@ -24,6 +24,7 @@ help:
 	@echo "Make Variables: (make ... VAR=VALUE)"
 	@echo "  DIFF=1         show changes made"
 	@echo "  CHECK=1      run in --check mode (implies DIFF=1)"
+	@echo "  CLEAR_VAULT=1  replace vault-encrypted files with empty placeholders when running the `validate` target"
 
 deps: requirements.yaml
 	bash bin/clean-deps.sh
@@ -51,6 +52,7 @@ known_hosts:
 	grep --quiet '^mq.bi.privat' ~/.ssh/known_hosts || echo "mq.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJLhLsIO61hj8Kk6VQWTq5JU+PRm5/so1k44yZQTwvVO" >> ~/.ssh/known_hosts
 	grep --quiet '^maintenance.bi.privat' ~/.ssh/known_hosts || echo "maintenance.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJLhLsIO61hj8Kk6VQWTq5JU+PRm5/so1k44yZQTwvVO" >> ~/.ssh/known_hosts
 	grep --quiet '^tpv-broker.bi.privat' ~/.ssh/known_hosts || echo "tpv-broker.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJLhLsIO61hj8Kk6VQWTq5JU+PRm5/so1k44yZQTwvVO" >> ~/.ssh/known_hosts
+	grep --quiet '^pulsar-relay.bi.privat' ~/.ssh/known_hosts || echo "pulsar-relay.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJLhLsIO61hj8Kk6VQWTq5JU+PRm5/so1k44yZQTwvVO" >> ~/.ssh/known_hosts
 	grep --quiet '^github.com' ~/.ssh/known_hosts || echo "github.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCj7ndNxQowgcQnjshcLrqPEiiphnt+VTTvDP6mHBL9j1aNUkY4Ue1gvwnGLVlOhGeYrnZaMgRK6+PKCUXaDbC7qtbW8gIkhL7aGCsOr/C56SJMy/BCZfxd1nWzAOxSDPgVsmerOBYfNqltV9/hWCqBywINIR+5dIg6JTJ72pcEpEjcYgXkE2YEFXV1JHnsKgbLWNlhScqb2UmyRkQyytRLtL+38TGxkxCflmO+5Z8CSSNY7GidjMIZ7Q4zMjA2n1nGrlTDkzwDCsw+wqFPGQA179cnfGWOWRVruj16z6XyvxvjJwbz0wQZ75XK5tKSb7FNyeIEs4TT4jk+S4dhPeAUC5y+bDYirYgM4GC7uEnztnZyaVWQ7B381AK4Qdrwt51ZqExKbQpTUNn+EjqoTwvqNj4kqx5QUCI0ThS/YkOxJCXmPUWZbhjpCg56i+2aB6CmK2JGhn57K5mj0MNdBXA4/WnwH6XoPWJzK5Nyu2zB3nAZp+S5hpQs+p1vN1/wsjk=" >> ~/.ssh/known_hosts
 	grep --quiet '^apollo.bi.privat' ~/.ssh/known_hosts || echo "apollo.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJLhLsIO61hj8Kk6VQWTq5JU+PRm5/so1k44yZQTwvVO" >> ~/.ssh/known_hosts
 
@@ -72,9 +74,19 @@ syntax:
 		ansible-playbook --syntax-check $$playbook; \
 	done
 
-validate: deps lint syntax
+ifeq ($(CLEAR_VAULT),1)
+VALIDATE_PREREQS := clear_vault deps lint syntax
+else
+VALIDATE_PREREQS := deps lint syntax
+endif
+
+validate: $(VALIDATE_PREREQS)
 
 %.yml: deps
 	ansible-playbook $@ $(CHECK_C) $(DIFF_C) $(DEBUG) $(OTHER)
 
 .PHONY: main.eu lint syntax validate known_hosts deps pull help
+
+clear_vault:
+	# replace all vault-encrypted files with an empty placeholder
+	find . -type f \( -name '*.yml' -o -name '*.yaml' \) -exec grep -lZ '^$$ANSIBLE_VAULT' {} + | xargs -0 -r sh -c 'for f; do printf -- "---\n" > "$$f"; done' sh

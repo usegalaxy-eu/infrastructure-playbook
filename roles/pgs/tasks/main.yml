@@ -27,7 +27,7 @@
 - name: "Template runner script"
   become: true
   become_user: centos
-  template:
+  ansible.builtin.template:
     src: script.sh.j2
     dest: "{{ pgs_dir }}/run.sh"
     mode: 0755
