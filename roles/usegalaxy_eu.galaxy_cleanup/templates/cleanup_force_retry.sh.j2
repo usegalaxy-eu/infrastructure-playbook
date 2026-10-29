@@ -8,7 +8,11 @@ timestamp="$(date --iso-8601=seconds)"
 started_at="$(date +%s)"
 stdout_log="{{ galaxy_cleanup_log_dir }}/cleanup-${timestamp}-purge_datasets-force-retry.log"
 stderr_log="{{ galaxy_cleanup_log_dir }}/cleanup-${timestamp}-purge_datasets-force-retry.err"
+{% if galaxy_cleanup_force_retry_ntfy_url is defined %}
 ntfy_url="{{ galaxy_cleanup_force_retry_ntfy_url }}"
+{% else %}
+ntfy_url=""
+{% endif %}
 
 notify() {
     if [[ -n "${ntfy_url}" ]]; then
