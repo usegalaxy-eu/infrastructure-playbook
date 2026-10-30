@@ -86,7 +86,8 @@
         name:
           - libvirt
       become: true
-    # Create network setup
+
+    # Set up network bridge and private VLAN for VMs
     - name: Create NetworkManager bridge connection
       community.general.nmcli:
         conn_name: "Bridge-KVM-V{{ bi_privat_vlan }}"
@@ -99,6 +100,7 @@
         method4: disabled
         method6: disabled
         state: present
+
     - name: Create connection bound to the bridge
       community.general.nmcli:
         conn_name: "KVM-V{{ bi_privat_vlan }}"
@@ -107,6 +109,7 @@
         master: "virbr1.{{ bi_privat_vlan }}"
         slave_type: "bridge"
         state: present
+
     - name: Set rp_filter for enp1s0f1 to loose mode, because two NICs on the same net wont work otherwise
       ansible.posix.sysctl:
         name: "net.ipv4.conf.{{ kvm_nic_name }}.rp_filter"
@@ -114,6 +117,31 @@
         sysctl_set: true
         state: present
         reload: true
+
+    - name: Enable VLAN filtering on the KVM bridge
+      ansible.builtin.command:
+        cmd: "ip link set virbr1.{{ bi_privat_vlan }} type bridge vlan_filtering 1"
+      changed_when: true
+
+    - name: Read list of KVM bridge ports
+      ansible.builtin.find:
+        paths: "/sys/class/net/virbr1.{{ bi_privat_vlan }}/brif"
+        file_type: any
+      register: kvm_bridge_ports
+
+    - name: Configure VLAN 2068 membership on KVM bridge ports
+      # One atomic run per port: with `vlan_filtering` on, a port without a
+      # PVID drops untagged frames, so removing vid 1 without adding the
+      # PVID would briefly block the port.
+      ansible.builtin.shell: |
+        set -euo pipefail
+        bridge vlan del dev {{ item.path | basename }} vid 1
+        bridge vlan add dev {{ item.path | basename }} vid {{ bi_privat_vlan }} pvid untagged
+      loop: "{{ kvm_bridge_ports.files }}"
+      loop_control:
+        label: "{{ item.path | basename }}"
+      changed_when: true
+
     - name: Create mountpoint for Libvirt images
       ansible.builtin.copy:
         content: |
