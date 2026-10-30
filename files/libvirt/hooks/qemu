@@ -1,0 +1,33 @@
+#!/bin/bash
+# Disable unknown-unicast flooding toward VM taps on the KVM bridge.
+#
+# Taps (vnetN) are created and destroyed by libvirt with each guest, so the
+# "bridge link ... flood off" setting cannot be applied once at provisioning
+# time. This hook applies it to every tap of a guest right after the guest
+# starts. With flooding disabled, a tap only receives unicast frames whose
+# destination MAC is present in the bridge FDB (learned from the guest's own
+# outbound traffic) plus broadcast and multicast; frames addressed to other
+# hosts are no longer delivered to the VM.
+#
+# Only the "started" event carries the live domain XML; all other events are
+# passed through untouched.
+
+set -euo pipefail
+
+GUEST="$1"
+EVENT="$2"
+
+if [[ "$EVENT" != "started" ]]; then
+    exit 0
+fi
+
+BRIDGE="{{ kvm_bridge_name | default('virbr1.' ~ bi_privat_vlan) }}"
+
+# stdin holds the live domain XML; collect every tap attached to our bridge.
+TAPS=$(virsh -q domiflist "$GUEST" | awk -v br="$BRIDGE" '$3 == br {print $1}')
+
+for tap in $TAPS; do
+    if [[ -d "/sys/class/net/$tap/brport" ]]; then
+        bridge link set dev "$tap" flood off
+    fi
+done
