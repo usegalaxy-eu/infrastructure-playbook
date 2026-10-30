@@ -1,0 +1,15 @@
+#jinja2: trim_blocks:False
+
+# Changing this file (by modifying variables) will result in a RELOAD of the condor daemons
+# on machines where it is copied to.
+# This means running jobs will continue to run.
+
+GalaxyTraining = {{ galaxy_training }}
+GalaxyGroup = "{{ galaxy_group }}"
+GalaxyCluster = "{{ galaxy_cluster }}"
+GalaxyDockerHack = {{ galaxy_docker_hack }}
+STARTD_ATTRS = {{ startd_attrs | join(', ') }}
+Rank = StringListMember(MY.{{ rank }}, TARGET.Group)
+BASE_CGROUP = {{ base_cgroup }}
+CGROUP_MEMORY_LIMIT_POLICY = {{ memory_limit_policy }}
+RESERVED_MEMORY = {{ reserved_memory }}

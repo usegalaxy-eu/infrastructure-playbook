@@ -8,6 +8,7 @@ import subprocess
 import sys
 from collections import Counter
 
+from ansible.inventory.group import Group
 from ansible.inventory.manager import InventoryManager
 from ansible.parsing.dataloader import DataLoader
 
@@ -31,9 +32,10 @@ MACHINE_ATTRS = [
 
 
 def parse_inventory(path):
-    """Return the hostnames listed in an Ansible inventory."""
+    """Return hostnames of the compute group and all its child groups."""
     inventory = InventoryManager(loader=DataLoader(), sources=[path])
-    return [host.name for host in inventory.get_hosts()]
+    group = inventory.groups.get("compute") or Group("compute")
+    return [host.name for host in group.get_hosts()]
 
 
 def run(cmd):
