@@ -93,7 +93,7 @@
         validate: /usr/sbin/visudo -cf %s
 
     - name: "Copy telegraf extra plugins"
-      template:
+      ansible.builtin.template:
         src: compute/telegraf-extra-plugin.conf.j2
         dest: "{{ telegraf_agent_config_path }}/telegraf.d/{{ item.key }}.conf"
         owner: telegraf
@@ -111,8 +111,9 @@
 
     - name: Check if disks are misconfigured
       ansible.builtin.shell:
-        cmd: "{{ check_slx_disks_path }} | cut -d ' ' -f2"
+        cmd: "set -o pipefail &&{{ check_slx_disks_path }} | cut -d ' ' -f2"
       register: disk_setup
+      changed_when: false
 
     - name: Fail if disks are misconfigured
       ansible.builtin.fail:
