@@ -142,6 +142,13 @@
         label: "{{ item.path | basename }}"
       changed_when: true
 
+    - name: Install libvirt hook to disable flooding toward VM taps
+      ansible.builtin.copy:
+        src: libvirt/hooks/qemu
+        dest: /etc/libvirt/hooks/qemu
+        mode: "0755"
+      notify: Restart libvirtd
+
     - name: Create mountpoint for Libvirt images
       ansible.builtin.copy:
         content: |
@@ -199,6 +206,12 @@
     # - nginx_hardening
     # - ssh_hardening
     - usegalaxy_eu.firewall
+
+  handlers:
+    - name: Restart libvirtd
+      ansible.builtin.systemd_service:
+        name: libvirtd
+        state: restarted
 
 - name: Jenkins
   hosts: build
