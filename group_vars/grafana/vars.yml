@@ -180,31 +180,3 @@ telegraf_plugins_extra:
         #- "handler11"
         #- "drmaa"
         #- "condor"
-
-galaxy_nagios_urls:
-  ftp_tests: []
-  http_tests:
-    - name: home_nossl
-      url: "http://usegalaxy.eu"
-      code: 301
-    - name: home
-      url: "https://usegalaxy.eu"
-      code: 200
-    - name: hicexplorer
-      url: "https://hicexplorer.usegalaxy.eu"
-      code: 200
-    - name: stats
-      url: "https://stats.galaxyproject.eu"
-      code: 200
-    - name: grt
-      url: "https://telescope.galaxyproject.eu"
-      code: 200
-    - name: build
-      url: "https://build.galaxyproject.eu"
-      code: 200
-    - name: influx
-      url: "{{ influxdb.url }}/ping"
-      code: 204
-    - name: phinch
-      url: "https://usegalaxy.eu/phinch/index.html"
-      code: 200

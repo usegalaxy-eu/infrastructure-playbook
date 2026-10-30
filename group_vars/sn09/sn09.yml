@@ -158,19 +158,6 @@ pip_install_dependencies:
   # WallE
   - tqdm # progress bar, has no dependencies
 
-yum_exclude_repos:
-  - condor*
-  - npm*
-
-all_yum_repositories:
-  - name: galaxy_gpel
-    description: Galaxy Packages for Enterprise Linux $releasever - $basearch
-    baseurl: https://depot.galaxyproject.org/yum/el/$releasever/$basearch/
-    enabled: true
-    gpgcheck: false
-    retries: 1
-    timeout: 10
-
 # Certbot
 certbot_dns_provider: route53
 certbot_auth_method: --standalone
@@ -280,8 +267,6 @@ galaxy_systemd_mode: 'gunicorn'
 galaxy_systemd_gunicorns: 7
 galaxy_systemd_gunicorn_workers: 5
 galaxy_systemd_gunicorn_timeout: 600
-galaxy_systemd_gunicorn_limit_nofile: 16384
-galaxy_systemd_handlers_limit_nofile: 16384
 galaxy_systemd_handlers: 6
 galaxy_systemd_workflow_schedulers: 3
 
@@ -343,13 +328,7 @@ pgc_users:
     pgdatabase: galaxy
 
 # GRT
-galaxy_grt_exporter: galaxy
-galaxy_grt_uploader: galaxy
-
 # Influx Notifier
-gxadmin_influx_task_notifier: true
-gxadmin_influx_task_notifier_db: notifications
-
 # postgres_pass defined in secret_group_vars
 gxadmin_commit: main
 gxadmin_dir: /opt/gxadmin
@@ -360,7 +339,6 @@ gxadmin_force: true
 galaxy_group:
   name: galaxy
   gid: 999
-galaxy_system_group: galaxy
 galaxy_log_dir: '/var/log/galaxy'
 galaxy_layout: root-dir
 galaxy_separate_privileges: true
@@ -382,7 +360,6 @@ galaxy_config_perms: "0644"
 
 galaxy_root: /opt/galaxy
 galaxy_workflow_scheduler_count: '{{ galaxy_systemd_workflow_schedulers }}'
-galaxy_home_dir: /opt/galaxy
 galaxy_mutable_config_dir: '{{ galaxy_root }}/mutable-config'
 galaxy_mutable_data_dir: '{{ galaxy_root }}/mutable-data'
 galaxy_shed_tools_dir: '{{ galaxy_root }}/shed_tools'
@@ -401,8 +378,6 @@ ucsc_build_sites:
 # due to https://github.com/usegalaxy-eu/infrastructure-playbook/pull/1591
 galaxy_virtualenv_command: '/usr/local/tools/_conda/envs/__python@3.11.5/bin/python -m venv --copies'
 galaxy_nonrepro_tools: '{{ galaxy_root }}/custom-tools'
-galaxy_nonrepro_commit: master
-
 # Custom override
 # Our galaxy_tool_dependency_dir is on NFS, and permissions are set in such a
 # way that they cannot be changed by the ansible connected user.
@@ -429,8 +404,6 @@ galaxy_repo: 'https://github.com/usegalaxy-eu/galaxy.git'
 galaxy_commit_id: 'release_26.1_europe'
 galaxy_force_checkout: true # discard any modified files
 #galaxy_admin_email_from: 'noreply@usegalaxy.eu'
-
-galaxy_singularity_images_cvmfs_path: '/cvmfs/singularity.galaxyproject.org/all/'
 
 galaxy_config: '{{ galaxy_config_hash }}'
 
@@ -545,7 +518,6 @@ galaxy_config_templates:
 # (usegalaxy-eu.bashrc)
 bashrc_galaxy_root: "{{ galaxy_root }}/server/"
 bashrc_galaxy_venv_dir: "{{ galaxy_venv_dir }}"
-bashrc_galaxy_server_dir: "{{ galaxy_server_dir }}"
 bashrc_galaxy_config_dir: "{{ galaxy_config_dir }}"
 bashrc_galaxy_config_file: "{{ galaxy_config_file }}"
 bashrc_galaxy_mutable_config_dir: "{{ galaxy_mutable_config_dir }}"
