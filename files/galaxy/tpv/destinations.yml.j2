@@ -479,7 +479,9 @@ destinations:
       submit_native_specification: "--partition=milan --nodes=1 --ntasks-per-node=1 --cpus-per-task={max(int(cores), -(-round(mem * 10) // 38))} --mem-per-cpu=3800M --time=4-0 -J pulsar_eu_j{job.id}"
       singularity_enabled: true
       singularity_command: apptainer
-      # volumes, default container and container resolvers come from pulsar_default (needs Galaxy CVMFS on NEMO)
+      # containers from CVMFS like the other CVMFS sites; volumes and default container come from pulsar_default
+      container_resolvers:
+        {{ pulsar_cz_container_resolvers() | indent(8, false) }}
     scheduling:
       require:
         - nemo-pulsar
