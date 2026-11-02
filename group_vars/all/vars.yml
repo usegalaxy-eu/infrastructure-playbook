@@ -220,7 +220,7 @@ yum_cron_hourly:
 
 # Automated dnf updates
 # usegalaxy-eu.autoupdates role
-au_hostname: "{{ hostname }}"
+au_hostname: "{{ hostname | default(inventory_hostname) }}"
 au_apply_updates: true
 au_random_sleep: 360
 
