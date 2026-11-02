@@ -476,7 +476,8 @@ destinations:
       SINGULARITY_CACHEDIR: /work/classic/fr_bg1002-pulsar/container_cache
     params:
       jobs_directory: /work/classic/fr_bg1002-pulsar/staging
-      # pulsar on NEMO uses queued_drmaa (slurm-drmaa): mem in MB, time in hours
+      # pulsar on NEMO uses queued_drmaa (slurm-drmaa), which only takes plain numbers:
+      # mem in MB (TPV gives GB, hence *1024; no G/M suffix), time in hours (no days)
       submit_native_specification: "--partition=milan --nodes=1 --ntasks-per-node=1 --cpus-per-task={int(cores)} --mem={int(mem * 1024)} --time=96:00:00 -J pulsar_eu_j{job.id}"
       singularity_enabled: true
       singularity_command: apptainer
