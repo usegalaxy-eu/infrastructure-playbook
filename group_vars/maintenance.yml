@@ -128,8 +128,7 @@ fsm_scripts:
     dst: "{{ fsm_maintenance_dir }}/s3_cache_dirs.sh"
     user: "{{ fsm_galaxy_user.username }}"
     group: "{{ fsm_galaxy_user.groupname }}"
-    paths:
-      - "{{ object_store_cache_dir }}"
+    paths: "{{ object_store_cache_dirs | map(attribute='path') | list }}"
     time: "{{ fsm_intervals.s3_cache }}"
   upload_dirs:
     enable: true
