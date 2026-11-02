@@ -467,8 +467,8 @@ destinations:
   pulsar_nemo_tpv:
     inherits: pulsar_default
     runner: pulsar_eu_nemo
-    max_accepted_cores: 4
-    max_accepted_mem: 15.2
+    max_accepted_cores: 16
+    max_accepted_mem: 64
     min_accepted_gpus: 0
     max_accepted_gpus: 0
     env:
@@ -476,8 +476,9 @@ destinations:
       SINGULARITY_CACHEDIR: /work/classic/fr_bg1002-pulsar/container_cache
     params:
       jobs_directory: /work/classic/fr_bg1002-pulsar/staging
-      # slurm settings are fixed in the pulsar role on NEMO (milan, 4 days, 4 cores, 3800M/core);
-      # queued_cli ignores native specs, so the limits above match that size
+      # pulsar on NEMO uses queued_drmaa (slurm-drmaa), which only takes plain numbers:
+      # mem in MB (TPV gives GB, hence *1024; no G/M suffix), time in hours (no days)
+      submit_native_specification: "--partition=milan --nodes=1 --ntasks-per-node=1 --cpus-per-task={int(cores)} --mem={int(mem * 1024)} --time=96:00:00 -J pulsar_eu_j{job.id}"
       singularity_enabled: true
       singularity_command: apptainer
       # containers from CVMFS like the other CVMFS sites; volumes and default container come from pulsar_default
