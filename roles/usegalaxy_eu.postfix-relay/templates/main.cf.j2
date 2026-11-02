@@ -1,0 +1,27 @@
+myhostname = {{ postfix_myhostname }}
+myorigin = {{ postfix_myorigin }}
+mydestination = $myhostname, localhost.$mydomain, localhost
+inet_interfaces = all
+inet_protocols = ipv4
+mynetworks = {{ (postfix_mynetworks + postfix_trusted_client_addresses) | unique | join(', ') }}
+smtpd_banner = $myhostname ESMTP
+
+smtpd_tls_security_level = {{ postfix_smtpd_tls_security_level }}
+
+relayhost = [{{ postfix_relay_host }}]:{{ postfix_relay_port }}
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+smtp_sasl_security_options = noanonymous
+smtp_tls_security_level = encrypt
+smtp_tls_CAfile = {{ postfix_smtp_tls_cafile }}
+smtp_tls_loglevel = 1
+{% if postfix_relay_wrappermode %}
+smtp_tls_wrappermode = yes
+{% endif %}
+
+smtp_destination_rate_delay = {{ postfix_destination_rate_delay }}
+smtp_destination_concurrency_limit = {{ postfix_destination_concurrency_limit }}
+default_destination_concurrency_limit = {{ postfix_destination_concurrency_limit }}
+
+maximal_queue_lifetime = {{ postfix_maximal_queue_lifetime }}
+bounce_queue_lifetime = {{ postfix_bounce_queue_lifetime }}

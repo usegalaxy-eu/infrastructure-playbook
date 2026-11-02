@@ -1,0 +1,72 @@
+- name: Install postfix and SASL client library
+  ansible.builtin.package:
+    name:
+      - postfix
+      - cyrus-sasl-plain
+    state: present
+
+- name: Resolve trusted client IPv4 addresses on the relay
+  ansible.builtin.getent:
+    database: ahostsv4
+    key: "{{ item }}"
+  loop: "{{ postfix_trusted_client_hosts }}"
+  register: postfix_trusted_client_lookups
+
+- name: Collect trusted client IPv4 addresses
+  ansible.builtin.set_fact:
+    postfix_trusted_client_addresses: >-
+      {{ postfix_trusted_client_lookups.results
+         | map(attribute='ansible_facts.getent_ahostsv4')
+         | map('list') | flatten | unique | sort | list }}
+
+- name: Deploy SMTP credentials for the upstream relay
+  ansible.builtin.template:
+    src: sasl_passwd.j2
+    dest: /etc/postfix/sasl_passwd
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+  register: postfix_sasl_credentials
+
+- name: Check for the SMTP credentials database
+  ansible.builtin.stat:
+    path: /etc/postfix/sasl_passwd.db
+  register: postfix_sasl_database
+
+- name: Build SMTP credentials database before starting postfix
+  ansible.builtin.command: /usr/sbin/postmap hash:/etc/postfix/sasl_passwd
+  when: postfix_sasl_credentials.changed or not postfix_sasl_database.stat.exists
+  changed_when: true
+  no_log: true
+  notify: Restart postfix
+
+- name: Restrict access to the SMTP credentials database
+  ansible.builtin.file:
+    path: /etc/postfix/sasl_passwd.db
+    owner: root
+    group: root
+    mode: "0600"
+  when: not ansible_check_mode or postfix_sasl_database.stat.exists
+
+- name: Deploy main.cf
+  ansible.builtin.template:
+    src: main.cf.j2
+    dest: /etc/postfix/main.cf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart postfix
+
+- name: Enable the SMTP submission listener on port 587
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/master.cf
+    regexp: '^#?submission\s+inet\s+'
+    line: 'submission inet n - n - - smtpd'
+  notify: Restart postfix
+
+- name: Ensure postfix is enabled and running
+  ansible.builtin.service:
+    name: postfix
+    state: started
+    enabled: true
