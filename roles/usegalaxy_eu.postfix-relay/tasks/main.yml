@@ -29,21 +29,43 @@
   no_log: true
   register: postfix_sasl_credentials
 
+- name: Check supported lookup table types
+  ansible.builtin.command: /usr/sbin/postconf -m
+  register: postfix_map_types
+  changed_when: false
+
+- name: Select the credentials database type
+  ansible.builtin.set_fact:
+    postfix_database_type: >-
+      {{ 'hash' if 'hash' in postfix_map_types.stdout_lines
+         else 'lmdb' if 'lmdb' in postfix_map_types.stdout_lines
+         else none }}
+    postfix_database_file: >-
+      {{ '/etc/postfix/sasl_passwd.db' if 'hash' in postfix_map_types.stdout_lines
+         else '/etc/postfix/sasl_passwd.lmdb' if 'lmdb' in postfix_map_types.stdout_lines
+         else none }}
+
+- name: Verify a usable credentials database type is available
+  ansible.builtin.assert:
+    that: postfix_database_type is not none
+    fail_msg: >-
+      Neither 'hash' nor 'lmdb' lookup tables are supported by this postfix
+      build (postconf -m). Install postfix-lmdb or an equivalent package.
+
 - name: Check for the SMTP credentials database
   ansible.builtin.stat:
-    path: /etc/postfix/sasl_passwd.db
+    path: "{{ postfix_database_file }}"
   register: postfix_sasl_database
 
 - name: Build SMTP credentials database before starting postfix
-  ansible.builtin.command: /usr/sbin/postmap hash:/etc/postfix/sasl_passwd
+  ansible.builtin.command: "/usr/sbin/postmap {{ postfix_database_type }}:/etc/postfix/sasl_passwd"
   when: postfix_sasl_credentials.changed or not postfix_sasl_database.stat.exists
   changed_when: true
-  no_log: true
   notify: Restart postfix
 
 - name: Restrict access to the SMTP credentials database
   ansible.builtin.file:
-    path: /etc/postfix/sasl_passwd.db
+    path: "{{ postfix_database_file }}"
     owner: root
     group: root
     mode: "0600"

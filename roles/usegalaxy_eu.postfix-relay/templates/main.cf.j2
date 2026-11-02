@@ -10,7 +10,7 @@ smtpd_tls_security_level = {{ postfix_smtpd_tls_security_level }}
 
 relayhost = [{{ postfix_relay_host }}]:{{ postfix_relay_port }}
 smtp_sasl_auth_enable = yes
-smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+smtp_sasl_password_maps = {{ postfix_database_type }}:/etc/postfix/sasl_passwd
 smtp_sasl_security_options = noanonymous
 smtp_tls_security_level = encrypt
 smtp_tls_CAfile = {{ postfix_smtp_tls_cafile }}
