@@ -1,6 +1,0 @@
----
-- name: Exclude some repositories
-  lineinfile:
-    dest: /etc/yum.repos.d/epel.repo
-    line: 'exclude={{ ",".join(yum_exclude_repos) }}'
-    insertafter: '^ *enabled=1'
