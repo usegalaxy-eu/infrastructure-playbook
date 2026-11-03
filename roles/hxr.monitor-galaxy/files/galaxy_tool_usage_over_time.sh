@@ -8,6 +8,6 @@ gxadmin query q "COPY (
            COUNT(*) AS usage_count
     FROM job
     WHERE create_time >= date_trunc('month', NOW()) - INTERVAL '2 years'
-    GROUP BY month, tool_id
+    GROUP BY 1, 2
 ) TO STDOUT WITH (FORMAT CSV, HEADER FALSE, DELIMITER ',');" \
 | awk -F, '{printf "galaxy_tool_usage_over_time,tool_id=%s,month=%s usage_count=%d\n", $2, $1, $3}'
