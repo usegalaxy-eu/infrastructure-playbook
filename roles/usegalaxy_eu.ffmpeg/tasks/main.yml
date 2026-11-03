@@ -1,0 +1,29 @@
+---
+# see https://github.com/usegalaxy-eu/issues/issues/550
+- name: Gather installed package facts
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: Install RPMFusion and ffmpeg if ffmpeg is missing
+  block:
+    - name: Enable CRB repository for EL9 dependencies
+      ansible.builtin.command: dnf config-manager --set-enabled crb
+      changed_when: false
+      when: ansible_distribution_major_version == "9"
+
+    - name: Import RPMFusion Free GPG Key
+      ansible.builtin.rpm_key:
+        state: present
+        key: "https://rpmfusion.org/keys?action=AttachFile&do=get&target=RPM-GPG-KEY-rpmfusion-free-el-{{ ansible_distribution_major_version }}"
+
+    - name: Install RPMFusion
+      ansible.builtin.dnf:
+        name: "https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-{{ ansible_distribution_major_version }}.noarch.rpm"
+        state: present
+        disable_gpg_check: no
+
+    - name: Install ffmpeg
+      ansible.builtin.dnf:
+        name: ffmpeg
+        state: present
+  when: "'ffmpeg' not in ansible_facts.packages"

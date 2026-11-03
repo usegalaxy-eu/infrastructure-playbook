@@ -1,0 +1,69 @@
+---
+- name: Load role vars
+  ansible.builtin.include_vars:
+    file: "{{ role_path }}/vars/main.yml"
+
+- name: Fail if `uv` is available on the system repositories
+  ansible.builtin.fail:
+    msg: >
+      For RHEL >= 10, `uv` is available on the system repositories, do not use
+      this role.
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version | int > 9
+
+- name: Fail if not running as root
+  ansible.builtin.fail:
+    msg: >
+      This role installs `uv` system-wide, it must be run as root. Current user
+      is '{{ ansible_user_id }}'."
+  when: ansible_user_id != "root"
+
+- name: Determine latest `uv` version
+  when: uv_version == "latest"
+  block:
+    - name: Parse `APP_VERSION` variable from installation script
+      ansible.builtin.shell:
+        executable: /bin/bash
+        cmd: |
+          curl -fsSL https://astral.sh/uv/install.sh | sed -n 's/^APP_VERSION="\([^"]*\)".*/\1/p'
+      changed_when: false
+      register: uv_latest_version
+
+    - name: Set `uv_latest` to latest version
+      ansible.builtin.set_fact:
+        uv_latest: "{{ uv_latest_version.stdout }}"
+
+- name: Determine installed `uv` version
+  block:
+    - name: Check if `uv` is installed
+      ansible.builtin.stat:
+        path: "{{ uv_dir }}/uv"
+      register: uv_installed
+
+    - name: Get installed `uv` version
+      ansible.builtin.shell:
+        executable: /bin/bash
+        cmd: "{{ uv_dir }}/uv --version | awk '{print $2}'"
+      changed_when: false
+      register: uv_installed_version
+      when: uv_installed.stat.exists
+
+    - name: Register installed `uv` version as fact
+      ansible.builtin.set_fact:
+          uv_installed_version: "{{ uv_installed_version.stdout | default(omit) }}"
+      when: uv_installed.stat.exists
+
+- name: Install `uv`
+  ansible.builtin.shell:
+    cmd: "curl -LsSf https://astral.sh/uv/{{ uv_latest | default(uv_version) }}/install.sh | UV_UNMANAGED_INSTALL={{ uv_dir }} sh"
+  when: uv_install and (uv_installed_version is not defined or (uv_latest | default(uv_version)) != uv_installed_version)
+
+- name: Uninstall `uv`
+  when: uv_install == false
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ uv_dir }}/uv"
+    - "{{ uv_dir }}/uvx"

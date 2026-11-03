@@ -1,16 +1,34 @@
 ---
+- name: Configure operating system
+  hosts: beacon
+  become: true
+  vars_files:
+    - secret_group_vars/all.yml
+  roles:
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        enable_hostname: true
+        enable_powertools: true        # geerlingguy.repo-epel role doesn't enable PowerTools repository
+        #enable_remap_user: true
+        enable_create_user: true
+    - geerlingguy.repo-epel
+    - influxdata.chrony
+    - usegalaxy-eu.dynmotd # nicer MOTD/welcome message
+  tasks:
+    - name: Install `uv` Python package manager
+      ansible.builtin.package:
+        name: uv
+        state: present
+
 - name: Beacon
   become: true
-  hosts:
-    - beacon
+  hosts: beacon
   vars_files:
-    - secret_group_vars/beacon.yml
-  vars:
-    postgres_data_dir: /data/postgresql/data
-    postgres_init_dir: /data/postgresql/init
-    bp_external_binding: 80
-    postgres_user: "{{ beacon_db_user }}"
-    postgres_pass: "{{ beacon_db_password }}"
-    postgres_external_binding: "{{ beacon_db_port }}"
+    - secret_group_vars/all.yml
   roles:
+    - dj-wasabi.telegraf
+
     - paprikant.beacon
+    - paprikant.beacon-importer
+#    - os_hardening
+#    - ssh_hardening

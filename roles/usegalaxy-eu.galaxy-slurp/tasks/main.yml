@@ -1,6 +1,6 @@
 ---
 - name: Deploy slurp script
-  template:
+  ansible.builtin.template:
     src: galaxy-slurp.j2
     dest: /usr/bin/galaxy-slurp
     owner: "{{ galaxy_slurper }}"
@@ -16,7 +16,7 @@
     user: "{{ galaxy_slurper }}"
 
 - name: Deploy slurp script (upto)
-  template:
+  ansible.builtin.template:
     src: galaxy-slurp-upto.j2
     dest: /usr/bin/galaxy-slurp-upto
     owner: "{{ galaxy_slurper }}"

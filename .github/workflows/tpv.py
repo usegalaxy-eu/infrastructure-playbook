@@ -132,7 +132,9 @@ def make_playbook(
         dummy_vars = {}
         # - determinate what is already defined in group variables
         group_vars = set()
-        for file_path in glob.glob(str(directory / "group_vars" / "*")):
+        for file_path in glob.glob(
+            str(directory / "group_vars" / "**" / "*.y*ml"), recursive=True
+        ):
             contents = yaml.safe_load(open(file_path))
             group_vars |= set(contents)
         # - for vars files

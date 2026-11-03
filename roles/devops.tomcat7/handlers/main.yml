@@ -2,4 +2,6 @@
 # handlers file for ansible-role-tomcat7
 
 - name: restart tomcat
-  service: name=tomcat state=restarted
+  ansible.builtin.service:
+    name: tomcat
+    state: restarted

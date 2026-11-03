@@ -1,0 +1,19 @@
+---
+- name: "Install fail2ban"
+  ansible.builtin.dnf:
+    name: fail2ban
+    state: present
+
+- name: "Add fail2ban sshd configuration"
+  ansible.builtin.copy:
+    src: "fail2ban_sshd.conf"
+    dest: "/etc/fail2ban/jail.d/01-sshd.conf"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
+- name: "Enable fail2ban service"
+  ansible.builtin.systemd_service:
+    name: "fail2ban"
+    state: "started"
+    enabled: true

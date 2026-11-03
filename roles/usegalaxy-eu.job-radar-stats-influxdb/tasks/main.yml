@@ -1,0 +1,16 @@
+---
+- name: Copy the gxadmin bash scripts for collecting stats for galaxy job radar visualization tool
+  ansible.builtin.copy:
+    src: '{{ item }}'
+    dest: '/usr/bin/{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: 0755
+  loop:
+    - 'galaxy_failed_jobs_by_destination.sh'
+    - 'galaxy_most_used_tools_by_destination.sh'
+    - 'galaxy_num_anonymous_jobs_by_destination.sh'
+    - 'galaxy_unique_users_job_count_by_destination.sh'
+    - 'galaxy_longest_running_jobs_by_destination.sh'
+    - 'galaxy_num_user_running_jobs_count_by_destination.sh'
+    - 'galaxy_jobs_stats.sh'

@@ -1,13 +1,7 @@
 ---
-hxr_custom_group:
-  name: tomcat
-hxr_custom_user:
-  name: tomcat
-  comment: "Apache Tomcat"
-  shell: /sbin/nologin
-
-usegalaxy_eu_autofs_mounts:
+autofs_mount_points:
   - data
+nfs_kernel_tuning: true
 
 # NGINX
 nginx_enable_default_server: false
@@ -25,8 +19,6 @@ tomcat7_hostname: localhost
 tomcat7_server_port: 8005
 tomcat7_catalina_port: 8080
 tomcat7_ajp_port: 8009
-tomcat7_uriencoding: ""
-
 apollo_version: eu-2.6.4
 
 apollo_config_apollo: |
@@ -39,7 +31,7 @@ apollo_config_jbrowse: |
     jbrowse {
         git {
             url= "https://github.com/GMOD/jbrowse"
-            tag = "1.16.10-release"
+            tag = "1.16.12-release"
             alwaysPull = true
             alwaysRecheck = true
         }

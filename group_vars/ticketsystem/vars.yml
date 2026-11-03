@@ -1,0 +1,21 @@
+---
+hostname: "ticketsystem.bi.privat"
+zammad_compose_dir: /opt/zammad-docker-compose
+zammad_fqdn: ticketsystem.galaxyproject.eu
+zammad_postgres_password: "{{ vault_zammad_postgres_password }}"
+zammad_trusted_proxies:
+  - 132.230.103.37  # traefik.galaxyproject.eu
+  - 127.0.0.1
+  - 172.16.0.0/16
+  - localhost
+docker_service_enabled: true
+docker_daemon_options:
+  data-root: /data/docker/
+  log-driver: json-file
+  log-opts:
+    max-size: "10m"
+    max-file: "3"
+software_groups_to_install:
+  - admin
+  - editors
+  - utils

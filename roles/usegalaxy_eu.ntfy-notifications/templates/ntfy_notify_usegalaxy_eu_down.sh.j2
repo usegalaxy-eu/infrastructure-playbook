@@ -1,0 +1,15 @@
+#!/bin/bash
+# Description: This script checks the HTTP status of a usegalaxy.eu and sends a notification via ntfy if the status is not 200 (OK).
+
+# Arguments
+NTFY_URL="{{ ntfy_galaxy_eu_url }}"
+WEBSITE_URL="https://usegalaxy.eu"
+
+# Check HTTP status of the website
+STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$WEBSITE_URL")
+
+# If status code is not 200, send a notification via ntfy
+if [ "$STATUS_CODE" -ne 200 ]; then
+    MESSAGE="🚨 **Alert**: **$WEBSITE_URL** returned status code **$STATUS_CODE**. Please check! ⚠️"
+    curl -d "$MESSAGE" "$NTFY_URL"
+fi

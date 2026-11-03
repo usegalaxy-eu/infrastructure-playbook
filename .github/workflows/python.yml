@@ -9,17 +9,22 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - run: pip install --upgrade pip
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version-file: '.python-version'
+          cache: 'pip'
+          cache-dependency-path: '.github/requirements-python-lint.txt'
 
       - id: pip_install
-        run: pip install --upgrade isort~=5.0 flake8~=6.0 flake8-docstrings~=1.0
+        run: pip install -r '.github/requirements-python-lint.txt'
 
       - name: isort
         run: isort . --check --diff
         if: (success() || failure()) && steps.pip_install.conclusion == 'success'
 
       - name: Black
-        uses: psf/black@stable
+        uses: psf/black@26.3.1
         with:
           version: "~=23.0"
           options: "--check --diff"

@@ -10,7 +10,7 @@
 - name: Attempting to overlay yum-cron configurations
   tags: yum_cron
   become: true
-  template:
+  ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ item.dst }}"
     owner: root

@@ -1,0 +1,15 @@
+---
+- name: Manage authorized SSH keys
+  hosts: all
+  gather_facts: false
+  roles:
+    - role: usegalaxy_eu.ssh_manager
+
+- name: Manage repositories and packages
+  hosts: all
+  become: true
+  roles:
+    - role: usegalaxy_eu.rocky_security_repository
+      when: ansible_facts['distribution'] == "Rocky"
+    - role: usegalaxy-eu.autoupdates
+      when: ansible_facts['os_family'] == "RedHat"

@@ -1,0 +1,18 @@
+---
+# WARNING: Job destinations may override this configuration.
+
+# use Docker if <container type="docker"> and use Singularity if <container type="singularity">
+- type: explicit
+
+# it is so nice, they do it twice, with different dirs
+- type: cached_mulled_singularity
+  cache_directory: /cvmfs/singularity.galaxyproject.org/all/
+  cache_directory_cacher_type: dir_mtime
+- type: cached_mulled_singularity
+  cache_directory: {{ cache.cache08.path }}/container_cache/singularity/mulled/
+  cache_directory_cacher_type: dir_mtime
+
+# this will create a container, the "auto_install: false" will ensure that the function returns a `path` to a sif file and NOT a docker://quay.io/ URL (as with auto_install: true)
+- type: mulled_singularity
+  cache_directory: {{ cache.cache08.path }}/container_cache/singularity/mulled/
+  auto_install: true

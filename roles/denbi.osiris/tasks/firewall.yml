@@ -1,0 +1,27 @@
+---
+- name: "Copy Apache access restriction scripts"
+  ansible.builtin.copy:
+    src: '{{ item }}'
+    dest: '{{ cron_bin_dir }}/{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: 0750
+  loop:
+    - 'fetch-ipranges.sh'
+    - 'apache-block.sh'
+
+- name: "Update Apache IP ranges"
+  ansible.builtin.cron:
+    name: "Firewall update German IP ranges - Weekly"
+    special_time: "weekly"
+    user: "root"
+    job: "{{ cron_bin_dir }}/fetch-ipranges.sh"
+    cron_file: ansible_firewall_update_ipranges
+
+- name: "Refresh Apache IP restrictions"
+  ansible.builtin.cron:
+    name: "Firewall refresh IPs blocked - Weekly"
+    special_time: "weekly"
+    user: "root"
+    job: "OSIRIS_WWW_DIR={{ osiris_www_dir }} {{ cron_bin_dir }}/apache-block.sh"
+    cron_file: ansible_firewall_refresh_block

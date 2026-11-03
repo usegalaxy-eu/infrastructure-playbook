@@ -21,8 +21,8 @@
         timeout 3m pssh -h /etc/pssh/cloud -l centos 'time timeout 1m  ls /data/dnb02/galaxy_db/' > $TIMES
         cat $TIMES | awk 'v && /real/{print v,$2}/SUCCESS/{v=$4}' | sed 's/\([0-9]*\)m\([0-9.]*\)s/\1\t\2/g' | awk '{print $1,$2"\t"$2 * 60 + $3}' | sed 's/://g' | awk '{print "disk-access-time,server="$1",disk=dnb02 seconds="$3}'
 
-        timeout 3m pssh -h /etc/pssh/cloud -l centos 'time timeout 1m  ls /data/dnb03/galaxy_db/' > $TIMES
-        cat $TIMES | awk 'v && /real/{print v,$2}/SUCCESS/{v=$4}' | sed 's/\([0-9]*\)m\([0-9.]*\)s/\1\t\2/g' | awk '{print $1,$2"\t"$2 * 60 + $3}' | sed 's/://g' | awk '{print "disk-access-time,server="$1",disk=Isilon_dnb03_cluster seconds="$3}'
+        timeout 3m pssh -h /etc/pssh/cloud -l centos 'time timeout 1m  ls /data/dnb03-legacy/galaxy_db/' > $TIMES
+        cat $TIMES | awk 'v && /real/{print v,$2}/SUCCESS/{v=$4}' | sed 's/\([0-9]*\)m\([0-9.]*\)s/\1\t\2/g' | awk '{print $1,$2"\t"$2 * 60 + $3}' | sed 's/://g' | awk '{print "disk-access-time,server="$1",disk=dnb03-legacy seconds="$3}'
 
         timeout 3m pssh -h /etc/pssh/cloud -l centos 'time timeout 1m  ls /data/dnb05/galaxy_db/' > $TIMES
         cat $TIMES | awk 'v && /real/{print v,$2}/SUCCESS/{v=$4}' | sed 's/\([0-9]*\)m\([0-9.]*\)s/\1\t\2/g' | awk '{print $1,$2"\t"$2 * 60 + $3}' | sed 's/://g' | awk '{print "disk-access-time,server="$1",disk=dnb05 seconds="$3}'

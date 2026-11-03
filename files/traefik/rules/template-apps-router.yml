@@ -1,0 +1,18 @@
+{{define "apps"}}
+    {{ . }}-apps-rtr:
+      rule: Host(`{{ . }}.apps.galaxyproject.eu`)
+      service: apps
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: "route53"
+        domains:
+          - main: "{{ . }}.apps.galaxyproject.eu"
+{{end}}
+
+http:
+  routers:
+{{template "apps" "ptdk"}}
+{{template "apps" "pwdk"}}
+{{template "apps" "oembed"}}
+{{template "apps" "dnanalyzer"}}

@@ -1,0 +1,23 @@
+---
+# Example:
+# galaxy_cleanup_scratchstorage:
+#   objectstore_id:
+#     days: 60
+
+# *****************************************************************************************
+# WARNING: Adding or modifying entries in `galaxy_cleanup_objectstores` will cause data
+#          in the specified object stores to be **deleted** after the defined retention
+#          period (e.g., `days: 60`).  Ensure you only include object stores that are meant
+#          to be cleaned up, and double‑check the `objectstore_id` values before saving.
+# *****************************************************************************************
+galaxy_cleanup_scratchstorage: {}
+
+# Schedule for Galaxy cleanup objectstore service.
+galaxy_cleanup_minute: 0
+galaxy_cleanup_hour: 1
+
+galaxy_cleanup_log_dir: "{{ undef() }}"
+
+galaxy_cleanup_systemd_service: galaxy-cleanup.service
+galaxy_cleanup_systemd_timer: galaxy-cleanup.timer
+galaxy_cleanup_systemd_on_calendar: "*-*-* {{ '%02d' | format(galaxy_cleanup_hour | int) }}:{{ '%02d' | format(galaxy_cleanup_minute | int) }}:00"
