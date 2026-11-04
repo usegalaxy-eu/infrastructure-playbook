@@ -5,15 +5,8 @@ DAY=86400
 cd ~
 for job in $(gxadmin query queue-detail | grep running | grep interactive_tool | awk '{print $3}')
 do
-    # Get job working directory
-    JWD=$(/opt/galaxy/venv/bin/python /usr/local/bin/galaxy_jwd get $job)
-
-    # Get external/Condor job ID from either external_id file or job_condor.log file from JWD
-    if [ -f $JWD/external_id ]; then
-        ClusterID=$(cat $JWD/external_id | tr -d '"')
-    elif [ -f $JWD/job_condor.log ]; then
-        ClusterID=$(head -n 1 $JWD/job_condor.log | sed -n 's/.*(\([0-9]*\)\..*/\1/p')
-    fi
+    # Get external/Condor job ID directly from the Galaxy DB
+    ClusterID=$(gxadmin tsvquery q "SELECT job_runner_external_id FROM job WHERE id = $job" | tr -d '"')
 
     # If cluster ID is found
     if [ ! -z "$ClusterID" ]; then
