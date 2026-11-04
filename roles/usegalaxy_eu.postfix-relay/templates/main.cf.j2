@@ -14,6 +14,8 @@ alias_database = {{ postfix_database_type }}:/etc/aliases
 smtpd_tls_security_level = {{ postfix_smtpd_tls_security_level }}
 
 relayhost = [{{ postfix_relay_host }}]:{{ postfix_relay_port }}
+sender_dependent_default_transport_maps = {{ postfix_database_type }}:/etc/postfix/sender_transport
+empty_address_default_transport_maps_lookup_key = <>
 smtp_sasl_auth_enable = yes
 smtp_sasl_password_maps = {{ postfix_database_type }}:/etc/postfix/sasl_passwd
 smtp_sasl_security_options = noanonymous
@@ -26,6 +28,12 @@ smtp_tls_wrappermode = yes
 
 smtp_destination_rate_delay = {{ postfix_destination_rate_delay }}
 smtp_destination_concurrency_limit = {{ postfix_destination_concurrency_limit }}
+smtp_destination_concurrency_failed_cohort_limit = 10
+bulk_destination_rate_delay = {{ postfix_bulk_destination_rate_delay }}
+bulk_destination_concurrency_limit = {{ postfix_bulk_destination_concurrency_limit }}
+bulk_destination_concurrency_failed_cohort_limit = 10
+dsnrelay_destination_rate_delay = 0s
+dsnrelay_destination_concurrency_limit = {{ postfix_destination_concurrency_limit }}
 default_destination_concurrency_limit = {{ postfix_destination_concurrency_limit }}
 
 maximal_queue_lifetime = {{ postfix_maximal_queue_lifetime }}

@@ -16,8 +16,12 @@ postfix_mynetworks:
 postfix_trusted_client_hosts: "{{ groups['celerycluster'] }}"
 postfix_maximal_queue_lifetime: 30d
 postfix_bounce_queue_lifetime: 30d
-postfix_destination_rate_delay: 5s
+postfix_destination_rate_delay: 36s
 postfix_destination_concurrency_limit: 2
+postfix_bulk_senders:
+  - assumetest-no-reply@informatik.uni-freiburg.de
+postfix_bulk_destination_rate_delay: 6s
+postfix_bulk_destination_concurrency_limit: 2
 
 galaxy_root: /opt/galaxy
 galaxy_venv_dir: "{{ galaxy_root }}/venv"

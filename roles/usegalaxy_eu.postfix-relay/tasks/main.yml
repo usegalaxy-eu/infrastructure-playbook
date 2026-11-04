@@ -71,6 +71,31 @@
     mode: "0600"
   when: not ansible_check_mode or postfix_sasl_database.stat.exists
 
+- name: Deploy sender-dependent transport routing
+  ansible.builtin.template:
+    src: sender_transport.j2
+    dest: /etc/postfix/sender_transport
+    owner: root
+    group: root
+    mode: "0644"
+  register: postfix_sender_transport
+
+- name: Check for the sender transport database
+  ansible.builtin.stat:
+    path: "/etc/postfix/sender_transport.{{ 'db' if postfix_database_type == 'hash' else 'lmdb' }}"
+  register: postfix_sender_transport_database
+
+- name: Build sender transport database before starting postfix
+  ansible.builtin.command:
+    argv:
+      - /usr/sbin/postmap
+      - "{{ postfix_database_type }}:/etc/postfix/sender_transport"
+  when: >-
+    postfix_sender_transport.changed or
+    not postfix_sender_transport_database.stat.exists
+  changed_when: true
+  notify: Restart postfix
+
 - name: Deploy main.cf
   ansible.builtin.template:
     src: main.cf.j2
@@ -106,6 +131,17 @@
     path: /etc/postfix/master.cf
     regexp: '^#?submission\s+inet\s+'
     line: 'submission inet n - n - - smtpd'
+  notify: Restart postfix
+
+- name: Configure bulk and unpaced delivery-status transports
+  ansible.builtin.blockinfile:
+    path: /etc/postfix/master.cf
+    marker: '# {mark} ANSIBLE MANAGED POSTFIX RELAY TRANSPORTS'
+    block: |
+      bulk unix - - n - - smtp
+        -o syslog_name=postfix/bulk
+      dsnrelay unix - - n - - smtp
+        -o syslog_name=postfix/dsnrelay
   notify: Restart postfix
 
 - name: Ensure postfix is enabled and running
