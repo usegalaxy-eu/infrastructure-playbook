@@ -21,7 +21,6 @@ from galaxy.util.properties import load_app_properties  # noqa: E402
 from sqlalchemy import select  # noqa: E402
 from sqlalchemy.orm import Session, scoped_session  # noqa: E402
 
-
 CONFIG_FILE = {{ galaxy_config_file | to_json }}
 PULSAR_APP_CONFIG_FILE = (
     {{ (galaxy_config_dir ~ "/pulsar_app.yml") | to_json }}
