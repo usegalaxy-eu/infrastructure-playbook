@@ -2,7 +2,7 @@
 # tasks for tomcat 7 Configure
 
 - name: Copy tomcat server.xml.
-  template:
+  ansible.builtin.template:
     src: server.xml.j2
     dest: "{{ tomcat7_conf_dir }}/server.xml"
     owner: root
@@ -12,7 +12,7 @@
   notify: restart tomcat
 
 - name: Copy tomcat tomcat-users.xml.
-  template:
+  ansible.builtin.template:
     src: tomcat-users.xml.j2
     dest: "{{ tomcat7_conf_dir }}/tomcat-users.xml"
     owner: root

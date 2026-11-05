@@ -14,6 +14,16 @@
     # which for 'apache' is /usr/share/httpd/.ansible/tmp
     ansible_remote_tmp: /tmp/ansible_osiris_checkout
 
+- name: "Disallow all web crawlers via robots.txt"
+  ansible.builtin.copy:
+    dest: "{{ osiris_www_dir }}/robots.txt"
+    content: |
+      User-agent: *
+      Disallow: /
+    owner: "apache"
+    group: "apache"
+    mode: "0640"
+
 - name: "Ensure permissions for OSIRIS PHP files"
   ansible.builtin.file:
     path: "{{ osiris_www_dir }}"

@@ -1,4 +1,27 @@
 ---
+- name: Configure operating system
+  hosts: grafana
+  vars_files:
+    - secret_group_vars/all.yml
+  roles:
+    - role: usegalaxy_eu.firewall
+      become: true
+    - role: geerlingguy.repo-epel # Install EPEL repository
+      become: true
+    - role: usegalaxy_eu.handy.os_setup
+      become: true
+      vars:
+        hostname: "{{ grafana_ini.server.domain }}"
+        enable_hostname: true
+        enable_powertools: true # geerlingguy.repo-epel role doesn't enable PowerTools repository
+    - influxdata.chrony # Keep our time in sync.
+  tasks:
+    - name: Install `uv` Python package manager
+      become: true
+      ansible.builtin.package:
+        name: uv
+        state: present
+
 - name: Grafana
   hosts: grafana
   vars_files:
@@ -24,29 +47,13 @@
       ansible.builtin.package:
         name:
           - git
-  collections:
-    - devsec.hardening
-    - grafana.grafana
   roles:
-    ## Starting configuration of the operating system
-    - role: usegalaxy_eu.firewall
-      become: true
-    - role: geerlingguy.repo-epel # Install EPEL repository
-      become: true
-    - role: usegalaxy_eu.handy.os_setup
-      become: true
-      vars:
-        hostname: "{{ grafana_ini.server.domain }}"
-        enable_hostname: true
-        enable_powertools: true # geerlingguy.repo-epel role doesn't enable PowerTools repository
-    - influxdata.chrony # Keep our time in sync.
-
     ## Monitoring
     - dj-wasabi.telegraf
     - role: hxr.monitor-email
       become: true
 
-    - grafana
+    - grafana.grafana.grafana
     - role: pgs
       become: true
 

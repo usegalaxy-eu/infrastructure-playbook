@@ -1,6 +1,6 @@
 ---
 - name: copy vgcn_monitoring template
-  template:
+  ansible.builtin.template:
     src: vgcn_monitoring.py.j2
     dest: /usr/local/bin/vgcn_monitoring.py
     owner: root
@@ -17,7 +17,7 @@
   notify: restart telegraf
 
 - name: Add VGCN monitoring Telegraf configuration
-  template:
+  ansible.builtin.template:
     src: vgcn_monitoring.conf.j2
     dest: /etc/telegraf/telegraf.d/vgcn_monitoring.conf
     owner: telegraf

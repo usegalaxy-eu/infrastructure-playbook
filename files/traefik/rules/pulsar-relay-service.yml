@@ -1,0 +1,13 @@
+---
+http:
+  serversTransports:
+    pulsar-relay-transport:
+      forwardingTimeouts:
+        # relay long-polls are silent for up to 60s (its own max), no heartbeats
+        responseHeaderTimeout: "90s"
+  services:
+    pulsar-relay:
+      loadBalancer:
+        serversTransport: pulsar-relay-transport
+        servers:
+          - url: "http://10.4.68.172:9000"

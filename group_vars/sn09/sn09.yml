@@ -14,8 +14,9 @@ docker_users:
   - galaxy
 
 # Autofs
-autofs_service.install: true
-autofs_service.enable: true
+autofs_service:
+  install: true
+  enable: true
 nfs_kernel_tuning: true
 
 autofs_mount_points:
@@ -94,6 +95,39 @@ telegraf_plugins_extra:
       - data_format = "influx"
       - interval = "15s"
 
+  # Parse nginx rate limit hits
+  nginx_rate_limit:
+    plugin: 'tail'
+    config:
+      - files = ["/var/log/nginx/rate_limit.log"]
+      - data_format = "grok"
+      - name_override = "nginx_rate_limit"
+      # Parses lines from the dedicated NGINX rate limit access log, see
+      # templates/nginx/conf.d/rate_limit.conf.j2)
+      - grok_patterns = ['ts=%{TIMESTAMP_ISO8601:ts:ts-"2006-01-02T15:04:05Z07:00"} client=%{IPORHOST:client:tag} host=%{NOTSPACE:host} request="%{WORD:method} (?P<req_path_raw>%{URIPATHPARAM:req_path_normalized:tag}) HTTP/%{NUMBER:httpver}" status=%{POSINT:status:int} bytes=%{NONNEGINT:body_bytes:int} limit_status=%{WORD:limit_status:tag} crawler=(?P<crawler>\S*)$']
+      # Note: "2006-01-02T15:04:05Z07:00" is a Go reference-time layout,
+      # where Z07:00 is the offset placeholder, not UTC+7.
+
+# Normalise high-cardinality path IDs in nginx_rate_limit metrics
+telegraf_processors:
+  - processor: regex
+    config:
+      - namepass = ["nginx_rate_limit"]
+      - '[[processors.regex.tags]]'
+      - '  key = "req_path_normalized"'
+      - '  pattern = "[0-9a-fA-F]{16,}"'
+      - '  replacement = "ID"'
+      - '[[processors.regex.tags]]'
+      - '  key = "req_path_normalized"'
+      - '  pattern = "\\?.*"'
+      - '  replacement = ""'
+  # Counters as float, else InfluxDB drops them next to float gauges
+  - processor: converter
+    config:
+      - namepass = ["galaxy_page_timings."]
+      - '[processors.converter.fields]'
+      - '  float = ["value"]'
+
 # Custom pip installer
 pip_venv_path: '{{ galaxy_venv_dir }}'
 pip_install_dependencies:
@@ -124,21 +158,7 @@ pip_install_dependencies:
   # WallE
   - tqdm # progress bar, has no dependencies
 
-yum_exclude_repos:
-  - condor*
-  - npm*
-
-all_yum_repositories:
-  - name: galaxy_gpel
-    description: Galaxy Packages for Enterprise Linux $releasever - $basearch
-    baseurl: https://depot.galaxyproject.org/yum/el/$releasever/$basearch/
-    enabled: true
-    gpgcheck: false
-    retries: 1
-    timeout: 10
-
 # Certbot
-certbot_virtualenv_package_name: python3-virtualenv
 certbot_dns_provider: route53
 certbot_auth_method: --standalone
 certbot_domains: '{{ server_names }}'
@@ -204,7 +224,7 @@ nginx_cache_dir: /var/cache/nginx
 # (see templates/nginx/conf.d/rate_limit.conf.j2, templates/nginx/galaxy-main.j2)
 nginx_extra_configs:
   - conf.d/rate_limit.conf
-nginx_rate_limit_dry_run: true
+nginx_rate_limit_dry_run: false
 # Proxies whose X-Forwarded-For we trust for the real client IP. Only list
 # proxies here, otherwise clients can spoof their own rate limit key.
 nginx_rate_limit_trusted_proxies:
@@ -256,7 +276,7 @@ galaxy_systemd_common_env: '{{ apollo_env }} GALAXY_ONEDRIVE_CLIENT_ID={{ onedri
 # Each Gunicorn master needs a distinct base name for its workers' control queues.
 # Systemd expands %i to the galaxy-gunicorn@ instance number.
 galaxy_systemd_gunicorn_env: '{{ galaxy_systemd_common_env }} GALAXY_CONFIG_SERVER_NAME=web_sn09_%i'
-galaxy_systemd_handler_env: '{{ galaxy_systemd_common_env }} PULSAR_RELAY_ALLOW_INSECURE=1'
+galaxy_systemd_handler_env: '{{ galaxy_systemd_common_env }}'
 galaxy_systemd_workflow_scheduler_env: '{{ galaxy_systemd_common_env }}'
 
 galaxy_systemd_sse_monitor: false
@@ -310,13 +330,7 @@ pgc_users:
     pgdatabase: galaxy
 
 # GRT
-galaxy_grt_exporter: galaxy
-galaxy_grt_uploader: galaxy
-
 # Influx Notifier
-gxadmin_influx_task_notifier: true
-gxadmin_influx_task_notifier_db: notifications
-
 # postgres_pass defined in secret_group_vars
 gxadmin_commit: main
 gxadmin_dir: /opt/gxadmin
@@ -327,7 +341,6 @@ gxadmin_force: true
 galaxy_group:
   name: galaxy
   gid: 999
-galaxy_system_group: galaxy
 galaxy_log_dir: '/var/log/galaxy'
 galaxy_layout: root-dir
 galaxy_separate_privileges: true
@@ -345,11 +358,10 @@ galaxy_webhook_dir: "{{ galaxy_mutable_data_dir }}/webhooks"
 galaxy_tour_dir: "{{ galaxy_mutable_data_dir }}/tours"
 tpv_mutable_dir: "{{ galaxy_mutable_data_dir }}/total_perspective_vortex"
 # Galaxy configuration files will be written with these permissions (mode argument to Ansible copy/template module)
-galaxy_config_perms: 0644
+galaxy_config_perms: "0644"
 
 galaxy_root: /opt/galaxy
 galaxy_workflow_scheduler_count: '{{ galaxy_systemd_workflow_schedulers }}'
-galaxy_home_dir: /opt/galaxy
 galaxy_mutable_config_dir: '{{ galaxy_root }}/mutable-config'
 galaxy_mutable_data_dir: '{{ galaxy_root }}/mutable-data'
 galaxy_shed_tools_dir: '{{ galaxy_root }}/shed_tools'
@@ -368,8 +380,6 @@ ucsc_build_sites:
 # due to https://github.com/usegalaxy-eu/infrastructure-playbook/pull/1591
 galaxy_virtualenv_command: '/usr/local/tools/_conda/envs/__python@3.11.5/bin/python -m venv --copies'
 galaxy_nonrepro_tools: '{{ galaxy_root }}/custom-tools'
-galaxy_nonrepro_commit: master
-
 # Custom override
 # Our galaxy_tool_dependency_dir is on NFS, and permissions are set in such a
 # way that they cannot be changed by the ansible connected user.
@@ -396,8 +406,6 @@ galaxy_repo: 'https://github.com/usegalaxy-eu/galaxy.git'
 galaxy_commit_id: 'release_26.1_europe'
 galaxy_force_checkout: true # discard any modified files
 #galaxy_admin_email_from: 'noreply@usegalaxy.eu'
-
-galaxy_singularity_images_cvmfs_path: '/cvmfs/singularity.galaxyproject.org/all/'
 
 galaxy_config: '{{ galaxy_config_hash }}'
 
@@ -447,6 +455,8 @@ galaxy_config_files:
     dest: '{{ tpv_mutable_dir }}/interactive_tools.yml'
   - src: '{{ galaxy_config_file_src_dir }}/tpv/users.yml'
     dest: '{{ tpv_mutable_dir }}/users.yml'
+  - src: '{{ galaxy_config_file_src_dir }}/tpv/resubmission.yml'
+    dest: '{{ tpv_mutable_dir }}/resubmission.yml'
 
   #- src: files/galaxy/config/job_resource_params_conf.xml
   #dest: "{{ galaxy_config['app:main']['job_resource_params_file'] }}"
@@ -510,7 +520,6 @@ galaxy_config_templates:
 # (usegalaxy-eu.bashrc)
 bashrc_galaxy_root: "{{ galaxy_root }}/server/"
 bashrc_galaxy_venv_dir: "{{ galaxy_venv_dir }}"
-bashrc_galaxy_server_dir: "{{ galaxy_server_dir }}"
 bashrc_galaxy_config_dir: "{{ galaxy_config_dir }}"
 bashrc_galaxy_config_file: "{{ galaxy_config_file }}"
 bashrc_galaxy_mutable_config_dir: "{{ galaxy_mutable_config_dir }}"
@@ -518,3 +527,8 @@ bashrc_galaxy_log_dir: "{{ galaxy_log_dir }}"
 bashrc_galaxy_pulsar_app_conf: "{{ galaxy_config_dir }}/pulsar_app.yml"
 bashrc_extra_exports:
   - "GXADMIN_TOOL_ID_FORMAT=tool_short"
+
+# NEMO Pulsar via the relay; credentials from group_vars/pulsar_relay/vault.yml (loaded in sn09.yml)
+pulsar_nemo_relay_url: "https://stargate.galaxyproject.eu/"
+pulsar_nemo_relay_username: "{{ vault_pulsar_nemo_relay_username }}"
+pulsar_nemo_relay_password: "{{ vault_pulsar_nemo_relay_password }}"

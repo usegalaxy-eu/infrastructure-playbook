@@ -1,3 +1,4 @@
+---
 # Coarse per-IP rate limit backstop for the websecure entrypoint, applied
 # via
 # `--entryPoints.websecure.http.middlewares` in group_vars/traefik.yml.
@@ -12,6 +13,6 @@ http:
     rate-limit-backstop:
       rateLimit:
         # Token Bucket algorithm: https://traefik.io/blog/how-to-keep-your-services-secure-with-traefiks-rate-limiting
-        average: 150 
+        average: 150
         period: 1s
         burst: 300

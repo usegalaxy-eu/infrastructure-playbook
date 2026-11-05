@@ -1,15 +1,31 @@
 ---
-- hosts: influxdb
-  name: InfluxDB
+- name: Configure operating system
+  hosts: influxdb
+  become: true
+  vars_files:
+    - secret_group_vars/all.yml
+  roles:
+    - geerlingguy.swap
+    - role: usegalaxy_eu.handy.os_setup
+      vars:
+        enable_hostname: true
+    - geerlingguy.repo-epel
+    - influxdata.chrony         # Keep our time in sync.
+    - usegalaxy-eu.dynmotd
+  tasks:
+    - name: Install `uv` Python package manager
+      become: true
+      ansible.builtin.package:
+        name: uv
+        state: present
+
+- name: InfluxDB
+  hosts: influxdb
   become: true
   vars_files:
     - "secret_group_vars/all.yml"
     - secret_group_vars/aws.yml # AWS creds
   pre_tasks:
-    - name: Install Dependencies
-      become: true
-      ansible.builtin.package:
-        name: ['python3-virtualenv']
     - name: Configure SELinux
       ansible.posix.seboolean:
         name: "{{ item }}"
@@ -43,18 +59,9 @@
       ansible.builtin.service:
         name: firewalld
         state: reloaded
-  collections:
-    - devsec.hardening
   roles:
-    ## Starting configuration of the operating system
-    - geerlingguy.swap
     - role: usegalaxy_eu.firewall
       become: true
-    - role: usegalaxy_eu.handy.os_setup
-      vars:
-        enable_hostname: true
-    - influxdata.chrony         # Keep our time in sync.
-    - usegalaxy-eu.dynmotd
     - hxr.monitor-email
 #    # Applications
     - geerlingguy.docker
@@ -63,5 +70,5 @@
     - usegalaxy_eu.influxdbserver
     - dj-wasabi.telegraf
     # hardening
-    # - os_hardening
-    # - ssh_hardening
+    #- devsec.hardening.os_hardening
+    #- devsec.hardening.ssh_hardening

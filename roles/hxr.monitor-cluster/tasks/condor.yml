@@ -77,6 +77,15 @@
     group: root
     mode: 0644
 
+- name: "Refresh VGCN host inventory for Condor host monitor"
+  ansible.builtin.cron:
+    name: "Refresh VGCN host inventory for Condor host monitor"
+    minute: "*/10"
+    user: root
+    job: >-
+      curl -fsS --max-time 60 -o /etc/condor-monitored-hosts.new {{ monitor_condor_inventory_url | quote }}
+      && mv /etc/condor-monitored-hosts.new /etc/condor-monitored-hosts
+
 - name: "Add Condor host status monitor"
   copy:
     src: "cluster_hosts-condor.py"

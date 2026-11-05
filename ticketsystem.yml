@@ -86,6 +86,7 @@
       vars:
         tailscale_serve_config: "{{ tailscale_serve_status.stdout | from_json
                                     if tailscale_serve_status.stdout else {} }}"
+      # noqa no-changed-when
 
   handlers:
     - name: Restart Zammad

@@ -1,5 +1,5 @@
 - name: "Copy procstat setup"
-  template:
+  ansible.builtin.template:
     src: "telegraf-procstat.conf.j2"
     dest: "/etc/telegraf/telegraf.d/galaxy_procstat.conf"
     owner: telegraf

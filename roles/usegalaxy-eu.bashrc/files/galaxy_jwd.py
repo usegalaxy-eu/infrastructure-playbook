@@ -6,6 +6,7 @@ days.
 """
 
 import argparse
+import json
 import os
 import shutil
 import sys
@@ -182,6 +183,11 @@ def main():
         galaxy_pulsar_app_conf
     )
 
+    # Default job_working_directory from the galaxy.yml as fallback
+    config_job_working_directory = get_config_job_working_directory(
+        galaxy_config_file
+    )
+
     # Connect to Galaxy database
     db = Database(
         dbname=db_name,
@@ -193,9 +199,16 @@ def main():
     # For the get subcommand
     if args.operation == "get":
         job_id = args.job_id
-        object_store_id, job_runner_name = db.get_job_info(job_id)
+        object_store_id, job_runner_name, destination_params = db.get_job_info(
+            job_id
+        )
         jwd_path = decode_path(
-            job_id, [object_store_id], backends, job_runner_name
+            job_id,
+            object_store_id,
+            destination_params,
+            backends,
+            job_runner_name=job_runner_name,
+            config_job_working_directory=config_job_working_directory,
         )
 
         # Check
@@ -236,14 +249,30 @@ def main():
                 )
                 for job_id, metadata in failed_jobs.items():
                     # Delete JWD folders older than X days
-                    jwd_path = decode_path(job_id, metadata, backends)
+                    jwd_path = decode_path(
+                        job_id,
+                        metadata[0],
+                        metadata[2],
+                        backends,
+                        config_job_working_directory=(
+                            config_job_working_directory
+                        ),
+                    )
                     if jwd_path:
                         delete_jwd(jwd_path)
                         jwd_log.write(f"{job_id}: {jwd_path}\n")
         else:
             # Print folders of JWDs of failed jobs older than X days
             for job_id, metadata in failed_jobs.items():
-                jwd_path = decode_path(job_id, metadata, backends)
+                jwd_path = decode_path(
+                    job_id,
+                    metadata[0],
+                    metadata[2],
+                    backends,
+                    config_job_working_directory=(
+                        config_job_working_directory
+                    ),
+                )
                 if jwd_path:
                     print(f"{job_id}: {jwd_path}")
 
@@ -299,6 +328,22 @@ def get_object_store_conf_path(galaxy_config_file: str) -> str:
                     raise ValueError(f"{object_store_conf} does not exist")
 
                 return object_store_conf
+
+
+def get_config_job_working_directory(galaxy_config_file: str) -> Optional[str]:
+    """Get the default job_working_directory from the galaxy.yml file.
+
+    Args:
+        galaxy_config_file: Path to the galaxy.yml file.
+
+    Returns:
+        The default job working directory configured in the galaxy.yml file,
+        or None if it is not set.
+    """
+    with open(galaxy_config_file, "r", encoding="utf-8") as file:
+        config = yaml.safe_load(file) or {}
+
+    return (config.get("galaxy") or {}).get("job_working_directory")
 
 
 def parse_object_store_xml(object_store_conf: str) -> dict:
@@ -377,62 +422,126 @@ def get_pulsar_staging_dir(galaxy_pulsar_app_conf: str) -> str:
     return pulsar_staging_dir
 
 
+def directory_hash_id(id: str) -> list:
+    """Build the hashed directory components for an id.
+
+    Duplicate of ``galaxy.util.directory_hash_id`` (we can not import Galaxy
+    here), see: lib/galaxy/util/__init__.py in the Galaxy codebase.
+    """
+    s = str(id)
+    len_s = len(s)
+    # Shortcut -- ids 0-999 go under ../000/
+    if len_s < 4:
+        return ["000"]
+    # Pad with zeros until a multiple of three
+    padded = ((3 - len_s % 3) * "0") + s
+    # Drop the last three digits -- 1000 files per directory
+    padded = padded[:-3]
+    # Break into chunks of three
+    return [padded[i * 3 : (i + 1) * 3] for i in range(len(padded) // 3)]
+
+
 def decode_path(
     job_id: int,
-    metadata: list,
+    object_store_id: str,
+    destination_params: Optional[dict],
     backends_dict: dict,
     job_runner_name: Optional[str] = None,
+    config_job_working_directory: Optional[str] = None,
 ) -> str:
     """Decode the path of JWDs and check if the path exists.
 
+    The JWD root is not necessarily the job_work extra_dir of the job's
+    object store backend: on instances using TPV / dynamic job destinations
+    the per-job job_working_directory is stored in the job's
+    destination_params (e.g. a weighted pool of JWD roots). Therefore we
+    build a list of candidate roots and return the first one that exists:
+
+    1. The job_working_directory from the job's destination_params
+    2. The job_work extra_dir of the job's object store backend
+    3. The default job_working_directory from the galaxy.yml
+
     Args:
         job_id: Job id.
-        metadata: List of object_store_id and update_time.
-        backends_dict: Dictionary of backend id with its type and path of type
-            'job_work'.
+        object_store_id: Object store id of the job.
+        destination_params: Destination params of the job (dict or JSON
+            string), may be None.
+        backends_dict: Dictionary of backend id with its type and path of
+            type 'job_work'.
         job_runner_name: Name of the job runner. Defaults to None.
+        config_job_working_directory: Default job_working_directory from the
+            galaxy.yml file. Defaults to None.
 
     Returns:
         Path to the JWD.
     """
     job_id = str(job_id)
-    object_store_id = metadata[0]
-    backend_info = backends_dict.get(object_store_id)
 
-    # Check if object_store_id exists in our object store config
-    if not backend_info:
-        print(
-            f"Skipping backend '{object_store_id}' as it does not exist in"
-            f" the object_store_conf file."
-        )
-        return None
-
-    # Pulsar embedded jobs uses the staging directory and this has a different
-    # path structure
+    # Pulsar embedded jobs uses the staging directory and this has a
+    # different path structure
     if (job_runner_name or "").startswith("pulsar_embedded"):
-        jwd_path = f"{backends_dict['pulsar_embedded']}/{job_id}"
+        candidates = [f"{backends_dict['pulsar_embedded']}/{job_id}"]
     else:
-        jwd_path = (
-            f"{backend_info['job_work_path']}/"
-            f"0{job_id[0:2]}/{job_id[2:5]}/{job_id}"
-        )
+        # Build the hashed path the same way Galaxy does it (see
+        # galaxy.util.directory_hash_id): chunk the id into groups of three
+        # digits after padding it with zeros
+        hashed_dirs = directory_hash_id(job_id)
 
-    # Validate that the path is a JWD
-    # It is a JWD if the following conditions are true:
-    # 1. Check if tool_script.sh exists
-    # 2. Check if directories 'inputs', and 'outputs' exist
-    # 3. Additionally, we can also try and find the file
-    # '__instrument_core_epoch_end' and compare the timestamp in that with the
-    # 'update_time' (metadata[1]) of the job.
-    if (
-        os.path.exists(jwd_path)
-        and os.path.exists(f"{jwd_path}/tool_script.sh")
-        and os.path.exists(f"{jwd_path}/inputs")
-        and os.path.exists(f"{jwd_path}/outputs")
-    ):
-        return jwd_path
-    else:
-        return None
+        # destination_params can come back from the DB as a JSON string, or
+        # as bytes/memoryview if the column is of type bytea
+        if isinstance(destination_params, (bytes, memoryview)):
+            destination_params = bytes(destination_params).decode("utf-8")
+        if isinstance(destination_params, str):
+            try:
+                destination_params = json.loads(destination_params)
+            except (TypeError, ValueError):
+                destination_params = None
+
+        candidates = []
+
+        # 1. The job_working_directory assigned to the job via its
+        #    destination_params (e.g. by TPV)
+        if destination_params:
+            jwd_root = destination_params.get("job_working_directory")
+            if jwd_root:
+                candidates.append(
+                    f"{jwd_root}/{'/'.join(hashed_dirs)}/{job_id}"
+                )
+
+        # 2. The job_work extra_dir of the job's object store backend
+        backend_info = backends_dict.get(object_store_id)
+        if not backend_info:
+            print(
+                f"Skipping backend '{object_store_id}' as it does not exist"
+                f" in the object_store_conf file.",
+                file=sys.stderr,
+            )
+        elif backend_info.get("job_work_path"):
+            candidates.append(
+                f"{backend_info['job_work_path']}/"
+                f"{'/'.join(hashed_dirs)}/{job_id}"
+            )
+
+        # 3. The default job_working_directory from the galaxy.yml
+        if config_job_working_directory:
+            candidates.append(
+                f"{config_job_working_directory}/"
+                f"{'/'.join(hashed_dirs)}/{job_id}"
+            )
+
+    # Relaxed validation: the first candidate that exists as a directory is
+    # considered the JWD
+    for jwd_path in candidates:
+        if os.path.isdir(jwd_path):
+            return jwd_path
+
+    if candidates:
+        print(
+            "Tried the following JWD candidates, none exists:\n  "
+            + "\n  ".join(candidates),
+            file=sys.stderr,
+        )
+    return None
 
 
 def delete_jwd(jwd_path: str) -> None:
@@ -480,13 +589,13 @@ class Database:
             days: Minimum age of failed jobs (in days).
 
         Returns:
-            Dictionary with job_id as key and object_store_id, and update_time
-                as list of values.
+            Dictionary with job_id as key and object_store_id, update_time,
+                and destination_params as list of values.
         """
         cur = self.conn.cursor()
         cur.execute(
             f"""
-            SELECT id, object_store_id, update_time
+            SELECT id, object_store_id, update_time, destination_params
             FROM job
             WHERE state = 'error'
             AND update_time IS NOT NULL
@@ -498,11 +607,20 @@ class Database:
         cur.close()
         self.conn.close()
 
-        # Create a dictionary with job_id as key and object_store_id, and
-        # update_time as values
+        # Create a dictionary with job_id as key and object_store_id,
+        # update_time, and destination_params as values
         failed_jobs_dict = {}
-        for job_id, object_store_id, update_time in failed_jobs:
-            failed_jobs_dict[job_id] = [object_store_id, update_time]
+        for (
+            job_id,
+            object_store_id,
+            update_time,
+            destination_params,
+        ) in failed_jobs:
+            failed_jobs_dict[job_id] = [
+                object_store_id,
+                update_time,
+                destination_params,
+            ]
 
         if not failed_jobs_dict:
             print(
@@ -513,38 +631,41 @@ class Database:
 
         return failed_jobs_dict
 
-    def get_job_info(self, job_id: int) -> Tuple[str, str]:
-        """Get object_store_id and job_runner_name for a given job id.
+    def get_job_info(self, job_id: int) -> Tuple[str, Optional[str], dict]:
+        """Get object_store_id, job_runner_name and destination_params.
 
         Args:
             job_id: Job id.
 
         Returns:
             object_store_id: Object store id.
-            job_runner_name: Job runner name.
+            job_runner_name: Job runner name (may be None).
+            destination_params: Destination params of the job (may be None).
         """
         cur = self.conn.cursor()
         cur.execute(
-            f"""
-            SELECT object_store_id, job_runner_name
-            FROM job
-            WHERE id = '{job_id}' AND object_store_id IS NOT NULL
-            AND job_runner_name IS NOT NULL
             """
+            SELECT object_store_id, job_runner_name, destination_params
+            FROM job
+            WHERE id = %s AND object_store_id IS NOT NULL
+            """,
+            (job_id,),
         )
-        object_store_id, job_runner_name = cur.fetchone()
+        row = cur.fetchone()
         cur.close()
         self.conn.close()
 
-        if not object_store_id:
+        if not row or not row[0]:
             print(
-                f"Object store id and/or the job runner name for the job"
-                f"'{job_id}' was not found in the database",
+                f"Object store id for the job '{job_id}' was not found in"
+                f" the database",
                 file=sys.stderr,
             )
             sys.exit(1)
 
-        return object_store_id, job_runner_name
+        object_store_id, job_runner_name, destination_params = row
+
+        return object_store_id, job_runner_name, destination_params
 
 
 if __name__ == "__main__":
