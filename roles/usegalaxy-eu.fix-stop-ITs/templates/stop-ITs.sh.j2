@@ -6,10 +6,21 @@ cd ~
 TODAY=$(date +"%d-%m-%y %H:%M:%S")
 DAY=86400
 
-for job in $(gxadmin query queue-detail | grep running | grep interactive_tool | awk '{print $3}')
+jobs="$(gxadmin query queue-detail | grep running | grep interactive_tool | awk '{print $3}')"
+# calling `galaxy_jwd` is expensive, it reuses Galaxy logic, large import times
+jwds="$(/opt/galaxy/venv/bin/python /usr/local/bin/galaxy_jwd get $jobs)"
+i=0  # used to match jobs to JWDs
+for job in $jobs
 do
     # Get job working directory
-    JWD=$(/opt/galaxy/venv/bin/python /usr/local/bin/galaxy_jwd get $job)
+    i=$((i + 1))
+    JWD=$(echo "$jwds" | sed -n "${i}p")
+
+    # Skip jobs whose JWD could not be resolved
+    if [ -z "$JWD" ]; then
+        echo "Failed to resolve JWD (Galaxy job id: $job) on $TODAY"
+        continue
+    fi
 
     # Get external/Condor job ID from either external_id file or job_condor.log file from JWD
     if [ -f $JWD/external_id ]; then
