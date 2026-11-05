@@ -5,23 +5,33 @@ import os
 import re
 import sys
 from datetime import datetime
+from typing import cast
 
 sys.path.insert(0, {{ (galaxy_server_dir ~ "/lib") | to_json }})
-
 import htcondor2  # noqa: E402
 import yaml  # noqa: E402
 from galaxy.config import GalaxyAppConfiguration  # noqa: E402
 from galaxy.job_execution.setup import JobWorkingDirectory  # noqa: E402
 from galaxy.model import Job, mapping  # noqa: E402
-from galaxy.objectstore import build_object_store_from_config  # noqa: E402
+from galaxy.objectstore import (  # noqa: E402
+    BaseObjectStore,
+    build_object_store_from_config,
+)
 from galaxy.util.properties import load_app_properties  # noqa: E402
 from sqlalchemy import select  # noqa: E402
+from sqlalchemy.orm import Session, scoped_session  # noqa: E402
+
 
 CONFIG_FILE = {{ galaxy_config_file | to_json }}
+PULSAR_APP_CONFIG_FILE = (
+    {{ (galaxy_config_dir ~ "/pulsar_app.yml") | to_json }}
+)
 MAX_AGE = 86400
 
 
-def connect():
+def connect() -> (
+    tuple[GalaxyAppConfiguration, scoped_session[Session], BaseObjectStore]
+):
     """Connect to the Galaxy database and object store without a Galaxy app."""
     config = GalaxyAppConfiguration(
         config_file=CONFIG_FILE,
@@ -33,26 +43,30 @@ def connect():
         config.database_connection,
         config.database_engine_options,
     )
-    return config, model.session, build_object_store_from_config(config)
+    object_store = cast(
+        BaseObjectStore, build_object_store_from_config(config)
+    )
+    return config, model.session, object_store
 
 
-def pulsar_staging_dir(config):
+def pulsar_staging_dir(config: GalaxyAppConfiguration) -> str:
     """Staging directory of embedded Pulsar jobs.
 
     Mirrors the default applied by galaxy.jobs.runners.pulsar when
     pulsar_app.yml does not define staging_directory. Their layout is
     <staging>/<job id>, without the hashed subdirectories.
     """
-    conf = {{ (galaxy_config_dir ~ "/pulsar_app.yml") | to_json }}
-    if os.path.isfile(conf):
-        with open(conf) as file:
+    if os.path.isfile(PULSAR_APP_CONFIG_FILE):
+        with open(PULSAR_APP_CONFIG_FILE) as file:
             staging = (yaml.safe_load(file) or {}).get("staging_directory")
-        if staging:
+        if isinstance(staging, str) and staging:
             return staging
     return os.path.join(config.data_dir, "pulsar_staging")
 
 
-def jwd_path(job, config, object_store) -> str | None:
+def jwd_path(
+    job: Job, config: GalaxyAppConfiguration, object_store: BaseObjectStore
+) -> str | None:
     """Return the existing JWD path of a job.
 
     Delegates to JobWorkingDirectory, which resolves the path from
@@ -65,7 +79,9 @@ def jwd_path(job, config, object_store) -> str | None:
     if runner.startswith("pulsar_embedded") or destination.startswith(
         "pulsar_embedded"
     ):
-        path = os.path.join(pulsar_staging_dir(config), str(job.id))
+        path: str | None = os.path.join(
+            pulsar_staging_dir(config), str(job.id)
+        )
     else:
         jwd = JobWorkingDirectory(job, object_store)
         path = jwd.resolve() if jwd.exists() else None
@@ -94,7 +110,8 @@ def condor_cluster_id(jwd: str) -> int | None:
         return None
 
 
-def main():
+def main() -> None:
+    """Remove interactive-tool Condor jobs older than 24 hours."""
     if not os.path.isfile(CONFIG_FILE):
         sys.exit(f"Galaxy config file {CONFIG_FILE} does not exist")
 
@@ -105,7 +122,7 @@ def main():
             Job.tool_id.contains("interactive_tool"),
         )
     ).all()
-    cluster_jobs = {}
+    cluster_jobs: dict[int, list[int]] = {}
     for job in jobs:
         jwd = jwd_path(job, config, object_store)
         if not jwd:
