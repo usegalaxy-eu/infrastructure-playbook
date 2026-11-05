@@ -21,6 +21,13 @@
             {%- endif %}
         {%- endfor %}
 {%- endmacro %}
+{% macro cvmfs_volumes(exclude_volumes=[]) -%}
+        {%- for vol in cvmfs.values() %}
+            {%- if vol.name not in exclude_volumes %}
+        {{ vol.path }}:{{ vol.docker_perm }}{{ "," if not loop.last }}
+            {%- endif %}
+        {%- endfor %}
+{%- endmacro %}
 {% macro pulsar_base_volumes() -%}
         $job_directory:rw,
         $tool_directory:ro,
@@ -62,8 +69,7 @@ destinations:
       docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,
         $defaults,
         {{ galaxy_volumes(exclude_volumes=['dnb04', 'dnb-ds01']) }}
-        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }},
-        {{ cvmfs.idc.path }}:{{ cvmfs.idc.docker_perm }}"
+        {{ cvmfs_volumes(exclude_volumes=["singularity"]) }}"
       docker_run_extra_arguments: "--memory={mem}g --cpus={cores} {self.params.get('docker_run_extra_arguments') or ''}"
       require_container: true
       submit_request_cpus: "{cores}"
@@ -86,7 +92,8 @@ destinations:
         {{ galaxy_volumes(exclude_volumes=['db', 'dnb04', 'dnb-ds01', '5']) }}
         {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
         {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
-        {{ tools.tools.path }}/:{{ tools.tools.docker_perm }}"
+        {{ tools.tools.path }}/:{{ tools.tools.docker_perm }},
+        {{ cvmfs_volumes(exclude_volumes=["singularity"]) }}"
       singularity_default_container_id: "{{ cvmfs.singularity.path }}/all/centos:8.3.2011"
 
   ################################
@@ -108,8 +115,7 @@ destinations:
         $job_directory/outputs:rw,
         $working_directory:rw,
         {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
-        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }},
-        {{ cvmfs.idc.path }}:{{ cvmfs.idc.docker_perm }}"
+        {{ cvmfs_volumes(exclude_volumes=["singularity"]) }}"
     scheduling:
       accept:
         - tool_type_user_defined
@@ -524,7 +530,8 @@ destinations:
         {{ galaxy_volumes(exclude_volumes=['db', 'dnb04', 'dnb-ds01', '5']) }}
         {{ dnb.5.path }}/galaxy_import/galaxy_user_data/:{{ dnb.5.docker_perm }},
         {{ dnb.db.path }}/:{{ dnb.db.docker_perm }},
-        {{ tools.tools.path }}/:{{ tools.tools.docker_perm }}"
+        {{ tools.tools.path }}/:{{ tools.tools.docker_perm }},
+        {{ cvmfs_volumes(exclude_volumes=["singularity"]) }}"
 
       # this container will not be used-because we have a fall-back already in place under `container:`
       singularity_default_container_id: "{{ cvmfs.singularity.path }}/all/centos:8.3.2011"
@@ -536,8 +543,7 @@ destinations:
       docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,
         $defaults,
         {{ galaxy_volumes(exclude_volumes=['dnb04', 'dnb-ds01']) }}
-        {{ cvmfs.data.path }}:{{ cvmfs.data.docker_perm }},
-        {{ cvmfs.idc.path }}:{{ cvmfs.idc.docker_perm }}"
+        {{ cvmfs_volumes(exclude_volumes=["singularity"]) }}"
 
       # let's move our config to destinations and forget about the global YAML file
       # If no resolver finds a container, this base container will be taken and resolve_dependencies=true will force conda deps usage
