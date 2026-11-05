@@ -51,16 +51,18 @@ def parse_args():
 
     get_parser = operations.add_parser(
         "get",
-        help="Print the JWD path of a job id",
+        help="Print the JWD paths of one or more job ids",
         epilog=textwrap.dedent("""
             example:
                 python galaxy_jwd.py get 12345678
+                python galaxy_jwd.py get 12345678 12345679
         """),  # noqa: E501
     )
     get_parser.add_argument(
         "job_id",
         type=int,
-        help="Galaxy job id",
+        nargs="+",
+        help="Galaxy job ids (one or more)",
     )
 
     clean_parser = operations.add_parser(
@@ -161,14 +163,27 @@ def delete_jwd(path):
         print(f"Error deleting JWD: {path} : {e.strerror}")
 
 
-def get(session, config, object_store, job_id):
-    job = session.get(Job, job_id)
-    if job is None:
-        sys.exit(f"Job '{job_id}' was not found in the database")
-    path = jwd_path(job, config, object_store)
-    if path is None:
-        sys.exit(f"ERROR: Job working directory (of {job_id}) does not exist")
-    print(path)
+def get(session, config, object_store, job_ids):
+    jobs = {
+        j.id: j
+        for j in session.scalars(select(Job).where(Job.id.in_(job_ids))).all()
+    }
+    for job_id in job_ids:
+        job = jobs.get(job_id)
+        if job is None:
+            print(
+                f"Job '{job_id}' was not found in the database",
+                file=sys.stderr,
+            )
+            continue
+        path = jwd_path(job, config, object_store)
+        if path is None:
+            print(
+                f"ERROR: Job working directory (of {job_id}) does not exist",
+                file=sys.stderr,
+            )
+            continue
+        print(path)
 
 
 def clean(session, config, object_store, log_dir, args):
