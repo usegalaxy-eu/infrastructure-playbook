@@ -1,8 +1,11 @@
 #!/bin/sh
+. {{ galaxy_root }}/.bashrc
+export PYTHONPATH="{{ galaxy_root }}/server/lib"
+cd ~
+
 TODAY=$(date +"%d-%m-%y %H:%M:%S")
 DAY=86400
-. {{ galaxy_root }}/.bashrc
-cd ~
+
 for job in $(gxadmin query queue-detail | grep running | grep interactive_tool | awk '{print $3}')
 do
     # Get job working directory

@@ -1,8 +1,21 @@
 #!/usr/bin/env python
-"""Galaxy jobs's job working directory (JWD) script.
+"""Print path of or clean up Galaxy job working directories (JWDs).
 
-Can get you the path of a JWD and can delete JWDs of failed jobs older than X
-days.
+Required environment variables:
+    PYTHONPATH:         path to the Galaxy code (needed to `import galaxy`)
+    GALAXY_CONFIG_FILE: path to the galaxy.yml file
+    GALAXY_LOG_DIR:     path to the Galaxy log directory (clean only)
+
+Optional environment variables:
+    GALAXY_PULSAR_APP_CONF: path to the pulsar_app.yml file, needed to locate
+        the staging directory of pulsar_embedded jobs; defaults to Galaxy's own
+        default (<data_dir>/pulsar_staging)
+
+The database connection is read from galaxy.yml (overridable with
+GALAXY_CONFIG_OVERRIDE_DATABASE_CONNECTION, like Galaxy itself).
+
+Uses the Galaxy model and object store (run with the Galaxy virtualenv) to
+resolve JWD paths reusing the same logic Galaxy uses.
 """
 
 import argparse
@@ -10,564 +23,202 @@ import os
 import shutil
 import sys
 import textwrap
-from argparse import RawDescriptionHelpFormatter
-from datetime import datetime
-from typing import Optional, Tuple
-from xml.dom.minidom import parse
+from datetime import datetime, timedelta, timezone
 
-import psycopg2
 import yaml
+from galaxy.config import GalaxyAppConfiguration
+from galaxy.job_execution.setup import JobWorkingDirectory
+from galaxy.model import Job, mapping
+from galaxy.objectstore import build_object_store_from_config
+from galaxy.util.properties import load_app_properties
+from sqlalchemy import select
 
 
-class SubcommandHelpFormatter(RawDescriptionHelpFormatter):
-    """Custom help formatter to hide argparse metavars."""
-
-    def _format_action(self, action):
-        """Removes the first line from subparsers."""
-        parts = super(RawDescriptionHelpFormatter, self)._format_action(action)
-        if action.nargs == argparse.PARSER:
-            parts = "\n".join(parts.split("\n")[1:])
-        return parts
-
-
-def main():
-    """Main function of the JWD script.
-
-    1. Can get you the path of a JWD
-    2. Can delete JWDs of failed jobs older than X days
-    """
+def parse_args():
     parser = argparse.ArgumentParser(
         prog="galaxy_jwd",
-        description=textwrap.dedent(
-            """
-            Get the JWD path of a given Galaxy job id or clean the JWDs of old failed jobs.
-
-            The following ENVs (same as gxadmin's) should be set:
-                GALAXY_CONFIG_FILE: Path to the galaxy.yml file
-                GALAXY_LOG_DIR: Path to the Galaxy log directory
-                PGDATABASE: Name of the Galaxy database
-                PGUSER: Galaxy database user
-                PGHOST: Galaxy database host
-
-            We also need a ~/.pgpass file (same as gxadmin's) in format:
-                <pg_host>:5432:*:<pg_user>:<pg_password>
-        """  # noqa: E501
+        description=(
+            "Get the JWD path for a Galaxy job id or delete the JWDs of "
+            "failed jobs."
         ),
-        formatter_class=SubcommandHelpFormatter,
-    )
-    subparsers = parser.add_subparsers(
-        dest="operation",
-        title="operations",
-        help=None,
-        metavar="",
     )
 
-    # Parser for the get subcommand
-    get_parser = subparsers.add_parser(
+    operations = parser.add_subparsers(
+        dest="operation",
+        metavar="",  # do not use argparse metavars
+        title="operations",
+    )
+
+    get_parser = operations.add_parser(
         "get",
-        help="Get the JWD path of a given Galaxy job id",
-        epilog=textwrap.dedent(
-            """
+        help="Print the JWD path of a job id",
+        epilog=textwrap.dedent("""
             example:
                 python galaxy_jwd.py get 12345678
-        """  # noqa: E501
-        ),
-        formatter_class=RawDescriptionHelpFormatter,
+        """),  # noqa: E501
     )
     get_parser.add_argument(
         "job_id",
+        type=int,
         help="Galaxy job id",
     )
 
-    # Parser for the clean subcommand
-    clean_parser = subparsers.add_parser(
+    clean_parser = operations.add_parser(
         "clean",
-        help="Clean JWDs of failed jobs older than X days",
-        epilog=textwrap.dedent(
-            """
-            example (dry-run):
-                python galaxy_jwd.py clean --dry_run --days 5
-
-            example (no dry-run):
-                python galaxy_jwd.py clean --no_dry_run --days 5
-        """  # noqa: E501
-        ),
-        formatter_class=RawDescriptionHelpFormatter,
+        help="Delete JWDs of failed jobs older than X days",
     )
-    dry_run_group = clean_parser.add_mutually_exclusive_group(required=True)
-    dry_run_group.add_argument(
+    dry_run = clean_parser.add_mutually_exclusive_group(required=True)
+    dry_run.add_argument(
         "--dry_run",
-        help="Dry run (prints the JWDs that would be deleted)",
         action="store_true",
+        help="Print the JWDs without deleting them",
     )
-    dry_run_group.add_argument(
+    dry_run.add_argument(
         "--no_dry_run",
-        help="No dry run (deletes the JWDs)",
         action="store_true",
+        help="Delete the JWDs and log the deletions",
     )
     clean_parser.add_argument(
         "--days",
-        help=(
-            "Minimum age of jobs (in days) to be considered for deletion "
-            "(default: 5)"
-        ),
+        type=int,
         default=5,
+        help="Minimum job age in days (default: 5)",
     )
 
-    args = parser.parse_args(args=None if sys.argv[1:] else ["--help"])
+    return parser.parse_args(args=None if sys.argv[1:] else ["--help"])
 
-    # Check if environment variables are set
-    if not os.environ.get("GALAXY_CONFIG_FILE"):
-        raise ValueError("Please set ENV GALAXY_CONFIG_FILE")
-    galaxy_config_file = os.environ.get("GALAXY_CONFIG_FILE").strip()
 
-    # Check if the given galaxy.yml file exists
-    if not os.path.isfile(galaxy_config_file):
-        raise ValueError(
-            f"The given galaxy.yml file {galaxy_config_file} does not exist"
-        )
+def require_env(name):
+    value = os.environ.get(name)
+    if not value:
+        sys.exit(f"Please set ENV {name}")
+    return value.strip()
 
-    # pulsar_app.yml file path for pulsar_embedded runner
-    if not os.environ.get("GALAXY_PULSAR_APP_CONF"):
-        raise ValueError("Please set ENV GALAXY_PULSAR_APP_CONF")
-    galaxy_pulsar_app_conf = os.environ.get("GALAXY_PULSAR_APP_CONF").strip()
 
-    if not os.environ.get("GALAXY_LOG_DIR"):
-        raise ValueError("Please set ENV GALAXY_LOG_DIR")
-    galaxy_log_dir = os.environ.get("GALAXY_LOG_DIR").strip()
+def connect(config_file):
+    """Connect to the Galaxy database and object store without a Galaxy app."""
+    config = GalaxyAppConfiguration(
+        config_file=config_file,
+        override_tempdir=False,
+        **load_app_properties(config_file=config_file),
+    )
+    model = mapping.init(
+        config.file_path,
+        config.database_connection,
+        config.database_engine_options,
+    )
+    return config, model.session, build_object_store_from_config(config)
 
-    if not os.environ.get("PGDATABASE"):
-        raise ValueError("Please set ENV PGDATABASE")
-    db_name = os.environ.get("PGDATABASE").strip()
 
-    if not os.environ.get("PGUSER"):
-        raise ValueError("Please set ENV PGUSER")
-    db_user = os.environ.get("PGUSER").strip()
+def pulsar_staging_dir(config):
+    """Staging directory of embedded Pulsar jobs.
 
-    if not os.environ.get("PGHOST"):
-        raise ValueError("Please set ENV PGHOST")
-    db_host = os.environ.get("PGHOST").strip()
+    Mirrors the default applied by galaxy.jobs.runners.pulsar when
+    pulsar_app.yml does not define staging_directory. Their layout is
+    <staging>/<job id>, without the hashed subdirectories.
+    """
+    conf = os.environ.get("GALAXY_PULSAR_APP_CONF")
+    if conf and os.path.isfile(conf):
+        with open(conf) as file:
+            staging = (yaml.safe_load(file) or {}).get("staging_directory")
+        if staging:
+            return staging
+    return os.path.join(config.data_dir, "pulsar_staging")
 
-    # Check if ~/.pgpass file exists and is not empty
-    if (
-        not os.path.isfile(os.path.expanduser("~/.pgpass"))
-        or os.stat(os.path.expanduser("~/.pgpass")).st_size == 0
+
+def jwd_path(job, config, object_store):
+    """Return the existing JWD path of a job, or None.
+
+    Delegates to JobWorkingDirectory, which resolves the path from
+    `job.working_directory` (persisted from the job_working_directory
+    destination param, e.g. by TPV) with fallback to the job_work extra_dir
+    of the job's object store backend.
+    """
+    runner = job.job_runner_name or ""
+    destination = job.destination_id or ""
+
+    if runner.startswith("pulsar_embedded") or destination.startswith(
+        "pulsar_embedded"
     ):
-        raise ValueError(
-            "Please create a ~/.pgpass file in format: "
-            "<pg_host>:5432:*:<pg_user>:<pg_password>"
-        )
-    db_password = extract_password_from_pgpass(
-        pgpass_file=os.path.expanduser("~/.pgpass")
-    )
-
-    object_store_conf = get_object_store_conf_path(galaxy_config_file)
-
-    # Apply the correct parser based on the file extension of the object store
-    if object_store_conf.endswith(".xml"):
-        parse_object_store = parse_object_store_xml
-    elif object_store_conf.endswith((".yml", ".yaml")):
-        parse_object_store = parse_object_store_yaml
+        path = os.path.join(pulsar_staging_dir(config), str(job.id))
     else:
-        raise ValueError(
-            f"Unsupported object store configuration file format: "
-            f"{object_store_conf}"
-        )
+        jwd = JobWorkingDirectory(job, object_store)
+        path = jwd.resolve() if jwd.exists() else None
 
-    # Parse the object store configuration file
-    backends = parse_object_store(object_store_conf)
+    if path and os.path.isdir(path):
+        return path
 
-    # Add pulsar staging directory (runner: pulsar_embedded) to backends
-    backends["pulsar_embedded"] = get_pulsar_staging_dir(
-        galaxy_pulsar_app_conf
-    )
-
-    # Connect to Galaxy database
-    db = Database(
-        dbname=db_name,
-        dbuser=db_user,
-        dbhost=db_host,
-        dbpassword=db_password,
-    )
-
-    # For the get subcommand
-    if args.operation == "get":
-        job_id = args.job_id
-        object_store_id, job_runner_name = db.get_job_info(job_id)
-        jwd_path = decode_path(
-            job_id, [object_store_id], backends, job_runner_name
-        )
-
-        # Check
-        if jwd_path:
-            print(jwd_path)
-        else:
-            print(
-                f"ERROR: Job working directory (of {job_id}) does not exist",
-                file=sys.stderr,
-            )
-            sys.exit(1)
-
-    # For the clean subcommand
-    if args.operation == "clean":
-        # Check if the given Galaxy log directory exists
-        if not os.path.isdir(galaxy_log_dir):
-            raise ValueError(
-                f"The given Galaxy log directory {galaxy_log_dir} does not"
-                f"exist"
-            )
-
-        # Set variables
-        dry_run = args.dry_run
-        days = args.days
-        jwd_cleanup_log = (
-            f"{galaxy_log_dir}/"
-            f"jwd_cleanup_{datetime.now().strftime('%d_%m_%Y-%I_%M_%S')}.log"
-        )
-        failed_jobs = db.get_failed_jobs(days=days)
-
-        # Delete JWD folders if dry_run is False
-        # Log the folders that will be deleted
-        if not dry_run:
-            with open(jwd_cleanup_log, "w") as jwd_log:
-                jwd_log.write(
-                    "The following job working directories (JWDs) belonging "
-                    "to the failed jobs are deleted\nJob id: JWD path\n"
-                )
-                for job_id, metadata in failed_jobs.items():
-                    # Delete JWD folders older than X days
-                    jwd_path = decode_path(job_id, metadata, backends)
-                    if jwd_path:
-                        delete_jwd(jwd_path)
-                        jwd_log.write(f"{job_id}: {jwd_path}\n")
-        else:
-            # Print folders of JWDs of failed jobs older than X days
-            for job_id, metadata in failed_jobs.items():
-                jwd_path = decode_path(job_id, metadata, backends)
-                if jwd_path:
-                    print(f"{job_id}: {jwd_path}")
+    if path:
+        print(f"Tried JWD candidate {path}, does not exist", file=sys.stderr)
+    return None
 
 
-def extract_password_from_pgpass(pgpass_file: str) -> str:
-    """Extract the password from the ~/.pgpass file.
-
-    The ~/.pgpass file should have the following format:
-    <pg_host>:5432:*:<pg_user>:<pg_password>
-
-    Args:
-        pgpass_file: Path to the ~/.pgpass file.
-
-    Returns:
-        Password for the given pg_host.
-
-    Raises:
-        ValueError: The ~/.pgpass file cannot be parsed.
-    """
-    pgpass_format = "<pg_host>:5432:*:<pg_user>:<pg_password>"
-    with open(pgpass_file, "r") as pgpass:
-        for line in pgpass:
-            if line.startswith(os.environ.get("PGHOST")):
-                return line.split(":")[4].strip()
-            else:
-                raise ValueError(
-                    f"Please add the password for '{os.environ.get('PGHOST')}'"
-                    f"to the ~/.pgpass file in format: {pgpass_format}"
-                )
-
-
-def get_object_store_conf_path(galaxy_config_file: str) -> str:
-    """Get the path to the object_store_conf file.
-
-    Args:
-        galaxy_config_file: Path to the galaxy.yml file.
-
-    Returns:
-        Path to the object_store_conf file.
-
-    Raises:
-        ValueError: The object store configuration file specified in the
-            Galaxy configuration does not exist.
-    """
-    object_store_conf = ""
-    with open(galaxy_config_file, "r") as config:
-        for line in config:
-            if line.strip().startswith("object_store_config_file"):
-                object_store_conf = line.split(":")[1].strip()
-
-                # Check if the object_store_conf file exists
-                if not os.path.isfile(object_store_conf):
-                    raise ValueError(f"{object_store_conf} does not exist")
-
-                return object_store_conf
-
-
-def parse_object_store_xml(object_store_conf: str) -> dict:
-    """Get the path of type 'job_work' from the extra_dir's for each backend.
-
-    Args:
-        object_store_conf: Path to the object_store_conf.xml file.
-
-    Returns:
-        Dictionary of backend id and path of type 'job_work'.
-    """
-    dom = parse(object_store_conf)
-    backends = {}
-    for backend in dom.getElementsByTagName("backend"):
-        backend_id = backend.getAttribute("id")
-        backend_type = backend.getAttribute("type")
-        backends[backend_id] = {"type": backend_type, "job_work_path": None}
-
-        # Get the extra_dir's path for each backend if type is "job_work"
-        for extra_dir in backend.getElementsByTagName("extra_dir"):
-            if extra_dir.getAttribute("type") == "job_work":
-                backends[backend_id]["job_work_path"] = extra_dir.getAttribute(
-                    "path"
-                )
-    return backends
-
-
-def parse_object_store_yaml(object_store_conf: str) -> dict:
-    """Get the path of type 'job_work' from the extra_dir's for each backend.
-
-    Args:
-        object_store_conf: Path to the object_store_conf.yml file.
-
-    Returns:
-        Dictionary of backend id and path of type 'job_work'.
-    """
-    with open(object_store_conf, "r", encoding="utf-8") as file:
-        config = yaml.safe_load(file)
-
-    backends = {}
-    for backend in config.get("backends", []):
-        backend_id = backend.get("id")
-        backend_type = backend.get("type")
-        backends[backend_id] = {"type": backend_type, "job_work_path": None}
-
-        # Get the extra_dir's path for each backend if type is "job_work"
-        for extra_dir in backend.get("extra_dirs", []):
-            if extra_dir.get("type") == "job_work":
-                backends[backend_id]["job_work_path"] = extra_dir.get("path")
-    return backends
-
-
-def get_pulsar_staging_dir(galaxy_pulsar_app_conf: str) -> str:
-    """Get the path to the pulsar staging directory.
-
-    Args:
-        galaxy_pulsar_app_conf: Path to the pulsar_app.yml file.
-
-    Returns:
-        Path to the pulsar staging directory.
-
-    Raises:
-        ValueError: The Pulsar staging directory does not exist.
-    """
-    pulsar_staging_dir = ""
-    with open(galaxy_pulsar_app_conf, "r") as config:
-        yaml_config = yaml.safe_load(config)
-        pulsar_staging_dir = yaml_config["staging_directory"]
-
-    # Check if the pulsar staging directory exists
-    if not os.path.isdir(pulsar_staging_dir):
-        raise ValueError(
-            f"Pulsar staging directory '{pulsar_staging_dir}' does not exist"
-        )
-
-    return pulsar_staging_dir
-
-
-def directory_hash_id(id: str) -> list:
-    """Build the hashed directory components for an id.
-
-    Duplicate of ``galaxy.util.directory_hash_id`` (we can not import Galaxy
-    here), see: lib/galaxy/util/__init__.py in the Galaxy codebase.
-    """
-    s = str(id)
-    len_s = len(s)
-    # Shortcut -- ids 0-999 go under ../000/
-    if len_s < 4:
-        return ["000"]
-    # Pad with zeros until a multiple of three
-    padded = ((3 - len_s % 3) * "0") + s
-    # Drop the last three digits -- 1000 files per directory
-    padded = padded[:-3]
-    # Break into chunks of three
-    return [padded[i * 3 : (i + 1) * 3] for i in range(len(padded) // 3)]
-
-
-def decode_path(
-    job_id: int,
-    metadata: list,
-    backends_dict: dict,
-    job_runner_name: Optional[str] = None,
-) -> str:
-    """Decode the path of JWDs and check if the path exists.
-
-    Args:
-        job_id: Job id.
-        metadata: List of object_store_id and update_time.
-        backends_dict: Dictionary of backend id with its type and path of type
-            'job_work'.
-        job_runner_name: Name of the job runner. Defaults to None.
-
-    Returns:
-        Path to the JWD.
-    """
-    job_id = str(job_id)
-    object_store_id = metadata[0]
-    backend_info = backends_dict.get(object_store_id)
-
-    # Check if object_store_id exists in our object store config
-    if not backend_info:
-        print(
-            f"Skipping backend '{object_store_id}' as it does not exist in"
-            f" the object_store_conf file."
-        )
-        return None
-
-    # Pulsar embedded jobs uses the staging directory and this has a different
-    # path structure
-    if (job_runner_name or "").startswith("pulsar_embedded"):
-        jwd_path = f"{backends_dict['pulsar_embedded']}/{job_id}"
-    else:
-        # Build the hashed path the same way Galaxy does it (see
-        # galaxy.util.directory_hash_id): chunk the id into groups of three
-        # digits after padding it with zeros
-        hashed_dirs = directory_hash_id(job_id)
-        jwd_path = (
-            f"{backend_info['job_work_path']}/"
-            f"{'/'.join(hashed_dirs)}/{job_id}"
-        )
-
-    # Validate that the path is a JWD
-    # It is a JWD if the following conditions are true:
-    # 1. Check if tool_script.sh exists
-    # 2. Check if directories 'inputs', and 'outputs' exist
-    # 3. Additionally, we can also try and find the file
-    # '__instrument_core_epoch_end' and compare the timestamp in that with the
-    # 'update_time' (metadata[1]) of the job.
-    if (
-        os.path.exists(jwd_path)
-        and os.path.exists(f"{jwd_path}/tool_script.sh")
-        and os.path.exists(f"{jwd_path}/inputs")
-        and os.path.exists(f"{jwd_path}/outputs")
-    ):
-        return jwd_path
-    else:
-        return None
-
-
-def delete_jwd(jwd_path: str) -> None:
-    """Delete JWD folder and all its contents.
-
-    Args:
-        jwd_path: Path to the JWD folder.
-    """
+def delete_jwd(path):
     try:
-        print(f"Deleting JWD: {jwd_path}")
-        shutil.rmtree(jwd_path)
+        print(f"Deleting JWD: {path}")
+        shutil.rmtree(path)
     except OSError as e:
-        print(f"Error deleting JWD: {jwd_path} : {e.strerror}")
+        print(f"Error deleting JWD: {path} : {e.strerror}")
 
 
-class Database:
-    """Class to connect to the database and query DB."""
+def get(session, config, object_store, job_id):
+    job = session.get(Job, job_id)
+    if job is None:
+        sys.exit(f"Job '{job_id}' was not found in the database")
+    path = jwd_path(job, config, object_store)
+    if path is None:
+        sys.exit(f"ERROR: Job working directory (of {job_id}) does not exist")
+    print(path)
 
-    def __init__(
-        self,
-        dbname: str,
-        dbuser: str,
-        dbhost: str,
-        dbpassword: str,
-    ) -> None:
-        """Create a connection to the Galaxy database.
 
-        Args:
-            dbname: Name of the database.
-            dbuser: Name of the database user.
-            dbhost: Hostname of the database.
-            dbpassword: Password of the database user.
-        """
-        try:
-            self.conn = psycopg2.connect(
-                dbname=dbname, user=dbuser, host=dbhost, password=dbpassword
-            )
-        except psycopg2.OperationalError as e:
-            print(f"Unable to connect to database: {e}")
-
-    def get_failed_jobs(self, days: int) -> dict:
-        """Get failed jobs from DB.
-
-        Args:
-            days: Minimum age of failed jobs (in days).
-
-        Returns:
-            Dictionary with job_id as key and object_store_id, and update_time
-                as list of values.
-        """
-        cur = self.conn.cursor()
-        cur.execute(
-            f"""
-            SELECT id, object_store_id, update_time
-            FROM job
-            WHERE state = 'error'
-            AND update_time IS NOT NULL
-            AND object_store_id IS NOT NULL
-            AND update_time <= NOW() - INTERVAL '{days} days'
-            """
+def clean(session, config, object_store, log_dir, args):
+    if not os.path.isdir(log_dir):
+        sys.exit(f"The given Galaxy log directory {log_dir} does not exist")
+    cutoff = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(
+        days=args.days
+    )
+    jobs = session.scalars(
+        select(Job).where(
+            Job.state == Job.states.ERROR,
+            Job.update_time.is_not(None),
+            Job.update_time <= cutoff,
         )
-        failed_jobs = cur.fetchall()
-        cur.close()
-        self.conn.close()
-
-        # Create a dictionary with job_id as key and object_store_id, and
-        # update_time as values
-        failed_jobs_dict = {}
-        for job_id, object_store_id, update_time in failed_jobs:
-            failed_jobs_dict[job_id] = [object_store_id, update_time]
-
-        if not failed_jobs_dict:
-            print(
-                f"No failed jobs older than {days} days found.",
-                file=sys.stderr,
-            )
-            sys.exit(1)
-
-        return failed_jobs_dict
-
-    def get_job_info(self, job_id: int) -> Tuple[str, str]:
-        """Get object_store_id and job_runner_name for a given job id.
-
-        Args:
-            job_id: Job id.
-
-        Returns:
-            object_store_id: Object store id.
-            job_runner_name: Job runner name.
-        """
-        cur = self.conn.cursor()
-        cur.execute(
-            f"""
-            SELECT object_store_id, job_runner_name
-            FROM job
-            WHERE id = '{job_id}' AND object_store_id IS NOT NULL
-            AND job_runner_name IS NOT NULL
-            """
+    ).all()
+    if not jobs:
+        sys.exit(f"No failed jobs older than {args.days} days found.")
+    found = [
+        (j.id, p) for j in jobs if (p := jwd_path(j, config, object_store))
+    ]
+    if args.dry_run:
+        for job_id, path in found:
+            print(f"{job_id}: {path}")
+        return
+    log_file = os.path.join(
+        log_dir,
+        f"jwd_cleanup_{datetime.now().strftime('%d_%m_%Y-%I_%M_%S')}.log",
+    )
+    with open(log_file, "w") as log:
+        log.write(
+            "The following job working directories (JWDs) belonging to the "
+            "failed jobs are deleted\nJob id: JWD path\n"
         )
-        object_store_id, job_runner_name = cur.fetchone()
-        cur.close()
-        self.conn.close()
+        for job_id, path in found:
+            delete_jwd(path)
+            log.write(f"{job_id}: {path}\n")
 
-        if not object_store_id:
-            print(
-                f"Object store id and/or the job runner name for the job"
-                f"'{job_id}' was not found in the database",
-                file=sys.stderr,
-            )
-            sys.exit(1)
 
-        return object_store_id, job_runner_name
+def main():
+    args = parse_args()
+    config_file = require_env("GALAXY_CONFIG_FILE")
+    if not os.path.isfile(config_file):
+        sys.exit(f"The given galaxy.yml file {config_file} does not exist")
+    config, session, object_store = connect(config_file)
+    if args.operation == "get":
+        get(session, config, object_store, args.job_id)
+    else:
+        clean(
+            session, config, object_store, require_env("GALAXY_LOG_DIR"), args
+        )
 
 
 if __name__ == "__main__":
