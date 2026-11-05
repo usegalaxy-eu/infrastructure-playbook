@@ -16,7 +16,9 @@ Postfix uses shared persistent queue storage with independent transport scheduli
 Routing uses SMTP `MAIL FROM`, not the visible `From` header. Campaign submission
 must use a distinct envelope sender; Galaxy's global `email_from` does not
 automatically distinguish campaign notifications from regular notifications.
-The configured campaign sender must also be authorized by the upstream provider.
+The configured campaign sender (`support@usegalaxy.eu`) must also be authorized
+by the upstream provider. Campaign bounces are addressed to the envelope sender
+and therefore land in the support mailbox, where they can be tracked manually.
 
 The queue manager reads transport-specific delays and concurrency limits from
 `main.cf`. The custom SMTP delivery services in `master.cf` inherit the upstream
@@ -34,7 +36,7 @@ and authentication limits. A delivery delay is not a strict recipient quota.
 On maintenance, inspect the map (use `hash:` instead if that type was selected):
 
 ```bash
-postmap -q assumetest-no-reply@informatik.uni-freiburg.de lmdb:/etc/postfix/sender_transport
+postmap -q support@usegalaxy.eu lmdb:/etc/postfix/sender_transport
 postmap -q '<>' lmdb:/etc/postfix/sender_transport
 postmap -q galaxy-no-reply@informatik.uni-freiburg.de lmdb:/etc/postfix/sender_transport
 postconf smtp_destination_rate_delay bulk_destination_rate_delay dsnrelay_destination_rate_delay
