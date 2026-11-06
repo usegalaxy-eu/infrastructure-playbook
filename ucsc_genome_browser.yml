@@ -158,6 +158,36 @@
           when:
             - ucsc_genome_browser_vm_state == "absent"
             - "'firewalld.service' in ansible_facts.services"
+
+    - name: Manage UCSC Genome Browser genome assembly updates
+      block:
+        - name: Install UCSC Genome Browser genome assembly update script
+          ansible.builtin.template:
+            src: ucsc_genome_browser/gbd-sync.sh.j2
+            dest: /usr/local/bin/ucsc-genome-browser-gbd-sync
+            owner: root
+            group: root
+            mode: "0700"
+
+        - name: Install UCSC Genome Browser genome assembly update units
+          ansible.builtin.template:
+            src: "ucsc_genome_browser/{{ item }}.j2"
+            dest: "/etc/systemd/system/ucsc-genome-browser-{{ item }}"
+            owner: root
+            group: root
+            mode: "0644"
+          loop:
+            - gbd-sync.service
+            - gbd-sync.timer
+
+        - name: Enable UCSC Genome Browser genome assembly update timer
+          vars:
+            ucsc_genome_browser_gbd_sync_active: "{{ ucsc_genome_browser_gbd_sync_enabled and ucsc_genome_browser_vm_state == 'present' }}"
+          ansible.builtin.systemd_service:
+            name: ucsc-genome-browser-gbd-sync.timer
+            enabled: "{{ ucsc_genome_browser_gbd_sync_active | bool }}"
+            state: "{{ 'started' if ucsc_genome_browser_gbd_sync_active | bool else 'stopped' }}"
+            daemon_reload: true
   post_tasks:
     - name: Retrieve IP address for UCSC Genome Browser VM
       when: ucsc_genome_browser_vm_state == "present"
