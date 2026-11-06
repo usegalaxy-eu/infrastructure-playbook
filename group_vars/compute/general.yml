@@ -1,0 +1,60 @@
+---
+## Firewall
+firewall_public_services: []
+firewall_internal_services: []
+firewall_restart_daemon: true
+accepted_internal_networks:  # usegalaxy_eu.restrict_docker_net
+  - 10.4.68.201  # sn09 needed for GxIT Proxy
+  - 10.8.103.69  # LiteLLM gateway
+
+autofs_mount_points:
+  - data
+  - gxtest
+  - gxkey
+  - jwd
+  - usrlocal
+  - usrlocal_celerycluster # which is actually /opt/galaxy
+  - cache
+  - cvac
+  - misc
+
+## Telegraf
+check_slx_disks_path: /usr/local/bin/check_slx_disks
+telegraf_agent_config_path: /etc/telegraf
+telegraf_historical_database: galaxy_stats
+telegraf_historical_measurements:
+  - ipmi_power
+telegraf_plugins_extra:
+  check_slx_disks_telegraf:
+    plugin: exec
+    config:
+      - commands = ["{{ check_slx_disks_path }}"]
+      - timeout = "2m"
+      - data_format = "influx"
+      - interval = "1m"
+  check_nfs_access_telegraf:
+    plugin: exec
+    config:
+      - commands = ["{{ nfs_check_path }}"]
+      - timeout = "1m"
+      - data_format = "influx"
+      - interval = "1m"
+  check_systemd:
+    plugin: systemd_units
+    config:
+      - unittype = "service"
+      - timeout = "5s"
+      - pattern = "autofs* condor* telegraf*"
+  oom_kills:
+    plugin: kernel_vmstat
+    config:
+      - fieldpass = ["oom_kill"]
+  ipmi_power:
+    plugin: exec
+    config:
+      - commands = ["sudo /usr/bin/ipmitool dcmi power reading"]
+      - timeout = "30s"
+      - interval = "1m"
+      - name_override = "ipmi_power"
+      - data_format = "grok"
+      - grok_patterns = ['%{SPACE}Average power reading over sample period:%{SPACE}%{NUMBER:watts:int} Watts']

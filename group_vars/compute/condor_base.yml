@@ -1,0 +1,7 @@
+---
+htcondor_role_execute: true
+htcondor_password: "{{ undef() }}"
+
+# Settings specific to the `condor_config.local.j2` configuration file.
+htcondor_allow_negotiator: "132.230.223.239,$(CONDOR_HOST),$(ALLOW_WRITE)"
+# TODO: above, take IP address from Ansible facts instead of hardcoding it
