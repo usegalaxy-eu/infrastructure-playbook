@@ -529,7 +529,7 @@ destinations:
     params:
       # slurm-drmaa refuses the short form --gres=gpu:N
       submit_native_specification: "--partition=l40s --nodes=1 --ntasks-per-node=1 --cpus-per-task={int(cores)} --mem={int(mem * 1024)} --gres=gres/gpu:{int(gpus)} --time=10:00:00 -J pulsar_3dtrees_j{job.id}"
-      singularity_run_extra_arguments: "--nv --bind \"$_GALAXY_JOB_TMP_DIR:/tmp\" --bind \"$_GALAXY_JOB_TMP_DIR:/home/datascience\""
+      singularity_run_extra_arguments: "--nv --bind \"$_GALAXY_JOB_TMP_DIR:/tmp\" --bind \"$_GALAXY_JOB_TMP_DIR:/home/datascience\" --bind \"$_GALAXY_JOB_TMP_DIR:/in\""
 
   #############################
   # LOCAL CONDOR DESTINATIONS #
