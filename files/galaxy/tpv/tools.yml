@@ -454,8 +454,18 @@ tools:
     inherits: _basic_docker_tool
     gpus: 1
     cores: 1
+    # FLUX.1 (2024+galaxy4 and older) keeps the offloaded model in host memory (~34 GB)
+    mem: 40
     env:
       GPU_AVAILABLE: 1
+    rules:
+      - if: helpers.tool_version_gte(tool, '2026+galaxy0')
+        # FLUX.2 [klein] 4B peaks at ~17 GB of host memory
+        mem: 24
+        context:
+          # FLUX 3 Image Klein needs ~46 GB of GPU memory, and both models run
+          # in bf16, which needs Ampere or newer
+          exclude_gpu_models: ["Tesla T4", "Tesla V100-PCIE-32GB"]
     # scheduling:
     #   require:
     #     - gpu-divided
