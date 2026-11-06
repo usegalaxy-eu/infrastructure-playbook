@@ -494,6 +494,49 @@ destinations:
       require:
         - nemo-pulsar
 
+  # 3Dtrees on NEMO 2 (account bw17b010). Pulsar runs queued_drmaa (slurm-drmaa), so sizes are per job:
+  # mem in plain MB, time in hours (see pulsar_nemo_tpv). Images are prepared as .sif on NEMO, named
+  # <tool>_<version>.sif without the wrapper suffix; a missing .sif fails the job.
+  pulsar_nemo_3dtrees_tpv:
+    inherits: pulsar_default
+    runner: pulsar_eu_nemo_3dtrees
+    max_accepted_cores: 50
+    max_accepted_mem: 300
+    min_accepted_gpus: 0
+    max_accepted_gpus: 0
+    env:
+      APPTAINER_CACHEDIR: /work/classic/fr_kg1074-pulsar/container_cache
+      SINGULARITY_CACHEDIR: /work/classic/fr_kg1074-pulsar/container_cache
+    params:
+      jobs_directory: /work/classic/fr_kg1074-pulsar/staging
+      submit_native_specification: "--partition=genoa --nodes=1 --ntasks-per-node=1 --cpus-per-task={int(cores)} --mem={int(mem * 1024)} --time=10:00:00 -J pulsar_3dtrees_j{job.id}"
+      singularity_enabled: true
+      singularity_command: apptainer
+      # our tools write to /tmp as they can under Docker; Galaxy's Singularity call leaves it read-only
+      singularity_run_extra_arguments: "--bind \"$_GALAXY_JOB_TMP_DIR:/tmp\""
+      container_override:
+        - type: singularity
+          shell: /bin/sh
+          identifier: "/work/classic/fr_kg1074-pulsar/container_cache/{tool.id.split('/')[-2]}_{tool.version.split('+')[0]}.sif"
+    scheduling:
+      require:
+        - nemo-3dtrees
+
+  # GPU jobs of the 3Dtrees tools on the l40s partition: 15 cores and about 120 GB per GPU.
+  pulsar_nemo_3dtrees_gpu_tpv:
+    inherits: pulsar_nemo_3dtrees_tpv
+    max_accepted_cores: 15
+    max_accepted_mem: 120
+    min_accepted_gpus: 1
+    max_accepted_gpus: 1
+    env:
+      # --nv adds NEMO's libGLX, which needs a newer glibc than our images; prefer the image's own copy
+      SINGULARITYENV_LD_LIBRARY_PATH: /usr/local/cuda/lib64:/opt/conda/lib:/usr/lib/x86_64-linux-gnu:/usr/local/nvidia/lib:/usr/local/nvidia/lib64
+    params:
+      # slurm-drmaa refuses the short form --gres=gpu:N
+      submit_native_specification: "--partition=l40s --nodes=1 --ntasks-per-node=1 --cpus-per-task={int(cores)} --mem={int(mem * 1024)} --gres=gres/gpu:{int(gpus)} --time=10:00:00 -J pulsar_3dtrees_j{job.id}"
+      singularity_run_extra_arguments: "--nv --bind \"$_GALAXY_JOB_TMP_DIR:/tmp\" --bind \"$_GALAXY_JOB_TMP_DIR:/home/datascience\" --bind \"$_GALAXY_JOB_TMP_DIR:/in\""
+
   #############################
   # LOCAL CONDOR DESTINATIONS #
   #############################
