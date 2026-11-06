@@ -96,19 +96,17 @@
     - role: galaxyproject.gxadmin
       when: htcondor_role_submit
     - role: grycap.htcondor
-    - role: usegalaxy-eu.fix-stop-ITs
-      when: htcondor_role_submit and inventory_hostname != "maintenance.bi.privat"
     - role: usegalaxy-eu.remove-orphan-condor-jobs
       when: htcondor_role_submit and inventory_hostname != "maintenance.bi.privat"
   post_tasks:
-    - name: Add /usr/local/bin to Galaxy's PATH in bashrc file. (usegalaxy-eu.fix-stop-ITs)
+    - name: Add /usr/local/bin to Galaxy's PATH in bashrc file.
       become: true
       when: htcondor_role_submit
       ansible.builtin.lineinfile:
         path: "{{ galaxy_user.home }}/.bashrc"
         line: 'export PATH="/usr/local/bin:$PATH"'
 
-    - name: Issue HTCondor token for the Galaxy user. (usegalaxy-eu.fix-stop-ITs)
+    - name: Issue HTCondor token for the Galaxy user.
       become: true
       when: htcondor_role_submit
       block:
