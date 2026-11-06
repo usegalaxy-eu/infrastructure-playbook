@@ -506,6 +506,8 @@ destinations:
       submit_native_specification: "--partition=genoa --nodes=1 --ntasks-per-node=1 --cpus-per-task={int(cores)} --mem={int(mem * 1024)} --time=10:00:00 -J pulsar_3dtrees_j{job.id}"
       singularity_enabled: true
       singularity_command: apptainer
+      # our tools write to /tmp as they can under Docker; Galaxy's Singularity call leaves it read-only
+      singularity_run_extra_arguments: "--bind \"$_GALAXY_JOB_TMP_DIR:/tmp\""
       container_override:
         - type: singularity
           shell: /bin/sh
@@ -521,9 +523,13 @@ destinations:
     max_accepted_mem: 120
     min_accepted_gpus: 1
     max_accepted_gpus: 1
+    env:
+      # --nv adds NEMO's libGLX, which needs a newer glibc than our images; prefer the image's own copy
+      SINGULARITYENV_LD_LIBRARY_PATH: /usr/local/cuda/lib64:/opt/conda/lib:/usr/lib/x86_64-linux-gnu:/usr/local/nvidia/lib:/usr/local/nvidia/lib64
     params:
-      submit_native_specification: "--partition=l40s --nodes=1 --ntasks-per-node=1 --cpus-per-task={int(cores)} --mem={int(mem * 1024)} --gres=gpu:{int(gpus)} --time=10:00:00 -J pulsar_3dtrees_j{job.id}"
-      singularity_run_extra_arguments: "--nv"
+      # slurm-drmaa refuses the short form --gres=gpu:N
+      submit_native_specification: "--partition=l40s --nodes=1 --ntasks-per-node=1 --cpus-per-task={int(cores)} --mem={int(mem * 1024)} --gres=gres/gpu:{int(gpus)} --time=10:00:00 -J pulsar_3dtrees_j{job.id}"
+      singularity_run_extra_arguments: "--nv --bind \"$_GALAXY_JOB_TMP_DIR:/tmp\" --bind \"$_GALAXY_JOB_TMP_DIR:/home/datascience\""
 
   #############################
   # LOCAL CONDOR DESTINATIONS #
