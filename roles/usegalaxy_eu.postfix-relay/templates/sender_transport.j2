@@ -1,0 +1,4 @@
+<> dsnrelay:
+{% for sender in postfix_bulk_senders | unique | sort %}
+{{ sender }} bulk:
+{% endfor %}

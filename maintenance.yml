@@ -127,6 +127,7 @@
       with_items:
         - 9618/tcp # HTCondor shared port
         - 514/tcp  # rsyslog
+        - 587/tcp  # postfix submission (galaxy -> relay -> upstream smtp)
     - name: Add the OpenAI API key to the telegraf user's bashrc file
       ansible.builtin.lineinfile:
         path: "/etc/telegraf/.bashrc"
@@ -141,6 +142,7 @@
     # OS operations
     - usegalaxy_eu.handy.os_setup
     - geerlingguy.repo-epel
+    - usegalaxy_eu.postfix-relay
     - influxdata.chrony
     - usegalaxy-eu.autofs
     - hxr.admin-tools
