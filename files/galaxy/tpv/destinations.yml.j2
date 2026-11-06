@@ -21,7 +21,7 @@
             {%- endif %}
         {%- endfor %}
 {%- endmacro %}
-{% macro cvmfs_volumes(exclude_volumes=[]) -%}
+{% macro cvmfs_volumes(exclude_volumes=["singularity"]) -%}
         {%- for vol in cvmfs.values() %}
             {%- if vol.name not in exclude_volumes %}
         {{ vol.path }}:{{ vol.docker_perm }}{{ "," if not loop.last }}
