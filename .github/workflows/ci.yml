@@ -61,5 +61,7 @@ jobs:
           done
           exit 1
 
+      # Vault preparation and dependency installation run above so downloads
+      # can be retried separately; finish `validate` with lint and syntax checks.
       - name: Validate repository.
         run: make lint syntax
