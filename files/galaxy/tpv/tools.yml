@@ -359,8 +359,8 @@ tools:
     mem: min(50 + (input_size * 4), 200)
     rules:
       - if: helpers.tool_version_gte(tool, '1.3.0')
-        # 1.3.0 caps every stage at GALAXY_SLOTS threads; peaks stayed below 22 GB up to 7 billion points
-        mem: 32
+        # 1.3.0 caps every stage at GALAXY_SLOTS threads: the peak grows with small inputs, then levels off below 22 GB
+        mem: min(8 + (input_size * 2), 32)
 
   toolshed.g2.bx.psu.edu/repos/imgteam/libcarna_render/libcarna_render/.*:
     inherits: _basic_docker_tool
