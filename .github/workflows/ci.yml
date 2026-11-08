@@ -43,8 +43,26 @@ jobs:
         run: |
           pip3 install -r requirements.txt -r .github/requirements-python-lint.txt
 
-      - name: Create fake vault password file.
-        run: printf '%s\n' 'fake_password' > .vault_password
+      - name: Test dependency cleanup.
+        run: python3 -m unittest discover -s tests
+
+      - name: Prepare vault placeholders.
+        run: |
+          printf '%s\n' 'fake_password' > .vault_password
+          make clear_vault
+
+      - name: Install Ansible Galaxy dependencies.
+        run: |
+          for attempt in 1 2 3; do
+            echo "Installing dependencies (attempt $attempt of 3)"
+            if make deps; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 3 ]; then
+              sleep 5
+            fi
+          done
+          exit 1
 
       - name: Validate repository.
-        run: make CLEAR_VAULT=1 validate
+        run: make lint syntax
