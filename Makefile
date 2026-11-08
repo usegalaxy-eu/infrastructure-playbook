@@ -28,7 +28,17 @@ help:
 
 deps: requirements.yaml
 	bash bin/clean-deps.sh
-	ansible-galaxy install -r requirements.yaml
+	# Retry dependency downloads for both local validation and CI.
+	@for attempt in 1 2 3; do \
+		echo "Installing dependencies (attempt $$attempt of 3)"; \
+		if ansible-galaxy install -r requirements.yaml; then \
+			exit 0; \
+		fi; \
+		if [ "$$attempt" -lt 3 ]; then \
+			sleep 5; \
+		fi; \
+	done; \
+	exit 1
 
 known_hosts:
 	grep --quiet '^stats.bi.privat' ~/.ssh/known_hosts || echo "stats.bi.privat ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJLhLsIO61hj8Kk6VQWTq5JU+PRm5/so1k44yZQTwvVO" >> ~/.ssh/known_hosts
