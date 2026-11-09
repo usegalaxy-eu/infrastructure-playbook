@@ -7,17 +7,19 @@ completion for text rows, the same with a small PNG attached for multimodal
 rows, the PNG alone for image rows and an embeddings request for embedding
 rows, a rerank request for rerank rows, and a transcription of a second of
 silence for audio rows (it only checks the model takes audio and answers
-with a `text` field). Chat calls stop at the first streamed chunk.
+with a `text` field), and a System One yes/no question for decision rows.
+Chat calls stop at the first streamed chunk.
 
-A row is HEALTHY, DEAD (rejected with a 4xx other than 408/429),
+A row is HEALTHY, DEAD (rejected with a 4xx other than 408/429, or 501),
 CAPABILITY_DRIFT (multimodal, but the image is rejected), FAILING (timeouts,
 408, 429 or 5xx on every attempt) or UNCONFIGURED (no base URL or key).
 
 Models a proxy lists on /models that the file lacks, as a row or as a
 commented-out row, are called too: HEALTHY with the domain the tools could
 use them as, DEAD if every call is rejected, FAILING otherwise. A model
-named like a reranker or a speech model only gets the rerank or the
-transcription call, since those often answer chat calls as well.
+named like a reranker, a speech or a decision model only gets the rerank,
+transcription or System One call, since those often answer chat calls as
+well.
 
 Writes a JSON report and posts to ntfy when a row is not HEALTHY or the
 probe fails. Run by hand without alerting:
@@ -56,10 +58,13 @@ PROBE_USER = "genai-catalogue-probe"
 PROMPT = "Reply with one word."
 # Names of speech to text models; they get the transcription call only
 AUDIO_NAMES = ("whisper", "voxtral", "canary", "parakeet", "transcri")
+# Names of decision (System One) models; they get the System One call only
+DECISION_NAMES = ("decid", "jev", "d3-", "systemone")
 # The calls made for each domain, in order; any other domain gets ("text",)
 CALLS_BY_DOMAIN = {
     "embedding": ("embedding",),
     "audio": ("audio",),
+    "decision": ("decision",),
     "image": ("image",),
     "multimodal": ("text", "text+image"),
     "rerank": ("rerank",),
@@ -70,9 +75,10 @@ class CallFailed(Exception):
     """A probe call failed; `permanent` means retrying cannot help."""
 
     def __init__(self, message, http_code=None):
-        """Treat a 4xx other than 408 and 429 as permanent."""
+        """Treat a 4xx other than 408 and 429, and 501, as permanent."""
         super().__init__(message)
-        self.permanent = (
+        # 501: the model does not support the call, e.g. System One
+        self.permanent = http_code == 501 or (
             http_code is not None
             and 400 <= http_code < 500
             and http_code not in (408, 429)
@@ -262,8 +268,26 @@ def transcribe(base_url, api_key, model_id):
         raise CallFailed("response contains no transcript")
 
 
+def decide(base_url, api_key, model_id):
+    """Ask one yes/no question through the System One decision API."""
+    question = {"type": "noul", "instructions": "Is the sample degraded?"}
+    payload = {
+        "model": model_id,
+        "state": "The sample is degraded.",
+        "questions": {"probe": question},
+        "user": PROBE_USER,
+    }
+    with post(f"{base_url}/systemone", api_key, payload) as resp:
+        answers = json.loads(resp.read().decode("utf-8")).get("answers")
+    answer = (answers or {}).get("probe") or {}
+    if not isinstance(answer.get("noul"), (int, float)):
+        raise CallFailed("response contains no yes/no probability")
+
+
 def probe_call(kind, base_url, api_key, model_id):
     """Make one call of the given kind; raise if the proxy rejects it."""
+    if kind == "decision":
+        return decide(base_url, api_key, model_id)
     if kind == "audio":
         return transcribe(base_url, api_key, model_id)
     if kind == "embedding":
@@ -335,6 +359,9 @@ def classify_new_model(provider, model_id, servers):
     elif any(name in model_id.lower() for name in AUDIO_NAMES):
         if accepted("audio"):
             domain = "audio"
+    elif any(name in model_id.lower() for name in DECISION_NAMES):
+        if accepted("decision"):
+            domain = "decision"
     elif accepted("text"):
         if accepted("text+image"):
             domain = "multimodal"
@@ -346,6 +373,8 @@ def classify_new_model(provider, model_id, servers):
         domain = "embedding"
     elif accepted("audio"):
         domain = "audio"
+    elif accepted("decision"):
+        domain = "decision"
     permanent = all(r["permanent"] for r in results.values())
     status = "DEAD" if permanent else "FAILING"
     errors = [f"{k}: {r['error']}" for k, r in results.items() if r["error"]]

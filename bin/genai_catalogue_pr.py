@@ -32,13 +32,26 @@ import urllib.error
 import urllib.request
 
 MARKER = "TODO-genai-bot"
-DOMAINS = ("text", "multimodal", "image", "embedding", "rerank", "audio")
+DOMAINS = (
+    "text",
+    "multimodal",
+    "image",
+    "embedding",
+    "rerank",
+    "audio",
+    "decision",
+)
 # Section headings new rows of these domains go under, first match wins
 SECTIONS = {
     "embedding": ("Embedding",),
     "rerank": ("Rerank", "Embedding"),
     "audio": ("Speech to text",),
+    "decision": ("Decision",),
 }
+DECISION_HEADER = (
+    "# --- Decision models (domain=decision), consumed by the decision "
+    "option of the LLM Hub tool ---"
+)
 REPO = "usegalaxy-eu/infrastructure-playbook"
 LOC_PATH = "files/galaxy/config/llm/genai_models.loc"
 BRANCH = "genai-catalogue-bot"
@@ -139,8 +152,8 @@ def insert_after(lines, rows, domain, provider):
     return (same or section or [end - 1])[-1]
 
 
-def apply_report(report, text):
-    """Return the new file text, and the removed, retyped and added entries."""
+def parse(text):
+    """Return the lines, the rows by line index and the known models."""
     lines = text.split("\n")
     rows = {}
     for i, line in enumerate(lines):
@@ -152,6 +165,34 @@ def apply_report(report, text):
         row = line.lstrip("#").split("\t")
         if line.startswith("#") and len(row) >= 5:
             known.add((row[4], row[1]))  # commented out: do not propose it
+    return lines, rows, known
+
+
+def add_decision_section(lines):
+    """Return the lines with a decision header after the speech section."""
+    dividers = [i for i, line in enumerate(lines) if line.startswith("# ---")]
+    start = next((i for i in dividers if "Speech to text" in lines[i]), None)
+    end = len(lines)
+    if start is not None:
+        end = next((i for i in dividers if i > start), len(lines))
+    while end > 0 and not lines[end - 1].strip():
+        end -= 1  # after the section's last row, before blank lines
+    return lines[:end] + ["", DECISION_HEADER] + lines[end:]
+
+
+def apply_report(report, text):
+    """Return the new file text, and the removed, retyped and added entries."""
+    lines, rows, known = parse(text)
+    if not any(
+        line.startswith("# ---") and "Decision" in line for line in lines
+    ):
+        if any(
+            m["status"] == "HEALTHY"
+            and m["domain"] == "decision"
+            and (m["provider"], m["model_id"]) not in known
+            for m in report.get("new_models", [])
+        ):
+            lines, rows, known = parse("\n".join(add_decision_section(lines)))
 
     # A verdict only applies if master still has the row as it was probed
     index = {(r[0], r[1], r[4], r[3]): i for i, r in rows.items()}
