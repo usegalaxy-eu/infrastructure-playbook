@@ -303,9 +303,7 @@ gie_proxy_path_prefix: /interactivetool/ep
 gie_proxy_port: 8800
 gie_proxy_verbose: true
 
-# Shorter walltime for interactive tools (usegalaxy-eu/issues#1125), set via the
-# periodic_remove submit command on the embedded_pulsar TPV destination. Regular
-# tools rely on the pool-wide SYSTEM_PERIODIC_HOLD (30 days) instead.
+# Shorter walltime for interactive tools (usegalaxy-eu/issues#1125)
 galaxy_it_max_walltime: "{{ 24 * 60 * 60 }}"
 
 # gxadmin
