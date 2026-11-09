@@ -9,7 +9,7 @@
 #value: Unique identifier for the dropdown selection
 #model_id: The actual model identifier to send to the LiteLLM API
 #name: Display name shown to users in the Galaxy interface
-#domain: Model type - text, image, multimodal, or embedding
+#domain: Model type - text, image, multimodal, embedding, rerank, or audio
 #provider: Server identifier matching a key in the servers section of your YAML config
 #free_tag: Optional tag that can be freely used by admins to specify additional filter options
 #
@@ -23,12 +23,13 @@ qwen-3.8-flash-next-llmlb-freiburg	qwen-3.8-flash-next-llmlb	Fast multimodal mod
 gpt-oss-120b-e-infra.cz	gpt-oss-120b	Most capable for complex tasks, deep reasoning, and detailed outputs (GPT-OSS-120B) [e-INFRA CZ]	text	e-infra.cz	OpenAI
 gemma4-e-infra.cz	gemma4	Gemma 4 model family, multimodal [e-INFRA CZ]	multimodal	e-infra.cz	Google DeepMind
 mistral-medium-3.5-e-infra.cz	mistral-medium-3.5	Mistral Medium 3.5, 128B multimodal [e-INFRA CZ]	multimodal	e-infra.cz	Mistral AI
-command-a-e-infra.cz	command-a	Cohere Command-A [e-INFRA CZ]	multimodal	e-infra.cz	Cohere
 kimi-k3-e-infra.cz	kimi-k3	Kimi K3, multimodal [e-INFRA CZ]	multimodal	e-infra.cz	Moonshot AI
+kimi-k3.1-pro-e-infra.cz	kimi-k3.1-pro	Kimi K3.1 Pro, multimodal, slower but more capable [e-INFRA CZ]	multimodal	e-infra.cz	Moonshot AI
 qwen3.8-27b-e-infra.cz	qwen3.8-27b	Qwen3.8 27B, multimodal [e-INFRA CZ]	multimodal	e-infra.cz	Alibaba Cloud
 qwen3.8-flash-next-e-infra.cz	qwen3.8-flash-next	Qwen3.8 Flash Next, fast multimodal [e-INFRA CZ]	multimodal	e-infra.cz	Alibaba Cloud
 glm-5-e-infra.cz	glm-5	GLM-5, text only [e-INFRA CZ]	text	e-infra.cz	Zhipu AI
 glm-5.3-e-infra.cz	glm-5.3	GLM-5.3, text only [e-INFRA CZ]	text	e-infra.cz	Zhipu AI
+glm-5.3-flash-e-infra.cz	glm-5.3-flash	GLM-5.3 Flash, fast, multimodal [e-INFRA CZ]	multimodal	e-infra.cz	Zhipu AI
 deepseek-v4.1-flash-e-infra.cz	deepseek-v4.1-flash	DeepSeek V4.1 Flash, multimodal [e-INFRA CZ]	multimodal	e-infra.cz	DeepSeek
 deepseek-v4.1-flash-thinking-e-infra.cz	deepseek-v4.1-flash-thinking	DeepSeek V4.1 Flash with reasoning enabled, multimodal [e-INFRA CZ]	multimodal	e-infra.cz	DeepSeek
 nrp-e-infra.cz	nrp	NRP, text only [e-INFRA CZ]	text	e-infra.cz	e-infra.cz
@@ -56,6 +57,13 @@ multilingual-e5-large-instruct-e-infra.cz	multilingual-e5-large-instruct	Instruc
 nomic-embed-text-v2-moe-e-infra.cz	nomic-embed-text-v2-moe	Mixture-of-experts text embedding model with long context (Nomic-Embed-Text-v2-MoE) [e-INFRA CZ]	embedding	e-infra.cz	Nomic
 nomic-embed-text-v1.5-e-infra.cz	nomic-embed-text-v1.5	Lightweight and efficient text embedding model (Nomic-Embed-Text-v1.5) [e-INFRA CZ]	embedding	e-infra.cz	Nomic
 mxbai-embed-large-e-infra.cz	mxbai-embed-large:latest	Large-scale embedding model with strong retrieval performance (Mixedbread-Embed-Large) [e-INFRA CZ]	embedding	e-infra.cz	Mixedbread AI
+embeddinggemma-2-e-infra.cz	embeddinggemma-2	Compact multilingual embedding model, 768 dimensions (EmbeddingGemma) [e-INFRA CZ]	embedding	e-infra.cz	Google DeepMind
+nemotron-3-5-embed-8b-e-infra.cz	nemotron-3-5-embed-8b	Large multilingual embedding model, 4096 dimensions (Nemotron Embed 8B) [e-INFRA CZ]	embedding	e-infra.cz	NVIDIA
+
+# --- Reranking models (domain=rerank), consumed by the RAG Retriever tool ---
+bge-reranker-v2-m3-llmlb-freiburg	bge-reranker-v2-m3-llmlb	Multilingual reranker that reorders retrieved passages by relevance (BGE-Reranker-v2-M3) [uni-freiburg]	rerank	uni-freiburg	BAAI
+qwen3-reranker-4b-llmlb-freiburg	qwen3-reranker-4b-llmlb	Multilingual reranker that reorders retrieved passages by relevance (Qwen3-Reranker-4B) [uni-freiburg]	rerank	uni-freiburg	Alibaba Cloud
+qwen3-reranker-4b-e-infra.cz	qwen3-reranker-4b	Multilingual reranker that reorders retrieved passages by relevance (Qwen3-Reranker-4B) [e-INFRA CZ]	rerank	e-infra.cz	Alibaba Cloud
 
 # --- Speech to text models (domain=audio), consumed by the audio option of the LLM Hub tool ---
 voxtral-mini-llmlb-freiburg	voxtral-mini-llmlb	Speech to text in English, German, French, Spanish, Italian, Portuguese, Dutch and Hindi (Voxtral Mini) [uni-freiburg]	audio	uni-freiburg	Mistral AI
