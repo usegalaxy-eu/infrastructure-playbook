@@ -32,7 +32,13 @@ import urllib.error
 import urllib.request
 
 MARKER = "TODO-genai-bot"
-DOMAINS = ("text", "multimodal", "image", "embedding", "rerank")
+DOMAINS = ("text", "multimodal", "image", "embedding", "rerank", "audio")
+# Section headings new rows of these domains go under, first match wins
+SECTIONS = {
+    "embedding": ("Embedding",),
+    "rerank": ("Rerank", "Embedding"),
+    "audio": ("Speech to text",),
+}
 REPO = "usegalaxy-eu/infrastructure-playbook"
 LOC_PATH = "files/galaxy/config/llm/genai_models.loc"
 BRANCH = "genai-catalogue-bot"
@@ -108,12 +114,20 @@ def insert_after(lines, rows, domain, provider):
     """Return the index of the line a new row goes after.
 
     Chat models go after their provider's rows in the first section,
-    embedding and rerank models (used by the RAG Retriever) at the end of the
-    embedding section.
+    embedding, rerank and audio models at the end of their own section
+    (rerank models in the embedding section if there is no rerank section).
     """
     dividers = [i for i, line in enumerate(lines) if line.startswith("# ---")]
-    if domain in ("embedding", "rerank"):
-        start = next((i for i in dividers if "Embedding" in lines[i]), None)
+    if domain in SECTIONS:
+        start = next(
+            (
+                i
+                for heading in SECTIONS[domain]
+                for i in dividers
+                if heading in lines[i]
+            ),
+            None,
+        )
         if start is None:
             return max(rows, default=-1)
         end = next((i for i in dividers if i > start), len(lines))

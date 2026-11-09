@@ -5,8 +5,9 @@
 Each row is called the way the Galaxy tools call it: a streamed chat
 completion for text rows, the same with a small PNG attached for multimodal
 rows, the PNG alone for image rows and an embeddings request for embedding
-rows, and a rerank request for rerank rows. Chat calls stop at the first
-streamed chunk.
+rows, a rerank request for rerank rows, and a transcription of a second of
+silence for audio rows (it only checks the model takes audio and answers
+with a `text` field). Chat calls stop at the first streamed chunk.
 
 A row is HEALTHY, DEAD (rejected with a 4xx other than 408/429),
 CAPABILITY_DRIFT (multimodal, but the image is rejected), FAILING (timeouts,
@@ -15,8 +16,8 @@ CAPABILITY_DRIFT (multimodal, but the image is rejected), FAILING (timeouts,
 Models a proxy lists on /models that the file lacks, as a row or as a
 commented-out row, are called too: HEALTHY with the domain the tools could
 use them as, DEAD if every call is rejected, FAILING otherwise. A model
-named like a reranker only gets the rerank call, since rerankers often
-answer chat calls as well.
+named like a reranker or a speech model only gets the rerank or the
+transcription call, since those often answer chat calls as well.
 
 Writes a JSON report and posts to ntfy when a row is not HEALTHY or the
 probe fails. Run by hand without alerting:
@@ -36,6 +37,7 @@ import time
 import traceback
 import urllib.error
 import urllib.request
+import uuid
 import zlib
 
 import yaml
@@ -52,9 +54,12 @@ RETRY_DELAY = 5  # seconds, multiplied by the attempt number
 # Sent as the OpenAI `user` field, to tell probe calls apart in metering
 PROBE_USER = "genai-catalogue-probe"
 PROMPT = "Reply with one word."
+# Names of speech to text models; they get the transcription call only
+AUDIO_NAMES = ("whisper", "voxtral", "canary", "parakeet", "transcri")
 # The calls made for each domain, in order; any other domain gets ("text",)
 CALLS_BY_DOMAIN = {
     "embedding": ("embedding",),
+    "audio": ("audio",),
     "image": ("image",),
     "multimodal": ("text", "text+image"),
     "rerank": ("rerank",),
@@ -114,14 +119,19 @@ def error_message(body):
     return " ".join(str(body).split())[:200]
 
 
-def post(url, api_key, payload):
-    """POST JSON to a proxy; raise CallFailed on an HTTP error status."""
+def post(url, api_key, payload, content_type="application/json"):
+    """POST to a proxy; raise CallFailed on an HTTP error status.
+
+    A payload that is not bytes is sent as JSON.
+    """
+    if not isinstance(payload, bytes):
+        payload = json.dumps(payload).encode("utf-8")
     req = urllib.request.Request(
         url,
-        data=json.dumps(payload).encode("utf-8"),
+        data=payload,
         headers={
             "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
+            "Content-Type": content_type,
         },
     )
     try:
@@ -213,8 +223,49 @@ def rerank(base_url, api_key, model_id):
         raise CallFailed("response contains no ranking")
 
 
+def silent_wav(seconds=1, rate=16000):
+    """Return a mono 16-bit WAV file of silence."""
+    data = b"\x00\x00" * rate * seconds
+    fmt = struct.pack("<HHIIHH", 1, 1, rate, rate * 2, 2, 16)
+    return (
+        b"RIFF"
+        + struct.pack("<I", 36 + len(data))
+        + b"WAVEfmt "
+        + struct.pack("<I", len(fmt))
+        + fmt
+        + b"data"
+        + struct.pack("<I", len(data))
+        + data
+    )
+
+
+def transcribe(base_url, api_key, model_id):
+    """Upload a clip as LLM Hub's speech to text does (multipart form)."""
+    boundary = uuid.uuid4().hex
+    body = b""
+    for name, value in (("model", model_id), ("user", PROBE_USER)):
+        body += (
+            f'--{boundary}\r\nContent-Disposition: form-data; name="{name}"'
+            f"\r\n\r\n{value}\r\n"
+        ).encode("utf-8")
+    body += (
+        f'--{boundary}\r\nContent-Disposition: form-data; name="file"; '
+        'filename="silence.wav"\r\nContent-Type: audio/wav\r\n\r\n'
+    ).encode("utf-8")
+    body += silent_wav() + f"\r\n--{boundary}--\r\n".encode("utf-8")
+    content_type = f"multipart/form-data; boundary={boundary}"
+    url = f"{base_url}/audio/transcriptions"
+    with post(url, api_key, body, content_type) as resp:
+        reply = json.loads(resp.read().decode("utf-8"))
+    # silence may give an empty text, but the field must be there
+    if not isinstance(reply, dict) or "text" not in reply:
+        raise CallFailed("response contains no transcript")
+
+
 def probe_call(kind, base_url, api_key, model_id):
     """Make one call of the given kind; raise if the proxy rejects it."""
+    if kind == "audio":
+        return transcribe(base_url, api_key, model_id)
     if kind == "embedding":
         return embed(base_url, api_key, model_id)
     if kind == "rerank":
@@ -281,6 +332,9 @@ def classify_new_model(provider, model_id, servers):
     if "rerank" in model_id.lower():  # rerankers often answer chat too
         if accepted("rerank"):
             domain = "rerank"
+    elif any(name in model_id.lower() for name in AUDIO_NAMES):
+        if accepted("audio"):
+            domain = "audio"
     elif accepted("text"):
         if accepted("text+image"):
             domain = "multimodal"
@@ -290,6 +344,8 @@ def classify_new_model(provider, model_id, servers):
         domain = "image"
     elif accepted("embedding"):
         domain = "embedding"
+    elif accepted("audio"):
+        domain = "audio"
     permanent = all(r["permanent"] for r in results.values())
     status = "DEAD" if permanent else "FAILING"
     errors = [f"{k}: {r['error']}" for k, r in results.items() if r["error"]]
