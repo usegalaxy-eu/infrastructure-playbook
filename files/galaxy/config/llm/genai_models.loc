@@ -9,7 +9,7 @@
 #value: Unique identifier for the dropdown selection
 #model_id: The actual model identifier to send to the LiteLLM API
 #name: Display name shown to users in the Galaxy interface
-#domain: Model type - text, image, multimodal, embedding, rerank, or audio
+#domain: Model type - text, image, multimodal, embedding, rerank, audio, or decision
 #provider: Server identifier matching a key in the servers section of your YAML config
 #free_tag: Optional tag that can be freely used by admins to specify additional filter options
 #
@@ -69,3 +69,6 @@ qwen3-reranker-4b-e-infra.cz	qwen3-reranker-4b	Multilingual reranker that reorde
 voxtral-mini-llmlb-freiburg	voxtral-mini-llmlb	Speech to text in English, German, French, Spanish, Italian, Portuguese, Dutch and Hindi (Voxtral Mini) [uni-freiburg]	audio	uni-freiburg	Mistral AI
 whisper-large-v3-e-infra.cz	whisper-large-v3	Speech to text in about 99 languages, with timestamps for subtitles (Whisper Large v3) [e-INFRA CZ]	audio	e-infra.cz	OpenAI
 canary-v2-e-infra.cz	canary-v2	Speech to text in 25 European languages; set the language, otherwise it translates to English (Canary-1B-v2) [e-INFRA CZ]	audio	e-infra.cz	NVIDIA
+
+# --- Decision models (domain=decision), consumed by the decision option of the LLM Hub tool ---
+vllm-sr-d3-flash-e-infra.cz	vllm-sr-d3-flash	Answers yes/no, choice and score questions about a text, with probabilities (D3 Flash) [e-INFRA CZ]	decision	e-infra.cz	vLLM Semantic Router
