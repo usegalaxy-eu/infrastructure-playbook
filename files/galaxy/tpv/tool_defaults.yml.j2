@@ -48,8 +48,6 @@ tools:
       request_memory: "{mem}G"
       submit_request_gpus: "{gpus or 0}"
       docker_memory: "{mem}G"
-      # Default walltime for ALL tools (usegalaxy-eu/issues#1125): HTCondor
-      submit_max_job_run_time: "{{ galaxy_max_job_run_time | default(2592000) }}"
       # Distribute jobs across the weighted jwd_pool (see global.context above). Reuse the assigned JWD root when TPV reroutes a retry.
       job_working_directory: >-
         {((job.working_directory or (job.destination_params or {}).get('job_working_directory')) if not (dry_run_mode := job_wrapper is None) else None) or helpers.weighted_choice(jwd_pool)['value']}

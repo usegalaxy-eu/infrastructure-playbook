@@ -303,9 +303,9 @@ gie_proxy_path_prefix: /interactivetool/ep
 gie_proxy_port: 8800
 gie_proxy_verbose: true
 
-# Walltime limits (usegalaxy-eu/issues#1125)
-galaxy_max_job_run_time: "{{ 30 * 24 * 60 * 60 }}"
-# Shorter limit for interactive tools, set on the embedded_pulsar TPV
+# Shorter walltime for interactive tools (usegalaxy-eu/issues#1125), set via the
+# periodic_remove submit command on the embedded_pulsar TPV destination. Regular
+# tools rely on the pool-wide SYSTEM_PERIODIC_HOLD (30 days) instead.
 galaxy_it_max_walltime: "{{ 24 * 60 * 60 }}"
 
 # gxadmin

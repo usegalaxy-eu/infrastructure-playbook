@@ -102,7 +102,9 @@ destinations:
     max_accepted_gpus: 0
     params:
       submit_requirements: "{entity.params.get('requirements') or ''}"
-      submit_max_job_run_time: "{{ galaxy_it_max_walltime | default(86400) }}"
+      # Interactive tools get a shorter walltime than the pool-wide
+      # SYSTEM_PERIODIC_HOLD (30d); jobs are removed and error in Galaxy.
+      submit_periodic_remove: "RemoteWallClockTime > {{ galaxy_it_max_walltime | default(86400) }}"
       docker_volumes: "$job_directory:rw,
         $_CONDOR_SCRATCH_DIR:rw,
         $tool_directory:ro,
