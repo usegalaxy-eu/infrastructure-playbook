@@ -14,13 +14,13 @@ postfix_mynetworks:
   - 127.0.0.0/8
   - 10.4.68.201/32  # sn09.bi.privat
 postfix_trusted_client_hosts: "{{ groups['celerycluster'] }}"
-postfix_maximal_queue_lifetime: 30d
-postfix_bounce_queue_lifetime: 30d
-postfix_destination_rate_delay: 36s
+postfix_maximal_queue_lifetime: 60d
+postfix_bounce_queue_lifetime: 60d
+postfix_destination_rate_delay: 8s
 postfix_destination_concurrency_limit: 2
 postfix_bulk_senders:
   - support@usegalaxy.eu
-postfix_bulk_destination_rate_delay: 6s
+postfix_bulk_destination_rate_delay: 30s
 postfix_bulk_destination_concurrency_limit: 2
 
 galaxy_root: /opt/galaxy

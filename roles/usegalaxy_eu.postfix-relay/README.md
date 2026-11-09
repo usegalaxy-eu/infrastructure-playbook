@@ -1,6 +1,7 @@
 # Postfix relay
 
-Deploy with `ansible-playbook -i hosts postfix.yml`. Deployment settings are in
+Deploy with `ansible-playbook -i hosts maintenance.yml`. This runs the full
+maintenance playbook; there is no dedicated `postfix.yml`. Deployment settings are in
 `group_vars/maintenance.yml`; credentials are supplied through vaulted variables.
 
 ## Delivery transports
@@ -9,9 +10,9 @@ Postfix uses shared persistent queue storage with independent transport scheduli
 
 | Envelope sender | Transport | Deployment pacing |
 | --- | --- | --- |
-| Addresses in `postfix_bulk_senders` | `bulk` | 6s delay (~600 messages/hour), concurrency limit 2 |
+| Addresses in `postfix_bulk_senders` | `bulk` | 30s delay (~120 messages/hour), concurrency limit 2 |
 | Null sender (`<>`, delivery-status notifications) | `dsnrelay` | No rate delay, concurrency limit 2 |
-| All other external mail, including regular Galaxy email | `smtp` | 36s delay (~100 messages/hour), concurrency limit 2 |
+| All other external mail, including regular Galaxy email | `smtp` | 8s delay (~450 messages/hour), concurrency limit 2 |
 
 Routing uses SMTP `MAIL FROM`, not the visible `From` header. Campaign submission
 must use a distinct envelope sender; Galaxy's global `email_from` does not
@@ -47,8 +48,8 @@ postfix check
 Expected map results are `bulk:`, `dsnrelay:`, and no match (default `smtp`).
 From sn09, submit several single-recipient test messages using the campaign
 envelope sender, then submit one using Galaxy's regular sender. Check
-`/var/log/maillog`: campaign deliveries should be spaced by approximately six
-seconds and regular deliveries by approximately 36 seconds. Regular mail should
+`/var/log/maillog`: campaign deliveries should be spaced by approximately 30
+seconds and regular deliveries by approximately eight seconds. Regular mail should
 use its independent transport rather
 than wait for the campaign to finish. Confirm `status=sent` and inbox receipt.
 
@@ -56,3 +57,42 @@ Unchanged daily playbook runs do not rebuild the routing database or restart
 Postfix. Changes to the sender map, transport configuration, or other managed
 configuration trigger the restart handler. Temporary failures remain queued
 for the configured lifetime; permanent SMTP rejections generate bounces.
+
+## Restart recovery and availability
+
+Accepted mail is stored in Postfix's persistent queue (normally
+`/var/spool/postfix`, inspect with `postconf queue_directory`), not just in RAM.
+A normal service restart or host reboot preserves queued messages, and Postfix
+resumes delivery automatically. The role sets `enabled: true` so the service
+starts on boot. This assumes the queue filesystem survives and is available;
+disk loss, corruption, or deleting/replacing the spool can lose mail. A restart
+does not reset message age or the configured 30-day queue lifetime.
+Unlike the queue itself, destination rate-delay timers are in memory and do not
+survive a restart or reload. Deliveries can therefore resume immediately, so
+restarting repeatedly can undermine the intended pacing.
+
+During downtime, new SMTP submissions can fail. Mail that has not received the
+final SMTP acceptance response is still the submitting application's
+responsibility; verify Galaxy/Celery retries rather than assuming Postfix can
+recover messages it never accepted. If the connection breaks after acceptance
+but before the client receives the response, retrying can produce duplicates.
+The same SMTP ambiguity exists when forwarding to the upstream relay.
+
+Before production use, test with a controlled SMTP sink and no real campaign:
+
+1. Temporarily make the test upstream unavailable, submit identifiable messages
+   through both transports, and record the accepted queue IDs with `postqueue -p`.
+2. Restart Postfix and confirm the messages remain queued. In a planned reboot
+   test, also verify `systemctl is-enabled postfix` and automatic startup.
+3. Restore the test upstream and confirm delivery resumes and the queue drains;
+   correlate message IDs and recipients with `status=sent` in the mail log.
+4. Test submission while the relay is stopped and confirm the application retries.
+
+With the relay on maintenance, Galaxy email submission depends on maintenance
+and the network path to it, although Galaxy's other functions need not stop.
+Moving the relay to sn09 removes that extra host dependency for sn09's own
+submissions, but Celery workers still depend on the relay host. Such a move needs
+coordinated client, trusted-host, firewall, credential, and playbook changes, and
+the old queue must be drained or safely migrated before retiring maintenance's
+relay. Keep the queue on durable storage and monitor queue age and free space
+regardless of placement.
