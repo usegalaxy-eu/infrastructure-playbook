@@ -13,12 +13,8 @@ closed. Without --publish the PR text is printed. `check` validates a file.
 
 Jenkins job: node internal-access, weekly after the probe (Mondays 05:00);
 GITHUB_TOKEN comes from a GitHub App credential with read and write access to
-Contents and Pull requests of this repository.
-
-  ssh "$PROBE_SSH_TARGET" cat /var/log/genai_catalogue_probe/report.json \
-      > report.json
-  python3 bin/genai_catalogue_pr.py build --report report.json \
-      --loc files/galaxy/config/llm/genai_models.loc ${GITHUB_TOKEN:+--publish}
+Contents and Pull requests of this repository. Its build step is
+genai-catalogue-pr.sh in usegalaxy-eu/jenkins-scripts.
 """
 
 import argparse
