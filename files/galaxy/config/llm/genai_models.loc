@@ -1,5 +1,5 @@
 #This is a sample file distributed with Galaxy that is used to define litellm
-#models, using 5 columns tab separated
+#models, using 6 columns tab separated
 #(longer whitespace are TAB characters):
 #
 #The entries are as follows:
@@ -9,9 +9,11 @@
 #value: Unique identifier for the dropdown selection
 #model_id: The actual model identifier to send to the LiteLLM API
 #name: Display name shown to users in the Galaxy interface
-#domain: Model type - text, image, multimodal, or embedding
+#domain: Model type - text, image, multimodal, embedding, rerank, audio (speech to text), or decision
 #provider: Server identifier matching a key in the servers section of your YAML config
 #free_tag: Optional tag that can be freely used by admins to specify additional filter options
+#
+#Rows added by bin/genai_catalogue_pr.py have TODO-genai-bot in name and free_tag for an admin to fill in
 #
 numarkdown-8b-thinking-llmlb-freiburg	numarkdown-8b-thinking-llmlb	Advanced OCR and document understanding, excels at extracting structured data from scanned images (NuMarkdown-8B-Thinking) [uni-freiburg]	image	uni-freiburg	NuMind
 gemma-3-27b-llmlb-freiburg	gemma-3-27b-llmlb	High-performance multimodal model for complex reasoning and image understanding (Gemma-3-27B-IT) [uni-freiburg]	multimodal	uni-freiburg	Google DeepMind
