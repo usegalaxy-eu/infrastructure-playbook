@@ -9,7 +9,9 @@ admin to fill in. A model commented out in the file is not proposed again.
 With --publish (needs GITHUB_TOKEN, and GIT_COMMIT: the master commit the
 file comes from) the branch genai-catalogue-bot is rebuilt from master and
 one draft PR is opened or updated; when nothing needs to change, it is
-closed. Without --publish the PR text is printed. `check` validates a file.
+closed, unless the probe could not check everything this week. Without
+--publish the PR text and the diff are printed and no file is written.
+`check` validates a file.
 
 Jenkins job: node internal-access, weekly after the probe (Mondays 05:00);
 GITHUB_TOKEN comes from a GitHub App credential with read and write access to
@@ -20,6 +22,7 @@ genai-catalogue-pr.sh in usegalaxy-eu/jenkins-scripts.
 import argparse
 import collections
 import datetime
+import difflib
 import json
 import os
 import re
@@ -122,7 +125,8 @@ def new_value(rows, provider, model_id):
 def insert_after(lines, rows, domain, provider):
     """Return the index of the line a new row goes after.
 
-    Chat models go after their provider's rows in the first section,
+    Chat models go after their provider's rows in the first section, but
+    never above the first row of their domain (the tools default to it),
     embedding, rerank and audio models at the end of their own section
     (rerank models in the embedding section if there is no rerank section).
     """
@@ -145,7 +149,9 @@ def insert_after(lines, rows, domain, provider):
     end = dividers[0] if dividers else len(lines)
     section = [i for i in rows if i < end]
     same = [i for i in section if rows[i][4] == provider]
-    return (same or section or [end - 1])[-1]
+    anchor = (same or section or [end - 1])[-1]
+    first = [i for i in section if rows[i][3] == domain][:1]
+    return max([anchor] + first)
 
 
 def parse(text):
@@ -177,7 +183,11 @@ def add_decision_section(lines):
 
 
 def apply_report(report, text):
-    """Return the new file text, and the removed, retyped and added entries."""
+    """Return the new file text and what changed.
+
+    That is the removed, retyped and added entries, and the providers whose
+    verdicts were skipped.
+    """
     lines, rows, known = parse(text)
     if not any(
         line.startswith("# ---") and "Decision" in line for line in lines
@@ -193,8 +203,18 @@ def apply_report(report, text):
     # A verdict only applies if master still has the row as it was probed
     index = {(r[0], r[1], r[4], r[3]): i for i, r in rows.items()}
     removed, retyped, added = [], [], []
-    drop, replace = set(), {}
-    for entry in report.get("results", []):
+    drop, inserts = set(), collections.defaultdict(list)
+    # With no working row, the key or URL is more likely wrong than every model
+    results = report.get("results", [])
+    working = {e["provider"] for e in results if e["status"] == "HEALTHY"}
+    skipped = {
+        e["provider"]: e["error"]
+        for e in results
+        if e["provider"] not in working and e["status"] != "UNCONFIGURED"
+    }
+    for entry in results:
+        if entry["provider"] in skipped:
+            continue
         key = (entry["value"], entry["model_id"])
         i = index.get(key + (entry["provider"], entry["domain"]))
         if i is None:
@@ -203,10 +223,13 @@ def apply_report(report, text):
             drop.add(i)
             removed.append(entry)
         elif entry["status"] == "CAPABILITY_DRIFT":
-            replace[i] = "\t".join(rows[i][:3] + ["text"] + rows[i][4:])
+            drop.add(i)  # moved, so it does not become the default text model
+            anchor = insert_after(lines, rows, "text", rows[i][4])
+            inserts[anchor].append(
+                "\t".join(rows[i][:3] + ["text"] + rows[i][4:])
+            )
             retyped.append(entry)
 
-    inserts = collections.defaultdict(list)
     values = {row[0] for row in rows.values()}
     for model in report.get("new_models", []):
         provider, model_id = model["provider"], model["model_id"]
@@ -227,16 +250,25 @@ def apply_report(report, text):
     out = list(inserts[-1])
     for i, line in enumerate(lines):
         if i not in drop:
-            out.append(replace.get(i, line))
+            out.append(line)
         out.extend(inserts[i])
     new_text = "\n".join(out)
     problems = check_loc(new_text, placeholders_allowed=True)
     if problems:
         raise BotError("the new file is not valid: " + "; ".join(problems))
-    return new_text, removed, retyped, added
+    return new_text, removed, retyped, added, skipped
 
 
-def pr_text(removed, retyped, added):
+def short(error):
+    """Return the call and HTTP status or error type of a probe error.
+
+    The PR is public, and proxy messages can quote parts of the API key.
+    """
+    match = re.match(r"[^:]+: (HTTP \d+|\w+)", error or "")
+    return match.group(0) if match else "error"
+
+
+def pr_text(removed, retyped, added, skipped=(), unchecked=()):
     """Return the Markdown description of the bot's PR."""
     out = [
         "Update from the weekly GenAI catalogue probe. The bot rebuilds this "
@@ -245,10 +277,10 @@ def pr_text(removed, retyped, added):
     ]
     if removed:
         out += ["", "### Removed: the proxy rejects them", ""]
-        out += [f"- `{e['value']}`: {e['error']}" for e in removed]
+        out += [f"- `{e['value']}`: {short(e['error'])}" for e in removed]
     if retyped:
         out += ["", "### Changed to text: images are rejected", ""]
-        out += [f"- `{e['value']}`: {e['error']}" for e in retyped]
+        out += [f"- `{e['value']}`: {short(e['error'])}" for e in retyped]
     if added:
         out += [
             "",
@@ -261,6 +293,21 @@ def pr_text(removed, retyped, added):
         out += [
             f"- [ ] `{m['model_id']}` ({m['provider']}) as `{m['domain']}`"
             for m in added
+        ]
+    if skipped:
+        out += ["", "### Left unchanged: no row of these providers works", ""]
+        out += [f"- `{p}`: {short(e)}" for p, e in skipped.items()]
+    if unchecked:
+        out += ["", "### Could not be checked this week", ""]
+        out += [
+            f"- `{e['model_id']}` ({e['provider']}): {e['status']}, "
+            f"{short(e['error'])}"
+            for e in unchecked
+        ]
+    if removed or retyped or skipped or unchecked:
+        out += [
+            "",
+            "The full errors are in the probe's report on maintenance.",
         ]
     return "\n".join(out) + "\n"
 
@@ -360,16 +407,32 @@ def main(argv=None):
         report = load_report(args.report, args.max_age_days)
         with open(args.loc, encoding="utf-8") as f:
             old = f.read()
-        text, removed, retyped, added = apply_report(report, old)
-        with open(args.loc, "w", encoding="utf-8") as f:
-            f.write(text)
-        body = pr_text(removed, retyped, added)
+        text, removed, retyped, added, skipped = apply_report(report, old)
+        unchecked = [
+            e
+            for e in report.get("results", []) + report.get("new_models", [])
+            if e["status"] in ("FAILING", "UNCONFIGURED")
+            and e["provider"] not in skipped
+        ]
+        body = pr_text(removed, retyped, added, skipped, unchecked)
         date = report["summary"]["started"][:10]
         title = f"GenAI catalogue: weekly update ({date})"
         if not args.publish:
             print(body)
+            sys.stdout.writelines(
+                difflib.unified_diff(
+                    old.splitlines(True),
+                    text.splitlines(True),
+                    args.loc,
+                    args.loc + " (new)",
+                )
+            )
         elif text == old:
-            withdraw()
+            # only close the PR if nothing went unseen this week
+            if skipped or unchecked or report.get("unlisted"):
+                print("Nothing to change, but the probe missed some models")
+            else:
+                withdraw()
         else:
             print(publish(base_sha, text, title, body))
     except (BotError, OSError) as e:

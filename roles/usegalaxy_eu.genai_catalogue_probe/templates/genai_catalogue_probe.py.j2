@@ -21,8 +21,9 @@ named like a reranker, a speech or a decision model only gets the rerank,
 transcription or System One call, since those often answer chat calls as
 well.
 
-Writes a JSON report and posts to ntfy when a row is not HEALTHY or the
-probe fails. Run by hand without alerting:
+Writes a JSON report. When an ntfy URL is set (it is off by default), it
+also posts there when a row is not HEALTHY or the probe fails. Run by hand
+without alerting:
 
   genai_catalogue_probe.py --ntfy-url '' --output-json /tmp/genai_probe.json
 """
@@ -388,8 +389,8 @@ def classify_new_model(provider, model_id, servers):
 
 
 def advertised_models(servers):
-    """Return {provider: model ids on /models}; print listing failures."""
-    advertised = {}
+    """Return {provider: model ids on /models} and the unlisted providers."""
+    advertised, unlisted = {}, []
     for provider in servers:
         base_url, api_key = credentials(servers, provider)
         if not base_url or not api_key:
@@ -404,7 +405,8 @@ def advertised_models(servers):
             advertised[provider] = {m["id"] for m in data or [] if m.get("id")}
         except Exception as e:
             print(f"Could not list the models of {provider}: {e}")
-    return advertised
+            unlisted.append(provider)
+    return advertised, unlisted
 
 
 def notify(url, title, message):
@@ -431,9 +433,10 @@ def run(args):
         raise ValueError(f"no 'servers' block in {args.config}")
 
     listed = {(r["provider"], r["model_id"]) for r in rows} | commented
+    advertised, unlisted = advertised_models(servers)
     candidates = sorted(
         (provider, model_id)
-        for provider, model_ids in advertised_models(servers).items()
+        for provider, model_ids in advertised.items()
         for model_id in model_ids
         if (provider, model_id) not in listed
     )
@@ -456,6 +459,7 @@ def run(args):
         "summary": {"started": started},
         "results": results,
         "new_models": new_models,
+        "unlisted": unlisted,
     }
     if args.output_json:
         with open(args.output_json, "w", encoding="utf-8") as f:
@@ -476,7 +480,7 @@ def run(args):
 
 
 def main():
-    """Run the probe; a crash alerts too, so it is never silent."""
+    """Run the probe; a crash alerts too, if an ntfy URL is set."""
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--config", default=DEFAULT_CONFIG)
     parser.add_argument("--loc", default=DEFAULT_LOC)
