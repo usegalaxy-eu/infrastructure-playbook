@@ -1,5 +1,13 @@
 ---
 users:
+  processor_nemo@3dtrees.earth:  # 3Dtrees processing account for NEMO 2
+    rules:
+      - id: nemo-3dtrees-tools
+        if: |
+          tool.id.startswith('toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_')
+        scheduling:
+          require:
+            - nemo-3dtrees
   bjoern.gruening@gmail.com:
     rules:
       - id: user-specific-notebook

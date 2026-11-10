@@ -17,6 +17,9 @@
 #black-forest-labs/FLUX.1-schnell	FLUX.1 [schnell] is the fastest model, tailored for personal use	text-to-image	image	flux	1	/path/to/huggingface/that-contains/hub/models--black-forest-labs--FLUX.1-schnell
 black-forest-labs-FLUX.1-dev	FLUX.1 [dev] is an open-weight, guidance-distilled model for non-commercial applications	text-to-image	image	flux	1	/data/db/databases/huggingface/flux/black-forest-labs/FLUX.1-dev/hub/models--black-forest-labs--FLUX.1-dev/
 black-forest-labs-FLUX.1-schnell	FLUX.1 [schnell] is the fastest model, tailored for personal use	text-to-image	image	flux	1	/data/db/databases/huggingface/flux/black-forest-labs/FLUX.1-schnell/hub/models--black-forest-labs--FLUX.1-schnell/
+# FLUX 2026+galaxy0 and newer (loaded by Hugging Face ID from one model root; version is the FLUX generation, and 2024+galaxy4 reads only the FLUX.1 rows above)
+black-forest-labs/FLUX.2-klein-4B	FLUX.2 [klein] 4B (fast, generation, editing and inpainting)	image-to-image	image	flux	2	/data/db/models/huggingface/flux
+black-forest-labs/flux-3-image-klein	FLUX 3 Image Klein (best quality, editing with up to 10 references, non-commercial)	image-to-image	image	flux	3	/data/db/models/huggingface/flux
 1038lab-sam3	Segment Anything Model 3 (SAM 3)	mask-generation	image	sam3	1	/data/db/models/huggingface/sam3/sam3.pt
 
 # TabPFN
@@ -43,3 +46,11 @@ tabpfn_2_5/tabpfn-v2.5-regressor-v2.5_variant	tabpfn-v2.5-regressor-v2.5_variant
 ## RAG embedding models
 sentence-transformers/all-MiniLM-L6-v2	all-MiniLM-L6-v2	feature-extraction	embedding	vector-rag	1	/data/db/models/huggingface/embeddings/sentence-transformers/all-MiniLM-L6-v2
 BAAI/bge-small-en	BAAI bge-small-en	feature-extraction	embedding	vector-rag	1	/data/db/models/huggingface/embeddings/BAAI/bge-small-en
+
+## WhisperX speech-to-text models (alignment, diarization and NLTK models are in the same folder)
+mobiuslabsgmbh/faster-whisper-large-v3-turbo	Whisper large-v3 turbo (~8x faster than large)	automatic-speech-recognition	audio	faster-whisper	1	/data/db/models/whisperx/whisperx_models
+Systran/faster-whisper-tiny	Whisper tiny (~10x faster than large)	automatic-speech-recognition	audio	faster-whisper	1	/data/db/models/whisperx/whisperx_models
+Systran/faster-whisper-base	Whisper base (~7x faster than large)	automatic-speech-recognition	audio	faster-whisper	1	/data/db/models/whisperx/whisperx_models
+Systran/faster-whisper-small	Whisper small (~4x faster than large)	automatic-speech-recognition	audio	faster-whisper	1	/data/db/models/whisperx/whisperx_models
+Systran/faster-whisper-medium	Whisper medium (~2x faster than large)	automatic-speech-recognition	audio	faster-whisper	1	/data/db/models/whisperx/whisperx_models
+Systran/faster-whisper-large-v3	Whisper large-v3	automatic-speech-recognition	audio	faster-whisper	1	/data/db/models/whisperx/whisperx_models
