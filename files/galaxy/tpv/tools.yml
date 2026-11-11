@@ -1011,6 +1011,7 @@ tools:
         mem: 20
 
   toolshed.g2.bx.psu.edu/repos/iuc/spatialdata_operation/spatialdata_operation/.*:
+    # int() should be used because the job fails with allocating cores as floats
     cores: min(max(int((1, input_size / 4)), 16)
     mem: min(max(int((4, input_size)), 64)
 
