@@ -70,6 +70,22 @@
     line: 'define("SCOPES", "{{ osiris_oicd_scopes }}");'
     state: present
 
+- name: "Adjust php.ini settings (larger uploads and security)"
+  community.general.ini_file:
+    path: "{{ php_conf }}"
+    section: PHP
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+    create: false
+  loop:
+    - { key: "memory_limit, value": "256M" }
+    - { key: "upload_max_filesize", value: "12M" }
+    - { key: "post_max_size", value: "12M" }
+    - { key: "max_execution_time", value: "60" }
+    # This setting was introduced due to CVE-2026-115560
+    - { key: "session.upload_progress.enabled", value: "0" }
+  notify: Restart php-fpm
+
 - name: Remove default ssl vhost configurations
   ansible.builtin.replace:
     path: "{{ apache_conf_path }}/ssl.conf"
