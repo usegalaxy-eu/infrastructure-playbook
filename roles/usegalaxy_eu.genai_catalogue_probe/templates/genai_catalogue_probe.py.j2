@@ -2,17 +2,19 @@
 # {{ ansible_managed }}
 """Check that every row of genai_models.loc still works on its LiteLLM proxy.
 
-Each row is called the way the Galaxy tools call it: a streamed chat
-completion for text rows, the same with a small PNG attached for multimodal
-rows, the PNG alone for image rows and an embeddings request for embedding
-rows, a rerank request for rerank rows, and a transcription of a second of
-silence for audio rows (it only checks the model takes audio and answers
-with a `text` field), and a System One yes/no question for decision rows.
-Chat calls stop at the first streamed chunk.
+Each row is called the way the Galaxy tools call it: a streamed chat completion
+for text rows, the same with a PNG of the word GALAXY attached for multimodal
+rows, the PNG alone for image rows, an embeddings request for embedding rows, a
+rerank request for rerank rows, and a transcription of a second of silence for
+audio rows (it only checks the model takes audio and answers with a `text`
+field), and a System One yes/no question for decision rows. Chat calls read the
+answer, like LLM Hub only its content, until it is not empty; with the image
+and a question, until it names the word in the image.
 
 A row is HEALTHY, DEAD (rejected with a 4xx other than 408/429, or 501),
-CAPABILITY_DRIFT (multimodal, but the image is rejected), FAILING (timeouts,
-408, 429 or 5xx on every attempt) or UNCONFIGURED (no base URL or key).
+CAPABILITY_DRIFT (multimodal, but the image is rejected or not read),
+FAILING (timeouts, 408, 429, 5xx or an empty answer on every attempt) or
+UNCONFIGURED (no base URL or key).
 
 Models a proxy lists on /models that the file lacks, as a row or as a
 commented-out row, are called too: HEALTHY with the domain the tools could
@@ -57,6 +59,16 @@ RETRY_DELAY = 5  # seconds, multiplied by the attempt number
 # Sent as the OpenAI `user` field, to tell probe calls apart in metering
 PROBE_USER = "genai-catalogue-probe"
 PROMPT = "Reply with one word."
+IMAGE_PROMPT = "What word is written in this image? Reply with the word only."
+# 5x7 glyphs of the word in the image; a model must read it back
+IMAGE_WORD = "GALAXY"
+GLYPHS = {
+    "G": (".###.", "#...#", "#....", "#.###", "#...#", "#...#", ".###."),
+    "A": (".###.", "#...#", "#...#", "#####", "#...#", "#...#", "#...#"),
+    "L": ("#....", "#....", "#....", "#....", "#....", "#....", "#####"),
+    "X": ("#...#", "#...#", ".#.#.", "..#..", ".#.#.", "#...#", "#...#"),
+    "Y": ("#...#", "#...#", ".#.#.", "..#..", "..#..", "..#..", "..#.."),
+}
 # Names of speech to text models; they get the transcription call only
 AUDIO_NAMES = ("whisper", "voxtral", "canary", "parakeet", "transcri")
 # Names of decision (System One) models; they get the System One call only
@@ -75,15 +87,24 @@ CALLS_BY_DOMAIN = {
 class CallFailed(Exception):
     """A probe call failed; `permanent` means retrying cannot help."""
 
-    def __init__(self, message, http_code=None):
-        """Treat a 4xx other than 408 and 429, and 501, as permanent."""
+    def __init__(self, message, http_code=None, unread=False):
+        """Treat a 4xx other than 408 and 429, and 501, as permanent.
+
+        `unread`: the model answered without reading the image; permanent
+        too, but retried, and only final once every attempt answered so.
+        """
         super().__init__(message)
         # 501: the model does not support the call, e.g. System One
-        self.permanent = http_code == 501 or (
-            http_code is not None
-            and 400 <= http_code < 500
-            and http_code not in (408, 429)
+        self.permanent = (
+            unread
+            or http_code == 501
+            or (
+                http_code is not None
+                and 400 <= http_code < 500
+                and http_code not in (408, 429)
+            )
         )
+        self.unread = unread
 
 
 def parse_loc_file(path):
@@ -148,26 +169,44 @@ def post(url, api_key, payload, content_type="application/json"):
         raise CallFailed(f"HTTP {e.code}: {error_message(body)}", e.code)
 
 
-def png_data_url(size=64):
-    """Return a data URL for a solid-colour PNG, large enough for encoders."""
+def png_data_url(scale=8, margin=6, gap=2):
+    """Return a data URL for a PNG of IMAGE_WORD, black on white.
+
+    Bigger letters or less spacing made mistral-small-4 misread the word.
+    """
 
     def chunk(kind, data):
         crc = struct.pack(">I", zlib.crc32(kind + data))
         return struct.pack(">I", len(data)) + kind + data + crc
 
-    scanline = b"\x00" + b"\xf0\x80\x30" * size  # filter byte + RGB pixels
+    rows = [
+        "." * margin
+        + ("." * gap).join(GLYPHS[c][r] for c in IMAGE_WORD)
+        + "." * margin
+        for r in range(7)
+    ]
+    blank = ["." * len(rows[0])] * margin
+    pixels = b""
+    for row in blank + rows + blank:
+        scanline = b"\x00" + b"".join(  # filter byte + RGB pixels
+            (b"\x00\x00\x00" if c == "#" else b"\xff\xff\xff") * scale
+            for c in row
+        )
+        pixels += scanline * scale
+    width, height = len(rows[0]) * scale, (len(rows) + 2 * margin) * scale
     png = (
         b"\x89PNG\r\n\x1a\n"
-        + chunk(b"IHDR", struct.pack(">IIBBBBB", size, size, 8, 2, 0, 0, 0))
-        + chunk(b"IDAT", zlib.compress(scanline * size))
+        + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0))
+        + chunk(b"IDAT", zlib.compress(pixels))
         + chunk(b"IEND", b"")
     )
     return "data:image/png;base64," + base64.b64encode(png).decode("ascii")
 
 
-def stream_chat(base_url, api_key, model_id, parts):
-    """Start a chat completion shaped like LLM Hub's; stop at the first chunk.
+def stream_chat(base_url, api_key, model_id, parts, word=None):
+    """Run a chat completion shaped like LLM Hub's and read its answer.
 
+    Stops once the answer is not empty, or names `word` if one is given.
     Leaving the `with` block closes the connection, so the proxy aborts the
     generation.
     """
@@ -178,6 +217,7 @@ def stream_chat(base_url, api_key, model_id, parts):
         "user": PROBE_USER,
     }
     deadline = time.monotonic() + TIMEOUT
+    answer = ""
     with post(f"{base_url}/chat/completions", api_key, payload) as resp:
         for raw in resp:
             line = raw.decode("utf-8", errors="replace").strip()
@@ -194,11 +234,23 @@ def stream_chat(base_url, api_key, model_id, parts):
                     code = int(code) if str(code).isdigit() else None
                     message = f"error in stream: {error_message(error)}"
                     raise CallFailed(message, code)
-                if "choices" in event:
+                # like LLM Hub: only `content` counts, reasoning does not
+                for choice in event.get("choices") or []:
+                    answer += (choice.get("delta") or {}).get("content") or ""
+                letters = "".join(filter(str.isalpha, answer.upper()))
+                if answer.strip() and (not word or word in letters):
                     return
             if time.monotonic() > deadline:
-                raise CallFailed(f"no chunk within {TIMEOUT}s")
-    raise CallFailed("stream ended without a chunk")
+                got = (
+                    "an answer without the word"
+                    if answer.strip()
+                    else "no answer"
+                )
+                raise CallFailed(f"Timeout: {got} within {TIMEOUT}s")
+    if not answer.strip():
+        raise CallFailed("EmptyAnswer: the stream ended without content")
+    short = " ".join(answer.split())[:80]
+    raise CallFailed(f"ImageNotRead: answered {short!r}", unread=True)
 
 
 def embed(base_url, api_key, model_id):
@@ -296,27 +348,37 @@ def probe_call(kind, base_url, api_key, model_id):
     if kind == "rerank":
         return rerank(base_url, api_key, model_id)
     text = {"type": "text", "text": PROMPT}
+    question = {"type": "text", "text": IMAGE_PROMPT}
     image = {"type": "image_url", "image_url": {"url": png_data_url()}}
-    # LLM Hub puts attached files before the question
-    parts = {"text": [text], "image": [image], "text+image": [image, text]}
+    if kind == "text+image":  # LLM Hub puts attached files before the question
+        return stream_chat(
+            base_url, api_key, model_id, [image, question], IMAGE_WORD
+        )
+    # image rows get no question, so any answer counts
+    parts = {"text": [text], "image": [image]}
     return stream_chat(base_url, api_key, model_id, parts[kind])
 
 
 def run_with_retries(call):
     """Run `call` until it succeeds, fails permanently or runs out of tries."""
+    unread = 0
     for attempt in range(1, ATTEMPTS + 1):
+        retry = True
         try:
             call()
             return {"ok": True, "permanent": False, "error": None}
         except CallFailed as e:
-            result = {"ok": False, "permanent": e.permanent, "error": str(e)}
+            unread += e.unread
+            permanent = e.permanent and (not e.unread or unread == attempt)
+            result = {"ok": False, "permanent": permanent, "error": str(e)}
+            retry = not e.permanent or e.unread
         except Exception as e:  # network, TLS, timeouts, malformed replies
             reason = getattr(e, "reason", None)
             if not isinstance(reason, BaseException):
                 reason = e  # URLError wraps the socket or TLS error
             error = f"{type(reason).__name__}: {reason}"
             result = {"ok": False, "permanent": False, "error": error}
-        if result["permanent"] or attempt == ATTEMPTS:
+        if not retry or attempt == ATTEMPTS:
             return result
         time.sleep(RETRY_DELAY * attempt)
 
