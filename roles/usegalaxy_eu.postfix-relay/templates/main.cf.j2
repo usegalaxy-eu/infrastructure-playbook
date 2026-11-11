@@ -16,6 +16,9 @@ smtpd_tls_security_level = {{ postfix_smtpd_tls_security_level }}
 relayhost = [{{ postfix_relay_host }}]:{{ postfix_relay_port }}
 sender_dependent_default_transport_maps = {{ postfix_database_type }}:/etc/postfix/sender_transport
 empty_address_default_transport_maps_lookup_key = <>
+{% if postfix_bulk_subject_regex %}
+smtpd_header_checks = {{ postfix_header_checks_type }}:/etc/postfix/header_checks
+{% endif %}
 smtp_sasl_auth_enable = yes
 smtp_sasl_password_maps = {{ postfix_database_type }}:/etc/postfix/sasl_passwd
 smtp_sasl_security_options = noanonymous

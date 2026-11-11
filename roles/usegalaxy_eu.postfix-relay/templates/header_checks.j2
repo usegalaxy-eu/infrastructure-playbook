@@ -1,0 +1,5 @@
+# Subject-based bulk routing. Matched messages are handed to the paced
+# 'bulk' transport; everything else keeps the default 'smtp' transport.
+# Envelope sender and From header are irrelevant, so campaign mail can use
+# the same address as regular Galaxy email (gxconfig email_from).
+/^Subject:.*{{ postfix_bulk_subject_regex }}/ FILTER bulk:

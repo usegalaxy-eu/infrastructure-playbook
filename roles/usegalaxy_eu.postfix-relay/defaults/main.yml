@@ -12,7 +12,11 @@ postfix_maximal_queue_lifetime: 5d
 postfix_bounce_queue_lifetime: 5d
 postfix_destination_rate_delay: 1s
 postfix_destination_concurrency_limit: 2
-postfix_bulk_senders: []
+# PCRE fragment matched against the Subject header of mail submitted through
+# smtpd; matching messages are handed to the paced 'bulk' transport via a
+# FILTER action. Galaxy campaign emails (e.g. GDPR retention notices) must
+# include this tag in their subject; regular Galaxy email does not.
+postfix_bulk_subject_regex: '\[Galaxy bulk\]'
 postfix_bulk_destination_rate_delay: "{{ postfix_destination_rate_delay }}"
 postfix_bulk_destination_concurrency_limit: "{{ postfix_destination_concurrency_limit }}"
 postfix_smtpd_tls_security_level: none

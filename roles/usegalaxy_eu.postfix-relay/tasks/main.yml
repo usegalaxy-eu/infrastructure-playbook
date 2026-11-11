@@ -71,7 +71,7 @@
     mode: "0600"
   when: not ansible_check_mode or postfix_sasl_database.stat.exists
 
-- name: Deploy sender-dependent transport routing
+- name: Deploy sender-dependent DSN routing
   ansible.builtin.template:
     src: sender_transport.j2
     dest: /etc/postfix/sender_transport
@@ -94,6 +94,30 @@
     postfix_sender_transport.changed or
     not postfix_sender_transport_database.stat.exists
   changed_when: true
+  notify: Restart postfix
+
+- name: Select the header checks table type
+  ansible.builtin.set_fact:
+    postfix_header_checks_type: >-
+      {{ 'pcre' if 'pcre' in postfix_map_types.stdout_lines
+         else 'regexp' if 'regexp' in postfix_map_types.stdout_lines
+         else none }}
+
+- name: Verify a usable header checks table type is available
+  ansible.builtin.assert:
+    that: postfix_header_checks_type is not none
+    fail_msg: >-
+      Neither 'pcre' nor 'regexp' lookup tables are supported by this postfix
+      build (postconf -m); subject-based bulk routing cannot be deployed.
+
+- name: Deploy subject-based bulk routing header checks
+  ansible.builtin.template:
+    src: header_checks.j2
+    dest: /etc/postfix/header_checks
+    owner: root
+    group: root
+    mode: "0644"
+  when: postfix_bulk_subject_regex | length > 0
   notify: Restart postfix
 
 - name: Deploy main.cf
