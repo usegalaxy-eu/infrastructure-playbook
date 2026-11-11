@@ -1,0 +1,8 @@
+---
+- name: Ensure CVMFS disk cache directory exists
+  ansible.builtin.file:
+    path: "{{ cvmfs_cache_disk_base }}"
+    state: directory
+    owner: cvmfs
+    group: cvmfs
+    mode: "0770"

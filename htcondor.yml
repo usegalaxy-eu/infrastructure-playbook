@@ -20,6 +20,7 @@
       ansible.builtin.package:
         name: findutils
         state: installed
+      when: not htcondor_role_execute
 
     - name: Ensure gxadmin dependencies are installed. (galaxyproject.gxadmin)
       become: true
@@ -88,7 +89,8 @@
       ansible.builtin.service_facts:
       register: service_facts
   roles:
-    - usegalaxy_eu.handy.os_setup
+    - role: usegalaxy_eu.handy.os_setup
+      when: not htcondor_role_execute
     - role: usegalaxy-eu.bashrc
       when: htcondor_role_submit
     - role: hxr.postgres-connection

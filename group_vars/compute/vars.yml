@@ -1,0 +1,14 @@
+---
+galaxy_group: compute
+galaxy_training: false
+galaxy_cluster: denbi
+galaxy_docker_hack: "true"
+startd_attrs:
+  - GalaxyTraining
+  - GalaxyGroup
+  - GalaxyCluster
+  - GalaxyDockerHack
+rank: GalaxyGroup
+base_cgroup: htcondor
+memory_limit_policy: hard
+reserved_memory: 2048
