@@ -369,9 +369,16 @@ tools:
             - type: explicit_singularity
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_inventory/3dtrees_inventory/.*:
-    cores: 10
+    # below 1 GB runs take minutes and use 4 cores at ~90 % efficiency; larger clouds keep gaining up to 10
+    cores: 4 if input_size < 1 else 10
     # 11 production COPCs (0.05-45 GB) peaked at 3-70 GiB; the largest COPC window needs ~24 bytes per point
     mem: min(16 + (input_size * 1.5), 128)
+    scheduling:
+      require:
+        - singularity
+    params:
+      container_resolvers:
+        - type: explicit_singularity
 
   toolshed.g2.bx.psu.edu/repos/imgteam/libcarna_render/libcarna_render/.*:
     inherits: _basic_docker_tool
