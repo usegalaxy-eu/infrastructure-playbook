@@ -352,7 +352,13 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_smart_tile/3dtrees_smart_tile/.*:
     cores: 10
-    mem: min(max(2,(input_size * 2)), 200)
+    # merge, remap, create_merged_file: 3-10 GB at 10 workers, flat in input size; SmartTile caps its workers to the grant
+    mem: min(max(5, 4 + input_size), 64)
+    rules:
+      - id: 3dtrees_smart_tile_tile_task
+        if: job.get_param_values(app).get('operation', {}).get('task') == 'tile'
+        # tile: 0.5 GB plus 0.6 GB per worker (Brandenburg 4.7 GB, 1911 11.6 GB at 10 workers)
+        mem: min(max(5, input_size), 64)
 
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_potree/3dtrees_potree/.*:
     cores: 10
