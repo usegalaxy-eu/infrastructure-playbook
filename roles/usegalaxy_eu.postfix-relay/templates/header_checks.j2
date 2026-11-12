@@ -1,0 +1,10 @@
+# Subject-based bulk routing. Matched messages are handed to the paced
+# 'bulk' transport; everything else keeps the default 'smtp' transport.
+# Envelope sender and From header are irrelevant, so campaign mail can use
+# the same address as regular Galaxy email (gxconfig email_from).
+#
+# NB: unlike transport-map entries, a FILTER action with an empty destination
+# does NOT fall back to $relayhost -- it would deliver directly to the
+# recipient domain. The upstream relay must therefore be spelled out as the
+# next-hop destination (same value as the relayhost parameter above).
+/^Subject:.*{{ postfix_bulk_subject_regex }}/ FILTER bulk:[{{ postfix_relay_host }}]:{{ postfix_relay_port }}

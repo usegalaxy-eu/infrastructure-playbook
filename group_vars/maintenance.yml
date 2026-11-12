@@ -1,6 +1,27 @@
 ---
 # MISC/Generic variables
 hostname: "{{ inventory_hostname }}"
+
+# Role: usegalaxy_eu.postfix-relay
+# (see https://github.com/usegalaxy-eu/issues/issues/1028).
+postfix_relay_host: smtp.informatik.uni-freiburg.de
+postfix_relay_port: 587
+postfix_relay_wrappermode: false
+postfix_relay_username: "{{ smtp_username }}"
+postfix_relay_password: "{{ smtp_password }}"
+postfix_myorigin: usegalaxy.eu
+postfix_mynetworks:
+  - 127.0.0.0/8
+  - 10.4.68.201/32  # sn09.bi.privat
+postfix_trusted_client_hosts: "{{ groups['celerycluster'] }}"
+postfix_maximal_queue_lifetime: 60d
+postfix_bounce_queue_lifetime: 60d
+postfix_destination_rate_delay: 8s
+postfix_destination_concurrency_limit: 2
+postfix_bulk_subject_regex: '\[Galaxy bulk\]'
+postfix_bulk_destination_rate_delay: 30s
+postfix_bulk_destination_concurrency_limit: 2
+
 galaxy_root: /opt/galaxy
 galaxy_venv_dir: "{{ galaxy_root }}/venv"
 galaxy_server_dir: "{{ galaxy_root }}/server"

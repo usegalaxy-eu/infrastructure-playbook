@@ -1,0 +1,23 @@
+postfix_relay_host: smtp.example.org
+postfix_relay_port: 587
+postfix_relay_wrappermode: false
+postfix_relay_username: user@example.org
+postfix_relay_password: dummy_password
+postfix_myhostname: "{{ ansible_facts['fqdn'] }}"
+postfix_myorigin: example.org
+postfix_mynetworks:
+  - 127.0.0.0/8
+postfix_trusted_client_hosts: []
+postfix_maximal_queue_lifetime: 5d
+postfix_bounce_queue_lifetime: 5d
+postfix_destination_rate_delay: 1s
+postfix_destination_concurrency_limit: 2
+# PCRE/regexp fragment matched against the Subject header of submitted mail;
+# matching messages are handed to the paced 'bulk' transport via a
+# FILTER action. Galaxy campaign emails (e.g. GDPR retention notices) must
+# include this tag in their subject; regular Galaxy email does not.
+postfix_bulk_subject_regex: '\[Galaxy bulk\]'
+postfix_bulk_destination_rate_delay: "{{ postfix_destination_rate_delay }}"
+postfix_bulk_destination_concurrency_limit: "{{ postfix_destination_concurrency_limit }}"
+postfix_smtpd_tls_security_level: none
+postfix_smtp_tls_cafile: /etc/pki/tls/certs/ca-bundle.crt
