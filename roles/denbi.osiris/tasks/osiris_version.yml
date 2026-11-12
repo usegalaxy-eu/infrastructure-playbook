@@ -24,6 +24,27 @@
     group: "apache"
     mode: "0640"
 
+- name: "Download composer installer"
+  ansible.builtin.get_url:
+    url: "https://getcomposer.org/installer"
+    dest: "/tmp/composer-setup.php"
+    mode: "0644"
+
+- name: "Install php composer"
+  ansible.builtin.command: "{{ php_bin }} --install-dir=/usr/local/bin --filename=composer"
+
+- name: "Delete composer installer"
+  ansible.builtin.file:
+    path: "/tmp/composer-setup.php"
+    state: absent
+
+- name: "Update OSIRIS dependencies with composer"
+  become: true
+  become_user: apache
+  ansible.builtin.shell:
+    chdir: "{{ osiris_www_dir }}"
+    cmd: 'PATH="{{ php_bin_dir }}:$PATH" /usr/local/bin/composer update --ignore-platform-reqs'
+
 - name: "Ensure permissions for OSIRIS PHP files"
   ansible.builtin.file:
     path: "{{ osiris_www_dir }}"

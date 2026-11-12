@@ -6,6 +6,12 @@
   failed_when: httpd_configtest.rc != 0
   listen: "Validate and restart apache"
 
+- name: Restart php-fpm
+  ansible.builtin.service:
+    name: "{{ php_version_prefix }}-php-fpm"
+    state: restarted
+  listen: "Restart php-fpm"
+
 - name: Restart Apache
   ansible.builtin.service:
     name: httpd
