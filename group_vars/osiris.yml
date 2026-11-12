@@ -43,6 +43,10 @@ osiris_config_file: "{{ osiris_www_dir }}/CONFIG.php"
 osiris_reverse_proxy_trusted:
   - "132.230.103.37"
 
+# See secret_group_vars/osiris.yml for other oauth related settings
+osiris_oauth_label: "Life Science Login"
+osiris_user_management: "AUTH"
+
 certbot_bin: "/usr/bin/true"  # Traefik handles SSL, certbot does not need to run
 certbot_well_known_root: "{{ osiris_www_dir }}/_well-known_root"
 certbot_domains:

@@ -25,49 +25,49 @@
   ansible.builtin.lineinfile:
     path: "{{ osiris_config_file }}"
     regexp: '^define\("USER_MANAGEMENT",'
-    line: 'define("USER_MANAGEMENT", "AUTH");'
+    line: 'define("USER_MANAGEMENT", "{{ osiris_user_management }}");'
     state: present
 
 - name: "Ensure OSIRIS OpenID Connect label"
   ansible.builtin.lineinfile:
     path: "{{ osiris_config_file }}"
     regexp: '^define\("OAUTH",'
-    line: 'define("OAUTH", "{{ osiris_oicd_label }}");'
+    line: 'define("OAUTH", "{{ osiris_oauth_label }}");'
     state: present
 
 - name: "Ensure OSIRIS OpenID Connect client id is set"
   ansible.builtin.lineinfile:
     path: "{{ osiris_config_file }}"
     regexp: '^define\("CLIENT_ID",'
-    line: 'define("CLIENT_ID", "{{ osiris_oicd_client_id }}");'
+    line: 'define("CLIENT_ID", "{{ osiris_oauth_client_id }}");'
     state: present
 
 - name: "Ensure OSIRIS OpenID Connect client secret is set"
   ansible.builtin.lineinfile:
     path: "{{ osiris_config_file }}"
     regexp: '^define\("CLIENT_SECRET",'
-    line: 'define("CLIENT_SECRET", "{{ osiris_oicd_client_secret }}");'
+    line: 'define("CLIENT_SECRET", "{{ osiris_oauth_client_secret }}");'
     state: present
 
 - name: "Ensure OSIRIS OpenID Connect redirect url is set"
   ansible.builtin.lineinfile:
     path: "{{ osiris_config_file }}"
     regexp: '^define\("REDIRECT_URI",'
-    line: 'define("REDIRECT_URI", "{{ osiris_oicd_redirect_uri }}");'
+    line: 'define("REDIRECT_URI", "{{ osiris_oauth_callback }}");'
     state: present
 
 - name: "Ensure OSIRIS OpenID Connect authority url is set"
   ansible.builtin.lineinfile:
     path: "{{ osiris_config_file }}"
     regexp: '^define\("AUTHORITY",'
-    line: 'define("AUTHORITY", "{{ osiris_oicd_authority_url }}");'
+    line: 'define("AUTHORITY", "{{ osiris_oauth_authority }}");'
     state: present
 
 - name: "Ensure OSIRIS OpenID Connect scopes are set"
   ansible.builtin.lineinfile:
     path: "{{ osiris_config_file }}"
     regexp: '^define\("SCOPES",'
-    line: 'define("SCOPES", "{{ osiris_oicd_scopes }}");'
+    line: 'define("SCOPES", "{{ osiris_oauth_scopes }}");'
     state: present
 
 - name: "Adjust php.ini settings (larger uploads and security)"
