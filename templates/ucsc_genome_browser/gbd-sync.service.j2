@@ -1,0 +1,9 @@
+[Unit]
+Description=Update UCSC Genome Browser genome assemblies on {{ ucsc_genome_browser_host_gbd_dir }}
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor={{ ucsc_genome_browser_host_gbd_dir }}
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/ucsc-genome-browser-gbd-sync
