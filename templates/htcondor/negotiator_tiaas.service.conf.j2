@@ -1,0 +1,5 @@
+[Unit]
+# The TIaaS negotiator keeps its accountant state in a subdirectory of SPOOL,
+# which is not created by the package or by any daemon (the negotiator exits
+# at startup if it is missing).
+ExecStartPre=/usr/bin/sh -c 'install -d -o condor -g condor -m 0755 "$(condor_config_val SPOOL)/negotiator_tiaas"'
