@@ -57,15 +57,15 @@ NEGOTIATOR_POST_JOB_RANK = {{ htcondor_negotiator_post_job_rank }}
 # and TIaaS usage cannot trigger "submitter limit exceeded" for regular users.
 NEGOTIATOR_TIAAS = $(NEGOTIATOR)
 NEGOTIATOR_TIAAS_ARGS = -f -local-name NEGOTIATOR_TIAAS
-NEGOTIATOR.NEGOTIATOR_TIAAS.NEGOTIATOR_LOG = $(LOG)/NegotiatorTiaasLog
-NEGOTIATOR.NEGOTIATOR_TIAAS.MATCH_LOG = $(LOG)/MatchTiaasLog
-NEGOTIATOR.NEGOTIATOR_TIAAS.SPOOL = $(SPOOL)/negotiator_tiaas
+NEGOTIATOR_TIAAS.NEGOTIATOR_LOG = $(LOG)/NegotiatorTiaasLog
+NEGOTIATOR_TIAAS.NEGOTIATOR_MATCH_LOG = $(LOG)/MatchTiaasLog
+NEGOTIATOR_TIAAS.SPOOL = $(SPOOL)/negotiator_tiaas
 DAEMON_LIST = $(DAEMON_LIST), NEGOTIATOR_TIAAS
 DC_DAEMON_LIST =+ NEGOTIATOR_TIAAS
 
 # Partition the slots between both negotiators: the TIaaS negotiator only
 # considers slots advertising GalaxyGroup == "tiaas"; the main negotiator takes
 # everything else (=!= is also true when the attribute is undefined).
-NEGOTIATOR.NEGOTIATOR_TIAAS.NEGOTIATOR_SLOT_CONSTRAINT = GalaxyGroup == "tiaas"
+NEGOTIATOR_TIAAS.NEGOTIATOR_SLOT_CONSTRAINT = GalaxyGroup == "tiaas"
 NEGOTIATOR_SLOT_CONSTRAINT = GalaxyGroup =!= "tiaas"
 {% endif %}
