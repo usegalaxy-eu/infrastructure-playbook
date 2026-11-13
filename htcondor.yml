@@ -102,6 +102,9 @@
       register: htcondor_tiaas_dropin
       notify: Reload systemd
 
+    - name: Reload systemd immediately
+      ansible.builtin.meta: flush_handlers
+
     - name: Open HTCondor shared port in the firewall.
       become: true
       ansible.posix.firewalld:
