@@ -10,7 +10,7 @@ in. A model commented out in the file is not proposed again.
 With --publish (needs GITHUB_TOKEN, and GIT_COMMIT: the master commit the
 file comes from) the branch genai-catalogue-bot is rebuilt from master and
 one draft PR is opened or updated; when nothing needs to change, it is
-closed, unless the probe could not check everything this week. Without
+closed, unless a provider could not be reached this week. Without
 --publish the PR text and the diff are printed and no file is written.
 `check` validates a file.
 
@@ -411,9 +411,22 @@ def main(argv=None):
         with open(args.loc, encoding="utf-8") as f:
             old = f.read()
         text, removed, drifted, added, skipped = apply_report(report, old)
+        # master may have changed since the probe ran: list only its rows
+        # and the models it does not have
+        _, rows, known = parse(old)
+        active = {(row[4], row[1]) for row in rows.values()}
+        seen = [
+            e
+            for e in report.get("results", [])
+            if (e["provider"], e["model_id"]) in active
+        ] + [
+            m
+            for m in report.get("new_models", [])
+            if (m["provider"], m["model_id"]) not in known
+        ]
         unchecked = [
             e
-            for e in report.get("results", []) + report.get("new_models", [])
+            for e in seen
             if e["status"] in ("FAILING", "UNCONFIGURED")
             and e["provider"] not in skipped
         ]
@@ -431,11 +444,16 @@ def main(argv=None):
                 )
             )
         elif text == old:
-            if drifted:  # the file stays as it is, so only this log shows them
+            if drifted or unchecked:  # only this log shows them now
                 print(body)
-            # only close the PR if nothing went unseen this week
-            if skipped or unchecked or report.get("unlisted"):
-                print("Nothing to change, but the probe missed some models")
+            # an open PR is stale now, unless a provider was down or not
+            # configured: its PR entries may still hold, so leave it open
+            down = any(
+                e["status"] == "UNCONFIGURED"
+                for e in report.get("results", [])
+            )
+            if down or skipped or report.get("unlisted"):
+                print("Nothing to change, but a provider could not be reached")
             else:
                 withdraw()
         else:
