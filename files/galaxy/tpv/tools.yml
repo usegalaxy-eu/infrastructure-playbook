@@ -368,6 +368,12 @@ tools:
           container_resolvers:
             - type: explicit_singularity
 
+  toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_raster/3dtrees_raster/.*:
+    cores: 10
+    # Windows hold at most about 50 M points, so the largest task needs about 10 GiB whatever the size;
+    # 16 GB covers it, and the size term buys parallel workers (10 workers on dense COPCs need ~50 GB)
+    mem: min(16 + (input_size * 4), 64)
+
   toolshed.g2.bx.psu.edu/repos/imgteam/libcarna_render/libcarna_render/.*:
     inherits: _basic_docker_tool
     gpus: 1
