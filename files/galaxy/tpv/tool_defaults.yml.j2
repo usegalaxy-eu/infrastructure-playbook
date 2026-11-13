@@ -87,7 +87,6 @@ tools:
           training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
           # training_labels = '"' + ", ".join(training_roles) + '"'
           # entity.params['+Group'] = training_labels
-          entity.params['+Group'] = "tiaas"
 
           # ongoing trainings
           @functools.lru_cache(maxsize=1)
@@ -127,6 +126,7 @@ tools:
           }
           if ongoing_trainings & user_trainings:
               entity.params['requirements'] = f'(({entity.params["requirements"]}) || (GalaxyGroup == "tiaas"))'
+              entity.params['+Group'] = "tiaas"
 
         # Require registration to use interactive tools
       - id: interactive_tool_require_registration
