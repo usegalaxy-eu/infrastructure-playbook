@@ -7,3 +7,11 @@ pulsar_relay_trusted_hosts: '["stargate.galaxyproject.eu"]'
 pulsar_relay_jwt_secret: "{{ vault_pulsar_relay_jwt_secret }}"
 pulsar_relay_admin_password: "{{ vault_pulsar_relay_admin_password }}"
 pulsar_relay_valkey_password: "{{ vault_pulsar_relay_valkey_password }}"
+
+# One relay account per Pulsar, created by the role if missing (create-only).
+# Onboarding: add the two vault vars to vault.yml, add an entry here, run pulsar-relay.yml.
+pulsar_relay_users:
+  - username: "{{ vault_pulsar_nemo_relay_username }}"
+    password: "{{ vault_pulsar_nemo_relay_password }}"
+  - username: "{{ vault_pulsar_nemo_3dtrees_relay_username }}"
+    password: "{{ vault_pulsar_nemo_3dtrees_relay_password }}"
