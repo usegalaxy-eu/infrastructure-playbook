@@ -22,7 +22,8 @@ genai_catalogue_probe_report_dest: "{{ genai_catalogue_probe_log_dir }}/report.j
 genai_catalogue_probe_ntfy_url: ""
 
 genai_catalogue_probe_concurrency: 6
-# Seconds to wait for a response (for chat, the first streamed chunk)
-genai_catalogue_probe_timeout: 60
+# Seconds to wait for a response; for chat, for the answer (thinking models
+# took up to 90 seconds to read the image)
+genai_catalogue_probe_timeout: 120
 # Tries per call on timeouts, connection errors, 408, 429 and 5xx
 genai_catalogue_probe_attempts: 3

@@ -2,9 +2,10 @@
 r"""Turn the GenAI catalogue probe's report into a pull request.
 
 Applies the report of the usegalaxy_eu.genai_catalogue_probe role to master's
-genai_models.loc: DEAD rows are removed, CAPABILITY_DRIFT rows become text,
-and working new models are added with TODO-genai-bot placeholders for an
-admin to fill in. A model commented out in the file is not proposed again.
+genai_models.loc: DEAD rows are removed, CAPABILITY_DRIFT rows are only
+listed (a proxy may be mid-change, so an admin checks them), and working
+new models are added with TODO-genai-bot placeholders for an admin to fill
+in. A model commented out in the file is not proposed again.
 
 With --publish (needs GITHUB_TOKEN, and GIT_COMMIT: the master commit the
 file comes from) the branch genai-catalogue-bot is rebuilt from master and
@@ -185,7 +186,7 @@ def add_decision_section(lines):
 def apply_report(report, text):
     """Return the new file text and what changed.
 
-    That is the removed, retyped and added entries, and the providers whose
+    That is the removed, drifted and added entries, and the providers whose
     verdicts were skipped.
     """
     lines, rows, known = parse(text)
@@ -202,7 +203,7 @@ def apply_report(report, text):
 
     # A verdict only applies if master still has the row as it was probed
     index = {(r[0], r[1], r[4], r[3]): i for i, r in rows.items()}
-    removed, retyped, added = [], [], []
+    removed, drifted, added = [], [], []
     drop, inserts = set(), collections.defaultdict(list)
     # With no working row, the key or URL is more likely wrong than every model
     results = report.get("results", [])
@@ -223,12 +224,7 @@ def apply_report(report, text):
             drop.add(i)
             removed.append(entry)
         elif entry["status"] == "CAPABILITY_DRIFT":
-            drop.add(i)  # moved, so it does not become the default text model
-            anchor = insert_after(lines, rows, "text", rows[i][4])
-            inserts[anchor].append(
-                "\t".join(rows[i][:3] + ["text"] + rows[i][4:])
-            )
-            retyped.append(entry)
+            drifted.append(entry)
 
     values = {row[0] for row in rows.values()}
     for model in report.get("new_models", []):
@@ -256,7 +252,7 @@ def apply_report(report, text):
     problems = check_loc(new_text, placeholders_allowed=True)
     if problems:
         raise BotError("the new file is not valid: " + "; ".join(problems))
-    return new_text, removed, retyped, added, skipped
+    return new_text, removed, drifted, added, skipped
 
 
 def short(error):
@@ -268,7 +264,7 @@ def short(error):
     return match.group(0) if match else "error"
 
 
-def pr_text(removed, retyped, added, skipped=(), unchecked=()):
+def pr_text(removed, drifted, added, skipped=(), unchecked=()):
     """Return the Markdown description of the bot's PR."""
     out = [
         "Update from the weekly GenAI catalogue probe. The bot rebuilds this "
@@ -278,9 +274,16 @@ def pr_text(removed, retyped, added, skipped=(), unchecked=()):
     if removed:
         out += ["", "### Removed: the proxy rejects them", ""]
         out += [f"- `{e['value']}`: {short(e['error'])}" for e in removed]
-    if retyped:
-        out += ["", "### Changed to text: images are rejected", ""]
-        out += [f"- `{e['value']}`: {short(e['error'])}" for e in retyped]
+    if drifted:
+        out += [
+            "",
+            "### Images rejected or not read",
+            "",
+            "Left as they are, since the proxy may have been mid-change. "
+            "If it lasts, change them to `text` by hand.",
+            "",
+        ]
+        out += [f"- `{e['value']}`: {short(e['error'])}" for e in drifted]
     if added:
         out += [
             "",
@@ -304,7 +307,7 @@ def pr_text(removed, retyped, added, skipped=(), unchecked=()):
             f"{short(e['error'])}"
             for e in unchecked
         ]
-    if removed or retyped or skipped or unchecked:
+    if removed or drifted or skipped or unchecked:
         out += [
             "",
             "The full errors are in the probe's report on maintenance.",
@@ -407,14 +410,14 @@ def main(argv=None):
         report = load_report(args.report, args.max_age_days)
         with open(args.loc, encoding="utf-8") as f:
             old = f.read()
-        text, removed, retyped, added, skipped = apply_report(report, old)
+        text, removed, drifted, added, skipped = apply_report(report, old)
         unchecked = [
             e
             for e in report.get("results", []) + report.get("new_models", [])
             if e["status"] in ("FAILING", "UNCONFIGURED")
             and e["provider"] not in skipped
         ]
-        body = pr_text(removed, retyped, added, skipped, unchecked)
+        body = pr_text(removed, drifted, added, skipped, unchecked)
         date = report["summary"]["started"][:10]
         title = f"GenAI catalogue: weekly update ({date})"
         if not args.publish:
@@ -428,6 +431,8 @@ def main(argv=None):
                 )
             )
         elif text == old:
+            if drifted:  # the file stays as it is, so only this log shows them
+                print(body)
             # only close the PR if nothing went unseen this week
             if skipped or unchecked or report.get("unlisted"):
                 print("Nothing to change, but the probe missed some models")
