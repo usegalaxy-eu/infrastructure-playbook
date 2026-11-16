@@ -336,16 +336,13 @@ tools:
   toolshed.g2.bx.psu.edu/repos/bgruening/3dtrees_forestmamba/3dtrees_forestmamba/.*:
     gpus: 1
     cores: 10
-    # Host memory grows with the 10 cm LAZ tile: up to 1.0.1 a 1.24 GB tile was killed at 20, 30 and 60 GB
-    mem: min(20 + (input_size * 50), 120)
+    mem: 20
     context:
       exclude_gpu_models: ["Tesla T4"]
       include_gpu_models: ["NVIDIA L40S", "Tesla V100-PCIE-32GB"]
     rules:
       - if: helpers.tool_version_gte(tool, '1.0.2')
-        # 1.0.2 keeps the point tile on the CPU and peaks below 10 GB of GPU memory, so the 16 GB T4 fits.
-        # It also needs about a third less host memory (~25 GB for a 0.79 GB tile of 158 M points)
-        mem: min(20 + (input_size * 30), 100)
+        # 1.0.2 keeps the point tile on the CPU and peaks below 10 GB of GPU memory, so the 16 GB T4 fits
         context:
           exclude_gpu_models: []
           include_gpu_models: ["NVIDIA L40S", "Tesla V100-PCIE-32GB", "Tesla T4"]
