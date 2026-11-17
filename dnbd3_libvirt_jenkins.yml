@@ -86,6 +86,17 @@
         name:
           - libvirt
       become: true
+    - name: Preserve tmp dir for terraform, see https://github.com/dmacvicar/terraform-provider-libvirt/issues/1267
+      ansible.builtin.copy:
+        content: |
+          # Ignore the contents of extracted sosreport directories.
+          #
+          # Type Path Mode User Group Age Argument
+          x /tmp/terraform-provider-libvirt-cloudinit
+        dest: /etc/tmpfiles.d/terraform.conf
+        mode: '0644'
+        owner: root
+        group: root
     # Create network setup
     - name: Create NetworkManager bridge connection
       community.general.nmcli:
