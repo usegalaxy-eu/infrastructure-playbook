@@ -815,9 +815,9 @@ base_app_main: &BASE_APP_MAIN
   # mail through an SMTP server, which you may define here (host:port).
   # Galaxy will automatically try STARTTLS but will continue upon
   # failure.
-  smtp_server: maintenance.bi.privat:587
+  smtp_server: postfix.bi.privat:587
 
-  # The postfix relay on the maintenance server accepts unauthenticated
+  # The postfix relay on postfix.bi.privat accepts unauthenticated
   # mail from Galaxy hosts (mynetworks) and authenticates to the upstream
   # SMTP server itself with a single account. Galaxy has no separate
   # smtp_port option - the port is part of the smtp_server string.

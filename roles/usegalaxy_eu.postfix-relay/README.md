@@ -1,8 +1,7 @@
 # Postfix relay
 
-Deploy with `ansible-playbook -i hosts maintenance.yml`. This runs the full
-maintenance playbook; there is no dedicated `postfix.yml`. Deployment settings are in
-`group_vars/maintenance.yml`; credentials are supplied through vaulted variables.
+Deploy with `ansible-playbook -i hosts postfix.yml`. Deployment settings are in
+`group_vars/postfix.yml`; credentials are supplied through vaulted variables.
 
 ## Delivery transports
 
@@ -10,7 +9,7 @@ Postfix uses shared persistent queue storage with independent transport scheduli
 
 | Message | Transport | Deployment pacing |
 | --- | --- | --- |
-| Subject matches `postfix_bulk_subject_regex` | `bulk` | 30s delay (~120 messages/hour), concurrency limit 2 |
+| Subject matches `postfix_bulk_subject_regex` (e.g. `[Galaxy bulk]`, `[Galaxy GDPR]`, `[Galaxy Delete Notice]`) | `bulk` | 30s delay (~120 messages/hour), concurrency limit 2 |
 | Null envelope sender (`<>`, delivery-status notifications) | `dsnrelay` | No rate delay, concurrency limit 2 |
 | All other mail, including regular Galaxy email | `smtp` | 8s delay (~450 messages/hour), concurrency limit 2 |
 
@@ -26,8 +25,9 @@ irrelevant, so campaign mail can use exactly the same address as regular
 Galaxy email — the global `email_from`
 (`European Galaxy Team <galaxy-no-reply@informatik.uni-freiburg.de>` covers
 account activation, password resets, notifications, and campaign mail alike).
-Campaign submissions must include the subject tag
-(`postfix_bulk_subject_regex`, default `[Galaxy bulk]`); Galaxy's regular
+Campaign submissions must include one of the subject tags
+(`postfix_bulk_subject_regex`, default matching `[Galaxy bulk]`,
+`[Galaxy GDPR]`, and `[Galaxy Delete Notice]`); Galaxy's regular
 email never carries it. Bounces are returned to the envelope sender, which is
 the relay's single upstream account; they are routed to the unpaced
 `dsnrelay` transport by the null sender map, not by headers, because bounces
@@ -44,19 +44,21 @@ The queue manager reads transport-specific delays and concurrency limits from
 SASL and TLS settings. Log prefixes distinguish `postfix/bulk/smtp` and
 `postfix/dsnrelay/smtp` from regular `postfix/smtp` deliveries.
 
-Together the paced transports target approximately 700 single-recipient
-deliveries/hour (600 bulk plus 100 regular). Bounces are additional and unpaced.
+Together the paced transports target approximately 570 single-recipient
+deliveries/hour (120 bulk plus 450 regular). Bounces are additional and unpaced.
 They share one upstream account: the combined traffic, including bounces, is
 still subject to that account's recipient limit and the source host's connection
 and authentication limits. A delivery delay is not a strict recipient quota.
 
 ## Verification after deployment
 
-On maintenance, inspect the maps (use `hash:` instead of `lmdb:` if that type
+On the relay host (postfix.bi.privat), inspect the maps (use `hash:` instead of `lmdb:` if that type
 was selected, and `regexp:` if the build lacks `pcre:`):
 
 ```bash
 postmap -q 'Subject: [Galaxy bulk] Updated Terms of Service and Privacy Policy' pcre:/etc/postfix/header_checks
+postmap -q 'Subject: [Galaxy GDPR] Your data will be deleted' pcre:/etc/postfix/header_checks
+postmap -q 'Subject: [Galaxy Delete Notice] Final reminder' pcre:/etc/postfix/header_checks
 postmap -q 'Subject: Your Galaxy account activation' pcre:/etc/postfix/header_checks
 postmap -q '<>' lmdb:/etc/postfix/sender_transport
 postconf header_checks smtp_destination_rate_delay bulk_destination_rate_delay dsnrelay_destination_rate_delay
@@ -90,7 +92,7 @@ A normal service restart or host reboot preserves queued messages, and Postfix
 resumes delivery automatically. The role sets `enabled: true` so the service
 starts on boot. This assumes the queue filesystem survives and is available;
 disk loss, corruption, or deleting/replacing the spool can lose mail. A restart
-does not reset message age or the configured 30-day queue lifetime.
+does not reset message age or the configured queue lifetime.
 Unlike the queue itself, destination rate-delay timers are in memory and do not
 survive a restart or reload. Deliveries can therefore resume immediately, so
 restarting repeatedly can undermine the intended pacing.
@@ -112,11 +114,10 @@ Before production use, test with a controlled SMTP sink and no real campaign:
    correlate message IDs and recipients with `status=sent` in the mail log.
 4. Test submission while the relay is stopped and confirm the application retries.
 
-With the relay on maintenance, Galaxy email submission depends on maintenance
-and the network path to it, although Galaxy's other functions need not stop.
-Moving the relay to sn09 removes that extra host dependency for sn09's own
-submissions, but Celery workers still depend on the relay host. Such a move needs
+With the relay on its own host (postfix.bi.privat), Galaxy email submission
+depends on that host and the network path to it, although Galaxy's other
+functions need not stop. If the relay moves again, the change needs
 coordinated client, trusted-host, firewall, credential, and playbook changes, and
-the old queue must be drained or safely migrated before retiring maintenance's
+the old queue must be drained or safely migrated before retiring the previous
 relay. Keep the queue on durable storage and monitor queue age and free space
 regardless of placement.
