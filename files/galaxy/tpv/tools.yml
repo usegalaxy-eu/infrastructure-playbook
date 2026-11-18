@@ -1060,3 +1060,24 @@ tools:
     mem: 60
     cores: 16
     gpus: 1
+
+  # Resource requirements moved from conda_in_container.yml, these tools are
+  # not covered by the tpv-shared-database
+  toolshed.g2.bx.psu.edu/repos/iuc/sleuth/sleuth/.*:
+    cores: 4
+    mem: 16
+
+  toolshed.g2.bx.psu.edu/repos/iuc/rnaquast/rna_quast/.*:
+    cores: 12
+    mem: 40
+
+  toolshed.g2.bx.psu.edu/repos/iuc/mashmap/mashmap/.*:
+    cores: 8
+    mem: 32
+
+  toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/.*:
+    cores: 1
+    mem: 40
+
+  toolshed.g2.bx.psu.edu/repos/iuc/pipelign/pipelign/0.2\+galaxy0:
+    mem: 5.6
