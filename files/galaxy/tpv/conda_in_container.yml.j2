@@ -91,19 +91,25 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/enasearch_search_data/enasearch_search_data/.*:
     inherits: _conda_in_container
 
-  # resource requirements for these are defined in tools.yml (they are not
-  # covered by the tpv-shared-database)
   toolshed.g2.bx.psu.edu/repos/iuc/sleuth/sleuth/.*:
     inherits: _conda_in_container
+    cores: 4
+    mem: 16
 
   toolshed.g2.bx.psu.edu/repos/iuc/rnaquast/rna_quast/.*:
     inherits: _conda_in_container
+    cores: 12
+    mem: 40
 
   toolshed.g2.bx.psu.edu/repos/iuc/mashmap/mashmap/.*:
     inherits: _conda_in_container
+    cores: 8
+    mem: 32
 
   toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/.*:
     inherits: _conda_in_container
+    cores: 1
+    mem: 40
 
   toolshed.g2.bx.psu.edu/repos/iuc/qiime_pick_otus/qiime_pick_otus/.*:
     inherits: _conda_in_container
@@ -298,4 +304,4 @@ tools:
   toolshed.g2.bx.psu.edu/repos/pjbriggs/trimmomatic/trimmomatic/0.36.[235]: {inherits: _conda_in_container}
   toolshed.g2.bx.psu.edu/repos/iuc/pipelign/pipelign/0.2\+galaxy0:
     inherits: _conda_in_container
-    # mem defined in tools.yml
+    mem: 5.6
