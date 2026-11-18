@@ -6,6 +6,8 @@ http:
       service: jenkins
       entryPoints:
         - websecure
+      middlewares:
+        - jenkins-ipallowlist
       tls:
         certResolver: "route53"
         domains:
