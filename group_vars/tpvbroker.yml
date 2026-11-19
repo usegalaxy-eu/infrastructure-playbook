@@ -64,6 +64,11 @@ nginx_ssl_role: usegalaxy-eu.certbot
 nginx_conf_ssl_certificate: /etc/letsencrypt/live/tpv-broker.galaxyproject.eu/fullchain.pem
 nginx_conf_ssl_certificate_key: /etc/letsencrypt/live/tpv-broker.galaxyproject.eu/privkey.pem
 
+# Mozilla SSL profile for galaxyproject.nginx >= 1.0.2 (see group_vars/sn09/sn09.yml)
+nginx_ssl_config_profile: intermediate
+nginx_conf_ssl_stapling: 'off'
+nginx_conf_ssl_dhparam: /etc/nginx/ssl/dhparams.pem
+
 # Role: usegalaxy_eu.ansible_tpv_broker
 tpv_broker_dir: '/opt/tpv-broker'
 tpv_broker_repo: 'https://github.com/usegalaxy-eu/tpv-broker.git'

@@ -272,6 +272,23 @@ galaxy_systemd_handlers_limit_nofile: 16384
 galaxy_systemd_handlers: 6
 galaxy_systemd_workflow_schedulers: 3
 
+galaxy_systemd_gunicorn_socket_name: gunicorn
+
+# galaxyproject.nginx >= 1.0.2: load the upload module (built by
+# usegalaxy_eu.ansible_nginx_upload_module) via modules-enabled/*.conf instead
+# of the hardcoded load_module line the old usegalaxy-eu.nginx fork had in
+# its nginx.conf template.
+nginx_load_modules:
+  - path: ngx_http_upload_module.so
+
+# Mozilla SSL profile. 'intermediate' is closest to the previous config
+# (TLSv1.2+1.3 with an explicit cipher list). Stapling is off to match the
+# previous behavior (no chain/OCSP config); enable it together with
+# nginx_conf_ssl_trusted_certificate if stapling is wanted later.
+nginx_ssl_config_profile: intermediate
+nginx_conf_ssl_stapling: 'off'
+nginx_conf_ssl_dhparam: /etc/nginx/ssl/dhparams.pem
+
 galaxy_systemd_common_env: '{{ apollo_env }} GALAXY_ONEDRIVE_CLIENT_ID={{ onedrive_client_id }} GALAXY_ONEDRIVE_CLIENT_SECRET={{ onedrive_client_secret }} GALAXY_DROPBOX_APP_CLIENT_ID={{ dropbox_app_client_id }} GALAXY_DROPBOX_APP_CLIENT_SECRET={{ dropbox_app_client_secret }} GALAXY_GOOGLE_DRIVE_APP_CLIENT_ID={{ google_drive_oauth_client_id }} GALAXY_GOOGLE_DRIVE_APP_CLIENT_SECRET={{ google_drive_oauth_client_secret }} GALAXY_VIRTUAL_ENV={{ galaxy_venv_dir }} GALAXY_LIB={{ galaxy_server_dir }}/lib'
 # Each Gunicorn master needs a distinct base name for its workers' control queues.
 # Systemd expands %i to the galaxy-gunicorn@ instance number.
