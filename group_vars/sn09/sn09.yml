@@ -303,6 +303,9 @@ gie_proxy_path_prefix: /interactivetool/ep
 gie_proxy_port: 8800
 gie_proxy_verbose: true
 
+# Shorter walltime for interactive tools (usegalaxy-eu/issues#1125)
+galaxy_it_max_walltime: "{{ 24 * 60 * 60 }}"
+
 # gxadmin
 postgres_user: galaxy
 postgres_host: sn11.galaxyproject.eu
