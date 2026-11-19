@@ -281,12 +281,33 @@ galaxy_systemd_gunicorn_socket_name: gunicorn
 nginx_load_modules:
   - path: ngx_http_upload_module.so
 
-# Mozilla SSL profile. 'intermediate' is closest to the previous config
-# (TLSv1.2+1.3 with an explicit cipher list). Stapling is off to match the
-# previous behavior (no chain/OCSP config); enable it together with
-# nginx_conf_ssl_trusted_certificate if stapling is wanted later.
-nginx_ssl_config_profile: intermediate
+# SSL config: byte-identical to the previous usegalaxy-eu.nginx (0.6.4 fork)
+# output.
+nginx_ssl_config_profile: default
+nginx_conf_ssl_ciphers:
+  - ECDHE-ECDSA-AES128-GCM-SHA256
+  - ECDHE-ECDSA-AES256-GCM-SHA384
+  - ECDHE-ECDSA-AES128-SHA
+  - ECDHE-ECDSA-AES256-SHA
+  - ECDHE-ECDSA-AES128-SHA256
+  - ECDHE-ECDSA-AES256-SHA384
+  - ECDHE-RSA-AES128-GCM-SHA256
+  - ECDHE-RSA-AES256-GCM-SHA384
+  - ECDHE-RSA-AES128-SHA
+  - ECDHE-RSA-AES256-SHA
+  - ECDHE-RSA-AES128-SHA256
+  - ECDHE-RSA-AES256-SHA384
+  - DHE-RSA-AES128-GCM-SHA256
+  - DHE-RSA-AES256-GCM-SHA384
+  - DHE-RSA-AES128-SHA
+  - DHE-RSA-AES256-SHA
+  - DHE-RSA-AES128-SHA256
+  - DHE-RSA-AES256-SHA256
+nginx_conf_ssl_prefer_server_ciphers: 'on'
+nginx_conf_ssl_session_cache: shared:SSL:8m
+nginx_conf_ssl_session_timeout: 5m
 nginx_conf_ssl_stapling: 'off'
+nginx_conf_ssl_stapling_verify: 'on'
 nginx_conf_ssl_dhparam: /etc/nginx/ssl/dhparams.pem
 
 galaxy_systemd_common_env: '{{ apollo_env }} GALAXY_ONEDRIVE_CLIENT_ID={{ onedrive_client_id }} GALAXY_ONEDRIVE_CLIENT_SECRET={{ onedrive_client_secret }} GALAXY_DROPBOX_APP_CLIENT_ID={{ dropbox_app_client_id }} GALAXY_DROPBOX_APP_CLIENT_SECRET={{ dropbox_app_client_secret }} GALAXY_GOOGLE_DRIVE_APP_CLIENT_ID={{ google_drive_oauth_client_id }} GALAXY_GOOGLE_DRIVE_APP_CLIENT_SECRET={{ google_drive_oauth_client_secret }} GALAXY_VIRTUAL_ENV={{ galaxy_venv_dir }} GALAXY_LIB={{ galaxy_server_dir }}/lib'
