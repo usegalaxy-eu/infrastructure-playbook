@@ -64,35 +64,6 @@ nginx_ssl_role: usegalaxy-eu.certbot
 nginx_conf_ssl_certificate: /etc/letsencrypt/live/tpv-broker.galaxyproject.eu/fullchain.pem
 nginx_conf_ssl_certificate_key: /etc/letsencrypt/live/tpv-broker.galaxyproject.eu/privkey.pem
 
-# SSL config: byte-identical to the previous usegalaxy-eu.nginx (0.6.4 fork)
-# output (see group_vars/sn09/sn09.yml for the rationale).
-nginx_ssl_config_profile: default
-nginx_conf_ssl_ciphers:
-  - ECDHE-ECDSA-AES128-GCM-SHA256
-  - ECDHE-ECDSA-AES256-GCM-SHA384
-  - ECDHE-ECDSA-AES128-SHA
-  - ECDHE-ECDSA-AES256-SHA
-  - ECDHE-ECDSA-AES128-SHA256
-  - ECDHE-ECDSA-AES256-SHA384
-  - ECDHE-RSA-AES128-GCM-SHA256
-  - ECDHE-RSA-AES256-GCM-SHA384
-  - ECDHE-RSA-AES128-SHA
-  - ECDHE-RSA-AES256-SHA
-  - ECDHE-RSA-AES128-SHA256
-  - ECDHE-RSA-AES256-SHA384
-  - DHE-RSA-AES128-GCM-SHA256
-  - DHE-RSA-AES256-GCM-SHA384
-  - DHE-RSA-AES128-SHA
-  - DHE-RSA-AES256-SHA
-  - DHE-RSA-AES128-SHA256
-  - DHE-RSA-AES256-SHA256
-nginx_conf_ssl_prefer_server_ciphers: 'on'
-nginx_conf_ssl_session_cache: shared:SSL:8m
-nginx_conf_ssl_session_timeout: 5m
-nginx_conf_ssl_stapling: 'off'
-nginx_conf_ssl_stapling_verify: 'on'
-nginx_conf_ssl_dhparam: /etc/nginx/ssl/dhparams.pem
-
 # Role: usegalaxy_eu.ansible_tpv_broker
 tpv_broker_dir: '/opt/tpv-broker'
 tpv_broker_repo: 'https://github.com/usegalaxy-eu/tpv-broker.git'
