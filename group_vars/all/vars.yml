@@ -145,7 +145,8 @@ os_auditd_space_left_action: suspend
 
 # Telegraf
 telegraf_agent_package_state: latest
-telegraf_agent_output:
+telegraf_agent_output: "{{ telegraf_agent_output_default + telegraf_agent_output_extra }}"
+telegraf_agent_output_default:
   - type: influxdb
     config:
       - urls = ["{{ influxdb.url }}"]
@@ -153,6 +154,7 @@ telegraf_agent_output:
       - username = "{{ influxdb.node.username }}"
       - password = "{{ influxdb.node.password }}"
       - timeout = "10s"
+telegraf_agent_output_extra: []
 telegraf_plugins_default:
   - plugin: cpu
     config:
