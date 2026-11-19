@@ -544,7 +544,7 @@ tools:
               refs = ref_cond["reference"]
               refs = refs if isinstance(refs, list) else [refs]
               refs = [d for r in refs for d in getattr(r, "dataset_instances", [r])]
-              ref_gb = sum(d.get_size() * (4 if d.ext.endswith(".gz") else 1) for d in refs) / 1024**3
+              ref_gb = sum(float(d.get_size()) * (4 if d.ext.endswith(".gz") else 1) for d in refs) / 1024**3
           elif ref_cond["reference_type"] == "keywords":
               keywords = ref_cond["reference"]
               keywords = keywords.split(",") if isinstance(keywords, str) else keywords
@@ -555,7 +555,7 @@ tools:
           hdist = int(advanced.get("hammingdistance", 0))
           edist = int(advanced.get("editdistance", 0))
           mutations = (8 * k) ** edist if edist else (3 * k) ** hdist
-          mem = 2 + ref_gb * 35 * mutations
+          mem = 2 + ref_gb * 40 * mutations
       except Exception:
           mem = 32
       round(mem, 1)
@@ -571,7 +571,7 @@ tools:
         if: |
           helpers.job_args_match(job, app, {"ref_source_cond": {"ref_source": "history"}})
         mem: |
-          ref_gb = job.get_param_values(app)["ref_source_cond"]["reference"].get_size() / 1024**3
+          ref_gb = float(job.get_param_values(app)["ref_source_cond"]["reference"].get_size()) / 1024**3
           round(min(4 + ref_gb * 8, 256), 1)
 
   toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_.*:
