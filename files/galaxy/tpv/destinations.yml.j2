@@ -134,7 +134,7 @@ destinations:
     context:
       galaxy_group: 'GalaxyGroup == "interactive"'
     params:
-      submit_requirements: "{galaxy_group}"
+      submit_requirements: "{entity.context.get('tiaas_requirements') or galaxy_group}"
       request_gpus: "{gpus or 0}"
       docker_run_extra_arguments: "{self.params.get('docker_run_extra_arguments') or ''} --gpus \"device=$_CONDOR_AssignedGPUs\" --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
     rules:
@@ -144,7 +144,7 @@ destinations:
         execute: |
           exclude_gpu_models = entity.context.get('exclude_gpu_models', [])
           include_gpu_models = entity.context.get('include_gpu_models', [])
-          existing_requirements = galaxy_group
+          existing_requirements = entity.context.get('tiaas_requirements') or galaxy_group
           gpu_conditions_list = []
           if exclude_gpu_models:
               exclude_conditions = ' && '.join(
@@ -615,7 +615,7 @@ destinations:
     context:
       galaxy_group: 'GalaxyGroup == "pxe-gpu"'
     params:
-      requirements: "{galaxy_group}"
+      requirements: "{entity.context.get('tiaas_requirements') or galaxy_group}"
       request_gpus: "{gpus or 0}"
       docker_run_extra_arguments: "{self.params.get('docker_run_extra_arguments') or ''} --gpus \"device=$_CONDOR_AssignedGPUs\" --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs --env NVIDIA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
       singularity_run_extra_arguments: "{self.params.get('singularity_run_extra_arguments') or ''} --nv --env CUDA_VISIBLE_DEVICES=$_CONDOR_AssignedGPUs"
@@ -626,7 +626,7 @@ destinations:
         execute: |
           exclude_gpu_models = entity.context.get('exclude_gpu_models', [])
           include_gpu_models = entity.context.get('include_gpu_models', [])
-          existing_requirements = galaxy_group
+          existing_requirements = entity.context.get('tiaas_requirements') or galaxy_group
           gpu_conditions_list = []
           if exclude_gpu_models:
               exclude_conditions = ' && '.join(
