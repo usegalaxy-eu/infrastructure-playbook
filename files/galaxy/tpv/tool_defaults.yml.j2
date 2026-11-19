@@ -48,7 +48,7 @@ tools:
       request_memory: "{mem}G"
       submit_request_gpus: "{gpus or 0}"
       docker_memory: "{mem}G"
-      # Distribute jobs across the weighted jwd_pool (see global.context above). Reuse the assigned JWD root when TPV reroutes a retry. 
+      # Distribute jobs across the weighted jwd_pool (see global.context above). Reuse the assigned JWD root when TPV reroutes a retry.
       job_working_directory: >-
         {((job.working_directory or (job.destination_params or {}).get('job_working_directory')) if not (dry_run_mode := job_wrapper is None) else None) or helpers.weighted_choice(jwd_pool)['value']}
       description: "{tool.id if not tool.id.count('/') == 5 else tool.id.split('/')[4]}"
@@ -74,9 +74,9 @@ tools:
         execute: |
           entity.params['requirements'] = '(GalaxyGroup == "interactive")'
 
-        # Send TIaaS jobs to training nodes
+        # Send ongoing TIaaS trainings only to training nodes
       - id: jobs_cluster_group_tiaas
-        # Note: Interactive tools can be sent to training nodes according o this rule.
+        # Interactive and GPU jobs are subject to the same restriction.
         if: user is not None
         execute: |
           import os
@@ -85,9 +85,6 @@ tools:
           from datetime import date
 
           training_roles = [r.name for r in user.all_roles() if not r.deleted and "training" in r.name]
-          # training_labels = '"' + ", ".join(training_roles) + '"'
-          # entity.params['+Group'] = training_labels
-
           # ongoing trainings
           @functools.lru_cache(maxsize=1)
           def get_ongoing_trainings(date_) -> set[str]:
@@ -125,8 +122,9 @@ tools:
               for training_role in training_roles
           }
           if ongoing_trainings & user_trainings:
-              entity.params['requirements'] = f'(({entity.params["requirements"]}) || (GalaxyGroup == "tiaas"))'
-              entity.params['+Group'] = "tiaas"
+              entity.context['tiaas_requirements'] = '(GalaxyGroup == "tiaas")'
+              entity.params['requirements'] = entity.context['tiaas_requirements']
+              entity.params['+Group'] = '"tiaas"'
 
         # Require registration to use interactive tools
       - id: interactive_tool_require_registration
@@ -166,11 +164,12 @@ tools:
             - internal
 
       - id: remote_resources
-        if: not (dry_run_mode := job_wrapper is None) and (user is not None) and ("internal" not in {tag.value for tag in entity.tpv_tags.tags})
+        if: not (dry_run_mode := job_wrapper is None) and (user is not None) and not entity.context.get('tiaas_requirements') and ("internal" not in {tag.value for tag in entity.tpv_tags.tags})
         # - `job_wrapper is None` occurs when TPV is launched in dry-run mode
         # - internal tools (tools requiring the Galaxy python environment)
         #   never run on Pulsar nodes, even if the user has selected specific
         #   remote resources (see `tool_requires_galaxy` rule above)
+        # - ongoing TIaaS jobs must use the local training nodes
         execute: |
           from tpv.core.entities import SchedulingTags, Tag, TagType
 
@@ -186,7 +185,7 @@ tools:
         if: |
           retval = False
           remote_resource_tag = None
-          if user is not None:
+          if user is not None and not entity.context.get('tiaas_requirements'):
               try:
                   user_preferences = user.extra_preferences
                   remote_resource_tag = None if user_preferences.get("distributed_compute|remote_resources") == "None" else user_preferences.get("distributed_compute|remote_resources")
