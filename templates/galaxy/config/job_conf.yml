@@ -278,6 +278,7 @@ galaxy_jobconf:
       type: python
       function: map_tool_to_destination
       rules_module: tpv.rules
+      tpv_explain_on_failure: true
       tpv_config_files:
         - "{{ galaxy_config_dir }}/total_perspective_vortex/tool_defaults.yml"
         - "https://raw.githubusercontent.com/galaxyproject/tpv-shared-database/main/tools.yml"
