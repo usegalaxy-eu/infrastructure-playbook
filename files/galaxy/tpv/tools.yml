@@ -533,12 +533,46 @@ tools:
   toolshed.g2.bx.psu.edu/repos/iuc/bbtools_tadpole/bbtools_tadpole/.*:
     mem: 8
 
-  # the following two rules are really dumb ones, which will allow bbtools to succeed in more cases than with default mem,
-  # but this should really be improved according to https://github.com/usegalaxy-eu/infrastructure-playbook/issues/1994
   toolshed.g2.bx.psu.edu/repos/iuc/bbtools_bbduk/bbtools_bbduk/.*:
-    mem: 32
+    mem: |
+      builtin_kb = {"adapters": 14, "artifacts": 106, "phix": 6, "lambda": 49, "pjet": 3, "mtst": 4, "kapa": 6}
+      try:
+          options = job.get_param_values(app)
+          ref_cond = options["reference_type_cond"]
+          advanced = options["advanced_options"]
+          if ref_cond["reference_type"] == "files":
+              refs = ref_cond["reference"]
+              refs = refs if isinstance(refs, list) else [refs]
+              refs = [d for r in refs for d in getattr(r, "dataset_instances", [r])]
+              ref_gb = sum(float(d.get_size()) * (4 if d.ext.endswith(".gz") else 1) for d in refs) / 1024**3
+          elif ref_cond["reference_type"] == "keywords":
+              keywords = ref_cond["reference"]
+              keywords = keywords.split(",") if isinstance(keywords, str) else keywords
+              ref_gb = sum(builtin_kb.get(kw, 106) for kw in keywords) / 1024**2
+          else:
+              ref_gb = 0
+          k = min(int(advanced.get("k", 27)), 31)
+          hdist = int(advanced.get("hammingdistance", 0))
+          edist = int(advanced.get("editdistance", 0))
+          mutations = (8 * k) ** edist if edist else (3 * k) ** hdist
+          mem = 2 + ref_gb * 40 * mutations
+      except Exception:
+          mem = 32
+      round(mem, 1)
+    rules:
+      - id: bbduk_mem_cap
+        if: entity.evaluate_resources(dict(locals())).mem > 256
+        fail: BBDuk would need more than 256 GB of memory for this reference and hamming/edit distance. Please lower hdist/edist or use a smaller reference.
+
   toolshed.g2.bx.psu.edu/repos/iuc/bbtools_bbmap/bbtools_bbmap/.*:
     mem: 32
+    rules:
+      - id: bbmap_history_reference
+        if: |
+          helpers.job_args_match(job, app, {"ref_source_cond": {"ref_source": "history"}})
+        mem: |
+          ref_gb = float(job.get_param_values(app)["ref_source_cond"]["reference"].get_size()) / 1024**3
+          round(min(4 + ref_gb * 8, 256), 1)
 
   toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_.*:
     params:
