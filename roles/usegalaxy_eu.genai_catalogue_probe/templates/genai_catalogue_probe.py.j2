@@ -6,10 +6,11 @@ Each row is called the way the Galaxy tools call it: a streamed chat completion
 for text rows, the same with a PNG of the word GALAXY attached for multimodal
 rows, the PNG alone for image rows, an embeddings request for embedding rows, a
 rerank request for rerank rows, and a transcription of a second of silence for
-audio rows (it only checks the model takes audio and answers with a `text`
-field), and a System One yes/no question for decision rows. Chat calls read the
-answer, like LLM Hub only its content, until it is not empty; with the image
-and a question, until it names the word in the image.
+audio rows (in English, since Canary needs the language; it only checks the
+model takes audio and answers with a `text` field), and a System One yes/no
+question for decision rows. Chat calls read the answer, like LLM Hub only its
+content, until it is not empty; with the image and a question, until it names
+the word in the image.
 
 A row is HEALTHY, DEAD (rejected with a 4xx other than 408/429, or 501),
 CAPABILITY_DRIFT (multimodal, but the image is rejected or not read),
@@ -302,7 +303,9 @@ def transcribe(base_url, api_key, model_id):
     """Upload a clip as LLM Hub's speech to text does (multipart form)."""
     boundary = uuid.uuid4().hex
     body = b""
-    for name, value in (("model", model_id), ("user", PROBE_USER)):
+    # Canary cannot detect the language and rejects a call without it
+    fields = (("model", model_id), ("language", "en"), ("user", PROBE_USER))
+    for name, value in fields:
         body += (
             f'--{boundary}\r\nContent-Disposition: form-data; name="{name}"'
             f"\r\n\r\n{value}\r\n"
