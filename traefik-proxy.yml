@@ -117,6 +117,7 @@
         - directory
       delegate_to: localhost
       become: false
+      # noqa: run-once[task]
       run_once: true
 
     # The copy module decrypts vaulted sources and passes plaintext through
@@ -131,6 +132,7 @@
         - files/traefik/rules/*.yml
       delegate_to: localhost
       become: false
+      # noqa: run-once[task]
       run_once: true
 
     - name: Install ansible dependencies
