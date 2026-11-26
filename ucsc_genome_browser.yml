@@ -244,10 +244,10 @@
           loop_control:
             label: "{{ item.item.key | basename }}"
           vars:
-            intended_source: "{{ expected_symlink_map[item.stat.path] }}"
+            intended_source: "{{ ucsc_genome_browser_vm_mariadb_symlink_map[item.stat.path] }}"
           when:
             - item.stat.exists
-            - (not item.stat.islnk) or (item.stat.lnk_source != intended_source)
+            - (not item.stat.islnk) or (item.stat.lnk_target | regex_replace('/+', '/') != intended_source | regex_replace('/+', '/'))
 
         - name: Create symlinks in MariaDB directory
           # TODO: symlinks should also be removed when the source files are removed
