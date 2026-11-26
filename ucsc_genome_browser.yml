@@ -182,8 +182,12 @@
 - name: Install UCSC Genome Browser
   hosts: ucsc_genome_browser
   tags: ucsc_genome_browser
+  vars_files:
+    - secret_group_vars/all.yml
   roles:
     - role: usegalaxy_eu.ucsc_genome_browser
+      become: true
+    - role: dj-wasabi.telegraf
       become: true
   tasks:
     - name: Symlink databases in UCSC Genome Browser database meta directory
