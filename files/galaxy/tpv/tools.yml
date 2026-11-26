@@ -85,7 +85,7 @@ tools:
     env:
       TEMP: /data/misc06/tmp
 
-  toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/*:
+  toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/.*:
     env:
       - name: SINGULARITYENV_LC_ALL
         value: C.UTF-8
@@ -292,7 +292,7 @@ tools:
       _GALAXY_JOB_TMP_DIR: '/tmp'
 
 
-  toolshed.g2.bx.psu.edu/repos/goeckslab/squidpy/squidpy_spatial/*:
+  toolshed.g2.bx.psu.edu/repos/goeckslab/squidpy/squidpy_spatial/.*:
     mem: 6
     env:
       _GALAXY_JOB_TMP_DIR: '/tmp'
@@ -686,7 +686,7 @@ tools:
         - docker
         - embedded-pulsar
 
-  'last_*':
+  'last_.*':
     params:
       docker_run_extra_arguments: --pids-limit 10000 --ulimit fsize=1000000000 --env TERM=vt100
       docker_volumes: "$_CONDOR_SCRATCH_DIR:rw,$job_directory:rw,$tool_directory:ro,$job_directory/outputs:rw,$working_directory:rw,/data/db/:ro,/data/dnb01/galaxy_db/:ro,/data/dnb02/galaxy_db/:ro,/data/dnb-ds03/galaxy_db/:ro,/data/dnb05/galaxy_db/:ro,/data/dnb06/galaxy_db/:rw,/data/dnb07/galaxy_db/:rw,/data/dnb08/galaxy_db/:rw,/data/dnb09/galaxy_db/:rw,/data/dnb10/galaxy_db/:rw,/data/dnb11/galaxy_db/:rw,/data/dnb12/galaxy_db/:rw,/data/dnb13/galaxy_db/:rw,/data/dp01/galaxy_db/:rw,/data/1/galaxy_db/:ro,/data/3/galaxy_db/:ro,/data/4/galaxy_db/:ro,/data/5/galaxy_import/galaxy_user_data/:ro,/data/6/galaxy_db/:ro,/data/7/galaxy_db/:ro,/usr/local/tools/:ro"
@@ -989,16 +989,18 @@ tools:
 
   toolshed.g2.bx.psu.edu/repos/recetox/aoptk_.*:
     env:
-      docker_env_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
       SINGULARITYENV_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
       LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
+    params:
+      docker_env_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
 
   toolshed.g2.bx.psu.edu/repos/bgruening/llm_hub/llm_hub/.*:
     mem: 1
     env:
-      docker_env_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
       SINGULARITYENV_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
       LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
+    params:
+      docker_env_LITELLM_CONFIG_FILE: '/data/db/models/config/litellm_config.yml'
 
   toolshed.g2.bx.psu.edu/repos/bgruening/rag_retriever/rag_retriever/.*:
     # Measured peak RSS ~1 GB (local HuggingFace path, 600k-char corpus); mem: 4
