@@ -10,6 +10,11 @@
       ansible.builtin.service:
         name: condor
         state: reloaded
+
+    - name: Reload systemd
+      become: true
+      ansible.builtin.systemd:
+        daemon_reload: true
   vars_files:
     - secret_group_vars/db-main.yml  # PostgreSQL password (galaxyproject.gxadmin)
     - mounts/dest/all.yml
@@ -74,6 +79,31 @@
         group: root
         mode: "0644"
       notify: Reload HTCondor
+
+    - name: Ensure the condor.service drop-in directory exists.
+      become: true
+      when: htcondor_role_manager
+      ansible.builtin.file:
+        path: /etc/systemd/system/condor.service.d
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Template TIaaS negotiator systemd drop-in.
+      become: true
+      when: htcondor_role_manager
+      ansible.builtin.template:
+        src: htcondor/negotiator_tiaas.service.conf.j2
+        dest: /etc/systemd/system/condor.service.d/negotiator_tiaas.conf
+        owner: root
+        group: root
+        mode: "0644"
+      register: htcondor_tiaas_dropin
+      notify: Reload systemd
+
+    - name: Reload systemd immediately
+      ansible.builtin.meta: flush_handlers
 
     - name: Open HTCondor shared port in the firewall.
       become: true
