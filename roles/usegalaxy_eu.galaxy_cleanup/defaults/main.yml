@@ -13,7 +13,7 @@
 galaxy_cleanup_scratchstorage: {}
 
 # Schedule for Galaxy cleanup objectstore service.
-galaxy_cleanup_minute: 0
+galaxy_cleanup_minute: 30
 galaxy_cleanup_hour: 1
 
 galaxy_cleanup_log_dir: "{{ undef() }}"
@@ -21,3 +21,9 @@ galaxy_cleanup_log_dir: "{{ undef() }}"
 galaxy_cleanup_systemd_service: galaxy-cleanup.service
 galaxy_cleanup_systemd_timer: galaxy-cleanup.timer
 galaxy_cleanup_systemd_on_calendar: "*-*-* {{ '%02d' | format(galaxy_cleanup_hour | int) }}:{{ '%02d' | format(galaxy_cleanup_minute | int) }}:00"
+
+# Annual one-time retry of datasets marked as purged (force-retry).
+galaxy_cleanup_force_retry_service: galaxy-cleanup-force-retry.service
+galaxy_cleanup_force_retry_timer: galaxy-cleanup-force-retry.timer
+galaxy_cleanup_force_retry_on_calendar: "*-12-24 01:00:00"
+galaxy_cleanup_force_retry_ntfy_url: "{{ undef() }}"

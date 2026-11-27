@@ -21,6 +21,8 @@ galaxy_user:
 
 # Role: usegalaxy_eu.galaxy_cleanup
 galaxy_cleanup_log_dir: "{{ dnb.dnb01.path }}/maintenance/galaxy_cleanup"
+galaxy_cleanup_force_retry_on_calendar: "*-12-24 01:00:00"
+galaxy_cleanup_force_retry_ntfy_url: "{{ NTFY_GALAXY_EU_URL }}"
 
 # Role: hxr.postgres-connection
 # Role: usegalaxy-eu.galaxy-slurp
