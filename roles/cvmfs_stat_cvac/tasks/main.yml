@@ -1,0 +1,8 @@
+---
+# Mounts the nfs cvmfs alien cache with autofs (needed for when a vgcn as been rebooted)
+- name: Check directory exists silently
+  stat:
+    path: "{{ cvac.cvac08.path }}"
+  become: true
+  changed_when: false
+  no_log: true

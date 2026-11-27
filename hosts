@@ -64,6 +64,7 @@ ansible_ssh_user=centos
 [htcondor:children]
 htcondor-manager
 htcondor-submit
+htcondor-execute
 
 [htcondor-manager]
 central-manager.bi.privat ansible_ssh_user=root
@@ -76,6 +77,12 @@ maintenance.bi.privat
 sn09.galaxyproject.eu
 
 [htcondor-submit:vars]
+ansible_group_priority=4
+
+[htcondor-execute:children]
+compute
+
+[htcondor-execute:vars]
 ansible_group_priority=4
 
 [dokku]
@@ -118,3 +125,82 @@ osiris.bi.privat ansible_host=10.4.68.174 ansible_ssh_user=centos
 [ticketsystem]
 ticketsystem.bi.privat
 
+[compute]
+# Intel Broadwell
+c32m2048-n3681.bi.privat
+# AMD Genoa
+c192m1536-n3702.bi.privat
+c192m1536-n3703.bi.privat
+c192m1536-n3704.bi.privat
+c192m1536-n3705.bi.privat
+c192m1536-n3706.bi.privat
+c192m1536-n3707.bi.privat
+c192m1536-n3708.bi.privat
+c192m1536-n3709.bi.privat
+c192m1536-n3710.bi.privat
+c192m1536-n3711.bi.privat
+c192m1536-n3712.bi.privat
+c192m1536-n3713.bi.privat
+c192m1536-n3714.bi.privat
+c192m1536-n3715.bi.privat
+c192m1536-n3716.bi.privat
+c192m1536-n3717.bi.privat
+# AMD Rome 4-in-1
+c128m1024-n3805.bi.privat
+c128m1024-n3806.bi.privat
+c128m1024-n3807.bi.privat
+c128m1024-n3808.bi.privat
+c128m1024-n3809.bi.privat
+c128m1024-n3810.bi.privat
+c128m1024-n3811.bi.privat
+c128m1024-n3812.bi.privat
+c128m1024-n3813.bi.privat
+c128m1024-n3814.bi.privat
+c128m1024-n3815.bi.privat
+c128m1024-n3816.bi.privat
+
+[compute:children]
+compute_entiregpu
+compute_divgpu4
+compute_tiaas
+compute_internal
+compute_test
+
+[compute:vars]
+ansible_group_priority=8
+
+[compute_entiregpu]
+# Nvidia L40S
+c128m512g4-n37103.bi.privat
+c128m512g4-n37104.bi.privat
+# Nvidia T4
+c64m384g8-n3801.bi.privat
+# Nvidia V100 32G vRAM
+c64m512g8-gpuv100.bi.privat
+
+[compute_entiregpu:vars]
+ansible_group_priority=9
+
+[compute_divgpu4]
+
+[compute_divgpu4:vars]
+ansible_group_priority=9
+
+[compute_tiaas]
+# General TIaaS node
+c192m1536-n3701.bi.privat
+
+[compute_tiaas:vars]
+ansible_group_priority=9
+
+# Nodes that should run internal Galaxy tools, like upload or expressions (short running)
+[compute_internal]
+
+[compute_internal:vars]
+ansible_group_priority=9
+
+# Nodes that should receive docker network restrictions should go here
+[compute_test]
+
+[compute_test:vars]
+ansible_group_priority=9
