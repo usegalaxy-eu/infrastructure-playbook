@@ -1,0 +1,175 @@
+- name: Install postfix and SASL client library
+  ansible.builtin.package:
+    name:
+      - postfix
+      - cyrus-sasl-plain
+    state: present
+
+- name: Resolve trusted client IPv4 addresses on the relay
+  ansible.builtin.getent:
+    database: ahostsv4
+    key: "{{ item }}"
+  loop: "{{ postfix_trusted_client_hosts }}"
+  register: postfix_trusted_client_lookups
+
+- name: Collect trusted client IPv4 addresses
+  ansible.builtin.set_fact:
+    postfix_trusted_client_addresses: >-
+      {{ postfix_trusted_client_lookups.results
+         | map(attribute='ansible_facts.getent_ahostsv4')
+         | map('list') | flatten | unique | sort | list }}
+
+- name: Deploy SMTP credentials for the upstream relay
+  ansible.builtin.template:
+    src: sasl_passwd.j2
+    dest: /etc/postfix/sasl_passwd
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+  register: postfix_sasl_credentials
+
+- name: Check supported lookup table types
+  ansible.builtin.command: /usr/sbin/postconf -m
+  register: postfix_map_types
+  changed_when: false
+
+- name: Select the credentials database type
+  ansible.builtin.set_fact:
+    postfix_database_type: >-
+      {{ 'hash' if 'hash' in postfix_map_types.stdout_lines
+         else 'lmdb' if 'lmdb' in postfix_map_types.stdout_lines
+         else none }}
+    postfix_database_file: >-
+      {{ '/etc/postfix/sasl_passwd.db' if 'hash' in postfix_map_types.stdout_lines
+         else '/etc/postfix/sasl_passwd.lmdb' if 'lmdb' in postfix_map_types.stdout_lines
+         else none }}
+
+- name: Verify a usable credentials database type is available
+  ansible.builtin.assert:
+    that: postfix_database_type is not none
+    fail_msg: >-
+      Neither 'hash' nor 'lmdb' lookup tables are supported by this postfix
+      build (postconf -m). Install postfix-lmdb or an equivalent package.
+
+- name: Check for the SMTP credentials database
+  ansible.builtin.stat:
+    path: "{{ postfix_database_file }}"
+  register: postfix_sasl_database
+
+- name: Build SMTP credentials database before starting postfix
+  ansible.builtin.command: "/usr/sbin/postmap {{ postfix_database_type }}:/etc/postfix/sasl_passwd"
+  when: postfix_sasl_credentials.changed or not postfix_sasl_database.stat.exists
+  changed_when: true
+  notify: Restart postfix
+
+- name: Restrict access to the SMTP credentials database
+  ansible.builtin.file:
+    path: "{{ postfix_database_file }}"
+    owner: root
+    group: root
+    mode: "0600"
+  when: not ansible_check_mode or postfix_sasl_database.stat.exists
+
+- name: Deploy sender-dependent DSN routing
+  ansible.builtin.template:
+    src: sender_transport.j2
+    dest: /etc/postfix/sender_transport
+    owner: root
+    group: root
+    mode: "0644"
+  register: postfix_sender_transport
+
+- name: Check for the sender transport database
+  ansible.builtin.stat:
+    path: "/etc/postfix/sender_transport.{{ 'db' if postfix_database_type == 'hash' else 'lmdb' }}"
+  register: postfix_sender_transport_database
+
+- name: Build sender transport database before starting postfix
+  ansible.builtin.command:
+    argv:
+      - /usr/sbin/postmap
+      - "{{ postfix_database_type }}:/etc/postfix/sender_transport"
+  when: >-
+    postfix_sender_transport.changed or
+    not postfix_sender_transport_database.stat.exists
+  changed_when: true
+  notify: Restart postfix
+
+- name: Select the header checks table type
+  ansible.builtin.set_fact:
+    postfix_header_checks_type: >-
+      {{ 'pcre' if 'pcre' in postfix_map_types.stdout_lines
+         else 'regexp' if 'regexp' in postfix_map_types.stdout_lines
+         else none }}
+
+- name: Verify a usable header checks table type is available
+  ansible.builtin.assert:
+    that: postfix_header_checks_type is not none
+    fail_msg: >-
+      Neither 'pcre' nor 'regexp' lookup tables are supported by this postfix
+      build (postconf -m); subject-based bulk routing cannot be deployed.
+
+- name: Deploy subject-based bulk routing header checks
+  ansible.builtin.template:
+    src: header_checks.j2
+    dest: /etc/postfix/header_checks
+    owner: root
+    group: root
+    mode: "0644"
+  when: postfix_bulk_subject_regex | length > 0
+  notify: Restart postfix
+
+- name: Deploy main.cf
+  ansible.builtin.template:
+    src: main.cf.j2
+    dest: /etc/postfix/main.cf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart postfix
+
+- name: Check the aliases source file
+  ansible.builtin.stat:
+    path: /etc/aliases
+  register: postfix_aliases_source
+
+- name: Check the aliases database
+  ansible.builtin.stat:
+    path: "/etc/aliases.{{ 'db' if postfix_database_type == 'hash' else 'lmdb' }}"
+  register: postfix_aliases_database
+
+- name: Build the aliases database before starting postfix
+  ansible.builtin.command:
+    argv:
+      - /usr/sbin/postalias
+      - "{{ postfix_database_type }}:/etc/aliases"
+  when: >-
+    not postfix_aliases_database.stat.exists or
+    postfix_aliases_source.stat.mtime > postfix_aliases_database.stat.mtime
+  changed_when: true
+  notify: Restart postfix
+
+- name: Enable the SMTP submission listener on port 587
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/master.cf
+    regexp: '^#?submission\s+inet\s+'
+    line: 'submission inet n - n - - smtpd'
+  notify: Restart postfix
+
+- name: Configure bulk and unpaced delivery-status transports
+  ansible.builtin.blockinfile:
+    path: /etc/postfix/master.cf
+    marker: '# {mark} ANSIBLE MANAGED POSTFIX RELAY TRANSPORTS'
+    block: |
+      bulk unix - - n - - smtp
+        -o syslog_name=postfix/bulk
+      dsnrelay unix - - n - - smtp
+        -o syslog_name=postfix/dsnrelay
+  notify: Restart postfix
+
+- name: Ensure postfix is enabled and running
+  ansible.builtin.service:
+    name: postfix
+    state: started
+    enabled: true
