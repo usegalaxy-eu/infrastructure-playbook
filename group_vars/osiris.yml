@@ -10,6 +10,10 @@ restore_backup_semaphore_path: /root/delete_to_restore_OSIRIS_backup.ansible
 php_version: "8.4"
 php_version_prefix: "php{{ php_version | replace('.', '') }}"
 php_versions_install_recommends: false
+php_bin_dir: "/opt/remi/{{ php_version_prefix }}/root/bin"
+php_bin: "{{ php_bin_dir }}/php"
+php_conf_dir: "/etc/opt/remi/{{ php_version_prefix }}"
+php_conf: "{{ php_conf_dir }}/php.ini"
 
 php_memory_limit: "128M"
 php_max_execution_time: "60"
@@ -38,6 +42,10 @@ osiris_www_dir: /var/www/osiris
 osiris_config_file: "{{ osiris_www_dir }}/CONFIG.php"
 osiris_reverse_proxy_trusted:
   - "132.230.103.37"
+
+# See secret_group_vars/osiris.yml for other oauth related settings
+osiris_oauth_label: "Life Science Login"
+osiris_user_management: "AUTH"
 
 certbot_bin: "/usr/bin/true"  # Traefik handles SSL, certbot does not need to run
 certbot_well_known_root: "{{ osiris_www_dir }}/_well-known_root"
