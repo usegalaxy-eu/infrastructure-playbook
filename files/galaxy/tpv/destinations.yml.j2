@@ -555,6 +555,8 @@ destinations:
         value: /scratch/singularity/
       - name: PYTHONPYCACHEPREFIX
         value: /scratch/pythoncache/
+      - name: PYDANTIC_DISABLE_PLUGINS
+        value: __all__
     params:
       request_gpus: "{gpus or 0}"
 
@@ -671,6 +673,8 @@ destinations:
     env:
       - name: PYTHONPYCACHEPREFIX
         value: /scratch/pythoncache/
+      - name: PYDANTIC_DISABLE_PLUGINS
+        value: __all__
     params:
       require_container: true
       container_override:
@@ -695,6 +699,8 @@ destinations:
     env:
       - name: PYTHONPYCACHEPREFIX
         value: /scratch/pythoncache/
+      - name: PYDANTIC_DISABLE_PLUGINS
+        value: __all__
     params:
       rank: 'GalaxyGroup == "internal"'
     scheduling:
