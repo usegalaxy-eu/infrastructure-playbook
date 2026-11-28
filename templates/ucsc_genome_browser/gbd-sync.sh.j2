@@ -5,7 +5,7 @@ set -euo pipefail
 GBD_DIR="{{ ucsc_genome_browser_host_gbd_dir | regex_replace('/$', '') }}"
 HGDOWNLOAD="{{ ucsc_genome_browser_gbd_sync_hgdownload }}"
 VAGRANT_DIR="{{ ucsc_genome_browser_vm_vagrant_project_dir }}"
-RSYNC_OPTS=(-rltv --partial)  # not -a, NFS root squashing
+RSYNC_OPTS=(-rltv)
 
 # $1 must not contain single quotes
 vm() {
@@ -21,7 +21,7 @@ mapfile -t DATABASES < <(find "$GBD_DIR/meta" -mindepth 1 -maxdepth 1 -type d -n
 
 for db in "${ASSEMBLIES[@]}"; do
     echo "Syncing gbdb: $db"
-    rsync "${RSYNC_OPTS[@]}" "$HGDOWNLOAD::gbdb/$db/" "$GBD_DIR/gbdb/$db/"
+    rsync "${RSYNC_OPTS[@]}" --partial-dir=.rsync-partial "$HGDOWNLOAD::gbdb/$db/" "$GBD_DIR/gbdb/$db/"
 done
 
 echo "Stopping MariaDB in the VM"
