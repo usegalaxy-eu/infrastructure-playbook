@@ -107,3 +107,11 @@ tools:
   #    - if: |
   #        not user or not 'trusted_for_ITs' in [role.name for role in user.all_roles() if not role.deleted]
   #      fail: "Interactive tool jupyter not available for user"  # TODO: update placeholder text
+
+  interactive_tool_cellxgene:
+    cores: 2 if input_size < 5 else (4 if input_size < 10 else (8 if input_size < 40 else 16))
+    mem: 4 if input_size < 0.5 else (8 if input_size < 2 else (16 if input_size < 5 else (32 if input_size < 10 else (48 if input_size < 20 else (64 if input_size < 40 else 80)))))
+
+  interactive_tool_cellxgene_vip:
+    cores: 2 if input_size < 2 else (4 if input_size < 10 else (8 if input_size < 20 else (12 if input_size < 40 else 16)))
+    mem: 8 if input_size < 0.5 else (12 if input_size < 2 else (24 if input_size < 5 else (48 if input_size < 10 else (64 if input_size < 20 else (80 if input_size < 40 else 128)))))
